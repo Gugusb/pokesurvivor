@@ -86,8 +86,8 @@ G.Dev = (() => {
         '<button class="btn small" data-currency="' + c.id + '" data-sign="-1" aria-label="减少' + c.name + '">−</button>' +
         '<button class="btn small" data-currency="' + c.id + '" data-sign="1" aria-label="增加' + c.name + '">＋</button></div>').join('') +
       '<p>勋章：' + Object.keys(save && save.abilityMedals || {}).length + '/' + G.AbilityDefs.LIST.length + '</p>' +
-      '<div class="row wrap"><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="legends">解锁关都传说</button></div>' +
-      '<label>测试伙伴 <select id="dev-partner">' + [144,145,146,150,151].map(d => '<option value="' + d + '">' + G.T(G.DEX_BY[d].name) + '</option>').join('') + '</select></label>' +
+      '<div class="row wrap"><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="legends">解锁关都五星</button></div>' +
+      '<label>测试伙伴 <select id="dev-partner">' + G.AbilityDefs.SPECIES.map(d => '<option value="' + d + '">' + G.T(G.DEX_BY[d].name) + '</option>').join('') + '</select></label>' +
       '<button class="btn small" data-dev="partner">选择伙伴（局外）</button>' +
       '<label>指定勋章 <select id="dev-medal">' + G.AbilityDefs.LIST.map(m => '<option value="' + m.id + '">' + G.T(G.DEX_BY[m.dex].name) + ' · ' + G.T(m.name) + '</option>').join('') + '</select></label>' +
       '<div class="row wrap"><button class="btn small" data-dev="force">下次抽出此勋章</button><button class="btn small" data-dev="equip">装备此勋章（局外）</button></div>' +
@@ -105,7 +105,7 @@ G.Dev = (() => {
       c.step = amount;
       action(() => adjustCurrency(c.id, amount * Number(b.dataset.sign)));
     });
-    if (save && [144,145,146,150,151].includes(save.partner)) panel.querySelector('#dev-partner').value = save.partner;
+    if (save && G.AbilityDefs.SPECIES.includes(save.partner)) panel.querySelector('#dev-partner').value = save.partner;
     panel.querySelectorAll('[data-dev]').forEach(b => b.onclick = () => {
       const dex = +panel.querySelector('#dev-partner').value;
       const medalId = panel.querySelector('#dev-medal').value;
@@ -113,7 +113,7 @@ G.Dev = (() => {
         const s = G.DB.save;
         switch (b.dataset.dev) {
           case 'medals': for (const m of G.AbilityDefs.LIST) s.abilityMedals[m.id] = s.abilityMedals[m.id] || { at: Date.now(), from: 'dev' }; break;
-          case 'legends': for (const d of [144,145,146,150,151]) G.DB.grant(d, 'dev'); break;
+          case 'legends': for (const d of G.AbilityDefs.SPECIES) G.DB.grant(d, 'dev'); break;
           case 'force': G.AbilityGacha.debugMedal(medalId); G.UI.toast('下次抽卡将产出指定勋章，仍消耗宝石'); break;
           case 'partner':
             if (G.Game.state !== 'ui') { G.UI.toast('请先返回主菜单'); break; }

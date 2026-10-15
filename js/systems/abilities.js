@@ -41,6 +41,10 @@ G.Abilities = (() => {
     }
     return true;
   }
+  function damageFactor(p, source) {
+    return has(p, 'multiscale') && p.hp >= p.maxHp &&
+      ['contact', 'ranged', 'attack'].includes(source.kind) ? 0.5 : 1;
+  }
   function applyEffect(e, kind, value) {
     if (!e || e.dead) return;
     if (kind === 'static') e.staticT = 2;
@@ -96,6 +100,6 @@ G.Abilities = (() => {
   function healEnemy(e, amount) {
     if (!e.dead) e.hp = Math.min(e.maxHp, e.hp + Math.max(0, amount) * (e.unnerveT > 0 ? 0.5 : 1));
   }
-  return { has, equipped, equip, pressure, slowStrength, slowFactor, beforeHurt, afterHurt,
+  return { has, equipped, equip, pressure, slowStrength, slowFactor, beforeHurt, damageFactor, afterHurt,
            onHit, applyEffect, fireballDamage, reflectSlow, playerTick, enemyTick, healEnemy, PRESSURE_RADIUS };
 })();

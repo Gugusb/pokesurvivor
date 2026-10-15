@@ -20,8 +20,13 @@ G.Combat = (() => {
 
   function tick(dt, pl, now) {
     if (pl.dead) return;
+    const active = pl.activeGroup();
+    if (G.Abilities.has(pl, 'innerfocus')) {
+      // Los huecos inactivos sólo se recargan: nunca lanzan ataques por sí solos.
+      for (const m of pl.moves) if (!active.includes(m) && m.kind !== 'orbit') m.t = Math.max(0, m.t - dt);
+    }
     // Vínculos: todos los movimientos del hueco activo, cada uno con su recarga.
-    for (const m of pl.activeGroup()) tickMove(dt, pl, m, now);
+    for (const m of active) tickMove(dt, pl, m, now);
   }
 
   function tickMove(dt, pl, m, now) {

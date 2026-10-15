@@ -3282,6 +3282,9 @@ G.I18n.addChinese({
   "Archaludon": "铝钢桥龙",
   "Hydrapple": "蜜集大蛇",
   "Terapagos": "太乐巴戈斯",
+  "Medallas de Dragonite · v0.3.0": "快龙特性勋章 · v0.3.0",
+  "Dragonite tiene dos medallas: Foco Interno recarga todos los movimientos a la vez; Compensación reduce a la mitad el daño de ataques con la vida al máximo. Sólo se equipa una.": "快龙新增精神力、多重鳞片两枚独立特性勋章：所有技能同时冷却，或满血时受到的攻击伤害减半；同时只能装备一枚。",
+  "En el gacha de habilidades, los premios de Dragonite ahora son sus medallas. Las seis especies de cinco estrellas conservan sus probabilidades y comparten cada una su probabilidad entre sus medallas.": "特性抽卡中的快龙奖励改为对应勋章；六只五星宝可梦维持原有抽取概率，每只的不同勋章等概率出现。",
   "Controles de depuración · v0.2.1": "调试控件 · v0.2.1",
   "El panel de desarrollo permite ampliar la vista entre 1× y 2× (1,5× por defecto). Al desactivarlo, la cámara vuelve a la vista normal.": "调试面板新增 1× 至 2× 视野调整，默认 1.5×；关闭开发者模式恢复正常视野。",
   "Añade o resta monedas, vales de una tirada, vales de diez tiradas y gemas de habilidad con cantidades configurables.": "金币、单抽券、十连券和特性宝石均可自定义数量后增加或减少。"

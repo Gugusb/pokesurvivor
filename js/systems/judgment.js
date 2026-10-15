@@ -262,7 +262,8 @@ G.Judgment = (() => {
   function cast(id, tg) {
     A.last = id;
     const c = A.cast = { id, t: 0, wind: 0.7 };
-    const H = (o) => G.Hazards.add(Object.assign({ type: null, pure: true, dmg: 1, color: GOLD }, o));
+    const H = (o) => G.Hazards.add(Object.assign({ type: null, pure: true, dmg: 1, color: GOLD,
+      sourceKind: o.kind === 'beam' ? 'ranged' : 'attack' }, o));
     if (id === 'rain') {
       // La Sentencia: pilares de luz sobre cada uno (más cuanto más dura).
       const n = 4 + Math.min(6, Math.floor(arenaT / 10));
@@ -327,7 +328,7 @@ G.Judgment = (() => {
     if (G.U.dist2(A.x, A.y, pl.x, pl.y) > rr * rr) return;
     A.touchCd = 0.9;
     pl.invuln = 0;
-    pl.hurt(pl.maxHp * TOUCH, null, true);
+    pl.hurt(pl.maxHp * TOUCH, null, true, { kind: 'attack' });
     G.Camera.kick(0.6);
     G.FX.ring(pl.x, pl.y, 6, 70, GOLD, 0.4, 4);
     if (authority()) A.anim.play('Attack', { speed: 1.4 });

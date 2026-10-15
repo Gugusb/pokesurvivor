@@ -45,9 +45,9 @@ function context(lang = 'zh') {
 }
 const approx = (a, b) => assert.ok(Math.abs(a - b) < 1e-7, `${a} ≠ ${b}`);
 
-test('nine independent medals; ownership alone does not enable an ability; one equipped', () => {
+test('eleven independent medals; ownership alone does not enable an ability; one equipped', () => {
   const s = context(), { G } = s, save = G.DB.save;
-  assert.equal(G.AbilityDefs.LIST.length, 9);
+  assert.equal(G.AbilityDefs.LIST.length, 11);
   save.owned[144] = { at: 1 }; assert.equal(G.Abilities.equipped(save, 144), null);
   assert.equal(G.Abilities.equip(save, 144, '144-pressure'), false);
   save.abilityMedals['144-pressure'] = { at: 1 }; save.abilityMedals['144-snowcloak'] = { at: 2 };
@@ -107,6 +107,72 @@ test('ordinary Pokémon gacha still grants Pokémon, never consumes gems', () =>
   s.random([(i + .01) / pool.length, .9]);
   const result = G.Gacha.pull(save, 1)[0]; assert.equal(result.dex, 150);
   assert.ok(save.owned[150]); assert.equal(save.abilityGems, 10); assert.equal(Object.keys(save.abilityMedals).length, 0);
+});
+
+test('Dragonite five-star rewards become either medal; duplicates refund, normal gacha still grants Dragonite', () => {
+  const s = context(), { G } = s, save = G.DB.save;
+  const pool = G.AbilityGacha.pool(5), pick = (pool.findIndex(p => p.dex === 149) + .01) / pool.length;
+  for (const [roll, ability] of [[0, 'innerfocus'], [.99, 'multiscale']]) {
+    save.abilityPity[1] = 69; s.random([pick, roll]);
+    const reward = G.AbilityGacha.pull(save, 1)[0];
+    assert.equal(reward.dex, 149); assert.equal(reward.medal, '149-' + ability);
+    assert.equal(save.owned[149], undefined); assert.ok(save.abilityMedals[reward.medal]);
+    const coins = save.coins; save.abilityPity[1] = 69; s.random([pick, roll]);
+    assert.equal(G.AbilityGacha.pull(save, 1)[0].refund, 300); assert.equal(save.coins, coins + 300);
+  }
+  assert.equal(G.Abilities.equip(save, 149, '149-multiscale'), true);
+  G.DB._test.sanitize(save); assert.equal(G.Abilities.equipped(save, 149), 'multiscale');
+  assert.equal(G.Abilities.equip(save, 149, '149-innerfocus'), true);
+  assert.equal(new G.Player(G.DEX_BY[149]).ability, 'innerfocus');
+  save.tickets.t1 = 1; save.pity[1] = 69; s.random([pick, .99]);
+  const reward = G.Gacha.pull(save, 1)[0]; assert.equal(reward.dex, 149); assert.ok(save.owned[149]);
+});
+
+test('Inner Focus cools inactive and linked moves once, holds them ready and only casts the active slot', () => {
+  const s = context(), { G } = s, p = s.player(149, 'innerfocus'); s.load('js/systems/combat.js');
+  G.VFX = { forMove: () => ({ pal: [] }) };
+  const move = t => ({ kind: 'buff', type: 'normal', stat: 'atk', amount: .1, dur: 5, stacks: 5, cd: 2, t });
+  const a = move(1), b = move(.2), linked = move(2), orbit = { kind: 'orbit', t: 0 };
+  p.moves = [a, b, linked, orbit]; p.slots = [[a], [b, linked], [orbit]]; p.active = 0;
+  let casts = 0; p.cast = () => casts++;
+  G.Combat.tick(.5, p, 0); approx(a.t, .5); assert.equal(b.t, 0); approx(linked.t, 1.5);
+  assert.equal(orbit.t, 0); assert.equal(casts, 0);
+  G.Combat.tick(.5, p, 1); assert.equal(casts, 1); approx(a.t, 2); assert.equal(b.t, 0);
+  p.active = 1; G.Combat.tick(.1, p, 2); assert.equal(casts, 2); approx(a.t, 1.9); approx(linked.t, .9);
+  p.ability = 'multiscale'; G.Combat.tick(.1, p, 3); approx(a.t, 1.9);
+  p.dead = true; const before = linked.t; G.Combat.tick(5, p, 4); approx(linked.t, before);
+});
+
+test('Multiscale halves final contact, ranged and pure attack damage only while full; healing reactivates it', () => {
+  const s = context(), { G } = s, p = s.player(149, 'multiscale'); p.maxHp = p.hp = 100;
+  for (const kind of ['contact', 'ranged', 'attack']) {
+    p.hp = 100; p.invuln = 0; p.hurt(20, null, kind === 'attack', { kind }); assert.equal(p.hp, 90);
+    p.invuln = 0; p.hurt(20, null, false, { kind }); assert.equal(p.hp, 70);
+    p.heal(30); p.invuln = 0; p.hurt(20, null, false, { kind }); assert.equal(p.hp, 90);
+  }
+  p.hp = 100; p.invuln = 0; p.hurt(20); assert.equal(p.hp, 80);
+  p.hp = 100; p.dmgReduce = .2; p.invuln = 0;
+  p.slots = [[{ kind: 'melee' }]]; G.Types.mult = () => 2;
+  p.hurt(20, 'ice', false, { kind: 'ranged' }); approx(p.hp, 88);
+  p.ability = 'innerfocus'; p.hp = 100; p.invuln = 0;
+  p.hurt(20, null, false, { kind: 'contact' }); approx(p.hp, 88);
+});
+
+test('Arceus attacks count for Multiscale while beams retain Snow Cloak compatibility', () => {
+  const s = context(), { G } = s, hazards = [];
+  G.Hazards = { add: h => hazards.push(h) };
+  const source = fs.readFileSync(path.join(ROOT, 'js/systems/judgment.js'), 'utf8').replace(
+    'AT, reset, noteDmg,', `_castForTest(id) { A = {x: 0, y: 0, r: 10, anim: {play() {}}}; cast(id, {x: 100, y: 0}); },
+    _touchForTest(p) { A = {x: p.x, y: p.y, r: 10, touchCd: 0, anim: {play() {}}}; touch(p); }, AT, reset, noteDmg,`);
+  vm.runInContext(source, s);
+  const p = s.player(149, 'multiscale'); p.hp = p.maxHp = 100;
+  G.Judgment._castForTest('rain'); assert.ok(hazards.length > 0);
+  assert.ok(hazards.every(h => h.sourceKind === 'attack'));
+  G.Judgment._touchForTest(p); assert.equal(p.hp, 80);
+  hazards.length = 0; G.Judgment._castForTest('cross');
+  assert.ok(hazards.length > 0); assert.ok(hazards.every(h => h.sourceKind === 'ranged'));
+  p.ability = 'snowcloak'; p.invuln = 0; s.random([0]);
+  assert.equal(p.hurt(35, null, true, {kind: hazards[0].sourceKind}), false);
 });
 test('pressure affects attack cooldowns, not movement; correct radius and no stacking', () => {
   const s = context(), { G } = s, p = s.player(144, 'pressure'), e = s.enemy();
@@ -170,9 +236,12 @@ test('a real local account retains spent gems, unlocked medals and equipment aft
   const { G } = context();
   assert.equal((await G.DB.register('AbilityTest', 'test-only')).ok, true);
   G.DB.save.abilityGems = 3; G.DB.save.abilityMedals['144-snowcloak'] = { at: 1 };
+  G.DB.save.abilityMedals['149-multiscale'] = { at: 1 };
+  G.Abilities.equip(G.DB.save, 149, '149-multiscale');
   G.Abilities.equip(G.DB.save, 144, '144-snowcloak'); assert.equal(G.DB.commit(true), true);
   await G.DB.logout(); assert.equal((await G.DB.login('AbilityTest', 'test-only')).ok, true);
   assert.equal(G.DB.save.abilityGems, 3); assert.equal(G.Abilities.equipped(G.DB.save, 144), 'snowcloak');
+  assert.equal(G.Abilities.equipped(G.DB.save, 149), 'multiscale');
 });
 test('rift victory awards exactly one gem, duplicate victory and defeat award none', () => {
   const s = context(), { G } = s, p = s.player(144, 'pressure');

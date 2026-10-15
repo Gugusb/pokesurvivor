@@ -141,21 +141,21 @@ G.GachaUI = (() => {
     const s = G.DB.save;
     $('banner').style.background = 'linear-gradient(135deg, #3a1d6e, #1b2f78 55%, #0f4d6e)';
     $('banner-title').textContent = 'Kanto · Medallas de habilidad';
-    $('banner-desc').textContent = 'Las cinco especies legendarias dan sus medallas. El resto da Pokémon.';
+    $('banner-desc').textContent = 'Las seis especies de cinco estrellas dan sus medallas, incluido Dragonite. El resto da Pokémon.';
     $('gacha-owned').textContent = 'Medallas: ' + Object.keys(s.abilityMedals).length + ' / ' + G.AbilityDefs.LIST.length;
     const feat = $('gacha-feat'); feat.innerHTML = '';
-    for (const dex of [144, 150, 151]) feat.appendChild(medalArt(dex));
+    for (const dex of [149, 150, 151]) feat.appendChild(medalArt(dex));
     $('gacha-pity').textContent = 'Tiradas sin legendaria en Kanto: ' + (s.abilityPity[1] || 0) + ' / ' + G.Gacha.PITY_5;
     $('gacha-rates').innerHTML = '<h3>Probabilidades</h3>' + G.Gacha.RATES.slice().reverse().map(([r, w]) =>
       '<div><span style="color:' + G.Gacha.RARITY_COLOR[r] + '">' + G.UI.stars(r, 10) + ' ' + G.Gacha.RARITY_NAME[r] + '</span><span>' + w + '%</span></div>').join('') +
-      '<p class="note">Cada especie conserva su probabilidad. Sus medallas se reparten por igual.<br>· ×10 garantiza una Épica o superior.<br>· Legendaria garantizada en la tirada 70. Puede ser Dragonite o una medalla.<br>· Medalla repetida: 300 Pokémonedas.<br>· Shiny: 1% en premios Pokémon; las medallas no son shiny.<br>· Cada jefe de una grieta da 1 gema. Regalo inicial: 10 gemas.<br>· El saldo y la garantía son independientes del gacha de Pokémon.</p>';
+      '<p class="note">Cada especie conserva su probabilidad. Sus medallas se reparten por igual.<br>· ×10 garantiza una Épica o superior.<br>· Medalla de cinco estrellas garantizada en la tirada 70.<br>· Medalla repetida: 300 Pokémonedas.<br>· Shiny: 1% en premios Pokémon; las medallas no son shiny.<br>· Cada jefe de una grieta da 1 gema. Regalo inicial: 10 gemas.<br>· El saldo y la garantía son independientes del gacha de Pokémon.</p>';
     $('cost-1').innerHTML = G.Icons.html('gem', 18) + ' 1';
     $('cost-10').innerHTML = G.Icons.html('gem', 18) + ' 10';
     $('gacha-tickets').innerHTML = G.Icons.html('gem', 18) + ' <b>' + s.abilityGems + '</b> Gemas de habilidad';
     $('pull-1').disabled = !G.AbilityGacha.costOf(s, 1);
     $('pull-10').disabled = !G.AbilityGacha.costOf(s, 10);
     const inventory = $('ability-medals'); inventory.innerHTML = '';
-    for (const dex of [144, 145, 146, 150, 151]) renderEquipment(inventory, dex);
+    for (const dex of G.AbilityDefs.SPECIES) renderEquipment(inventory, dex);
     G.UI.refreshCoins();
   }
 

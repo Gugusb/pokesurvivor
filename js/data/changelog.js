@@ -6,6 +6,13 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-15', title: ['Medallas de Dragonite · v0.3.0', 'Dragonite medals · v0.3.0'], new: [
+    ['Dragonite tiene dos medallas: Foco Interno recarga todos los movimientos a la vez; Compensación reduce a la mitad el daño de ataques con la vida al máximo. Sólo se equipa una.',
+     'Dragonite has two medals: Inner Focus cools all moves simultaneously; Multiscale halves attack damage at full HP. Equip only one.']
+  ], chg: [
+    ['En el gacha de habilidades, los premios de Dragonite ahora son sus medallas. Las seis especies de cinco estrellas conservan sus probabilidades y comparten cada una su probabilidad entre sus medallas.',
+     'Dragonite rewards in the ability gacha are now its medals. All six five-star species keep their drop chances, shared equally between each species’ medals.']
+  ], fix: [] },
   { d: '2026-10-15', title: ['Controles de depuración · v0.2.1', 'Debug controls · v0.2.1'], new: [
     ['El panel de desarrollo permite ampliar la vista entre 1× y 2× (1,5× por defecto). Al desactivarlo, la cámara vuelve a la vista normal.',
      'The developer panel can widen the view from 1× to 2× (1.5× by default). Disabling developer mode restores the normal view.'],

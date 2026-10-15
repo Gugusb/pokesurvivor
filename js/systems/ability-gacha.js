@@ -1,4 +1,4 @@
-/* Gacha de Kanto: las cinco especies legendarias dan medallas individuales. */
+/* Gacha de Kanto: las seis especies de cinco estrellas dan medallas individuales. */
 G.AbilityGacha = (() => {
   let forced = null;
   function costOf(save, n) {

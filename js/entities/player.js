@@ -240,7 +240,7 @@ G.Player = class Player {
     // Con un ataque cuerpo a cuerpo activo se recibe un 25 % menos: hay que
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
-    const d = pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close);
+    const d = (pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source);
     this.hp -= d;
     G.Abilities.afterHurt(this, source);
     this.invuln = 0.45;
