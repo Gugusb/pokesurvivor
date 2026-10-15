@@ -1,17 +1,19 @@
-/* Gacha de Kanto: las seis especies de cinco estrellas dan medallas individuales. */
+/* Gacha de habilidades: Kanto, Johto y Hoenn; garantía independiente por región. */
 G.AbilityGacha = (() => {
   let forced = null;
   function costOf(save, n) {
     return (n === 1 || n === 10) && Number.isFinite(save.abilityGems) && save.abilityGems >= n ? n : null;
   }
-  function pool(rarity) { return G.Gacha.pool(rarity, 1); }
+  const GENS = [1, 2, 3];
+  function pool(rarity, gen = 1) { return GENS.includes(gen) ? G.Gacha.pool(rarity, gen) : []; }
   function roll(min = 1) {
     const rates = G.Gacha.RATES.filter(([r]) => r >= min);
     let n = Math.random() * rates.reduce((sum, [, w]) => sum + w, 0);
     for (const [r, w] of rates) { n -= w; if (n <= 0) return r; }
     return 5;
   }
-  function pull(save, n) {
+  function pull(save, n, gen = 1) {
+    if (!GENS.includes(gen)) return null;
     const cost = costOf(save, n);
     if (!cost) return null;
     save.abilityGems -= cost;
@@ -21,12 +23,13 @@ G.AbilityGacha = (() => {
     save.shiny = save.shiny || {};
     const out = [];
     for (let i = 0; i < n; i++) {
-      save.abilityPity[1] = (save.abilityPity[1] || 0) + 1;
-      const forcedDef = i === 0 && forced && G.Dev && G.Dev.canUse() ? G.AbilityDefs.BY_ID[forced] : null;
-      const rarity = forcedDef || save.abilityPity[1] >= G.Gacha.PITY_5 ? 5
+      save.abilityPity[gen] = (save.abilityPity[gen] || 0) + 1;
+      const candidate = i === 0 && forced && G.Dev && G.Dev.canUse() ? G.AbilityDefs.BY_ID[forced] : null;
+      const forcedDef = candidate && G.DEX_BY[candidate.dex].gen === gen ? candidate : null;
+      const rarity = forcedDef || save.abilityPity[gen] >= G.Gacha.PITY_5 ? 5
         : n === 10 && i === 9 && !out.some(r => r.rarity >= 4) ? roll(4) : roll();
-      if (rarity === 5) save.abilityPity[1] = 0;
-      let mon = forcedDef ? G.DEX_BY[forcedDef.dex] : G.U.pick(pool(rarity));
+      if (rarity === 5) save.abilityPity[gen] = 0;
+      let mon = forcedDef ? G.DEX_BY[forcedDef.dex] : G.U.pick(pool(rarity, gen));
       const medals = G.AbilityDefs.medalsFor(mon.dex);
       let isNew, refund = 0, shiny = false, medal = null;
       if (medals.length) {
@@ -40,7 +43,7 @@ G.AbilityGacha = (() => {
       } else {
         shiny = G.Sprites.hasShiny(mon.dex) && Math.random() < G.Gacha.SHINY_RATE;
         if (shiny && save.shiny[mon.dex]) {
-          const missing = pool(rarity).filter(p => !G.AbilityDefs.medalsFor(p.dex).length && G.Sprites.hasShiny(p.dex) && !save.shiny[p.dex]);
+          const missing = pool(rarity, gen).filter(p => !G.AbilityDefs.medalsFor(p.dex).length && G.Sprites.hasShiny(p.dex) && !save.shiny[p.dex]);
           if (missing.length) mon = G.U.pick(missing); else shiny = false;
         }
         isNew = !(shiny ? save.shiny[mon.dex] : save.owned[mon.dex]);
@@ -54,5 +57,5 @@ G.AbilityGacha = (() => {
     save.stats.abilityPulls = (save.stats.abilityPulls || 0) + n;
     return out;
   }
-  return { costOf, pool, pull, debugMedal(id) { if (G.Dev && G.Dev.canUse() && G.AbilityDefs.BY_ID[id]) forced = id; }, clearDebug() { forced = null; } };
+  return { GENS, costOf, pool, pull, debugMedal(id) { if (G.Dev && G.Dev.canUse() && G.AbilityDefs.BY_ID[id]) forced = id; }, clearDebug() { forced = null; } };
 })();

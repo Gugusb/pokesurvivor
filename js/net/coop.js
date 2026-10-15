@@ -169,7 +169,7 @@ G.Coop = (() => {
       if (e.dead || G.U.dist2(e.x, e.y, near.x, near.y) > r2n) continue;
       const a = ANIMS.indexOf(e.anim.cur);
       out.push([e.id, r1(e.x), r1(e.y), Math.ceil(e.hp), a < 0 ? 0 : a, e.anim.dir,
-                (e.burn > 0 || e.abilityBurn ? 1 : 0) | (e.poison > 0 ? 2 : 0) | (e.shield > 0 ? 4 : 0), r2(e.staticT || 0), r2(e.unnerveT || 0)]);
+                (e.burn > 0 || e.abilityBurn ? 1 : 0) | (e.poison > 0 ? 2 : 0) | (e.shield > 0 ? 4 : 0), r2(e.staticT || 0), r2(e.unnerveT || 0), r2(e.fearT || 0)]);
     }
     return out;
   }
@@ -264,21 +264,30 @@ G.Coop = (() => {
           const e = G.EnemyMgr.get(ev[1]);
           if (!e || e.dead || e.remote) break;
           hitFrom = from;
-          e.hurt(ev[2], ev[3], ev[4], ev[5], ev[6]);
+          e.hurt(ev[2], ev[3], ev[4], ev[5], ev[6], null, m.pl);
           hitFrom = null;
           break;
         }
         case 's': {
           const e = G.EnemyMgr.get(ev[1]);
           if (!e || e.dead) break;
-          if (ev[2] === 'b') e.applyBurn(ev[3]);
-          else if (ev[2] === 'p') e.applyPoison(ev[3]);
+          if (ev[2] === 'b') e.applyBurn(ev[3], m.pl);
+          else if (ev[2] === 'p') e.applyPoison(ev[3], m.pl);
           else if (ev[2] === 's') e.applySlow(ev[3], ev[4] || 1.2);
           break;
         }
         case 'ab': {
           const e = G.EnemyMgr.get(ev[1]);
-          if (e && !e.dead && m.pl.ability === ev[2] && Number.isFinite(ev[3])) G.Abilities.applyEffect(e, ev[2], Math.max(0, Math.min(1e6, ev[3])));
+          const allowed = m.pl.ability === ev[2] || (m.pl.ability === 'intimidate' && ev[2] === 'fear') ||
+            (m.pl.ability === 'serenegrace' && G.Abilities.DEBUFFS.includes(ev[2]));
+          if (e && !e.dead && allowed && Number.isFinite(ev[3])) G.Abilities.applyEffect(e, ev[2], Math.max(0, Math.min(1e6, ev[3])), m.pl);
+          break;
+        }
+        case 'aw': {
+          const kind = G.Abilities.WEATHER[m.pl.ability], now = G.Game.st.time;
+          if (kind && ev[1] === kind && now - (m.abilityWeatherAt || 0) >= 39.5) {
+            m.abilityWeatherAt = now; G.Weather.debugStart(kind, 20);
+          }
           break;
         }
         case 'as': {
@@ -357,11 +366,13 @@ G.Coop = (() => {
       e.hp = Math.min(e.maxHp, a[3]);
       n.anim = a[4]; n.dir = a[5]; n.st = a[6];
       e.staticT = a[7] || 0; e.unnerveT = a[8] || 0;
+      e.fearT = a[9] || 0;
     }
   }
 
   function applyHostEvent(ev) {
     switch (ev[0]) {
+      case 'ak': G.Abilities.onKill(local, ev[1]); break;
       case 'ne':
         G.EnemyMgr.addRemote({ id: ev[1], dex: ev[2], x: ev[3], y: ev[4], boss: !!ev[5], shiny: !!ev[6], hp: ev[7], dmg: ev[8], beh: ev[9] });
         break;
@@ -416,6 +427,7 @@ G.Coop = (() => {
 
   // anfitrión
   function hurtShown(e, d, color) { emitNear(['hn', e.id, d, color], e.x, e.y, hitFrom); }
+  function abilityKill(p, id) { const m = mates.get(p.uid); if (m && m.connected) m.q.push(['ak', id]); }
   function enemyAdded(e) {
     emit(['ne', e.id, e.dex, r1(e.x), r1(e.y), e.boss ? 1 : 0, e.shiny ? 1 : 0, Math.ceil(e.maxHp), r2(e.dmg), e.behavior]);
   }
@@ -511,7 +523,7 @@ G.Coop = (() => {
 
   return {
     ANIMS, COLORS, begin, end, leave, tick, players, puppets, xpFactor, scaleRate, scaleHp,
-    cast, hit, status, hurtShown, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
+    cast, hit, status, hurtShown, abilityKill, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
     propBroken, collected, shinyCaught, levelStart, localPicked, over, holdStart, holdEnd,
     /** Anfitrión: evento para todos. Invitado: evento para el anfitrión. */
     broadcast(ev) { emit(ev); },

@@ -637,6 +637,7 @@ G.Game = (() => {
     const b = Math.floor(time / 240);
     if (b !== biome && !G.Rift.inArena && !G.Judgment.active) {
       biome = b;
+      for (const p of everyone()) G.Abilities.resetStage(p, b);
       G.World.setBiome(b);
       G.Audio.sfx('biome');
       G.Spawner.say('— ' + G.World.biomeName() + ' —', 3);

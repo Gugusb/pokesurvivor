@@ -86,11 +86,14 @@ G.Dev = (() => {
         '<button class="btn small" data-currency="' + c.id + '" data-sign="-1" aria-label="减少' + c.name + '">−</button>' +
         '<button class="btn small" data-currency="' + c.id + '" data-sign="1" aria-label="增加' + c.name + '">＋</button></div>').join('') +
       '<p>勋章：' + Object.keys(save && save.abilityMedals || {}).length + '/' + G.AbilityDefs.LIST.length + '</p>' +
-      '<div class="row wrap"><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="legends">解锁关都五星</button></div>' +
+      '<div class="row wrap"><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="legends">解锁全部五星伙伴</button></div>' +
       '<label>测试伙伴 <select id="dev-partner">' + G.AbilityDefs.SPECIES.map(d => '<option value="' + d + '">' + G.T(G.DEX_BY[d].name) + '</option>').join('') + '</select></label>' +
       '<button class="btn small" data-dev="partner">选择伙伴（局外）</button>' +
       '<label>指定勋章 <select id="dev-medal">' + G.AbilityDefs.LIST.map(m => '<option value="' + m.id + '">' + G.T(G.DEX_BY[m.dex].name) + ' · ' + G.T(m.name) + '</option>').join('') + '</select></label>' +
       '<div class="row wrap"><button class="btn small" data-dev="force">下次抽出此勋章</button><button class="btn small" data-dev="equip">装备此勋章（局外）</button></div>' +
+      '<p>' + G.Abilities.status(G.Game.player) + '</p>' +
+      '<label>测试天气 <select id="dev-weather"><option value="sand">沙暴</option><option value="snow">雪天</option><option value="rain">下雨</option><option value="sun">晴天</option><option value="fog">雾天</option></select></label>' +
+      '<div class="row wrap"><button class="btn small" data-dev="weather">召唤天气 20s</button><button class="btn small" data-dev="clear-weather">清除天气</button><button class="btn small" data-dev="damage">测试受伤 10%</button><button class="btn small" data-dev="lethal">测试致命伤害</button></div>' +
       '<div class="row wrap"><button class="btn small" data-dev="god">无敌：' + (god ? '开' : '关') + '</button><button class="btn small" data-dev="heal">回满生命</button><button class="btn small" data-dev="level">升一级</button><button class="btn small" data-dev="slow">自身减速 3.5s</button><button class="btn small" data-dev="time">时间 +60s</button><button class="btn small" data-dev="rift">开启裂隙战斗</button><button class="btn small" data-dev="boss">击败裂隙 Boss</button><button class="btn small" data-dev="quit">结束本局</button></div>';
     panel.querySelector('#dev-close').onclick = () => panel.classList.add('hidden');
     panel.querySelector('#dev-view').oninput = e => {
@@ -127,6 +130,10 @@ G.Dev = (() => {
             G.Abilities.equip(s, m.dex, m.id); G.UI.toast('已装备：' + G.T(m.name)); break;
           }
           case 'god': god = !god; break;
+          case 'weather': if (requireRun()) G.Weather.debugStart(panel.querySelector('#dev-weather').value, 20); break;
+          case 'clear-weather': if (requireRun()) G.Weather.clear(); break;
+          case 'damage': { const p = requireRun(); if (p) { p.invuln = 0; p.hurt(p.maxHp * 0.1); } break; }
+          case 'lethal': { const p = requireRun(); if (p) { p.invuln = 0; p.hurt(p.maxHp * 10); } break; }
           case 'heal': { const p = requireRun(); if (p) p.heal(p.maxHp); break; }
           case 'level': if (requireRun()) G.Game.debugLevelUp(); break;
           case 'slow': { const p = requireRun(); if (p) p.slowT = 3.5; break; }

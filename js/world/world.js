@@ -289,6 +289,7 @@ G.World = (() => {
    * Devuelve true si ha chocado con algo.
    */
   function collide(e) {
+    if (G.Abilities && G.Abilities.has(e, 'levitate')) { G.Abilities.updatePhase(e); return false; }
     const r = e.r;
     let hit = false;
     for (let pass = 0; pass < 2; pass++) {
@@ -326,6 +327,19 @@ G.World = (() => {
       }
     }
     return hit;
+  }
+
+  /** Intersección del cuerpo con paredes y objetos sólidos, sin moverlo. */
+  function overlapsSolid(x, y, r) {
+    for (let ty = tileOf(y - r); ty <= tileOf(y + r); ty++) for (let tx = tileOf(x - r); tx <= tileOf(x + r); tx++) {
+      if (terrainAt(tx, ty) === WALL) {
+        const qx = G.U.clamp(x, tx * TS, (tx + 1) * TS), qy = G.U.clamp(y, ty * TS, (ty + 1) * TS);
+        if ((x - qx) ** 2 + (y - qy) ** 2 < r * r) return true;
+      }
+      const p = propAtTile(tx, ty);
+      if (p && p.solid && G.U.dist2(x, y, p.x, p.y) < (r + p.r) ** 2) return true;
+    }
+    return false;
   }
 
   /** ¿Choca un proyectil aquí? Devuelve 'wall', el prop sólido, o null. */
@@ -587,7 +601,7 @@ G.World = (() => {
 
   return {
     TS, CW, reset, setBiome, biomeName, liquidKind, liquidEffect, walkable,
-    kindAt, isWall, isLiquid, isFree, collide, projectileBlock, propsInCircle, nearestBreakable,
+    kindAt, isWall, isLiquid, isFree, collide, overlapsSolid, projectileBlock, propsInCircle, nearestBreakable,
     damageProp, breakAt, specialsNear, update,
     breakProp(p) { if (!broken.has(p.tx + ',' + p.ty)) destroyProp(p); },
     /** Arena de la grieta: { tx, ty, r } (en tiles) o null. */

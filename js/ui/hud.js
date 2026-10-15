@@ -75,6 +75,9 @@ G.HUD = (() => {
       bx += tw + 5;
     }
 
+    ctx.font = F(700, 10); ctx.fillStyle = '#e8c5ff';
+    ctx.fillText(G.Abilities.status(pl), px, py + 70);
+
     // ---------- reloj / bioma / kills ----------
     ctx.textAlign = 'center';
     ctx.font = F(800, 26);
@@ -89,7 +92,7 @@ G.HUD = (() => {
     if (wx) {
       ctx.font = F(800, 11);
       ctx.textAlign = 'left';
-      const txt = wx.name.toUpperCase() + ' · ' + Math.ceil(wx.left) + 's';
+      const txt = wx.name.toUpperCase() + ' · ' + Math.ceil(wx.left) + 's' + (G.Weather.suppressed ? ' · ' + G.T('Clima anulado') : '');
       const tw = ctx.measureText(txt).width + 40;
       const x0 = w - tw - 16 - (touch ? 56 : 0), y0 = 14;
       roundRect(ctx, x0, y0, tw, 26, 9);

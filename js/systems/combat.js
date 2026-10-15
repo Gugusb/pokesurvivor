@@ -20,6 +20,10 @@ G.Combat = (() => {
 
   function tick(dt, pl, now) {
     if (pl.dead) return;
+    if (!G.Abilities.canCast(pl)) {
+      for (const m of pl.activeGroup()) if (m.kind !== 'orbit') m.t = Math.max(0, m.t - dt);
+      G.Projectiles.clearOrbs(pl); return;
+    }
     const active = pl.activeGroup();
     if (G.Abilities.has(pl, 'innerfocus')) {
       // Los huecos inactivos sólo se recargan: nunca lanzan ataques por sí solos.
@@ -39,7 +43,7 @@ G.Combat = (() => {
       m.t = 0.05;
       return;
     }
-    m.t = Math.max(0.05, m.cd * pl.cdMul);
+    m.t = Math.max(0.05, m.cd * pl.cdMul) * G.Abilities.onCast(pl, m);
     pl.cast(m);
     if (G.Coop.active) G.Coop.cast(pl, m);
     // Vínculo: su icono destella en el HUD al lanzarse (uno que explota pegado al
@@ -528,19 +532,17 @@ G.Combat = (() => {
   }
 
   // Golpe crítico (Mejoras → Golpe Crítico): x1,5 de daño, número naranja y grande.
-  const CRIT_MUL = 1.5;
   const isCrit = pl => !ghost && pl.critChance > 0 && Math.random() < pl.critChance;
 
   function hit(pl, e, dmg, col, dx, dy, knock, m) {
     const k = typeK(m.type, e);
     const crit = isCrit(pl);
-    dmg *= k * (crit ? CRIT_MUL : 1);
-    e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Types.mult(m.type, e.types)));
-    if (!ghost) G.Abilities.onHit(pl, e);
+    dmg *= k * (crit ? G.Abilities.critMultiplier(pl) : 1);
+    e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Types.mult(m.type, e.types)), ghost ? null : pl);
     if (!ghost) pl.onDealt(dmg);
     pl.dmgDealt += dmg;
-    if (m.burn) e.applyBurn(m.burn);
-    if (m.poison) e.applyPoison(m.poison);
+    if (m.burn) e.applyBurn(m.burn, pl);
+    if (m.poison) e.applyPoison(m.poison, pl);
     if (m.slow) e.applySlow(m.slow);
   }
 
@@ -578,7 +580,7 @@ G.Combat = (() => {
 
       // --- disparos de jugadores ---
       // Orbes de un compañero: sólo se ven.
-      if (p.orb && p.ghost) continue;
+      if (p.ghost) continue;
       if (!p.orb) {
         const block = G.World.projectileBlock(p.x, p.y, p.r);
         if (block === 'wall' || (block && !block.destructible)) {
@@ -642,15 +644,14 @@ G.Combat = (() => {
         }
 
         const crit = isCrit(pl);
-        const k = (p.mtype ? typeK(p.mtype, e) : 1) * (crit ? CRIT_MUL : 1);
+        const k = (p.mtype ? typeK(p.mtype, e) : 1) * (crit ? G.Abilities.critMultiplier(pl) : 1);
         e.hurt(p.dmg * k, p.color, p.vx || (e.x - pl.x), p.vy || (e.y - pl.y), p.knock,
-               crit ? 'crit' : p.mtype ? G.Types.label(G.Types.mult(p.mtype, e.types)) : null);
-        G.Abilities.onHit(pl, e);
+               crit ? 'crit' : p.mtype ? G.Types.label(G.Types.mult(p.mtype, e.types)) : null, pl);
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
         pl.dmgDealt += p.dmg * k;
         pl.onDealt(p.dmg * k);
-        if (p.burn) e.applyBurn(p.burn);
-        if (p.poison) e.applyPoison(p.poison);
+        if (p.burn) e.applyBurn(p.burn, pl);
+        if (p.poison) e.applyPoison(p.poison, pl);
         if (p.slow) e.applySlow(p.slow);
 
         if (!p.orb) {
@@ -671,8 +672,8 @@ G.Combat = (() => {
       if (e.touchCd > 0 || e.behavior === 'thief') continue;
       e.touchCd = 0.55;
       e.strike(pl);
-      const landed = pl.hurt(e.dmg, e.atkType, false, { kind: 'contact', enemy: e });
-      if (landed && pl.hasItem('rockyhelmet')) e.hurt(15 + pl.level * 4, '#9aa6b5', e.x - pl.x, e.y - pl.y, 80);
+      const landed = pl.hurt(G.Abilities.enemyDamage(e, e.dmg), e.atkType, false, { kind: 'contact', enemy: e });
+      if (landed && pl.hasItem('rockyhelmet')) e.hurt(15 + pl.level * 4, '#9aa6b5', e.x - pl.x, e.y - pl.y, 80, null, pl);
       const [nx, ny] = G.U.norm(e.x - pl.x, e.y - pl.y);
       e.kx += nx * 150; e.ky += ny * 150;
     }

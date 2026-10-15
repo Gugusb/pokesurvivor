@@ -88,12 +88,12 @@ G.Player = class Player {
   cy() { return this.y; }
 
   // ---------------- stats efectivos ----------------
-  get atk() { return this.baseAtk * this.atkMul * (1 + this.buffs.atk.n * this.buffs.atk.amount); }
+  get atk() { return this.baseAtk * this.atkMul * (1 + this.buffs.atk.n * this.buffs.atk.amount + G.Abilities.attackBonus(this)); }
   get spd() {
-    const s = this.baseSpd * this.spdMul * (1 + this.buffs.spd.n * this.buffs.spd.amount) * (this.slowT > 0 ? 0.5 : 1);
+    const s = this.baseSpd * this.spdMul * (1 + this.buffs.spd.n * this.buffs.spd.amount + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
-    return s * slow * w;
+    return s * (G.Abilities.slowImmune(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this);
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + this.buffs.def.n * this.buffs.def.amount); }
   get regen() { return this.regenFlat + this.buffs.regen.n * this.buffs.regen.amount; }
@@ -203,7 +203,9 @@ G.Player = class Player {
   cast(m) {
     // Vidasfera: cada ataque cuesta un poco de vida (nunca te deja KO).
     if (this.hasItem('lifeorb') && m.kind !== 'orbit' && m.kind !== 'trail' && !this.remote) {
+      const before = this.hp;
       this.hp = Math.max(1, this.hp - Math.max(1, this.maxHp * 0.01));
+      if (this.hp < before) G.Abilities.onDamage(this);
     }
     const anim = { melee: 'Attack', beam: 'Shoot', projectile: 'Shoot', nova: 'Attack',
                    aura: 'Charge', buff: 'Charge', orbit: 'Charge', boomerang: 'Shoot', chain: 'Shoot',
@@ -242,6 +244,7 @@ G.Player = class Player {
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = (pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source);
     this.hp -= d;
+    G.Abilities.onDamage(this);
     G.Abilities.afterHurt(this, source);
     this.invuln = 0.45;
     this.flash = 0.14;
@@ -249,6 +252,7 @@ G.Player = class Player {
     G.Camera.kick(0.28);
     G.FX.dmgText(this.x, this.y - this.bodyH - 4, '-' + Math.round(d), eff === 'super' ? '#ff3048' : eff === 'weak' ? '#c9a0a8' : '#ff6b7a', eff === 'super');
     G.FX.burst(this.x, this.y - this.bodyH * 0.5, '#ff5f6d', 6, 90);
+    if (this.hp <= 0) G.Abilities.saveLethal(this);
     // Banda Focus: aguanta el golpe con 1 de vida (una vez cada 60 s).
     if (this.hp <= 0 && this.hasItem('focussash') && performance.now() - this.sashT > 60000) {
       this.sashT = performance.now();
@@ -306,6 +310,7 @@ G.Player = class Player {
   addPower(def, dur) {
     if (this.power) this.power.def.off(this);
     def.on(this);
+    dur = G.Abilities.buffDuration(this, dur);
     this.power = { def, t: dur, dur };
   }
 
@@ -314,7 +319,7 @@ G.Player = class Player {
     if (!b) return;
     b.amount = amount;
     b.n = Math.min(maxStacks, b.n + 1);
-    b.t = dur;
+    b.t = G.Abilities.buffDuration(this, dur);
   }
 
   // ---------------- ciclo ----------------

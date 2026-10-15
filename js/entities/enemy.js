@@ -98,7 +98,7 @@
     }
 
     /** @param eff  'super' | 'weak' | null (tabla de tipos, sólo para enseñarlo) */
-    hurt(amount, color = '#fff', dirX = 0, dirY = 0, knock = 0, eff = null) {
+    hurt(amount, color = '#fff', dirX = 0, dirY = 0, knock = 0, eff = null, attacker = null) {
       if (this.dead) return;
       const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
@@ -117,6 +117,8 @@
         amount = d - a;
       }
       this.hp -= Math.max(1, Math.round(amount));
+      if (attacker) this.lastAttacker = attacker;
+      if (attacker) G.Abilities.onHit(attacker, this);
       G.Judgment.noteDmg(amount, this);
       this.showHurt(d, color, dirX, dirY, eff);
       if (knock > 0 && !this.boss) {
@@ -144,13 +146,15 @@
       this.slow = Math.max(this.slow, factor);
       this.slowT = Math.max(this.slowT, dur);
     }
-    applyBurn(stacks = 1) {
+    applyBurn(stacks = 1, owner = null) {
       if (this.remote) { G.Coop.status(this, 'b', stacks); return; }
       this.burn = Math.min(8, this.burn + stacks); this.burnT = 3;
+      if (owner) this.burnOwner = owner;
     }
-    applyPoison(stacks = 1) {
+    applyPoison(stacks = 1, owner = null) {
       if (this.remote) { G.Coop.status(this, 'p', stacks); return; }
       this.poison = Math.min(8, this.poison + stacks); this.poisonT = 4;
+      if (owner) this.poisonOwner = owner;
     }
 
     die() {
@@ -169,6 +173,7 @@
         if (this.shiny) { G.FX.burst(this.x, cy, '#ffe9a0', 30, 220); G.FX.ring(this.x, this.y, this.r, this.r * 7, '#9ae6ff', 0.7, 5); }
         return;
       }
+      G.Abilities.onKill(this.lastAttacker, this.id);
       // (Los legendarios de la Sentencia de Arceus sólo dan experiencia.)
       if (this.boss && !this.judge) {
         G.Camera.kick(0.9);
@@ -212,6 +217,7 @@
       if (this.touchCd > 0) this.touchCd -= dt * attackRate;
       this.staticT = Math.max(0, (this.staticT || 0) - dt);
       this.unnerveT = Math.max(0, (this.unnerveT || 0) - dt);
+      this.fearT = Math.max(0, (this.fearT || 0) - dt);
       this.bob += dt * 6;
       if (this.shiny) {
         this.sparkT -= dt;
@@ -261,12 +267,12 @@
       if (this.slowT > 0) { this.slowT -= dt; if (this.slowT <= 0) this.slow = 0; }
       if (this.burn > 0) {
         this.burnT -= dt; this.burnTick -= dt;
-        if (this.burnTick <= 0) { this.burnTick = 0.5; this.hurt(1.6 * this.burn * (1 + pl.level * 0.06), '#ff9a4d'); }
+        if (this.burnTick <= 0) { this.burnTick = 0.5; this.hurt(1.6 * this.burn * (1 + pl.level * 0.06), '#ff9a4d', 0, 0, 0, null, this.burnOwner); }
         if (this.burnT <= 0) this.burn = 0;
       }
       if (this.poison > 0) {
         this.poisonT -= dt; this.poisonTick -= dt;
-        if (this.poisonTick <= 0) { this.poisonTick = 0.6; this.hurt(this.maxHp * 0.012 * this.poison + 1, '#d47cf0'); }
+        if (this.poisonTick <= 0) { this.poisonTick = 0.6; this.hurt(this.maxHp * 0.012 * this.poison + 1, '#d47cf0', 0, 0, 0, null, this.poisonOwner); }
         if (this.poisonT <= 0) this.poison = 0;
       }
       if (this.dead) return;
@@ -470,7 +476,8 @@
     }
 
     hazard(h) {
-      return G.Hazards.add(Object.assign({ sourceKind: 'ranged', sourceId: this.id }, h));
+      return G.Hazards.add(Object.assign({ sourceKind: 'ranged', sourceId: this.id }, h,
+        { dmg: G.Abilities.enemyDamage(this, h.dmg) }));
     }
 
     bossStart(id, pl) {
@@ -564,7 +571,7 @@
         const a = base + (n === 1 ? 0 : (i / (n - 1) - 0.5) * spread);
         const shot = G.Projectiles.spawn({
           x: this.x, y: this.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
-          dmg: this.shotDmg() * k, r: 7, life: 2.4, friendly: false, color: '#ff7a9e', mtype: type,
+          dmg: G.Abilities.enemyDamage(this, this.shotDmg() * k), r: 7, life: 2.4, friendly: false, color: '#ff7a9e', mtype: type,
           vis: G.VFX.forType(type)
         });
         if (G.Coop.isHost) G.Coop.enemyShot(shot, type);
@@ -732,6 +739,7 @@
       const SUP = { healer: 'heart', shielder: 'shield', summoner: 'friends' };
       if (SUP[this.behavior]) G.Icons.draw(ctx, SUP[this.behavior], Math.round(this.x - 6), Math.round(this.y - this.bodyH - (this.hp < this.maxHp ? 26 : 18)), 12);
       if (this.staticT > 0 || this.unnerveT > 0) G.Icons.draw(ctx, this.staticT > 0 ? 'type:electric' : 'type:psychic', Math.round(this.x + 8), Math.round(this.y - this.bodyH - 25), 12);
+      if (this.fearT > 0) G.Icons.draw(ctx, 'type:dark', Math.round(this.x - 18), Math.round(this.y - this.bodyH - 25), 12);
 
       if (this.boss || this.hp < this.maxHp) {
         const w = this.boss ? 90 : Math.max(22, this.r * 2);

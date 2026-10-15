@@ -40,6 +40,7 @@ G.Weather = (() => {
   let checkT = CHECK, chipT = 0;
   let parts = [];
   const authority = () => !G.Coop.active || G.Coop.isHost;
+  const suppressed = () => G.Abilities && G.Abilities.weatherSuppressed();
 
   function reset() { cur = null; checkT = CHECK; chipT = 0; parts = []; }
 
@@ -47,6 +48,7 @@ G.Weather = (() => {
 
   /** Multiplicador de daño de un ataque de este tipo con el clima actual. */
   function mult(type) {
+    if (suppressed()) return 1;
     const d = def();
     return d && d.mult[type] ? 1 + (d.mult[type] - 1) * level() : 1;
   }
@@ -59,12 +61,14 @@ G.Weather = (() => {
 
   /** ¿Le afecta el daño de arena/nieve a un Pokémon con estos tipos? */
   function hurts(types) {
+    if (suppressed()) return false;
     const d = def();
     return !!(d && d.safe && !types.some(t => d.safe.includes(t)));
   }
 
   /** Factor de velocidad (nieve) para un Pokémon con estos tipos. */
   function speedFor(types) {
+    if (suppressed()) return 1;
     const d = def();
     return d && d.slow && !types.includes('ice') ? 1 - 0.1 * level() : 1;
   }
@@ -72,7 +76,7 @@ G.Weather = (() => {
   function start(kind, dur) {
     cur = { kind, t: 0, dur };
     const d = KINDS[kind];
-    G.Spawner.say(d.name + ': ' + d.hint, 3.4, true);
+    G.Spawner.say(d.name + ': ' + (suppressed() ? G.T('Clima anulado') : d.hint), 3.4, true);
     G.Audio.sfx('biome');
   }
 
@@ -112,6 +116,7 @@ G.Weather = (() => {
         const d = Math.max(1, pl.maxHp * 0.012);
         if (pl.hp > d + 1) {
           pl.hp -= d;
+          G.Abilities.onDamage(pl);
           G.FX.dmgText(pl.x, pl.y - pl.bodyH - 4, '-' + Math.round(d), def().color);
         }
       }
@@ -171,7 +176,9 @@ G.Weather = (() => {
   return {
     KINDS, reset, update, draw, mult, speedFor, hurts, onEvent,
     get current() { return cur && level() > 0 ? Object.assign({ left: Math.max(0, cur.dur - cur.t) }, cur, KINDS[cur.kind]) : null; },
-    get vignette() { return cur && cur.kind === 'fog' ? level() : 0; },
+    get vignette() { return !suppressed() && cur && cur.kind === 'fog' ? level() : 0; },
+    hasWeather() { return !!cur; },
+    get suppressed() { return !!suppressed(); },
     /** Pone un clima ya (la arena de la grieta; no se manda: cada uno lo pone). */
     force(kind, dur) { start(kind, dur); },
     /** Quita el clima de golpe (al salir de la arena). */

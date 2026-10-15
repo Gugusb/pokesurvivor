@@ -6,6 +6,20 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-15', title: ['Habilidades de Johto y Hoenn · v0.4.0', 'Johto and Hoenn abilities · v0.4.0'], new: [
+    ['Johto y Hoenn llegan al gacha de habilidades: 31 medallas nuevas, 42 en total, con garantías independientes por región y una sola medalla equipada por Pokémon.',
+     'Johto and Hoenn join the ability gacha: 31 new medals, 42 total, with separate regional pity and one equipped medal per Pokémon.'],
+    ['Nuevas habilidades: clima periódico, regeneración, inmunidad a lentitud, Miedo, confianza acumulable, beneficios más largos, aceleración al recibir daño, Robustez, Levitación y estados aleatorios.',
+     'New abilities include periodic weather, regeneration, slow immunity, Fear, stacking confidence, longer buffs, haste on damage, Sturdy, Levitate and random debuffs.'],
+    ['Levitación atraviesa obstáculos sin poder lanzar movimientos: velocidad -50% dentro y -70% durante 0,3 s al entrar y salir. El panel de desarrollo añade pruebas de clima y daño.',
+     'Levitate crosses obstacles without casting: 50% slower inside and 70% slower for 0.3 s on entry and exit. The developer panel adds weather and damage tests.']
+  ], chg: [
+    ['El HUD muestra cargas, recargas y disponibilidad de habilidades. Bucle Aire conserva el clima, pero anula sus efectos para todos.',
+     'The HUD shows ability stacks, timers and readiness. Air Lock keeps the weather present while suppressing its effects for everyone.']
+  ], fix: [
+    ['Los proyectiles visuales de compañeros ya no infligen daño ni conceden bajas al jugador local.',
+     'Visual projectiles from teammates no longer deal damage or grant kills to the local player.']
+  ] },
   { d: '2026-10-15', title: ['Medallas de Dragonite · v0.3.0', 'Dragonite medals · v0.3.0'], new: [
     ['Dragonite tiene dos medallas: Foco Interno recarga todos los movimientos a la vez; Compensación reduce a la mitad el daño de ataques con la vida al máximo. Sólo se equipa una.',
      'Dragonite has two medals: Inner Focus cools all moves simultaneously; Multiscale halves attack damage at full HP. Equip only one.']

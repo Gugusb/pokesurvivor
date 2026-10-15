@@ -45,9 +45,221 @@ function context(lang = 'zh') {
 }
 const approx = (a, b) => assert.ok(Math.abs(a - b) < 1e-7, `${a} ≠ ${b}`);
 
-test('eleven independent medals; ownership alone does not enable an ability; one equipped', () => {
+test('three ability banners replace every five-star species, with region pity and preserved old saves', () => {
   const s = context(), { G } = s, save = G.DB.save;
-  assert.equal(G.AbilityDefs.LIST.length, 11);
+  for (const [gen, expected] of [[1, 11], [2, 13], [3, 18]]) {
+    assert.equal(G.AbilityDefs.LIST.filter(m => G.DEX_BY[m.dex].gen === gen).length, expected);
+    const pool = G.AbilityGacha.pool(5, gen);
+    for (let i = 0; i < pool.length; i++) {
+      assert.ok(G.AbilityDefs.medalsFor(pool[i].dex).length);
+      save.abilityGems = 10; save.abilityPity[gen] = 69; s.random([(i + .01) / pool.length, .99]);
+      const reward = G.AbilityGacha.pull(save, 1, gen)[0];
+      assert.equal(reward.dex, pool[i].dex); assert.ok(reward.medal);
+      assert.equal(save.owned[reward.dex], undefined); assert.equal(save.abilityPity[gen], 0);
+    }
+  }
+  save.abilityGems = 10; save.abilityPity[1] = 23; save.abilityPity[2] = 19;
+  s.random([]); G.AbilityGacha.pull(save, 1, 3);
+  assert.equal(save.abilityPity[1], 23); assert.equal(save.abilityPity[2], 19);
+  const before = JSON.stringify(save); assert.equal(G.AbilityGacha.pull(save, 1, 4), null); assert.equal(JSON.stringify(save), before);
+  save.abilityMedals['377-sturdy'] = {at: 1}; G.Abilities.equip(save, 377, '377-sturdy');
+  G.DB._test.sanitize(save); assert.equal(G.Abilities.equipped(save, 377), 'sturdy');
+});
+
+test('weather abilities first summon at 40s, last 20s and repeat on the next 40s interval', () => {
+  const s = context(), { G } = s;
+  for (const [dex, ability, kind] of [[248,'sandstream','sand'],[382,'drizzle','rain'],[383,'drought','sun']]) {
+    const p = s.player(dex, ability), calls = []; G.Weather.debugStart = (...a) => calls.push(a);
+    G.Abilities.playerTick(p, 39.99); assert.equal(calls.length, 0);
+    G.Abilities.playerTick(p, .01); assert.deepEqual(calls, [[kind,20]]);
+    G.Abilities.playerTick(p, 39.99); assert.equal(calls.length, 1);
+    G.Abilities.playerTick(p, .01); assert.equal(calls.length, 2);
+  }
+  const p = s.player(382, 'drizzle'); G.Coop.active = true;
+  G.Abilities.playerTick(p, 40); assert.equal(s.events[0][0], 'aw'); assert.equal(s.events[0][1], 'rain');
+});
+
+test('Regenerator waits five undamaged seconds, integrates only eligible time, and resets on actual damage', () => {
+  const s = context(), { G } = s, p = s.player(250, 'regenerator'); p.maxHp = 100; p.hp = 50;
+  G.Abilities.playerTick(p, 4.9); assert.equal(p.hp, 50);
+  G.Abilities.playerTick(p, .2); approx(p.hp, 50.5);
+  G.Abilities.playerTick(p, 1); approx(p.hp, 55.5);
+  p.hurt(10); approx(p.hp, 45.5); G.Abilities.playerTick(p, 5); approx(p.hp, 45.5);
+  G.Abilities.playerTick(p, 20); assert.equal(p.hp, 100);
+  p.invuln = 1; const before = G.Abilities.state(p).safeTime; assert.equal(p.hurt(10), false);
+  assert.equal(G.Abilities.state(p).safeTime, before);
+});
+
+test('Natural Cure rejects trap, terrain and snow slows until hurt, then restores after 20s', () => {
+  const s = context(), { G } = s, p = s.player(251, 'naturalcure');
+  G.Game.player = p; G.EnemyMgr.queryCircle = () => []; s.load('js/systems/interact.js');
+  G.Weather.speedFor = () => .9; p.inLiquid = true;
+  const trap = {x: p.x, y: p.y + 8, kind: 1}, hp = p.hp;
+  G.Interact.trapEffect(trap); assert.equal(p.slowT, 0); assert.equal(p.hp, hp); approx(p.spd, p.baseSpd);
+  p.hurt(10); G.Interact.trapEffect(trap); assert.equal(p.slowT, 3.5); approx(p.spd, p.baseSpd * .5 * .5 * .9);
+  G.Abilities.playerTick(p, 19.99); assert.equal(G.Abilities.slowImmune(p), false);
+  G.Abilities.playerTick(p, .01); assert.equal(G.Abilities.slowImmune(p), true); assert.equal(p.slowT, 0); approx(p.spd, p.baseSpd);
+});
+
+test('Truant doubles every fourth real cast cooldown and heals once, including linked skills', () => {
+  const s = context(), { G } = s, p = s.player(289, 'truant');
+  s.load('js/systems/combat.js'); G.VFX = {forMove: () => ({pal: []})};
+  p.maxHp = 100; p.hp = 50; p.cast = noop;
+  const move = () => ({kind:'buff', type:'normal', stat:'atk', amount:.1, dur:5, stacks:5, cd:2, t:0});
+  p.moves = [move()]; p.slots = [p.moves];
+  for (let i = 1; i <= 8; i++) {
+    p.moves[0].t = 0; G.Combat.tick(.1, p, i);
+    assert.equal(p.moves[0].t, i % 4 ? 2 : 4); assert.equal(p.hp, 50 + Math.floor(i / 4) * 5);
+  }
+  p.moves = [move(),move(),move(),move()]; p.slots = [p.moves]; G.Combat.tick(.1,p,9);
+  assert.deepEqual(p.moves.map(m => m.t), [2,2,2,4]); assert.equal(p.hp, 65);
+});
+
+test('Fear refreshes three seconds without stacking and reduces shots and telegraphed attacks by 20%', () => {
+  const s = context(), { G } = s, p = s.player(373, 'intimidate'), e = s.enemy(), shots = [], hazards = [];
+  G.Abilities.onHit(p,e); assert.equal(e.fearT, 3); approx(G.Abilities.enemyDamage(e, 100),80);
+  G.Abilities.enemyTick(e,2); G.Abilities.onHit(p,e); assert.equal(e.fearT,3);
+  G.Projectiles.spawn = o => {shots.push(o); return o;}; G.VFX = {forType: () => ({})};
+  G.Hazards = {add: o => hazards.push(o)};
+  e.shoot(1,0); approx(shots[0].dmg,e.shotDmg()*.8);
+  e.hazard({kind:'zone',dmg:100}); assert.equal(hazards[0].dmg,80);
+  G.Abilities.enemyTick(e,3); approx(G.Abilities.enemyDamage(e,100),100);
+});
+
+test('Moxie kill credit is per owner, deduplicated, capped at five and expires each stack independently', () => {
+  const s = context(), { G } = s, p = s.player(373,'moxie');
+  G.Pickups = {drop:noop,dropXp:noop};
+  const base = p.atk, e = s.enemy(); e.hurt(1000,'#fff',0,0,0,null,p); approx(p.atk,base*1.1);
+  G.Abilities.onKill(p,e.id); approx(p.atk,base*1.1);
+  G.Abilities.playerTick(p,1); G.Abilities.onKill(p,12345); approx(p.atk,base*1.2);
+  G.Abilities.playerTick(p,2.01); approx(p.atk,base*1.1);
+  for (let i=0;i<10;i++) G.Abilities.onKill(p,20000+i);
+  approx(p.atk,base*1.5); G.Abilities.playerTick(p,3); approx(p.atk,base);
+  const untouched = s.enemy(); untouched.hurt(1000); approx(p.atk,base);
+});
+
+test('Clear Body extends skill buffs and altar powers by 50%, without changing strength or permanent stats', () => {
+  const {G} = context(), p = new G.Player(G.DEX_BY[376]); p.ability = 'clearbody';
+  p.addBuff('atk',.1,7,5); assert.equal(p.buffs.atk.t,10.5); assert.equal(p.buffs.atk.n,1); assert.equal(p.buffs.atk.amount,.1);
+  let n=0; const power = {on:()=>n++,off:()=>n--}; p.addPower(power,25);
+  assert.equal(p.power.t,37.5); p.addPower(power,25); assert.equal(n,1);
+  assert.equal(p.atkMul,1);
+});
+
+test('Light Metal stacks additively to 60%, refresh all stacks to five seconds, and ignores prevented hits', () => {
+  const s = context(), {G} = s, p = s.player(376,'lightmetal'), base = p.spd;
+  for (let i=1;i<=4;i++) {p.invuln=0;p.hurt(1);approx(p.spd,base*(1+Math.min(3,i)*.2));}
+  G.Abilities.playerTick(p,4); p.invuln=0; p.hurt(1); assert.equal(G.Abilities.state(p).hasteT,5);
+  G.Abilities.playerTick(p,4.99); approx(p.spd,base*1.6);
+  p.invuln=1;p.hurt(1); G.Abilities.playerTick(p,.02); approx(p.spd,base);
+});
+
+test('Sturdy saves lethal damage once even below full HP, and resets only when the surface stage changes', () => {
+  const s = context(), {G} = s, p = s.player(377,'sturdy'); p.maxHp=100;p.hp=10;
+  p.hurt(1000); assert.equal(p.hp,51); assert.equal(p.dead,false);
+  G.Abilities.resetStage(p,0); assert.equal(G.Abilities.state(p).sturdyUsed,true);
+  G.Abilities.resetStage(p,1); assert.equal(G.Abilities.state(p).sturdyUsed,false);
+  p.invuln=0;p.hp=2;p.hurt(1000);assert.equal(p.hp,51);
+  p.invuln=0;p.hurt(1000);assert.equal(p.dead,true);
+});
+
+test('Air Lock suppresses all weather mechanics but keeps weather present; Ice Body works only under effective snow', () => {
+  const s = context(), {G}=s, p=s.player(378,'icebody'); G.Spawner={say:noop}; s.load('js/systems/weather.js');
+  p.maxHp=100;p.hp=50;G.Weather.force('snow',20);G.Weather.update(3,0,p);
+  G.Abilities.playerTick(p,1);approx(p.hp,53);approx(G.Weather.speedFor(['normal']),.9);
+  const air = new G.Player(G.DEX_BY[384]);air.ability='airlock';s.players.push(air);
+  assert.equal(G.Weather.hasWeather(),true); assert.equal(G.Weather.mult('ice'),1);assert.equal(G.Weather.hurts(['normal']),false);
+  assert.equal(G.Weather.speedFor(['normal']),1);G.Abilities.playerTick(p,1);approx(p.hp,53);
+  assert.equal(G.Abilities.critMultiplier(air),1.5);G.Weather.clear();assert.equal(G.Abilities.critMultiplier(air),2.25);
+  G.Weather.force('fog',20);assert.equal(G.Weather.vignette,0);air.dead=true;assert.equal(G.Weather.suppressed,false);
+});
+
+test('weather chip damage resets undamaged timers, and Air Lock prevents that damage for players and enemies', () => {
+  const s=context(),{G}=s,p=s.player(250,'regenerator'),e=s.enemy();G.Spawner={say:noop};s.load('js/systems/weather.js');
+  p.maxHp=100;p.hp=50;G.Abilities.playerTick(p,6);assert.ok(G.Abilities.state(p).safeTime>5);
+  G.Weather.force('sand',20);G.Weather.update(3,0,p);assert.equal(G.Abilities.state(p).safeTime,0);
+  const air=new G.Player(G.DEX_BY[384]);air.ability='airlock';s.players.push(air);
+  const hp=p.hp,ehp=e.hp;G.Weather.update(3,0,p);assert.equal(p.hp,hp);assert.equal(e.hp,ehp);
+});
+
+test('Levitate bypasses real obstacle collision, forbids casting within obstacles and resumes after exit', () => {
+  const s=context(),{G}=s,p=s.player(380,'levitate');G.Tiles={T:16};
+  const world=fs.readFileSync(path.join(ROOT,'js/world/world.js'),'utf8').replace(
+    'TS, CW, reset,', '_fixture() { terrainAt = (x,y) => x === 1 && y === 0 ? WALL : FLOOR; propAtTile = () => null; }, TS, CW, reset,');
+  vm.runInContext(world,s);G.World._fixture();p.x=48;p.y=16;
+  assert.equal(G.World.overlapsSolid(p.x,p.y,p.r),true);G.World.collide(p);assert.equal(p.x,48);assert.equal(G.Abilities.canCast(p),false);
+  approx(p.spd,p.baseSpd*.3);G.Abilities.playerTick(p,.29);approx(p.spd,p.baseSpd*.3);
+  G.Abilities.playerTick(p,.01);approx(p.spd,p.baseSpd*.5);
+  s.load('js/systems/combat.js');G.VFX={forMove:()=>({pal:[]})};
+  const m={kind:'buff',stat:'atk',type:'normal',amount:.1,dur:5,stacks:5,cd:2,t:0};p.moves=[m];p.slots=[[m]];p.cast=noop;
+  G.Combat.tick(1,p,1);assert.equal(p.buffs.atk.n,0);
+  p.x=100;assert.equal(G.Abilities.canCast(p),true);approx(p.spd,p.baseSpd*.3);
+  G.Abilities.playerTick(p,.3);approx(p.spd,p.baseSpd);
+  G.Combat.tick(.1,p,2);assert.equal(p.buffs.atk.n,1);
+  p.ability=null;p.x=48;assert.equal(G.World.collide(p),true);assert.notEqual(p.x,48);
+});
+
+test('Serene Grace rolls 10% per hit and applies each of six independently supported debuffs', () => {
+  const s=context(),{G}=s,p=s.player(385,'serenegrace');
+  for(let i=0;i<6;i++) {
+    const e=s.enemy();s.random([.099,(i+.01)/6]);G.Abilities.onHit(p,e);
+    const kind=G.Abilities.DEBUFFS[i];
+    if(kind==='slow'){approx(e.slow,.2);assert.equal(e.slowT,3);}
+    if(kind==='burn')assert.equal(e.burn,1);
+    if(kind==='poison')assert.equal(e.poison,1);
+    if(kind==='static')assert.equal(e.staticT,2);
+    if(kind==='unnerve')assert.equal(e.unnerveT,3);
+    if(kind==='fear')assert.equal(e.fearT,3);
+  }
+  const e=s.enemy();s.random([.1]);G.Abilities.onHit(p,e);assert.equal(e.burn,0);assert.equal(e.slow,0);
+});
+
+test('owned damage-over-time can proc Serene Grace, while invulnerable or shield-only hits cannot', () => {
+  const s=context(),{G}=s,p=s.player(385,'serenegrace'),e=s.enemy();
+  e.applyPoison(1,p);s.random([0,5.1/6]);e.update(.1,p);assert.equal(e.fearT,3);
+  const shielded=s.enemy();shielded.shield=1000;s.random([0,5.1/6]);shielded.hurt(10,'#fff',0,0,0,null,p);
+  assert.equal(shielded.fearT,undefined);
+});
+
+test('combat contact honors Fear, and teammate visual projectiles never damage or proc local abilities', () => {
+  const s=context(),{G}=s,p=s.player(385,'serenegrace'),e=s.enemy();s.load('js/systems/combat.js');
+  const shots=[{friendly:true,ghost:true,x:100,y:0,r:10,dmg:200,pierce:0,phits:new Set()}];
+  G.Projectiles.all=()=>shots;G.EnemyMgr.queryCircle=()=>[e];
+  G.World.propsInCircle=()=>[];G.World.projectileBlock=()=>null;
+  const hp=e.hp;s.random([0,5.1/6]);G.Combat.resolve(.1,p,1);assert.equal(e.hp,hp);assert.equal(e.fearT,undefined);
+  e.x=p.x;e.y=p.y;e.fearT=3;e.touchCd=0;const before=p.hp;
+  G.Combat.resolve(.1,p,2);approx(p.hp,before-8);
+});
+
+test('co-op host validates weather requests, applies on-hit Fear and credits the actual peer killer', () => {
+  const s=context(),{G}=s;let receive;let time=40;const calls=[];
+  G.Net={uid:'host',on:fn=>{receive=fn;},onPeer:noop};G.startMoveOf=()=> 'confusion';G.Sprites.preload=noop;
+  G.Game.st={get time(){return time;}};G.EnemyMgr.get=id=>s.enemies.find(e=>e.id===id);
+  G.Weather.debugStart=(...a)=>calls.push(a);G.Pickups={drop:noop,dropXp:noop};
+  const p=s.player(144,'pressure');G.Game.player=p;s.load('js/net/coop.js');
+  G.Coop.begin({host:'host',members:[{uid:'host',dex:144},{uid:'rain',dex:382},{uid:'fear',dex:373}]},p,{});
+  const frame=ability=>[0,0,0,0,100,100,0,'confusion',1,78,0,1,0,0,0,ability];
+  receive('rain',{k:'f',p:frame('drizzle'),ev:[['aw','rain'],['aw','rain'],['aw','sun']]});
+  assert.deepEqual(calls,[['rain',20]]);time=80;
+  receive('rain',{k:'f',p:frame('drizzle'),ev:[['aw','rain']]});assert.equal(calls.length,2);
+  const e=s.enemy();receive('fear',{k:'f',p:frame('intimidate'),ev:[['h',e.id,10,'#fff',0,0,0]]});assert.equal(e.fearT,3);
+  receive('fear',{k:'f',p:frame('moxie'),ev:[['h',e.id,1000,'#fff',0,0,0]]});
+  assert.ok(G.Coop.mate('fear').q.some(ev=>ev[0]==='ak'&&ev[1]===e.id));
+  assert.equal(G.Abilities.state(p).confidence.length,0);G.Coop.end();
+});
+
+test('co-op guest receives deduplicated Moxie kill credit from host', () => {
+  const s=context(),{G}=s;let receive;
+  G.Net={uid:'peer',on:fn=>{receive=fn;},onPeer:noop};G.startMoveOf=()=> 'confusion';G.Sprites.preload=noop;
+  const p=s.player(373,'moxie');G.Game.player=p;s.load('js/net/coop.js');
+  G.Coop.begin({host:'host',members:[{uid:'host',dex:144},{uid:'peer',dex:373}]},p,{syncTeam:noop});
+  const frame={k:'f',ev:[['ak',777]],p:{},t:1,lv:1,xp:0,xn:100,ki:1,bo:0,co:0};
+  receive('host',frame);receive('host',frame);assert.equal(G.Abilities.state(p).confidence.length,1);G.Coop.end();
+});
+
+test('42 independent medals; ownership alone does not enable an ability; one equipped', () => {
+  const s = context(), { G } = s, save = G.DB.save;
+  assert.equal(G.AbilityDefs.LIST.length, 42);
   save.owned[144] = { at: 1 }; assert.equal(G.Abilities.equipped(save, 144), null);
   assert.equal(G.Abilities.equip(save, 144, '144-pressure'), false);
   save.abilityMedals['144-pressure'] = { at: 1 }; save.abilityMedals['144-snowcloak'] = { at: 2 };

@@ -29,7 +29,7 @@ G.GachaUI = (() => {
   function open(nextMode = 'pokemon') {
     if (busy || !$('pull-fx').classList.contains('hidden')) return;
     mode = nextMode;
-    if (mode === 'ability') gen = 1;
+    if (mode === 'ability' && !G.AbilityGacha.GENS.includes(gen)) gen = 1;
     G.UI.show('scr-gacha', true);
     refresh();
   }
@@ -41,7 +41,7 @@ G.GachaUI = (() => {
     $('gacha-ability-mode').classList.toggle('on', ability);
     $('ability-medals').classList.toggle('hidden', !ability);
     $('pull-10b').classList.toggle('hidden', ability);
-    document.querySelectorAll('#gacha-gens .gen-tab').forEach(t => t.classList.toggle('hidden', ability && +t.dataset.gen !== 1));
+    document.querySelectorAll('#gacha-gens .gen-tab').forEach(t => t.classList.toggle('hidden', ability && !G.AbilityGacha.GENS.includes(+t.dataset.gen)));
     if (ability) { refreshAbilities(); return; }
     const s = G.DB.save;
     const banner = G.Gacha.BANNERS[gen - 1];
@@ -139,13 +139,16 @@ G.GachaUI = (() => {
 
   function refreshAbilities() {
     const s = G.DB.save;
+    const banner = G.Gacha.BANNERS[gen - 1], species = G.AbilityDefs.SPECIES.filter(d => G.DEX_BY[d].gen === gen);
+    document.querySelectorAll('#gacha-gens .gen-tab').forEach(t => t.classList.toggle('on', +t.dataset.gen === gen));
     $('banner').style.background = 'linear-gradient(135deg, #3a1d6e, #1b2f78 55%, #0f4d6e)';
-    $('banner-title').textContent = 'Kanto · Medallas de habilidad';
-    $('banner-desc').textContent = 'Las seis especies de cinco estrellas dan sus medallas, incluido Dragonite. El resto da Pokémon.';
-    $('gacha-owned').textContent = 'Medallas: ' + Object.keys(s.abilityMedals).length + ' / ' + G.AbilityDefs.LIST.length;
+    $('banner-title').textContent = banner.name + ' · Medallas de habilidad';
+    $('banner-desc').textContent = 'Las especies de cinco estrellas dan medallas de habilidad. El resto da Pokémon.';
+    const medals = G.AbilityDefs.LIST.filter(m => G.DEX_BY[m.dex].gen === gen);
+    $('gacha-owned').textContent = 'Medallas: ' + medals.filter(m => s.abilityMedals[m.id]).length + ' / ' + medals.length;
     const feat = $('gacha-feat'); feat.innerHTML = '';
-    for (const dex of [149, 150, 151]) feat.appendChild(medalArt(dex));
-    $('gacha-pity').textContent = 'Tiradas sin legendaria en Kanto: ' + (s.abilityPity[1] || 0) + ' / ' + G.Gacha.PITY_5;
+    for (const dex of species.slice(-3)) feat.appendChild(medalArt(dex));
+    $('gacha-pity').textContent = 'Tiradas sin legendaria en ' + banner.name + ': ' + (s.abilityPity[gen] || 0) + ' / ' + G.Gacha.PITY_5;
     $('gacha-rates').innerHTML = '<h3>Probabilidades</h3>' + G.Gacha.RATES.slice().reverse().map(([r, w]) =>
       '<div><span style="color:' + G.Gacha.RARITY_COLOR[r] + '">' + G.UI.stars(r, 10) + ' ' + G.Gacha.RARITY_NAME[r] + '</span><span>' + w + '%</span></div>').join('') +
       '<p class="note">Cada especie conserva su probabilidad. Sus medallas se reparten por igual.<br>· ×10 garantiza una Épica o superior.<br>· Medalla de cinco estrellas garantizada en la tirada 70.<br>· Medalla repetida: 300 Pokémonedas.<br>· Shiny: 1% en premios Pokémon; las medallas no son shiny.<br>· Cada jefe de una grieta da 1 gema. Regalo inicial: 10 gemas.<br>· El saldo y la garantía son independientes del gacha de Pokémon.</p>';
@@ -155,13 +158,13 @@ G.GachaUI = (() => {
     $('pull-1').disabled = !G.AbilityGacha.costOf(s, 1);
     $('pull-10').disabled = !G.AbilityGacha.costOf(s, 10);
     const inventory = $('ability-medals'); inventory.innerHTML = '';
-    for (const dex of G.AbilityDefs.SPECIES) renderEquipment(inventory, dex);
+    for (const dex of species) renderEquipment(inventory, dex);
     G.UI.refreshCoins();
   }
 
   async function pull(n, use = 't1') {
     if (busy) return;
-    const res = mode === 'ability' ? G.AbilityGacha.pull(G.DB.save, n) : G.Gacha.pull(G.DB.save, n, gen, use);
+    const res = mode === 'ability' ? G.AbilityGacha.pull(G.DB.save, n, gen) : G.Gacha.pull(G.DB.save, n, gen, use);
     if (!res) { G.Audio.sfx('error'); G.UI.toast(mode === 'ability' ? 'No tienes gemas suficientes: derrota jefes de grietas' : 'No tienes tickets suficientes: consíguelos jugando'); return; }
     G.Progress.checkAch();
     G.DB.commit(true);
