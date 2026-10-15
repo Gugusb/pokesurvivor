@@ -63,6 +63,7 @@ G.Coop = (() => {
    * @param cb    { levelStart(lv), resume(), waiting(names), over(data), lost(msg), team(t), shiny(dex) }
    */
   function begin(cfg, pl, cb) {
+    if (G.MegaPreview) G.MegaPreview.restore(pl);
     active = true;
     me = G.Net.uid; hostUid = cfg.host;
     host = me === hostUid;

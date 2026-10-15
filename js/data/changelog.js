@@ -6,6 +6,15 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-15', title: ['Vista previa de Mega · v0.6.0', 'Mega asset preview · v0.6.0'], new: [
+    ['Se importan los recursos Mega disponibles de Kanto y Hoenn, con variantes shiny donde existen. El panel de desarrollo permite probarlos dentro de una partida.',
+     'Available Kanto and Hoenn Mega assets are imported, including shiny variants where provided. Developer tools can preview them in a run.'],
+    ['La vista previa conserva estadísticas, tipos, habilidades y colisiones del Pokémon base. Las reglas de megaevolución se diseñarán más adelante.',
+     'The preview keeps the base Pokémon stats, types, abilities and collision size. Mega Evolution mechanics will be designed later.']
+  ], chg: [
+    ['Las formas sin animaciones se indican como no disponibles; los movimientos que reutilizan otra animación se documentan. Se mantienen los créditos por artista y forma.',
+     'Forms without animations are marked unavailable, and animation substitutions are documented. Artist and form attribution is preserved.']
+  ], fix: [] },
   { d: '2026-10-15', title: ['Sinnoh y Tinovictoria · v0.5.0', 'Sinnoh and Victory Star · v0.5.0'], new: [
     ['Sinnoh añade 20 medallas y Victini estrena Tinovictoria en Teselia: 63 medallas para 42 especies. Teselia conserva premios Pokémon donde aún no hay habilidades diseñadas.',
      'Sinnoh adds 20 medals and Victini brings Victory Star to Unova: 63 medals for 42 species. Unova retains Pokémon rewards for species whose abilities are not designed yet.'],

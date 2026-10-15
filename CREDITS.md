@@ -2,6 +2,8 @@
 
 ## Sprites
 
+Mega form assets imported for the development preview have separate per-form attribution and animation notes in [docs/MEGA_ASSET_CREDITS.md](docs/MEGA_ASSET_CREDITS.md). Their source revision and file checksums are recorded in [assets/mega/manifest.json](assets/mega/manifest.json).
+
 Los sprites estilo *Pokémon Mundo Misterioso* vienen de
 [SpriteCollab](https://github.com/PMDCollab/SpriteCollab), bajo licencia
 [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/):
