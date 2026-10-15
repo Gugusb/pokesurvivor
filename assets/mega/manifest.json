@@ -10,6 +10,8 @@
       "name": "Venusaur",
       "form": "Mega",
       "source": "0003/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -377,7 +379,9 @@
           "id": "<@!593113130213572610>",
           "name": "Morei"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "6-mega-y",
@@ -386,6 +390,8 @@
       "name": "Charizard",
       "form": "Mega_Y",
       "source": "0006/0002",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -397,6 +403,8 @@
       "name": "Blastoise",
       "form": "Mega",
       "source": "0009/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -408,6 +416,8 @@
       "name": "Beedrill",
       "form": "Mega",
       "source": "0015/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -419,6 +429,8 @@
       "name": "Pidgeot",
       "form": "Mega",
       "source": "0018/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -430,6 +442,8 @@
       "name": "Raichu",
       "form": "Mega_X",
       "source": "0026/0002",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -441,6 +455,8 @@
       "name": "Raichu",
       "form": "Mega_Y",
       "source": "0026/0003",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -452,6 +468,8 @@
       "name": "Clefable",
       "form": "Mega",
       "source": "0036/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -827,7 +845,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "71-mega",
@@ -836,6 +856,8 @@
       "name": "Victreebel",
       "form": "Mega",
       "source": "0071/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -1218,7 +1240,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 0,
+      "basicComplete": false
     },
     {
       "id": "94-mega",
@@ -1587,7 +1611,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "115-mega",
@@ -1954,7 +1980,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "121-mega",
@@ -1963,6 +1991,8 @@
       "name": "Starmie",
       "form": "Mega",
       "source": "0121/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -1974,6 +2004,8 @@
       "name": "Pinsir",
       "form": "Mega",
       "source": "0127/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -1985,6 +2017,8 @@
       "name": "Gyarados",
       "form": "Mega",
       "source": "0130/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -2352,7 +2386,9 @@
           "id": "<@!350050109741858829>",
           "name": "G〜"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "149-mega",
@@ -2361,6 +2397,8 @@
       "name": "Dragonite",
       "form": "Mega",
       "source": "0149/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -2372,6 +2410,8 @@
       "name": "Mewtwo",
       "form": "Mega_X",
       "source": "0150/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -2732,7 +2772,1202 @@
           "id": "<@!593113130213572610>",
           "name": "Morei"
         }
+      ],
+      "completion": 1,
+      "basicComplete": true
+    },
+    {
+      "id": "154-mega",
+      "dex": 154,
+      "gen": 2,
+      "name": "Meganium",
+      "form": "Mega",
+      "source": "0154/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "160-mega",
+      "dex": 160,
+      "gen": 2,
+      "name": "Feraligatr",
+      "form": "Mega",
+      "source": "0160/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "181-mega",
+      "dex": 181,
+      "gen": 2,
+      "name": "Ampharos",
+      "form": "Mega",
+      "source": "0181/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "208-mega",
+      "dex": 208,
+      "gen": 2,
+      "name": "Steelix",
+      "form": "Mega",
+      "source": "0208/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Appeal",
+        "Attack",
+        "Charge",
+        "Dance",
+        "Double",
+        "Emit",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Strike",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 2,
+        "a": {
+          "Idle": {
+            "w": 64,
+            "h": 136,
+            "n": 4,
+            "r": 8,
+            "d": [
+              16,
+              12,
+              16,
+              12
+            ],
+            "ax": 31.5,
+            "ay": 71.5
+          },
+          "Walk": {
+            "w": 72,
+            "h": 128,
+            "n": 4,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              10,
+              14
+            ],
+            "ax": 35.5,
+            "ay": 67.5
+          },
+          "Attack": {
+            "w": 120,
+            "h": 176,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 59.5,
+            "ay": 90.5
+          },
+          "Shoot": {
+            "w": 96,
+            "h": 136,
+            "n": 12,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 47.5,
+            "ay": 69.5
+          },
+          "Charge": {
+            "w": 64,
+            "h": 128,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 32.5,
+            "ay": 67.5
+          },
+          "Hurt": {
+            "w": 64,
+            "h": 128,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 31.5,
+            "ay": 65.5
+          },
+          "Faint": {
+            "w": 64,
+            "h": 128,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 31.5,
+            "ay": 65.5
+          }
+        },
+        "path": "assets/mega/208-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 64,
+            "h": 136,
+            "n": 4,
+            "r": 8,
+            "d": [
+              16,
+              12,
+              16,
+              12
+            ],
+            "ax": 31.5,
+            "ay": 71.5
+          },
+          "Walk": {
+            "w": 72,
+            "h": 128,
+            "n": 4,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              10,
+              14
+            ],
+            "ax": 35.5,
+            "ay": 67.5
+          },
+          "Attack": {
+            "w": 120,
+            "h": 176,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 59.5,
+            "ay": 90.5
+          },
+          "Shoot": {
+            "w": 96,
+            "h": 136,
+            "n": 12,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 47.5,
+            "ay": 69.5
+          },
+          "Charge": {
+            "w": 64,
+            "h": 128,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 32.5,
+            "ay": 67.5
+          },
+          "Hurt": {
+            "w": 64,
+            "h": 128,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 31.5,
+            "ay": 65.5
+          },
+          "Faint": {
+            "w": 64,
+            "h": 128,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 31.5,
+            "ay": 65.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/208-mega/Idle.png",
+          "sha256": "7c37f1541eb1417c4cb750de98c480b68660b01ca5637c350df9022c402e5b71"
+        },
+        {
+          "path": "assets/mega/208-mega/Walk.png",
+          "sha256": "ab1d2b1bb13694c64b265ad39aa3d8b331c6f95af21a0992a41f2a8e01850aba"
+        },
+        {
+          "path": "assets/mega/208-mega/Attack.png",
+          "sha256": "e5170c3d1731654768a6be71f9e99b63134f78ad03933cd39c0c2568881fb28c"
+        },
+        {
+          "path": "assets/mega/208-mega/Shoot.png",
+          "sha256": "0a2ecc2747f05f93f7f6209efec8f74777c9bed30579f28df0ae5ce70ee54c82"
+        },
+        {
+          "path": "assets/mega/208-mega/Charge.png",
+          "sha256": "24b8eca4dcf6c3adb8994037e72a9eab0996e6cf660f76eb9cfd566499b8bd0f"
+        },
+        {
+          "path": "assets/mega/208-mega/Hurt.png",
+          "sha256": "128d11706bd2d41bad4e51c3e50c572fd54da135c28658e874681082e47d511d"
+        },
+        {
+          "path": "assets/mega/208-mega/Faint.png",
+          "sha256": "128d11706bd2d41bad4e51c3e50c572fd54da135c28658e874681082e47d511d"
+        },
+        {
+          "path": "assets/mega/208-mega/s/Idle.png",
+          "sha256": "de68c1cb7225fdabeee28eb7294ba103b0ab0b481fc90799db7e0b9f3d96ea66"
+        },
+        {
+          "path": "assets/mega/208-mega/s/Walk.png",
+          "sha256": "638ef64704fd86aa75f1592a144235d9a3974ace085dc0d2c0ff89d7fd31610d"
+        },
+        {
+          "path": "assets/mega/208-mega/s/Attack.png",
+          "sha256": "a4f3efb1a26f0b96ba13303a9e740b077bb998375d16722d9b7a18be0d499e5c"
+        },
+        {
+          "path": "assets/mega/208-mega/s/Shoot.png",
+          "sha256": "4f1bcb40448d9c41e86c9d6b770fe3b1d3e6a111a1e5b879821fdee01796fbd9"
+        },
+        {
+          "path": "assets/mega/208-mega/s/Charge.png",
+          "sha256": "96f1515762f5dcdc7d656ac4194507e74dcddba08c9d0aeb5402669322ba976f"
+        },
+        {
+          "path": "assets/mega/208-mega/s/Hurt.png",
+          "sha256": "736e717278693e33e9555ec8ce7951ad726ebf27da171200a76c466ffb08fcce"
+        },
+        {
+          "path": "assets/mega/208-mega/s/Faint.png",
+          "sha256": "736e717278693e33e9555ec8ce7951ad726ebf27da171200a76c466ffb08fcce"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!544245909639397378>",
+          "name": "baronessfaron"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!823932975916777512>",
+          "name": "Pokejavi."
+        }
       ]
+    },
+    {
+      "id": "212-mega",
+      "dex": 212,
+      "gen": 2,
+      "name": "Scizor",
+      "form": "Mega",
+      "source": "0212/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "214-mega",
+      "dex": 214,
+      "gen": 2,
+      "name": "Heracross",
+      "form": "Mega",
+      "source": "0214/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "227-mega",
+      "dex": 227,
+      "gen": 2,
+      "name": "Skarmory",
+      "form": "Mega",
+      "source": "0227/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Strike",
+        "Swing",
+        "Twirl",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 48,
+            "h": 72,
+            "n": 7,
+            "r": 8,
+            "d": [
+              40,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4
+            ],
+            "ax": 23.5,
+            "ay": 39.5
+          },
+          "Walk": {
+            "w": 48,
+            "h": 80,
+            "n": 9,
+            "r": 8,
+            "d": [
+              4,
+              4,
+              4,
+              4,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 43.5
+          },
+          "Attack": {
+            "w": 88,
+            "h": 96,
+            "n": 14,
+            "r": 8,
+            "d": [
+              3,
+              3,
+              3,
+              3,
+              3,
+              2,
+              2,
+              3,
+              3,
+              3,
+              3,
+              3,
+              8,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 50.5
+          },
+          "Shoot": {
+            "w": 48,
+            "h": 64,
+            "n": 8,
+            "r": 8,
+            "d": [
+              3,
+              6,
+              6,
+              3,
+              3,
+              3,
+              10,
+              3
+            ],
+            "ax": 23.5,
+            "ay": 35.5
+          },
+          "Charge": {
+            "w": 48,
+            "h": 56,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 80,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 41.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 80,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 41.5
+          }
+        },
+        "path": "assets/mega/227-mega"
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/227-mega/Idle.png",
+          "sha256": "dd5652225aa10a60b25d4fff7aa5c3264c23148d70d8202e067af65167b7d1bc"
+        },
+        {
+          "path": "assets/mega/227-mega/Walk.png",
+          "sha256": "db6a8c1f79bbf92489edcd82de1c8bd49a8837954955470e591cce6803e57d4f"
+        },
+        {
+          "path": "assets/mega/227-mega/Attack.png",
+          "sha256": "1e462fa17d2a746d310274b2bcd4a847717d68dd36c39d85647b400694a401a7"
+        },
+        {
+          "path": "assets/mega/227-mega/Shoot.png",
+          "sha256": "239436826a8accc3d3ebc12c6fa8ac6ca869a4a95fd55047a534f740ee829132"
+        },
+        {
+          "path": "assets/mega/227-mega/Charge.png",
+          "sha256": "a8c3d96318c3fe70264f85d1d2eb6ea9eb0df52696b1a26f56ef7589250b242f"
+        },
+        {
+          "path": "assets/mega/227-mega/Hurt.png",
+          "sha256": "7997055e4306c8d8481aeae03990a863fa90059fe60f5ee55c8c9a88e8a3e6e3"
+        },
+        {
+          "path": "assets/mega/227-mega/Faint.png",
+          "sha256": "7997055e4306c8d8481aeae03990a863fa90059fe60f5ee55c8c9a88e8a3e6e3"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!225949425292410880>",
+          "name": "Johanne2"
+        }
+      ],
+      "partial": false
+    },
+    {
+      "id": "229-mega",
+      "dex": 229,
+      "gen": 2,
+      "name": "Houndoom",
+      "form": "Mega",
+      "source": "0229/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Dance",
+        "Double",
+        "Fainted",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Injured",
+        "Rotate",
+        "Shake",
+        "Shoot",
+        "Sleep",
+        "Special0",
+        "Strike",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 40,
+            "h": 64,
+            "n": 14,
+            "r": 8,
+            "d": [
+              60,
+              10,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              10
+            ],
+            "ax": 19.5,
+            "ay": 35.5
+          },
+          "Walk": {
+            "w": 40,
+            "h": 64,
+            "n": 4,
+            "r": 8,
+            "d": [
+              8,
+              12,
+              8,
+              12
+            ],
+            "ax": 19.5,
+            "ay": 35.5
+          },
+          "Attack": {
+            "w": 64,
+            "h": 88,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              4,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 31.5,
+            "ay": 46.5
+          },
+          "Shoot": {
+            "w": 48,
+            "h": 64,
+            "n": 12,
+            "r": 8,
+            "d": [
+              6,
+              2,
+              6,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 23.5,
+            "ay": 33.5
+          },
+          "Charge": {
+            "w": 40,
+            "h": 64,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 20.5,
+            "ay": 35.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          }
+        },
+        "path": "assets/mega/229-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 40,
+            "h": 64,
+            "n": 14,
+            "r": 8,
+            "d": [
+              60,
+              10,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              10
+            ],
+            "ax": 19.5,
+            "ay": 35.5
+          },
+          "Walk": {
+            "w": 40,
+            "h": 64,
+            "n": 4,
+            "r": 8,
+            "d": [
+              8,
+              12,
+              8,
+              12
+            ],
+            "ax": 19.5,
+            "ay": 35.5
+          },
+          "Attack": {
+            "w": 64,
+            "h": 88,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              4,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 31.5,
+            "ay": 46.5
+          },
+          "Shoot": {
+            "w": 48,
+            "h": 64,
+            "n": 12,
+            "r": 8,
+            "d": [
+              6,
+              2,
+              6,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 23.5,
+            "ay": 33.5
+          },
+          "Charge": {
+            "w": 40,
+            "h": 64,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 20.5,
+            "ay": 35.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/229-mega/Idle.png",
+          "sha256": "71bfa74f676f31d58116988ece09e0d56a6f69cffb1dad4b0e4bda0a0bbe5579"
+        },
+        {
+          "path": "assets/mega/229-mega/Walk.png",
+          "sha256": "79996e0eac94aa0da7ea5b2fb39aa54afaba679c99ca70f8f9bc64f797623995"
+        },
+        {
+          "path": "assets/mega/229-mega/Attack.png",
+          "sha256": "d65e781ecdad001ef6ddd5a015ee4f4c9e55223d0cb40a4214eef20671314b29"
+        },
+        {
+          "path": "assets/mega/229-mega/Shoot.png",
+          "sha256": "62ad834f782d94df15e95ecd3da5c51268427fbf34075828845b8b13e171ead7"
+        },
+        {
+          "path": "assets/mega/229-mega/Charge.png",
+          "sha256": "417dd009c89dc903408a042ea9dcd7e2b40ced47f61bd355066d3b3a5399ef36"
+        },
+        {
+          "path": "assets/mega/229-mega/Hurt.png",
+          "sha256": "8d0eb7a43ec02da55b452f023e68c5b9b42bad6f7a9e05cc46e58f3ccfe2e65e"
+        },
+        {
+          "path": "assets/mega/229-mega/Faint.png",
+          "sha256": "8d0eb7a43ec02da55b452f023e68c5b9b42bad6f7a9e05cc46e58f3ccfe2e65e"
+        },
+        {
+          "path": "assets/mega/229-mega/s/Idle.png",
+          "sha256": "9f4498a09dab63081256b611160671d734af5911a923e2564e3f204de625bf61"
+        },
+        {
+          "path": "assets/mega/229-mega/s/Walk.png",
+          "sha256": "3f2b82a8ae88b1ac7cb6e0259c550f627757d83997ff9db8b111c5f2eb9fd1ff"
+        },
+        {
+          "path": "assets/mega/229-mega/s/Attack.png",
+          "sha256": "d03574f0fac5e55de7901fdcb168cc8b48cf9beca24e7eaaa68f791c6df3cc2f"
+        },
+        {
+          "path": "assets/mega/229-mega/s/Shoot.png",
+          "sha256": "a66e2385ccd7e5a48033684ed77f6f59ca1f3c9a4163d84041a5a5842b20f8de"
+        },
+        {
+          "path": "assets/mega/229-mega/s/Charge.png",
+          "sha256": "b7635533a7675ed0b802bdc0ecb55ceb9ad89f3f35856815e8bdd714fed28105"
+        },
+        {
+          "path": "assets/mega/229-mega/s/Hurt.png",
+          "sha256": "fe1387e20a41c9b5e1fea50195c561449630e4193d97a562582688f9876a926c"
+        },
+        {
+          "path": "assets/mega/229-mega/s/Faint.png",
+          "sha256": "fe1387e20a41c9b5e1fea50195c561449630e4193d97a562582688f9876a926c"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!276369635304275968>",
+          "name": "Top_Kec"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!593113130213572610>",
+          "name": "Morei"
+        }
+      ]
+    },
+    {
+      "id": "248-mega",
+      "dex": 248,
+      "gen": 2,
+      "name": "Tyranitar",
+      "form": "Mega",
+      "source": "0248/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Strike",
+        "Swing",
+        "Twirl",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 40,
+            "h": 56,
+            "n": 4,
+            "r": 8,
+            "d": [
+              14,
+              24,
+              14,
+              24
+            ],
+            "ax": 19.5,
+            "ay": 31.5
+          },
+          "Walk": {
+            "w": 40,
+            "h": 56,
+            "n": 4,
+            "r": 8,
+            "d": [
+              10,
+              16,
+              10,
+              16
+            ],
+            "ax": 19.5,
+            "ay": 31.5
+          },
+          "Attack": {
+            "w": 64,
+            "h": 88,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              4,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 31.5,
+            "ay": 46.5
+          },
+          "Shoot": {
+            "w": 48,
+            "h": 56,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              3,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 23.5,
+            "ay": 29.5
+          },
+          "Charge": {
+            "w": 40,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 20.5,
+            "ay": 27.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          }
+        },
+        "path": "assets/mega/248-mega"
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/248-mega/Idle.png",
+          "sha256": "3d7b00b27adc3c65d89cca4df0332a346f500c8d81c07bf6235cc4fceb51f92c"
+        },
+        {
+          "path": "assets/mega/248-mega/Walk.png",
+          "sha256": "6203d17c5ae1bbcc08d1af40e464c9798991c11f09bc3c211818de1948c0de70"
+        },
+        {
+          "path": "assets/mega/248-mega/Attack.png",
+          "sha256": "8f0ba84d30f3c80320d021ea7877683b8ebd5c869e3217f5720ff7c85e47e313"
+        },
+        {
+          "path": "assets/mega/248-mega/Shoot.png",
+          "sha256": "a927bee3fc07716be532315435c3daed88040d5b520a2ed532cb121c16496c54"
+        },
+        {
+          "path": "assets/mega/248-mega/Charge.png",
+          "sha256": "2107f9aea7dee87e46576e88c6bca2212b81eac2a2c4e05aebde6c756c24fd25"
+        },
+        {
+          "path": "assets/mega/248-mega/Hurt.png",
+          "sha256": "589b550044fdbb2efa05a7db606ed6e119a88e47f85b14b4b73ef19f384b9eb2"
+        },
+        {
+          "path": "assets/mega/248-mega/Faint.png",
+          "sha256": "589b550044fdbb2efa05a7db606ed6e119a88e47f85b14b4b73ef19f384b9eb2"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!702275233125630042>",
+          "name": "JFain"
+        }
+      ],
+      "partial": false
     },
     {
       "id": "254-mega",
@@ -3017,7 +4252,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 0,
+      "basicComplete": false
     },
     {
       "id": "257-mega",
@@ -3026,6 +4263,8 @@
       "name": "Blaziken",
       "form": "Mega",
       "source": "0257/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -3037,6 +4276,8 @@
       "name": "Swampert",
       "form": "Mega",
       "source": "0260/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -3387,7 +4628,9 @@
           "id": "<@!544245909639397378>",
           "name": "baronessfaron"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "302-mega",
@@ -3731,7 +4974,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "303-mega",
@@ -4132,7 +5377,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 2,
+      "basicComplete": true
     },
     {
       "id": "306-mega",
@@ -4141,6 +5388,8 @@
       "name": "Aggron",
       "form": "Mega",
       "source": "0306/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -4338,7 +5587,9 @@
           "name": "JFain"
         }
       ],
-      "partial": true
+      "partial": true,
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "310-mega",
@@ -4714,7 +5965,9 @@
           "id": "<@!276369635304275968>",
           "name": "Top_Kec"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "319-mega",
@@ -5057,7 +6310,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 0,
+      "basicComplete": false
     },
     {
       "id": "323-mega",
@@ -5405,7 +6660,9 @@
           "id": "<@!330751862590406656>",
           "name": "Caitemis"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "334-mega",
@@ -5790,7 +7047,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "354-mega",
@@ -6147,7 +7406,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "358-mega",
@@ -6413,7 +7674,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 0,
+      "basicComplete": false
     },
     {
       "id": "359-mega",
@@ -6757,7 +8020,9 @@
           "id": "<@!593113130213572610>",
           "name": "Morei"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "359-mega-z",
@@ -6766,6 +8031,8 @@
       "name": "Absol",
       "form": "Mega_Z",
       "source": "0359/0002",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -7133,7 +8400,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "373-mega",
@@ -7142,6 +8411,8 @@
       "name": "Salamence",
       "form": "Mega",
       "source": "0373/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -7153,6 +8424,8 @@
       "name": "Metagross",
       "form": "Mega",
       "source": "0376/0001",
+      "completion": 0,
+      "basicComplete": false,
       "available": false,
       "sourceAnimations": [],
       "reason": "No overworld animation in source"
@@ -7531,7 +8804,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "381-mega",
@@ -7907,7 +9182,9 @@
           "id": "<@!356635814668664832>",
           "name": "Emmuffin"
         }
-      ]
+      ],
+      "completion": 1,
+      "basicComplete": true
     },
     {
       "id": "384-mega",
@@ -8266,7 +9543,5176 @@
           "id": "<@!276369635304275968>",
           "name": "Top_Kec"
         }
+      ],
+      "completion": 1,
+      "basicComplete": true
+    },
+    {
+      "id": "398-mega",
+      "dex": 398,
+      "gen": 4,
+      "name": "Staraptor",
+      "form": "Mega",
+      "source": "0398/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "428-mega",
+      "dex": 428,
+      "gen": 4,
+      "name": "Lopunny",
+      "form": "Mega",
+      "source": "0428/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Appeal",
+        "Attack",
+        "Charge",
+        "Double",
+        "Fainted",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Jump",
+        "Pose",
+        "QuickStrike",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Special1",
+        "StandingUp",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 40,
+            "h": 56,
+            "n": 7,
+            "r": 8,
+            "d": [
+              20,
+              4,
+              2,
+              4,
+              4,
+              2,
+              6
+            ],
+            "ax": 19.5,
+            "ay": 31.5
+          },
+          "Walk": {
+            "w": 40,
+            "h": 64,
+            "n": 9,
+            "r": 8,
+            "d": [
+              6,
+              2,
+              2,
+              4,
+              4,
+              4,
+              4,
+              6,
+              4
+            ],
+            "ax": 19.5,
+            "ay": 33.5
+          },
+          "Attack": {
+            "w": 72,
+            "h": 80,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              4,
+              4,
+              2,
+              2
+            ],
+            "ax": 35.5,
+            "ay": 41.5
+          },
+          "Shoot": {
+            "w": 48,
+            "h": 56,
+            "n": 12,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 23.5,
+            "ay": 30.5
+          },
+          "Charge": {
+            "w": 40,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 20.5,
+            "ay": 27.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 29.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 29.5
+          }
+        },
+        "path": "assets/mega/428-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 40,
+            "h": 56,
+            "n": 7,
+            "r": 8,
+            "d": [
+              20,
+              4,
+              2,
+              4,
+              4,
+              2,
+              6
+            ],
+            "ax": 19.5,
+            "ay": 31.5
+          },
+          "Walk": {
+            "w": 40,
+            "h": 64,
+            "n": 9,
+            "r": 8,
+            "d": [
+              6,
+              2,
+              2,
+              4,
+              4,
+              4,
+              4,
+              6,
+              4
+            ],
+            "ax": 19.5,
+            "ay": 33.5
+          },
+          "Attack": {
+            "w": 72,
+            "h": 80,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              4,
+              4,
+              2,
+              2
+            ],
+            "ax": 35.5,
+            "ay": 41.5
+          },
+          "Shoot": {
+            "w": 48,
+            "h": 56,
+            "n": 12,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 23.5,
+            "ay": 30.5
+          },
+          "Charge": {
+            "w": 40,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 20.5,
+            "ay": 27.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 29.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 29.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/428-mega/Idle.png",
+          "sha256": "9780361405bd6916cc6d134bda77caeaf1d89d0a3ca37cca8e8e775f1fb482a4"
+        },
+        {
+          "path": "assets/mega/428-mega/Walk.png",
+          "sha256": "5c2db8d4d4c55d0aff45debf69d2f2f476543d4702a74c386c8d978de89e15ce"
+        },
+        {
+          "path": "assets/mega/428-mega/Attack.png",
+          "sha256": "fae0fad4cb19318ba16507be1518fb93a97508f4d5b6db72fb9b46ed75dbf4d7"
+        },
+        {
+          "path": "assets/mega/428-mega/Shoot.png",
+          "sha256": "6d6bc74d7d2588065636de063df4fefd1b0ec58e60b457e8398e31ea9e606607"
+        },
+        {
+          "path": "assets/mega/428-mega/Charge.png",
+          "sha256": "38590598ca021da4cf3b793cbd2bf2f6ff5fb8a916785154e6e24185740cfe0b"
+        },
+        {
+          "path": "assets/mega/428-mega/Hurt.png",
+          "sha256": "07708a34df3af38c2b282ca53cb293df0f420dc115a52b931839939c3ae657ee"
+        },
+        {
+          "path": "assets/mega/428-mega/Faint.png",
+          "sha256": "07708a34df3af38c2b282ca53cb293df0f420dc115a52b931839939c3ae657ee"
+        },
+        {
+          "path": "assets/mega/428-mega/s/Idle.png",
+          "sha256": "a2845ebaaea2defe44185f248f9843c8e394a00eca97bf9d542829dced2340af"
+        },
+        {
+          "path": "assets/mega/428-mega/s/Walk.png",
+          "sha256": "691620a1f6628be722b96232df349a148c943bc46dc881327cfa2d2ff3576504"
+        },
+        {
+          "path": "assets/mega/428-mega/s/Attack.png",
+          "sha256": "c5644e87a04230daefa3d59a884bcaac5c2bc4c68aee147e018a44dfba0f0fa8"
+        },
+        {
+          "path": "assets/mega/428-mega/s/Shoot.png",
+          "sha256": "723fedfd508d77b6d7a3f35ffc5088b0734890690261b5bfa8465a24662982e1"
+        },
+        {
+          "path": "assets/mega/428-mega/s/Charge.png",
+          "sha256": "21dfed42de52d02e4dc9e30df200b6f9a407ff9f90cd0a819f9cda3070523197"
+        },
+        {
+          "path": "assets/mega/428-mega/s/Hurt.png",
+          "sha256": "eb54d933f8d112d6c27e885576b5f1379d472e8fb8c270fceb37d6529555a2f5"
+        },
+        {
+          "path": "assets/mega/428-mega/s/Faint.png",
+          "sha256": "eb54d933f8d112d6c27e885576b5f1379d472e8fb8c270fceb37d6529555a2f5"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!702275233125630042>",
+          "name": "JFain"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!593113130213572610>",
+          "name": "Morei"
+        }
       ]
+    },
+    {
+      "id": "445-mega",
+      "dex": 445,
+      "gen": 4,
+      "name": "Garchomp",
+      "form": "Mega",
+      "source": "0445/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "445-mega-z",
+      "dex": 445,
+      "gen": 4,
+      "name": "Garchomp",
+      "form": "Mega_Z",
+      "source": "0445/0002",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "448-mega",
+      "dex": 448,
+      "gen": 4,
+      "name": "Lucario",
+      "form": "Mega",
+      "source": "0448/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "QuickStrike",
+        "RearUp",
+        "Rotate",
+        "Sleep",
+        "SpAttack",
+        "Strike",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 32,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              40,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              12
+            ],
+            "ax": 15.5,
+            "ay": 27.5
+          },
+          "Walk": {
+            "w": 32,
+            "h": 48,
+            "n": 4,
+            "r": 8,
+            "d": [
+              8,
+              10,
+              8,
+              10
+            ],
+            "ax": 15.5,
+            "ay": 27.5
+          },
+          "Attack": {
+            "w": 64,
+            "h": 80,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              1,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 32.5,
+            "ay": 41.5
+          },
+          "Shoot": {
+            "w": 64,
+            "h": 80,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              1,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 32.5,
+            "ay": 41.5
+          },
+          "Charge": {
+            "w": 32,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 16.5,
+            "ay": 27.5
+          },
+          "Hurt": {
+            "w": 40,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 19.5,
+            "ay": 29.5
+          },
+          "Faint": {
+            "w": 40,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 19.5,
+            "ay": 29.5
+          }
+        },
+        "path": "assets/mega/448-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 32,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              40,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              12
+            ],
+            "ax": 15.5,
+            "ay": 27.5
+          },
+          "Walk": {
+            "w": 32,
+            "h": 48,
+            "n": 4,
+            "r": 8,
+            "d": [
+              8,
+              10,
+              8,
+              10
+            ],
+            "ax": 15.5,
+            "ay": 27.5
+          },
+          "Attack": {
+            "w": 64,
+            "h": 80,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              1,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 32.5,
+            "ay": 41.5
+          },
+          "Shoot": {
+            "w": 64,
+            "h": 80,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              1,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 32.5,
+            "ay": 41.5
+          },
+          "Charge": {
+            "w": 32,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 16.5,
+            "ay": 27.5
+          },
+          "Hurt": {
+            "w": 40,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 19.5,
+            "ay": 29.5
+          },
+          "Faint": {
+            "w": 40,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 19.5,
+            "ay": 29.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Attack",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/448-mega/Idle.png",
+          "sha256": "a088f2bec5e912c53097f0a9c42d3b3278103413f98cbab24e732cf8eb029ff3"
+        },
+        {
+          "path": "assets/mega/448-mega/Walk.png",
+          "sha256": "550cc3ded33b46c58f2d8fe1477290bf88dc9604e65e5ceccb1351ab1c5d0fe3"
+        },
+        {
+          "path": "assets/mega/448-mega/Attack.png",
+          "sha256": "7bebbde027f314158b79c143b13561999e64d3b11fe670b461adb1613078e9aa"
+        },
+        {
+          "path": "assets/mega/448-mega/Shoot.png",
+          "sha256": "7bebbde027f314158b79c143b13561999e64d3b11fe670b461adb1613078e9aa"
+        },
+        {
+          "path": "assets/mega/448-mega/Charge.png",
+          "sha256": "d8b0ab82400eb509669c5ab4e57ce5d0604c83620a9676dad1dcf95b6d7d0b94"
+        },
+        {
+          "path": "assets/mega/448-mega/Hurt.png",
+          "sha256": "0d802ef7baa501c906c531e411d6c7d4c8acfafd7e8810ae58c5a9573317bd1a"
+        },
+        {
+          "path": "assets/mega/448-mega/Faint.png",
+          "sha256": "0d802ef7baa501c906c531e411d6c7d4c8acfafd7e8810ae58c5a9573317bd1a"
+        },
+        {
+          "path": "assets/mega/448-mega/s/Idle.png",
+          "sha256": "c25c58d1975f7659e23996ed9f11872e3c8e2abfd16c15a7c03b4456147c34be"
+        },
+        {
+          "path": "assets/mega/448-mega/s/Walk.png",
+          "sha256": "607ea9467939014d7a2fc680145a8a412015bf089d5eee3ae95bfc132a15c4d1"
+        },
+        {
+          "path": "assets/mega/448-mega/s/Attack.png",
+          "sha256": "6f119008f2e7abf122f16689d498bb53dc327e9827b4033ece9f7bb97a2465d7"
+        },
+        {
+          "path": "assets/mega/448-mega/s/Shoot.png",
+          "sha256": "6f119008f2e7abf122f16689d498bb53dc327e9827b4033ece9f7bb97a2465d7"
+        },
+        {
+          "path": "assets/mega/448-mega/s/Charge.png",
+          "sha256": "ca17a43111492456b53b31e2244c9aae356befe8b5f5ad07a5e3e8d883b30f7d"
+        },
+        {
+          "path": "assets/mega/448-mega/s/Hurt.png",
+          "sha256": "b6e887a246753e05273c14a302872b919f6784ec30c91562dade75cb68fcf9f8"
+        },
+        {
+          "path": "assets/mega/448-mega/s/Faint.png",
+          "sha256": "b6e887a246753e05273c14a302872b919f6784ec30c91562dade75cb68fcf9f8"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!544245909639397378>",
+          "name": "baronessfaron"
+        }
+      ],
+      "partial": true,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Attack",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!356635814668664832>",
+          "name": "Emmuffin"
+        }
+      ]
+    },
+    {
+      "id": "448-mega-z",
+      "dex": 448,
+      "gen": 4,
+      "name": "Lucario",
+      "form": "Mega_Z",
+      "source": "0448/0002",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "460-mega",
+      "dex": 460,
+      "gen": 4,
+      "name": "Abomasnow",
+      "form": "Mega",
+      "source": "0460/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "475-mega",
+      "dex": 475,
+      "gen": 4,
+      "name": "Gallade",
+      "form": "Mega",
+      "source": "0475/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "RearUp",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Strike",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 24,
+            "h": 64,
+            "n": 5,
+            "r": 8,
+            "d": [
+              60,
+              2,
+              6,
+              2,
+              26
+            ],
+            "ax": 11.5,
+            "ay": 35.5
+          },
+          "Walk": {
+            "w": 24,
+            "h": 48,
+            "n": 4,
+            "r": 8,
+            "d": [
+              12,
+              12,
+              12,
+              12
+            ],
+            "ax": 11.5,
+            "ay": 27.5
+          },
+          "Attack": {
+            "w": 64,
+            "h": 80,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              1,
+              2
+            ],
+            "ax": 31.5,
+            "ay": 41.5
+          },
+          "Shoot": {
+            "w": 40,
+            "h": 56,
+            "n": 12,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 19.5,
+            "ay": 30.5
+          },
+          "Charge": {
+            "w": 24,
+            "h": 56,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 12.5,
+            "ay": 31.5
+          },
+          "Hurt": {
+            "w": 40,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 19.5,
+            "ay": 29.5
+          },
+          "Faint": {
+            "w": 40,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 19.5,
+            "ay": 29.5
+          }
+        },
+        "path": "assets/mega/475-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 24,
+            "h": 64,
+            "n": 5,
+            "r": 8,
+            "d": [
+              60,
+              2,
+              6,
+              2,
+              26
+            ],
+            "ax": 11.5,
+            "ay": 35.5
+          },
+          "Walk": {
+            "w": 24,
+            "h": 48,
+            "n": 4,
+            "r": 8,
+            "d": [
+              12,
+              12,
+              12,
+              12
+            ],
+            "ax": 11.5,
+            "ay": 27.5
+          },
+          "Attack": {
+            "w": 64,
+            "h": 80,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              1,
+              2
+            ],
+            "ax": 31.5,
+            "ay": 41.5
+          },
+          "Shoot": {
+            "w": 40,
+            "h": 56,
+            "n": 12,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 19.5,
+            "ay": 30.5
+          },
+          "Charge": {
+            "w": 24,
+            "h": 56,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 12.5,
+            "ay": 31.5
+          },
+          "Hurt": {
+            "w": 40,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 19.5,
+            "ay": 29.5
+          },
+          "Faint": {
+            "w": 40,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 19.5,
+            "ay": 29.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/475-mega/Idle.png",
+          "sha256": "2a7fa3ebfc5e47e2a9e233ce03bf6197c7a077654b13a3b3e311543c28238ce2"
+        },
+        {
+          "path": "assets/mega/475-mega/Walk.png",
+          "sha256": "95a0caa9ebea22a807f1a8f107bf811a21f14f4c7d1234b4ebaf7139f3de5d65"
+        },
+        {
+          "path": "assets/mega/475-mega/Attack.png",
+          "sha256": "b1d4817350a06a5b103772fa125a0edd238988f1daf17d6d2dbc94e6680d4976"
+        },
+        {
+          "path": "assets/mega/475-mega/Shoot.png",
+          "sha256": "5998573b35e4adb9c9357aa62f077a381e23bb1000d788fc1122b906201e7567"
+        },
+        {
+          "path": "assets/mega/475-mega/Charge.png",
+          "sha256": "826362560b578c120c623311cc0f9dc5447cee9cb72db914b09a6df2ec9cecae"
+        },
+        {
+          "path": "assets/mega/475-mega/Hurt.png",
+          "sha256": "4ebace1cadb552fabf1f02f482d39502cfcb10112617a3b64b5bc30b12f9f0e0"
+        },
+        {
+          "path": "assets/mega/475-mega/Faint.png",
+          "sha256": "4ebace1cadb552fabf1f02f482d39502cfcb10112617a3b64b5bc30b12f9f0e0"
+        },
+        {
+          "path": "assets/mega/475-mega/s/Idle.png",
+          "sha256": "7f91716dd4b2b800e9de0f635d906b63d78ef57e12687e91c769acc9850052ea"
+        },
+        {
+          "path": "assets/mega/475-mega/s/Walk.png",
+          "sha256": "47b6288af3779827ce16b69a08b188f30b195534bc9b3a1374ffb285e15dc5f4"
+        },
+        {
+          "path": "assets/mega/475-mega/s/Attack.png",
+          "sha256": "a966e6aaa05cf1a9c2057420c761d5f4a0f01e8ed5a3771d0563b48d6742e78b"
+        },
+        {
+          "path": "assets/mega/475-mega/s/Shoot.png",
+          "sha256": "34fd22905a1c262eca407734050e27797234bb3fffc17396b5488ee5d9623b0f"
+        },
+        {
+          "path": "assets/mega/475-mega/s/Charge.png",
+          "sha256": "94494a918fbfab52a8987212d658b27216e79585d4a69cf52b029a65db2b4a41"
+        },
+        {
+          "path": "assets/mega/475-mega/s/Hurt.png",
+          "sha256": "3b6dd8a1285657e967781993a26c51c180949016fa4048184a121e484a929061"
+        },
+        {
+          "path": "assets/mega/475-mega/s/Faint.png",
+          "sha256": "3b6dd8a1285657e967781993a26c51c180949016fa4048184a121e484a929061"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!702275233125630042>",
+          "name": "JFain"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!593113130213572610>",
+          "name": "Morei"
+        }
+      ]
+    },
+    {
+      "id": "478-mega",
+      "dex": 478,
+      "gen": 4,
+      "name": "Froslass",
+      "form": "Mega",
+      "source": "0478/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "485-mega",
+      "dex": 485,
+      "gen": 4,
+      "name": "Heatran",
+      "form": "Mega",
+      "source": "0485/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "491-mega",
+      "dex": 491,
+      "gen": 4,
+      "name": "Darkrai",
+      "form": "Mega",
+      "source": "0491/0002",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 2,
+        "a": {
+          "Idle": {
+            "w": 96,
+            "h": 96,
+            "n": 11,
+            "r": 8,
+            "d": [
+              10,
+              5,
+              10,
+              5,
+              10,
+              5,
+              10,
+              5,
+              10,
+              5,
+              15
+            ],
+            "ax": 47.5,
+            "ay": 51.5
+          },
+          "Walk": {
+            "w": 96,
+            "h": 96,
+            "n": 6,
+            "r": 8,
+            "d": [
+              10,
+              10,
+              10,
+              10,
+              10,
+              10
+            ],
+            "ax": 47.5,
+            "ay": 51.5
+          },
+          "Attack": {
+            "w": 104,
+            "h": 136,
+            "n": 10,
+            "r": 8,
+            "d": [
+              3,
+              3,
+              2,
+              2,
+              2,
+              2,
+              4,
+              4,
+              4,
+              2
+            ],
+            "ax": 51.5,
+            "ay": 71.5
+          },
+          "Shoot": {
+            "w": 96,
+            "h": 96,
+            "n": 12,
+            "r": 8,
+            "d": [
+              3,
+              5,
+              6,
+              3,
+              3,
+              4,
+              4,
+              4,
+              4,
+              4,
+              2,
+              2
+            ],
+            "ax": 47.5,
+            "ay": 49.5
+          },
+          "Charge": {
+            "w": 88,
+            "h": 80,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 43.5
+          },
+          "Hurt": {
+            "w": 88,
+            "h": 104,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 43.5,
+            "ay": 53.5
+          },
+          "Faint": {
+            "w": 88,
+            "h": 104,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 43.5,
+            "ay": 53.5
+          }
+        },
+        "path": "assets/mega/491-mega"
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/491-mega/Idle.png",
+          "sha256": "5ed9c5721bbec8c1bf35f83602c7425cd9acac03c51f85a6bd029677a63d10de"
+        },
+        {
+          "path": "assets/mega/491-mega/Walk.png",
+          "sha256": "ee04b49c000d6782624a90249fd1b8bd6d27e593226e9ad3b2ea831dd4bb278f"
+        },
+        {
+          "path": "assets/mega/491-mega/Attack.png",
+          "sha256": "e16b4c5695f0285b9bb0635e950613c297373ce626c8d672298593bd9feeaf11"
+        },
+        {
+          "path": "assets/mega/491-mega/Shoot.png",
+          "sha256": "ae77c2d19cfeec35b23c73960a367cd4e33494ae152b76e746815a19bc993600"
+        },
+        {
+          "path": "assets/mega/491-mega/Charge.png",
+          "sha256": "6b36101b9b24e0032143c51f6985d2d477ed721b1e7c6887ba5e48c6dcee6be4"
+        },
+        {
+          "path": "assets/mega/491-mega/Hurt.png",
+          "sha256": "217c1ff840dad4815b50dcf976c11e81ae54bde7868b2b23189017d2d8f6ad38"
+        },
+        {
+          "path": "assets/mega/491-mega/Faint.png",
+          "sha256": "217c1ff840dad4815b50dcf976c11e81ae54bde7868b2b23189017d2d8f6ad38"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!225949425292410880>",
+          "name": "Johanne2"
+        }
+      ],
+      "partial": false
+    },
+    {
+      "id": "500-mega",
+      "dex": 500,
+      "gen": 5,
+      "name": "Emboar",
+      "form": "Mega",
+      "source": "0500/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "530-mega",
+      "dex": 530,
+      "gen": 5,
+      "name": "Excadrill",
+      "form": "Mega",
+      "source": "0530/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Strike",
+        "Swing",
+        "Twirl",
+        "Walk"
+      ],
+      "meta": {
+        "s": 2,
+        "a": {
+          "Idle": {
+            "w": 72,
+            "h": 64,
+            "n": 4,
+            "r": 8,
+            "d": [
+              48,
+              18,
+              28,
+              24
+            ],
+            "ax": 35.5,
+            "ay": 35.5
+          },
+          "Walk": {
+            "w": 64,
+            "h": 64,
+            "n": 4,
+            "r": 8,
+            "d": [
+              10,
+              16,
+              10,
+              16
+            ],
+            "ax": 31.5,
+            "ay": 35.5
+          },
+          "Attack": {
+            "w": 120,
+            "h": 104,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              6,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 59.5,
+            "ay": 54.5
+          },
+          "Shoot": {
+            "w": 80,
+            "h": 72,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              3,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 39.5,
+            "ay": 37.5
+          },
+          "Charge": {
+            "w": 72,
+            "h": 64,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 36.5,
+            "ay": 35.5
+          },
+          "Hurt": {
+            "w": 80,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 33.5
+          },
+          "Faint": {
+            "w": 80,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 33.5
+          }
+        },
+        "path": "assets/mega/530-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 72,
+            "h": 64,
+            "n": 4,
+            "r": 8,
+            "d": [
+              48,
+              18,
+              28,
+              24
+            ],
+            "ax": 35.5,
+            "ay": 35.5
+          },
+          "Walk": {
+            "w": 64,
+            "h": 64,
+            "n": 4,
+            "r": 8,
+            "d": [
+              10,
+              16,
+              10,
+              16
+            ],
+            "ax": 31.5,
+            "ay": 35.5
+          },
+          "Attack": {
+            "w": 120,
+            "h": 104,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              6,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 59.5,
+            "ay": 54.5
+          },
+          "Shoot": {
+            "w": 80,
+            "h": 72,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              3,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 39.5,
+            "ay": 37.5
+          },
+          "Charge": {
+            "w": 72,
+            "h": 64,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 36.5,
+            "ay": 35.5
+          },
+          "Hurt": {
+            "w": 80,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 33.5
+          },
+          "Faint": {
+            "w": 80,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 33.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/530-mega/Idle.png",
+          "sha256": "181d514a7edcd97c587254035b3458c53c41041513066bdac0d2e18842fda0ed"
+        },
+        {
+          "path": "assets/mega/530-mega/Walk.png",
+          "sha256": "89e673ec28c25fc3ac806e8be6b6c4a3eaa397109f2bacd6dcbc179e474ecc0b"
+        },
+        {
+          "path": "assets/mega/530-mega/Attack.png",
+          "sha256": "189fe6d243570b461f599576086a8a262d327f96099d7ba8f9c02bae2ea41175"
+        },
+        {
+          "path": "assets/mega/530-mega/Shoot.png",
+          "sha256": "1f1fa6a4a6a9ac2e314f853e4859b6424676953fde935ceb4e8d4892604a0811"
+        },
+        {
+          "path": "assets/mega/530-mega/Charge.png",
+          "sha256": "9bfb00df43be5d02b1460e50358c0a5c54008e65350b9bd6a30f624d9db6482f"
+        },
+        {
+          "path": "assets/mega/530-mega/Hurt.png",
+          "sha256": "c3c3e2fad7a1b44f5322d375f1c9a73cb51bf063b6f676a6d6b35b2174919367"
+        },
+        {
+          "path": "assets/mega/530-mega/Faint.png",
+          "sha256": "c3c3e2fad7a1b44f5322d375f1c9a73cb51bf063b6f676a6d6b35b2174919367"
+        },
+        {
+          "path": "assets/mega/530-mega/s/Idle.png",
+          "sha256": "5140252ee8e4133f363c7db684a0523d2cabd1d876bc42c34ac1e7d3fe8bfaf8"
+        },
+        {
+          "path": "assets/mega/530-mega/s/Walk.png",
+          "sha256": "123d8b3d0df46a7685c39c28898b996c81a8b532e787c2e62770b8a623593609"
+        },
+        {
+          "path": "assets/mega/530-mega/s/Attack.png",
+          "sha256": "918c743b6adc803dadbb986b9f1ff04b6e5bffd784473edffca17e602462fb96"
+        },
+        {
+          "path": "assets/mega/530-mega/s/Shoot.png",
+          "sha256": "82707b9b67f61eb7dbff43c4f681e322df51a50f71d0e740421fce7066da8b4a"
+        },
+        {
+          "path": "assets/mega/530-mega/s/Charge.png",
+          "sha256": "eb284a163c55b02c5675a2e703c23197529c2efc93de151cbde35384aa026452"
+        },
+        {
+          "path": "assets/mega/530-mega/s/Hurt.png",
+          "sha256": "ace91b4db6bb6c99697fb87426dfb14858c5164b8d1ab75f83221bd7040f7f1c"
+        },
+        {
+          "path": "assets/mega/530-mega/s/Faint.png",
+          "sha256": "ace91b4db6bb6c99697fb87426dfb14858c5164b8d1ab75f83221bd7040f7f1c"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!229131140903075840>",
+          "name": "Soulja"
+        },
+        {
+          "id": "<@!272761782269902848>",
+          "name": "DeltaL"
+        },
+        {
+          "id": "<@!608107243329814529>",
+          "name": "pi3.14"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!356635814668664832>",
+          "name": "Emmuffin"
+        }
+      ]
+    },
+    {
+      "id": "531-mega",
+      "dex": 531,
+      "gen": 5,
+      "name": "Audino",
+      "form": "Mega",
+      "source": "0531/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "545-mega",
+      "dex": 545,
+      "gen": 5,
+      "name": "Scolipede",
+      "form": "Mega",
+      "source": "0545/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "560-mega",
+      "dex": 560,
+      "gen": 5,
+      "name": "Scrafty",
+      "form": "Mega",
+      "source": "0560/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [
+        "Attack",
+        "Double",
+        "Idle",
+        "Rotate",
+        "Sleep",
+        "Swing",
+        "Walk"
+      ],
+      "reason": "Source animations below basic completion; not imported"
+    },
+    {
+      "id": "604-mega",
+      "dex": 604,
+      "gen": 5,
+      "name": "Eelektross",
+      "form": "Mega",
+      "source": "0604/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "RearUp",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Strike",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 2,
+        "a": {
+          "Idle": {
+            "w": 80,
+            "h": 72,
+            "n": 10,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              14,
+              14,
+              14,
+              10,
+              14,
+              14,
+              14,
+              14
+            ],
+            "ax": 39.5,
+            "ay": 39.5
+          },
+          "Walk": {
+            "w": 80,
+            "h": 72,
+            "n": 10,
+            "r": 8,
+            "d": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 39.5
+          },
+          "Attack": {
+            "w": 88,
+            "h": 104,
+            "n": 14,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 53.5
+          },
+          "Shoot": {
+            "w": 88,
+            "h": 64,
+            "n": 12,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 34.5
+          },
+          "Charge": {
+            "w": 72,
+            "h": 64,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 36.5,
+            "ay": 35.5
+          },
+          "Hurt": {
+            "w": 80,
+            "h": 72,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 37.5
+          },
+          "Faint": {
+            "w": 80,
+            "h": 72,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 37.5
+          }
+        },
+        "path": "assets/mega/604-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 80,
+            "h": 72,
+            "n": 10,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              14,
+              14,
+              14,
+              10,
+              14,
+              14,
+              14,
+              14
+            ],
+            "ax": 39.5,
+            "ay": 39.5
+          },
+          "Walk": {
+            "w": 80,
+            "h": 72,
+            "n": 10,
+            "r": 8,
+            "d": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 39.5
+          },
+          "Attack": {
+            "w": 88,
+            "h": 104,
+            "n": 14,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 53.5
+          },
+          "Shoot": {
+            "w": 88,
+            "h": 64,
+            "n": 12,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 34.5
+          },
+          "Charge": {
+            "w": 72,
+            "h": 64,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 36.5,
+            "ay": 35.5
+          },
+          "Hurt": {
+            "w": 80,
+            "h": 72,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 37.5
+          },
+          "Faint": {
+            "w": 80,
+            "h": 72,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 37.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/604-mega/Idle.png",
+          "sha256": "0a22c9ba0a1257de5a853e16eae8632fd8c616363e02374f0032cb922b96d90a"
+        },
+        {
+          "path": "assets/mega/604-mega/Walk.png",
+          "sha256": "ecccea221dbb014cadfc37fc5a92d5cc79e0ee1c13056ceef2c37391db4e78f0"
+        },
+        {
+          "path": "assets/mega/604-mega/Attack.png",
+          "sha256": "2e41b40ae9f374ad174f1bbbbb4d29150a07a25d1efc5cfb1844c6d8666838d7"
+        },
+        {
+          "path": "assets/mega/604-mega/Shoot.png",
+          "sha256": "47d7361aeb69f8e3948094ed841f0bcf8cd7ecd6b65794e011101b5fe5053de6"
+        },
+        {
+          "path": "assets/mega/604-mega/Charge.png",
+          "sha256": "c6abfaa612eac9f2e0dfe98e5992328b2f12468cb96e781e6f8cb554bc257fd5"
+        },
+        {
+          "path": "assets/mega/604-mega/Hurt.png",
+          "sha256": "38b738b579bdd9da5858c7e3c56dccb59704e077414cead8a58596ab780d2ae1"
+        },
+        {
+          "path": "assets/mega/604-mega/Faint.png",
+          "sha256": "38b738b579bdd9da5858c7e3c56dccb59704e077414cead8a58596ab780d2ae1"
+        },
+        {
+          "path": "assets/mega/604-mega/s/Idle.png",
+          "sha256": "53ae7136f368802485905d0cfeca70166de1c96255f697dc3ed6ba3e6dde3a4d"
+        },
+        {
+          "path": "assets/mega/604-mega/s/Walk.png",
+          "sha256": "63e06c7af47d15118a386785edf6ca3d3b6de9b9e867a781b657bc7a825e4d9a"
+        },
+        {
+          "path": "assets/mega/604-mega/s/Attack.png",
+          "sha256": "67406cedd4501a8aa503ccd8d292b22940664676f8b16a323a3ca096f9850066"
+        },
+        {
+          "path": "assets/mega/604-mega/s/Shoot.png",
+          "sha256": "a752bd04f6a73ae17e31c6e8681d6a7b48cfcdf23d6d1a9ec3b0bc36cad2bd6e"
+        },
+        {
+          "path": "assets/mega/604-mega/s/Charge.png",
+          "sha256": "3f237d0e92a677a77cebd1d8f70c511de4f1adc48ceb901cb5d702817a79ec15"
+        },
+        {
+          "path": "assets/mega/604-mega/s/Hurt.png",
+          "sha256": "ef3b336ead0688814e9f793eeec6beaa5235823d2764a09e97aaae512fb3aec4"
+        },
+        {
+          "path": "assets/mega/604-mega/s/Faint.png",
+          "sha256": "ef3b336ead0688814e9f793eeec6beaa5235823d2764a09e97aaae512fb3aec4"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!276369635304275968>",
+          "name": "Top_Kec"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!276369635304275968>",
+          "name": "Top_Kec"
+        }
+      ]
+    },
+    {
+      "id": "609-mega",
+      "dex": 609,
+      "gen": 5,
+      "name": "Chandelure",
+      "form": "Mega",
+      "source": "0609/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "623-mega",
+      "dex": 623,
+      "gen": 5,
+      "name": "Golurk",
+      "form": "Mega",
+      "source": "0623/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "652-mega",
+      "dex": 652,
+      "gen": 6,
+      "name": "Chesnaught",
+      "form": "Mega",
+      "source": "0652/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "655-mega",
+      "dex": 655,
+      "gen": 6,
+      "name": "Delphox",
+      "form": "Mega",
+      "source": "0655/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "658-mega",
+      "dex": 658,
+      "gen": 6,
+      "name": "Greninja",
+      "form": "Mega",
+      "source": "0658/0002",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "668-mega",
+      "dex": 668,
+      "gen": 6,
+      "name": "Pyroar",
+      "form": "Mega",
+      "source": "0668/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "670-mega",
+      "dex": 670,
+      "gen": 6,
+      "name": "Floette",
+      "form": "Mega",
+      "source": "0670/0006",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Strike",
+        "Swing",
+        "Twirl",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 80,
+            "h": 120,
+            "n": 18,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              14,
+              14,
+              14,
+              10,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              14,
+              14,
+              14,
+              14,
+              14
+            ],
+            "ax": 39.5,
+            "ay": 63.5
+          },
+          "Walk": {
+            "w": 80,
+            "h": 112,
+            "n": 10,
+            "r": 8,
+            "d": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 59.5
+          },
+          "Attack": {
+            "w": 128,
+            "h": 112,
+            "n": 15,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              1,
+              3,
+              1,
+              3,
+              2,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              10
+            ],
+            "ax": 63.5,
+            "ay": 58.5
+          },
+          "Shoot": {
+            "w": 112,
+            "h": 112,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              3,
+              4,
+              4,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              8
+            ],
+            "ax": 55.5,
+            "ay": 57.5
+          },
+          "Charge": {
+            "w": 104,
+            "h": 64,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 52.5,
+            "ay": 35.5
+          },
+          "Hurt": {
+            "w": 88,
+            "h": 112,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 43.5,
+            "ay": 55.5
+          },
+          "Faint": {
+            "w": 88,
+            "h": 112,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 43.5,
+            "ay": 55.5
+          }
+        },
+        "path": "assets/mega/670-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 80,
+            "h": 120,
+            "n": 18,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              14,
+              14,
+              14,
+              10,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              14,
+              14,
+              14,
+              14,
+              14
+            ],
+            "ax": 39.5,
+            "ay": 63.5
+          },
+          "Walk": {
+            "w": 80,
+            "h": 112,
+            "n": 10,
+            "r": 8,
+            "d": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 59.5
+          },
+          "Attack": {
+            "w": 128,
+            "h": 112,
+            "n": 15,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              1,
+              3,
+              1,
+              3,
+              2,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              10
+            ],
+            "ax": 63.5,
+            "ay": 58.5
+          },
+          "Shoot": {
+            "w": 112,
+            "h": 112,
+            "n": 13,
+            "r": 8,
+            "d": [
+              2,
+              3,
+              4,
+              4,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              8
+            ],
+            "ax": 55.5,
+            "ay": 57.5
+          },
+          "Charge": {
+            "w": 104,
+            "h": 64,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 52.5,
+            "ay": 35.5
+          },
+          "Hurt": {
+            "w": 88,
+            "h": 112,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 43.5,
+            "ay": 55.5
+          },
+          "Faint": {
+            "w": 88,
+            "h": 112,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 43.5,
+            "ay": 55.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/670-mega/Idle.png",
+          "sha256": "45d821ad1b05f0d2cb5ec16d37cc81d0256b032e34e1f0ad9883b8e1a51bfbdd"
+        },
+        {
+          "path": "assets/mega/670-mega/Walk.png",
+          "sha256": "a7ebfb52fa327c14ae9ce613489ab5ba766b6dce26ff72155aed7297eb6ec910"
+        },
+        {
+          "path": "assets/mega/670-mega/Attack.png",
+          "sha256": "d74d2de024a3bdf479e86776c662ebd0ed15ea1e72615a8129828dbb5619181f"
+        },
+        {
+          "path": "assets/mega/670-mega/Shoot.png",
+          "sha256": "fd18bf7cdcb1f92624fe73995724ef0ed415f77f2b99475d114a04021fd42bb3"
+        },
+        {
+          "path": "assets/mega/670-mega/Charge.png",
+          "sha256": "1a18af30f3f68c7869586b445b3732757fc8f09e04fb5795d5b6d055b2daeca3"
+        },
+        {
+          "path": "assets/mega/670-mega/Hurt.png",
+          "sha256": "98919fd2100d43166b48068a883165dd442d66777ee97a2edda8dfe0cac4f09b"
+        },
+        {
+          "path": "assets/mega/670-mega/Faint.png",
+          "sha256": "98919fd2100d43166b48068a883165dd442d66777ee97a2edda8dfe0cac4f09b"
+        },
+        {
+          "path": "assets/mega/670-mega/s/Idle.png",
+          "sha256": "48d511b0d88a058c1f90e5b3cf2b57d7be0b1c62af860431afdd8c7c19ea627c"
+        },
+        {
+          "path": "assets/mega/670-mega/s/Walk.png",
+          "sha256": "06efde3e1b1164d1a04bb911fe580b98a816e9059d21e4bf6ecf4d0dadf5928c"
+        },
+        {
+          "path": "assets/mega/670-mega/s/Attack.png",
+          "sha256": "09c0915ab1d888057cdefbec7187b5e1789d784fc723df8e7882adb5a19b57c3"
+        },
+        {
+          "path": "assets/mega/670-mega/s/Shoot.png",
+          "sha256": "1349f2eb3edb6b1b191398bfe26c6e1541d5fb5ba6fd846d0888001b7901608b"
+        },
+        {
+          "path": "assets/mega/670-mega/s/Charge.png",
+          "sha256": "da6cc5f6cf22adf6a251013a12e97671acac9517b033709983ef23fe4abc1ab7"
+        },
+        {
+          "path": "assets/mega/670-mega/s/Hurt.png",
+          "sha256": "679d9e7da2e51b20b9f4ea51fbb85faa47eaf288ea3080d27e0aa50e524aec2d"
+        },
+        {
+          "path": "assets/mega/670-mega/s/Faint.png",
+          "sha256": "679d9e7da2e51b20b9f4ea51fbb85faa47eaf288ea3080d27e0aa50e524aec2d"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!272761782269902848>",
+          "name": "DeltaL"
+        },
+        {
+          "id": "<@!608107243329814529>",
+          "name": "pi3.14"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!272761782269902848>",
+          "name": "DeltaL"
+        }
+      ]
+    },
+    {
+      "id": "678-mega",
+      "dex": 678,
+      "gen": 6,
+      "name": "Meowstic",
+      "form": "Mega",
+      "source": "0678/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "687-mega",
+      "dex": 687,
+      "gen": 6,
+      "name": "Malamar",
+      "form": "Mega",
+      "source": "0687/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "689-mega",
+      "dex": 689,
+      "gen": 6,
+      "name": "Barbaracle",
+      "form": "Mega",
+      "source": "0689/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "691-mega",
+      "dex": 691,
+      "gen": 6,
+      "name": "Dragalge",
+      "form": "Mega",
+      "source": "0691/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Strike",
+        "Swing",
+        "Twirl",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 48,
+            "h": 80,
+            "n": 10,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              14,
+              14,
+              14,
+              10,
+              14,
+              14,
+              14,
+              14
+            ],
+            "ax": 23.5,
+            "ay": 43.5
+          },
+          "Walk": {
+            "w": 56,
+            "h": 72,
+            "n": 5,
+            "r": 8,
+            "d": [
+              10,
+              10,
+              12,
+              10,
+              12
+            ],
+            "ax": 27.5,
+            "ay": 39.5
+          },
+          "Attack": {
+            "w": 88,
+            "h": 96,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              4,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 50.5
+          },
+          "Shoot": {
+            "w": 56,
+            "h": 80,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 27.5,
+            "ay": 41.5
+          },
+          "Charge": {
+            "w": 48,
+            "h": 72,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 24.5,
+            "ay": 39.5
+          },
+          "Hurt": {
+            "w": 56,
+            "h": 88,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 27.5,
+            "ay": 45.5
+          },
+          "Faint": {
+            "w": 56,
+            "h": 88,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 27.5,
+            "ay": 45.5
+          }
+        },
+        "path": "assets/mega/691-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 48,
+            "h": 80,
+            "n": 10,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              14,
+              14,
+              14,
+              10,
+              14,
+              14,
+              14,
+              14
+            ],
+            "ax": 23.5,
+            "ay": 43.5
+          },
+          "Walk": {
+            "w": 56,
+            "h": 72,
+            "n": 5,
+            "r": 8,
+            "d": [
+              10,
+              10,
+              12,
+              10,
+              12
+            ],
+            "ax": 27.5,
+            "ay": 39.5
+          },
+          "Attack": {
+            "w": 88,
+            "h": 96,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              4,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 50.5
+          },
+          "Shoot": {
+            "w": 56,
+            "h": 80,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 27.5,
+            "ay": 41.5
+          },
+          "Charge": {
+            "w": 48,
+            "h": 72,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 24.5,
+            "ay": 39.5
+          },
+          "Hurt": {
+            "w": 56,
+            "h": 88,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 27.5,
+            "ay": 45.5
+          },
+          "Faint": {
+            "w": 56,
+            "h": 88,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 27.5,
+            "ay": 45.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/691-mega/Idle.png",
+          "sha256": "f4aabb61ebffda8c541347d3c0ae39a3bd654320dcdb6665400642ee94acbae4"
+        },
+        {
+          "path": "assets/mega/691-mega/Walk.png",
+          "sha256": "3d5a22cd0c5cc5206ef5aaab6fd8eeab90242e1350931abfa19cb9f2777c09b5"
+        },
+        {
+          "path": "assets/mega/691-mega/Attack.png",
+          "sha256": "8d547be0a1c4135023beb7dfb8b66a069c8521b463b6a3c8b262b9e56ec9d088"
+        },
+        {
+          "path": "assets/mega/691-mega/Shoot.png",
+          "sha256": "486e35e873f6dbaa64444b5325cfba258b9d0c1e7215c0695435a81112766155"
+        },
+        {
+          "path": "assets/mega/691-mega/Charge.png",
+          "sha256": "9eaadd92e18317ad6903c8d436c62e9b6f192e6b9a74e8f00860b4b4cda80df0"
+        },
+        {
+          "path": "assets/mega/691-mega/Hurt.png",
+          "sha256": "c8157a94d69b3feb31511521364f5d88d98790e6343b692cc0af03674075264e"
+        },
+        {
+          "path": "assets/mega/691-mega/Faint.png",
+          "sha256": "c8157a94d69b3feb31511521364f5d88d98790e6343b692cc0af03674075264e"
+        },
+        {
+          "path": "assets/mega/691-mega/s/Idle.png",
+          "sha256": "d3fdc3cd85f8f57c344d9c8a6a2ecfed2fda23655ce054b1e58664890f2bd5b1"
+        },
+        {
+          "path": "assets/mega/691-mega/s/Walk.png",
+          "sha256": "1cc4d6a335f2f413f8ec89ecbede58f594a3c1fcb8bbf8f64e9c1df25d4385f3"
+        },
+        {
+          "path": "assets/mega/691-mega/s/Attack.png",
+          "sha256": "680185d8132e3a2a8f16f79b7d5cb60c2c2ede56c60261b18e8019ab1b4ff518"
+        },
+        {
+          "path": "assets/mega/691-mega/s/Shoot.png",
+          "sha256": "c10ce1814af21631a3b0ca3b129883dd5186e842dbe181561a45455e6ceecc26"
+        },
+        {
+          "path": "assets/mega/691-mega/s/Charge.png",
+          "sha256": "64944c0b0c6b3b69f0adbba136082b90e400731327f04c05bde135eda1c493ad"
+        },
+        {
+          "path": "assets/mega/691-mega/s/Hurt.png",
+          "sha256": "10fe051b8d913720e3b2c9c0da277eccd8f7e430fc19dd44598e90e40e4c6664"
+        },
+        {
+          "path": "assets/mega/691-mega/s/Faint.png",
+          "sha256": "10fe051b8d913720e3b2c9c0da277eccd8f7e430fc19dd44598e90e40e4c6664"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!229131140903075840>",
+          "name": "Soulja"
+        },
+        {
+          "id": "<@!272761782269902848>",
+          "name": "DeltaL"
+        },
+        {
+          "id": "<@!608107243329814529>",
+          "name": "pi3.14"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!356635814668664832>",
+          "name": "Emmuffin"
+        }
+      ]
+    },
+    {
+      "id": "701-mega",
+      "dex": 701,
+      "gen": 6,
+      "name": "Hawlucha",
+      "form": "Mega",
+      "source": "0701/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [
+        "Double",
+        "Idle",
+        "Rotate",
+        "Swing",
+        "Walk"
+      ],
+      "reason": "Source animations below basic completion; not imported"
+    },
+    {
+      "id": "718-mega",
+      "dex": 718,
+      "gen": 6,
+      "name": "Zygarde",
+      "form": "Mega",
+      "source": "0718/0005",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "SpAttack",
+        "Strike",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 2,
+        "a": {
+          "Idle": {
+            "w": 120,
+            "h": 200,
+            "n": 10,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              14,
+              14,
+              14,
+              10,
+              14,
+              14,
+              14,
+              14
+            ],
+            "ax": 59.5,
+            "ay": 103.5
+          },
+          "Walk": {
+            "w": 120,
+            "h": 200,
+            "n": 10,
+            "r": 8,
+            "d": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "ax": 59.5,
+            "ay": 103.5
+          },
+          "Attack": {
+            "w": 160,
+            "h": 224,
+            "n": 14,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 79.5,
+            "ay": 113.5
+          },
+          "Shoot": {
+            "w": 128,
+            "h": 184,
+            "n": 14,
+            "r": 8,
+            "d": [
+              2,
+              10,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              4
+            ],
+            "ax": 63.5,
+            "ay": 93.5
+          },
+          "Charge": {
+            "w": 120,
+            "h": 184,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 60.5,
+            "ay": 95.5
+          },
+          "Hurt": {
+            "w": 120,
+            "h": 184,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 59.5,
+            "ay": 91.5
+          },
+          "Faint": {
+            "w": 120,
+            "h": 184,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 59.5,
+            "ay": 91.5
+          }
+        },
+        "path": "assets/mega/718-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 120,
+            "h": 200,
+            "n": 10,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              14,
+              14,
+              14,
+              10,
+              14,
+              14,
+              14,
+              14
+            ],
+            "ax": 59.5,
+            "ay": 103.5
+          },
+          "Walk": {
+            "w": 120,
+            "h": 200,
+            "n": 10,
+            "r": 8,
+            "d": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "ax": 59.5,
+            "ay": 103.5
+          },
+          "Attack": {
+            "w": 160,
+            "h": 224,
+            "n": 14,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 79.5,
+            "ay": 113.5
+          },
+          "Shoot": {
+            "w": 128,
+            "h": 184,
+            "n": 14,
+            "r": 8,
+            "d": [
+              2,
+              10,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              4
+            ],
+            "ax": 63.5,
+            "ay": 93.5
+          },
+          "Charge": {
+            "w": 120,
+            "h": 184,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 60.5,
+            "ay": 95.5
+          },
+          "Hurt": {
+            "w": 120,
+            "h": 184,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 59.5,
+            "ay": 91.5
+          },
+          "Faint": {
+            "w": 120,
+            "h": 184,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 59.5,
+            "ay": 91.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/718-mega/Idle.png",
+          "sha256": "329670b742348ec322e45c0f4ded4d5154c4e445ca6858d275ed3bc21370c320"
+        },
+        {
+          "path": "assets/mega/718-mega/Walk.png",
+          "sha256": "329670b742348ec322e45c0f4ded4d5154c4e445ca6858d275ed3bc21370c320"
+        },
+        {
+          "path": "assets/mega/718-mega/Attack.png",
+          "sha256": "829f420068bcb0fc106bb44f8bd8b66f340973602ebca6fdc2b31e3a501dc45c"
+        },
+        {
+          "path": "assets/mega/718-mega/Shoot.png",
+          "sha256": "692af1ced0ba6fac4d8726733fb8af08ea237cfc1bccec5a314951439ddb5c86"
+        },
+        {
+          "path": "assets/mega/718-mega/Charge.png",
+          "sha256": "293a70670cca4cc530225225e6f93be786c25bc976c5506c4bdc72308233a8d7"
+        },
+        {
+          "path": "assets/mega/718-mega/Hurt.png",
+          "sha256": "4b1e90077e108f873fe52263c8cf45707bd158b7c5f9be4e1a9fe9544e4c605e"
+        },
+        {
+          "path": "assets/mega/718-mega/Faint.png",
+          "sha256": "4b1e90077e108f873fe52263c8cf45707bd158b7c5f9be4e1a9fe9544e4c605e"
+        },
+        {
+          "path": "assets/mega/718-mega/s/Idle.png",
+          "sha256": "435945c5e853274fd908b23c1f8f21f2fa6773706d4d6270d18120514d087d93"
+        },
+        {
+          "path": "assets/mega/718-mega/s/Walk.png",
+          "sha256": "435945c5e853274fd908b23c1f8f21f2fa6773706d4d6270d18120514d087d93"
+        },
+        {
+          "path": "assets/mega/718-mega/s/Attack.png",
+          "sha256": "3d697aef00c96485a6da7439e238222be91839476bf3011640eac70c52217984"
+        },
+        {
+          "path": "assets/mega/718-mega/s/Shoot.png",
+          "sha256": "e7734417ee7aade6788bc0641ac8b1df95eb82da69b35dcd1a178b284fac6ff7"
+        },
+        {
+          "path": "assets/mega/718-mega/s/Charge.png",
+          "sha256": "041d4f0bd4fd20690dd79e61d6308fd1d8b9c311b530ca2e3e3075375dc98781"
+        },
+        {
+          "path": "assets/mega/718-mega/s/Hurt.png",
+          "sha256": "50557055874258df4fdbd53c2c5c08d89d0936dff23d1fb5718f213ac8391347"
+        },
+        {
+          "path": "assets/mega/718-mega/s/Faint.png",
+          "sha256": "50557055874258df4fdbd53c2c5c08d89d0936dff23d1fb5718f213ac8391347"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!272761782269902848>",
+          "name": "DeltaL"
+        },
+        {
+          "id": "<@!608107243329814529>",
+          "name": "pi3.14"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!272761782269902848>",
+          "name": "DeltaL"
+        }
+      ]
+    },
+    {
+      "id": "719-mega",
+      "dex": 719,
+      "gen": 6,
+      "name": "Diancie",
+      "form": "Mega",
+      "source": "0719/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Strike",
+        "Swing",
+        "Twirl",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 64,
+            "h": 88,
+            "n": 4,
+            "r": 8,
+            "d": [
+              16,
+              12,
+              16,
+              12
+            ],
+            "ax": 31.5,
+            "ay": 47.5
+          },
+          "Walk": {
+            "w": 56,
+            "h": 88,
+            "n": 9,
+            "r": 8,
+            "d": [
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4
+            ],
+            "ax": 27.5,
+            "ay": 47.5
+          },
+          "Attack": {
+            "w": 80,
+            "h": 104,
+            "n": 14,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              1,
+              2
+            ],
+            "ax": 39.5,
+            "ay": 53.5
+          },
+          "Shoot": {
+            "w": 56,
+            "h": 88,
+            "n": 12,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 27.5,
+            "ay": 46.5
+          },
+          "Charge": {
+            "w": 64,
+            "h": 96,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 32.5,
+            "ay": 51.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 88,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 45.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 88,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 45.5
+          }
+        },
+        "path": "assets/mega/719-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 64,
+            "h": 88,
+            "n": 4,
+            "r": 8,
+            "d": [
+              16,
+              12,
+              16,
+              12
+            ],
+            "ax": 31.5,
+            "ay": 47.5
+          },
+          "Walk": {
+            "w": 56,
+            "h": 88,
+            "n": 9,
+            "r": 8,
+            "d": [
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4,
+              4
+            ],
+            "ax": 27.5,
+            "ay": 47.5
+          },
+          "Attack": {
+            "w": 80,
+            "h": 104,
+            "n": 14,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              1,
+              2
+            ],
+            "ax": 39.5,
+            "ay": 53.5
+          },
+          "Shoot": {
+            "w": 56,
+            "h": 88,
+            "n": 12,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 27.5,
+            "ay": 46.5
+          },
+          "Charge": {
+            "w": 64,
+            "h": 96,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 32.5,
+            "ay": 51.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 88,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 45.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 88,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 45.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/719-mega/Idle.png",
+          "sha256": "70b8a74757893d04b695421e55cf33c4ace86f249c0ab9329ea1351df64c3650"
+        },
+        {
+          "path": "assets/mega/719-mega/Walk.png",
+          "sha256": "2634b1206db96a84be602c52731db3341b1eb312647946439a92691575387daf"
+        },
+        {
+          "path": "assets/mega/719-mega/Attack.png",
+          "sha256": "2945d604b8d713eb8b7c7e3df6634c974dde0381601978ef3a67cde4d9f65d3f"
+        },
+        {
+          "path": "assets/mega/719-mega/Shoot.png",
+          "sha256": "2d9619af7c05bfadf30a17c001eb9543080a4ef3a5a0c70771c8ba22daf0b23a"
+        },
+        {
+          "path": "assets/mega/719-mega/Charge.png",
+          "sha256": "78b63d7b1b35c93aac3f897b085604f53d24d3cd15792515e9881c92db16e249"
+        },
+        {
+          "path": "assets/mega/719-mega/Hurt.png",
+          "sha256": "33cf963f0fa6671b5dc1d7ccb260d5081e34934ffd5c6ee0db53f5fdf07e1887"
+        },
+        {
+          "path": "assets/mega/719-mega/Faint.png",
+          "sha256": "33cf963f0fa6671b5dc1d7ccb260d5081e34934ffd5c6ee0db53f5fdf07e1887"
+        },
+        {
+          "path": "assets/mega/719-mega/s/Idle.png",
+          "sha256": "08461131e65d3116125680138107ff2703ddb8232104c8b721c1f11166f5e3b1"
+        },
+        {
+          "path": "assets/mega/719-mega/s/Walk.png",
+          "sha256": "4ea667b0778bb5d2513ddd0b5657b3f02efa7cda1302fb2d206304e6debdbe68"
+        },
+        {
+          "path": "assets/mega/719-mega/s/Attack.png",
+          "sha256": "3990c35b18109c20aa9bc4d233b095da1fe25aa93f4eada97cd62f3151b441d0"
+        },
+        {
+          "path": "assets/mega/719-mega/s/Shoot.png",
+          "sha256": "3dd033a153a3d933a5e889cc81906ec787022f40eb7d2c902ece3b15bc17e4dc"
+        },
+        {
+          "path": "assets/mega/719-mega/s/Charge.png",
+          "sha256": "276f7778801cf5d55d184c1cef424eb6d2eaeaf4e8873df80c2d7296f66d2b8d"
+        },
+        {
+          "path": "assets/mega/719-mega/s/Hurt.png",
+          "sha256": "ce1111270768ada1ea563dbd136abc8ab7fca59a4cf01722ef4d1138d790c934"
+        },
+        {
+          "path": "assets/mega/719-mega/s/Faint.png",
+          "sha256": "ce1111270768ada1ea563dbd136abc8ab7fca59a4cf01722ef4d1138d790c934"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!544245909639397378>",
+          "name": "baronessfaron"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!823932975916777512>",
+          "name": "Pokejavi."
+        }
+      ]
+    },
+    {
+      "id": "740-mega",
+      "dex": 740,
+      "gen": 7,
+      "name": "Crabominable",
+      "form": "Mega",
+      "source": "0740/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "768-mega",
+      "dex": 768,
+      "gen": 7,
+      "name": "Golisopod",
+      "form": "Mega",
+      "source": "0768/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "780-mega",
+      "dex": 780,
+      "gen": 7,
+      "name": "Drampa",
+      "form": "Mega",
+      "source": "0780/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "RearUp",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "Strike",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 2,
+        "a": {
+          "Idle": {
+            "w": 64,
+            "h": 104,
+            "n": 10,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              14,
+              14,
+              14,
+              10,
+              14,
+              14,
+              14,
+              14
+            ],
+            "ax": 31.5,
+            "ay": 55.5
+          },
+          "Walk": {
+            "w": 64,
+            "h": 104,
+            "n": 10,
+            "r": 8,
+            "d": [
+              8,
+              8,
+              6,
+              6,
+              6,
+              8,
+              8,
+              6,
+              6,
+              6
+            ],
+            "ax": 31.5,
+            "ay": 55.5
+          },
+          "Attack": {
+            "w": 120,
+            "h": 120,
+            "n": 14,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 59.5,
+            "ay": 61.5
+          },
+          "Shoot": {
+            "w": 88,
+            "h": 112,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              6,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 57.5
+          },
+          "Charge": {
+            "w": 64,
+            "h": 112,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 32.5,
+            "ay": 59.5
+          },
+          "Hurt": {
+            "w": 80,
+            "h": 136,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 67.5
+          },
+          "Faint": {
+            "w": 80,
+            "h": 136,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 67.5
+          }
+        },
+        "path": "assets/mega/780-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 64,
+            "h": 104,
+            "n": 10,
+            "r": 8,
+            "d": [
+              10,
+              14,
+              14,
+              14,
+              14,
+              10,
+              14,
+              14,
+              14,
+              14
+            ],
+            "ax": 31.5,
+            "ay": 55.5
+          },
+          "Walk": {
+            "w": 64,
+            "h": 104,
+            "n": 10,
+            "r": 8,
+            "d": [
+              8,
+              8,
+              6,
+              6,
+              6,
+              8,
+              8,
+              6,
+              6,
+              6
+            ],
+            "ax": 31.5,
+            "ay": 55.5
+          },
+          "Attack": {
+            "w": 120,
+            "h": 120,
+            "n": 14,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 59.5,
+            "ay": 61.5
+          },
+          "Shoot": {
+            "w": 88,
+            "h": 112,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              6,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 57.5
+          },
+          "Charge": {
+            "w": 64,
+            "h": 112,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 32.5,
+            "ay": 59.5
+          },
+          "Hurt": {
+            "w": 80,
+            "h": 136,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 67.5
+          },
+          "Faint": {
+            "w": 80,
+            "h": 136,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 39.5,
+            "ay": 67.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/780-mega/Idle.png",
+          "sha256": "c4185bcb17e0256588f9fdb5233a3e21f8c093998966b791f9ba9dc76fc6f4e8"
+        },
+        {
+          "path": "assets/mega/780-mega/Walk.png",
+          "sha256": "1198b779317de02c32d20e4a451002395e639a55fa57d2e0d3ca0b02e69dbb33"
+        },
+        {
+          "path": "assets/mega/780-mega/Attack.png",
+          "sha256": "91379e020557719da822ab22b265eef1c475d085409a65a2e3f87e68d81ba9b5"
+        },
+        {
+          "path": "assets/mega/780-mega/Shoot.png",
+          "sha256": "8726c60acd4d95a7b5ff27b9b117b3db48c37e6fcf2c0d2a02c68c63ebd223c4"
+        },
+        {
+          "path": "assets/mega/780-mega/Charge.png",
+          "sha256": "84b4c9e4754b85c1a3c96fc8d5dd2e0a9393c82db4e970422b4400ba8221b8c7"
+        },
+        {
+          "path": "assets/mega/780-mega/Hurt.png",
+          "sha256": "c53b8b4a878d365255edfcda552366cc249fcbef6f17639ea8b0bc4376d1337c"
+        },
+        {
+          "path": "assets/mega/780-mega/Faint.png",
+          "sha256": "c53b8b4a878d365255edfcda552366cc249fcbef6f17639ea8b0bc4376d1337c"
+        },
+        {
+          "path": "assets/mega/780-mega/s/Idle.png",
+          "sha256": "4374e06b4701364a9e7eedcc887b88b3f1f8acd3e1bec69759e5f86437d1da76"
+        },
+        {
+          "path": "assets/mega/780-mega/s/Walk.png",
+          "sha256": "167045e8a36318320a31d09dc6a4dab2395427d613dd95d38e3d39524500deb1"
+        },
+        {
+          "path": "assets/mega/780-mega/s/Attack.png",
+          "sha256": "54be0c5a08d766c807b8b4b74dfba948cc422c0aebb061f22a74abc3941fab36"
+        },
+        {
+          "path": "assets/mega/780-mega/s/Shoot.png",
+          "sha256": "ef9c39d13984af1822a6ecb2615df0b3b8e3b137d71e8c49acd8d32cd1470e60"
+        },
+        {
+          "path": "assets/mega/780-mega/s/Charge.png",
+          "sha256": "c430afcef663abd36bf4c20530df680ee3c112e98cc5c8ef0ae8de4d04b794e5"
+        },
+        {
+          "path": "assets/mega/780-mega/s/Hurt.png",
+          "sha256": "7ed89aad2f4ebf840a177f613405bb74235feec86ece571f78e7033b7372a522"
+        },
+        {
+          "path": "assets/mega/780-mega/s/Faint.png",
+          "sha256": "7ed89aad2f4ebf840a177f613405bb74235feec86ece571f78e7033b7372a522"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!229131140903075840>",
+          "name": "Soulja"
+        },
+        {
+          "id": "<@!272761782269902848>",
+          "name": "DeltaL"
+        },
+        {
+          "id": "<@!608107243329814529>",
+          "name": "pi3.14"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!356635814668664832>",
+          "name": "Emmuffin"
+        }
+      ]
+    },
+    {
+      "id": "801-mega",
+      "dex": 801,
+      "gen": 7,
+      "name": "Magearna",
+      "form": "Mega",
+      "source": "0801/0002",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "801-original-mega",
+      "dex": 801,
+      "gen": 7,
+      "name": "Magearna",
+      "form": "Original_Mega",
+      "source": "0801/0003",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "807-mega",
+      "dex": 807,
+      "gen": 7,
+      "name": "Zeraora",
+      "form": "Mega",
+      "source": "0807/0001",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Cringe",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "QuickStrike",
+        "RearUp",
+        "Rotate",
+        "Sleep",
+        "SpAttack",
+        "Strike",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 48,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              40,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              12
+            ],
+            "ax": 23.5,
+            "ay": 27.5
+          },
+          "Walk": {
+            "w": 48,
+            "h": 48,
+            "n": 4,
+            "r": 8,
+            "d": [
+              6,
+              6,
+              6,
+              6
+            ],
+            "ax": 23.5,
+            "ay": 27.5
+          },
+          "Attack": {
+            "w": 64,
+            "h": 72,
+            "n": 15,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 31.5,
+            "ay": 38.5
+          },
+          "Shoot": {
+            "w": 64,
+            "h": 72,
+            "n": 15,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 31.5,
+            "ay": 38.5
+          },
+          "Charge": {
+            "w": 48,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 24.5,
+            "ay": 27.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 29.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 29.5
+          }
+        },
+        "path": "assets/mega/807-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 48,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              40,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              12
+            ],
+            "ax": 23.5,
+            "ay": 27.5
+          },
+          "Walk": {
+            "w": 48,
+            "h": 48,
+            "n": 4,
+            "r": 8,
+            "d": [
+              6,
+              6,
+              6,
+              6
+            ],
+            "ax": 23.5,
+            "ay": 27.5
+          },
+          "Attack": {
+            "w": 64,
+            "h": 72,
+            "n": 15,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 31.5,
+            "ay": 38.5
+          },
+          "Shoot": {
+            "w": 64,
+            "h": 72,
+            "n": 15,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 31.5,
+            "ay": 38.5
+          },
+          "Charge": {
+            "w": 48,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 24.5,
+            "ay": 27.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 29.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 56,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 29.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Attack",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/807-mega/Idle.png",
+          "sha256": "9e6c8639b53ad003e38d8095ed566e368fd78fb1dec8447b38d8cbde69f925b8"
+        },
+        {
+          "path": "assets/mega/807-mega/Walk.png",
+          "sha256": "3c1dcee7f046c49e7291bec090250029f0b2b4bc87c9e3535cbc62751f8db61d"
+        },
+        {
+          "path": "assets/mega/807-mega/Attack.png",
+          "sha256": "8a861c9be4f3d10af0d3588e1ad22cc17f80c1eb12ce2ac85841662b0b5c6757"
+        },
+        {
+          "path": "assets/mega/807-mega/Shoot.png",
+          "sha256": "8a861c9be4f3d10af0d3588e1ad22cc17f80c1eb12ce2ac85841662b0b5c6757"
+        },
+        {
+          "path": "assets/mega/807-mega/Charge.png",
+          "sha256": "a3f997b6b7a72da8a7d0cf37937ad599939444fb229496bb150a3e6f49892f18"
+        },
+        {
+          "path": "assets/mega/807-mega/Hurt.png",
+          "sha256": "ca6e41fa3f8882ef1666223fd61fb1fe7d618b506b321e7c41960631b9548ec1"
+        },
+        {
+          "path": "assets/mega/807-mega/Faint.png",
+          "sha256": "ca6e41fa3f8882ef1666223fd61fb1fe7d618b506b321e7c41960631b9548ec1"
+        },
+        {
+          "path": "assets/mega/807-mega/s/Idle.png",
+          "sha256": "9d6f76de8a877c301b57ff4f04aa031052c01ebd01b489053e0e1edc4ac9f066"
+        },
+        {
+          "path": "assets/mega/807-mega/s/Walk.png",
+          "sha256": "68913c53fa94898ae4d4be5de449a0d9f510f4dee287441bbd75f81fc4d6091f"
+        },
+        {
+          "path": "assets/mega/807-mega/s/Attack.png",
+          "sha256": "25df8cd20021c1a95f3a5626c856bef35a11af45cb99d641d48b9d2caa15bbd6"
+        },
+        {
+          "path": "assets/mega/807-mega/s/Shoot.png",
+          "sha256": "25df8cd20021c1a95f3a5626c856bef35a11af45cb99d641d48b9d2caa15bbd6"
+        },
+        {
+          "path": "assets/mega/807-mega/s/Charge.png",
+          "sha256": "1b135cafeb8a17fcc6c70a34c80a2bc685969fb83a4b1ca6f690900101288743"
+        },
+        {
+          "path": "assets/mega/807-mega/s/Hurt.png",
+          "sha256": "0b017524fddb1f34477f380ae9b0669fb6d55057f3cb594219f14f2e9b75efa0"
+        },
+        {
+          "path": "assets/mega/807-mega/s/Faint.png",
+          "sha256": "0b017524fddb1f34477f380ae9b0669fb6d55057f3cb594219f14f2e9b75efa0"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!272761782269902848>",
+          "name": "DeltaL"
+        },
+        {
+          "id": "<@!608107243329814529>",
+          "name": "pi3.14"
+        }
+      ],
+      "partial": true,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Attack",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!356635814668664832>",
+          "name": "Emmuffin"
+        }
+      ]
+    },
+    {
+      "id": "870-mega",
+      "dex": 870,
+      "gen": 8,
+      "name": "Falinks",
+      "form": "Mega",
+      "source": "0870/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "952-mega",
+      "dex": 952,
+      "gen": 9,
+      "name": "Scovillain",
+      "form": "Mega",
+      "source": "0952/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "970-mega",
+      "dex": 970,
+      "gen": 9,
+      "name": "Glimmora",
+      "form": "Mega",
+      "source": "0970/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "978-droopy-mega",
+      "dex": 978,
+      "gen": 9,
+      "name": "Tatsugiri",
+      "form": "Droopy_Mega",
+      "source": "0978/0005",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "978-mega",
+      "dex": 978,
+      "gen": 9,
+      "name": "Tatsugiri",
+      "form": "Mega",
+      "source": "0978/0003",
+      "completion": 1,
+      "basicComplete": true,
+      "available": true,
+      "sourceAnimations": [
+        "Attack",
+        "Charge",
+        "Double",
+        "Hop",
+        "Hurt",
+        "Idle",
+        "RearUp",
+        "Rotate",
+        "Shoot",
+        "Sleep",
+        "SpAttack",
+        "Strike",
+        "Swing",
+        "Walk"
+      ],
+      "meta": {
+        "s": 1,
+        "a": {
+          "Idle": {
+            "w": 40,
+            "h": 48,
+            "n": 8,
+            "r": 8,
+            "d": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "ax": 19.5,
+            "ay": 27.5
+          },
+          "Walk": {
+            "w": 40,
+            "h": 48,
+            "n": 8,
+            "r": 8,
+            "d": [
+              6,
+              6,
+              6,
+              6,
+              6,
+              6,
+              6,
+              6
+            ],
+            "ax": 19.5,
+            "ay": 27.5
+          },
+          "Attack": {
+            "w": 88,
+            "h": 72,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 38.5
+          },
+          "Shoot": {
+            "w": 48,
+            "h": 48,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              6,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 23.5,
+            "ay": 25.5
+          },
+          "Charge": {
+            "w": 40,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 20.5,
+            "ay": 27.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          }
+        },
+        "path": "assets/mega/978-mega",
+        "sh": 1,
+        "sa": {
+          "Idle": {
+            "w": 40,
+            "h": 48,
+            "n": 8,
+            "r": 8,
+            "d": [
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8,
+              8
+            ],
+            "ax": 19.5,
+            "ay": 27.5
+          },
+          "Walk": {
+            "w": 40,
+            "h": 48,
+            "n": 8,
+            "r": 8,
+            "d": [
+              6,
+              6,
+              6,
+              6,
+              6,
+              6,
+              6,
+              6
+            ],
+            "ax": 19.5,
+            "ay": 27.5
+          },
+          "Attack": {
+            "w": 88,
+            "h": 72,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              6,
+              1,
+              1,
+              1,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 43.5,
+            "ay": 38.5
+          },
+          "Shoot": {
+            "w": 48,
+            "h": 48,
+            "n": 11,
+            "r": 8,
+            "d": [
+              2,
+              6,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 23.5,
+            "ay": 25.5
+          },
+          "Charge": {
+            "w": 40,
+            "h": 48,
+            "n": 10,
+            "r": 8,
+            "d": [
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2,
+              2
+            ],
+            "ax": 20.5,
+            "ay": 27.5
+          },
+          "Hurt": {
+            "w": 48,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          },
+          "Faint": {
+            "w": 48,
+            "h": 64,
+            "n": 2,
+            "r": 8,
+            "d": [
+              2,
+              8
+            ],
+            "ax": 23.5,
+            "ay": 31.5
+          }
+        },
+        "sm": []
+      },
+      "aliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "files": [
+        {
+          "path": "assets/mega/978-mega/Idle.png",
+          "sha256": "461d6c78ae54e3bb19ffd925f4e53d8655142456cbc0e9dd3e353b74d27c7df3"
+        },
+        {
+          "path": "assets/mega/978-mega/Walk.png",
+          "sha256": "bb383ef76760d8cff0ec34cf6b2fd822b418c4c54c1813d33ef9756c2f83e506"
+        },
+        {
+          "path": "assets/mega/978-mega/Attack.png",
+          "sha256": "8e090bde5ffb10004b664cf15dc9629e116ccaa1eb0d27acfb9b222dcc6868b7"
+        },
+        {
+          "path": "assets/mega/978-mega/Shoot.png",
+          "sha256": "d1e4c3bd151dd69e16ae6b36dc41466cf269476a1278d9cddb32c3f3b2ad9cc7"
+        },
+        {
+          "path": "assets/mega/978-mega/Charge.png",
+          "sha256": "f74bb7d086e19e9122b6630ff78e908ec4324e3ff42fe71b782ae35871b22b0b"
+        },
+        {
+          "path": "assets/mega/978-mega/Hurt.png",
+          "sha256": "a78dcb961fd092e1de33161c25120e03a97bd01ae68120fcfca42e70f9ae047d"
+        },
+        {
+          "path": "assets/mega/978-mega/Faint.png",
+          "sha256": "a78dcb961fd092e1de33161c25120e03a97bd01ae68120fcfca42e70f9ae047d"
+        },
+        {
+          "path": "assets/mega/978-mega/s/Idle.png",
+          "sha256": "5d12f1119e15645308c217ce80695707220f6f6b4caa80e2c460b6f3a21e5317"
+        },
+        {
+          "path": "assets/mega/978-mega/s/Walk.png",
+          "sha256": "622390a2426a411ef994eca2c90274a148b00717eae74f55d93d4ef025627607"
+        },
+        {
+          "path": "assets/mega/978-mega/s/Attack.png",
+          "sha256": "b606a94f1ce8ae580f06680e7037aed0858d6b8668bc406a5be9441685e78d68"
+        },
+        {
+          "path": "assets/mega/978-mega/s/Shoot.png",
+          "sha256": "58e003b1b79de32fe13382a742fa3c100b5026c8612a9410717caa4829cb2d3a"
+        },
+        {
+          "path": "assets/mega/978-mega/s/Charge.png",
+          "sha256": "a550ccde29eabef95bdd89e9cd64376822d033f8677b981114695385ff4abbf0"
+        },
+        {
+          "path": "assets/mega/978-mega/s/Hurt.png",
+          "sha256": "cd8730534675cb319a426375f457a30462c20c92eb60f5fca681780727abad69"
+        },
+        {
+          "path": "assets/mega/978-mega/s/Faint.png",
+          "sha256": "cd8730534675cb319a426375f457a30462c20c92eb60f5fca681780727abad69"
+        }
+      ],
+      "artists": [
+        {
+          "id": "<@!356635814668664832>",
+          "name": "Emmuffin"
+        }
+      ],
+      "partial": false,
+      "shinyAliases": {
+        "Idle": "Idle",
+        "Walk": "Walk",
+        "Attack": "Attack",
+        "Shoot": "Shoot",
+        "Charge": "Charge",
+        "Hurt": "Hurt",
+        "Faint": "Hurt"
+      },
+      "shinyArtists": [
+        {
+          "id": "<@!356635814668664832>",
+          "name": "Emmuffin"
+        }
+      ]
+    },
+    {
+      "id": "978-stretchy-mega",
+      "dex": 978,
+      "gen": 9,
+      "name": "Tatsugiri",
+      "form": "Stretchy_Mega",
+      "source": "0978/0004",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
+    },
+    {
+      "id": "998-mega",
+      "dex": 998,
+      "gen": 9,
+      "name": "Baxcalibur",
+      "form": "Mega",
+      "source": "0998/0001",
+      "completion": 0,
+      "basicComplete": false,
+      "available": false,
+      "sourceAnimations": [],
+      "reason": "No overworld animation in source"
     }
   ]
 }

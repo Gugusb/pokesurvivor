@@ -20,18 +20,24 @@ function context() {
   s.load=load;s.enabled=v=>enabled=v;s.marked=()=>marked;return s;
 }
 
-test('pinned Mega manifest has 43 canonical Gen 1/3 forms and validates all 315 imported files',()=>{
+test('pinned Mega manifest catalogs all generations and imports every basic-complete form',()=>{
   const m=JSON.parse(fs.readFileSync(path.join(ROOT,'assets/mega/manifest.json'),'utf8'));
-  assert.match(m.commit,/^[a-f0-9]{40}$/);assert.equal(m.forms.length,43);
-  assert.equal(m.forms.filter(f=>f.available).length,23);assert.equal(m.forms.filter(f=>f.meta?.sh).length,22);
-  assert.equal(new Set(m.forms.map(f=>f.id)).size,43);let count=0;
+  assert.match(m.commit,/^[a-f0-9]{40}$/);assert.equal(m.forms.length,96);
+  assert.equal(m.forms.filter(f=>f.available).length,40);
+  assert.equal(m.forms.filter(f=>f.basicComplete).length,36);
+  const expected=[6,65,94,115,142,150,208,227,229,248,282,302,303,308,310,323,334,354,359,362,380,381,384,428,448,475,491,530,604,670,691,718,719,780,807,978];
+  assert.deepEqual(m.forms.filter(f=>f.basicComplete).map(f=>f.dex),expected);
+  assert.deepEqual(m.forms.filter(f=>f.available&&!f.basicComplete).map(f=>f.dex),[80,254,319,358]);
+  assert.deepEqual(m.forms.filter(f=>!f.available&&f.sourceAnimations.length).map(f=>f.dex),[560,701]);
+  assert.equal(new Set(m.forms.map(f=>f.id)).size,96);let count=0;
   for(const f of m.forms){
-    assert.ok(f.dex<=151||f.dex>=252&&f.dex<=386);assert.ok(['Mega','Mega_X','Mega_Y','Mega_Z'].includes(f.form));
+    assert.ok(f.gen>=1&&f.gen<=9);assert.ok(['Mega','Mega_X','Mega_Y','Mega_Z','Original_Mega','Stretchy_Mega','Droopy_Mega'].includes(f.form));
+    assert.equal(f.basicComplete,f.completion>=1);if(f.basicComplete)assert.ok(f.available);
     if(!f.available){assert.equal(f.meta,undefined);continue;}
     assert.ok(f.artists.length);assert.ok(f.meta.a.Idle&&f.meta.a.Walk&&f.meta.a.Attack);
     for(const a of f.files){const b=fs.readFileSync(path.join(ROOT,a.path));assert.equal(crypto.createHash('sha256').update(b).digest('hex'),a.sha256);count++;}
   }
-  assert.equal(count,315);
+  assert.equal(count,m.forms.reduce((n,f)=>n+(f.available?(1+Number(!!f.meta.sh))*7:0),0));
 });
 
 test('every normal and shiny form renders all seven animations in eight directions with valid crop bounds',()=>{
@@ -44,7 +50,20 @@ test('every normal and shiny form renders all seven animations in eight directio
       anim.update(10);anim.draw(ctx,0,0);
     }
   }
-  assert.equal(draws,45*7*8*2);
+  const variants=G.MegaPreview.LIST.reduce((n,f)=>n+(f.available?1+Number(!!f.meta.sh):0),0);
+  assert.equal(draws,variants*7*8*2);
+});
+
+test('every imported Mega has a playable base and preserves stats across apply/restore',()=>{
+  const s=context(),{G}=s;
+  for(const f of G.MegaPreview.LIST.filter(f=>f.available)){
+    assert.ok(G.DEX_BY[f.dex],f.id);assert.equal(G.DEX_BY[f.dex].gen,f.gen);
+    assert.ok(G.SPRITE_META[f.dex],f.id);assert.ok(G.I18n?G.T(G.DEX_BY[f.dex].name):false);
+    const p=s.player(f.dex),before=JSON.stringify([p.dex,p.mon,p.atk,p.spd,p.hp,p.maxHp,p.r,p.ability]);
+    assert.ok(G.MegaPreview.apply(p,f.id));assert.equal(p.anim.dex,f.id);
+    assert.equal(JSON.stringify([p.dex,p.mon,p.atk,p.spd,p.hp,p.maxHp,p.r,p.ability]),before);
+    assert.ok(G.MegaPreview.restore(p));assert.equal(p.spriteDex,f.dex);
+  }
 });
 
 test('runtime preview changes only visual data and restores base visuals without writing to the save',()=>{

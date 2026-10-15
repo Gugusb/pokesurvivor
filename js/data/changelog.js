@@ -6,6 +6,13 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-15', title: ['Mega de todas las generaciones · v0.7.0', 'Mega across all generations · v0.7.0'], new: [
+    ['La vista previa incorpora las 36 formas Mega con animaciones básicas completas de SpriteCollab, incluidas 17 nuevas formas de otras generaciones.',
+     'The preview now includes all 36 SpriteCollab Mega forms meeting basic animation completion, including 17 newly added forms from other generations.']
+  ], chg: [
+    ['Se conservan las cuatro vistas previas parciales anteriores. El selector distingue el nivel básico, completo, parcial y los recursos ausentes; el catálogo documenta las 96 formas registradas.',
+     'The four existing partial previews are retained. The selector distinguishes basic, full, partial and missing assets; the catalog documents all 96 registered forms.']
+  ], fix: [] },
   { d: '2026-10-15', title: ['Vista previa de Mega · v0.6.0', 'Mega asset preview · v0.6.0'], new: [
     ['Se importan los recursos Mega disponibles de Kanto y Hoenn, con variantes shiny donde existen. El panel de desarrollo permite probarlos dentro de una partida.',
      'Available Kanto and Hoenn Mega assets are imported, including shiny variants where provided. Developer tools can preview them in a run.'],

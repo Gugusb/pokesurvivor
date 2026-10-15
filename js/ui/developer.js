@@ -90,7 +90,7 @@ G.Dev = (() => {
       '<label>测试伙伴 <select id="dev-partner">' + G.AbilityDefs.SPECIES.map(d => '<option value="' + d + '">' + G.T(G.DEX_BY[d].name) + '</option>').join('') + '</select></label>' +
       '<button class="btn small" data-dev="partner">选择伙伴（局外）</button>' +
       '<h4>Mega 素材预览</h4><p class="note">仅预览外观和动画，属性、能力、碰撞半径沿用本体；正式进化系统待设计。先选择对应本体开局，再应用外观。</p>' +
-      '<label>Mega 形态 <select id="dev-mega">' + G.MegaPreview.LIST.map(f => '<option value="' + f.id + '"' + (f.available ? '' : ' disabled') + '>' + G.MegaPreview.label(f) + (f.available ? f.partial ? '（部分动作借用）' : '' : '（暂无动画素材）') + '</option>').join('') + '</select></label>' +
+      '<label>Mega 形态 <select id="dev-mega">' + G.MegaPreview.LIST.map(f => '<option value="' + f.id + '"' + (f.available ? '' : ' disabled') + '>' + G.MegaPreview.label(f) + (f.available ? (!f.basicComplete ? '（未达基本标准，旧版保留）' : f.completion === 2 ? '（完整级）' : '（基本达标）') : f.completion === 0 && f.reason && f.reason.startsWith('Source animations') ? '（已有部分动画，未达基本标准）' : '（暂无动画素材）') + '</option>').join('') + '</select></label>' +
       '<label><input id="dev-mega-shiny" type="checkbox">异色（该形态需有异色素材）</label>' +
       '<div class="row wrap"><button class="btn small" data-dev="mega-partner">选择对应本体（局外）</button><button class="btn small" data-dev="mega-apply">应用 Mega 外观（局内）</button><button class="btn small" data-dev="mega-clear">恢复本体外观</button></div>' +
       '<p class="note">' + (G.Game.player && G.Game.player.megaForm ? G.MegaPreview.label(G.MegaPreview.BY_ID[G.Game.player.megaForm]) : '当前为本体外观') + '</p>' +

@@ -3,7 +3,7 @@ G.MegaPreview = (() => {
   const LIST = G.MEGA_FORMS || [];
   const BY_ID = Object.fromEntries(LIST.map(f => [f.id, f]));
   function label(f) {
-    const suffix = f.form.replace('Mega', '').replace('_', ' ');
+    const suffix = {Original_Mega: G.T(' (Original Color)'), Stretchy_Mega: G.T(' (Stretchy)'), Droopy_Mega: G.T(' (Droopy)')}[f.form] || f.form.replace('Mega', '').replace('_', ' ');
     return G.T('Mega') + ' ' + G.T((G.DEX_BY[f.dex] || {}).name || f.name) + suffix;
   }
   function allowed(p) {
@@ -35,5 +35,7 @@ G.MegaPreview = (() => {
   }
   G.I18n.add({'Mega': 'Mega', 'Vista previa de recursos': 'Asset preview'});
   G.I18n.addChinese({'Mega': '超级', 'Vista previa de recursos': '素材预览'});
+  G.I18n.add({' (Original Color)': ' (Original Color)', ' (Stretchy)': ' (Stretchy)', ' (Droopy)': ' (Droopy)'});
+  G.I18n.addChinese({' (Original Color)': '（初始颜色）', ' (Stretchy)': '（平挺姿势）', ' (Droopy)': '（下垂姿势）'});
   return {LIST, BY_ID, label, apply, restore, play};
 })();

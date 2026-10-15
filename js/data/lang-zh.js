@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Pyroar": "火炎狮",
+  "Falinks": "列阵兵",
+  "Mega de todas las generaciones · v0.7.0": "全世代 Mega 素材 · v0.7.0",
+  "La vista previa incorpora las 36 formas Mega con animaciones básicas completas de SpriteCollab, incluidas 17 nuevas formas de otras generaciones.": "接入 SpriteCollab 全部 36 个基本动作集达标的 Mega 形态，本次新增其他世代的 17 个形态。",
+  "Se conservan las cuatro vistas previas parciales anteriores. El selector distingue el nivel básico, completo, parcial y los recursos ausentes; el catálogo documenta las 96 formas registradas.": "保留旧版 4 个部分完成预览。列表区分基本达标、完整级、部分完成和素材缺失，并提供库中全部 96 个登记形态的加入清单。",
   "Acero": "钢",
   "Steel": "钢",
   "Agua": "水",
