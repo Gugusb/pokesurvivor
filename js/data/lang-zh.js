@@ -3281,5 +3281,8 @@ G.I18n.addChinese({
   "Ogerpon": "厄诡椪",
   "Archaludon": "铝钢桥龙",
   "Hydrapple": "蜜集大蛇",
-  "Terapagos": "太乐巴戈斯"
+  "Terapagos": "太乐巴戈斯",
+  "Controles de depuración · v0.2.1": "调试控件 · v0.2.1",
+  "El panel de desarrollo permite ampliar la vista entre 1× y 2× (1,5× por defecto). Al desactivarlo, la cámara vuelve a la vista normal.": "调试面板新增 1× 至 2× 视野调整，默认 1.5×；关闭开发者模式恢复正常视野。",
+  "Añade o resta monedas, vales de una tirada, vales de diez tiradas y gemas de habilidad con cantidades configurables.": "金币、单抽券、十连券和特性宝石均可自定义数量后增加或减少。"
 });

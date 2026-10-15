@@ -5,6 +5,7 @@
 G.Camera = {
   x: 0, y: 0,
   scale: 1,
+  viewMultiplier: 1,
   VIEW_W: 768,              // un 20% más de vista que al principio (640)
   shake: 0,
   _sx: 0, _sy: 0,
@@ -17,13 +18,22 @@ G.Camera = {
   MIN_VIEW_H: 420,
 
   resize(cssW, cssH, dpr = 1) {
+    this.cssW = cssW; this.cssH = cssH;
     this.dpr = dpr;
-    this.scale = Math.min(cssW / this.VIEW_W, cssH / this.MIN_VIEW_H);
+    this.scale = Math.min(cssW / this.VIEW_W, cssH / this.MIN_VIEW_H) / this.viewMultiplier;
     this.w = cssW / this.scale;
     this.h = cssH / this.scale;
   },
 
+  setViewMultiplier(value) {
+    if (!Number.isFinite(value)) return;
+    this.viewMultiplier = Math.max(1, Math.min(2, value));
+    if (this.cssW > 0 && this.cssH > 0) this.resize(this.cssW, this.cssH, this.dpr);
+  },
+
   follow(tx, ty, dt) {
+    const view = G.Dev && G.Dev.canUse() ? G.Dev.viewMultiplier : 1;
+    if (this.viewMultiplier !== view) this.setViewMultiplier(view);
     this.x = G.U.damp(this.x, tx, 9, dt);
     this.y = G.U.damp(this.y, ty, 9, dt);
     if (this.shake > 0) {

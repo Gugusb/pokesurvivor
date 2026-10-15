@@ -3,11 +3,40 @@ G.Dev = (() => {
   let enabled = false;
   try { enabled = localStorage.getItem('ps.dev.enabled') === 'true'; } catch (e) { /* sin persistencia */ }
   let god = false, panel, launcher;
+  let viewMultiplier = 1.5;
+  try {
+    const stored = Number(localStorage.getItem('ps.dev.view'));
+    if (stored >= 1 && stored <= 2) viewMultiplier = stored;
+  } catch (e) { /* sin persistencia */ }
+  const currencies = [
+    { id: 'coins', name: '金币', step: 1000 },
+    { id: 't1', name: '单抽券', step: 10 },
+    { id: 't10', name: '十连券', step: 1 },
+    { id: 'abilityGems', name: '特性宝石', step: 10 }
+  ];
   const canUse = () => enabled && G.DB.loggedIn && !G.Coop.active;
+  const balance = id => id === 't1' || id === 't10' ? G.DB.save.tickets[id] : G.DB.save[id];
+  function adjustCurrency(id, delta) {
+    if (!canUse() || !currencies.some(c => c.id === id) || !Number.isSafeInteger(delta)) return false;
+    G.Game.debugMark();
+    const amount = Math.max(0, Math.min(Number.MAX_SAFE_INTEGER, balance(id) + delta));
+    if (id === 't1' || id === 't10') G.DB.save.tickets[id] = amount;
+    else G.DB.save[id] = amount;
+    return true;
+  }
+  function setView(value) {
+    if (!canUse() || !Number.isFinite(value)) return false;
+    viewMultiplier = Math.round(Math.max(1, Math.min(2, value)) * 100) / 100;
+    G.Game.debugMark();
+    if (G.Camera.setViewMultiplier) G.Camera.setViewMultiplier(viewMultiplier);
+    try { localStorage.setItem('ps.dev.view', String(viewMultiplier)); } catch (e) { /* nada */ }
+    return true;
+  }
   function setEnabled(on) {
     enabled = !!on;
     if (enabled && G.Game) G.Game.debugMark();
     if (!enabled) { god = false; if (G.AbilityGacha.clearDebug) G.AbilityGacha.clearDebug(); }
+    if (G.Camera.setViewMultiplier) G.Camera.setViewMultiplier(canUse() ? viewMultiplier : 1);
     try { localStorage.setItem('ps.dev.enabled', String(enabled)); } catch (e) { /* nada */ }
     refresh();
   }
@@ -41,20 +70,41 @@ G.Dev = (() => {
     if (G.DB.loggedIn) { G.DB.commit(true); G.UI.refreshCoins(); }
     if (G.UI.isOpen('scr-menu') && !G.UI.isOpen('scr-gacha')) G.MenuUI.open();
     if (G.UI.isOpen('scr-gacha') && !G.GachaUI.open_) G.GachaUI.refresh();
-    renderPanel();
+    if (panel) renderPanel();
   }
   function renderPanel() {
     const save = G.DB.save;
+    const scroll = panel.scrollTop;
     panel.innerHTML = '<div class="row between"><h3>开发者调试</h3><button class="btn small" id="dev-close">收起</button></div>' +
       '<p class="note">调试会修改当前本地存档。调试局不提交排行榜；联机时不可使用。</p>' +
-      '<p>特性宝石：' + ((save && save.abilityGems) || 0) + '　勋章：' + Object.keys(save && save.abilityMedals || {}).length + '/9</p>' +
-      '<div class="row wrap"><button class="btn small" data-dev="gems">+10 特性宝石</button><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="legends">解锁关都传说</button></div>' +
+      '<label for="dev-view">视野范围：<output id="dev-view-value">' + viewMultiplier.toFixed(2) + '×</output></label>' +
+      '<input id="dev-view" type="range" min="1" max="2" step="0.05" value="' + viewMultiplier + '">' +
+      '<p class="note">向右拉可看得更远，默认 1.5×；关闭开发者模式恢复正常视野。</p>' +
+      '<h4>货币增减</h4><p class="note">输入每次增减的数量。余额最低为 0，立即保存。</p>' +
+      currencies.map(c => '<div class="dev-currency"><span>' + c.name + '：' + (save ? balance(c.id) : 0) + '</span>' +
+        '<input type="number" id="dev-amount-' + c.id + '" aria-label="' + c.name + '增减数量" min="1" max="1000000000" step="1" value="' + c.step + '">' +
+        '<button class="btn small" data-currency="' + c.id + '" data-sign="-1" aria-label="减少' + c.name + '">−</button>' +
+        '<button class="btn small" data-currency="' + c.id + '" data-sign="1" aria-label="增加' + c.name + '">＋</button></div>').join('') +
+      '<p>勋章：' + Object.keys(save && save.abilityMedals || {}).length + '/' + G.AbilityDefs.LIST.length + '</p>' +
+      '<div class="row wrap"><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="legends">解锁关都传说</button></div>' +
       '<label>测试伙伴 <select id="dev-partner">' + [144,145,146,150,151].map(d => '<option value="' + d + '">' + G.T(G.DEX_BY[d].name) + '</option>').join('') + '</select></label>' +
       '<button class="btn small" data-dev="partner">选择伙伴（局外）</button>' +
       '<label>指定勋章 <select id="dev-medal">' + G.AbilityDefs.LIST.map(m => '<option value="' + m.id + '">' + G.T(G.DEX_BY[m.dex].name) + ' · ' + G.T(m.name) + '</option>').join('') + '</select></label>' +
       '<div class="row wrap"><button class="btn small" data-dev="force">下次抽出此勋章</button><button class="btn small" data-dev="equip">装备此勋章（局外）</button></div>' +
       '<div class="row wrap"><button class="btn small" data-dev="god">无敌：' + (god ? '开' : '关') + '</button><button class="btn small" data-dev="heal">回满生命</button><button class="btn small" data-dev="level">升一级</button><button class="btn small" data-dev="slow">自身减速 3.5s</button><button class="btn small" data-dev="time">时间 +60s</button><button class="btn small" data-dev="rift">开启裂隙战斗</button><button class="btn small" data-dev="boss">击败裂隙 Boss</button><button class="btn small" data-dev="quit">结束本局</button></div>';
     panel.querySelector('#dev-close').onclick = () => panel.classList.add('hidden');
+    panel.querySelector('#dev-view').oninput = e => {
+      if (setView(Number(e.target.value))) panel.querySelector('#dev-view-value').textContent = viewMultiplier.toFixed(2) + '×';
+    };
+    panel.querySelectorAll('[data-currency]').forEach(b => b.onclick = () => {
+      const c = currencies.find(c => c.id === b.dataset.currency);
+      const input = panel.querySelector('#dev-amount-' + c.id), amount = Number(input.value);
+      if (!Number.isSafeInteger(amount) || amount < 1 || amount > 1000000000) {
+        G.UI.toast('请输入 1 至 1000000000 的整数'); return;
+      }
+      c.step = amount;
+      action(() => adjustCurrency(c.id, amount * Number(b.dataset.sign)));
+    });
     if (save && [144,145,146,150,151].includes(save.partner)) panel.querySelector('#dev-partner').value = save.partner;
     panel.querySelectorAll('[data-dev]').forEach(b => b.onclick = () => {
       const dex = +panel.querySelector('#dev-partner').value;
@@ -62,7 +112,6 @@ G.Dev = (() => {
       action(() => {
         const s = G.DB.save;
         switch (b.dataset.dev) {
-          case 'gems': s.abilityGems += 10; break;
           case 'medals': for (const m of G.AbilityDefs.LIST) s.abilityMedals[m.id] = s.abilityMedals[m.id] || { at: Date.now(), from: 'dev' }; break;
           case 'legends': for (const d of [144,145,146,150,151]) G.DB.grant(d, 'dev'); break;
           case 'force': G.AbilityGacha.debugMedal(medalId); G.UI.toast('下次抽卡将产出指定勋章，仍消耗宝石'); break;
@@ -88,6 +137,7 @@ G.Dev = (() => {
         }
       });
     });
+    panel.scrollTop = scroll;
   }
   function renderSettings(box) {
     box.setAttribute('translate', 'no');
@@ -95,5 +145,6 @@ G.Dev = (() => {
       '<button class="btn ' + (enabled ? 'gold' : '') + '" id="dev-enable">开发者模式：' + (enabled ? '开' : '关') + '</button>';
     box.querySelector('#dev-enable').onclick = () => { setEnabled(!enabled); renderSettings(box); };
   }
-  return { init, canUse, setEnabled, renderSettings, get enabled() { return enabled; }, get invincible() { return canUse() && god; } };
+  return { init, canUse, setEnabled, setView, adjustCurrency, renderSettings,
+    get viewMultiplier() { return viewMultiplier; }, get enabled() { return enabled; }, get invincible() { return canUse() && god; } };
 })();

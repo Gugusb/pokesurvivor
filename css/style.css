@@ -130,6 +130,10 @@ input { font: inherit; }
 #dev-panel label { display: block; margin: 10px 0 4px; }
 #dev-panel select { max-width: 100%; font: inherit; padding: 4px; }
 #dev-panel .row { margin: 8px 0; gap: 6px; }
+#dev-view { width: 100%; }
+#dev-panel .dev-currency { display: grid; grid-template-columns: minmax(0, 1fr) 90px 36px 36px; align-items: center; gap: 5px; margin: 8px 0; }
+#dev-panel .dev-currency input { width: 100%; min-width: 0; font: inherit; padding: 4px; }
+#dev-panel .dev-currency span { overflow-wrap: anywhere; }
 .menu-item {
   appearance: none; background: none; border: 0; cursor: pointer;
   text-align: left; padding: 8px 10px 8px 30px; border-radius: 6px;

@@ -215,3 +215,44 @@ test('developer mode defaults off; enabling is explicit and co-op blocks debug a
   G.Coop.active = true; assert.equal(G.Dev.canUse(), false); G.Coop.active = false;
   G.Dev.setEnabled(false); assert.equal(G.Dev.enabled, false); assert.equal(G.Dev.invincible, false);
 });
+
+test('debug currency controls cover all balances, clamp safely and reject invalid or co-op edits', () => {
+  const s = context(), { G } = s; let marked = 0;
+  G.Game.debugMark = () => marked++; s.load('js/ui/developer.js');
+  assert.equal(G.Dev.adjustCurrency('coins', 10), false);
+  G.Dev.setEnabled(true);
+  const read = id => ['t1', 't10'].includes(id) ? G.DB.save.tickets[id] : G.DB.save[id];
+  const pity = JSON.stringify([G.DB.save.pity, G.DB.save.abilityPity]);
+  for (const id of ['coins', 't1', 't10', 'abilityGems']) {
+    const before = read(id);
+    assert.equal(G.Dev.adjustCurrency(id, 123), true); assert.equal(read(id), before + 123);
+    G.Dev.adjustCurrency(id, -Number.MAX_SAFE_INTEGER); assert.equal(read(id), 0);
+    G.Dev.adjustCurrency(id, Number.MAX_SAFE_INTEGER); G.Dev.adjustCurrency(id, 1);
+    assert.equal(read(id), Number.MAX_SAFE_INTEGER);
+    G.Dev.adjustCurrency(id, -Number.MAX_SAFE_INTEGER); assert.equal(read(id), 0);
+    for (const invalid of [NaN, Infinity, 1.5, Number.MAX_SAFE_INTEGER + 1]) {
+      assert.equal(G.Dev.adjustCurrency(id, invalid), false); assert.equal(read(id), 0);
+    }
+  }
+  assert.equal(G.Dev.adjustCurrency('pity', 20), false);
+  assert.equal(JSON.stringify([G.DB.save.pity, G.DB.save.abilityPity]), pity);
+  G.Coop.active = true; assert.equal(G.Dev.adjustCurrency('coins', 10), false);
+  assert.equal(G.DB.save.coins, 0); assert.ok(marked > 1);
+});
+
+test('debug view expands both world dimensions, survives resize and resets outside solo debugging', () => {
+  const s = context(), { G } = s;
+  G.Game.debugMark = noop; s.load('js/core/camera.js'); s.load('js/ui/developer.js');
+  const c = G.Camera; c.resize(1200, 800, 2);
+  const w = c.w, h = c.h, scale = c.scale, radius = c.outerRadius();
+  G.Dev.setEnabled(true); approx(c.w, w * 1.5); approx(c.h, h * 1.5);
+  assert.ok(c.outerRadius() > radius); approx(c.scale, scale / 1.5);
+  G.Dev.setView(2); c.resize(600, 400, 1);
+  approx(c.w, w * 2); approx(c.h, h * 2); assert.equal(c.dpr, 1);
+  G.Dev.setView(NaN); assert.equal(G.Dev.viewMultiplier, 2);
+  G.Coop.active = true; c.follow(0, 0, .01);
+  approx(c.w, w); assert.equal(G.Dev.setView(1.5), false);
+  G.Coop.active = false; c.follow(0, 0, .01); approx(c.w, w * 2);
+  G.Dev.setEnabled(false); approx(c.w, w); approx(c.h, h);
+  assert.equal(G.Dev.setView(2), false);
+});

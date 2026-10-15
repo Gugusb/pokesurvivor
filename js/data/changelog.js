@@ -6,6 +6,12 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-15', title: ['Controles de depuración · v0.2.1', 'Debug controls · v0.2.1'], new: [
+    ['El panel de desarrollo permite ampliar la vista entre 1× y 2× (1,5× por defecto). Al desactivarlo, la cámara vuelve a la vista normal.',
+     'The developer panel can widen the view from 1× to 2× (1.5× by default). Disabling developer mode restores the normal view.'],
+    ['Añade o resta monedas, vales de una tirada, vales de diez tiradas y gemas de habilidad con cantidades configurables.',
+     'Add or subtract coins, single-pull tickets, ten-pull tickets and ability gems with configurable amounts.']
+  ], chg: [], fix: [] },
   { d: '2026-10-15', title: ['Habilidades de Kanto · v0.2.0', 'Kanto abilities · v0.2.0'], new: [
     ['Medallas de habilidad para Articuno, Zapdos, Moltres, Mewtwo y Mew. Cada medalla desbloquea una habilidad; equipa sólo una por Pokémon.',
      'Ability medals for Articuno, Zapdos, Moltres, Mewtwo and Mew. Each medal unlocks one ability; equip one per Pokémon.'],
