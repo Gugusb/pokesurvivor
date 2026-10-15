@@ -5,12 +5,15 @@ G.GachaUI = (() => {
   const $ = G.UI.$;
   let busy = false;
   let gen = 1;
+  let mode = 'pokemon';
 
   function init() {
     $('pull-1').onclick = () => pull(1);
     $('pull-10').onclick = () => pull(10, 't1');
     $('pull-10b').onclick = () => pull(10, 't10');
     $('pull-close').onclick = close;
+    $('gacha-pokemon-mode').onclick = () => open('pokemon');
+    $('gacha-ability-mode').onclick = () => open('ability');
 
     const tabs = $('gacha-gens');
     G.Gacha.BANNERS.forEach(b => {
@@ -23,12 +26,23 @@ G.GachaUI = (() => {
     });
   }
 
-  function open() {
+  function open(nextMode = 'pokemon') {
+    if (busy || !$('pull-fx').classList.contains('hidden')) return;
+    mode = nextMode;
+    if (mode === 'ability') gen = 1;
     G.UI.show('scr-gacha', true);
     refresh();
   }
 
   function refresh() {
+    const ability = mode === 'ability';
+    $('gacha-heading').textContent = ability ? 'Gacha de habilidades' : 'Gacha';
+    $('gacha-pokemon-mode').classList.toggle('on', !ability);
+    $('gacha-ability-mode').classList.toggle('on', ability);
+    $('ability-medals').classList.toggle('hidden', !ability);
+    $('pull-10b').classList.toggle('hidden', ability);
+    document.querySelectorAll('#gacha-gens .gen-tab').forEach(t => t.classList.toggle('hidden', ability && +t.dataset.gen !== 1));
+    if (ability) { refreshAbilities(); return; }
     const s = G.DB.save;
     const banner = G.Gacha.BANNERS[gen - 1];
     document.querySelectorAll('#gacha-gens .gen-tab').forEach(t => t.classList.toggle('on', +t.dataset.gen === gen));
@@ -78,10 +92,77 @@ G.GachaUI = (() => {
 
   const wait = ms => new Promise(r => setTimeout(r, ms));
 
+  function medalArt(dex, size = 120) {
+    const art = document.createElement('div');
+    art.className = 'ability-medal-art';
+    art.style.width = size + 'px';
+    art.style.height = size + 'px';
+    art.appendChild(G.UI.spriteCanvas(dex, size, size, { scale: 2 }));
+    art.insertAdjacentHTML('beforeend', '<span>' + G.Icons.html('medal3', 36) + '</span>');
+    return art;
+  }
+
+  function renderEquipment(parent, dex) {
+    const save = G.DB.save, mon = G.DEX_BY[dex];
+    const section = document.createElement('div');
+    section.className = 'ability-equipment';
+    section.innerHTML = '<h3>' + mon.name + ' · Habilidades</h3><p class="note">Sólo una medalla equipada por Pokémon.</p>';
+    for (const medal of G.AbilityDefs.medalsFor(dex)) {
+      const owned = !!save.abilityMedals[medal.id];
+      const equipped = save.abilityEquipped[dex] === medal.id;
+      const row = document.createElement('div');
+      row.className = 'ability-medal-row' + (owned ? '' : ' locked');
+      row.innerHTML = '<div><b>' + G.Icons.html('medal3', 18) + ' ' + medal.name + '</b><p class="note">' + medal.desc + '</p></div>';
+      const btn = document.createElement('button');
+      btn.className = 'btn small' + (equipped ? ' gold' : '');
+      btn.textContent = !owned ? 'Sin medalla' : equipped ? 'Equipada' : 'Equipar';
+      btn.disabled = !owned || equipped;
+      btn.setAttribute('aria-label', G.T('Equipar') + ' ' + mon.name + ' ' + G.T(medal.name));
+      btn.onclick = () => {
+        if (!G.Abilities.equip(save, dex, medal.id)) return;
+        G.DB.commit(true);
+        const replacement = renderEquipment(parent, dex);
+        section.replaceWith(replacement);
+      };
+      row.appendChild(btn); section.appendChild(row);
+    }
+    const off = document.createElement('button');
+    off.className = 'btn small ghost'; off.textContent = 'Sin habilidad';
+    off.disabled = !save.abilityEquipped[dex];
+    off.onclick = () => {
+      G.Abilities.equip(save, dex, null); G.DB.commit(true);
+      const replacement = renderEquipment(parent, dex); section.replaceWith(replacement);
+    };
+    section.appendChild(off); parent.appendChild(section);
+    return section;
+  }
+
+  function refreshAbilities() {
+    const s = G.DB.save;
+    $('banner').style.background = 'linear-gradient(135deg, #3a1d6e, #1b2f78 55%, #0f4d6e)';
+    $('banner-title').textContent = 'Kanto · Medallas de habilidad';
+    $('banner-desc').textContent = 'Las cinco especies legendarias dan sus medallas. El resto da Pokémon.';
+    $('gacha-owned').textContent = 'Medallas: ' + Object.keys(s.abilityMedals).length + ' / ' + G.AbilityDefs.LIST.length;
+    const feat = $('gacha-feat'); feat.innerHTML = '';
+    for (const dex of [144, 150, 151]) feat.appendChild(medalArt(dex));
+    $('gacha-pity').textContent = 'Tiradas sin legendaria en Kanto: ' + (s.abilityPity[1] || 0) + ' / ' + G.Gacha.PITY_5;
+    $('gacha-rates').innerHTML = '<h3>Probabilidades</h3>' + G.Gacha.RATES.slice().reverse().map(([r, w]) =>
+      '<div><span style="color:' + G.Gacha.RARITY_COLOR[r] + '">' + G.UI.stars(r, 10) + ' ' + G.Gacha.RARITY_NAME[r] + '</span><span>' + w + '%</span></div>').join('') +
+      '<p class="note">Cada especie conserva su probabilidad. Sus medallas se reparten por igual.<br>· ×10 garantiza una Épica o superior.<br>· Legendaria garantizada en la tirada 70. Puede ser Dragonite o una medalla.<br>· Medalla repetida: 300 Pokémonedas.<br>· Shiny: 1% en premios Pokémon; las medallas no son shiny.<br>· Cada jefe de una grieta da 1 gema. Regalo inicial: 10 gemas.<br>· El saldo y la garantía son independientes del gacha de Pokémon.</p>';
+    $('cost-1').innerHTML = G.Icons.html('gem', 18) + ' 1';
+    $('cost-10').innerHTML = G.Icons.html('gem', 18) + ' 10';
+    $('gacha-tickets').innerHTML = G.Icons.html('gem', 18) + ' <b>' + s.abilityGems + '</b> Gemas de habilidad';
+    $('pull-1').disabled = !G.AbilityGacha.costOf(s, 1);
+    $('pull-10').disabled = !G.AbilityGacha.costOf(s, 10);
+    const inventory = $('ability-medals'); inventory.innerHTML = '';
+    for (const dex of [144, 145, 146, 150, 151]) renderEquipment(inventory, dex);
+    G.UI.refreshCoins();
+  }
+
   async function pull(n, use = 't1') {
     if (busy) return;
-    const res = G.Gacha.pull(G.DB.save, n, gen, use);
-    if (!res) { G.Audio.sfx('error'); G.UI.toast('No tienes tickets suficientes: consíguelos jugando'); return; }
+    const res = mode === 'ability' ? G.AbilityGacha.pull(G.DB.save, n) : G.Gacha.pull(G.DB.save, n, gen, use);
+    if (!res) { G.Audio.sfx('error'); G.UI.toast(mode === 'ability' ? 'No tienes gemas suficientes: derrota jefes de grietas' : 'No tienes tickets suficientes: consíguelos jugando'); return; }
     G.Progress.checkAch();
     G.DB.commit(true);
     busy = true;
@@ -104,11 +185,12 @@ G.GachaUI = (() => {
       c.className = 'pcard r' + r.rarity + (r.shiny ? ' shiny' : '');
       c.style.setProperty('--rc', r.shiny ? '#9ae6ff' : G.Gacha.RARITY_COLOR[r.rarity]);
       c.innerHTML = `<div class="stars">${G.UI.stars(r.rarity, 24)}</div>`;
-      c.appendChild(G.UI.spriteCanvas(r.dex, 132, 120, { lively: r.rarity >= 4 || r.shiny, scale: 2, shiny: r.shiny }));
+      c.appendChild(r.medal ? medalArt(r.dex) : G.UI.spriteCanvas(r.dex, 132, 120, { lively: r.rarity >= 4 || r.shiny, scale: 2, shiny: r.shiny }));
       const tag = r.isNew
         ? `<span class="new">${r.shiny ? '¡SHINY NUEVO!' : '¡NUEVO!'}</span>`
         : `Repetido · <span class="coin"></span> +${r.refund}`;
-      c.insertAdjacentHTML('beforeend', `<b>${r.shiny ? G.Icons.html('shiny', 12) + ' ' : ''}${mon.name}</b><div class="tag">${tag}</div>`);
+      const medal = r.medal && G.AbilityDefs.BY_ID[r.medal];
+      c.insertAdjacentHTML('beforeend', `<b>${r.shiny ? G.Icons.html('shiny', 12) + ' ' : ''}${mon.name}${medal ? ' · ' + medal.name : ''}</b>${medal ? '<small>Medalla de habilidad</small>' : ''}<div class="tag">${tag}</div>`);
       out.appendChild(c);
       G.Audio.sfx('reveal', { rarity: r.rarity });
       await wait(n === 10 ? 150 : 0);
@@ -122,5 +204,5 @@ G.GachaUI = (() => {
     refresh();
   }
 
-  return { init, open, get open_() { return !$('pull-fx').classList.contains('hidden'); } };
+  return { init, open, refresh, renderEquipment, get open_() { return !$('pull-fx').classList.contains('hidden'); } };
 })();

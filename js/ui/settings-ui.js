@@ -6,8 +6,8 @@
 G.SettingsUI = (() => {
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '1.2 · 2026-10-09';
-  const REPO = 'https://github.com/JPTER78/pokesurvivor';
+  const VERSION = '0.2.0 · 2026-10-15';
+  const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 
   function init() {
@@ -68,6 +68,7 @@ G.SettingsUI = (() => {
   function render() {
     document.querySelectorAll('#set-tabs .gen-tab').forEach(b => b.classList.toggle('on', b.dataset.t === tab));
     const box = $('set-body');
+    box.removeAttribute('translate');
     box.scrollTop = 0;
     if (tab === 'sound') {
       box.innerHTML = section('Sonido') + '<div id="set-sound" class="sound-inline"></div>';
@@ -75,7 +76,7 @@ G.SettingsUI = (() => {
     } else if (tab === 'gfx') {
       const auto = ['baja', 'media', 'alta'][G.Settings.autoLevel];
       box.innerHTML = section('Idioma', 'El juego se recarga al cambiarlo.')
-        + `<div class="chips set-chips" translate="no">${[['es', 'Español'], ['en', 'English']].map(([v, l]) =>
+        + `<div class="chips set-chips" translate="no">${[['es', 'Español'], ['en', 'English'], ['zh', '简体中文']].map(([v, l]) =>
              `<button class="chip ${G.I18n.lang === v ? 'on' : ''}" data-lang="${v}">${l}</button>`).join('')}</div>`
         + section('Calidad', 'Cuántos efectos y partículas se dibujan. <b>Auto</b> la baja sola si el juego va a tirones (ahora: ' + auto + ').')
         + choice('quality', [['auto', 'Auto'], ['high', 'Alta'], ['mid', 'Media'], ['low', 'Baja']])
@@ -99,6 +100,8 @@ G.SettingsUI = (() => {
              <div><kbd>Esc</kbd> o <kbd>P</kbd></div><span>pausa</span>
              <div><kbd>1</kbd>–<kbd>3</kbd></div><span>elegir carta al subir de nivel</span>
            </div>`;
+    } else if (tab === 'dev') {
+      G.Dev.renderSettings(box);
     } else if (tab === 'acc') {
       renderAccount(box);
     } else {

@@ -190,6 +190,9 @@ G.Rift = (() => {
   function won() {
     if (!arena || arena.phase !== 'fight') return;
     arena.phase = 'won'; arena.endT = 5;
+    G.DB.save.abilityGems = (G.DB.save.abilityGems || 0) + 1;
+    G.DB.commit(true);
+    G.UI.toast('+1 Gema de habilidad');
     G.Progress.event('rift', { type: arena.type });
     G.Pickups.pullAll();
     G.Spawner.say('¡Has vencido a ' + G.DEX_BY[arena.dex].name + '! Recoge el premio…', 3.4, true);
@@ -270,6 +273,7 @@ G.Rift = (() => {
 
   return {
     reset, update, drawable, onEvent, enterRequest() { if (!arena) start(); },
+    debugStart() { if (G.Dev && G.Dev.canUse()) start(); },
     get rift() { return rift; }, get arena() { return arena; },
     get inArena() { return !!arena; },
     get timeLeft() { return arena ? Math.max(0, ARENA_TIME - arena.t) : 0; },

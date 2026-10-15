@@ -5,7 +5,7 @@ G.MenuUI = (() => {
   let dexFilter = 'all', dexGen = 1, dexSel = null;
 
   function init() {
-    const ICON = { play: 'ball', dex: 'book', upgrades: 'up', gacha: 'ball4', goals: 'medal3', friends: 'friends', rank: 'trophy', settings: 'gear' };
+    const ICON = { play: 'ball', dex: 'book', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', friends: 'friends', rank: 'trophy', settings: 'gear' };
     document.querySelectorAll('#scr-menu [data-go]').forEach(b => {
       b.insertAdjacentHTML('afterbegin', `<span class="mi-ico">${G.Icons.html(ICON[b.dataset.go], 26)}</span>`);
       b.dataset.sfx = b.dataset.go === 'play' ? 'confirm' : 'click';
@@ -15,6 +15,7 @@ G.MenuUI = (() => {
         else if (go === 'dex') openDex();
         else if (go === 'upgrades') openUpgrades();
         else if (go === 'gacha') G.GachaUI.open();
+        else if (go === 'ability-gacha') G.GachaUI.open('ability');
         else if (go === 'goals') G.GoalsUI.open();
         else if (go === 'friends') G.FriendsUI.open();
         else if (go === 'rank') G.RankingUI.open();
@@ -43,6 +44,8 @@ G.MenuUI = (() => {
     $('menu-partner').classList.toggle('shiny', shiny);
     $('menu-partner-name').innerHTML = mon.name + (shiny ? ' ' + G.Icons.html('shiny', 24) : '');
     $('menu-partner-info').innerHTML = G.UI.typeChips(mon.types) + ' ' + G.UI.stars(mon.rarity);
+    const ability = G.Abilities.equipped(s, mon.dex);
+    if (ability) $('menu-partner-info').insertAdjacentHTML('beforeend', '<br>' + G.Icons.html('medal3', 18) + ' ' + G.AbilityDefs.BY_ID[mon.dex + '-' + ability].name);
     // Normal / shiny a mano, aquí mismo (en el móvil no se encontraba en la ficha).
     const seg = $('menu-shiny');
     seg.classList.toggle('hidden', !G.DB.ownsShiny(mon.dex));
@@ -215,6 +218,7 @@ G.MenuUI = (() => {
     $('dex-big').style.setProperty('--stage-c', !own ? '#5b83d6' : viewShiny ? '#9ae6ff' : G.U.TYPE_COLOR[p.types[0]]);
     $('dex-big').classList.toggle('shiny', own && viewShiny);
     G.UI.sprite($('dex-big'), dex, { lively: own, spin: own, silhouette: !own, scale: 3, hero: true, shiny: own && viewShiny });
+    if (G.AbilityDefs.medalsFor(dex).length) G.GachaUI.renderEquipment(box, dex);
     box.querySelectorAll('.seg button').forEach(b => {
       b.onclick = () => { viewShiny = b.dataset.v === '1'; showDetail(dex); };
     });

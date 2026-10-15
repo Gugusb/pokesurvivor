@@ -109,7 +109,7 @@ G.Game = (() => {
     G.World.setBiome(0, true);
     biome = 0;
     time = 0; pendingLevels = 0;
-    runReal = performance.now(); tampered = false;
+    runReal = performance.now(); tampered = !!(G.Dev && G.Dev.enabled);
 
     pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(mon.dex));
     banked = { t1: 0, t10: 0 };
@@ -864,6 +864,7 @@ G.Game = (() => {
 
   return {
     init, startRun, everyone, levelXp, flash, offerBond,
+    debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },
     /** Para grabar vídeos: cámara lenta (0,5 = mitad de velocidad). */
@@ -882,7 +883,7 @@ G.Game = (() => {
 G.Flow = {
   boot() {
     G.UI.initChrome();
-    G.LoginUI.init(); G.TestUI.init(); G.MenuUI.init(); G.GachaUI.init();
+    G.LoginUI.init(); G.TestUI.init(); G.MenuUI.init(); G.GachaUI.init(); G.Dev.init();
     G.SocialUI.init(); G.RankingUI.init(); G.ModUI.init(); G.GoalsUI.init(); G.ProfileUI.init(); G.SettingsUI.init(); G.SupportUI.init(); G.NewsUI.init(); G.Updater.init();
     // Tu nombre arriba a la derecha abre tu perfil.
     document.getElementById('user-pill').onclick = () => G.GoalsUI.open('profile');

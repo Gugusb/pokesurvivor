@@ -531,6 +531,7 @@ G.Combat = (() => {
     const crit = isCrit(pl);
     dmg *= k * (crit ? CRIT_MUL : 1);
     e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Types.mult(m.type, e.types)));
+    if (!ghost) G.Abilities.onHit(pl, e);
     if (!ghost) pl.onDealt(dmg);
     pl.dmgDealt += dmg;
     if (m.burn) e.applyBurn(m.burn);
@@ -563,7 +564,7 @@ G.Combat = (() => {
           continue;
         }
         if (G.U.dist2(p.x, p.y, pl.x, pl.y) < (p.r + pl.r) * (p.r + pl.r)) {
-          pl.hurt(p.dmg, p.mtype);
+          pl.hurt(p.dmg, p.mtype, false, { kind: 'ranged' });
           G.FX.burst(p.x, p.y - G.LIFT, p.color, 7, 110);
           projectiles.splice(i, 1);
         }
@@ -639,6 +640,7 @@ G.Combat = (() => {
         const k = (p.mtype ? typeK(p.mtype, e) : 1) * (crit ? CRIT_MUL : 1);
         e.hurt(p.dmg * k, p.color, p.vx || (e.x - pl.x), p.vy || (e.y - pl.y), p.knock,
                crit ? 'crit' : p.mtype ? G.Types.label(G.Types.mult(p.mtype, e.types)) : null);
+        G.Abilities.onHit(pl, e);
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
         pl.dmgDealt += p.dmg * k;
         pl.onDealt(p.dmg * k);
@@ -664,8 +666,8 @@ G.Combat = (() => {
       if (e.touchCd > 0 || e.behavior === 'thief') continue;
       e.touchCd = 0.55;
       e.strike(pl);
-      pl.hurt(e.dmg, e.atkType);
-      if (pl.hasItem('rockyhelmet')) e.hurt(15 + pl.level * 4, '#9aa6b5', e.x - pl.x, e.y - pl.y, 80);
+      const landed = pl.hurt(e.dmg, e.atkType, false, { kind: 'contact', enemy: e });
+      if (landed && pl.hasItem('rockyhelmet')) e.hurt(15 + pl.level * 4, '#9aa6b5', e.x - pl.x, e.y - pl.y, 80);
       const [nx, ny] = G.U.norm(e.x - pl.x, e.y - pl.y);
       e.kx += nx * 150; e.ky += ny * 150;
     }

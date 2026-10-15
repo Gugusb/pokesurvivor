@@ -79,6 +79,7 @@ G.Coop = (() => {
       const mon = G.DEX_BY[m.dex] || G.DEX_BY[25];
       const p = new G.Player(mon, {}, !!m.shiny);
       p.remote = true; p.uid = m.uid; p.tag = m.name; p.tagColor = COLORS[i]; p.revLabel = 'Quédate a su lado';
+      p.ability = null;
       p.x = x; p.y = y;
       p.net = { x, y, ang: Math.PI / 2, walk: 0, hp: p.maxHp, maxHp: p.maxHp, dead: 0, mv: G.startMoveOf(mon.dex), ml: 1, mag: 78, aim: Math.PI / 2, rev: 0 };
       G.Sprites.preload([mon.dex], 8000, p.shiny);
@@ -135,12 +136,12 @@ G.Coop = (() => {
     const m = g.find(x => x.kind === 'orbit') || g[0];
     return [r1(local.x), r1(local.y), r2(local.moveAngle), local.walking ? 1 : 0, r1(local.hp), r1(local.maxHp),
             local.dead ? 1 : 0, m ? m.id : '', m ? m.lvl : 1, r1(local.magnet), r2(local.aim), r2(local.xpMul),
-            r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq];
+            r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq, local.ability || null];
   }
 
   function readState(a) {
     return { x: a[0], y: a[1], ang: a[2], walk: a[3], hp: a[4], maxHp: a[5], dead: a[6], mv: a[7], ml: a[8],
-             mag: a[9], aim: a[10], xpMul: a[11], rev: a[12], ch: a[13], ld: a[14] };
+             mag: a[9], aim: a[10], xpMul: a[11], rev: a[12], ch: a[13], ld: a[14], ability: a[15] || null };
   }
 
   // ---------------- envío ----------------
@@ -168,7 +169,7 @@ G.Coop = (() => {
       if (e.dead || G.U.dist2(e.x, e.y, near.x, near.y) > r2n) continue;
       const a = ANIMS.indexOf(e.anim.cur);
       out.push([e.id, r1(e.x), r1(e.y), Math.ceil(e.hp), a < 0 ? 0 : a, e.anim.dir,
-                (e.burn > 0 ? 1 : 0) | (e.poison > 0 ? 2 : 0) | (e.shield > 0 ? 4 : 0)]);
+                (e.burn > 0 || e.abilityBurn ? 1 : 0) | (e.poison > 0 ? 2 : 0) | (e.shield > 0 ? 4 : 0), r2(e.staticT || 0), r2(e.unnerveT || 0)]);
     }
     return out;
   }
@@ -251,7 +252,12 @@ G.Coop = (() => {
   function onClientFrame(from, msg) {
     const m = mates.get(from);
     if (!m || !m.connected) return;
-    if (msg.p) { m.state = msg.p; m.pl.net = readState(msg.p); m.xpMul = m.pl.net.xpMul || 1; reconcile(from, m.pl.net); }
+    if (msg.p) {
+      m.state = msg.p; m.pl.net = readState(msg.p);
+      const validAbility = G.AbilityDefs.medalsFor(m.pl.dex).some(a => a.ability === m.pl.net.ability);
+      m.pl.ability = validAbility ? m.pl.net.ability : null;
+      m.xpMul = m.pl.net.xpMul || 1; reconcile(from, m.pl.net);
+    }
     for (const ev of msg.ev || []) {
       switch (ev[0]) {
         case 'h': {
@@ -267,7 +273,18 @@ G.Coop = (() => {
           if (!e || e.dead) break;
           if (ev[2] === 'b') e.applyBurn(ev[3]);
           else if (ev[2] === 'p') e.applyPoison(ev[3]);
-          else if (ev[2] === 's') e.applySlow(ev[3]);
+          else if (ev[2] === 's') e.applySlow(ev[3], ev[4] || 1.2);
+          break;
+        }
+        case 'ab': {
+          const e = G.EnemyMgr.get(ev[1]);
+          if (e && !e.dead && m.pl.ability === ev[2] && Number.isFinite(ev[3])) G.Abilities.applyEffect(e, ev[2], Math.max(0, Math.min(1e6, ev[3])));
+          break;
+        }
+        case 'as': {
+          if (m.pl.ability === 'synchronize' && Number.isFinite(ev[1])) {
+            for (const e of G.EnemyMgr.all()) if (!e.dead) e.applySlow(G.U.clamp(ev[1], 0, 0.95), 3);
+          }
           break;
         }
         case 'c':
@@ -339,6 +356,7 @@ G.Coop = (() => {
       n.x = a[1]; n.y = a[2]; n.age = 0; n.last = now;
       e.hp = Math.min(e.maxHp, a[3]);
       n.anim = a[4]; n.dir = a[5]; n.st = a[6];
+      e.staticT = a[7] || 0; e.unnerveT = a[8] || 0;
     }
   }
 
@@ -394,7 +412,7 @@ G.Coop = (() => {
 
   // invitado
   function hit(e, d, color, dx, dy, knock) { outEv.push(['h', e.id, d, color, r1(dx), r1(dy), knock || 0]); }
-  function status(e, kind, val) { outEv.push(['s', e.id, kind, val]); }
+  function status(e, kind, val, dur) { outEv.push(['s', e.id, kind, val, dur]); }
 
   // anfitrión
   function hurtShown(e, d, color) { emitNear(['hn', e.id, d, color], e.x, e.y, hitFrom); }

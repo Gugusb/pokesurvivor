@@ -27,7 +27,7 @@
 G.DB = (() => {
   const K_ACC = 'ps.accounts', K_SES = 'ps.session', K_SAVE = 'ps.save.';
   const K_CLOUD = 'ps.cloud.', K_MIGRATED = 'ps.migrated.';
-  const VERSION = 3;
+  const VERSION = 4;
   const START_COINS = 500;
   const SDK = 'https://www.gstatic.com/firebasejs/13.0.0/';
   const NAME_DOMAIN = 'jugadores.pokesurvivor.net';   // sólo para el email interno
@@ -83,6 +83,11 @@ G.DB = (() => {
       pupg: {},               // dex -> { id -> nivel }: mejoras de cada Pokémon
       tickets: { t1: 0, t10: 0 },   // tickets del gacha (x1 y x10)
       pity: {},               // generación del banner -> tiradas sin ★5
+      abilityGems: 10,        // regalo inicial, una sola vez por partida guardada
+      abilityStarterGranted: true,
+      abilityMedals: {},      // dex-habilidad -> { at, from }
+      abilityPity: {},        // contador independiente por banner de habilidades
+      abilityEquipped: {},    // una sola medalla equipada por especie
       legends: {},            // dex -> fecha: legendarios vencidos en grietas
       arenas: {},             // tipo -> fecha: arenas de grieta ganadas
       itemsFound: {},         // id -> fecha: objetos equipables encontrados
@@ -91,12 +96,13 @@ G.DB = (() => {
       missions: {},           // misiones del día / semana (systems/progress.js)
       profile: { favs: [], title: '' },   // perfil público: 3 favoritos y título
       stats: { runs: 0, bestTime: 0, bestLevel: 0, totalKills: 0, pulls: 0, coinsEarned: 0, shinies: 0,
-               bossesTotal: 0, riftWins: 0, evolutions: 0, missionsDone: 0, groupRuns: 0, bestGroupTime: 0 }
+               bossesTotal: 0, riftWins: 0, evolutions: 0, missionsDone: 0, groupRuns: 0, bestGroupTime: 0, abilityPulls: 0 }
     };
   }
 
   /** Rellena campos que falten en partidas de versiones anteriores. */
   function migrate(s, name) {
+    const needsAbilityGift = !s.abilityStarterGranted;
     const base = newSave(name || s.name);
     for (const k in base) if (s[k] == null) s[k] = base[k];
     for (const k in base.stats) if (s.stats[k] == null) s.stats[k] = base.stats[k];
@@ -110,6 +116,7 @@ G.DB = (() => {
       s.pupgDone = true;
     }
     s.tickets = Object.assign({ t1: 0, t10: 0 }, s.tickets);
+    if (needsAbilityGift) { s.abilityGems = 10; s.abilityStarterGranted = true; }
     sanitize(s);
     s.v = VERSION;
     return s;
@@ -126,6 +133,24 @@ G.DB = (() => {
     s.coins = n(s.coins);
     s.tickets.t1 = n(s.tickets.t1);
     s.tickets.t10 = n(s.tickets.t10);
+    s.abilityGems = n(s.abilityGems);
+    if (!s.abilityMedals || typeof s.abilityMedals !== 'object' || Array.isArray(s.abilityMedals)) s.abilityMedals = {};
+    if (G.AbilityDefs) {
+      for (const id of Object.keys(s.abilityMedals)) {
+        const medal = s.abilityMedals[id];
+        if (!Object.prototype.hasOwnProperty.call(G.AbilityDefs.BY_ID, id) || !medal || typeof medal !== 'object' || Array.isArray(medal)) {
+          delete s.abilityMedals[id];
+        }
+      }
+    }
+    if (!s.abilityPity || typeof s.abilityPity !== 'object' || Array.isArray(s.abilityPity)) s.abilityPity = {};
+    for (const gen of Object.keys(s.abilityPity)) s.abilityPity[gen] = n(s.abilityPity[gen]);
+    if (!s.abilityEquipped || typeof s.abilityEquipped !== 'object' || Array.isArray(s.abilityEquipped)) s.abilityEquipped = {};
+    if (G.AbilityDefs) for (const dex of Object.keys(s.abilityEquipped)) {
+      const id = s.abilityEquipped[dex], def = G.AbilityDefs.BY_ID[id];
+      if (id === null && G.AbilityDefs.medalsFor(+dex).length) continue;
+      if (!def || def.dex !== +dex || !s.abilityMedals[id]) delete s.abilityEquipped[dex];
+    }
     if (G.DEX_BY) for (const coll of ['owned', 'shiny']) {
       for (const d of Object.keys(s[coll] || {})) if (!G.DEX_BY[d]) delete s[coll][d];
     }
@@ -172,12 +197,18 @@ G.DB = (() => {
     const newer = (a.updated || 0) >= (b.updated || 0) ? a : b;
     const older = newer === a ? b : a;
     const r = JSON.parse(JSON.stringify(newer));
-    for (const coll of ['owned', 'shiny']) {
+    for (const coll of ['owned', 'shiny', 'abilityMedals']) {
       r[coll] = r[coll] || {};
       for (const k in older[coll] || {}) {
         if (!r[coll][k] || (older[coll][k].at || 0) < (r[coll][k].at || 0)) r[coll][k] = older[coll][k];
       }
     }
+    // Un cliente antiguo no conoce estos campos: conservarlos si los omite.
+    // Cuando están presentes, el saldo y el pity son los de la copia reciente.
+    if (r.abilityGems == null) r.abilityGems = older.abilityGems || 0;
+    if (r.abilityPity == null) r.abilityPity = JSON.parse(JSON.stringify(older.abilityPity || {}));
+    if (r.abilityEquipped == null) r.abilityEquipped = JSON.parse(JSON.stringify(older.abilityEquipped || {}));
+    r.abilityStarterGranted = !!(newer.abilityStarterGranted || older.abilityStarterGranted);
     for (const k in older.upgrades || {}) r.upgrades[k] = Math.max(r.upgrades[k] || 0, older.upgrades[k]);
     r.pupg = r.pupg || {};
     for (const d in older.pupg || {}) {

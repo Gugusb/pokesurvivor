@@ -183,6 +183,7 @@
         <button class="menu-item" data-go="dex">Pokémon<small id="menu-dex-count">Tu colección</small></button>
         <button class="menu-item" data-go="upgrades">Mejoras<small>Haz más fuerte cada run</small></button>
         <button class="menu-item" data-go="gacha">Gacha<small>9 regiones · Pokémon y shinies</small></button>
+        <button class="menu-item" data-go="ability-gacha">Gacha de habilidades<small>Gemas y medallas de Kanto</small></button>
         <button class="menu-item" data-go="goals">Misiones<small id="menu-goals-sub">Misiones, logros y perfil</small></button>
         <button class="menu-item" data-go="friends">Amigos<small id="menu-friends-sub">Juega en grupo, hasta 4</small></button>
         <button class="menu-item" data-go="rank">Ranking<small>Quién aguanta más</small></button>
@@ -249,6 +250,7 @@
       <button class="gen-tab" data-t="ctl">Controles</button>
       <button class="gen-tab" data-t="acc">Cuenta</button>
       <button class="gen-tab" data-t="about">Acerca de</button>
+      <button class="gen-tab" data-t="dev">Desarrollador</button>
     </div>
     <div id="set-body" class="set-body"></div>
   </div>
@@ -474,7 +476,8 @@
 <!-- ====== Gacha ====== -->
 <section id="scr-gacha" class="scr dim hidden">
   <div class="box wide">
-    <div class="row between"><h2>Gacha</h2><button class="btn small ghost" data-back>Volver</button></div>
+    <div class="row between"><h2 id="gacha-heading">Gacha</h2><button class="btn small ghost" data-back>Volver</button></div>
+    <div class="seg gacha-mode"><button id="gacha-pokemon-mode">Pokémon</button><button id="gacha-ability-mode">Habilidades</button></div>
     <div class="gen-tabs" id="gacha-gens"></div>
     <div class="split" style="margin-top:8px">
       <div>
@@ -494,6 +497,7 @@
       </div>
       <div class="panel rates" id="gacha-rates"></div>
     </div>
+    <div id="ability-medals" class="hidden"></div>
   </div>
 </section>
 
@@ -560,10 +564,12 @@
 <script defer src="js/core/util.js"></script>
 <script defer src="js/core/i18n.js"></script>
 <script defer src="js/data/lang-en.js"></script>
+<script defer src="js/data/lang-zh.js"></script>
 <script defer src="js/core/settings.js"></script>
 <script defer src="js/data/music.js"></script>
 <script defer src="js/data/pokedex.js"></script>
 <script defer src="js/data/sprites-meta.js"></script>
+<script defer src="js/data/abilities.js"></script>
 <!-- núcleo -->
 <script defer src="js/core/firebase-config.js"></script>
 <script defer src="js/core/db.js"></script>
@@ -598,6 +604,8 @@
 <script defer src="js/systems/spawner.js"></script>
 <script defer src="js/systems/levelup.js"></script>
 <script defer src="js/systems/gacha.js"></script>
+<script defer src="js/systems/abilities.js"></script>
+<script defer src="js/systems/ability-gacha.js"></script>
 <script defer src="js/systems/interact.js"></script>
 <script defer src="js/systems/rift.js"></script>
 <script defer src="js/systems/judgment.js"></script>
@@ -627,6 +635,7 @@
 <script defer src="js/ui/mod-ui.js"></script>
 <script defer src="js/ui/goals-ui.js"></script>
 <script defer src="js/ui/settings-ui.js"></script>
+<script defer src="js/ui/developer.js"></script>
 <script defer src="js/ui/support-ui.js"></script>
 <script defer src="js/ui/news-ui.js"></script>
 <script defer src="js/core/updater.js"></script>

@@ -30,6 +30,8 @@ G.Player = class Player {
     this.hp = this.maxHp;
     this.baseSpd = mon.spd;
     this.baseAtk = mon.atk;
+    this.ability = G.Abilities.equipped(G.DB.save, mon.dex);
+    this.snowHealCd = 0; this.syncCd = 0;
 
     this.moves = [];           // todos los movimientos aprendidos
     this.slots = [];           // huecos: cada uno, una lista de movimientos que se lanzan a la vez
@@ -225,8 +227,10 @@ G.Player = class Player {
    * @param type  tipo del ataque (tabla de tipos y clima); sin tipo, daño tal cual
    * @param pure  daño que no baja con la defensa ni el cuerpo a cuerpo (Arceus)
    */
-  hurt(amount, type = null, pure = false) {
-    if (this.invuln > 0 || this.dead) return;
+  hurt(amount, type = null, pure = false, source = { kind: 'environment' }) {
+    if (this.invuln > 0 || this.dead) return false;
+    if (G.Dev && G.Dev.invincible) return false;
+    if (!G.Abilities.beforeHurt(this, source)) return false;
     let eff = null;
     if (type) {
       const k = G.Types.mult(type, this.mon.types);
@@ -238,6 +242,7 @@ G.Player = class Player {
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close);
     this.hp -= d;
+    G.Abilities.afterHurt(this, source);
     this.invuln = 0.45;
     this.flash = 0.14;
     G.Audio.sfx('hurt');
@@ -257,6 +262,7 @@ G.Player = class Player {
       G.Projectiles.clearOrbs(this);
       this.reviveT = 0;
     }
+    return true;
   }
 
   heal(amount) {
@@ -315,6 +321,7 @@ G.Player = class Player {
   update(dt) {
     this.anim.update(dt);
     if (this.dead) return;
+    G.Abilities.playerTick(this, dt);
     if (this.invuln > 0) this.invuln -= dt;
     if (this.flash > 0) this.flash -= dt;
     if (this.attackFace > 0) this.attackFace -= dt;
@@ -412,6 +419,7 @@ G.Player = class Player {
     else { this.x = G.U.damp(this.x, n.x, 14, dt); this.y = G.U.damp(this.y, n.y, 14, dt); }
     if (n.hp < this.hp - 0.5 && !n.dead) this.flash = 0.14;
     this.hp = n.hp; this.maxHp = n.maxHp;
+    this.ability = n.ability || null;
     this.magnet = n.mag || this.magnet;
     this.reviveT = n.rev || 0;
     if (n.dead && !this.dead) { this.dead = true; this.anim.play('Faint', { hold: true }); G.Projectiles.clearOrbs(this); }

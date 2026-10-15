@@ -6,6 +6,16 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-15', title: ['Habilidades de Kanto · v0.2.0', 'Kanto abilities · v0.2.0'], new: [
+    ['Medallas de habilidad para Articuno, Zapdos, Moltres, Mewtwo y Mew. Cada medalla desbloquea una habilidad; equipa sólo una por Pokémon.',
+     'Ability medals for Articuno, Zapdos, Moltres, Mewtwo and Mew. Each medal unlocks one ability; equip one per Pokémon.'],
+    ['Gacha de habilidades con gemas: regalo inicial de 10 y una por cada jefe de grieta derrotado. Colección y garantía independientes del gacha normal.',
+     'Ability gacha using gems: receive 10 initially and one per defeated rift boss. Collection and pity are separate from the normal gacha.'],
+    ['Idioma chino simplificado en Ajustes → Gráficos → Idioma, con el diccionario de Gugusb.',
+     'Simplified Chinese in Settings → Graphics → Language, using Gugusb’s dictionary.'],
+    ['Modo desarrollador opcional en Ajustes: gemas, medallas, compañeros, pruebas de combate y grietas. F2 abre el panel; sólo para partidas en solitario y sin ranking.',
+     'Optional developer mode in Settings: gems, medals, partners, combat tests and rifts. F2 opens the panel; solo only, with no leaderboard submissions.']
+  ], chg: [], fix: [] },
   { d: '2026-10-14', title: ['Recupera tu cuenta con Gmail', 'Recover your account with Gmail'], new: [
     ['Si juegas con nombre y contraseña, puedes vincular tu Gmail: si un día olvidas la contraseña, entras con Google y es tu misma cuenta. Te lo ofrecemos al entrar.',
      'If you play with a name and password, you can link your Gmail: if you ever forget your password, sign in with Google and it is the same account. We offer it when you sign in.']

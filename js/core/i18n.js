@@ -22,29 +22,38 @@ G.I18n = (() => {
   try { saved = localStorage.getItem(KEY); } catch (e) { /* nada */ }
   const byPath = /\/en(\/|$)/.test(location.pathname) ? 'en' : null;
   const nav = ((navigator.languages && navigator.languages[0]) || navigator.language || 'es').toLowerCase();
-  const lang = saved === 'es' || saved === 'en' ? saved : byPath || (nav.startsWith('es') ? 'es' : 'en');
-  document.documentElement.lang = lang;
+  const lang = ['es', 'en', 'zh'].includes(saved) ? saved : byPath || (nav.startsWith('zh') ? 'zh' : nav.startsWith('es') ? 'es' : 'en');
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : lang;
 
   const exact = new Map(), exactLow = new Map();
   let patterns = [], frag = null, fragLow = null, fragMap = new Map();
   const cache = new Map();
+  const dictionaries = { en: {}, zh: {} };
   const L = '\\p{L}\\p{N}';
   const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
   /** Añade traducciones { 'texto en español': 'English text' }. */
-  function add(dict) {
+  function add(dict, locale = 'en') {
+    Object.assign(dictionaries[locale], dict);
+    exact.clear(); exactLow.clear(); fragMap.clear(); patterns = [];
+    const active = lang === 'zh' ? Object.assign(
+      Object.fromEntries(Object.entries(dictionaries.en).map(([es, en]) => [es, dictionaries.zh[es] || dictionaries.zh[en] || en])),
+      dictionaries.zh
+    ) : dictionaries.en;
     const fr = [];
-    for (const [es, en] of Object.entries(dict)) {
+    for (const [source, en] of Object.entries(active)) {
+      const es = source.replace(/\s+/g, ' ').trim();
       if (!en || es === en) continue;
       if (es.includes('{x}')) {
         const parts = es.split('{x}').map(reEsc);
-        patterns.push({ re: new RegExp('^' + parts.join('(.+?)') + '$', 'u'), reI: new RegExp('^' + parts.join('(.+?)') + '$', 'iu'), en });
+        patterns.push({ re: new RegExp('^' + parts.join('(.+?)') + '$', 'u'), reI: new RegExp('^' + parts.join('(.+?)') + '$', 'iu'), en, length: es.length });
       } else {
         exact.set(es, en);
         exactLow.set(es.toLowerCase(), en);
-        if (es.length >= 4 || /\s/.test(es)) { fr.push(es); fragMap.set(es.toLowerCase(), en); }
+        if (es.length >= (lang === 'zh' ? 3 : 4) || /\s/.test(es)) { fr.push(es); fragMap.set(es.toLowerCase(), en); }
       }
     }
+    patterns.sort((a, b) => b.length - a.length);
     // Una sola expresión con todos los trozos (los más largos primero), sólo palabras enteras.
     const all = [...fragMap.keys()].sort((a, b) => b.length - a.length).map(reEsc).join('|');
     frag = all ? new RegExp(`(?<![${L}])(${all})(?![${L}])`, 'giu') : null;
@@ -63,6 +72,7 @@ G.I18n = (() => {
     const c = cache.get(s);
     if (c !== undefined) return c;
     let r = core(s);
+    if (lang === 'zh' && r !== s && /[A-Za-z]/.test(r)) r = core(r);
     if (cache.size > 4000) cache.clear();
     cache.set(s, r);
     return r;
@@ -82,7 +92,7 @@ G.I18n = (() => {
         const mm = (upper ? p.reI : p.re).exec(body);
         if (!mm) continue;
         let i = 1;
-        r = p.en.replace(/\{x\}/g, () => { const g = mm[i++]; return g === undefined ? '' : core(g); });
+        r = p.en.replace(/\{x\}|\{(\d+)\}/g, (_, explicit) => { const g = mm[explicit ? +explicit : i++]; return g === undefined ? '' : core(g); });
         r = keepCase(body, r);
         break;
       }
@@ -129,7 +139,7 @@ G.I18n = (() => {
     if (lang === 'es') return;
     // Los enlaces a las páginas de la web, a su versión en inglés.
     const EN_LINKS = { 'guia/': 'en/guide/', 'pokedex/': 'en/pokedex/' };
-    document.querySelectorAll('a[href]').forEach(a => { const h = a.getAttribute('href'); if (EN_LINKS[h]) a.setAttribute('href', EN_LINKS[h]); });
+    if (lang === 'en') document.querySelectorAll('a[href]').forEach(a => { const h = a.getAttribute('href'); if (EN_LINKS[h]) a.setAttribute('href', EN_LINKS[h]); });
     walk(document.body);
     new MutationObserver(ms => {
       for (const m of ms) {
@@ -158,6 +168,6 @@ G.I18n = (() => {
     location.reload();
   }
 
-  return { lang, add, t, f, set, startDom, walk };
+  return { lang, add, addChinese(dict) { add(dict, 'zh'); }, t, f, set, startDom, walk };
 })();
 G.T = G.I18n.t;

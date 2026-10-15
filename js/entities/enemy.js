@@ -55,6 +55,7 @@
       this.lavaTick = 0;
       this.kx = 0; this.ky = 0;
       this.touchCd = 0;
+      this.staticT = 0; this.unnerveT = 0; this.abilityBurn = null;
       this.dead = false;
       this.fade = 0;             // tiempo de desvanecimiento tras caer
 
@@ -139,7 +140,7 @@
     }
 
     applySlow(factor, dur = 1.2) {
-      if (this.remote) { G.Coop.status(this, 's', factor); return; }
+      if (this.remote) { G.Coop.status(this, 's', factor, dur); return; }
       this.slow = Math.max(this.slow, factor);
       this.slowT = Math.max(this.slowT, dur);
     }
@@ -207,7 +208,10 @@
       this.anim.update(dt);
       if (this.flash > 0) this.flash -= dt;
       if (this.dead) { this.fade -= dt; return; }
-      if (this.touchCd > 0) this.touchCd -= dt;
+      const attackRate = G.Abilities.pressure(this);
+      if (this.touchCd > 0) this.touchCd -= dt * attackRate;
+      this.staticT = Math.max(0, (this.staticT || 0) - dt);
+      this.unnerveT = Math.max(0, (this.unnerveT || 0) - dt);
       this.bob += dt * 6;
       if (this.shiny) {
         this.sparkT -= dt;
@@ -247,7 +251,10 @@
           G.FX.twinkle(this.x + G.U.rand(-this.r, this.r) * 1.2, this.y - G.U.rand(4, this.bodyH * 1.1));
         }
       }
-      if (this.touchCd > 0) this.touchCd -= dt;
+      const attackRate = G.Abilities.pressure(this);
+      if (this.touchCd > 0) this.touchCd -= dt * attackRate;
+      G.Abilities.enemyTick(this, dt);
+      if (this.dead) return;
       this.bob += dt * 6;
 
       // --- estados ---
@@ -276,7 +283,7 @@
         } else if (le.slow) terrainMul = le.slow < 0.5 ? 0.45 : 0.55;
       }
 
-      const spd = this.spd * (1 - this.slow) * terrainMul * G.Weather.speedFor(this.types);
+      const spd = this.spd * G.Abilities.slowFactor(this, terrainMul * G.Weather.speedFor(this.types));
       let [dx, dy] = G.U.norm(pl.x - this.x, pl.y - this.y);
       const dist = G.U.dist(this.x, this.y, pl.x, pl.y);
       // Duende del tesoro: huye de ti (en zigzag) en cuanto te acercas.
@@ -313,7 +320,7 @@
       }
       if (this.behavior === 'bomber' && dist < this.r + pl.r + 26) { this.startFuse(); return; }
       if (this.behavior === 'shielder' || this.behavior === 'jumper') {
-        this.skillCd -= dt;
+        this.skillCd -= dt * attackRate;
         if (this.skillCd <= 0) {
           if (this.behavior === 'shielder') { this.skillCd = 6; this.castShields(); }
           else if (dist < 250) { this.skillCd = G.U.rand(5, 7); this.startJump(pl); return; }
@@ -340,7 +347,7 @@
       if (this.boss) {
         [vx, vy, animBase] = this.bossMove(dt, pl, dist, dx, dy, spd);
       } else if (this.behavior === 'charger') {
-        this.pt -= dt;
+        this.pt -= dt * (this.phase === 'walk' ? attackRate : 1);
         if (this.phase === 'walk') {
           if (dist < 200 && this.pt <= 0) {
             this.phase = 'aim'; this.pt = 0.55;
@@ -365,7 +372,7 @@
         const [ddx, ddy] = G.U.norm(pl.x - this.x, pl.y - this.y);
         if (dist < keep * 0.75) { vx = -ddx * spd * 0.8; vy = -ddy * spd * 0.8; }
         else if (dist < keep) { vx *= 0.1; vy *= 0.1; animBase = 'Idle'; }
-        this.shotCd -= dt;
+        this.shotCd -= dt * attackRate;
         if (this.shotCd <= 0 && dist < range) {
           this.shotCd = this.def.shotCd || 2;
           this.special(pl, ddx, ddy);
@@ -426,7 +433,7 @@
       if (!ai.fury && this.hp < this.maxHp * 0.5) this.enrage();
       const k = ai.fury ? 1.25 : 1;
       if (ai.cast) return this.bossCast(dt, pl);
-      ai.modeT -= dt; ai.cd -= dt * k;
+      ai.modeT -= dt; ai.cd -= dt * k * G.Abilities.pressure(this);
       // Alterna siempre: en su distancia favorita está más rato (7-9 s) que en la otra (4-5 s).
       if (ai.modeT <= 0) {
         ai.mode = ai.mode === 'far' ? 'close' : 'far';
@@ -462,6 +469,10 @@
       G.Audio.sfx('boss');
     }
 
+    hazard(h) {
+      return G.Hazards.add(Object.assign({ sourceKind: 'ranged', sourceId: this.id }, h));
+    }
+
     bossStart(id, pl) {
       const ai = this.ai, f = ai.fury ? 0.8 : 1, type = this.atkType;
       const col = G.U.TYPE_COLOR[type] || '#ff7a9e';
@@ -470,18 +481,18 @@
       switch (id) {
         case 'slam':       // pisotón: onda alrededor
           c.wind = 0.85 * f;
-          G.Hazards.add({ kind: 'zone', x: this.x, y: this.y, r: 96 + this.r, delay: c.wind, dmg: this.dmg * 1.3, type, color: col });
+          this.hazard({ kind: 'zone', sourceKind: 'contact', x: this.x, y: this.y, r: 96 + this.r, delay: c.wind, dmg: this.dmg * 1.3, type, color: col });
           this.anim.play('Charge', { speed: 1.2 });
           break;
         case 'dash':       // embestida en línea recta
           c.wind = 0.75 * f; c.len = 330; c.dur = 0.32;
-          G.Hazards.add({ kind: 'beam', x: this.x, y: this.y, angle: ang, len: c.len + this.r, w: this.r * 2 + 16,
+          this.hazard({ kind: 'beam', sourceKind: 'contact', x: this.x, y: this.y, angle: ang, len: c.len + this.r, w: this.r * 2 + 16,
                           delay: c.wind + c.dur, dmg: this.dmg * 1.2, type, color: col });
           this.anim.play('Charge', { speed: 1.3 });
           break;
         case 'leap':       // salto y caída sobre ti
           this.jump = { sx: this.x, sy: this.y, tx: pl.x, ty: pl.y, t: -0.5 * f, dur: 0.65 };
-          G.Hazards.add({ kind: 'zone', x: pl.x, y: pl.y, r: 82, delay: 0.5 * f + 0.65, dmg: this.dmg * 1.25, type, color: col });
+          this.hazard({ kind: 'zone', sourceKind: 'contact', x: pl.x, y: pl.y, r: 82, delay: 0.5 * f + 0.65, dmg: this.dmg * 1.25, type, color: col });
           this.anim.play('Charge', { speed: 1.4 });
           ai.cast = null; ai.cd = G.U.rand(1.4, 2) + 0.6;
           break;
@@ -489,7 +500,7 @@
           const n = ai.fury ? 6 : 4;
           for (let i = 0; i < n; i++) {
             const a = i ? Math.random() * 6.2832 : 0, d = i ? G.U.rand(40, 120) : 0;
-            G.Hazards.add({ kind: 'zone', x: pl.x + Math.cos(a) * d, y: pl.y + Math.sin(a) * d * 0.8, r: 50,
+            this.hazard({ kind: 'zone', x: pl.x + Math.cos(a) * d, y: pl.y + Math.sin(a) * d * 0.8, r: 50,
                             delay: 1.05 + i * 0.12, dmg: this.shotDmg() * 1.15, type, color: col });
           }
           c.wind = 0.5; this.anim.play('Shoot');
@@ -498,7 +509,7 @@
         case 'beam': {     // rayos en abanico
           const n = ai.fury ? 5 : 3, sp = ai.fury ? 0.42 : 0.5;
           for (let i = 0; i < n; i++) {
-            G.Hazards.add({ kind: 'beam', x: this.x, y: this.y, angle: ang + (i - (n - 1) / 2) * sp, len: 400, w: 26,
+            this.hazard({ kind: 'beam', x: this.x, y: this.y, angle: ang + (i - (n - 1) / 2) * sp, len: 400, w: 26,
                             delay: 1.0, dmg: this.shotDmg() * 1.2, type, color: col });
           }
           c.wind = 1.0; c.after = 0.25; this.anim.play('Charge', { speed: 1.1 });
@@ -569,14 +580,14 @@
         case 'fan': { const n = this.def.fanN || 5; this.shoot(dx, dy, n === 3 ? 0.6 : 0.9, n, 0.65); break; }
         case 'beamer':
           // Rayo con aviso: primero se ve la franja en el suelo.
-          G.Hazards.add({ kind: 'beam', x: this.x, y: this.y, angle: Math.atan2(dy, dx), len: 360, w: 22,
+          this.hazard({ kind: 'beam', x: this.x, y: this.y, angle: Math.atan2(dy, dx), len: 360, w: 22,
                           delay: 1.0, dmg: this.shotDmg() * 1.05, type: this.atkType, color: col });
           this.anim.play('Charge', { speed: 1.2 });
           break;
         case 'zoner': {
           const n = G.U.randInt(1, this.def.zones || 3);
           for (let i = 0; i < n; i++) {
-            G.Hazards.add({ kind: 'zone', x: pl.x + (i ? G.U.rand(-70, 70) : 0), y: pl.y + (i ? G.U.rand(-55, 55) : 0), r: 44,
+            this.hazard({ kind: 'zone', x: pl.x + (i ? G.U.rand(-70, 70) : 0), y: pl.y + (i ? G.U.rand(-55, 55) : 0), r: 44,
                             delay: 1.2, dmg: this.shotDmg() * 0.95, type: this.atkType, color: col });
           }
           this.anim.play('Shoot');
@@ -598,7 +609,7 @@
       let n = 0;
       for (const e of G.EnemyMgr.queryCircle(this.x, this.y, 150)) {
         if (e.dead || e.hp >= e.maxHp) continue;
-        e.hp = Math.min(e.maxHp, e.hp + e.maxHp * k);
+        G.Abilities.healEnemy(e, e.maxHp * k);
         G.FX.burst(e.x, e.y - e.bodyH * 0.6, '#7dffb0', 5, 60);
         n++;
       }
@@ -638,14 +649,14 @@
 
     startFuse() {
       this.phase = 'fuse'; this.pt = 1.0;
-      G.Hazards.add({ kind: 'zone', x: this.x, y: this.y, r: 62, delay: 1.0, dmg: this.dmg * 1.4, type: this.atkType, color: '#ff7b3d' });
+      this.hazard({ kind: 'zone', x: this.x, y: this.y, r: 62, delay: 1.0, dmg: this.dmg * 1.4, type: this.atkType, color: '#ff7b3d' });
     }
 
     startJump(pl) {
       const tx = pl.x, ty = pl.y;
       this.jump = { sx: this.x, sy: this.y, tx, ty, t: -0.45, dur: 0.6 };
       this.anim.play('Charge', { speed: 1.4 });
-      G.Hazards.add({ kind: 'zone', x: tx, y: ty, r: 50, delay: 1.05, dmg: this.dmg * 1.2, type: this.atkType,
+      this.hazard({ kind: 'zone', sourceKind: 'contact', x: tx, y: ty, r: 50, delay: 1.05, dmg: this.dmg * 1.2, type: this.atkType,
                       color: G.U.TYPE_COLOR[this.atkType] || '#ff7a9e' });
     }
 
@@ -709,10 +720,10 @@
         ctx.restore();
       }
 
-      if (this.burn > 0 || this.poison > 0 || (this.net && this.net.st & 3)) {
+      if (this.burn > 0 || this.abilityBurn || this.poison > 0 || (this.net && this.net.st & 3)) {
         ctx.save();
         ctx.globalAlpha = 0.45;
-        ctx.fillStyle = this.burn > 0 || (this.net && this.net.st & 1) ? '#ff8a3d' : '#c86bdc';
+        ctx.fillStyle = this.burn > 0 || this.abilityBurn || (this.net && this.net.st & 1) ? '#ff8a3d' : '#c86bdc';
         ctx.beginPath(); ctx.ellipse(this.x, this.y, this.r * 1.2, this.r * 0.5, 0, 0, 6.2832); ctx.fill();
         ctx.restore();
       }
@@ -720,6 +731,7 @@
       // Apoyos: icono encima, para saber a quién ir primero.
       const SUP = { healer: 'heart', shielder: 'shield', summoner: 'friends' };
       if (SUP[this.behavior]) G.Icons.draw(ctx, SUP[this.behavior], Math.round(this.x - 6), Math.round(this.y - this.bodyH - (this.hp < this.maxHp ? 26 : 18)), 12);
+      if (this.staticT > 0 || this.unnerveT > 0) G.Icons.draw(ctx, this.staticT > 0 ? 'type:electric' : 'type:psychic', Math.round(this.x + 8), Math.round(this.y - this.bodyH - 25), 12);
 
       if (this.boss || this.hp < this.maxHp) {
         const w = this.boss ? 90 : Math.max(22, this.r * 2);

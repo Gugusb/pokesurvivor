@@ -16,6 +16,9 @@ G.Icons = (() => {
                  '..kmwmmmnk..', '.kmwmsmmmnk.', '.kmmsssmmnk.', '.kmmmsmmmnk.', '..kmmmmmnk..', '...kkkkkk...'];
 
   const UI = {
+    gem: { pal: { p: '#b77bff', d: '#6540b5', w: '#f4e8ff', l: '#d9b7ff' }, rows: [
+      '....kkkk....', '...klwwlk...', '..klwwwwlk..', '.kpllllllpk.', 'kpppppppppdk', 'kppppppppddk',
+      '.kppppppddk.', '..kppppddk..', '...kppddk...', '....kddk....', '.....kk.....', '............'] },
     gear: { pal: { g: '#c9d6ff', d: '#7f93c9' }, rows: [
       '....kkkk....', '.kk.kggk.kk.', '.kgkkggkkgk.', '..kggggggk..', 'kkggkkkkggkk', 'kgggk..kgddk',
       'kgggk..kgddk', 'kkggkkkkddkk', '..kggddddk..', '.kgkkddkkdk.', '.kk.kddk.kk.', '....kkkk....'] },
