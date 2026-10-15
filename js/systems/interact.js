@@ -45,7 +45,7 @@ G.Interact = (() => {
           } else if (p.open > 0) p.open = Math.max(0, p.open - dt * 1.5);
           break;
         case 'trap':
-          if (!pl.dead && d2 < 13 * 13) G.World.breakProp(p);
+            if (!pl.dead && !G.Abilities.has(pl, 'levitate') && d2 < 13 * 13) G.World.breakProp(p);
           else if (authority() && G.EnemyMgr.queryCircle(p.x, p.y - 8, 3).some(e => !e.flying && !e.remote)) G.World.breakProp(p);
           break;
       }

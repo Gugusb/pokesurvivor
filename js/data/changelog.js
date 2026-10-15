@@ -6,6 +6,17 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-15', title: ['Sinnoh y Tinovictoria · v0.5.0', 'Sinnoh and Victory Star · v0.5.0'], new: [
+    ['Sinnoh añade 20 medallas y Victini estrena Tinovictoria en Teselia: 63 medallas para 42 especies. Teselia conserva premios Pokémon donde aún no hay habilidades diseñadas.',
+     'Sinnoh adds 20 medals and Victini brings Victory Star to Unova: 63 medals for 42 species. Unova retains Pokémon rewards for species whose abilities are not designed yet.'],
+    ['Velo Arena acelera durante la arena; Piel Tosca contraataca con Placaje; Telepatía reduce daño del mismo tipo; Absorbe Fuego da ataque; Inicio Lento cambia experiencia y elecciones de nivel.',
+     'Sand Veil grants haste in sand; Rough Skin counters with Tackle; Telepathy halves matching damage; Flash Fire grants attack; Slow Start changes XP and level-up choices.'],
+    ['Hidratación evita estados negativos bajo lluvia; Mal Sueño drena enemigos lentos; Multitipo ignora la tabla de tipos; Tinovictoria acelera proyectiles un 30%.',
+     'Hydration prevents debuffs in rain; Bad Dreams drains slowed enemies; Multitype ignores the type chart; Victory Star speeds projectiles by 30%.']
+  ], chg: [
+    ['Cuerpo Llama repele y quema enemigos cercanos con 1 s de recarga. Levitación ya no activa trampas del suelo. Se añaden pruebas de daño por tipo al panel de desarrollo.',
+     'Flame Body knocks back and burns nearby enemies with a 1 s cooldown. Levitate no longer triggers ground traps. Developer tools add typed damage tests.']
+  ], fix: [] },
   { d: '2026-10-15', title: ['Habilidades de Johto y Hoenn · v0.4.0', 'Johto and Hoenn abilities · v0.4.0'], new: [
     ['Johto y Hoenn llegan al gacha de habilidades: 31 medallas nuevas, 42 en total, con garantías independientes por región y una sola medalla equipada por Pokémon.',
      'Johto and Hoenn join the ability gacha: 31 new medals, 42 total, with separate regional pity and one equipped medal per Pokémon.'],

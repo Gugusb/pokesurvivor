@@ -112,8 +112,8 @@ G.Weather = (() => {
     chipT -= dt;
     if (chipT <= 0) {
       chipT = 2;
-      if (pl && !pl.dead && hurts(pl.mon.types) && level() > 0.5) {
-        const d = Math.max(1, pl.maxHp * 0.012);
+      if (pl && !pl.dead && cur && !(cur.kind === 'sand' && G.Abilities.has(pl, 'sandveil')) && hurts(pl.mon.types) && level() > 0.5) {
+        const d = Math.max(1, pl.maxHp * 0.012) * G.Abilities.damageFactor(pl, {kind: 'environment'});
         if (pl.hp > d + 1) {
           pl.hp -= d;
           G.Abilities.onDamage(pl);

@@ -93,7 +93,7 @@ G.Dev = (() => {
       '<div class="row wrap"><button class="btn small" data-dev="force">下次抽出此勋章</button><button class="btn small" data-dev="equip">装备此勋章（局外）</button></div>' +
       '<p>' + G.Abilities.status(G.Game.player) + '</p>' +
       '<label>测试天气 <select id="dev-weather"><option value="sand">沙暴</option><option value="snow">雪天</option><option value="rain">下雨</option><option value="sun">晴天</option><option value="fog">雾天</option></select></label>' +
-      '<div class="row wrap"><button class="btn small" data-dev="weather">召唤天气 20s</button><button class="btn small" data-dev="clear-weather">清除天气</button><button class="btn small" data-dev="damage">测试受伤 10%</button><button class="btn small" data-dev="lethal">测试致命伤害</button></div>' +
+      '<div class="row wrap"><button class="btn small" data-dev="weather">召唤天气 20s</button><button class="btn small" data-dev="clear-weather">清除天气</button><button class="btn small" data-dev="damage">测试受伤 10%</button><button class="btn small" data-dev="same-type">测试同属性伤害</button><button class="btn small" data-dev="fire-damage">测试火属性伤害</button><button class="btn small" data-dev="lethal">测试致命伤害</button></div>' +
       '<div class="row wrap"><button class="btn small" data-dev="god">无敌：' + (god ? '开' : '关') + '</button><button class="btn small" data-dev="heal">回满生命</button><button class="btn small" data-dev="level">升一级</button><button class="btn small" data-dev="slow">自身减速 3.5s</button><button class="btn small" data-dev="time">时间 +60s</button><button class="btn small" data-dev="rift">开启裂隙战斗</button><button class="btn small" data-dev="boss">击败裂隙 Boss</button><button class="btn small" data-dev="quit">结束本局</button></div>';
     panel.querySelector('#dev-close').onclick = () => panel.classList.add('hidden');
     panel.querySelector('#dev-view').oninput = e => {
@@ -133,6 +133,8 @@ G.Dev = (() => {
           case 'weather': if (requireRun()) G.Weather.debugStart(panel.querySelector('#dev-weather').value, 20); break;
           case 'clear-weather': if (requireRun()) G.Weather.clear(); break;
           case 'damage': { const p = requireRun(); if (p) { p.invuln = 0; p.hurt(p.maxHp * 0.1); } break; }
+          case 'same-type': { const p = requireRun(); if (p) { p.invuln = 0; p.hurt(p.maxHp * 0.2, p.mon.types[0], false, {kind:'attack'}); } break; }
+          case 'fire-damage': { const p = requireRun(); if (p) { p.invuln = 0; p.hurt(p.maxHp * 0.2, 'fire', false, {kind:'attack'}); } break; }
           case 'lethal': { const p = requireRun(); if (p) { p.invuln = 0; p.hurt(p.maxHp * 10); } break; }
           case 'heal': { const p = requireRun(); if (p) p.heal(p.maxHp); break; }
           case 'level': if (requireRun()) G.Game.debugLevelUp(); break;

@@ -153,7 +153,7 @@ G.Game = (() => {
   /** Experiencia que hace falta para el siguiente nivel (cofres con candado). */
   function levelXp() {
     if (!pl) return 20;
-    const k = (G.Coop.active ? G.Coop.xpFactor() : 1) * (pl.xpMul || 1);
+    const k = (G.Coop.active ? G.Coop.xpFactor() : 1) * pl.effectiveXpMul;
     return Math.ceil((pl.xpNext - pl.xp + 1) / k);
   }
 
@@ -203,11 +203,7 @@ G.Game = (() => {
       state = 'levelup';
       G.UI.hide('scr-pause');
       G.Audio.sfx('levelup');
-      G.RunUI.showLevelUp(level, G.LevelUp.offer(pl), card => {
-        G.Audio.sfx('confirm');
-        card.apply(pl);
-        G.Coop.localPicked();
-      }, true);
+      chooseLevelCards(level, () => G.Coop.localPicked(), true);
     },
     waiting(names) { G.RunUI.setWaiting(names); },
     resume() {
@@ -356,6 +352,17 @@ G.Game = (() => {
 
   // ---------------- subida de nivel ----------------
 
+  function chooseLevelCards(level, done, coop = false) {
+    let remaining = G.Abilities.levelChoices(pl);
+    function offer() {
+      G.RunUI.showLevelUp(level, G.LevelUp.offer(pl), card => {
+        G.Audio.sfx('confirm'); card.apply(pl);
+        if (--remaining > 0) offer(); else done();
+      }, coop);
+    }
+    offer();
+  }
+
   function maybeLevelUp() {
     if (pendingLevels <= 0 || state !== 'playing') return;
     if (G.Coop.active) {
@@ -370,11 +377,7 @@ G.Game = (() => {
     pendingLevels--;
     state = 'levelup';
     G.Audio.sfx('levelup');
-    G.RunUI.showLevelUp(pl.level, G.LevelUp.offer(pl), card => {
-      G.Audio.sfx('confirm');
-      card.apply(pl);
-      state = 'playing';
-    });
+    chooseLevelCards(pl.level, () => { state = 'playing'; });
   }
 
   // ---------------- vínculos ----------------

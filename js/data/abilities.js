@@ -4,7 +4,7 @@ G.AbilityDefs = (() => {
     pressure: { name: 'Presión', en: 'Pressure', desc: 'Los enemigos a 240 de distancia atacan un 20% menos.', descEn: 'Enemies within 240 units attack 20% less often.' },
     snowcloak: { name: 'Manto Níveo', en: 'Snow Cloak', desc: '10% de evasión contra ataques a distancia. Al esquivar recuperas 5% de vida máxima (1 s entre curaciones). Siempre activo por ahora.', descEn: '10% chance to dodge ranged attacks. Dodging heals 5% max HP (1 s healing cooldown). Always active for now.' },
     static: { name: 'Electricidad Estática', en: 'Static', desc: 'Al recibir daño de contacto, el atacante se ralentiza 10% durante 2 s. Sus ataques de contacto tienen 25% de fallo contra ti.', descEn: 'Taking contact damage slows the attacker by 10% for 2 s. Its contact attacks have a 25% chance to fail against you.' },
-    flamebody: { name: 'Cuerpo Llama', en: 'Flame Body', desc: '30% de quemar al atacante al recibir daño de contacto. En 5 s inflige el daño de una bola de Ascuas.', descEn: '30% chance to burn an attacker after contact damage. Deals one Ember fireball of damage over 5 s.' },
+    flamebody: { name: 'Cuerpo Llama', en: 'Flame Body', desc: 'Al recibir daño de contacto, repele y quema enemigos a 120 de distancia durante 5 s. Daño total de una bola de Ascuas; recarga 1 s.', descEn: 'Taking contact damage knocks back and burns enemies within 120 units for 5 s. Total damage equals one Ember fireball; 1 s cooldown.' },
     unnerve: { name: 'Nerviosismo', en: 'Unnerve', desc: 'Tus ataques reducen la curación recibida por el objetivo un 50% durante 3 s.', descEn: 'Your attacks reduce healing received by the target by 50% for 3 s.' },
     synchronize: { name: 'Sincronía', en: 'Synchronize', desc: 'Al ralentizarte, refleja esa ralentización a todos los enemigos durante 3 s (recarga 3 s). Toda ralentización enemiga es ×1,1.', descEn: 'When slowed, reflect that slow to all enemies for 3 s (3 s cooldown). All enemy slow effects are ×1.1.' },
     innerfocus: { name: 'Foco Interno', en: 'Inner Focus', desc: 'Todos los movimientos se recargan a la vez, incluso los de huecos inactivos. Sólo ataca el hueco seleccionado.', descEn: 'All moves cool down simultaneously, including inactive slots. Only the selected slot attacks.' },
@@ -19,7 +19,16 @@ G.AbilityDefs = (() => {
     lightmetal: { name: 'Metal Liviano', en: 'Light Metal', desc: 'Recibir daño da +20% de velocidad durante 5 s. Hasta 3 cargas; refresca la duración.', descEn: 'Taking damage grants +20% speed for 5 s. Up to 3 stacks; refreshes duration.' },
     sturdy: { name: 'Robustez', en: 'Sturdy', desc: 'Sobrevive a un golpe mortal con 1 PS y recupera 50% de vida máxima. Una vez por etapa del mapa; las grietas no lo reinician.', descEn: 'Survive lethal damage at 1 HP, then heal 50% max HP. Once per surface stage; rifts do not reset it.' },
     icebody: { name: 'Gélido', en: 'Ice Body', desc: 'Mientras la nieve tenga efecto, recupera 3% de vida máxima por segundo.', descEn: 'While snow is effective, restore 3% max HP per second.' },
-    levitate: { name: 'Levitación', en: 'Levitate', desc: 'Atraviesa obstáculos sin lanzar movimientos. Velocidad -50% al atravesar; -70% durante 0,3 s al entrar y salir, sin acumular ambas penalizaciones.', descEn: 'Pass through obstacles without casting. Move 50% slower inside; 70% slower for 0.3 s on entry and exit, without stacking the two penalties.' },
+    levitate: { name: 'Levitación', en: 'Levitate', desc: 'No activa trampas del suelo. Atraviesa obstáculos sin lanzar movimientos: velocidad -50% dentro; -70% durante 0,3 s al entrar y salir, sin acumular.', descEn: 'Does not trigger ground traps. Cross obstacles without casting: 50% slower inside; 70% slower for 0.3 s on entry and exit, without stacking.' },
+    sandveil: { name: 'Velo Arena', en: 'Sand Veil', desc: 'Inmune al daño de arena. Durante la tormenta gana cada segundo una carga de +20% velocidad durante 5 s, hasta 3; refresca duración.', descEn: 'Immune to sandstorm damage. Each second in sand grants +20% speed for 5 s, up to 3 stacks; refreshes duration.' },
+    roughskin: { name: 'Piel Tosca', en: 'Rough Skin', desc: 'Al recibir daño de contacto lanza un Placaje de nivel 1, aunque no lo conozca. Recarga 1 s.', descEn: 'Taking contact damage casts level 1 Tackle, even if unlearned. 1 s cooldown.' },
+    telepathy: { name: 'Telepatía', en: 'Telepathy', desc: 'Daño del mismo tipo que tú -50%. Tras recibirlo cura 5% de vida máxima; sólo la curación tiene recarga de 1 s.', descEn: 'Damage matching either of your types is halved. Taking it heals 5% max HP; only healing has a 1 s cooldown.' },
+    flashfire: { name: 'Absorbe Fuego', en: 'Flash Fire', desc: 'Recibir daño de Fuego da Combustión: +50% ataque durante 5 s. Se refresca sin acumular.', descEn: 'Taking Fire damage grants Kindling: +50% attack for 5 s. Refreshes without stacking.' },
+    slowstart: { name: 'Inicio Lento', en: 'Slow Start', desc: 'Experiencia recibida -30%. Cada subida de nivel tiene 50% de dar otra elección de habilidad, sin subir otro nivel.', descEn: 'XP gained -30%. Each level-up has a 50% chance to grant an extra skill choice without another level.' },
+    hydration: { name: 'Hidratación', en: 'Hydration', desc: 'Mientras la lluvia tenga efecto, inmune a todos los estados negativos y elimina los existentes.', descEn: 'While rain is effective, immune to all debuffs and clears existing ones.' },
+    baddreams: { name: 'Mal Sueño', en: 'Bad Dreams', desc: 'Los enemigos ralentizados pierden 5% de su vida actual cada segundo.', descEn: 'Slowed enemies lose 5% of their current HP each second.' },
+    multitype: { name: 'Multitipo', en: 'Multitype', desc: 'Ignora ventajas e inmunidades de tipos. Todo daño recibido -20% y todo daño causado +20%.', descEn: 'Ignore type advantages and immunities. All damage received -20%; all damage dealt +20%.' },
+    victorystar: { name: 'Tinovictoria', en: 'Victory Star', desc: 'Tus proyectiles viajan un 30% más rápido.', descEn: 'Your projectiles travel 30% faster.' },
     drizzle: { name: 'Llovizna', en: 'Drizzle', desc: 'Cada 40 s invoca lluvia de 20 s.', descEn: 'Every 40 s, summon rain lasting 20 s.' },
     drought: { name: 'Sequía', en: 'Drought', desc: 'Cada 40 s invoca sol de 20 s.', descEn: 'Every 40 s, summon sunlight lasting 20 s.' },
     airlock: { name: 'Bucle Aire', en: 'Air Lock', desc: 'Anula los efectos del clima para todos. Sin clima, el daño crítico aumenta un 50%.', descEn: 'Suppress weather effects for everyone. Without weather, critical damage increases by 50%.' },
@@ -36,7 +45,11 @@ G.AbilityDefs = (() => {
     248: ['sandstream', 'unnerve'], 249: ['pressure', 'multiscale'], 250: ['pressure', 'regenerator'], 251: ['naturalcure'],
     289: ['truant'], 373: ['intimidate', 'moxie'], 376: ['clearbody', 'lightmetal'],
     377: ['clearbody', 'sturdy'], 378: ['clearbody', 'icebody'], 379: ['clearbody', 'lightmetal'],
-    380: ['levitate'], 381: ['levitate'], 382: ['drizzle'], 383: ['drought'], 384: ['airlock'], 385: ['serenegrace'], 386: ['pressure']
+    380: ['levitate'], 381: ['levitate'], 382: ['drizzle'], 383: ['drought'], 384: ['airlock'], 385: ['serenegrace'], 386: ['pressure'],
+    445: ['sandveil', 'roughskin'], 480: ['levitate'], 481: ['levitate'], 482: ['levitate'],
+    483: ['pressure', 'telepathy'], 484: ['pressure', 'telepathy'], 485: ['flashfire', 'flamebody'], 486: ['slowstart'],
+    487: ['pressure', 'telepathy'], 488: ['levitate'], 489: ['hydration'], 490: ['hydration'],
+    491: ['baddreams'], 492: ['naturalcure'], 493: ['multitype'], 494: ['victorystar']
   };
   const LIST = Object.entries(byDex).flatMap(([dex, ids]) => ids.map(ability => ({
     id: dex + '-' + ability, dex: +dex, ability, rarity: 5, ...abilities[ability]
@@ -49,6 +62,10 @@ G.AbilityDefs = (() => {
   }
   G.I18n.add(Object.fromEntries(Object.values(abilities).flatMap(a => [[a.name, a.en], [a.desc, a.descEn]])));
   G.I18n.add({
+    'Gemas y medallas de cinco regiones': 'Gems and medals from five regions',
+    'Sólo las especies con habilidades disponibles dan medallas; las demás dan Pokémon.': 'Only species with available abilities award medals; the rest award Pokémon.',
+    'Premio de cinco estrellas garantizado en la tirada 70.': 'A five-star reward is guaranteed on pull 70.',
+    'Combustión': 'Kindling',
     'Gemas y medallas de tres regiones': 'Gems and medals from three regions',
     '{x} · Medallas de habilidad': '{x} · Ability Medals',
     'Las especies de cinco estrellas dan medallas de habilidad. El resto da Pokémon.': 'Five-star species award ability medals. Other rewards are Pokémon.',
@@ -70,6 +87,23 @@ G.AbilityDefs = (() => {
     '¡Evasión!': 'Dodged!', '¡Fallo!': 'Miss!', '¡Sincronía!': 'Synchronize!'
   });
   G.I18n.addChinese({
+    'Gemas y medallas de cinco regiones': '关都至合众特性宝石与勋章',
+    'Sólo las especies con habilidades disponibles dan medallas; las demás dan Pokémon.': '本地区已开放特性的宝可梦奖励替换为勋章；其余仍为宝可梦，后续继续补充特性。',
+    'Premio de cinco estrellas garantizado en la tirada 70.': '第 70 抽保底五星奖励。',
+    'Combustión': '助燃',
+    'Velo Arena': '沙隐', 'Piel Tosca': '粗糙皮肤', 'Telepatía': '心灵感应', 'Absorbe Fuego': '引火',
+    'Inicio Lento': '慢启动', 'Hidratación': '湿润之躯', 'Mal Sueño': '梦魇', 'Multitipo': '多属性', 'Tinovictoria': '胜利之星',
+    'Al recibir daño de contacto, repele y quema enemigos a 120 de distancia durante 5 s. Daño total de una bola de Ascuas; recarga 1 s.': '受到接触伤害时，必定击退周围 120 范围内敌人并灼伤 5 秒；总伤害约为自身一发火花火球伤害，隐藏冷却 1 秒。',
+    'No activa trampas del suelo. Atraviesa obstáculos sin lanzar movimientos: velocidad -50% dentro; -70% durante 0,3 s al entrar y salir, sin acumular.': '不会触发地面陷阱；可穿越障碍，但期间无法发动技能。穿越时减速 50%，开始和结束时各减速 70% 持续 0.3 秒，两档不叠乘。',
+    'Inmune al daño de arena. Durante la tormenta gana cada segundo una carga de +20% velocidad durante 5 s, hasta 3; refresca duración.': '免疫沙暴伤害；沙暴生效时立即及每秒获得一层加速：移速 +20%，持续 5 秒，最多 3 层，重复刷新时间。',
+    'Al recibir daño de contacto lanza un Placaje de nivel 1, aunque no lo conozca. Recarga 1 s.': '受到接触伤害时立即发动等级 1 撞击，即使未学会；隐藏冷却 1 秒，不占技能槽。',
+    'Daño del mismo tipo que tú -50%. Tras recibirlo cura 5% de vida máxima; sólo la curación tiene recarga de 1 s.': '受到与自身任一属性相同的伤害时，始终减伤 50%，并恢复 5% 最大生命；仅回血有 1 秒隐藏冷却。',
+    'Recibir daño de Fuego da Combustión: +50% ataque durante 5 s. Se refresca sin acumular.': '受到火属性伤害时获得助燃：攻击 +50%，持续 5 秒，不叠加，重复触发刷新时间。',
+    'Experiencia recibida -30%. Cada subida de nivel tiene 50% de dar otra elección de habilidad, sin subir otro nivel.': '获得经验减少 30%；每次升级有 50% 概率额外获得一次技能选择，不额外升级。',
+    'Mientras la lluvia tenga efecto, inmune a todos los estados negativos y elimina los existentes.': '下雨生效时免疫所有负面效果，并清除已有负面效果。',
+    'Los enemigos ralentizados pierden 5% de su vida actual cada segundo.': '被减速的敌人每秒损失 5% 当前生命。',
+    'Ignora ventajas e inmunidades de tipos. Todo daño recibido -20% y todo daño causado +20%.': '无视属性克制、抵抗和免疫；受到所有伤害降低 20%，造成所有伤害提高 20%。',
+    'Tus proyectiles viajan un 30% más rápido.': '自身投射物技能的弹道速度提高 30%。',
     'Gemas y medallas de tres regiones': '关都、城都、丰缘特性宝石与勋章',
     '{x} · Medallas de habilidad': '{x} · 特性勋章',
     'Las especies de cinco estrellas dan medallas de habilidad. El resto da Pokémon.': '本地区五星宝可梦奖励替换为对应特性勋章；其余奖励仍为宝可梦。',

@@ -100,6 +100,8 @@
     /** @param eff  'super' | 'weak' | null (tabla de tipos, sólo para enseñarlo) */
     hurt(amount, color = '#fff', dirX = 0, dirY = 0, knock = 0, eff = null, attacker = null) {
       if (this.dead) return;
+      // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
+      if (!this.remote && attacker) amount *= G.Abilities.outgoingDamage(attacker);
       const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
       // quien decide si cae. Aquí sólo se ve (número, destello y animación).

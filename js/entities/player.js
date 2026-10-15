@@ -97,6 +97,7 @@ G.Player = class Player {
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + this.buffs.def.n * this.buffs.def.amount); }
   get regen() { return this.regenFlat + this.buffs.regen.n * this.buffs.regen.amount; }
+  get effectiveXpMul() { return this.xpMul * G.Abilities.xpFactor(this); }
 
   // ---------------- movimientos ----------------
   addMove(id) {
@@ -204,7 +205,7 @@ G.Player = class Player {
     // Vidasfera: cada ataque cuesta un poco de vida (nunca te deja KO).
     if (this.hasItem('lifeorb') && m.kind !== 'orbit' && m.kind !== 'trail' && !this.remote) {
       const before = this.hp;
-      this.hp = Math.max(1, this.hp - Math.max(1, this.maxHp * 0.01));
+      this.hp = Math.max(1, this.hp - Math.max(1, this.maxHp * 0.01) * G.Abilities.damageFactor(this, {kind: 'environment'}));
       if (this.hp < before) G.Abilities.onDamage(this);
     }
     const anim = { melee: 'Attack', beam: 'Shoot', projectile: 'Shoot', nova: 'Attack',
@@ -235,17 +236,17 @@ G.Player = class Player {
     if (!G.Abilities.beforeHurt(this, source)) return false;
     let eff = null;
     if (type) {
-      const k = G.Types.mult(type, this.mon.types);
+      const k = G.Abilities.has(this, 'multitype') ? 1 : G.Types.mult(type, this.mon.types);
       eff = G.Types.label(k);
       amount *= k * G.Weather.mult(type);
     }
     // Con un ataque cuerpo a cuerpo activo se recibe un 25 % menos: hay que
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
-    const d = (pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source);
+    const d = (pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type);
     this.hp -= d;
     G.Abilities.onDamage(this);
-    G.Abilities.afterHurt(this, source);
+    G.Abilities.afterHurt(this, source, type);
     this.invuln = 0.45;
     this.flash = 0.14;
     G.Audio.sfx('hurt');
@@ -280,7 +281,7 @@ G.Player = class Player {
 
   /** Devuelve cuántos niveles ha subido (pueden ser varios de golpe). */
   gainXp(amount) {
-    this.xp += amount * this.xpMul;
+    this.xp += amount * this.effectiveXpMul;
     let leveled = 0;
     while (this.xp >= this.xpNext) {
       this.xp -= this.xpNext;

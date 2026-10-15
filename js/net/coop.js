@@ -121,9 +121,9 @@ G.Coop = (() => {
    * se subiría de nivel el triple de rápido que en solitario).
    */
   function xpFactor() {
-    let s = local.xpMul, n = 1;
+    let s = local.effectiveXpMul, n = 1;
     for (const m of mates.values()) if (m.connected) { s += m.xpMul || 1; n++; }
-    return (s / n) / local.xpMul / (1 + 0.6 * (n - 1));
+    return (s / n) / local.effectiveXpMul / (1 + 0.6 * (n - 1));
   }
 
   // ---------------- estado de un jugador ----------------
@@ -135,7 +135,7 @@ G.Coop = (() => {
     const g = local.activeGroup();
     const m = g.find(x => x.kind === 'orbit') || g[0];
     return [r1(local.x), r1(local.y), r2(local.moveAngle), local.walking ? 1 : 0, r1(local.hp), r1(local.maxHp),
-            local.dead ? 1 : 0, m ? m.id : '', m ? m.lvl : 1, r1(local.magnet), r2(local.aim), r2(local.xpMul),
+            local.dead ? 1 : 0, m ? m.id : '', m ? m.lvl : 1, r1(local.magnet), r2(local.aim), r2(local.effectiveXpMul),
             r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq, local.ability || null];
   }
 

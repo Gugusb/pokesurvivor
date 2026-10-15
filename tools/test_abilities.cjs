@@ -32,7 +32,7 @@ function context(lang = 'zh') {
     'ready, register, login,', '_test: {newSave, migrate, sanitize}, ready, register, login,');
   vm.runInContext(db, s, { filename: 'js/core/db.js' }); G.DB.playAsGuest();
   for (const file of ['js/systems/abilities.js', 'js/systems/gacha.js', 'js/systems/ability-gacha.js', 'js/entities/player.js', 'js/entities/enemy.js']) s.load(file);
-  G.EnemyMgr = { all: () => s.enemies };
+  G.EnemyMgr = { all: () => s.enemies, queryCircle: (x,y,r) => s.enemies.filter(e => !e.dead && (e.x-x)**2+(e.y-y)**2 <= r*r) };
   s.player = (dex, ability) => {
     const p = new G.Player(G.DEX_BY[dex]); p.ability = ability || null; s.players = [p]; return p;
   };
@@ -45,9 +45,151 @@ function context(lang = 'zh') {
 }
 const approx = (a, b) => assert.ok(Math.abs(a - b) < 1e-7, `${a} ≠ ${b}`);
 
-test('three ability banners replace every five-star species, with region pity and preserved old saves', () => {
+test('Sinnoh medals cover all fifteen five-stars; Unova currently replaces only Victini without changing odds', () => {
+  const s=context(),{G}=s,save=G.DB.save;
+  assert.equal(G.AbilityDefs.SPECIES.filter(d=>G.DEX_BY[d].gen===4).length,15);
+  assert.equal(G.AbilityDefs.LIST.filter(m=>G.DEX_BY[m.dex].gen===5).length,1);
+  const pool=G.AbilityGacha.pool(5,5);
+  for(let i=0;i<pool.length;i++) {
+    save.abilityGems=1;save.abilityPity[5]=69;s.random([(i+.01)/pool.length,.5]);
+    const r=G.AbilityGacha.pull(save,1,5)[0];assert.equal(r.dex,pool[i].dex);
+    assert.equal(!!r.medal,r.dex===494);assert.equal(save.abilityPity[5],0);
+  }
+  save.abilityMedals['483-telepathy']={at:1};G.Abilities.equip(save,483,'483-telepathy');
+  G.DB._test.sanitize(save);assert.equal(G.Abilities.equipped(save,483),'telepathy');
+});
+
+test('Sand Veil reuses the three-stack haste buff, refreshes each sand second and is immune to sand chip', () => {
+  const s=context(),{G}=s,p=s.player(445,'sandveil');G.World.biome=0;G.Coop.broadcast=noop;G.Spawner={say:noop};
+  s.load('js/systems/weather.js');p.mon={...p.mon,types:['normal']};p.hp=p.maxHp=100;
+  assert.doesNotThrow(()=>G.Weather.update(3,0,p));
+  G.Weather.debugStart('sand',20);G.Weather.update(.1,0,p);G.Abilities.playerTick(p,.01);approx(p.spd,p.baseSpd*1.2);
+  G.Abilities.playerTick(p,2);assert.equal(G.Abilities.state(p).haste,3);approx(p.spd,p.baseSpd*1.6);
+  G.Weather.update(3,0,p);assert.equal(p.hp,100);
+  G.Weather.clear();assert.doesNotThrow(()=>G.Weather.update(3,0,p));G.Abilities.playerTick(p,4.99);assert.equal(G.Abilities.state(p).haste,3);
+  G.Abilities.playerTick(p,.01);assert.equal(G.Abilities.state(p).haste,0);
+});
+
+test('Rough Skin casts an unlearned level-one Tackle toward the attacker once per second without touching slots', () => {
+  const s=context(),{G}=s,p=s.player(445,'roughskin'),e=s.enemy();e.x=30;
+  s.load('js/systems/combat.js');G.VFX={forMove:()=>({pal:[]})};G.World.propsInCircle=()=>[];
+  const casts=[];p.cast=m=>casts.push([m.id,m.lvl]);p.aim=Math.PI;const hp=e.hp;
+  p.hurt(1,null,false,{kind:'contact',enemy:e});assert.deepEqual(casts,[['tackle',1]]);
+  assert.ok(e.hp<hp);assert.equal(p.moves.length,0);assert.equal(p.slots.length,0);assert.equal(p.aim,Math.PI);
+  p.invuln=0;p.hurt(1,null,false,{kind:'contact',enemy:e});assert.equal(casts.length,1);
+  G.Abilities.playerTick(p,1);p.invuln=0;p.hurt(1,null,false,{kind:'contact',enemy:e});assert.equal(casts.length,2);
+});
+
+test('Flame Body always burns and knocks back nearby enemies, with a shared one-second cooldown', () => {
+  const s=context(),{G}=s,p=s.player(485,'flamebody'),e=s.enemy(),near=s.enemy(),far=s.enemy();
+  near.x=80;far.x=121;s.random([.99]);p.hurt(1,null,false,{kind:'contact',enemy:e});
+  assert.ok(e.abilityBurn);assert.ok(near.abilityBurn);assert.equal(far.abilityBurn,null);assert.ok(near.kx>0);
+  const knock=near.kx;near.abilityBurn=null;p.invuln=0;p.hurt(1,null,false,{kind:'contact',enemy:e});
+  assert.equal(near.abilityBurn,null);assert.equal(near.kx,knock);
+  G.Abilities.playerTick(p,1);p.invuln=0;p.hurt(1,null,false,{kind:'contact',enemy:e});assert.ok(near.abilityBurn);assert.ok(near.kx>knock);
+  const remote=s.enemy();remote.remote=true;remote.x=90;G.Abilities.applyEffect(remote,'flamebody',50,p);
+  assert.equal(remote.abilityBurn.total,50);assert.ok(remote.kx>0);
+});
+
+test('Levitate never triggers a ground trap, but another grounded unit can still trigger it', () => {
+  const s=context(),{G}=s,p=s.player(380,'levitate');s.load('js/systems/interact.js');
+  const trap={type:'trap',x:0,y:8};let breaks=0;G.World.specialsNear=()=>[trap];G.World.breakProp=()=>breaks++;
+  G.Interact.update(.1,p);assert.equal(breaks,0);p.ability=null;G.Interact.update(.1,p);assert.equal(breaks,1);
+  p.ability='levitate';const e=s.enemy();e.x=0;e.y=0;e.flying=false;e.remote=false;
+  G.Interact.update(.1,p);assert.equal(breaks,2);
+});
+
+test('Telepathy always halves matching typed damage; only its five-percent heal has a one-second cooldown', () => {
+  const s=context(),{G}=s,p=s.player(483,'telepathy');p.maxHp=100;p.hp=60;
+  p.hurt(20,'dragon',true,{kind:'attack'});approx(p.hp,55);
+  p.invuln=0;p.hurt(20,'dragon',true,{kind:'attack'});approx(p.hp,45);
+  p.invuln=0;p.hurt(10,'fire',true,{kind:'attack'});approx(p.hp,35);
+  G.Abilities.playerTick(p,1);p.invuln=0;p.hurt(20,'steel',true,{kind:'attack'});approx(p.hp,30);
+  p.invuln=0;p.hurt(5,null,true);approx(p.hp,25);
+});
+
+test('Flash Fire grants fifty-percent attack for five seconds, refreshes without stacking and requires actual Fire damage', () => {
+  const s=context(),{G}=s,p=s.player(485,'flashfire'),base=p.atk;
+  p.hurt(1,'fire',true,{kind:'ranged'});approx(p.atk,base*1.5);
+  G.Abilities.playerTick(p,4);p.invuln=0;p.hurt(1,'fire',true,{kind:'attack'});approx(p.atk,base*1.5);
+  G.Abilities.playerTick(p,4.99);approx(p.atk,base*1.5);G.Abilities.playerTick(p,.01);approx(p.atk,base);
+  p.invuln=1;p.hurt(1,'fire');approx(p.atk,base);
+});
+
+test('Slow Start reduces XP by thirty percent, and extra choices are local, sequential and never recursive', () => {
+  const s=context(),{G}=s,p=s.player(486,'slowstart');p.xpNext=100;p.xpMul=2;
+  assert.equal(p.gainXp(50),0);approx(p.xp,70);s.random([.49,.5]);
+  assert.equal(G.Abilities.levelChoices(p),2);assert.equal(G.Abilities.levelChoices(p),1);
+  let source=fs.readFileSync(path.join(ROOT,'js/game.js'),'utf8').replace(
+    'init, startRun, everyone,', '_choose(p, done, coop) { pl=p; chooseLevelCards(p.level, done, coop); }, init, startRun, everyone,');
+  vm.runInContext(source,s);let cb,count=0,done=0;G.LevelUp={offer:()=>[]};G.RunUI={showLevelUp:(lv,list,fn,coop)=>{assert.equal(coop,true);count++;cb=fn;}};
+  s.random([0]);const level=p.level;G.Game._choose(p,()=>done++,true);
+  assert.equal(count,1);cb({apply:noop});assert.equal(count,2);assert.equal(done,0);
+  cb({apply:noop});assert.equal(done,1);assert.equal(count,2);assert.equal(p.level,level);
+});
+
+test('Hydration clears active slows, blocks rain-time trap/terrain/weather slows, and ends with rain or Air Lock', () => {
+  const s=context(),{G}=s,p=s.player(490,'hydration');let kind='rain';G.Weather.current={kind:'rain'};
+  G.Game.player=p;s.load('js/systems/interact.js');p.slowT=3.5;p.inLiquid=true;G.Weather.speedFor=()=>.9;
+  G.Abilities.playerTick(p,.01);assert.equal(p.slowT,0);approx(p.spd,p.baseSpd);
+  G.Interact.trapEffect({x:0,y:8,kind:1});assert.equal(p.slowT,0);
+  G.Weather.current=null;assert.equal(G.Abilities.debuffImmune(p),false);
+  G.Weather.current={kind:'rain'};const air=new G.Player(G.DEX_BY[384]);air.ability='airlock';s.players.push(air);
+  assert.equal(G.Abilities.debuffImmune(p),false);
+});
+
+test('Bad Dreams drains current HP each second under any slow, stops when slow expires, and does not stack across Darkrai', () => {
+  const s=context(),{G}=s,p=s.player(491,'baddreams'),e=s.enemy();e.hp=400;e.applySlow(.2,5);
+  G.Abilities.enemyTick(e,.99);assert.equal(e.hp,400);G.Abilities.enemyTick(e,.01);assert.equal(e.hp,380);
+  s.players.push(p);G.Abilities.enemyTick(e,1);assert.equal(e.hp,361);
+  e.slow=0;e.slowT=0;G.Abilities.enemyTick(e,3);assert.equal(e.hp,361);
+  e.staticT=2;G.Abilities.enemyTick(e,1);assert.equal(e.hp,343);
+  e.staticT=0;G.Weather.speedFor=()=>.9;G.Abilities.enemyTick(e,1);assert.equal(e.hp,326);
+  G.Weather.speedFor=()=>1;e.applySlow(.2,.2);e.nightmareTick=1;G.Abilities.enemyTick(e,1);assert.equal(e.hp,326);
+});
+
+test('Multitype ignores type resistance, immunity and weakness; all received and caused damage has its fixed modifier', () => {
+  const s=context(),{G}=s,p=s.player(493,'multitype'),e=s.enemy();p.maxHp=100;p.hp=100;
+  G.Types.mult=()=>0;assert.equal(G.Abilities.outgoingType(p,'normal',['ghost']),1);
+  p.hurt(10,'normal',true,{kind:'attack'});approx(p.hp,92);p.invuln=0;
+  G.Types.mult=()=>4;p.hurt(10,'fighting',true,{kind:'attack'});approx(p.hp,84);p.invuln=0;
+  p.hurt(10);approx(p.hp,76);
+  e.hurt(10,'#fff',0,0,0,null,p);assert.equal(e.hp,488);
+  e.applyBurn(1,p);e.burnTick=0;e.update(.1,p);assert.equal(e.hp,486);
+  e.remote=true;let sent;G.Coop.hit=(target,d)=>sent=d;e.hurt(10,'#fff',0,0,0,null,p);assert.equal(sent,10);
+});
+
+test('Victory Star speeds all owned travelling projectiles and return paths, without changing enemy shots or orbit rotation', () => {
+  const s=context(),{G}=s,p=s.player(494,'victorystar');s.load('js/entities/projectile.js');
+  const shot=G.Projectiles.spawn({vx:300,vy:400,owner:p,bsp:200,boom:2});
+  approx(Math.hypot(shot.vx,shot.vy),650);approx(shot.bsp,260);approx(shot.boom,2/1.3);
+  const enemy=G.Projectiles.spawn({friendly:false,vx:300,owner:p});assert.equal(enemy.vx,300);
+  const orb=G.Projectiles.spawnOrb({owner:p,ospeed:2});assert.equal(orb.ospeed,2);
+});
+
+test('Multitype melee and projectile damage bypass real type immunity and are boosted exactly once', () => {
+  const s=context(),{G}=s,p=s.player(493,'multitype'),e=s.enemy();e.x=30;G.Types.mult=()=>0;
+  s.load('js/systems/combat.js');G.VFX={forMove:()=>({pal:[]})};G.World.propsInCircle=()=>[];G.World.projectileBlock=()=>null;p.cast=noop;
+  const m=G.Moves.instance('tackle',1);m.t=0;p.target=e;p.moves=[m];p.slots=[[m]];p.aim=0;G.Combat.tick(.1,p,1);
+  assert.equal(e.hp,500-Math.round(m.dmg*p.atk*1.2));
+  const hp=e.hp,shots=[{friendly:true,ghost:false,x:30,y:0,r:5,dmg:10,mtype:'normal',pierce:0,hits:new Set(),phits:new Set()}];
+  G.Projectiles.all=()=>shots;G.Combat.resolve(.1,p,2);assert.equal(e.hp,hp-12);
+});
+
+test('co-op host applies peer Multitype once and synchronizes Flame Body knockback and burn ownership', () => {
+  const s=context(),{G}=s;let receive;G.Net={uid:'host',on:fn=>receive=fn,onPeer:noop};G.startMoveOf=()=> 'confusion';G.Sprites.preload=noop;
+  G.Game.st={time:1};G.EnemyMgr.get=id=>s.enemies.find(e=>e.id===id);
+  const p=s.player(144,'pressure');G.Game.player=p;s.load('js/net/coop.js');
+  G.Coop.begin({host:'host',members:[{uid:'host',dex:144},{uid:'arc',dex:493},{uid:'fire',dex:485}]},p,{});
+  const frame=ability=>[0,0,0,0,100,100,0,'confusion',1,78,0,1,0,0,0,ability],e=s.enemy();
+  receive('arc',{k:'f',p:frame('multitype'),ev:[['h',e.id,10,'#fff',0,0,0]]});assert.equal(e.hp,488);
+  receive('fire',{k:'f',p:frame('flamebody'),ev:[['ab',e.id,'flamebody',50]]});assert.equal(e.abilityBurn.owner,G.Coop.mate('fire').pl);assert.ok(e.kx>0);
+  G.Coop.end();
+});
+
+test('complete ability banners replace every five-star species, with region pity and preserved old saves', () => {
   const s = context(), { G } = s, save = G.DB.save;
-  for (const [gen, expected] of [[1, 11], [2, 13], [3, 18]]) {
+  for (const [gen, expected] of [[1, 11], [2, 13], [3, 18], [4, 20]]) {
     assert.equal(G.AbilityDefs.LIST.filter(m => G.DEX_BY[m.dex].gen === gen).length, expected);
     const pool = G.AbilityGacha.pool(5, gen);
     for (let i = 0; i < pool.length; i++) {
@@ -61,7 +203,7 @@ test('three ability banners replace every five-star species, with region pity an
   save.abilityGems = 10; save.abilityPity[1] = 23; save.abilityPity[2] = 19;
   s.random([]); G.AbilityGacha.pull(save, 1, 3);
   assert.equal(save.abilityPity[1], 23); assert.equal(save.abilityPity[2], 19);
-  const before = JSON.stringify(save); assert.equal(G.AbilityGacha.pull(save, 1, 4), null); assert.equal(JSON.stringify(save), before);
+  const before = JSON.stringify(save); assert.equal(G.AbilityGacha.pull(save, 1, 6), null); assert.equal(JSON.stringify(save), before);
   save.abilityMedals['377-sturdy'] = {at: 1}; G.Abilities.equip(save, 377, '377-sturdy');
   G.DB._test.sanitize(save); assert.equal(G.Abilities.equipped(save, 377), 'sturdy');
 });
@@ -257,9 +399,9 @@ test('co-op guest receives deduplicated Moxie kill credit from host', () => {
   receive('host',frame);receive('host',frame);assert.equal(G.Abilities.state(p).confidence.length,1);G.Coop.end();
 });
 
-test('42 independent medals; ownership alone does not enable an ability; one equipped', () => {
+test('63 independent medals; ownership alone does not enable an ability; one equipped', () => {
   const s = context(), { G } = s, save = G.DB.save;
-  assert.equal(G.AbilityDefs.LIST.length, 42);
+  assert.equal(G.AbilityDefs.LIST.length, 63);
   save.owned[144] = { at: 1 }; assert.equal(G.Abilities.equipped(save, 144), null);
   assert.equal(G.Abilities.equip(save, 144, '144-pressure'), false);
   save.abilityMedals['144-pressure'] = { at: 1 }; save.abilityMedals['144-snowcloak'] = { at: 2 };

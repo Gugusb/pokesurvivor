@@ -1,10 +1,10 @@
-/* Gacha de habilidades: Kanto, Johto y Hoenn; garantía independiente por región. */
+/* Gacha de habilidades: regiones disponibles; garantía independiente por región. */
 G.AbilityGacha = (() => {
   let forced = null;
   function costOf(save, n) {
     return (n === 1 || n === 10) && Number.isFinite(save.abilityGems) && save.abilityGems >= n ? n : null;
   }
-  const GENS = [1, 2, 3];
+  const GENS = [1, 2, 3, 4, 5];
   function pool(rarity, gen = 1) { return GENS.includes(gen) ? G.Gacha.pool(rarity, gen) : []; }
   function roll(min = 1) {
     const rates = G.Gacha.RATES.filter(([r]) => r >= min);

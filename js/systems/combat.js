@@ -90,7 +90,14 @@ G.Combat = (() => {
   }
 
   /** Tabla de tipos × clima para un ataque de tipo `type` contra `e`. */
-  function typeK(type, e) { return G.Types.mult(type, e.types) * G.Weather.mult(type); }
+  function typeK(type, e, pl) { return G.Abilities.outgoingType(pl, type, e.types) * G.Weather.mult(type); }
+
+  function counterTackle(pl, attacker) {
+    const m = G.Moves.instance('tackle', 1), aim = pl.aim;
+    if (attacker) pl.aim = Math.atan2(attacker.y - pl.y, attacker.x - pl.x);
+    try { pl.cast(m); if (G.Coop.active) G.Coop.cast(pl, m); run(pl, m); }
+    finally { pl.aim = aim; }
+  }
 
   function fireProjectiles(pl, m) {
     const col = G.U.TYPE_COLOR[m.type];
@@ -535,12 +542,13 @@ G.Combat = (() => {
   const isCrit = pl => !ghost && pl.critChance > 0 && Math.random() < pl.critChance;
 
   function hit(pl, e, dmg, col, dx, dy, knock, m) {
-    const k = typeK(m.type, e);
+    const k = typeK(m.type, e, pl);
     const crit = isCrit(pl);
     dmg *= k * (crit ? G.Abilities.critMultiplier(pl) : 1);
-    e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Types.mult(m.type, e.types)), ghost ? null : pl);
-    if (!ghost) pl.onDealt(dmg);
-    pl.dmgDealt += dmg;
+    e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Abilities.outgoingType(pl, m.type, e.types)), ghost ? null : pl);
+    const dealt = dmg * G.Abilities.outgoingDamage(pl);
+    if (!ghost) pl.onDealt(dealt);
+    pl.dmgDealt += dealt;
     if (m.burn) e.applyBurn(m.burn, pl);
     if (m.poison) e.applyPoison(m.poison, pl);
     if (m.slow) e.applySlow(m.slow);
@@ -644,12 +652,12 @@ G.Combat = (() => {
         }
 
         const crit = isCrit(pl);
-        const k = (p.mtype ? typeK(p.mtype, e) : 1) * (crit ? G.Abilities.critMultiplier(pl) : 1);
+        const k = (p.mtype ? typeK(p.mtype, e, pl) : 1) * (crit ? G.Abilities.critMultiplier(pl) : 1);
         e.hurt(p.dmg * k, p.color, p.vx || (e.x - pl.x), p.vy || (e.y - pl.y), p.knock,
-               crit ? 'crit' : p.mtype ? G.Types.label(G.Types.mult(p.mtype, e.types)) : null, pl);
+               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(pl, p.mtype, e.types)) : null, pl);
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
-        pl.dmgDealt += p.dmg * k;
-        pl.onDealt(p.dmg * k);
+        pl.dmgDealt += p.dmg * k * G.Abilities.outgoingDamage(pl);
+        pl.onDealt(p.dmg * k * G.Abilities.outgoingDamage(pl));
         if (p.burn) e.applyBurn(p.burn, pl);
         if (p.poison) e.applyPoison(p.poison, pl);
         if (p.slow) e.applySlow(p.slow);
@@ -679,6 +687,6 @@ G.Combat = (() => {
     }
   }
 
-  return { tick, resolve, ghostCast, ghostOrbit, updateFields, drawGroundFields, drawAirFields, clearFields,
+  return { tick, resolve, ghostCast, ghostOrbit, counterTackle, updateFields, drawGroundFields, drawAirFields, clearFields,
            get fieldCount() { return fields.length; } };
 })();

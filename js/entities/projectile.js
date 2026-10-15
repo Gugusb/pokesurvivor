@@ -24,6 +24,12 @@ G.Projectiles = (() => {
       color: '#fff', homing: 0, slow: 0, burn: 0, poison: 0, knock: 0,
       orb: false, rehit: 0.34, hitLog: null, phits: null
     }, o);
+    if (p.friendly && !p.orb && p.owner) {
+      const k = G.Abilities.projectileSpeed(p.owner);
+      p.vx *= k; p.vy *= k;
+      if (p.bsp) p.bsp *= k;
+      if (p.boom) p.boom /= k;
+    }
     if (p.friendly && !p.orb && !p.phits) p.phits = new Set();
     list.push(p);
     return p;
