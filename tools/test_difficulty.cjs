@@ -27,11 +27,12 @@ function context() {
   };
   return s;
 }
-test('four stars exactly preserves original stats and every adjacent star scales HP 3.5% and attack 2.4%',()=>{
-  const s=context(),D=s.G.Difficulty;close(D.factors(4).hp,1);close(D.factors(4).dmg,1);
-  for(let n=1;n<8;n++){close(D.factors(n+1).hp/D.factors(n).hp,1.035);close(D.factors(n+1).dmg/D.factors(n).dmg,1.024);}
-  s.run(4);let e=s.enemy();assert.equal(e.maxHp,2000);assert.equal(e.dmg,300);assert.equal(e.shotDmg(),60);
-  s.run(8);e=s.enemy(true);assert.equal(e.maxHp,Math.round(2000*1.035**4));close(e.dmg,300*1.024**4);close(e.shotDmg(),60*1.024**4);
+test('every star keeps the original 5%/3% growth while the whole curve is scaled to 70% HP and 80% damage',()=>{
+  const s=context(),D=s.G.Difficulty;
+  close(D.factors(4).hp,0.7);close(D.factors(4).dmg,0.8);
+  for(let n=1;n<8;n++){close(D.factors(n+1).hp/D.factors(n).hp,1.05);close(D.factors(n+1).dmg/D.factors(n).dmg,1.03);}
+  s.run(4);let e=s.enemy();assert.equal(e.maxHp,1400);assert.equal(e.dmg,240);assert.equal(e.shotDmg(),48);
+  s.run(8);e=s.enemy(true);assert.equal(e.maxHp,Math.round(2000*0.7*1.05**4));close(e.dmg,300*0.8*1.03**4);close(e.shotDmg(),60*0.8*1.03**4);
   assert.equal(e.spd,20);assert.equal(e.xp,5);
 });
 
@@ -65,7 +66,7 @@ test('original leaderboard accepts clean normal four-star runs but excludes easi
 });
 test('summons inherit the original spawn scale once; remote enemies keep host HP and damage unchanged',()=>{
   const s=context(),G=s.G;s.run(8);const e=s.enemy(true);e.summon();
-  assert.equal(e.minions.length,2);assert.equal(e.minions[0].maxHp,Math.round(350*2*1.035**4));close(e.minions[0].dmg,60*3*1.024**4);
+  assert.equal(e.minions.length,2);assert.equal(e.minions[0].maxHp,Math.round(350*2*0.7*1.05**4));close(e.minions[0].dmg,60*3*0.8*1.03**4);
   const copy=G.EnemyMgr.addRemote({id:999,dex:1,hp:e.maxHp,dmg:e.dmg,x:0,y:0,boss:true});assert.equal(copy.maxHp,e.maxHp);close(copy.dmg,e.dmg);
 });
 test('new and legacy saves start at one star, and progression cannot skip a locked tier',()=>{
@@ -98,7 +99,7 @@ test('a registered local save persists selected tier, medals and record through 
 test('co-op chooses one tier within every member’s unlocked range, including legacy member fallback',()=>{
   const {G}=context(),s=G.DB.save,D=G.Difficulty;for(let n=1;n<=8;n++)s.difficulty.cleared[n]=true;s.difficulty.selected=7;
   assert.equal(D.partyLevel(s,[{difficultyLimit:8},{difficultyLimit:3}]),3);assert.equal(D.partyLevel(s,[{difficultyLimit:8},{}]),1);
-  assert.equal(D.begin(s,6,3).stars,3);close(D.factors().hp,1/1.035);
+  assert.equal(D.begin(s,6,3).stars,3);close(D.factors().hp,0.7/1.05);
 });
 test('real game checkpoint grants victory once after 20 minutes, keeps playing, then persists the longer end time',()=>{
   const s=context(),G=s.G;s.loadGame();const p=s.player(),r=s.run(1);G.Game._test.setRun(p,r,1200);G.Game._test.checkChallenge();assert.equal(r.victory,false);

@@ -5,7 +5,7 @@ G.Difficulty = (() => {
   const level = n => Number.isInteger(n) && n >= 1 && n <= 8 ? n : 1;
   const map = x => x && typeof x === 'object' && !Array.isArray(x) ? x : {};
   const seconds = x => Number.isFinite(x) && x > 0 ? x : 0;
-  const factors = (n = current) => ({ hp: 1.035 ** (level(n) - 4), dmg: 1.024 ** (level(n) - 4) });
+  const factors = (n = current) => ({ hp: 0.7 * 1.05 ** (level(n) - 4), dmg: 0.8 * 1.03 ** (level(n) - 4) });
   function unlocked(s) {
     let n = 1;
     while (n < 8 && s.difficulty?.cleared?.[n]) n++;
