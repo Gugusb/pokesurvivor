@@ -150,6 +150,21 @@ input { font: inherit; }
 .menu-item:hover, .menu-item:focus-visible { background: rgba(255,255,255,.08); outline: none; }
 .menu-item:hover::before, .menu-item:focus-visible::before { opacity: 1; transform: none; }
 .menu-item.play { font-size: 30px; color: var(--gold); }
+.play-row { display: flex; align-items: center; gap: 8px; grid-column: 1 / -1; min-width: 0; }
+.play-row .play { flex: 1; min-width: 0; padding: 8px 4px; white-space: nowrap; grid-template-columns: 26px minmax(0,1fr); column-gap: 6px; }
+.difficulty-picker { width: 112px; max-width: 42%; flex-shrink: 0; }
+.difficulty-picker label { display: block; font-size: 12px; color: var(--gold); }
+.difficulty-picker select { width: 100%; padding: 5px 7px; font: inherit; font-weight: 700; color: #ffe59a; background: #15233d; border: 1px solid #ac9049; border-radius: 7px; }
+.difficulty-picker small { display: block; font-size: 10px; color: var(--muted); line-height: 1.25; margin-top: 3px; }
+.difficulty-record { margin: 12px 0; padding: 10px; border: 1px solid #566986; border-radius: 10px; background: #09152790; }
+.difficulty-record h4 { margin: 0 0 8px; }
+.difficulty-medals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.difficulty-medal { display: inline-block; text-align: center; padding: 4px; border: 1px solid #47566c; border-radius: 5px 5px 10px 10px; color: #7d8da6; background: #182233; }
+.difficulty-medal.won { color: #fff2b8; border-color: #efc65a; background: linear-gradient(140deg,#765214,#b18126 45%,#4b3415); box-shadow: inset 0 1px 2px #fff9; }
+.cell.victory-gold:not(.locked), canvas.stage.victory-gold { border: 3px solid #f4cb57; box-shadow: 0 0 10px #e5b83077, inset 0 0 5px #fff0a855; }
+.cell.victory-emerald:not(.locked), canvas.stage.victory-emerald { border: 3px solid #4ff5b4; border-image: linear-gradient(135deg,#b9ffe1,#08784d 20%,#65ffc4 35%,#0e8254 50%,#a6ffdc 65%,#0b6547 80%,#78ffd3) 1; background-color: #0c3e35c9; box-shadow: 0 0 13px #22efa577, inset 0 0 7px #72ffca77; }
+.cell.victory-ruby:not(.locked), canvas.stage.victory-ruby { border: 3px solid #ff5579; border-image: linear-gradient(135deg,#ffd2de,#840e39 20%,#ff7099 35%,#990d37 50%,#ffbad0 65%,#ff7093) 1; background-color: #490d2bc9; box-shadow: 0 0 15px #ff276f88, inset 0 0 7px #ff95b577; }
+@media (max-width: 600px), (max-height: 520px) { .difficulty-picker { width: 108px; } .difficulty-picker small { font-size: 9px; } .play-row { gap: 3px; } .play-row .play { padding-left: 3px; } }
 .menu-item { display: grid; grid-template-columns: 34px 1fr; column-gap: 8px; align-items: center; }
 .menu-item small { grid-column: 2; }
 .mi-ico { grid-row: span 2; display: flex; }

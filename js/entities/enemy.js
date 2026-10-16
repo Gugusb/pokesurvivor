@@ -37,10 +37,11 @@
       this.r = G.Sprites.bodyRadius(this.spriteDex, this.scale);
       this.bodyH = G.Sprites.bodyHeight(this.spriteDex, this.scale);
 
-      this.maxHp = Math.round(def.hp * sc.hp);
+      const difficulty = G.Difficulty && !def.networkStats ? G.Difficulty.factors() : { hp: 1, dmg: 1 };
+      this.maxHp = Math.max(1, Math.round(def.hp * sc.hp * difficulty.hp));
       this.hp = this.maxHp;
       this.spd = def.spd * sc.spd;
-      this.dmg = def.dmg * sc.dmg;
+      this.dmg = def.dmg * sc.dmg * difficulty.dmg;
       this.xp = def.xp;
       this.behavior = def.behavior;
 
@@ -784,7 +785,7 @@
     /** Copia local de un enemigo del anfitrión (cooperativo). */
     function addRemote(o) {
       if (byId.has(o.id)) return byId.get(o.id);
-      const def = { dex: o.dex, mega: o.mega, hp: o.hp, spd: 0, dmg: o.dmg, xp: 0, behavior: o.beh || 'remote' };
+      const def = { dex: o.dex, mega: o.mega, hp: o.hp, spd: 0, dmg: o.dmg, xp: 0, behavior: o.beh || 'remote', networkStats: true };
       const e = new Enemy(def, o.x, o.y, { hp: 1, spd: 1, dmg: 1 }, o.boss);
       e.id = o.id;
       e.remote = true;

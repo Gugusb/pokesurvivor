@@ -27,7 +27,7 @@
 G.DB = (() => {
   const K_ACC = 'ps.accounts', K_SES = 'ps.session', K_SAVE = 'ps.save.';
   const K_CLOUD = 'ps.cloud.', K_MIGRATED = 'ps.migrated.';
-  const VERSION = 5;
+  const VERSION = 6;
   const START_COINS = 500;
   const SDK = 'https://www.gstatic.com/firebasejs/13.0.0/';
   const NAME_DOMAIN = 'jugadores.pokesurvivor.net';   // sólo para el email interno
@@ -90,6 +90,9 @@ G.DB = (() => {
       abilityEquipped: {},    // una sola medalla equipada por especie
       megaStones: {},         // permanent collection keyed by Mega form
       megaEquipped: {},       // one matching stone per base species
+      difficulty: { selected: 1, cleared: {} },
+      difficultyRecords: {},  // dex -> stars -> { best: seconds, won }
+      offline: { seen: 0, carry: 0, rates: null },
       legends: {},            // dex -> fecha: legendarios vencidos en grietas
       arenas: {},             // tipo -> fecha: arenas de grieta ganadas
       itemsFound: {},         // id -> fecha: objetos equipables encontrados
@@ -131,6 +134,8 @@ G.DB = (() => {
    * servidor (firestore.rules, saves).
    */
   function sanitize(s) {
+    if (G.Difficulty) G.Difficulty.normalize(s);
+    if (G.Offline) G.Offline.normalize(s);
     if (!s.megaStones || typeof s.megaStones !== 'object' || Array.isArray(s.megaStones)) s.megaStones = {};
     if (!s.megaEquipped || typeof s.megaEquipped !== 'object' || Array.isArray(s.megaEquipped)) s.megaEquipped = {};
     if (G.Mega) {
@@ -209,6 +214,14 @@ G.DB = (() => {
     const newer = (a.updated || 0) >= (b.updated || 0) ? a : b;
     const older = newer === a ? b : a;
     const r = JSON.parse(JSON.stringify(newer));
+    if (G.Difficulty) Object.assign(r, G.Difficulty.merge(newer, older));
+    if (G.Offline) {
+      r.offline = G.Offline.merge(newer, older);
+      const delta = k => Math.max(0, r.offline.total[k] - (newer.offline?.total?.[k] || 0));
+      r.coins = (r.coins || 0) + delta('coins');
+      r.tickets ||= {t1:0,t10:0}; r.tickets.t1 += delta('tickets');
+      r.abilityGems = (r.abilityGems || 0) + delta('gems');
+    }
     for (const coll of ['owned', 'shiny', 'abilityMedals', 'megaStones']) {
       r[coll] = r[coll] || {};
       for (const k in older[coll] || {}) {
@@ -685,6 +698,38 @@ G.DB = (() => {
   /** Funciones que se ejecutan al cerrar sesión o borrar la cuenta (amigos, salas...). */
   const leaveHooks = [];
 
+  /** Offline rewards commit with the cursor, atomically for cloud accounts. */
+  async function settleOffline(now) {
+    if (guest || !save || !key || !G.Offline) return null;
+    const account = key;
+    const settle = async () => {
+      if (key !== account || guest || !save) return null;
+      if (mode === 'local') {
+        const stored = read(K_SAVE + key);
+        if (stored) applyInPlace(merge(plain(save), migrate(stored)));
+        const result = G.Offline.claim(save, now); commit(true); return result;
+      }
+      if (pushing) await pushing;
+      let result, settled;
+      const transaction = fs.runTransaction(async tx => {
+        if (key !== account || !save) throw new Error('Account changed');
+        const ref = docRef(), snap = await tx.get(ref);
+        settled = snap.exists ? merge(plain(save), migrate(snap.data().save)) : plain(save);
+        result = G.Offline.claim(settled, now); settled.updated = Date.now();
+        const doc = { save: settled, updatedAt: firebase.firestore.FieldValue.serverTimestamp(), v: VERSION };
+        if (snap.exists && snap.data().ban === true) doc.ban = true;
+        tx.set(ref, doc);
+      });
+      await Promise.race([transaction, new Promise((_, reject) => setTimeout(() => reject(new Error('Offline settlement timed out')), 12000))]);
+      if (key === account && save) {
+        applyInPlace(merge(plain(save), settled)); write(K_CLOUD + uid, save);
+      }
+      return result;
+    };
+    // Serialize tabs in the same browser; Firestore serializes different devices.
+    return navigator.locks ? navigator.locks.request('ps.offline.' + account, settle) : settle();
+  }
+
   async function logout() {
     for (const fn of leaveHooks) { try { await fn('logout'); } catch (e) { /* nada */ } }
     if (mode === 'cloud' && !guest && save) {
@@ -790,7 +835,7 @@ G.DB = (() => {
   }
 
   return {
-    ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, flush: pushNow,
+    ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, settleOffline, flush: pushNow,
     owns, grant, ownsShiny, grantShiny, merge, setName, upgradesOf,
     onSync(fn) { listeners.add(fn); },
     onLeave(fn) { leaveHooks.push(fn); },

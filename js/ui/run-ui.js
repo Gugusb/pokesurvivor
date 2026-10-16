@@ -103,8 +103,10 @@ G.RunUI = (() => {
   }
 
   function showOver(r, onBack) {
-    $('over-title').textContent = r.dead ? 'Has caído…' : 'Run terminada';
+    $('over-title').textContent = r.victory ? 'Dificultad superada' : r.dead ? 'Has caído…' : 'Run terminada';
     $('over-stats').innerHTML = `
+      ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : G.T('Sin superar')}</b></div>` : ''}
+      ${r.rankingExcluded ? `<p class="note" style="grid-column:1/-1">${G.T('El ranking original sólo acepta partidas limpias de 4 estrellas a velocidad normal.')}</p>` : ''}
       <div><span>Tiempo</span><b>${G.U.mmss(r.time)}</b></div>
       <div><span>Nivel</span><b>${r.level}</b></div>
       <div><span>Derrotados</span><b>${r.kills}</b></div>
@@ -225,6 +227,11 @@ G.RunUI = (() => {
     G.UI.soundControls($('pause-sound'));
     $('pause-coop').classList.toggle('hidden', !coop);
     $('btn-quit').textContent = coop ? 'Salir de la partida' : 'Abandonar run';
+    const speed = $('btn-run-speed');
+    const refresh = () => { speed.textContent = G.T('Velocidad de juego') + ': ' + (G.Game.speed || 1) + '× · V'; };
+    refresh(); speed.disabled = coop && !G.Coop.isHost;
+    speed.title = G.T('En grupo, sólo el anfitrión cambia la velocidad.');
+    speed.onclick = () => { G.Game.setSpeed(G.Game.speed === 2 ? 1 : 2); refresh(); };
     G.UI.show('scr-pause');
   }
 

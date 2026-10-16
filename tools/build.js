@@ -52,9 +52,10 @@ if (!EXPOSE) {
     '--unicode-escape-sequence', 'false', '--target', 'browser'], { stdio: 'inherit', shell });
 }
 const min = fs.readFileSync(outJs);
-const hash = crypto.createHash('sha1').update(min).digest('hex').slice(0, 10);
+const hash = crypto.createHash('sha1').update(min).update(fs.readFileSync(path.join(ROOT, 'css/style.css'))).digest('hex').slice(0, 10);
 
 let html = dev.slice(0, i) + `<script defer src="js/app.min.js?v=${hash}"></script>` + dev.slice(j + END.length);
+html = html.replace(/href="css\/style\.css(?:\?[^"]*)?"/, `href="css/style.css?v=${hash}"`);
 html = html.replace(/<meta name="robots" content="noindex">\s*/, '');
 // --sin-seo: sin canonical/redes/datos estructurados ni enlaces a las páginas
 // (para publicar antes de tener el dominio pokesurvivor.com).

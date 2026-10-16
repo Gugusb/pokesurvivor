@@ -296,7 +296,8 @@ G.Social = (() => {
 
   function memberInfo() {
     const s = G.DB.save;
-    return { name: me.name, dex: s.partner, shiny: !!s.partnerShiny && G.DB.ownsShiny(s.partner), at: ts() };
+    return { name: me.name, dex: s.partner, shiny: !!s.partnerShiny && G.DB.ownsShiny(s.partner), at: ts(),
+      difficultyLimit: G.Difficulty ? G.Difficulty.unlocked(s) : 1 };
   }
 
   /**
@@ -405,7 +406,8 @@ G.Social = (() => {
   /** Actualiza tu Pokémon en la sala (si cambias de compañero). */
   function refreshMember() {
     if (room && me) fb.rtdb.ref('rooms/' + room.id + '/m/' + uid).update(
-      { dex: G.DB.save.partner, shiny: !!G.DB.save.partnerShiny && G.DB.ownsShiny(G.DB.save.partner) }).catch(() => {});
+      { dex: G.DB.save.partner, shiny: !!G.DB.save.partnerShiny && G.DB.ownsShiny(G.DB.save.partner),
+        difficultyLimit: G.Difficulty ? G.Difficulty.unlocked(G.DB.save) : 1 }).catch(() => {});
   }
 
   // ---------------- invitaciones ----------------

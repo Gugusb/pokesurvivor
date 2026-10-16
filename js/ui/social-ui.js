@@ -252,6 +252,8 @@
         : ms.length < 2 ? 'Necesitas al menos un amigo en la sala.'
         : failed ? 'No se puede conectar con algún amigo: su red (o la tuya) no deja jugar en grupo. Probad con otra wifi o datos móviles; se reintenta solo.'
         : connecting ? 'Conectando con tus amigos…' : 'La partida empieza para todos a la vez.';
+      if (G.Difficulty && room.isHost) $('lobby-note').textContent += ' · ' + G.T('Dificultad') + ' ' +
+        G.Difficulty.partyLevel(G.DB.save, ms) + '★ · ' + G.T('Limitada por el desbloqueo del equipo');
     }
 
     function start() {
@@ -259,6 +261,7 @@
       if (!room || !room.isHost || room.members.length < 2) return;
       const cfg = {
         k: 'start', seed: Math.floor(Math.random() * 1e6), host: room.host,
+        difficulty: G.Difficulty ? G.Difficulty.partyLevel(G.DB.save, room.members) : 1,
         members: room.members.map(m => ({ uid: m.uid, name: m.name, dex: m.dex, shiny: !!m.shiny }))
       };
       G.Social.setOpen(false);

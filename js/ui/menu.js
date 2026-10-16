@@ -5,7 +5,7 @@ G.MenuUI = (() => {
   let dexFilter = 'all', dexGen = 1, dexSel = null;
 
   function init() {
-    const ICON = { play: 'ball', dex: 'book', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', friends: 'friends', rank: 'trophy', settings: 'gear' };
+    const ICON = { play: 'ball', dex: 'book', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
     document.querySelectorAll('#scr-menu [data-go]').forEach(b => {
       b.insertAdjacentHTML('afterbegin', `<span class="mi-ico">${G.Icons.html(ICON[b.dataset.go], 26)}</span>`);
       b.dataset.sfx = b.dataset.go === 'play' ? 'confirm' : 'click';
@@ -17,6 +17,7 @@ G.MenuUI = (() => {
         else if (go === 'gacha') G.GachaUI.open();
         else if (go === 'ability-gacha') G.GachaUI.open('ability');
         else if (go === 'goals') G.GoalsUI.open();
+        else if (go === 'offline') G.OfflineUI.open();
         else if (go === 'friends') G.FriendsUI.open();
         else if (go === 'rank') G.RankingUI.open();
         else if (go === 'settings') G.SettingsUI.open();
@@ -42,6 +43,7 @@ G.MenuUI = (() => {
     G.UI.sprite($('menu-partner'), mon.dex, { lively: true, scale: 4, hero: true, shiny });
     $('menu-partner').style.setProperty('--stage-c', shiny ? '#9ae6ff' : G.U.TYPE_COLOR[mon.types[0]]);
     $('menu-partner').classList.toggle('shiny', shiny);
+    if (G.DifficultyUI) G.DifficultyUI.menu();
     $('menu-partner-name').innerHTML = mon.name + (shiny ? ' ' + G.Icons.html('shiny', 24) : '');
     $('menu-partner-info').innerHTML = G.UI.typeChips(mon.types) + ' ' + G.UI.stars(mon.rarity);
     const ability = G.Abilities.equipped(s, mon.dex);
@@ -68,6 +70,7 @@ G.MenuUI = (() => {
     $('menu-dex-count').textContent = `${owned} / ${G.DEX.length}` + (shinies ? ` · ${shinies} shiny` : '');
 
     const st = s.stats;
+    if (G.OfflineUI) G.OfflineUI.menu();
     $('menu-stats').innerHTML =
       `Runs <b style="color:#fff">${st.runs}</b> · Mejor tiempo <b style="color:#fff">${G.U.mmss(st.bestTime)}</b><br>` +
       `Mejor nivel <b style="color:#fff">${st.bestLevel}</b> · Derrotados <b style="color:#fff">${st.totalKills.toLocaleString('es')}</b>` +
@@ -157,6 +160,7 @@ G.MenuUI = (() => {
 
       const cell = document.createElement('div');
       cell.className = 'cell' + (own ? '' : ' locked') + (p.dex === dexSel ? ' on' : '');
+      if (G.DifficultyUI && own) G.DifficultyUI.decorate(cell, p.dex);
       cell.insertAdjacentHTML('beforeend', `<span class="no">${String(p.dex).padStart(3, '0')}</span>`);
       if (p.dex === s.partner) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Compañero">${G.Icons.html('crown', 14)}</span>`);
       else if (sh) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Tienes su shiny">${G.Icons.html('shiny', 12)}</span>`);
@@ -219,6 +223,7 @@ G.MenuUI = (() => {
     `;
     $('dex-big').style.setProperty('--stage-c', !own ? '#5b83d6' : viewShiny ? '#9ae6ff' : G.U.TYPE_COLOR[p.types[0]]);
     $('dex-big').classList.toggle('shiny', own && viewShiny);
+    if (G.DifficultyUI && own) { G.DifficultyUI.decorate($('dex-big'), dex); G.DifficultyUI.detail(box, dex); }
     G.UI.sprite($('dex-big'), dex, { lively: own, spin: own, silhouette: !own, scale: 3, hero: true, shiny: own && viewShiny });
     if (G.AbilityDefs.medalsFor(dex).length) G.GachaUI.renderEquipment(box, dex);
     if (G.MegaUI && own) G.MegaUI.renderEquipment(box, dex);

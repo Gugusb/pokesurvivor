@@ -6,6 +6,19 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-16', title: ['Dificultad, ingresos y doble velocidad · v0.9.0', 'Difficulty, offline income and double speed · v0.9.0'], new: [
+    ['Las cuentas registradas ganan ingresos sin conexión: de 100 a 5000 monedas/hora según la colección y los Shinies. Los Shinies aumentan los vales (media 1–5/h) y gemas de habilidad (0,5–2/h), con liquidación automática al volver.',
+     'Registered accounts earn offline income: 100–5000 coins/hour based on collection and Shinies. Shinies increase ticket drops (expected 1–5/h) and Ability Gems (0.5–2/h), automatically settled on return.'],
+    ['Cambia entre 1× y 2× en el menú de pausa o con V. Acelera el combate y el tiempo de la partida; los ingresos sin conexión usan tiempo real. En grupo lo decide el anfitrión.',
+     'Switch between 1× and 2× in the pause menu or with V. Combat and run time accelerate; offline income uses real time. The co-op host controls speed.'],
+    ['Elige de 1 a 8 estrellas junto a Jugar. 4 estrellas conserva el equilibrio original; cada estrella multiplica la vida enemiga por 1,05 y su ataque por 1,03. Sobrevive más de 20 minutos para ganar y desbloquear la siguiente; puedes seguir jugando.',
+     'Choose 1–8 stars beside Play. 4 stars preserves the original balance; each star multiplies enemy HP by 1.05 and attack by 1.03. Survive more than 20 minutes to win and unlock the next star; you can keep playing.'],
+    ['Cada Pokémon guarda sus ocho medallas y su mejor tiempo por dificultad. La primera victoria da un marco dorado, vencer 5 estrellas da esmeralda y reunir las ocho medallas da rubí. La ficha muestra el récord en su mayor dificultad intentada.',
+     'Each Pokémon tracks eight medals and best time per difficulty. First victory grants a gold frame, clearing 5 stars grants emerald, and all eight medals grant ruby. Details show the record at its highest attempted difficulty.']
+  ], chg: [
+    ['Las partidas de depuración no otorgan medallas ni desbloqueos. En grupo se usa una dificultad común limitada por lo desbloqueado por todos los miembros.',
+     'Debug runs do not grant medals or unlocks. Co-op uses one shared difficulty limited by every member’s unlocked progress.']
+  ], fix: [] },
   { d: '2026-10-16', title: ['Elecciones de nivel mejoradas · v0.8.1', 'Improved level-up choices · v0.8.1'], new: [], chg: [
     ['Los movimientos aprendidos aparecen con más frecuencia y ganan peso con su nivel. Si una oferta no incluye una mejora aprendida, la siguiente la garantiza, también al renovar; no se aplica si todos están al máximo.',
      'Learned moves appear more often, with increasing weight at higher levels. After an offer without a learned upgrade, the next guarantees one, including rerolls; maxed-out moves are exempt.'],

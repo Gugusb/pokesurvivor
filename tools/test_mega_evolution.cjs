@@ -43,7 +43,7 @@ test('stones migrate empty, sanitize invalid equipment, merge ownership and pres
   assert.equal(s.megaStones.bad,undefined);assert.equal(s.megaEquipped[65],undefined);
   const old=JSON.parse(JSON.stringify(s));s.updated=20;old.updated=10;G.Mega.equip(s,6,null);G.Mega.grant(old,'65-mega');
   const merged=G.DB.merge(s,old);assert.equal(merged.megaEquipped[6],null);assert.ok(merged.megaStones['65-mega']);
-  const legacy=G.DB._test.migrate({name:'old',owned:{},stats:{},abilityStarterGranted:true},'old');assert.equal(legacy.v,5);assert.equal(Object.keys(legacy.megaStones).length,0);
+  const legacy=G.DB._test.migrate({name:'old',owned:{},stats:{},abilityStarterGranted:true},'old');assert.equal(legacy.v,6);assert.equal(Object.keys(legacy.megaStones).length,0);
 });
 test('a real local save retains stone ownership and equipment through logout/login',async()=>{
   const {G}=context();assert.ok((await G.DB.register('MegaTest','test-only')).ok);G.Mega.grant(G.DB.save,'6-mega-x');G.Mega.equip(G.DB.save,6,'6-mega-x');G.DB.commit(true);

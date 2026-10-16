@@ -3313,6 +3313,12 @@ G.I18n.addChinese({
   "Controles de depuración · v0.2.1": "调试控件 · v0.2.1",
   "El panel de desarrollo permite ampliar la vista entre 1× y 2× (1,5× por defecto). Al desactivarlo, la cámara vuelve a la vista normal.": "调试面板新增 1× 至 2× 视野调整，默认 1.5×；关闭开发者模式恢复正常视野。",
   "Añade o resta monedas, vales de una tirada, vales de diez tiradas y gemas de habilidad con cantidades configurables.": "金币、单抽券、十连券和特性宝石均可自定义数量后增加或减少。",
+  "Dificultad, ingresos y doble velocidad · v0.9.0": "难度、挂机与二倍速 · v0.9.0",
+  "Las cuentas registradas ganan ingresos sin conexión: de 100 a 5000 monedas/hora según la colección y los Shinies. Los Shinies aumentan los vales (media 1–5/h) y gemas de habilidad (0,5–2/h), con liquidación automática al volver.": "已注册玩家退出或切到后台后可获得挂机收益，返回时自动结算。金币随图鉴和闪光收藏非线性增长，范围 100～5000／小时；闪光越多，单抽券期望从 1 提高至 5／小时，特性宝石从 0.5 提高至 2／小时。",
+  "Cambia entre 1× y 2× en el menú de pausa o con V. Acelera el combate y el tiempo de la partida; los ingresos sin conexión usan tiempo real. En grupo lo decide el anfitrión.": "暂停菜单或快捷键 V 可切换 1×／2×，加快战斗和局内计时；挂机仍按现实时间计算，联机速度由房主设置。",
+  "Elige de 1 a 8 estrellas junto a Jugar. 4 estrellas conserva el equilibrio original; cada estrella multiplica la vida enemiga por 1,05 y su ataque por 1,03. Sobrevive más de 20 minutos para ganar y desbloquear la siguiente; puedes seguir jugando.": "开始游戏旁可选择一至八星难度，四星保持原有数值；每升一星，敌人生命乘 1.05、攻击乘 1.03。生存超过 20 分钟即可通关、解锁下一星，之后仍可继续挑战。",
+  "Cada Pokémon guarda sus ocho medallas y su mejor tiempo por dificultad. La primera victoria da un marco dorado, vencer 5 estrellas da esmeralda y reunir las ocho medallas da rubí. La ficha muestra el récord en su mayor dificultad intentada.": "每只宝可梦分别记录八档奖牌和各难度最长生存时间：首次胜利获得金框，通关五星获得绿宝石框，集齐八档奖牌获得红宝石框；图鉴详情显示挑战过的最高难度纪录。",
+  "Las partidas de depuración no otorgan medallas ni desbloqueos. En grupo se usa una dificultad común limitada por lo desbloqueado por todos los miembros.": "调试局不发放通关奖牌、不解锁难度；联机使用全队共同解锁范围内的同一难度。",
   "Elecciones de nivel mejoradas · v0.8.1": "升级选项优化 · v0.8.1",
   "Los movimientos aprendidos aparecen con más frecuencia y ganan peso con su nivel. Si una oferta no incluye una mejora aprendida, la siguiente la garantiza, también al renovar; no se aplica si todos están al máximo.": "已学技能更容易出现，并随技能等级提高权重。若一轮没有已学技能升级，下一轮必出至少一项，刷新也计一轮；已有技能全部满级时除外。",
   "Las categorías se eligen con pesos 5:3:2 para ataques, atributos permanentes y movimientos de beneficio. Las evoluciones de movimientos dejan de ser obligatorias y tienen menos peso.": "输出技能、永久属性卡、属性增益技能按约 5∶3∶2 的类别权重抽取。超武进化卡取消必出，并降低出现权重。"
