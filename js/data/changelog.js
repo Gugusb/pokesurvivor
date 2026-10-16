@@ -6,6 +6,12 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-16', title: ['Elecciones de nivel mejoradas · v0.8.1', 'Improved level-up choices · v0.8.1'], new: [], chg: [
+    ['Los movimientos aprendidos aparecen con más frecuencia y ganan peso con su nivel. Si una oferta no incluye una mejora aprendida, la siguiente la garantiza, también al renovar; no se aplica si todos están al máximo.',
+     'Learned moves appear more often, with increasing weight at higher levels. After an offer without a learned upgrade, the next guarantees one, including rerolls; maxed-out moves are exempt.'],
+    ['Las categorías se eligen con pesos 5:3:2 para ataques, atributos permanentes y movimientos de beneficio. Las evoluciones de movimientos dejan de ser obligatorias y tienen menos peso.',
+     'Category weights are 5:3:2 for attacks, permanent stats and buff moves. Ultimate move evolutions are no longer guaranteed and have lower weight.']
+  ], fix: [] },
   { d: '2026-10-16', title: ['Megapiedras y megaevolución · v0.8.0', 'Mega Stones and Mega Evolution · v0.8.0'], new: [
     ['Un 20% de las grietas contienen uno de los 36 jefes Mega disponibles. Al vencerlo, hay un 5% de obtener su Megapiedra permanente; se equipa en la ficha del Pokémon.',
      '20% of rifts contain one of 36 available Mega bosses. Defeating it has a 5% chance to award its permanent Mega Stone; equip it in the Pokémon details.'],

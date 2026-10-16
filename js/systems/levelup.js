@@ -5,6 +5,10 @@
  *   stat  mejora permanente de la run
  */
 G.LevelUp = (() => {
+  // Run-local history, shared by initial offers, rerolls and extra choices.
+  const missed = new WeakMap();
+  const CATEGORY = { attack: 5, buff: 2, stat: 3 };
+  const family = m => m.kind === 'buff' ? 'buff' : 'attack';
 
   const STATS = [
     { id: 'hp',   icon: 'heart', title: 'Vigor',        desc: '+20 de vida máxima (y la recupera).',
@@ -38,10 +42,10 @@ G.LevelUp = (() => {
       const buffs = pl.moves.filter(m => m.kind === 'buff').length;
       const pool = G.Moves.poolFor(pl.mon).filter(id =>
         !pl.hasMove(id) && !(pl.banned && pl.banned.has(id)) && !(buffs >= 2 && G.Moves.BY_ID[id].kind === 'buff'));
-      for (const id of G.U.pickN(pool, 6)) {
+      for (const id of pool) {
         const d = G.Moves.BY_ID[id];
         out.push({
-          w: 10, type: 'new', key: 'new:' + id,
+          w: 1, category: family(d), type: 'new', key: 'new:' + id,
           icon: 'move:' + id, color: G.U.TYPE_COLOR[d.type],
           tag: G.U.TYPE_NAME[d.type],
           title: d.name, desc: d.desc,
@@ -57,7 +61,7 @@ G.LevelUp = (() => {
       if (!ev) continue;
       if (!ev.ready) { waiting[ev.needs] = m; continue; }
       out.push({
-        w: 40, type: 'evo', key: 'evo:' + m.id,
+        w: 0.75, category: family(m), type: 'evo', key: 'evo:' + m.id,
         icon: 'move:' + m.id, color: '#ffd23f', tag: 'EVOLUCIÓN',
         title: m.name + ' → ' + ev.name, desc: ev.text,
         apply: p => {
@@ -75,7 +79,7 @@ G.LevelUp = (() => {
       const txt = G.Moves.nextUpText(m);
       if (!txt) continue;
       out.push({
-        w: 8, type: 'up', key: 'up:' + m.id,
+        w: 2 + 0.75 * (m.lvl - 1), category: family(m), type: 'up', key: 'up:' + m.id,
         icon: 'move:' + m.id, color: G.U.TYPE_COLOR[m.type],
         tag: 'Nv.' + m.lvl + ' > ' + (m.lvl + 1),
         title: m.name, desc: txt,
@@ -84,16 +88,16 @@ G.LevelUp = (() => {
     }
 
     // --- stats ---
-    // Las que desbloquean una evolución salen siempre y con aviso.
+    // Keep evolution prerequisites available, with a modest relative bonus.
     // Cada mejora tiene un tope de veces (`max`): en partidas muy largas se
     // acumulaban sin fin (velocidad, recarga y experiencia por las nubes) y el
-    // juego acababa colgándose. Las que piden una evolución salen siempre.
+    // juego acababa colgándose. Las condiciones de evolución siguen disponibles.
     const room = s => !s.max || (pl.statsTaken[s.id] || 0) < s.max;
-    const pickStats = G.U.pickN(STATS.filter(s => !waiting[s.id] && room(s)), 5).concat(STATS.filter(s => waiting[s.id]));
+    const pickStats = STATS.filter(s => waiting[s.id] || room(s));
     for (const s of pickStats) {
       const evoFor = waiting[s.id];
       out.push({
-        w: evoFor ? 14 : pl.slots.length < pl.maxMoves ? 4 : 7,
+        w: evoFor ? 2 : 1, category: 'stat',
         type: 'stat', key: 'stat:' + s.id,
         icon: s.icon, color: evoFor ? '#ffd23f' : '#8fa3c4', tag: evoFor ? 'Evoluciona ' + evoFor.name : 'Mejora',
         title: s.title, desc: s.desc,
@@ -104,24 +108,37 @@ G.LevelUp = (() => {
     return out;
   }
 
-  /** Devuelve 3 cartas distintas, elegidas por peso. */
+  // First choose a category, then a card within it: pool size cannot dilute 5:3:2.
+  function draw(pool) {
+    const groups = Object.keys(CATEGORY).filter(k => pool.some(c => c.category === k));
+    // Do not normalize away the ultimate penalty when it is the only attack left.
+    const weight = k => {
+      const cards = pool.filter(c => c.category === k);
+      return CATEGORY[k] * cards.reduce((sum, c) => sum + c.w, 0) /
+        cards.reduce((sum, c) => sum + (c.type === 'evo' ? 4.25 : c.w), 0);
+    };
+    let r = Math.random() * groups.reduce((sum, k) => sum + weight(k), 0);
+    let group = groups[groups.length - 1];
+    for (const k of groups) { r -= weight(k); if (r < 0) { group = k; break; } }
+    const cards = pool.filter(c => c.category === group);
+    r = Math.random() * cards.reduce((sum, c) => sum + c.w, 0);
+    for (const c of cards) { r -= c.w; if (r < 0) return c; }
+    return cards[cards.length - 1];
+  }
+
+  /** Three distinct cards; never two consecutive displays without an available upgrade. */
   function offer(pl, n = 3) {
     const pool = candidates(pl);
     const picked = [];
-    const used = new Set();
-    // Si hay una evolución lista, su carta dorada sale siempre.
-    const evo = pool.findIndex(c => c.type === 'evo');
-    if (evo >= 0) { const c = pool.splice(evo, 1)[0]; used.add(c.key); picked.push(c); }
-
+    const eligible = pool.some(c => c.type === 'up');
+    const guarantee = eligible && missed.get(pl);
     while (picked.length < n && pool.length) {
-      const total = pool.reduce((a, c) => a + c.w, 0);
-      let r = Math.random() * total, idx = 0;
-      for (let i = 0; i < pool.length; i++) { r -= pool[i].w; if (r <= 0) { idx = i; break; } }
-      const c = pool.splice(idx, 1)[0];
-      if (used.has(c.key)) continue;
-      used.add(c.key);
+      const force = guarantee && picked.length === n - 1 && !picked.some(c => c.type === 'up');
+      const c = draw(force ? pool.filter(c => c.type === 'up') : pool);
+      pool.splice(pool.indexOf(c), 1);
       picked.push(c);
     }
+    if (picked.length) missed.set(pl, eligible && !picked.some(c => c.type === 'up'));
     return picked;
   }
 

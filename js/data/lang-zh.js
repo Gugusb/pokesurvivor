@@ -3312,5 +3312,8 @@ G.I18n.addChinese({
   "En el gacha de habilidades, los premios de Dragonite ahora son sus medallas. Las seis especies de cinco estrellas conservan sus probabilidades y comparten cada una su probabilidad entre sus medallas.": "特性抽卡中的快龙奖励改为对应勋章；六只五星宝可梦维持原有抽取概率，每只的不同勋章等概率出现。",
   "Controles de depuración · v0.2.1": "调试控件 · v0.2.1",
   "El panel de desarrollo permite ampliar la vista entre 1× y 2× (1,5× por defecto). Al desactivarlo, la cámara vuelve a la vista normal.": "调试面板新增 1× 至 2× 视野调整，默认 1.5×；关闭开发者模式恢复正常视野。",
-  "Añade o resta monedas, vales de una tirada, vales de diez tiradas y gemas de habilidad con cantidades configurables.": "金币、单抽券、十连券和特性宝石均可自定义数量后增加或减少。"
+  "Añade o resta monedas, vales de una tirada, vales de diez tiradas y gemas de habilidad con cantidades configurables.": "金币、单抽券、十连券和特性宝石均可自定义数量后增加或减少。",
+  "Elecciones de nivel mejoradas · v0.8.1": "升级选项优化 · v0.8.1",
+  "Los movimientos aprendidos aparecen con más frecuencia y ganan peso con su nivel. Si una oferta no incluye una mejora aprendida, la siguiente la garantiza, también al renovar; no se aplica si todos están al máximo.": "已学技能更容易出现，并随技能等级提高权重。若一轮没有已学技能升级，下一轮必出至少一项，刷新也计一轮；已有技能全部满级时除外。",
+  "Las categorías se eligen con pesos 5:3:2 para ataques, atributos permanentes y movimientos de beneficio. Las evoluciones de movimientos dejan de ser obligatorias y tienen menos peso.": "输出技能、永久属性卡、属性增益技能按约 5∶3∶2 的类别权重抽取。超武进化卡取消必出，并降低出现权重。"
 });
