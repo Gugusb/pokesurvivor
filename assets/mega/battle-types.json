@@ -1,0 +1,283 @@
+{
+  "source": "PokeAPI/pokeapi",
+  "commit": "81d20919845b6a445969b9265aab5cec6b04cece",
+  "forms": {
+    "6-mega-x": {
+      "pokemon": "charizard-mega-x",
+      "id": 10034,
+      "types": [
+        "fire",
+        "dragon"
+      ]
+    },
+    "65-mega": {
+      "pokemon": "alakazam-mega",
+      "id": 10037,
+      "types": [
+        "psychic"
+      ]
+    },
+    "94-mega": {
+      "pokemon": "gengar-mega",
+      "id": 10038,
+      "types": [
+        "ghost",
+        "poison"
+      ]
+    },
+    "115-mega": {
+      "pokemon": "kangaskhan-mega",
+      "id": 10039,
+      "types": [
+        "normal"
+      ]
+    },
+    "142-mega": {
+      "pokemon": "aerodactyl-mega",
+      "id": 10042,
+      "types": [
+        "rock",
+        "flying"
+      ]
+    },
+    "150-mega-y": {
+      "pokemon": "mewtwo-mega-y",
+      "id": 10044,
+      "types": [
+        "psychic"
+      ]
+    },
+    "208-mega": {
+      "pokemon": "steelix-mega",
+      "id": 10072,
+      "types": [
+        "steel",
+        "ground"
+      ]
+    },
+    "227-mega": {
+      "pokemon": "skarmory-mega",
+      "id": 10284,
+      "types": [
+        "steel",
+        "flying"
+      ]
+    },
+    "229-mega": {
+      "pokemon": "houndoom-mega",
+      "id": 10048,
+      "types": [
+        "dark",
+        "fire"
+      ]
+    },
+    "248-mega": {
+      "pokemon": "tyranitar-mega",
+      "id": 10049,
+      "types": [
+        "rock",
+        "dark"
+      ]
+    },
+    "282-mega": {
+      "pokemon": "gardevoir-mega",
+      "id": 10051,
+      "types": [
+        "psychic",
+        "fairy"
+      ]
+    },
+    "302-mega": {
+      "pokemon": "sableye-mega",
+      "id": 10066,
+      "types": [
+        "dark",
+        "ghost"
+      ]
+    },
+    "303-mega": {
+      "pokemon": "mawile-mega",
+      "id": 10052,
+      "types": [
+        "steel",
+        "fairy"
+      ]
+    },
+    "308-mega": {
+      "pokemon": "medicham-mega",
+      "id": 10054,
+      "types": [
+        "fighting",
+        "psychic"
+      ]
+    },
+    "310-mega": {
+      "pokemon": "manectric-mega",
+      "id": 10055,
+      "types": [
+        "electric"
+      ]
+    },
+    "323-mega": {
+      "pokemon": "camerupt-mega",
+      "id": 10087,
+      "types": [
+        "fire",
+        "ground"
+      ]
+    },
+    "334-mega": {
+      "pokemon": "altaria-mega",
+      "id": 10067,
+      "types": [
+        "dragon",
+        "fairy"
+      ]
+    },
+    "354-mega": {
+      "pokemon": "banette-mega",
+      "id": 10056,
+      "types": [
+        "ghost"
+      ]
+    },
+    "359-mega": {
+      "pokemon": "absol-mega",
+      "id": 10057,
+      "types": [
+        "dark"
+      ]
+    },
+    "362-mega": {
+      "pokemon": "glalie-mega",
+      "id": 10074,
+      "types": [
+        "ice"
+      ]
+    },
+    "380-mega": {
+      "pokemon": "latias-mega",
+      "id": 10062,
+      "types": [
+        "dragon",
+        "psychic"
+      ]
+    },
+    "381-mega": {
+      "pokemon": "latios-mega",
+      "id": 10063,
+      "types": [
+        "dragon",
+        "psychic"
+      ]
+    },
+    "384-mega": {
+      "pokemon": "rayquaza-mega",
+      "id": 10079,
+      "types": [
+        "dragon",
+        "flying"
+      ]
+    },
+    "428-mega": {
+      "pokemon": "lopunny-mega",
+      "id": 10088,
+      "types": [
+        "normal",
+        "fighting"
+      ]
+    },
+    "448-mega": {
+      "pokemon": "lucario-mega",
+      "id": 10059,
+      "types": [
+        "fighting",
+        "steel"
+      ]
+    },
+    "475-mega": {
+      "pokemon": "gallade-mega",
+      "id": 10068,
+      "types": [
+        "psychic",
+        "fighting"
+      ]
+    },
+    "491-mega": {
+      "pokemon": "darkrai-mega",
+      "id": 10312,
+      "types": [
+        "dark"
+      ]
+    },
+    "530-mega": {
+      "pokemon": "excadrill-mega",
+      "id": 10287,
+      "types": [
+        "ground",
+        "steel"
+      ]
+    },
+    "604-mega": {
+      "pokemon": "eelektross-mega",
+      "id": 10290,
+      "types": [
+        "electric"
+      ]
+    },
+    "670-mega": {
+      "pokemon": "floette-mega",
+      "id": 10296,
+      "types": [
+        "fairy"
+      ]
+    },
+    "691-mega": {
+      "pokemon": "dragalge-mega",
+      "id": 10299,
+      "types": [
+        "poison",
+        "dragon"
+      ]
+    },
+    "718-mega": {
+      "pokemon": "zygarde-mega",
+      "id": 10301,
+      "types": [
+        "dragon",
+        "ground"
+      ]
+    },
+    "719-mega": {
+      "pokemon": "diancie-mega",
+      "id": 10075,
+      "types": [
+        "rock",
+        "fairy"
+      ]
+    },
+    "780-mega": {
+      "pokemon": "drampa-mega",
+      "id": 10302,
+      "types": [
+        "normal",
+        "dragon"
+      ]
+    },
+    "807-mega": {
+      "pokemon": "zeraora-mega",
+      "id": 10319,
+      "types": [
+        "electric"
+      ]
+    },
+    "978-mega": {
+      "pokemon": "tatsugiri-curly-mega",
+      "id": 10322,
+      "types": [
+        "dragon",
+        "water"
+      ]
+    }
+  }
+}

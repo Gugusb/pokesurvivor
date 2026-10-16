@@ -439,6 +439,7 @@ G.Game = (() => {
   /** Has cogido un objeto: si no llevas ninguno te lo pones; si no, eliges. */
   function offerItem(id) {
     if (!pl || !G.Items.BY[id]) return;
+    if (G.Mega && G.Mega.hasStone(pl)) { if (!G.Coop.active || G.Coop.isHost) convertItem(pl); return; }
     if (state === 'levelup' || G.UI.isOpen('scr-levelup')) { laterItems.push(id); return; }
     let mine = false;            // esta elección es la que ha parado el juego
     const take = got => {
@@ -474,7 +475,9 @@ G.Game = (() => {
       if (mine) G.Audio.sfx(PICK_SFX[p.kind]);
       return;
     }
-    if (G.Coop.active) G.Coop.collected(p, who);
+    const convert = p.kind === 'item' && G.Mega && G.Mega.hasStone(who);
+    if (G.Coop.active) G.Coop.collected(p, who, convert);
+    if (convert) { convertItem(who); return; }
     if (mine || p.kind === 'bomb') G.Audio.sfx(PICK_SFX[p.kind]);
     if (p.kind === 'xp' || p.kind === 'xpBig') {
       pendingLevels += pl.gainXp(p.value * (G.Coop.active ? G.Coop.xpFactor() : 1));
@@ -515,6 +518,14 @@ G.Game = (() => {
         e.hurt(60 + pl.level * 14, '#ff7b3d', e.x - who.x, e.y - who.y, 160);
       }
     }
+  }
+
+  function convertItem(who) {
+    const xp = G.Mega.itemXp(pl) * (G.Coop.active ? G.Coop.xpFactor() : 1);
+    pendingLevels += pl.gainXp(xp);
+    G.FX.dmgText(who.x, who.y - who.bodyH - 10, '+' + Math.round(xp * pl.effectiveXpMul) + ' XP', '#8beaff', true);
+    if (who === pl) G.UI.toast(G.T('Objeto convertido en experiencia'));
+    G.Audio.sfx('xp');
   }
 
   // ---------------- teclado ----------------
@@ -558,6 +569,7 @@ G.Game = (() => {
     }
     if (G.Input.tap('keyq')) pl.cycle(-1);
     if (G.Input.tap('keye') || G.Input.tap('tab')) pl.cycle(1);
+    if (G.Input.tap('keyf') && G.Mega && !document.activeElement?.closest('input, textarea, select, [contenteditable]')) G.Mega.activate(pl);
   }
 
   // ---------------- bucle ----------------
@@ -878,6 +890,7 @@ G.Game = (() => {
     quit() { if (state !== 'ui' && state !== 'over') quitRun(); },
     /** Para grabar vídeos: abre las cartas de subir de nivel. */
     debugLevelUp() { tampered = true; pl.level++; pendingLevels++; },
+    debugItem(id) { if (G.Dev && G.Dev.canUse() && pl && G.Items.BY[id]) { tampered = true; onCollect({id:-1,kind:'item',value:id},pl); } },
     toUI() { state = 'ui'; Backdrop.restore(); },
     get state() { return state; }, get player() { return pl; }, st
   };

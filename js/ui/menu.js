@@ -46,6 +46,8 @@ G.MenuUI = (() => {
     $('menu-partner-info').innerHTML = G.UI.typeChips(mon.types) + ' ' + G.UI.stars(mon.rarity);
     const ability = G.Abilities.equipped(s, mon.dex);
     if (ability) $('menu-partner-info').insertAdjacentHTML('beforeend', '<br>' + G.Icons.html('medal3', 18) + ' ' + G.AbilityDefs.BY_ID[mon.dex + '-' + ability].name);
+    const stone = s.megaEquipped && s.megaEquipped[mon.dex];
+    if (G.Mega && G.Mega.owns(s, stone)) $('menu-partner-info').insertAdjacentHTML('beforeend', '<br>' + G.Icons.html('megaStone', 18) + ' ' + G.Mega.label(stone));
     // Normal / shiny a mano, aquí mismo (en el móvil no se encontraba en la ficha).
     const seg = $('menu-shiny');
     seg.classList.toggle('hidden', !G.DB.ownsShiny(mon.dex));
@@ -219,6 +221,7 @@ G.MenuUI = (() => {
     $('dex-big').classList.toggle('shiny', own && viewShiny);
     G.UI.sprite($('dex-big'), dex, { lively: own, spin: own, silhouette: !own, scale: 3, hero: true, shiny: own && viewShiny });
     if (G.AbilityDefs.medalsFor(dex).length) G.GachaUI.renderEquipment(box, dex);
+    if (G.MegaUI && own) G.MegaUI.renderEquipment(box, dex);
     box.querySelectorAll('.seg button').forEach(b => {
       b.onclick = () => { viewShiny = b.dataset.v === '1'; showDetail(dex); };
     });

@@ -30,7 +30,8 @@ G.Rift = (() => {
   const authority = () => !G.Coop.active || G.Coop.isHost;
   const TS = () => G.Tiles.T * G.Sprites.PX;
 
-  function reset() { rift = null; arena = null; checkT = CHECK; asked = false; downT = 0; misses = 0; }
+  let forceStone = false;
+  function reset() { rift = null; arena = null; checkT = CHECK; asked = false; downT = 0; misses = 0; forceStone = false; }
 
   // ---------------- grieta en el mapa ----------------
 
@@ -86,7 +87,7 @@ G.Rift = (() => {
   /** Quien manda: elige legendario y lugar, y avisa a todos. */
   let nextType = null;          // pruebas/vídeos: tipo de la próxima arena
 
-  function start(forceType) {
+  function start(forceType, forceMega = null) {
     if (arena) return;
     forceType = forceType || nextType; nextType = null;
     let pool = G.DEX.filter(p => p.leg && G.SPRITE_META[p.dex]);
@@ -96,12 +97,13 @@ G.Rift = (() => {
     const ws = pool.map(p => (beaten[p.dex] ? 1 : 4));
     let r = Math.random() * ws.reduce((a, b) => a + b, 0), mi = 0;
     while (mi < pool.length - 1 && (r -= ws[mi]) > 0) mi++;
-    const mon = pool[mi];
+    const mega = G.Mega && (G.Mega.BY[forceMega] || (!forceType && Math.random() < 0.2 ? G.U.pick(G.Mega.LIST) : null));
+    const mon = mega ? G.DEX_BY[mega.dex] : pool[mi];
     const cfg = {
       tx: 5000 + Math.floor(Math.random() * 3000), ty: 5000 + Math.floor(Math.random() * 3000), r: ARENA_R,
-      dex: mon.dex, shiny: G.Sprites.hasShiny(mon.dex) && Math.random() < 1 / 512,
+      dex: mon.dex, mega: mega ? mega.id : null, shiny: G.Sprites.hasShiny(mega ? mega.id : mon.dex) && Math.random() < 1 / 512,
       // La arena es la de uno de sus tipos, al azar.
-      type: forceType || G.U.pick(mon.types)
+      type: forceType || G.U.pick(mega ? G.MEGA_TYPES[mega.id] : mon.types)
     };
     if (G.Coop.isHost) G.Coop.broadcast(['arena', cfg]);
     begin(cfg);
@@ -141,12 +143,12 @@ G.Rift = (() => {
     const n = G.Game.everyone().length;
     const ts = TS();
     const def = {
-      dex: mon.dex, name: mon.name,
-      hp: Math.round((3200 + t * 9) * G.Coop.scaleHp(n) * (n > 1 ? 1.4 : 1)),
+      dex: mon.dex, mega: arena.mega, name: mon.name,
+      hp: Math.round((3200 + t * 9) * G.Coop.scaleHp(n) * (n > 1 ? 1.4 : 1) * (arena.mega ? 1.3 : 1)),
       spd: Math.round(G.U.clamp(48 + (mon.spd - 78) * 0.6, 48, 105)),
-      dmg: Math.round(36 + t / 20), xp: Math.round(500 + t * 1.2),
+      dmg: Math.round((36 + t / 20) * (arena.mega ? 1.5 : 1)), xp: Math.round(500 + t * 1.2),
       behavior: mon.types.some(x => ['psychic', 'electric', 'ghost', 'fairy', 'fire', 'water', 'ice', 'dragon'].includes(x)) ? 'ranged' : 'charger',
-      shotDmg: Math.round(18 + t / 40), shotCd: 0.9, range: 300
+      shotDmg: Math.round((18 + t / 40) * (arena.mega ? 1.5 : 1)), shotCd: 0.9, range: 300
     };
     const e = new G.Enemy(def, arena.x, arena.y - ts * 3.5, { hp: 1, spd: 1, dmg: 1 }, true);
     e.legend = true;
@@ -154,6 +156,7 @@ G.Rift = (() => {
     // rocas, tus disparos no podrían alcanzarle (bug de Celebi).
     e.flying = false;
     if (arena.shiny) e.makeShiny();
+    G.Sprites.preload([e.spriteDex], 8000, arena.shiny);
     G.EnemyMgr.add(e);
     arena.bossId = e.id;
     G.Spawner.say('¡' + e.name + (e.shiny ? ' shiny' : '') + ' te esperaba en la grieta!', 3.2);
@@ -177,7 +180,11 @@ G.Rift = (() => {
       if (!authority()) return;
       keepInside();
       const boss = G.EnemyMgr.get(arena.bossId);
-      if (!boss || boss.dead) { G.Coop.isHost && G.Coop.broadcast(['aw']); won(); return; }
+      if (boss && boss.dead || arena.defeated) {
+        const stone = arena.mega && (forceStone || Math.random() < 0.05) ? arena.mega : null;
+        if (arena.mega) forceStone = false;
+        G.Coop.isHost && G.Coop.broadcast(['aw', stone]); won(stone); return;
+      }
       const allDown = G.Game.everyone().every(p => p.dead);
       downT = allDown ? downT + dt : 0;
       if (downT > 1.4 || arena.t > ARENA_TIME) { G.Coop.isHost && G.Coop.broadcast(['al']); lost(); }
@@ -187,15 +194,16 @@ G.Rift = (() => {
     if (arena.endT <= 0) finish();
   }
 
-  function won() {
+  function won(stone = null) {
     if (!arena || arena.phase !== 'fight') return;
     arena.phase = 'won'; arena.endT = 5;
     G.DB.save.abilityGems = (G.DB.save.abilityGems || 0) + 1;
     G.DB.commit(true);
     G.UI.toast('+1 Gema de habilidad');
+    if (stone && stone === arena.mega && G.Mega) G.Mega.award(stone);
     G.Progress.event('rift', { type: arena.type });
     G.Pickups.pullAll();
-    G.Spawner.say('¡Has vencido a ' + G.DEX_BY[arena.dex].name + '! Recoge el premio…', 3.4, true);
+    G.Spawner.say('¡Has vencido a ' + (arena.mega ? G.Mega.label(arena.mega) : G.DEX_BY[arena.dex].name) + '! Recoge el premio…', 3.4, true);
     G.Audio.sfx('legend');
     const pl = G.Game.player;
     if (pl) {
@@ -266,7 +274,7 @@ G.Rift = (() => {
       case 'rift': show(ev[1], ev[2], ev[3]); break;
       case 'riftx': rift = null; break;
       case 'arena': begin(ev[1]); break;
-      case 'aw': won(); break;
+      case 'aw': won(ev[1]); break;
       case 'al': lost(); break;
     }
   }
@@ -274,6 +282,9 @@ G.Rift = (() => {
   return {
     reset, update, drawable, onEvent, enterRequest() { if (!arena) start(); },
     debugStart() { if (G.Dev && G.Dev.canUse()) start(); },
+    debugMega(id) { if (G.Dev && G.Dev.canUse() && G.Mega.BY[id]) start(null, id); },
+    debugStoneDrop() { if (G.Dev && G.Dev.canUse()) forceStone = true; },
+    noteDefeated(e) { if (arena && arena.phase === 'fight' && arena.bossId === e.id) arena.defeated = true; },
     get rift() { return rift; }, get arena() { return arena; },
     get inArena() { return !!arena; },
     get timeLeft() { return arena ? Math.max(0, ARENA_TIME - arena.t) : 0; },

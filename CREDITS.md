@@ -131,6 +131,8 @@ uso **no comercial** y con atribución a sus artistas.
 Stats base y nombres en español: [PokeAPI](https://pokeapi.co/),
 descargados una vez y guardados en `js/data/pokedex.js`.
 
+Mega battle types also come from [PokeAPI](https://github.com/PokeAPI/pokeapi/tree/81d20919845b6a445969b9265aab5cec6b04cece/data/v2/csv), pinned separately in [assets/mega/battle-types.json](assets/mega/battle-types.json). No type data is requested during gameplay.
+
 ## Fuente
 
 [Pixelify Sans](https://github.com/eifetx/Pixelify-Sans) (SIL Open Font License 1.1,

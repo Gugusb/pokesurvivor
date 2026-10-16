@@ -6,6 +6,17 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-16', title: ['Megapiedras y megaevolución · v0.8.0', 'Mega Stones and Mega Evolution · v0.8.0'], new: [
+    ['Un 20% de las grietas contienen uno de los 36 jefes Mega disponibles. Al vencerlo, hay un 5% de obtener su Megapiedra permanente; se equipa en la ficha del Pokémon.',
+     '20% of rifts contain one of 36 available Mega bosses. Defeating it has a 5% chance to award its permanent Mega Stone; equip it in the Pokémon details.'],
+    ['Pulsa F o el nuevo botón a la izquierda de los movimientos con 120 de energía: megaevoluciona durante 60s, cambia sus tipos, gana ×1,3 vida, ×1,5 daño y recibe daño ÷1,3.',
+     'Press F or the new button left of the moves at 120 energy: Mega Evolve for 60s, change types, gain ×1.3 HP and ×1.5 damage, and take damage ÷1.3.'],
+    ['Las 15 familias de movimientos tienen mejoras Mega temporales, una paleta especial y partículas. La transformación empuja a los enemigos cercanos, incluidos los jefes.',
+     'All 15 move families receive temporary Mega enhancements, a special palette and particles. Transforming pushes nearby enemies, including bosses.']
+  ], chg: [
+    ['La energía sube 1/s y las derrotas añaden hasta 0,25/s; no se obtiene durante la transformación. La piedra sustituye el objeto equipado: los objetos recogidos dan un 25% de la experiencia base necesaria para el nivel actual.',
+     'Energy charges at 1/s, with kills adding up to 0.25/s; it stops during transformation. The stone replaces the held item: collected items grant 25% of the current level base XP requirement.']
+  ], fix: [] },
   { d: '2026-10-15', title: ['Mega de todas las generaciones · v0.7.0', 'Mega across all generations · v0.7.0'], new: [
     ['La vista previa incorpora las 36 formas Mega con animaciones básicas completas de SpriteCollab, incluidas 17 nuevas formas de otras generaciones.',
      'The preview now includes all 36 SpriteCollab Mega forms meeting basic animation completion, including 17 newly added forms from other generations.']

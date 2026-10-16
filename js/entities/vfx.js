@@ -13,6 +13,7 @@ G.VFX = (() => {
 
   // Paletas por tipo: contorno, oscuro, medio, claro, brillo.
   const PAL = {
+    mega:     ['#341449', '#8a37ae', '#e373ef', '#95eaff', '#fff6ff'],
     fire:     ['#6b1200', '#b8300a', '#ff6a1f', '#ffb22e', '#fff2a0'],
     water:    ['#0f2f78', '#1f56c4', '#3d8bff', '#8ccaff', '#eaf7ff'],
     grass:    ['#14400f', '#24721e', '#45b23c', '#97e36c', '#eaffd0'],
@@ -390,7 +391,8 @@ G.VFX = (() => {
 
   function forMove(m) {
     const v = MOVE[m.id] || {};
-    return Object.assign({ pal: m.type, proj: TYPE_SHAPE[m.type] || 'ball' }, v, { pal: v.pal || m.type });
+    return Object.assign({ pal: m.type, proj: TYPE_SHAPE[m.type] || 'ball' }, v,
+      { pal: m.megaFx ? 'mega' : v.pal || m.type }, m.megaFx ? { trail: v.trail || 'spark' } : {});
   }
   function forType(type) { return { proj: TYPE_SHAPE[type] || 'ball', pal: PAL[type] ? type : 'normal' }; }
 

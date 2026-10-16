@@ -76,6 +76,7 @@ G.Player = class Player {
     this.sashT = -999;         // última vez que salvó la Banda Focus
     this.bellHeal = 0;         // curación pendiente del Cascabel Concha
     this.statsTaken = {};      // mejoras de stat cogidas (condición de evolución)
+    if (G.Mega) G.Mega.init(this, G.DB.save);
   }
 
   /** Segundos que hay que estar junto a un compañero caído para levantarlo. */
@@ -89,15 +90,16 @@ G.Player = class Player {
   cy() { return this.y; }
 
   // ---------------- stats efectivos ----------------
-  get atk() { return this.baseAtk * this.atkMul * (1 + this.buffs.atk.n * this.buffs.atk.amount + G.Abilities.attackBonus(this)); }
+  buffStacks(b) { return G.Mega ? G.Mega.buffStacks(this, b.n) : b.n; }
+  get atk() { return this.baseAtk * this.atkMul * (1 + this.buffStacks(this.buffs.atk) * this.buffs.atk.amount + G.Abilities.attackBonus(this)); }
   get spd() {
-    const s = this.baseSpd * this.spdMul * (1 + this.buffs.spd.n * this.buffs.spd.amount + G.Abilities.speedBonus(this));
+    const s = this.baseSpd * this.spdMul * (1 + this.buffStacks(this.buffs.spd) * this.buffs.spd.amount + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return s * (G.Abilities.slowImmune(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this);
   }
-  get reduction() { return Math.min(0.8, this.dmgReduce + this.buffs.def.n * this.buffs.def.amount); }
-  get regen() { return this.regenFlat + this.buffs.regen.n * this.buffs.regen.amount; }
+  get reduction() { return Math.min(0.8, this.dmgReduce + this.buffStacks(this.buffs.def) * this.buffs.def.amount); }
+  get regen() { return this.regenFlat + this.buffStacks(this.buffs.regen) * this.buffs.regen.amount; }
   get effectiveXpMul() { return this.xpMul * G.Abilities.xpFactor(this); }
 
   // ---------------- movimientos ----------------
@@ -221,7 +223,7 @@ G.Player = class Player {
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
     const meta = G.Sprites.animMeta(this.spriteDex, anim);
     const len = meta ? meta.d.reduce((a, b) => a + b, 0) / 60 : 0.4;
-    const cd = Math.max(0.12, m.cd * this.cdMul);
+    const cd = Math.max(0.12, m.cd * this.cdMul / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
     this.anim.play(anim, { speed: Math.max(1, len / (cd * 0.9)) });
     this.attackFace = 0.35;
   }
@@ -244,7 +246,7 @@ G.Player = class Player {
     // Con un ataque cuerpo a cuerpo activo se recibe un 25 % menos: hay que
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
-    const d = (pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type);
+    const d = (pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1);
     this.hp -= d;
     G.Abilities.onDamage(this);
     G.Abilities.afterHurt(this, source, type);
@@ -278,7 +280,7 @@ G.Player = class Player {
     if (got >= 1) G.FX.dmgText(this.x, this.y - this.bodyH - 6, '+' + got, '#5fe08a');
   }
 
-  addMaxHp(amount) { this.maxHp += amount; this.hp += amount; }
+  addMaxHp(amount) { amount *= G.Mega && G.Mega.active(this) ? G.Mega.HP : 1; this.maxHp += amount; this.hp += amount; }
 
   /** Devuelve cuántos niveles ha subido (pueden ser varios de golpe). */
   gainXp(amount) {
@@ -298,6 +300,7 @@ G.Player = class Player {
 
   /** Se pone un objeto (y se quita el que llevara). */
   equip(id) {
+    if (id && G.Mega && G.Mega.hasStone(this)) return false;
     if (this.item) G.Items.BY[this.item].off(this);
     this.item = id;
     if (id) G.Items.BY[id].on(this);
@@ -326,6 +329,8 @@ G.Player = class Player {
 
   // ---------------- ciclo ----------------
   update(dt) {
+    if (G.Mega) G.Mega.tick(this, dt);
+    this.megaDashGuard = Math.max(0, (this.megaDashGuard || 0) - dt);
     this.anim.update(dt);
     if (this.dead) return;
     G.Abilities.playerTick(this, dt);
@@ -420,6 +425,7 @@ G.Player = class Player {
     this.anim.update(dt);
     const n = this.net;
     if (!n) return;
+    if (G.Mega) G.Mega.sync(this, n.mega, n.megaLeft, n.stone);
     if (this.flash > 0) this.flash -= dt;
     if (this.attackFace > 0) this.attackFace -= dt;
     if (G.U.dist2(this.x, this.y, n.x, n.y) > 300 * 300) { this.x = n.x; this.y = n.y; }

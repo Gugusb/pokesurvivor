@@ -11,6 +11,7 @@ G.MegaPreview = (() => {
       !['ui', 'over'].includes(G.Game.state) && !G.Coop.active);
   }
   function restore(p) {
+    if (G.Mega && G.Mega.active(p)) return false;
     if (!p || !p.megaForm) return false;
     const dir = p.anim.dir;
     p.spriteDex = p.dex; p.megaForm = null;
@@ -20,7 +21,7 @@ G.MegaPreview = (() => {
   }
   function apply(p, id, shiny = false) {
     const f = BY_ID[id];
-    if (!allowed(p) || !f || !f.available || f.dex !== p.dex || shiny && !f.meta.sh) return false;
+    if (!allowed(p) || !f || !f.available || f.dex !== p.dex || shiny && !f.meta.sh || G.Mega && G.Mega.active(p)) return false;
     G.Game.debugMark();
     const dir = p.anim.dir;
     p.spriteDex = id; p.megaForm = id;

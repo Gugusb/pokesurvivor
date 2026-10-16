@@ -26,13 +26,16 @@
       this.id = nextId++;
       this.def = def;
       this.dex = def.dex;
+      this.mega = G.Mega && G.Mega.BY[def.mega] && G.Mega.BY[def.mega].dex === def.dex ? def.mega : null;
+      this.spriteDex = this.mega || this.dex;
       this.name = (G.DEX_BY[def.dex] && G.DEX_BY[def.dex].name) || def.name;
+      if (this.mega) this.name = G.Mega.label(this.mega);
       this.x = x; this.y = y;
       this.boss = boss;
-      this.scale = boss ? bossScale(def.dex) : 1;
-      this.anim = new G.Sprites.Animator(def.dex, this.scale);
-      this.r = G.Sprites.bodyRadius(def.dex, this.scale);
-      this.bodyH = G.Sprites.bodyHeight(def.dex, this.scale);
+      this.scale = boss ? bossScale(this.spriteDex) : 1;
+      this.anim = new G.Sprites.Animator(this.spriteDex, this.scale);
+      this.r = G.Sprites.bodyRadius(this.spriteDex, this.scale);
+      this.bodyH = G.Sprites.bodyHeight(this.spriteDex, this.scale);
 
       this.maxHp = Math.round(def.hp * sc.hp);
       this.hp = this.maxHp;
@@ -42,7 +45,7 @@
       this.behavior = def.behavior;
 
       const types = (G.DEX_BY[def.dex] && G.DEX_BY[def.dex].types) || [];
-      this.types = types.length ? types : ['normal'];
+      this.types = this.mega ? G.MEGA_TYPES[this.mega].slice() : types.length ? types : ['normal'];
       this.atkType = this.types[0];         // tipo de sus golpes (tabla de tipos)
       // Vuelan por encima de rocas y agua sólo los que FLOTAN en su sprite (un
       // Rowlet camina aunque sea Volador). Los jefes, por su tamaño, también.
@@ -84,10 +87,10 @@
     /** Lo convierte en shiny: otro sprite, más aguante y mucha más XP. */
     makeShiny() {
       this.shiny = true;
-      this.anim = new G.Sprites.Animator(this.dex, this.scale, true);
+      this.anim = new G.Sprites.Animator(this.spriteDex, this.scale, true);
       this.maxHp *= 2; this.hp = this.maxHp;
       this.xp *= 5;
-      G.Sprites.preload([this.dex], 4000, true);
+      G.Sprites.preload([this.spriteDex], 4000, true);
     }
 
     /** Hora dorada (events.js): doble de experiencia y a veces monedas. */
@@ -102,6 +105,7 @@
       if (this.dead) return;
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
       if (!this.remote && attacker) amount *= G.Abilities.outgoingDamage(attacker);
+      if (!this.remote && this.mega) amount /= 1.3;
       const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
       // quien decide si cae. Aquí sólo se ve (número, destello y animación).
@@ -162,6 +166,7 @@
     die() {
       if (this.dead) return;
       this.dead = true;
+      if (G.Rift && G.Rift.noteDefeated) G.Rift.noteDefeated(this);
       this.fade = 0.9;
       this.anim.play('Faint', { hold: true });
       const col = this.boss ? '#ffd95e' : '#ffffff';
@@ -176,6 +181,7 @@
         return;
       }
       G.Abilities.onKill(this.lastAttacker, this.id);
+      if (G.Mega) G.Mega.onKill(this.lastAttacker, this.id);
       // (Los legendarios de la Sentencia de Arceus sólo dan experiencia.)
       if (this.boss && !this.judge) {
         G.Camera.kick(0.9);
@@ -709,7 +715,7 @@
 
       ctx.save();
       ctx.globalAlpha = alpha;
-      G.Sprites.drawShadow(ctx, this.dex, this.x, this.y, this.scale);
+      G.Sprites.drawShadow(ctx, this.spriteDex, this.x, this.y, this.scale);
       // Los que flotan ya van en el aire en su sprite: sólo se mecen un poco.
       // (Y los que saltan, en arco.)
       const lift = (this.flying && !this.boss ? 1 + Math.sin(this.bob) * 1.5 : 0) + (this.jumpLift || 0);
@@ -778,7 +784,7 @@
     /** Copia local de un enemigo del anfitrión (cooperativo). */
     function addRemote(o) {
       if (byId.has(o.id)) return byId.get(o.id);
-      const def = { dex: o.dex, hp: o.hp, spd: 0, dmg: o.dmg, xp: 0, behavior: o.beh || 'remote' };
+      const def = { dex: o.dex, mega: o.mega, hp: o.hp, spd: 0, dmg: o.dmg, xp: 0, behavior: o.beh || 'remote' };
       const e = new Enemy(def, o.x, o.y, { hp: 1, spd: 1, dmg: 1 }, o.boss);
       e.id = o.id;
       e.remote = true;

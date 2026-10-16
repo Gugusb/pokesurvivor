@@ -21,13 +21,13 @@ G.Combat = (() => {
   function tick(dt, pl, now) {
     if (pl.dead) return;
     if (!G.Abilities.canCast(pl)) {
-      for (const m of pl.activeGroup()) if (m.kind !== 'orbit') m.t = Math.max(0, m.t - dt);
+      for (const m of pl.activeGroup()) if (m.kind !== 'orbit') m.t = Math.max(0, m.t - dt * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1));
       G.Projectiles.clearOrbs(pl); return;
     }
     const active = pl.activeGroup();
     if (G.Abilities.has(pl, 'innerfocus')) {
       // Los huecos inactivos sólo se recargan: nunca lanzan ataques por sí solos.
-      for (const m of pl.moves) if (!active.includes(m) && m.kind !== 'orbit') m.t = Math.max(0, m.t - dt);
+      for (const m of pl.moves) if (!active.includes(m) && m.kind !== 'orbit') m.t = Math.max(0, m.t - dt * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1));
     }
     // Vínculos: todos los movimientos del hueco activo, cada uno con su recarga.
     for (const m of active) tickMove(dt, pl, m, now);
@@ -36,7 +36,7 @@ G.Combat = (() => {
   function tickMove(dt, pl, m, now) {
     if (m.kind === 'orbit') { orbit(pl, m, dt, now); return; }
 
-    m.t -= dt;
+    m.t -= dt * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1);
     if (m.t > 0) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
     if (needsTarget(m) && !(pl.target && G.U.dist(pl.x, pl.y, pl.target.x, pl.target.y) <= reach(m))) {
@@ -54,6 +54,8 @@ G.Combat = (() => {
   }
 
   function run(pl, m) {
+    if (G.Mega) G.Mega.particles(pl);
+    if (G.Mega) m = G.Mega.move(pl, m);
     switch (m.kind) {
       case 'projectile': fireProjectiles(pl, m); break;
       case 'melee':      melee(pl, m); break;
@@ -325,6 +327,7 @@ G.Combat = (() => {
     pl.x = sx + ca * len; pl.y = sy + sa * len;
     G.World.collide(pl);
     pl.invuln = Math.max(pl.invuln || 0, 0.3);
+    if (G.Mega && G.Mega.active(pl)) pl.megaDashGuard = 0.6;
     const w = m.width || 34;
     const mx = sx + ca * len / 2, my = sy + sa * len / 2;
     for (const e of G.EnemyMgr.queryCircle(mx, my, len / 2 + w)) {
@@ -482,6 +485,7 @@ G.Combat = (() => {
   function clearFields(owner) { fields = owner ? fields.filter(f => f.owner !== owner) : []; }
 
   function orbit(pl, m, dt, now, isGhost = false) {
+    if (G.Mega) m = G.Mega.move(pl, m);
     const col = G.U.TYPE_COLOR[m.type];
     const want = Math.max(1, m.count | 0);
     // Cada movimiento de órbita tiene sus orbes (puede haber dos en un vínculo).

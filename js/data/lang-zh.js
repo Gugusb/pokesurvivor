@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Megapiedras y megaevolución · v0.8.0": "Mega 进化石与超级进化 · v0.8.0",
+  "Un 20% de las grietas contienen uno de los 36 jefes Mega disponibles. Al vencerlo, hay un 5% de obtener su Megapiedra permanente; se equipa en la ficha del Pokémon.": "裂缝有 20% 概率出现 36 个已开放形态之一的 Mega 首领；击败后有 5% 概率获得永久 Mega 石，在宝可梦详情中装备。",
+  "Pulsa F o el nuevo botón a la izquierda de los movimientos con 120 de energía: megaevoluciona durante 60s, cambia sus tipos, gana ×1,3 vida, ×1,5 daño y recibe daño ÷1,3.": "能量达到 120 后按 F 或点击技能左侧的按钮，Mega 进化持续 60 秒：改变属性、生命 ×1.3、伤害 ×1.5、最终承伤 ÷1.3。",
+  "Las 15 familias de movimientos tienen mejoras Mega temporales, una paleta especial y partículas. La transformación empuja a los enemigos cercanos, incluidos los jefes.": "15 类技能均获得临时 Mega 强化与专用配色、粒子特效；变身会击退附近敌人，包含首领。",
+  "La energía sube 1/s y las derrotas añaden hasta 0,25/s; no se obtiene durante la transformación. La piedra sustituye el objeto equipado: los objetos recogidos dan un 25% de la experiencia base necesaria para el nivel actual.": "能量自然每秒 +1，击杀额外速率最高每秒 +0.25，变身期间停充。进化石替代普通道具栏，拾取普通道具转为当前等级所需基础经验的 25%。",
   "Pyroar": "火炎狮",
   "Falinks": "列阵兵",
   "Mega de todas las generaciones · v0.7.0": "全世代 Mega 素材 · v0.7.0",

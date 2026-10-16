@@ -45,7 +45,7 @@ G.HUD = (() => {
     ctx.font = F(800, 13);
     ctx.fillStyle = '#eaf2ff';
     ctx.textAlign = 'left';
-    ctx.fillText(pl.megaForm ? G.MegaPreview.label(G.MegaPreview.BY_ID[pl.megaForm]) + ' · ' + G.T('Vista previa de recursos') : pl.mon.name, px, py + 10);
+    ctx.fillText(pl.megaForm ? G.MegaPreview.label(G.MegaPreview.BY_ID[pl.megaForm]) + (G.Mega && G.Mega.active(pl) ? ' · Mega ' + Math.ceil(pl.megaState.left) + 's' : ' · ' + G.T('Vista previa de recursos')) : pl.mon.name, px, py + 10);
 
     ctx.font = F(700, 11);
     ctx.fillStyle = '#ffcb3d';
@@ -55,7 +55,7 @@ G.HUD = (() => {
     ctx.font = F(700, 10);
     ctx.fillStyle = 'rgba(255,255,255,.95)';
     ctx.textAlign = 'center';
-    ctx.fillText(Math.ceil(pl.hp) + ' / ' + Math.round(pl.maxHp), px + 48 + 84, py + 26);
+    ctx.fillText(Math.ceil(pl.hp) + ' / ' + Math.ceil(pl.maxHp), px + 48 + 84, py + 26);
 
     // buffs activos
     const COL = { atk: '#ff6b4d', spd: '#7fe0ff', def: '#b0b8c8', regen: '#5fe08a' };
@@ -66,7 +66,7 @@ G.HUD = (() => {
       const b = pl.buffs[k];
       if (b.n <= 0) continue;
       ctx.font = F(800, 9);
-      const txt = LBL[k] + ' ×' + b.n;
+      const txt = LBL[k] + ' ×' + pl.buffStacks(b);
       const tw = ctx.measureText(txt).width + 12;
       roundRect(ctx, bx, py + 34, tw, 15, 7);
       ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fill();
@@ -243,10 +243,23 @@ G.HUD = (() => {
     // ---------- ranura de movimientos ----------
     const S = 54, GAP = 9;
     const n = Math.max(1, pl.slots.length);
-    const totalW = n * S + (n - 1) * GAP;
+    const hasMega = !!(pl.megaState && pl.megaState.id);
+    const totalW = (n + Number(hasMega)) * S + (n - 1 + Number(hasMega)) * GAP;
     let sx = (w - totalW) / 2;
     // Por encima de la barra de inicio del iPhone (allí los toques a veces no llegan).
     const sy = h - S - 18 - (touch ? Math.min(28, G.Touch.safeArea().bottom) : 0);
+    if (hasMega) {
+      const ms = pl.megaState, running = G.Mega.active(pl), ready = !running && ms.energy >= G.Mega.CAP;
+      roundRect(ctx, sx, sy, S, S, 12); ctx.fillStyle = 'rgba(36,16,55,.95)'; ctx.fill();
+      ctx.strokeStyle = ready ? '#fff2a0' : '#dc8cff'; ctx.lineWidth = ready ? 3 : 1.5; ctx.stroke();
+      G.Icons.draw(ctx, 'megaStone', sx + 12, sy + 5, 30);
+      ctx.font = F(800, 9); ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
+      ctx.fillText(running ? Math.ceil(ms.left) + 's' : ready ? G.T('Lista') : Math.floor(ms.energy / G.Mega.CAP * 100) + '%', sx + S / 2, sy + 44);
+      ctx.fillText('F', sx + 7, sy + 11);
+      bar(ctx, sx + 4, sy + S - 6, S - 8, 3, running ? ms.left / G.Mega.DURATION : ms.energy / G.Mega.CAP, '#e373ef');
+      G.Touch.addButton(sx, sy, S, S, () => G.Mega.activate(pl), GAP / 2);
+      sx += S + GAP;
+    }
     const BOND = '#ff8ad8';
     const cdOf = m => m.kind === 'orbit' ? 0 : G.U.clamp(m.t / (m.cd * pl.cdMul), 0, 1);
 
@@ -326,7 +339,7 @@ G.HUD = (() => {
 
     // ---------- vínculo guardado (aún no hay dos movimientos sueltos) ----------
     if (pl.bonds > 0) {
-      const bx = sx + totalW + 12, by = sy + S / 2 - 12;
+      const bx = (w + totalW) / 2 + 12, by = sy + S / 2 - 12;
       G.Icons.draw(ctx, 'bond', bx, by, 24);
       if (pl.bonds > 1) {
         ctx.font = F(800, 10);
@@ -337,7 +350,7 @@ G.HUD = (() => {
     }
 
     // ---------- objeto equipado (a la izquierda de los movimientos) ----------
-    {
+    if (!hasMega) {
       const ix = sx - S - 18, iy = sy;
       roundRect(ctx, ix, iy, S, S, 12);
       ctx.fillStyle = pl.item ? 'rgba(40,30,10,.9)' : 'rgba(10,16,28,.55)';

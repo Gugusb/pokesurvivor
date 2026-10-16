@@ -27,7 +27,7 @@
 G.DB = (() => {
   const K_ACC = 'ps.accounts', K_SES = 'ps.session', K_SAVE = 'ps.save.';
   const K_CLOUD = 'ps.cloud.', K_MIGRATED = 'ps.migrated.';
-  const VERSION = 4;
+  const VERSION = 5;
   const START_COINS = 500;
   const SDK = 'https://www.gstatic.com/firebasejs/13.0.0/';
   const NAME_DOMAIN = 'jugadores.pokesurvivor.net';   // sólo para el email interno
@@ -88,6 +88,8 @@ G.DB = (() => {
       abilityMedals: {},      // dex-habilidad -> { at, from }
       abilityPity: {},        // contador independiente por banner de habilidades
       abilityEquipped: {},    // una sola medalla equipada por especie
+      megaStones: {},         // permanent collection keyed by Mega form
+      megaEquipped: {},       // one matching stone per base species
       legends: {},            // dex -> fecha: legendarios vencidos en grietas
       arenas: {},             // tipo -> fecha: arenas de grieta ganadas
       itemsFound: {},         // id -> fecha: objetos equipables encontrados
@@ -129,6 +131,16 @@ G.DB = (() => {
    * servidor (firestore.rules, saves).
    */
   function sanitize(s) {
+    if (!s.megaStones || typeof s.megaStones !== 'object' || Array.isArray(s.megaStones)) s.megaStones = {};
+    if (!s.megaEquipped || typeof s.megaEquipped !== 'object' || Array.isArray(s.megaEquipped)) s.megaEquipped = {};
+    if (G.Mega) {
+      for (const id of Object.keys(s.megaStones)) if (!G.Mega.BY[id] || !s.megaStones[id] || typeof s.megaStones[id] !== 'object' || Array.isArray(s.megaStones[id])) delete s.megaStones[id];
+      for (const dex of Object.keys(s.megaEquipped)) {
+        const id = s.megaEquipped[dex];
+        if (id === null && G.Mega.formsFor(+dex).length) continue;
+        if (!G.Mega.owns(s, id) || G.Mega.BY[id].dex !== +dex) delete s.megaEquipped[dex];
+      }
+    }
     const n = v => (Number.isFinite(+v) && +v > 0 ? Math.floor(+v) : 0);
     s.coins = n(s.coins);
     s.tickets.t1 = n(s.tickets.t1);
@@ -197,7 +209,7 @@ G.DB = (() => {
     const newer = (a.updated || 0) >= (b.updated || 0) ? a : b;
     const older = newer === a ? b : a;
     const r = JSON.parse(JSON.stringify(newer));
-    for (const coll of ['owned', 'shiny', 'abilityMedals']) {
+    for (const coll of ['owned', 'shiny', 'abilityMedals', 'megaStones']) {
       r[coll] = r[coll] || {};
       for (const k in older[coll] || {}) {
         if (!r[coll][k] || (older[coll][k].at || 0) < (r[coll][k].at || 0)) r[coll][k] = older[coll][k];
@@ -208,6 +220,7 @@ G.DB = (() => {
     if (r.abilityGems == null) r.abilityGems = older.abilityGems || 0;
     if (r.abilityPity == null) r.abilityPity = JSON.parse(JSON.stringify(older.abilityPity || {}));
     if (r.abilityEquipped == null) r.abilityEquipped = JSON.parse(JSON.stringify(older.abilityEquipped || {}));
+    if (r.megaEquipped == null) r.megaEquipped = JSON.parse(JSON.stringify(older.megaEquipped || {}));
     r.abilityStarterGranted = !!(newer.abilityStarterGranted || older.abilityStarterGranted);
     for (const k in older.upgrades || {}) r.upgrades[k] = Math.max(r.upgrades[k] || 0, older.upgrades[k]);
     r.pupg = r.pupg || {};

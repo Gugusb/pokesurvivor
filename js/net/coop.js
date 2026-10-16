@@ -137,12 +137,15 @@ G.Coop = (() => {
     const m = g.find(x => x.kind === 'orbit') || g[0];
     return [r1(local.x), r1(local.y), r2(local.moveAngle), local.walking ? 1 : 0, r1(local.hp), r1(local.maxHp),
             local.dead ? 1 : 0, m ? m.id : '', m ? m.lvl : 1, r1(local.magnet), r2(local.aim), r2(local.effectiveXpMul),
-            r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq, local.ability || null];
+            r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq, local.ability || null,
+            G.Mega && G.Mega.active(local) ? local.megaState.id : null, r2(local.megaState && local.megaState.left || 0),
+            G.Mega && G.Mega.hasStone(local) ? local.megaState.id : null];
   }
 
   function readState(a) {
     return { x: a[0], y: a[1], ang: a[2], walk: a[3], hp: a[4], maxHp: a[5], dead: a[6], mv: a[7], ml: a[8],
-             mag: a[9], aim: a[10], xpMul: a[11], rev: a[12], ch: a[13], ld: a[14], ability: a[15] || null };
+             mag: a[9], aim: a[10], xpMul: a[11], rev: a[12], ch: a[13], ld: a[14], ability: a[15] || null,
+             mega: a[16] || null, megaLeft: a[17] || 0, stone: a[18] || null };
   }
 
   // ---------------- envío ----------------
@@ -257,10 +260,16 @@ G.Coop = (() => {
       m.state = msg.p; m.pl.net = readState(msg.p);
       const validAbility = G.AbilityDefs.medalsFor(m.pl.dex).some(a => a.ability === m.pl.net.ability);
       m.pl.ability = validAbility ? m.pl.net.ability : null;
+      if (G.Mega) G.Mega.sync(m.pl, m.pl.net.mega, m.pl.net.megaLeft, m.pl.net.stone);
       m.xpMul = m.pl.net.xpMul || 1; reconcile(from, m.pl.net);
     }
     for (const ev of msg.ev || []) {
       switch (ev[0]) {
+        case 'mx':
+          if (G.Mega && G.Mega.active(m.pl) && m.pl.megaState.id === ev[1] && G.Game.st.time - (m.megaRepelAt ?? -999) >= G.Mega.DURATION) {
+            m.megaRepelAt = G.Game.st.time; G.Mega.repel(m.pl);
+          }
+          break;
         case 'h': {
           const e = G.EnemyMgr.get(ev[1]);
           if (!e || e.dead || e.remote) break;
@@ -373,9 +382,11 @@ G.Coop = (() => {
 
   function applyHostEvent(ev) {
     switch (ev[0]) {
+      case 'ix': G.UI.toast(G.T('Objeto convertido en experiencia')); break;
+      case 'mk': if (G.Mega) G.Mega.onKill(local, ev[1]); break;
       case 'ak': G.Abilities.onKill(local, ev[1]); break;
       case 'ne':
-        G.EnemyMgr.addRemote({ id: ev[1], dex: ev[2], x: ev[3], y: ev[4], boss: !!ev[5], shiny: !!ev[6], hp: ev[7], dmg: ev[8], beh: ev[9] });
+        G.EnemyMgr.addRemote({ id: ev[1], dex: ev[2], x: ev[3], y: ev[4], boss: !!ev[5], shiny: !!ev[6], hp: ev[7], dmg: ev[8], beh: ev[9], mega: ev[10] });
         break;
       case 'ed': G.EnemyMgr.removeRemote(ev[1], true); break;
       case 'eg': G.EnemyMgr.removeRemote(ev[1], false); break;
@@ -429,8 +440,9 @@ G.Coop = (() => {
   // anfitrión
   function hurtShown(e, d, color) { emitNear(['hn', e.id, d, color], e.x, e.y, hitFrom); }
   function abilityKill(p, id) { const m = mates.get(p.uid); if (m && m.connected) m.q.push(['ak', id]); }
+  function megaKill(p, id) { const m = mates.get(p.uid); if (m && m.connected) m.q.push(['mk', id]); }
   function enemyAdded(e) {
-    emit(['ne', e.id, e.dex, r1(e.x), r1(e.y), e.boss ? 1 : 0, e.shiny ? 1 : 0, Math.ceil(e.maxHp), r2(e.dmg), e.behavior]);
+    emit(['ne', e.id, e.dex, r1(e.x), r1(e.y), e.boss ? 1 : 0, e.shiny ? 1 : 0, Math.ceil(e.maxHp), r2(e.dmg), e.behavior, e.mega || null]);
   }
   function enemyGone(e, died) { emit([died ? 'ed' : 'eg', e.id]); }
   function enemyShot(p, type) { emit(['es', r1(p.x), r1(p.y), r1(p.vx), r1(p.vy), r2(p.dmg), p.r, p.life, type]); }
@@ -444,8 +456,12 @@ G.Coop = (() => {
   }
 
   /** Anfitrión: alguien ha cogido un objeto. Devuelve true si es para ti. */
-  function collected(p, who) {
+  function collected(p, who, converted = false) {
     emit(['pc', p.id]);
+    if (converted) {
+      if (who !== local) { const m = mates.get(who.uid); if (m) m.q.push(['ix']); }
+      return;
+    }
     if (p.kind === 'magnet') emit(['mag']);
     if (p.kind === 'bomb') emit(['bomb', r1(who.x), r1(who.y)]);
     if ((p.kind === 'heal' || p.kind === 'item') && who !== local) {
@@ -524,7 +540,7 @@ G.Coop = (() => {
 
   return {
     ANIMS, COLORS, begin, end, leave, tick, players, puppets, xpFactor, scaleRate, scaleHp,
-    cast, hit, status, hurtShown, abilityKill, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
+    cast, hit, status, hurtShown, abilityKill, megaKill, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
     propBroken, collected, shinyCaught, levelStart, localPicked, over, holdStart, holdEnd,
     /** Anfitrión: evento para todos. Invitado: evento para el anfitrión. */
     broadcast(ev) { emit(ev); },
