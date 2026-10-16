@@ -6,6 +6,10 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-17', title: ['Dificultad más asequible · v0.9.1', 'Easier difficulty scaling · v0.9.1'], new: [], chg: [
+    ['Cada estrella ahora multiplica la vida enemiga por 1,035 y su ataque por 1,024 en lugar de 1,05 y 1,03; las cuatro estrellas siguen siendo el equilibrio original.',
+     'Each star now multiplies enemy HP by 1.035 and attack by 1.024 instead of 1.05 and 1.03; four stars remains the original balance.']
+  ], fix: [] },
   { d: '2026-10-16', title: ['Dificultad, ingresos y doble velocidad · v0.9.0', 'Difficulty, offline income and double speed · v0.9.0'], new: [
     ['Las cuentas registradas ganan ingresos sin conexión: de 100 a 5000 monedas/hora según la colección y los Shinies. Los Shinies aumentan los vales (media 1–5/h) y gemas de habilidad (0,5–2/h), con liquidación automática al volver.',
      'Registered accounts earn offline income: 100–5000 coins/hour based on collection and Shinies. Shinies increase ticket drops (expected 1–5/h) and Ability Gems (0.5–2/h), automatically settled on return.'],
