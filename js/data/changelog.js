@@ -6,6 +6,11 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-17', title: ['Mejoras compartidas · v0.10.6', 'Shared upgrades · v0.10.6'], new: [
+    ['Las mejoras permanentes se comparten entre las formas de una familia evolutiva; cada atributo tiene un botón para completarlo.','Permanent upgrades are shared across an evolution family; each stat has a button to max it.']
+  ], chg: [
+    ['La megapiedra de la forma final reserva su espacio de objeto desde el inicio; la energía Mega comienza al completar la evolución.','The final form’s Mega Stone reserves the item slot from the start; Mega energy starts after the final evolution.']
+  ], fix: [] },
   { d: '2026-10-17', title: ['IV visibles · v0.10.5', 'IV display · v0.10.5'], new: [
     ['Los IV aparecen junto a cada atributo de la Pokédex y el color indica su rango.','IVs appear beside each Pokédex stat, with color showing the range.']
   ], chg: [], fix: [] },

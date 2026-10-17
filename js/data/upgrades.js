@@ -25,6 +25,25 @@ G.Upgrades = (() => {
     return Math.round(u.base * Math.pow(u.grow, lvl) / 10) * 10;
   }
 
+  function costToMax(id, lvl) {
+    const u = BY[id];
+    let total = 0;
+    for (let n = Math.max(0, lvl | 0); n < u.max; n++) total += cost(id, n);
+    return total;
+  }
+
+  function buy(dex, id, toMax = false) {
+    const u = BY[id], s = G.DB.save;
+    if (!u || !s) return false;
+    const levels = G.DB.upgradesOf(dex), now = levels[id] || 0;
+    if (now >= u.max) return false;
+    const price = toMax ? costToMax(id, now) : cost(id, now);
+    if (s.coins < price) return false;
+    s.coins -= price; levels[id] = toMax ? u.max : now + 1;
+    G.DB.commit(true);
+    return true;
+  }
+
   /** Niveles comprados -> modificadores para G.Player. */
   function perks(levels = {}) {
     // Nunca por encima del máximo (una partida editada a mano no da más poder).
@@ -46,5 +65,5 @@ G.Upgrades = (() => {
     };
   }
 
-  return { LIST, BY, cost, perks };
+  return { LIST, BY, cost, costToMax, buy, perks };
 })();

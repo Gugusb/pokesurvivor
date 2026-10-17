@@ -14,7 +14,7 @@ function context(lang = 'zh') {
   vm.createContext(s);
   s.load = file => vm.runInContext(fs.readFileSync(path.join(ROOT, file), 'utf8'), s, { filename: file });
   for (const file of ['js/core/util.js', 'js/core/i18n.js', 'js/data/lang-en.js', 'js/data/lang-zh.js',
-    'js/data/pokedex.js', 'js/data/sprites-meta.js', 'js/data/moves.js', 'js/data/abilities.js']) s.load(file);
+    'js/data/pokedex.js', 'js/data/evolutions.js', 'js/data/sprites-meta.js', 'js/data/moves.js', 'js/data/abilities.js', 'js/data/upgrades.js']) s.load(file);
   const G = s.G;
   G.FIREBASE_CONFIG = null;
   G.FX = new Proxy({}, { get: () => noop }); G.Audio = { sfx: noop }; G.Camera = { kick: noop, sees: () => false };
@@ -31,6 +31,7 @@ function context(lang = 'zh') {
   const db = fs.readFileSync(path.join(ROOT, 'js/core/db.js'), 'utf8').replace(
     'ready, register, login,', '_test: {newSave, migrate, sanitize}, ready, register, login,');
   vm.runInContext(db, s, { filename: 'js/core/db.js' }); G.DB.playAsGuest();
+  s.load('js/systems/progression-mon.js');
   for (const file of ['js/systems/abilities.js', 'js/systems/gacha.js', 'js/systems/ability-gacha.js', 'js/entities/player.js', 'js/entities/enemy.js']) s.load(file);
   G.EnemyMgr = { all: () => s.enemies, queryCircle: (x,y,r) => s.enemies.filter(e => !e.dead && (e.x-x)**2+(e.y-y)**2 <= r*r) };
   s.player = (dex, ability) => {
@@ -61,6 +62,50 @@ test('repeated Pokémon rewards keep the highest IV per stat and report only rea
   const third = G.DB.grant(25, 'test');
   assert.equal(third.ivUp, false);
   assert.deepEqual(Array.from(G.DB.ivOf(25)), [31, 1, 31]);
+});
+
+test('evolution families share upgrade levels and max-upgrade cost sums remaining levels', () => {
+  const s = context(), { G } = s, save = G.DB.save;
+  G.DB.grant(4, 'test'); G.DB.grant(6, 'test');
+  G.DB.upgradesOf(4).atk = 3;
+  G.DB.upgradesOf(6).atk = 5;
+  const shared = G.DB.upgradesOf(5);
+  assert.equal(shared.atk, 5);
+  assert.equal(G.DB.upgradesOf(4), G.DB.upgradesOf(6));
+  assert.equal(G.Upgrades.costToMax('atk', 5), G.Upgrades.cost('atk', 5) + G.Upgrades.cost('atk', 6) + G.Upgrades.cost('atk', 7) + G.Upgrades.cost('atk', 8) + G.Upgrades.cost('atk', 9));
+  save.pupg[4].atk = 10;
+  assert.equal(G.DB.upgradesOf(6).atk, 10);
+});
+
+test('legacy upgrades merge across branching families and survive save and cloud merge round trips', () => {
+  const { G } = context(), save = G.DB.save;
+  save.pupg = { 134: { atk: 2, hp: 7 }, 135: { atk: 5 }, 700: { spd: 3 }, 6: { atk: 4 }, 150: { hp: 1 } };
+  G.DB._test.sanitize(save);
+  const shared = G.DB.upgradesOf(133);
+  assert.equal(shared.atk, 5); assert.equal(shared.hp, 7); assert.equal(shared.spd, 3);
+  for (const dex of [134, 135, 136, 196, 197, 470, 471, 700]) assert.equal(G.DB.upgradesOf(dex), shared);
+  assert.equal(G.DB.upgradesOf(6).atk, 4); assert.equal(G.DB.upgradesOf(150).hp, 1);
+  const copy = JSON.parse(JSON.stringify(save));
+  copy.pupg[136] = { atk: 8 }; copy.updated = save.updated + 1;
+  const merged = G.DB.merge(save, copy);
+  assert.equal(merged.pupg[133].atk, 8); assert.equal(merged.pupg[136], undefined);
+  assert.deepEqual(G.DB.merge(merged, save).pupg, merged.pupg);
+  const legacy = G.DB._test.migrate({ pupg: { 282: { hp: 2 }, 475: { hp: 4, atk: 3 } }, pupgDone: true }, 'test');
+  assert.equal(legacy.pupg[280].hp, 4); assert.equal(legacy.pupg[280].atk, 3);
+});
+
+test('max upgrade spends the exact remaining cost once and rejects insufficient coins', () => {
+  const { G } = context(), save = G.DB.save;
+  const levels = G.DB.upgradesOf(4); levels.atk = 3;
+  const price = G.Upgrades.costToMax('atk', 3);
+  save.coins = price - 1;
+  assert.equal(G.Upgrades.buy(6, 'atk', true), false); assert.equal(levels.atk, 3); assert.equal(save.coins, price - 1);
+  save.coins = price + 17;
+  assert.ok(G.Upgrades.buy(5, 'atk', true)); assert.equal(levels.atk, 10); assert.equal(save.coins, 17);
+  assert.equal(G.Upgrades.buy(6, 'atk', true), false); assert.equal(save.coins, 17);
+  assert.equal(G.Upgrades.costToMax('atk', 10), 0);
+  save.coins = G.Upgrades.cost('hp', 0);
+  assert.ok(G.Upgrades.buy(6, 'hp')); assert.equal(G.DB.upgradesOf(4).hp, 1); assert.equal(save.coins, 0);
 });
 
 test('Sinnoh medals cover all fifteen five-stars; Unova currently replaces only Victini without changing odds', () => {

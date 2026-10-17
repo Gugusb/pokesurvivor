@@ -8,6 +8,7 @@ function context(){
     document:{documentElement:{},addEventListener:noop},CanvasRenderingContext2D:function(){}};
   s.window=s;vm.createContext(s);s.load=f=>vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),s,{filename:f});
   for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/pokedex.js','js/data/sprites-meta.js','js/data/types.js','js/data/moves.js','js/data/items.js','js/data/mega-forms.js','js/data/mega-types.js','js/data/abilities.js'])s.load(f);
+  s.load('js/data/evolutions.js');s.load('js/systems/progression-mon.js');
   const G=s.G;G.FIREBASE_CONFIG=null;G.Coop={active:false,isHost:false,scaleHp:()=>1,broadcast:noop};
   G.FX=new Proxy({},{get:()=>noop});G.Audio={sfx:noop};G.UI={toast:noop};G.Camera={kick:noop,sees:()=>false,outerRadius:()=>500};
   G.Sprites={PX:2,hasShiny:id=>typeof id==='number'||!!G.MEGA_SPRITE_META?.[id]?.sh,bodyRadius:()=>10,bodyHeight:()=>30,preload:noop,hovers:()=>false,dirFromAngle:()=>0,animMeta:()=>null,
@@ -131,6 +132,27 @@ test('a held Mega stone converts item pickups to XP without equipping or offerin
   G.Game._test.offerItem('quickclaw');close(p.xp,xp*2);assert.equal(p.level,1);
   G.Game._test.offerItem('quickclaw');close(p.xp,xp*3-threshold);assert.equal(p.level,2);assert.equal(G.Game._test.pending(),1);
   const q=s.player(65,false);G.Game._test.setPlayer(q);G.Game._test.collect({kind:'item',value:'leftovers'},q);assert.equal(q.item,'leftovers');assert.equal(q.xp,0);
+});
+test('a final-form stone blocks items throughout the run but energy and Mega unlock only after evolution',()=>{
+  const s=context(),{G}=s;
+  G.Mega.grant(G.DB.save,'6-mega-x');G.Mega.equip(G.DB.save,6,'6-mega-x');
+  const p=s.player(4,false);p.evolutionPath=[4,5,6];p.monStage=4;s.loadGame();G.Dev.canUse=()=>true;
+  assert.ok(G.Mega.hasStone(p));assert.equal(G.Mega.eligible(p),false);
+  G.Mega.tick(p,120);G.Mega.onKill(p,1);assert.equal(p.megaState.energy,0);assert.equal(p.megaState.bonus,0);
+  assert.equal(G.Mega.debugCharge(p),false);p.megaState.energy=120;assert.equal(G.Mega.activate(p),false);p.megaState.energy=0;
+  G.Game._test.collect({kind:'item',value:'leftovers'},p);assert.equal(p.item,null);assert.ok(p.xp>0);assert.equal(p.equip('leftovers'),false);
+  p.monStage=5;G.Mega.tick(p,120);G.Mega.onKill(p,2);assert.equal(p.megaState.energy,0);
+  p.monStage=6;p.mon=G.DEX_BY[6];p.spriteDex=6;assert.ok(G.Mega.eligible(p));
+  G.Mega.tick(p,1);close(p.megaState.energy,1);G.Mega.tick(p,119);assert.ok(G.Mega.activate(p));
+  assert.equal(p.mon.dex,6);assert.equal(p.spriteDex,'6-mega-x');assert.deepEqual(Array.from(p.mon.types),['fire','dragon']);
+  G.Mega.finish(p);assert.equal(p.spriteDex,6);assert.equal(p.mon,G.DEX_BY[6]);assert.equal(p.dex,4);
+});
+test('stone selection follows the selected evolution branch and does not borrow a sibling stone',()=>{
+  const s=context(),{G}=s;G.Mega.grant(G.DB.save,'282-mega');G.Mega.equip(G.DB.save,282,'282-mega');
+  const gardevoir=new G.Player(G.DEX_BY[280],{},false,282),gallade=new G.Player(G.DEX_BY[280],{},false,475);
+  assert.ok(G.Mega.hasStone(gardevoir));assert.equal(G.Mega.hasStone(gallade),false);
+  G.Mega.grant(G.DB.save,'475-mega');G.Mega.equip(G.DB.save,475,'475-mega');
+  const ready=new G.Player(G.DEX_BY[280],{},false,475);assert.equal(ready.megaState.id,'475-mega');assert.equal(G.Mega.eligible(ready),false);
 });
 test('co-op recognizes a stone before activation and converts a peer item into shared XP once',()=>{
   const s=context(),{G}=s;let receive;G.Net={uid:'host',on:f=>receive=f,onPeer:noop};G.startMoveOf=()=> 'ember';s.load('js/net/coop.js');

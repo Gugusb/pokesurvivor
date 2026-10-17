@@ -1,6 +1,16 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Mejoras compartidas · v0.10.6": "共享强化与 Mega 调整 · v0.10.6",
+  "Shared upgrades · v0.10.6": "共享强化与 Mega 调整 · v0.10.6",
+  "Las mejoras permanentes se comparten entre las formas de una familia evolutiva; cada atributo tiene un botón para completarlo.": "同进化链共享局外强化，每个属性可一键升满。",
+  "Permanent upgrades are shared across an evolution family; each stat has a button to max it.": "同进化链共享局外强化，每个属性可一键升满。",
+  "La megapiedra de la forma final reserva su espacio de objeto desde el inicio; la energía Mega comienza al completar la evolución.": "最终形态装备 Mega 石后，全程不使用普通道具，完成进化后才开始积累 Mega 能量。",
+  "The final form’s Mega Stone reserves the item slot from the start; Mega energy starts after the final evolution.": "最终形态装备 Mega 石后，全程不使用普通道具，完成进化后才开始积累 Mega 能量。",
+  "Mejorar al máximo": "一键强化",
+  "Max upgrade": "一键强化",
+  "Cada familia evolutiva comparte sus mejoras permanentes.": "同进化链宝可梦共享局外强化。",
+  "Each evolution family shares its permanent upgrades.": "同进化链宝可梦共享局外强化。",
   "IV visibles · v0.10.5": "个体值展示优化 · v0.10.5",
   "IV display · v0.10.5": "个体值展示优化 · v0.10.5",
   "Los IV aparecen junto a cada atributo de la Pokédex y el color indica su rango.": "图鉴将个体值显示在对应属性行的最右侧，并用颜色区分数值区间。",

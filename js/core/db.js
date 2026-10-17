@@ -80,7 +80,7 @@ G.DB = (() => {
       starter: null,          // dex que te tocó en el test
       personality: null,      // { trait, scores }
       upgrades: {},           // (antiguo) mejoras de la cuenta; ahora van por Pokémon
-      pupg: {},               // dex -> { id -> nivel }: mejoras de cada Pokémon
+      pupg: {},               // evolution root dex -> { id -> nivel }
       tickets: { t1: 0, t10: 0 },   // tickets del gacha (x1 y x10)
       pity: {},               // generación del banner -> tiradas sin ★5
       abilityGems: 10,        // regalo inicial, una sola vez por partida guardada
@@ -198,6 +198,7 @@ G.DB = (() => {
         else u[id] = Math.min(G.Upgrades.BY[id].max, n(u[id]));
       }
     }
+    normalizeUpgrades(s);
   }
 
   /**
@@ -265,6 +266,7 @@ G.DB = (() => {
     if (r.partner == null || !r.owned[r.partner]) { r.partner = older.partner; r.partnerShiny = older.partnerShiny; }
     r.created = Math.min(a.created || Date.now(), b.created || Date.now());
     r.updated = Math.max(a.updated || 0, b.updated || 0);
+    normalizeUpgrades(r);
     return r;
   }
 
@@ -837,11 +839,25 @@ G.DB = (() => {
 
   function ownsShiny(dex) { return !!(save && save.shiny && save.shiny[dex]); }
 
-  /** Mejoras compradas para un Pokémon: { id -> nivel }. */
+  const upgradeRoot = dex => (G.EVOLUTION_PATHS?.[dex] || G.MonProgression?.pathFor(+dex) || [+dex])[0];
+  // Store one record per family, merging legacy per-species purchases by maximum.
+  function normalizeUpgrades(s) {
+    s.pupg ||= {};
+    for (const dex of Object.keys(s.pupg)) {
+      const root = upgradeRoot(dex), levels = s.pupg[dex];
+      if (!levels || typeof levels !== 'object' || Array.isArray(levels)) { delete s.pupg[dex]; continue; }
+      if (String(root) === dex) continue;
+      const shared = s.pupg[root] ||= {};
+      for (const [id, level] of Object.entries(levels)) shared[id] = Math.max(shared[id] || 0, level | 0);
+      delete s.pupg[dex];
+    }
+  }
+
+  /** Mejoras compradas para una familia: { id -> nivel }. */
   function upgradesOf(dex) {
     if (!save) return {};
-    save.pupg = save.pupg || {};
-    return save.pupg[dex] || (save.pupg[dex] = {});
+    normalizeUpgrades(save);
+    return save.pupg[upgradeRoot(dex)] ||= {};
   }
 
   /** Da la versión shiny (y la normal, si no la tenía). Devuelve true si es nueva. */

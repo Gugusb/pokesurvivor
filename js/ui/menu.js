@@ -252,7 +252,7 @@ G.MenuUI = (() => {
     if (!upgDex || !s.owned[upgDex]) upgDex = s.partner;
     // Selector con tus Pokémon: el compañero primero, luego los que ya tienen mejoras.
     const sel = $('upg-mon');
-    const lv = d => Object.values(s.pupg[d] || {}).reduce((a, b) => a + b, 0);
+    const lv = d => Object.values(G.DB.upgradesOf(d)).reduce((a, b) => a + b, 0);
     const mons = Object.keys(s.owned).map(Number).filter(d => G.DEX_BY[d])
       .sort((a, b) => (b === s.partner) - (a === s.partner) || lv(b) - lv(a) || a - b);
     sel.innerHTML = mons.map(d => `<option value="${d}">${G.DEX_BY[d].name}${d === s.partner ? ' (compañero)' : ''}${lv(d) ? ' · ' + lv(d) + ' niveles' : ''}</option>`).join('');
@@ -285,21 +285,22 @@ G.MenuUI = (() => {
         <div class="upg-btns">
           ${u.id === 'ban' && lvl > 0 ? `<button class="btn small" data-ban>Elegir (${banList().length}/${lvl})</button>` : ''}
           <button class="btn small ${maxed ? '' : 'gold'}" data-buy data-sfx="none" ${maxed || s.coins < cost ? 'disabled' : ''}>
-          ${maxed ? 'Máx.' : `<span class="coin"></span> ${cost}`}</button></div>`;
+          ${maxed ? 'Máx.' : `<span class="coin"></span> ${cost}`}</button>
+          ${maxed ? '' : `<button class="btn small ${s.coins >= G.Upgrades.costToMax(u.id, lvl) ? 'gold' : ''}" data-max data-sfx="none" ${s.coins < G.Upgrades.costToMax(u.id, lvl) ? 'disabled' : ''}><span>${G.T('Mejorar al máximo')}</span><span class="coin"></span> ${G.Upgrades.costToMax(u.id, lvl)}</button>`}</div>`;
       if (u.id === 'ban' && lvl > 0) el.querySelector('[data-ban]').onclick = () => { banOpen = !banOpen; renderUpgrades(); };
       el.querySelector('[data-buy]').onclick = () => {
         // Se vuelve a leer todo al pulsar (la partida puede haber cambiado desde que se dibujó).
-        const sv = G.DB.save, lv = G.DB.upgradesOf(upgDex), now = lv[u.id] || 0;
-        if (now >= u.max) { renderUpgrades(); return; }
-        const price = G.Upgrades.cost(u.id, now);
-        if (sv.coins < price) { renderUpgrades(); return; }
-        sv.coins -= price;
-        lv[u.id] = now + 1;
-        G.DB.commit(true);
+        if (!G.Upgrades.buy(upgDex, u.id)) { renderUpgrades(); return; }
         G.Audio.sfx('buy');
         G.UI.refreshCoins();
-        G.UI.toast(`${mon.name} · ${u.name}: nivel ${now + 1}`);
+        G.UI.toast(`${mon.name} · ${G.T(u.name)}`);
         renderUpgrades();
+      };
+      const maxButton = el.querySelector('[data-max]');
+      if (maxButton) maxButton.onclick = () => {
+        if (!G.Upgrades.buy(upgDex, u.id, true)) { renderUpgrades(); return; }
+        G.Audio.sfx('buy'); G.UI.refreshCoins();
+        G.UI.toast(`${mon.name} · ${G.T(u.name)}: ${G.T('Máx.')}`); renderUpgrades();
       };
       box.appendChild(el);
       if (u.id === 'ban' && lvl > 0 && banOpen) box.appendChild(banPicker(lvl));

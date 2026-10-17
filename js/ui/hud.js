@@ -253,7 +253,7 @@ G.HUD = (() => {
     // Por encima de la barra de inicio del iPhone (allí los toques a veces no llegan).
     const sy = h - S - 18 - (touch ? Math.min(28, G.Touch.safeArea().bottom) : 0);
     if (hasMega) {
-      const ms = pl.megaState, running = G.Mega.active(pl), ready = !running && ms.energy >= G.Mega.CAP;
+      const ms = pl.megaState, running = G.Mega.active(pl), ready = !running && G.Mega.eligible(pl) && ms.energy >= G.Mega.CAP;
       roundRect(ctx, sx, sy, S, S, 12); ctx.fillStyle = 'rgba(36,16,55,.95)'; ctx.fill();
       ctx.strokeStyle = ready ? '#fff2a0' : '#dc8cff'; ctx.lineWidth = ready ? 3 : 1.5; ctx.stroke();
       G.Icons.draw(ctx, 'megaStone', sx + 12, sy + 5, 30);

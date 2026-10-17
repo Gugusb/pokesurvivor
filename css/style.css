@@ -333,7 +333,9 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
 
 /* ---------- mejoras ---------- */
 .upg { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; }
-.upg-item { display: grid; grid-template-columns: 40px 1fr auto; gap: 10px; align-items: center; }
+.upg-item { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; align-items: center; }
+.upg-item > div { min-width: 0; }
+.upg-item .upg-btns { grid-column: 1 / -1; }
 .upg-item .ic { font-size: 26px; text-align: center; }
 .pips { display: flex; gap: 3px; margin-top: 4px; }
 .pips i { width: 12px; height: 6px; border-radius: 2px; background: rgba(0,0,0,.4); }
@@ -808,6 +810,7 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 .box.support { width: min(560px, 100%); }
 /* Mejoras: botones y veto */
 .upg-btns { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+.upg-btns [data-max] { display: inline-flex; gap: 6px; align-items: center; justify-content: center; }
 .ban-picker { grid-column: 1 / -1; }
 .bind-panel { grid-column: 1 / -1; }
 .bind-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }

@@ -4,6 +4,8 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  'Mejorar al máximo': 'Max upgrade',
+  'Cada familia evolutiva comparte sus mejoras permanentes.': 'Each evolution family shares its permanent upgrades.',
   'IV mejorados': 'IV improved',
   // ---------------- tipos y regiones ----------------
   'Acero': 'Steel', 'Agua': 'Water', 'Bicho': 'Bug', 'Dragón': 'Dragon', 'Eléctrico': 'Electric', 'Fantasma': 'Ghost',

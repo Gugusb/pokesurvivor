@@ -5,6 +5,8 @@ G.Mega = (() => {
   const CAP = 120, DURATION = 60, HP = 1.3;
   const active = p => !!(p && p.megaState && p.megaState.left > 0);
   const hasStone = p => !!(p && p.megaState && BY[p.megaState.id]);
+  const currentDex = p => p.monStage || p.dex;
+  const eligible = p => hasStone(p) && currentDex(p) === BY[p.megaState.id].dex;
   const itemXp = p => Math.max(1, Math.floor(p.xpNext * 0.25));
   const formsFor = dex => LIST.filter(f => f.dex === dex);
   const owns = (s, id) => !!(s && s.megaStones && s.megaStones[id] && BY[id]);
@@ -20,13 +22,15 @@ G.Mega = (() => {
     s.megaStones[id] = { at: Date.now() }; return true;
   }
   function init(p, save) {
-    const id = save && save.megaEquipped && save.megaEquipped[p.dex];
-    p.megaState = { id: owns(save, id) && BY[id].dex === p.dex ? id : null, energy: 0, left: 0, bonus: 0, kills: new Set() };
+    const path = p.evolutionPath || G.MonProgression?.pathFor(p.ivDex || p.dex) || [p.dex];
+    const finalDex = path[path.length - 1], id = save?.megaEquipped?.[finalDex];
+    p.megaState = { id: owns(save, id) && BY[id].dex === finalDex ? id : null, energy: 0, left: 0, bonus: 0, kills: new Set() };
   }
   function setVisual(p, id) {
     const f = BY[id], dir = p.anim.dir;
-    p.megaForm = id || null; p.spriteDex = id || p.dex;
-    p.mon = id ? Object.assign({}, G.DEX_BY[p.dex], { types: G.MEGA_TYPES[id].slice() }) : G.DEX_BY[p.dex];
+    const dex = currentDex(p);
+    p.megaForm = id || null; p.spriteDex = id || dex;
+    p.mon = id ? Object.assign({}, G.DEX_BY[dex], { types: G.MEGA_TYPES[id].slice() }) : G.DEX_BY[dex];
     p.anim = new G.Sprites.Animator(p.spriteDex, 1, p.shiny && (!f || !!f.meta.sh)); p.anim.dir = dir;
     p.bodyH = G.Sprites.bodyHeight(p.spriteDex);
     G.Sprites.preload([p.spriteDex], 8000, p.anim.shiny);
@@ -46,7 +50,7 @@ G.Mega = (() => {
       if (p.dead || dt >= s.left) { finish(p); return; }
       s.left -= dt; return;
     }
-    if (p.dead || !s.id) return;
+    if (p.dead || !eligible(p)) return;
     s.energy = Math.min(CAP, s.energy + dt);
     s.bonus = Math.min(0.25, s.bonus + dt * 0.25);
   }
@@ -56,7 +60,7 @@ G.Mega = (() => {
     const s = p.megaState;
     if (!s || s.kills.has(id)) return;
     s.kills.add(id);
-    if (!s.id || active(p)) return;
+    if (!eligible(p) || active(p)) return;
     const bonus = Math.min(0.1, s.bonus); s.bonus -= bonus; s.energy = Math.min(CAP, s.energy + bonus);
   }
   function repel(p) {
@@ -70,7 +74,7 @@ G.Mega = (() => {
   }
   function activate(p) {
     const s = p && p.megaState;
-    if (!s || !BY[s.id] || p.dead || p.remote || active(p) || s.energy < CAP || !G.Game || G.Game.state !== 'playing') return false;
+    if (!s || !eligible(p) || p.dead || p.remote || active(p) || s.energy < CAP || !G.Game || G.Game.state !== 'playing') return false;
     if (G.MegaPreview && p.megaForm) G.MegaPreview.restore(p);
     s.energy = 0; s.left = DURATION; s.bonus = 0;
     p.maxHp *= HP; p.hp *= HP;
@@ -125,9 +129,9 @@ G.Mega = (() => {
     for (let i = 0; i < 4; i++) G.FX.px(p.x + G.U.rand(-20, 20), p.y - G.U.rand(4, 35), i % 2 ? '#8beaff' : '#f7a8ff', { vy: -45, life: 0.35 });
   }
   function debugCharge(p) {
-    if (!G.Dev || !G.Dev.canUse() || !p || !p.megaState || !p.megaState.id || active(p)) return false;
+    if (!G.Dev || !G.Dev.canUse() || !eligible(p) || active(p)) return false;
     G.Game.debugMark(); p.megaState.energy = CAP; return true;
   }
-  return { LIST, BY, CAP, DURATION, HP, formsFor, owns, label, equip, grant, init, active, hasStone, itemXp, activate, finish, tick, onKill,
+  return { LIST, BY, CAP, DURATION, HP, formsFor, owns, label, equip, grant, init, active, hasStone, eligible, itemXp, activate, finish, tick, onKill,
            repel, sync, move, cooldownRate, damage, buffStacks, defense, award, particles, debugCharge };
 })();
