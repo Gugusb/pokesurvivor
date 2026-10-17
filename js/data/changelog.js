@@ -6,6 +6,10 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-17', title: ['Visualización de IV simplificada · v0.10.2', 'Simplified IV display · v0.10.2'], new: [
+    ['La ficha de la Pokédex muestra ahora solo los valores IV de 1 a 31; los modificadores internos siguen aplicándose en combate.',
+     'Pokédex details now show only IV values from 1 to 31; internal modifiers remain active in combat.']
+  ], chg: [], fix: [] },
   { d: '2026-10-17', title: ['Todas las evoluciones · v0.10.1', 'All evolutions · v0.10.1'], new: [
     ['Las 318 familias evolutivas disponibles cubren 775 Pokémon del catálogo. Cada partida empieza en la primera forma y evoluciona en los niveles 6 y 15 siguiendo la ruta del Pokémon elegido; evolucionar concede una elección de movimiento adicional.',
      'All 318 available evolution families now cover 775 Pokédex entries. Every run starts at the first form and evolves at levels 6 and 15 along the route of the chosen Pokémon; each evolution grants one extra move choice.']
