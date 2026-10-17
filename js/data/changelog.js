@@ -6,6 +6,9 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-17', title: ['Mejoras de IV · v0.10.4', 'IV improvements · v0.10.4'], new: [
+    ['Las tiradas y capturas muestran una flecha cuando mejoran los valores individuales de un Pokémon.','Gacha pulls and captures show an arrow when they improve a Pokémon’s individual values.']
+  ], chg: [], fix: [] },
   { d: '2026-10-17', title: ['Descripciones simplificadas · v0.10.3', 'Simplified descriptions · v0.10.3'], new: [
     ['Las descripciones de habilidades y sistemas son ahora más breves y fáciles de leer; los detalles internos se reservan para el juego.','Ability and system descriptions are now shorter and easier to scan; internal details remain in gameplay.']
   ], chg: [], fix: [] },

@@ -412,6 +412,10 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
 .pcard b { display: block; font-size: 16px; }
 .pcard .tag { font-size: 12px; margin-top: 2px; }
 .pcard .new { color: var(--gold); font-weight: 700; }
+.iv-improved-art { position: relative; display: inline-block; line-height: 0; }
+.iv-up { position: absolute; top: 2px; right: 2px; display: grid; place-items: center; width: 25px; height: 25px;
+  border: 2px solid #d9ffe5; border-radius: 50%; background: #16874a; color: #fff; font: 700 20px/1 Arial, sans-serif;
+  text-shadow: none; box-shadow: 0 1px 6px #000a; }
 .pcard.r5 { animation: pop .3s ease-out both, legend 1.4s ease-in-out infinite alternate; }
 @keyframes legend { to { box-shadow: 0 0 40px var(--rc), 0 0 80px var(--rc); } }
 

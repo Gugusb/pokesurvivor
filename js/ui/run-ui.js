@@ -134,7 +134,10 @@ G.RunUI = (() => {
       const row = $('over-caught');
       for (const c of r.caught) {
         const w = document.createElement('div');
-        w.appendChild(G.UI.spriteCanvas(c.dex, 90, 72, { shiny: true, lively: true, scale: 2 }));
+        const art = document.createElement('div'); art.className = 'iv-improved-art';
+        art.appendChild(G.UI.spriteCanvas(c.dex, 90, 72, { shiny: !c.captured, lively: true, scale: 2 }));
+        if (c.ivUp) art.insertAdjacentHTML('beforeend', '<span class="iv-up" title="' + G.T('IV mejorados') + '" aria-label="' + G.T('IV mejorados') + '">↑</span>');
+        w.appendChild(art);
         w.insertAdjacentHTML('beforeend', `<small>${G.DEX_BY[c.dex].name}${c.isNew ? ' · ¡nuevo!' : ''}</small>`);
         row.appendChild(w);
       }

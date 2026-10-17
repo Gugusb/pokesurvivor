@@ -35,8 +35,8 @@ G.MonProgression = (() => {
   function commitCaptures(save, run) {
     const out = [];
     for (const c of run?.pendingCaptures || []) {
-      const fresh = !G.DB.owns(c.dex); G.DB.grant(c.dex, 'capture');
-      out.push({ dex: c.dex, isNew: fresh });
+      const result = G.DB.grant(c.dex, 'capture');
+      out.push({ dex: c.dex, isNew: result.isNew, ivUp: result.ivUp, ivRaised: result.ivRaised });
     }
     if (out.length) G.DB.commit(true);
     return out;

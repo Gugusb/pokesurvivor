@@ -31,7 +31,7 @@ G.AbilityGacha = (() => {
       if (rarity === 5) save.abilityPity[gen] = 0;
       let mon = forcedDef ? G.DEX_BY[forcedDef.dex] : G.U.pick(pool(rarity, gen));
       const medals = G.AbilityDefs.medalsFor(mon.dex);
-      let isNew, refund = 0, shiny = false, medal = null;
+      let isNew, refund = 0, shiny = false, medal = null, ivUp = false;
       if (medals.length) {
         medal = forcedDef || G.U.pick(medals);
         if (forcedDef) forced = null;
@@ -46,13 +46,15 @@ G.AbilityGacha = (() => {
           const missing = pool(rarity, gen).filter(p => !G.AbilityDefs.medalsFor(p.dex).length && G.Sprites.hasShiny(p.dex) && !save.shiny[p.dex]);
           if (missing.length) mon = G.U.pick(missing); else shiny = false;
         }
-        isNew = !(shiny ? save.shiny[mon.dex] : save.owned[mon.dex]);
+        const isOwned = !!save.owned[mon.dex];
+        const iv = G.DB.grant(mon.dex, 'ability-gacha');
+        ivUp = iv.ivUp;
+        isNew = shiny ? !save.shiny[mon.dex] : !isOwned;
         if (shiny && isNew) save.shiny[mon.dex] = { at: Date.now(), from: 'ability-gacha' };
-        if (!save.owned[mon.dex]) save.owned[mon.dex] = { at: Date.now(), from: 'ability-gacha' };
         if (!isNew) refund = G.Gacha.REFUND[rarity] * (shiny ? 3 : 1);
       }
       save.coins += refund;
-      out.push({ dex: mon.dex, rarity, shiny, isNew, refund, medal: medal && medal.id });
+      out.push({ dex: mon.dex, rarity, shiny, isNew, refund, medal: medal && medal.id, ivUp });
     }
     save.stats.abilityPulls = (save.stats.abilityPulls || 0) + n;
     return out;

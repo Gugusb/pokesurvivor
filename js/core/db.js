@@ -823,8 +823,16 @@ G.DB = (() => {
   }
 
   function grant(dex, from) {
-    if (!save.owned[dex]) save.owned[dex] = { at: Date.now(), from, iv: [randomIv(), randomIv(), randomIv()] };
-    else { const old = ivOf(dex), next = [randomIv(), randomIv(), randomIv()]; for (let i = 0; i < 3; i++) old[i] = Math.max(old[i], next[i]); }
+    const fresh = !save.owned[dex];
+    if (fresh) save.owned[dex] = { at: Date.now(), from, iv: [randomIv(), randomIv(), randomIv()] };
+    const old = fresh ? save.owned[dex].iv : ivOf(dex);
+    const next = fresh ? old.slice() : [randomIv(), randomIv(), randomIv()];
+    const raised = [];
+    if (!fresh) for (let i = 0; i < 3; i++) {
+      if (next[i] > old[i]) raised.push(i);
+      old[i] = Math.max(old[i], next[i]);
+    }
+    return { isNew: fresh, ivUp: raised.length > 0, ivRaised: raised };
   }
 
   function ownsShiny(dex) { return !!(save && save.shiny && save.shiny[dex]); }
@@ -838,10 +846,10 @@ G.DB = (() => {
 
   /** Da la versión shiny (y la normal, si no la tenía). Devuelve true si es nueva. */
   function grantShiny(dex, from) {
-    grant(dex, from);
-    if (save.shiny[dex]) return false;
-    save.shiny[dex] = { at: Date.now(), from };
-    return true;
+    const result = grant(dex, from);
+    const shinyNew = !save.shiny[dex];
+    if (shinyNew) save.shiny[dex] = { at: Date.now(), from };
+    return { ...result, shinyNew };
   }
 
   return {

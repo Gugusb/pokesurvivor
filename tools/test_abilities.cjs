@@ -45,6 +45,24 @@ function context(lang = 'zh') {
 }
 const approx = (a, b) => assert.ok(Math.abs(a - b) < 1e-7, `${a} ≠ ${b}`);
 
+test('repeated Pokémon rewards keep the highest IV per stat and report only real improvements', () => {
+  const s = context(), { G } = s;
+  s.random([0, 0, 0]);
+  const first = G.DB.grant(25, 'test');
+  assert.equal(first.isNew, true); assert.equal(first.ivUp, false); assert.equal(first.ivRaised.length, 0);
+  assert.deepEqual(Array.from(G.DB.ivOf(25)), [1, 1, 1]);
+  s.random([.99, 0, .99]);
+  const second = G.DB.grant(25, 'test');
+  assert.equal(second.isNew, false);
+  assert.equal(second.ivUp, true);
+  assert.equal(second.ivRaised.length, 2); assert.equal(second.ivRaised[0], 0); assert.equal(second.ivRaised[1], 2);
+  assert.deepEqual(Array.from(G.DB.ivOf(25)), [31, 1, 31]);
+  s.random([0, 0, 0]);
+  const third = G.DB.grant(25, 'test');
+  assert.equal(third.ivUp, false);
+  assert.deepEqual(Array.from(G.DB.ivOf(25)), [31, 1, 31]);
+});
+
 test('Sinnoh medals cover all fifteen five-stars; Unova currently replaces only Victini without changing odds', () => {
   const s=context(),{G}=s,save=G.DB.save;
   assert.equal(G.AbilityDefs.SPECIES.filter(d=>G.DEX_BY[d].gen===4).length,15);

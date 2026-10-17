@@ -106,19 +106,19 @@ G.Gacha = (() => {
         else shiny = false;
       }
 
+      const isOwned = !!save.owned[mon.dex];
+      const iv = G.DB.grant(mon.dex, 'gacha');
       let isNew = false, refund = 0;
       if (shiny) {
         isNew = !save.shiny[mon.dex];
         if (isNew) save.shiny[mon.dex] = { at: Date.now(), from: 'gacha' };
         else refund = REFUND[rarity] * 3;
-        if (!save.owned[mon.dex]) save.owned[mon.dex] = { at: Date.now(), from: 'gacha' };
       } else {
-        isNew = !save.owned[mon.dex];
-        if (isNew) save.owned[mon.dex] = { at: Date.now(), from: 'gacha' };
-        else refund = REFUND[rarity];
+        isNew = !isOwned;
+        if (!isNew) refund = REFUND[rarity];
       }
       save.coins += refund;
-      out.push({ dex: mon.dex, rarity, shiny, isNew, refund });
+      out.push({ dex: mon.dex, rarity, shiny, isNew, refund, ivUp: iv.ivUp, ivRaised: iv.ivRaised });
     }
     save.stats.pulls = (save.stats.pulls || 0) + n;
     return out;

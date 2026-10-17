@@ -295,10 +295,11 @@ G.Game = (() => {
   G.onShinyCaught = e => {
     if (!G.DB.save || !pl) return;
     if (G.Coop.isHost) G.Coop.shinyCaught(e);
-    const isNew = G.DB.grantShiny(e.dex, 'wild');
+    const result = G.DB.grantShiny(e.dex, 'wild');
+    const isNew = result.shinyNew;
     G.DB.save.stats.shinies++;
     G.DB.commit(true);
-    caught.push({ dex: e.dex, isNew });
+    caught.push({ dex: e.dex, isNew, ivUp: result.ivUp, ivRaised: result.ivRaised });
     G.Spawner.say(isNew ? '¡Has conseguido a ' + e.name + ' shiny!' : '¡Otro ' + e.name + ' shiny! (+300 monedas)', 4);
     if (!isNew) pl.coins += 300;
     G.Audio.sfx('shinyGet');

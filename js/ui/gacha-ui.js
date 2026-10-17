@@ -192,7 +192,13 @@ G.GachaUI = (() => {
       c.className = 'pcard r' + r.rarity + (r.shiny ? ' shiny' : '');
       c.style.setProperty('--rc', r.shiny ? '#9ae6ff' : G.Gacha.RARITY_COLOR[r.rarity]);
       c.innerHTML = `<div class="stars">${G.UI.stars(r.rarity, 24)}</div>`;
-      c.appendChild(r.medal ? medalArt(r.dex) : G.UI.spriteCanvas(r.dex, 132, 120, { lively: r.rarity >= 4 || r.shiny, scale: 2, shiny: r.shiny }));
+      if (r.medal) c.appendChild(medalArt(r.dex));
+      else {
+        const art = document.createElement('div'); art.className = 'iv-improved-art';
+        art.appendChild(G.UI.spriteCanvas(r.dex, 132, 120, { lively: r.rarity >= 4 || r.shiny, scale: 2, shiny: r.shiny }));
+        if (r.ivUp) art.insertAdjacentHTML('beforeend', '<span class="iv-up" title="' + G.T('IV mejorados') + '" aria-label="' + G.T('IV mejorados') + '">↑</span>');
+        c.appendChild(art);
+      }
       const tag = r.isNew
         ? `<span class="new">${r.shiny ? '¡SHINY NUEVO!' : '¡NUEVO!'}</span>`
         : `Repetido · <span class="coin"></span> +${r.refund}`;

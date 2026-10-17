@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "IV mejorados": "个体值提升",
+  "Mejoras de IV · v0.10.4": "个体值提升提示 · v0.10.4",
+  "IV improvements · v0.10.4": "个体值提升提示 · v0.10.4",
+  "Las tiradas y capturas muestran una flecha cuando mejoran los valores individuales de un Pokémon.": "抽卡和捕获宝可梦提升个体值时，会显示上升箭头。",
+  "Gacha pulls and captures show an arrow when they improve a Pokémon’s individual values.": "抽卡和捕获宝可梦提升个体值时，会显示上升箭头。",
   "Descripciones simplificadas · v0.10.3": "描述简化 · v0.10.3",
   "Simplified descriptions · v0.10.3": "描述简化 · v0.10.3",
   "Las descripciones de habilidades y sistemas son ahora más breves y fáciles de leer; los detalles internos se reservan para el juego.": "特性和系统描述已简化，更易阅读；具体机制保留在游戏内部。",
