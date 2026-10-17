@@ -27,10 +27,12 @@ G.Player = class Player {
     this.xpMul = perks.xpMul || 1;
     this.coinMul = perks.coinMul || 1;
 
-    this.maxHp = mon.hp + (perks.hp || 0);
+    const ivs = G.MonProgression ? G.MonProgression.values(mon.dex) : [16, 16, 16];
+    const ivm = G.MonProgression ? ivs.map(G.MonProgression.ivMod) : [1, 1, 1];
+    this.maxHp = mon.hp * ivm[0] + (perks.hp || 0);
     this.hp = this.maxHp;
-    this.baseSpd = mon.spd;
-    this.baseAtk = mon.atk;
+    this.baseSpd = mon.spd * ivm[2];
+    this.baseAtk = mon.atk * ivm[1];
     this.ability = G.Abilities.equipped(G.DB.save, mon.dex);
     this.snowHealCd = 0; this.syncCd = 0;
 

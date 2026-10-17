@@ -813,8 +813,18 @@ G.DB = (() => {
 
   function owns(dex) { return !!(save && save.owned[dex]); }
 
+  function randomIv() { return 1 + Math.floor(Math.random() * 31); }
+  function ivOf(dex) {
+    if (!save) return null;
+    const e = save.owned[dex] || (save.owned[dex] = { at: Date.now(), from: 'unknown' });
+    if (!Array.isArray(e.iv) || e.iv.length < 3) e.iv = [randomIv(), randomIv(), randomIv()];
+    e.iv = e.iv.slice(0, 3).map(v => Math.max(1, Math.min(31, v | 0)));
+    return e.iv;
+  }
+
   function grant(dex, from) {
-    if (!save.owned[dex]) save.owned[dex] = { at: Date.now(), from };
+    if (!save.owned[dex]) save.owned[dex] = { at: Date.now(), from, iv: [randomIv(), randomIv(), randomIv()] };
+    else { const old = ivOf(dex), next = [randomIv(), randomIv(), randomIv()]; for (let i = 0; i < 3; i++) old[i] = Math.max(old[i], next[i]); }
   }
 
   function ownsShiny(dex) { return !!(save && save.shiny && save.shiny[dex]); }
@@ -836,7 +846,7 @@ G.DB = (() => {
 
   return {
     ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, settleOffline, flush: pushNow,
-    owns, grant, ownsShiny, grantShiny, merge, setName, upgradesOf,
+    owns, grant, ownsShiny, grantShiny, ivOf, merge, setName, upgradesOf,
     onSync(fn) { listeners.add(fn); },
     onLeave(fn) { leaveHooks.push(fn); },
     /** Acceso de bajo nivel para los módulos de red (sólo en modo nube). */

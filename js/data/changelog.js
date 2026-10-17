@@ -6,6 +6,10 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-17', title: ['Valores individuales y capturas · v0.10.0', 'Individual values and captures · v0.10.0'], new: [
+    ['Cada Pokémon tiene valores individuales y puede evolucionar durante la partida. También puedes capturar Pokémon salvajes y revisarlos al terminar la partida.',
+     'Each Pokémon has individual values and can evolve during a run. You can also capture wild Pokémon and review them when the run ends.']
+  ], chg: [], fix: [] },
   { d: '2026-10-17', title: ['Dificultad más asequible · v0.9.2', 'Easier difficulty scaling · v0.9.2'], new: [], chg: [
     ['Corrige el ajuste anterior: la curva completa se multiplica por 0,7 en vida y 0,8 en ataque (la estrella 1 baja de 0,86× a 0,60× de vida), conservando el crecimiento original por estrella.',
      'Fixes the previous change: the whole curve is scaled to 0.7 HP and 0.8 damage (star 1 drops from 0.86× to 0.60× HP), keeping the original per-star growth.']

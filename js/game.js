@@ -19,7 +19,7 @@ G.Game = (() => {
   let state = 'ui';
   let time = 0, last = 0, pendingLevels = 0;
   let pl = null;
-  let caught = [];          // shinies conseguidos en esta run
+  let caught = [];          // shinies y capturas pendientes de esta run
   let biome = -1;
   let challenge = null;
 
@@ -115,8 +115,10 @@ G.Game = (() => {
     runReal = performance.now(); tampered = !!(G.Dev && G.Dev.enabled);
 
     pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(mon.dex));
+    if (G.MonProgression) pl.monStage = G.MonProgression.stageFor(mon.dex, 1);
     banked = { t1: 0, t10: 0 };
     caught = [];
+    if (G.MonProgression) challenge.pendingCaptures = [];
     // Atajos: movimientos con hueco fijo (save.pbind[dex] = [id del 1, id del 2, ...]),
     // antes de aprender nada: addMove ya los coloca.
     (save.pbind && save.pbind[mon.dex] || []).forEach((id, i) => { if (id) pl.bind[id] = i; });
@@ -305,6 +307,7 @@ G.Game = (() => {
     G.Audio.music(null);
     G.Audio.sfx(dead ? 'gameover' : 'back');
     const save = G.DB.save;
+    const confirmed = G.MonProgression ? G.MonProgression.commitCaptures(save, challenge || {}) : [];
     const mul = pl.coinMul;
     const ok = clean();
     if (G.Difficulty) G.Difficulty.record(save, challenge, time, !pl.dead, ok);
@@ -345,7 +348,7 @@ G.Game = (() => {
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge,
-      moves: pl.moves, caught, difficulty: challenge?.stars, victory: !!challenge?.victory, rankingExcluded: !ranked,
+      moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, rankingExcluded: !ranked,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (mul > 1 ? ` · ×${mul.toFixed(2)} Fortuna` : '')
     }, () => { pl = null; G.Flow.afterRun(); });
@@ -397,6 +400,21 @@ G.Game = (() => {
     pendingLevels--;
     state = 'levelup';
     G.Audio.sfx('levelup');
+    const before = pl.monStage;
+    const next = G.MonProgression ? G.MonProgression.stageFor(pl.dex, pl.level) : pl.dex;
+    if (G.MonProgression && next !== before) {
+      pl.monStage = next;
+      const oldHp = pl.maxHp;
+      const ivs = G.MonProgression.values(pl.dex);
+      pl.mon = Object.assign({}, G.DEX_BY[next], { types: G.DEX_BY[next].types.slice() });
+      pl.baseAtk = pl.mon.atk * G.MonProgression.ivMod(ivs[1]);
+      pl.baseSpd = pl.mon.spd * G.MonProgression.ivMod(ivs[2]);
+      const ratio = pl.mon.hp * G.MonProgression.ivMod(ivs[0]) / Math.max(1, oldHp);
+      pl.maxHp *= ratio; pl.hp *= ratio;
+      chooseLevelCards(pl.level, () => { state = 'playing'; });
+      chooseLevelCards(pl.level, () => { state = 'playing'; });
+      return;
+    }
     chooseLevelCards(pl.level, () => { state = 'playing'; });
   }
 
@@ -905,7 +923,7 @@ G.Game = (() => {
   })();
 
   return {
-    init, startRun, everyone, levelXp, flash, offerBond, setSpeed, get speed() { return runSpeed; },
+    init, startRun, everyone, levelXp, flash, offerBond, setSpeed, get challenge() { return challenge; }, get speed() { return runSpeed; },
     debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },

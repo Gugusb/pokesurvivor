@@ -192,6 +192,8 @@ G.MenuUI = (() => {
     showDetail.last = dex;
 
     const max = { hp: 183, atk: 1.55, spd: 137 };
+    const iv = G.DB.ivOf(dex) || [1, 1, 1];
+    const ivMod = n => (0.75 + 0.65 * Math.pow((n - 1) / 30, 2)).toFixed(2);
     const bar = (label, v, m, txt) =>
       `<div class="stat"><span>${label}</span><div class="bar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div><span>${txt}</span></div>`;
     const usingThis = isPartner && (!hasSh || !!s.partnerShiny === viewShiny);
@@ -209,6 +211,7 @@ G.MenuUI = (() => {
         <div style="margin:6px 0">${own ? G.UI.typeChips(p.types) : ''}</div>
       </div>
       ${own ? `
+        <div class="iv-grid"><span>HP IV ${iv[0]} · ×${ivMod(iv[0])}</span><span>攻击 IV ${iv[1]} · ×${ivMod(iv[1])}</span><span>速度 IV ${iv[2]} · ×${ivMod(iv[2])}</span></div>
         ${bar('Vida', p.hp, max.hp, p.hp)}
         ${bar('Ataque', p.atk, max.atk, '×' + p.atk.toFixed(2))}
         ${bar('Velocidad', p.spd, max.spd, p.spd)}

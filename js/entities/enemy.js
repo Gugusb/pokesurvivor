@@ -211,6 +211,7 @@
         G.FX.ring(this.x, this.y, this.r, this.r * 7, '#9ae6ff', 0.7, 5);
         if (G.onShinyCaught) G.onShinyCaught(this);
       }
+      if (G.MonProgression && G.Game && G.Game.challenge) G.MonProgression.tryCapture(this, G.Game.challenge);
     }
 
     /**
