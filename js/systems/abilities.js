@@ -8,11 +8,42 @@ G.Abilities = (() => {
   function state(p) {
     return p.abilityState || (p.abilityState = { safeTime: 0, naturalReady: true, weatherTime: 0,
       casts: 0, confidence: [], haste: 0, hasteT: 0, sturdyUsed: false, stage: 0, kills: new Set(), phaseInside: false, phaseT: 0,
-      contactCd: 0, telepathyCd: 0, kindleT: 0, sandTick: 0 });
+      contactCd: 0, telepathyCd: 0, kindleT: 0, sandTick: 0, justiceT: 0,
+      growthAtk: 0, growthSpeed: 0, growthCooldown: 0, defenseFactor: 1 });
   }
   const buffDuration = (p, dur) => dur * (has(p, 'clearbody') ? 1.5 : 1);
-  const attackBonus = p => has(p, 'moxie') ? state(p).confidence.length * 0.1 : has(p, 'flashfire') && state(p).kindleT > 0 ? 0.5 : 0;
+  const attackBonus = p => state(p).growthAtk + (has(p, 'justified') && state(p).justiceT > 0 ? 0.4 :
+    has(p, 'moxie') ? state(p).confidence.length * 0.1 : has(p, 'flashfire') && state(p).kindleT > 0 ? 0.5 : 0);
   const speedBonus = p => has(p, 'lightmetal') || has(p, 'sandveil') ? state(p).haste * 0.2 : 0;
+  const cooldownRate = (p, m) => 1 + state(p).growthCooldown + (has(p, 'prankster') && m.kind === 'buff' ? 0.15 : 0) +
+    (has(p, 'sandforce') && weatherActive('sand') ? 0.25 : 0);
+  const electricField = () => players().some(p => has(p, 'transistor'));
+  const fieldDamage = type => type === 'electric' && electricField() ? 1.1 : 1;
+  const suppressEffects = p => has(p, 'sheerforce');
+  function move(p, m) {
+    if (!suppressEffects(p) || m.kind === 'buff') return m;
+    return { ...m, burn: 0, poison: 0, slow: 0, knock: 0, drain: 0 };
+  }
+  function onLevel(p) {
+    const s = state(p);
+    if (has(p, 'intrepidsword')) s.growthAtk += 0.02;
+    if (has(p, 'dauntlessshield')) s.defenseFactor *= 0.99;
+    if (!has(p, 'download')) return;
+    const baseHp = G.MonProgression ? G.MonProgression.stats(p.monStage || p.dex).hp : p.mon.hp;
+    const hpScale = G.Mega && G.Mega.active(p) ? G.Mega.HP : 1;
+    // Compare dimensionless permanent growth, never raw HP against speed or temporary buffs.
+    const scores = [p.maxHp / hpScale / baseHp, p.atkMul + s.growthAtk,
+      p.spdMul + s.growthSpeed, (1 + s.growthCooldown) / p.cdMul,
+      1 / ((1 - Math.min(0.8, p.dmgReduce)) * s.defenseFactor)];
+    const lowest = Math.min(...scores), ties = scores.map((v, i) => v <= lowest + 1e-8 ? i : -1).filter(i => i >= 0);
+    const pick = G.U.pick(ties);
+    if (pick === 0) p.addMaxHp(baseHp * 0.02);
+    if (pick === 1) s.growthAtk += 0.02;
+    if (pick === 2) s.growthSpeed += 0.02;
+    if (pick === 3) s.growthCooldown += 0.02;
+    if (pick === 4) s.defenseFactor *= 0.98;
+    s.downloadLast = ['hp', 'atk', 'spd', 'cd', 'def'][pick];
+  }
   const weatherActive = kind => !!(G.Weather.current && G.Weather.current.kind === kind && !weatherSuppressed());
   const debuffImmune = p => has(p, 'hydration') && weatherActive('rain');
   const slowImmune = p => debuffImmune(p) || has(p, 'naturalcure') && state(p).naturalReady;
@@ -20,9 +51,11 @@ G.Abilities = (() => {
   const levelChoices = p => has(p, 'slowstart') && Math.random() < 0.5 ? 2 : 1;
   const projectileSpeed = p => has(p, 'victorystar') ? 1.3 : 1;
   const outgoingType = (p, type, types) => has(p, 'multitype') ? 1 : type ? G.Types.mult(type, types) : 1;
-  const outgoingDamage = p => (has(p, 'multitype') ? 1.2 : 1) * (G.Mega ? G.Mega.damage(p) : 1);
+  const outgoingDamage = (p, attack = {}, bypass = false) => 1 + (p && p.damageBonus || 0) + (has(p, 'multitype') ? 0.2 : 0) +
+    (G.Mega ? G.Mega.damage(p) - 1 : 0) + (attack.kind && attack.kind !== 'buff' && has(p, 'sheerforce') ? 0.15 : 0) +
+    (bypass && attack.kind === 'melee' && has(p, 'unseenfist') ? 0.2 : 0) + (fieldDamage(attack.type) - 1);
   const weatherSuppressed = () => players().some(p => has(p, 'airlock'));
-  const enemyDamage = (e, dmg) => dmg * (e && e.fearT > 0 ? 0.8 : 1);
+  const enemyDamage = (e, dmg) => dmg * (e && e.repelT > 0 ? 0.75 : e && e.fearT > 0 ? 0.8 : 1);
   const critMultiplier = p => has(p, 'airlock') && !(G.Weather.hasWeather && G.Weather.hasWeather()) ? 2.25 : 1.5;
   function canCast(p) {
     return !(has(p, 'levitate') && G.World.overlapsSolid && G.World.overlapsSolid(p.x, p.y, p.r));
@@ -91,7 +124,7 @@ G.Abilities = (() => {
     return Math.min(0.95, Math.max(0, factor) * k);
   }
   function slowFactor(e, environmental = 1) {
-    const raw = 1 - (1 - (e.slow || 0)) * (e.staticT > 0 ? 0.9 : 1) * environmental;
+    const raw = 1 - (1 - (e.slow || 0)) * (e.staticT > 0 ? 0.9 : 1) * (e.repelT > 0 ? 0.5 : 1) * environmental;
     return 1 - slowStrength(raw);
   }
   function show(p, text, color) { if (G.FX) G.FX.dmgText(p.x, p.y - (p.bodyH || 0) - 10, text, color); }
@@ -108,16 +141,18 @@ G.Abilities = (() => {
     return true;
   }
   function damageFactor(p, source, type = null) {
-    if (has(p, 'multitype')) return 0.8;
-    if (has(p, 'telepathy') && type && p.mon.types.includes(type)) return 0.5;
-    return has(p, 'multiscale') && p.hp >= p.maxHp &&
-      ['contact', 'ranged', 'attack'].includes(source.kind) ? 0.5 : 1;
+    const factor = state(p).defenseFactor;
+    if (has(p, 'multitype')) return factor * 0.8;
+    if (has(p, 'telepathy') && type && p.mon.types.includes(type)) return factor * 0.5;
+    return factor * (has(p, 'multiscale') && p.hp >= p.maxHp &&
+      ['contact', 'ranged', 'attack'].includes(source.kind) ? 0.5 : 1);
   }
   function applyEffect(e, kind, value, owner = null) {
     if (!e || e.dead) return;
     if (kind === 'static') e.staticT = 2;
     if (kind === 'unnerve') e.unnerveT = 3;
     if (kind === 'fear') e.fearT = 3;
+    if (kind === 'repel') e.repelT = 3;
     if (kind === 'slow') e.applySlow(0.2, 3);
     if (kind === 'burn') e.applyBurn(1, owner);
     if (kind === 'poison') e.applyPoison(1, owner);
@@ -136,6 +171,7 @@ G.Abilities = (() => {
   }
   function afterHurt(p, source, type = null) {
     const s = state(p);
+    if (has(p, 'justified') && type && G.Types.mult(type, p.mon.types) > 1) s.justiceT = buffDuration(p, 5);
     if (has(p, 'flashfire') && type === 'fire') s.kindleT = 5;
     if (has(p, 'telepathy') && type && p.mon.types.includes(type) && s.telepathyCd <= 0 && p.hp > 0) {
       s.telepathyCd = 1; p.heal(p.maxHp * 0.05);
@@ -151,10 +187,10 @@ G.Abilities = (() => {
     }
     if (has(p, 'roughskin')) { s.contactCd = 1; G.Combat.counterTackle(p, e); }
   }
-  function onHit(p, e) {
+  function onHit(p, e, attack = {}) {
     if (!e || e.dead || e.hp <= 0) return;
     if (has(p, 'unnerve')) sendEffect(p, e, 'unnerve');
-    if (has(p, 'intimidate')) sendEffect(p, e, 'fear');
+    if (has(p, 'intimidate') && attack.kind === 'melee') sendEffect(p, e, 'repel');
     if (has(p, 'serenegrace') && Math.random() < 0.1) sendEffect(p, e, G.U.pick(DEBUFFS));
   }
   function reflectSlow(p, factor) {
@@ -173,7 +209,7 @@ G.Abilities = (() => {
     s.safeTime += dt;
     s.confidence = s.confidence.map(t => t - dt).filter(t => t > 1e-8);
     s.hasteT = Math.max(0, s.hasteT - dt); if (!s.hasteT) s.haste = 0;
-    for (const key of ['contactCd', 'telepathyCd', 'kindleT']) s[key] = Math.max(0, s[key] - dt);
+    for (const key of ['contactCd', 'telepathyCd', 'kindleT', 'justiceT']) s[key] = Math.max(0, s[key] - dt);
     if (has(p, 'sandveil') && weatherActive('sand')) {
       s.sandTick -= dt;
       while (s.sandTick <= 1e-8) { grantHaste(p); s.sandTick += 1; }
@@ -216,6 +252,7 @@ G.Abilities = (() => {
     e.staticT = Math.max(0, (e.staticT || 0) - dt);
     e.unnerveT = Math.max(0, (e.unnerveT || 0) - dt);
     e.fearT = Math.max(0, (e.fearT || 0) - dt);
+    e.repelT = Math.max(0, (e.repelT || 0) - dt);
     const b = e.abilityBurn;
     if (!b) return;
     const active = Math.min(dt, b.remaining);
@@ -236,6 +273,7 @@ G.Abilities = (() => {
     if (has(p, 'moxie')) return name + ' ×' + s.confidence.length;
     if (has(p, 'lightmetal') || has(p, 'sandveil')) return name + ' ×' + s.haste + ' · ' + Math.ceil(s.hasteT) + 's';
     if (has(p, 'flashfire')) return name + (s.kindleT > 0 ? ' · ' + G.T('Combustión') + ' +50% · ' + Math.ceil(s.kindleT) + 's' : '');
+    if (has(p, 'justified')) return name + (s.justiceT > 0 ? ' · ' + G.T('Justicia') + ' · ' + Math.ceil(s.justiceT) + 's' : '');
     if (has(p, 'hydration')) return name + (debuffImmune(p) ? ' ✓' : '');
     if (has(p, 'naturalcure')) return name + (s.naturalReady ? ' ✓' : ' · ' + Math.ceil(Math.max(0, 20 - s.safeTime)) + 's');
     if (has(p, 'regenerator')) return name + (s.safeTime >= 5 ? ' ✓' : ' · ' + Math.ceil(5 - s.safeTime) + 's');
@@ -247,7 +285,7 @@ G.Abilities = (() => {
     return name;
   }
   return { has, equipped, equip, state, buffDuration, attackBonus, speedBonus, slowImmune, debuffImmune, weatherActive, weatherSuppressed,
-           xpFactor, levelChoices, projectileSpeed, outgoingType, outgoingDamage,
+           xpFactor, levelChoices, projectileSpeed, outgoingType, outgoingDamage, cooldownRate, fieldDamage, move, suppressEffects, onLevel,
            enemyDamage, critMultiplier, canCast, updatePhase, movementFactor, onDamage, resetStage, saveLethal, onCast, onKill, WEATHER, DEBUFFS, status,
            pressure, slowStrength, slowFactor, beforeHurt, damageFactor, afterHurt,
            onHit, applyEffect, fireballDamage, reflectSlow, playerTick, enemyTick, healEnemy, PRESSURE_RADIUS };

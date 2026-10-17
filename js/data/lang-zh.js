@@ -1,6 +1,14 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Nuevas habilidades · v0.11.0": "新增特性 · v0.11.0",
+  "New abilities · v0.11.0": "新增特性 · v0.11.0",
+  "Nuevas medallas de Teselia, Alola y Galar: habilidades de escudos, crecimiento y combate.": "新增合众、阿罗拉和伽勒尔特性勋章，加入护盾交互、升级成长及战斗特性。",
+  "New Unova, Alola and Galar medals add shield, growth and combat abilities.": "新增合众、阿罗拉和伽勒尔特性勋章，加入护盾交互、升级成长及战斗特性。",
+  "Intimidación ahora aplica Repulsión con los golpes cuerpo a cuerpo.": "威吓调整为近战技能命中后附加呵退。",
+  "Intimidate now applies Repel with melee hits.": "威吓调整为近战技能命中后附加呵退。",
+  "Los aumentos de ataque y daño se suman en grupos separados; las defensas de habilidades se aplican después de la defensa normal.": "攻击力增幅与伤害增幅分别相加；特性减伤在原有减伤后乘算。",
+  "Attack and damage bonuses add in separate groups; ability defenses apply after normal defense.": "攻击力增幅与伤害增幅分别相加；特性减伤在原有减伤后乘算。",
   "IV por forma · v0.10.7": "按形态计算个体值 · v0.10.7",
   "Form-specific IVs · v0.10.7": "按形态计算个体值 · v0.10.7",
   "Cada forma evolucionada usa sus propios IV; las formas no registradas empiezan en 1/1/1.": "每个进化形态使用自己的个体值，未收录形态从 1/1/1 开始。",

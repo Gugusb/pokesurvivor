@@ -13,7 +13,20 @@ G.AbilityDefs = (() => {
     regenerator: { name: 'Regeneración', en: 'Regenerator', desc: 'Tras un breve descanso, recupera vida.', descEn: 'Recover HP after a short rest.' },
     naturalcure: { name: 'Cura Natural', en: 'Natural Cure', desc: 'Al descansar, se vuelve inmune a la ralentización.', descEn: 'After resting, become immune to slow.' },
     truant: { name: 'Ausente', en: 'Truant', desc: 'Tras varios lanzamientos, el siguiente tarda más pero recupera vida.', descEn: 'After several casts, the next takes longer but restores HP.' },
-    intimidate: { name: 'Intimidación', en: 'Intimidate', desc: 'Tus impactos causan Miedo y reducen el daño enemigo.', descEn: 'Your hits cause Fear and reduce enemy damage.' },
+    intimidate: { name: 'Intimidación', en: 'Intimidate', desc: 'Los golpes cuerpo a cuerpo frenan y debilitan al enemigo.', descEn: 'Melee hits slow and weaken the enemy.' },
+    justified: { name: 'Justiciero', en: 'Justified', desc: 'Recibir daño supereficaz aumenta temporalmente el ataque.', descEn: 'Taking super-effective damage temporarily raises attack.' },
+    prankster: { name: 'Bromista', en: 'Prankster', desc: 'Los movimientos de atributos se recargan más rápido.', descEn: 'Stat-buff moves cool down faster.' },
+    defiant: { name: 'Competitivo', en: 'Defiant', desc: 'Es inmune a las reducciones de ataque.', descEn: 'Immune to attack reductions.' },
+    turboblaze: { name: 'Turbollama', en: 'Turboblaze', desc: 'Los ataques hacen más daño a los escudos.', descEn: 'Attacks deal more damage to shields.' },
+    teravolt: { name: 'Terravoltaje', en: 'Teravolt', desc: 'Golpear un escudo inflige daño adicional que lo atraviesa.', descEn: 'Hitting a shield deals additional damage through it.' },
+    sandforce: { name: 'Poder Arena', en: 'Sand Force', desc: 'Los movimientos se recargan más rápido durante la tormenta de arena.', descEn: 'Moves cool down faster during sandstorms.' },
+    sheerforce: { name: 'Potencia Bruta', en: 'Sheer Force', desc: 'Los ataques pierden sus efectos secundarios, pero hacen más daño.', descEn: 'Attacks lose their secondary effects but deal more damage.' },
+    download: { name: 'Descarga de Datos', en: 'Download', desc: 'Al subir de nivel, mejora el atributo menos desarrollado.', descEn: 'Leveling up improves the least-developed stat.' },
+    voltabsorb: { name: 'Absorbe Elec', en: 'Volt Absorb', desc: 'Los ataques eléctricos curan en vez de causar daño.', descEn: 'Electric attacks heal instead of dealing damage.' },
+    intrepidsword: { name: 'Espada Indómita', en: 'Intrepid Sword', desc: 'Al subir de nivel, aumenta el ataque.', descEn: 'Leveling up raises attack.' },
+    dauntlessshield: { name: 'Escudo Recio', en: 'Dauntless Shield', desc: 'Al subir de nivel, recibe menos daño.', descEn: 'Leveling up reduces incoming damage.' },
+    unseenfist: { name: 'Puño Invisible', en: 'Unseen Fist', desc: 'Los golpes cuerpo a cuerpo pueden atravesar escudos y hacer más daño.', descEn: 'Melee hits can bypass shields and deal more damage.' },
+    transistor: { name: 'Transistor', en: 'Transistor', desc: 'Potencia el daño eléctrico de todos los combatientes.', descEn: 'Boosts Electric damage for all combatants.' },
     moxie: { name: 'Autoestima', en: 'Moxie', desc: 'Las bajas aumentan temporalmente el ataque. Puede acumularse.', descEn: 'KOs temporarily raise attack. This can stack.' },
     clearbody: { name: 'Cuerpo Puro', en: 'Clear Body', desc: 'Los beneficios temporales duran más.', descEn: 'Temporary buffs last longer.' },
     lightmetal: { name: 'Metal Liviano', en: 'Light Metal', desc: 'Al recibir daño, obtiene velocidad. Puede acumularse.', descEn: 'Taking damage grants speed. This can stack.' },
@@ -49,7 +62,11 @@ G.AbilityDefs = (() => {
     445: ['sandveil', 'roughskin'], 480: ['levitate'], 481: ['levitate'], 482: ['levitate'],
     483: ['pressure', 'telepathy'], 484: ['pressure', 'telepathy'], 485: ['flashfire', 'flamebody'], 486: ['slowstart'],
     487: ['pressure', 'telepathy'], 488: ['levitate'], 489: ['hydration'], 490: ['hydration'],
-    491: ['baddreams'], 492: ['naturalcure'], 493: ['multitype'], 494: ['victorystar']
+    491: ['baddreams'], 492: ['naturalcure'], 493: ['multitype'], 494: ['victorystar'],
+    638: ['justified'], 639: ['justified'], 640: ['justified'], 641: ['prankster', 'defiant'],
+    642: ['prankster', 'defiant'], 643: ['turboblaze'], 644: ['teravolt'], 645: ['sandforce', 'sheerforce'],
+    647: ['justified'], 649: ['download'], 807: ['voltabsorb'],
+    888: ['intrepidsword'], 889: ['dauntlessshield'], 892: ['unseenfist'], 894: ['transistor']
   };
   const LIST = Object.entries(byDex).flatMap(([dex, ids]) => ids.map(ability => ({
     id: dex + '-' + ability, dex: +dex, ability, rarity: 5, ...abilities[ability]
@@ -62,6 +79,8 @@ G.AbilityDefs = (() => {
   }
   G.I18n.add(Object.fromEntries(Object.values(abilities).flatMap(a => [[a.name, a.en], [a.desc, a.descEn]])));
   G.I18n.add({
+    'Justicia': 'Justice', 'Repulsión': 'Repel',
+    'Medallas de las regiones disponibles': 'Medals from available regions',
     'Gemas y medallas de cinco regiones': 'Gems and medals from five regions',
     'Sólo las especies con habilidades disponibles dan medallas; las demás dan Pokémon.': 'Only species with available abilities award medals; the rest award Pokémon.',
     'Premio de cinco estrellas garantizado en la tirada 70.': 'A five-star reward is guaranteed on pull 70.',
@@ -85,6 +104,25 @@ G.AbilityDefs = (() => {
     '¡Evasión!': 'Dodged!', '¡Fallo!': 'Miss!', '¡Sincronía!': 'Synchronize!'
   });
   G.I18n.addChinese({
+    'Medallas de las regiones disponibles': '已开放地区的特性勋章',
+    'Justiciero': '正义之心', 'Bromista': '恶作剧之心', 'Competitivo': '不服输', 'Turbollama': '涡轮火焰',
+    'Terravoltaje': '兆级电压', 'Poder Arena': '沙之力', 'Potencia Bruta': '强行', 'Descarga de Datos': '下载',
+    'Absorbe Elec': '蓄电', 'Espada Indómita': '不挠之剑', 'Escudo Recio': '不屈之盾', 'Puño Invisible': '无形拳',
+    'Transistor': '电晶体', 'Justicia': '正义', 'Repulsión': '呵退',
+    'Los golpes cuerpo a cuerpo frenan y debilitan al enemigo.': '近战技能命中后使敌人呵退，降低移速和攻击力。',
+    'Recibir daño supereficaz aumenta temporalmente el ataque.': '受到克制伤害后暂时提高攻击力。',
+    'Los movimientos de atributos se recargan más rápido.': '属性增益技能冷却更快。',
+    'Es inmune a las reducciones de ataque.': '免疫攻击力降低效果。',
+    'Los ataques hacen más daño a los escudos.': '攻击对护盾造成更多伤害。',
+    'Golpear un escudo inflige daño adicional que lo atraviesa.': '攻击护盾时额外造成穿盾伤害。',
+    'Los movimientos se recargan más rápido durante la tormenta de arena.': '沙暴天气下技能冷却更快。',
+    'Los ataques pierden sus efectos secundarios, pero hacen más daño.': '输出技能失去非伤害效果，但伤害提高。',
+    'Al subir de nivel, mejora el atributo menos desarrollado.': '升级时小幅强化成长最低的一项属性。',
+    'Los ataques eléctricos curan en vez de causar daño.': '免疫电属性伤害并恢复生命。',
+    'Al subir de nivel, aumenta el ataque.': '升级时小幅提高攻击力。',
+    'Al subir de nivel, recibe menos daño.': '升级时小幅提高额外减伤。',
+    'Los golpes cuerpo a cuerpo pueden atravesar escudos y hacer más daño.': '近战技能有概率穿过护盾，穿盾时伤害提高。',
+    'Potencia el daño eléctrico de todos los combatientes.': '提高全场电属性技能伤害。',
     'Los enemigos cercanos atacan con menos frecuencia.': '周围敌人的攻击频率降低。',
     'A veces esquiva ataques a distancia y recupera vida.': '有机会闪避远程攻击并恢复生命。',
     'Los ataques de contacto pueden ralentizar al atacante y fallar después.': '受到接触攻击时，可能使攻击者减速，其后续接触攻击可能失效。',

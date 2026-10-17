@@ -219,6 +219,7 @@ G.Game = (() => {
     syncTeam(t) {
       if (Math.abs(t.time - time) > 0.4) time = t.time;
       if (t.level > pl.level) G.Audio.sfx('xp');
+      for (let level = pl.level; level < t.level; level++) G.Abilities.onLevel(pl);
       pl.level = t.level; pl.xp = t.xp; pl.xpNext = t.xpNext;
       pl.kills = t.kills; pl.bosses = t.bosses; pl.coins = t.coins;
       if (t.t1 > pl.t1 || t.t10 > pl.t10) G.Audio.sfx('shiny');
@@ -948,7 +949,7 @@ G.Game = (() => {
     /** Abandona la partida en curso (p. ej. al cerrar sesión desde Ajustes). */
     quit() { if (state !== 'ui' && state !== 'over') quitRun(); },
     /** Para grabar vídeos: abre las cartas de subir de nivel. */
-    debugLevelUp() { tampered = true; pl.level++; pendingLevels++; },
+    debugLevelUp() { tampered = true; pl.level++; pl.xpNext = G.Player.xpFor(pl.level); G.Abilities.onLevel(pl); pendingLevels++; },
     debugItem(id) { if (G.Dev && G.Dev.canUse() && pl && G.Items.BY[id]) { tampered = true; onCollect({id:-1,kind:'item',value:id},pl); } },
     toUI() { state = 'ui'; Backdrop.restore(); },
     get state() { return state; }, get player() { return pl; }, st

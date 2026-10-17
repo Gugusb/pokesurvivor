@@ -21,6 +21,8 @@ G.Player = class Player {
     this.bodyH = G.Sprites.bodyHeight(mon.dex);
 
     this.atkMul = perks.atkMul || 1;
+    this.damageBonus = 0;
+    this.attackDebuff = 0; this.attackDebuffT = 0;
     this.spdMul = perks.spdMul || 1;
     this.cdMul = perks.cdMul || 1;
     this.dmgReduce = perks.dmgReduce || 0;
@@ -95,9 +97,11 @@ G.Player = class Player {
 
   // ---------------- stats efectivos ----------------
   buffStacks(b) { return G.Mega ? G.Mega.buffStacks(this, b.n) : b.n; }
-  get atk() { return this.baseAtk * this.atkMul * (1 + this.buffStacks(this.buffs.atk) * this.buffs.atk.amount + G.Abilities.attackBonus(this)); }
+  get atk() { return this.baseAtk * Math.max(0, this.atkMul + this.buffStacks(this.buffs.atk) * this.buffs.atk.amount +
+    G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
   get spd() {
-    const s = this.baseSpd * this.spdMul * (1 + this.buffStacks(this.buffs.spd) * this.buffs.spd.amount + G.Abilities.speedBonus(this));
+    const s = this.baseSpd * (this.spdMul + G.Abilities.state(this).growthSpeed) *
+      (1 + this.buffStacks(this.buffs.spd) * this.buffs.spd.amount + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return s * (G.Abilities.slowImmune(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this);
@@ -227,7 +231,7 @@ G.Player = class Player {
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
     const meta = G.Sprites.animMeta(this.spriteDex, anim);
     const len = meta ? meta.d.reduce((a, b) => a + b, 0) / 60 : 0.4;
-    const cd = Math.max(0.12, m.cd * this.cdMul / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
+    const cd = Math.max(0.12, m.cd * this.cdMul / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
     this.anim.play(anim, { speed: Math.max(1, len / (cd * 0.9)) });
     this.attackFace = 0.35;
   }
@@ -238,14 +242,17 @@ G.Player = class Player {
    * @param pure  daño que no baja con la defensa ni el cuerpo a cuerpo (Arceus)
    */
   hurt(amount, type = null, pure = false, source = { kind: 'environment' }) {
-    if (this.invuln > 0 || this.dead) return false;
+    if (this.dead || !(amount > 0)) return false;
     if (G.Dev && G.Dev.invincible) return false;
+    if (type === 'electric' && G.Abilities.has(this, 'voltabsorb')) { this.heal(this.maxHp * 0.25); return false; }
+    if (this.invuln > 0) return false;
     if (!G.Abilities.beforeHurt(this, source)) return false;
     let eff = null;
     if (type) {
       const k = G.Abilities.has(this, 'multitype') ? 1 : G.Types.mult(type, this.mon.types);
+      if (k === 0) return false;
       eff = G.Types.label(k);
-      amount *= k * G.Weather.mult(type);
+      amount *= k * G.Weather.mult(type) * G.Abilities.fieldDamage(type);
     }
     // Con un ataque cuerpo a cuerpo activo se recibe un 25 % menos: hay que
     // estar encima de los enemigos para pegar (iban muy por detrás).
@@ -284,6 +291,12 @@ G.Player = class Player {
     if (got >= 1) G.FX.dmgText(this.x, this.y - this.bodyH - 6, '+' + got, '#5fe08a');
   }
 
+  applyAttackDebuff(amount, duration) {
+    if (G.Abilities.has(this, 'defiant') || G.Abilities.debuffImmune(this) || !(amount > 0) || !(duration > 0)) return false;
+    this.attackDebuff = Math.max(this.attackDebuff, Math.min(1, amount));
+    this.attackDebuffT = Math.max(this.attackDebuffT, duration); return true;
+  }
+
   addMaxHp(amount) { amount *= G.Mega && G.Mega.active(this) ? G.Mega.HP : 1; this.maxHp += amount; this.hp += amount; }
 
   /** Devuelve cuántos niveles ha subido (pueden ser varios de golpe). */
@@ -293,6 +306,7 @@ G.Player = class Player {
     while (this.xp >= this.xpNext) {
       this.xp -= this.xpNext;
       this.level++;
+      G.Abilities.onLevel(this);
       this.xpNext = Player.xpFor(this.level);
       leveled++;
     }
@@ -338,6 +352,8 @@ G.Player = class Player {
     this.anim.update(dt);
     if (this.dead) return;
     G.Abilities.playerTick(this, dt);
+    this.attackDebuffT = Math.max(0, this.attackDebuffT - dt);
+    if (!this.attackDebuffT || G.Abilities.has(this, 'defiant') || G.Abilities.debuffImmune(this)) this.attackDebuff = this.attackDebuffT = 0;
     if (this.invuln > 0) this.invuln -= dt;
     if (this.flash > 0) this.flash -= dt;
     if (this.attackFace > 0) this.attackFace -= dt;
@@ -437,6 +453,7 @@ G.Player = class Player {
     if (n.hp < this.hp - 0.5 && !n.dead) this.flash = 0.14;
     this.hp = n.hp; this.maxHp = n.maxHp;
     this.ability = n.ability || null;
+    this.damageBonus = n.damageBonus || 0;
     this.magnet = n.mag || this.magnet;
     this.reviveT = n.rev || 0;
     if (n.dead && !this.dead) { this.dead = true; this.anim.play('Faint', { hold: true }); G.Projectiles.clearOrbs(this); }

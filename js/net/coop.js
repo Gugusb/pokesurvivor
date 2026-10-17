@@ -139,13 +139,14 @@ G.Coop = (() => {
             local.dead ? 1 : 0, m ? m.id : '', m ? m.lvl : 1, r1(local.magnet), r2(local.aim), r2(local.effectiveXpMul),
             r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq, local.ability || null,
             G.Mega && G.Mega.active(local) ? local.megaState.id : null, r2(local.megaState && local.megaState.left || 0),
-            G.Mega && G.Mega.hasStone(local) ? local.megaState.id : null];
+            G.Mega && G.Mega.hasStone(local) ? local.megaState.id : null, r2(local.damageBonus || 0)];
   }
 
   function readState(a) {
     return { x: a[0], y: a[1], ang: a[2], walk: a[3], hp: a[4], maxHp: a[5], dead: a[6], mv: a[7], ml: a[8],
              mag: a[9], aim: a[10], xpMul: a[11], rev: a[12], ch: a[13], ld: a[14], ability: a[15] || null,
-             mega: a[16] || null, megaLeft: a[17] || 0, stone: a[18] || null };
+             mega: a[16] || null, megaLeft: a[17] || 0, stone: a[18] || null,
+             damageBonus: Number.isFinite(a[19]) ? G.U.clamp(a[19], 0, 10) : 0 };
   }
 
   // ---------------- envío ----------------
@@ -173,7 +174,7 @@ G.Coop = (() => {
       if (e.dead || G.U.dist2(e.x, e.y, near.x, near.y) > r2n) continue;
       const a = ANIMS.indexOf(e.anim.cur);
       out.push([e.id, r1(e.x), r1(e.y), Math.ceil(e.hp), a < 0 ? 0 : a, e.anim.dir,
-                (e.burn > 0 || e.abilityBurn ? 1 : 0) | (e.poison > 0 ? 2 : 0) | (e.shield > 0 ? 4 : 0), r2(e.staticT || 0), r2(e.unnerveT || 0), r2(e.fearT || 0)]);
+                (e.burn > 0 || e.abilityBurn ? 1 : 0) | (e.poison > 0 ? 2 : 0) | (e.shield > 0 ? 4 : 0), r2(e.staticT || 0), r2(e.unnerveT || 0), r2(e.fearT || 0), r2(e.repelT || 0)]);
     }
     return out;
   }
@@ -260,6 +261,7 @@ G.Coop = (() => {
       m.state = msg.p; m.pl.net = readState(msg.p);
       const validAbility = G.AbilityDefs.medalsFor(m.pl.dex).some(a => a.ability === m.pl.net.ability);
       m.pl.ability = validAbility ? m.pl.net.ability : null;
+      m.pl.damageBonus = m.pl.net.damageBonus;
       if (G.Mega) G.Mega.sync(m.pl, m.pl.net.mega, m.pl.net.megaLeft, m.pl.net.stone);
       m.xpMul = m.pl.net.xpMul || 1; reconcile(from, m.pl.net);
     }
@@ -274,13 +276,16 @@ G.Coop = (() => {
           const e = G.EnemyMgr.get(ev[1]);
           if (!e || e.dead || e.remote) break;
           hitFrom = from;
-          e.hurt(ev[2], ev[3], ev[4], ev[5], ev[6], null, m.pl);
+          const def = G.Moves.BY_ID[ev[7]];
+          const attack = def ? { kind: def.kind, type: def.type } : {};
+          e.hurt(ev[2], ev[3], ev[4], ev[5], G.Abilities.suppressEffects(m.pl) ? 0 : ev[6], null, m.pl, attack);
           hitFrom = null;
           break;
         }
         case 's': {
           const e = G.EnemyMgr.get(ev[1]);
           if (!e || e.dead) break;
+          if (G.Abilities.suppressEffects(m.pl)) break;
           if (ev[2] === 'b') e.applyBurn(ev[3], m.pl);
           else if (ev[2] === 'p') e.applyPoison(ev[3], m.pl);
           else if (ev[2] === 's') e.applySlow(ev[3], ev[4] || 1.2);
@@ -288,7 +293,7 @@ G.Coop = (() => {
         }
         case 'ab': {
           const e = G.EnemyMgr.get(ev[1]);
-          const allowed = m.pl.ability === ev[2] || (m.pl.ability === 'intimidate' && ev[2] === 'fear') ||
+          const allowed = m.pl.ability === ev[2] || (m.pl.ability === 'intimidate' && ev[2] === 'repel') ||
             (m.pl.ability === 'serenegrace' && G.Abilities.DEBUFFS.includes(ev[2]));
           if (e && !e.dead && allowed && Number.isFinite(ev[3])) G.Abilities.applyEffect(e, ev[2], Math.max(0, Math.min(1e6, ev[3])), m.pl);
           break;
@@ -378,6 +383,7 @@ G.Coop = (() => {
       n.anim = a[4]; n.dir = a[5]; n.st = a[6];
       e.staticT = a[7] || 0; e.unnerveT = a[8] || 0;
       e.fearT = a[9] || 0;
+      e.repelT = a[10] || 0;
     }
   }
 
@@ -435,7 +441,7 @@ G.Coop = (() => {
   }
 
   // invitado
-  function hit(e, d, color, dx, dy, knock) { outEv.push(['h', e.id, d, color, r1(dx), r1(dy), knock || 0]); }
+  function hit(e, d, color, dx, dy, knock, attack = {}) { outEv.push(['h', e.id, d, color, r1(dx), r1(dy), knock || 0, attack.id || null]); }
   function status(e, kind, val, dur) { outEv.push(['s', e.id, kind, val, dur]); }
 
   // anfitrión

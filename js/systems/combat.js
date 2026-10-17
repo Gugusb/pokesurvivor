@@ -21,13 +21,13 @@ G.Combat = (() => {
   function tick(dt, pl, now) {
     if (pl.dead) return;
     if (!G.Abilities.canCast(pl)) {
-      for (const m of pl.activeGroup()) if (m.kind !== 'orbit') m.t = Math.max(0, m.t - dt * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1));
+      for (const m of pl.activeGroup()) if (m.kind !== 'orbit') m.t = Math.max(0, m.t - dt * G.Abilities.cooldownRate(pl, m) * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1));
       G.Projectiles.clearOrbs(pl); return;
     }
     const active = pl.activeGroup();
     if (G.Abilities.has(pl, 'innerfocus')) {
       // Los huecos inactivos sólo se recargan: nunca lanzan ataques por sí solos.
-      for (const m of pl.moves) if (!active.includes(m) && m.kind !== 'orbit') m.t = Math.max(0, m.t - dt * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1));
+      for (const m of pl.moves) if (!active.includes(m) && m.kind !== 'orbit') m.t = Math.max(0, m.t - dt * G.Abilities.cooldownRate(pl, m) * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1));
     }
     // Vínculos: todos los movimientos del hueco activo, cada uno con su recarga.
     for (const m of active) tickMove(dt, pl, m, now);
@@ -36,7 +36,7 @@ G.Combat = (() => {
   function tickMove(dt, pl, m, now) {
     if (m.kind === 'orbit') { orbit(pl, m, dt, now); return; }
 
-    m.t -= dt * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1);
+    m.t -= dt * G.Abilities.cooldownRate(pl, m) * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1);
     if (m.t > 0) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
     if (needsTarget(m) && !(pl.target && G.U.dist(pl.x, pl.y, pl.target.x, pl.target.y) <= reach(m))) {
@@ -56,6 +56,7 @@ G.Combat = (() => {
   function run(pl, m) {
     if (G.Mega) G.Mega.particles(pl);
     if (G.Mega) m = G.Mega.move(pl, m);
+    m = G.Abilities.move(pl, m);
     switch (m.kind) {
       case 'projectile': fireProjectiles(pl, m); break;
       case 'melee':      melee(pl, m); break;
@@ -88,7 +89,7 @@ G.Combat = (() => {
   }
 
   function payload(m) {
-    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type };
+    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, moveKind: m.kind, moveId: m.id };
   }
 
   /** Tabla de tipos × clima para un ataque de tipo `type` contra `e`. */
@@ -326,8 +327,10 @@ G.Combat = (() => {
     if (ghost) return;
     pl.x = sx + ca * len; pl.y = sy + sa * len;
     G.World.collide(pl);
-    pl.invuln = Math.max(pl.invuln || 0, 0.3);
-    if (G.Mega && G.Mega.active(pl)) pl.megaDashGuard = 0.6;
+    if (!G.Abilities.suppressEffects(pl)) {
+      pl.invuln = Math.max(pl.invuln || 0, 0.3);
+      if (G.Mega && G.Mega.active(pl)) pl.megaDashGuard = 0.6;
+    }
     const w = m.width || 34;
     const mx = sx + ca * len / 2, my = sy + sa * len / 2;
     for (const e of G.EnemyMgr.queryCircle(mx, my, len / 2 + w)) {
@@ -486,6 +489,7 @@ G.Combat = (() => {
 
   function orbit(pl, m, dt, now, isGhost = false) {
     if (G.Mega) m = G.Mega.move(pl, m);
+    m = G.Abilities.move(pl, m);
     const col = G.U.TYPE_COLOR[m.type];
     const want = Math.max(1, m.count | 0);
     // Cada movimiento de órbita tiene sus orbes (puede haber dos en un vínculo).
@@ -504,7 +508,7 @@ G.Combat = (() => {
         dmg: m.dmg * pl.atk,
         oa: (i / want) * 6.2832, orad: m.radius, ospeed: m.speed,
         rehit: Math.max(0.12, m.cd),
-        knock: m.knock || 0, burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, mtype: m.type
+        ...payload(m)
       });
     }
     const live = G.Projectiles.all().filter(mine);
@@ -549,8 +553,7 @@ G.Combat = (() => {
     const k = typeK(m.type, e, pl);
     const crit = isCrit(pl);
     dmg *= k * (crit ? G.Abilities.critMultiplier(pl) : 1);
-    e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Abilities.outgoingType(pl, m.type, e.types)), ghost ? null : pl);
-    const dealt = dmg * G.Abilities.outgoingDamage(pl);
+    const dealt = e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Abilities.outgoingType(pl, m.type, e.types)), ghost ? null : pl, m) || 0;
     if (!ghost) pl.onDealt(dealt);
     pl.dmgDealt += dealt;
     if (m.burn) e.applyBurn(m.burn, pl);
@@ -657,11 +660,11 @@ G.Combat = (() => {
 
         const crit = isCrit(pl);
         const k = (p.mtype ? typeK(p.mtype, e, pl) : 1) * (crit ? G.Abilities.critMultiplier(pl) : 1);
-        e.hurt(p.dmg * k, p.color, p.vx || (e.x - pl.x), p.vy || (e.y - pl.y), p.knock,
-               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(pl, p.mtype, e.types)) : null, pl);
+        const dealt = e.hurt(p.dmg * k, p.color, p.vx || (e.x - pl.x), p.vy || (e.y - pl.y), p.knock,
+               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(pl, p.mtype, e.types)) : null, pl, { id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile') }) || 0;
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
-        pl.dmgDealt += p.dmg * k * G.Abilities.outgoingDamage(pl);
-        pl.onDealt(p.dmg * k * G.Abilities.outgoingDamage(pl));
+        pl.dmgDealt += dealt;
+        pl.onDealt(dealt);
         if (p.burn) e.applyBurn(p.burn, pl);
         if (p.poison) e.applyPoison(p.poison, pl);
         if (p.slow) e.applySlow(p.slow);

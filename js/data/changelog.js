@@ -6,6 +6,12 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-17', title: ['Nuevas habilidades · v0.11.0', 'New abilities · v0.11.0'], new: [
+    ['Nuevas medallas de Teselia, Alola y Galar: habilidades de escudos, crecimiento y combate.', 'New Unova, Alola and Galar medals add shield, growth and combat abilities.']
+  ], chg: [
+    ['Intimidación ahora aplica Repulsión con los golpes cuerpo a cuerpo.', 'Intimidate now applies Repel with melee hits.'],
+    ['Los aumentos de ataque y daño se suman en grupos separados; las defensas de habilidades se aplican después de la defensa normal.', 'Attack and damage bonuses add in separate groups; ability defenses apply after normal defense.']
+  ], fix: [] },
   { d: '2026-10-17', title: ['IV por forma · v0.10.7', 'Form-specific IVs · v0.10.7'], new: [
     ['Cada forma evolucionada usa sus propios IV; las formas no registradas empiezan en 1/1/1.','Each evolved form uses its own IVs; unregistered forms start at 1/1/1.']
   ], chg: [], fix: [] },

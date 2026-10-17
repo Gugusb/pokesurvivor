@@ -4,7 +4,7 @@ G.AbilityGacha = (() => {
   function costOf(save, n) {
     return (n === 1 || n === 10) && Number.isFinite(save.abilityGems) && save.abilityGems >= n ? n : null;
   }
-  const GENS = [1, 2, 3, 4, 5];
+  const GENS = [...new Set(G.AbilityDefs.SPECIES.map(dex => G.DEX_BY[dex].gen))].sort((a, b) => a - b);
   function pool(rarity, gen = 1) { return GENS.includes(gen) ? G.Gacha.pool(rarity, gen) : []; }
   function roll(min = 1) {
     const rates = G.Gacha.RATES.filter(([r]) => r >= min);

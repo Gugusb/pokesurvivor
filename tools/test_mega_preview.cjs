@@ -85,7 +85,7 @@ test('preview rejects disabled debugging, co-op, dead players, different base sp
 
 test('Mega keys do not become catchable species, medals or ordinary sprite replacements',()=>{
   const s=context(),{G}=s,count=G.DEX.length,base=G.SPRITE_META[6];s.load('js/data/abilities.js');
-  assert.equal(G.AbilityDefs.LIST.length,63);assert.equal(G.DEX_BY['6-mega-x'],undefined);assert.equal(G.SPRITE_META[6],base);
+  assert.equal(G.AbilityDefs.LIST.length,81);assert.equal(G.DEX_BY['6-mega-x'],undefined);assert.equal(G.SPRITE_META[6],base);
   assert.equal(G.Sprites.sheet(6,'Idle').src,'assets/pokemon/6/Idle.png');
   assert.equal(G.Sprites.sheet('6-mega-x','Idle').src,'assets/mega/6-mega-x/Idle.png');assert.equal(G.DEX.length,count);
   const scep=G.MegaPreview.BY_ID['254-mega'];assert.equal(scep.aliases.Attack,'Idle');assert.ok(scep.partial);

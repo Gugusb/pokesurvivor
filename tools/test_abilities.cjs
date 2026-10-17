@@ -46,6 +46,163 @@ function context(lang = 'zh') {
 }
 const approx = (a, b) => assert.ok(Math.abs(a - b) < 1e-7, `${a} ≠ ${b}`);
 
+function combatContext() {
+  const s=context(),{G}=s;
+  G.VFX={forMove:()=>({pal:[]}),forType:()=>({})};
+  G.World.propsInCircle=()=>[];G.World.projectileBlock=()=>null;G.World.damageProp=noop;
+  s.load('js/entities/projectile.js');s.load('js/systems/combat.js');
+  return s;
+}
+
+test('Justified requires actual super-effective damage, refreshes five seconds and adds attack without stacking',()=>{
+  const s=context(),{G}=s,p=s.player(638,'justified');
+  G.Types.mult=type=>type==='fire'?2:1;p.maxHp=1000;p.hp=1000;p.atkMul=1.3;
+  p.buffs.atk={n:1,t:10,amount:.2};const base=p.baseAtk;
+  p.hurt(1,'normal',true,{kind:'ranged'});approx(p.atk,base*1.5);
+  p.invuln=0;p.hurt(1,'fire',true,{kind:'ranged'});approx(p.atk,base*1.9);
+  G.Abilities.playerTick(p,4);p.invuln=0;p.hurt(1,'fire',true,{kind:'contact'});
+  approx(p.atk,base*1.9);G.Abilities.playerTick(p,4.99);approx(p.atk,base*1.9);
+  G.Abilities.playerTick(p,.01);approx(p.atk,base*1.5);
+  p.invuln=1;p.hurt(1,'fire');approx(p.atk,base*1.5);
+});
+
+test('Prankster only accelerates buff cooldowns and Sand Force follows effective sand weather',()=>{
+  const s=combatContext(),{G}=s,p=s.player(641,'prankster');
+  const buff={kind:'buff',t:10},attack={kind:'melee',t:10};p.moves=[buff,attack];p.slots=[p.moves];
+  G.Combat.tick(1,p,0);approx(buff.t,8.85);approx(attack.t,9);
+  p.ability='sandforce';G.Weather.current={kind:'sand'};
+  G.Combat.tick(1,p,1);approx(buff.t,7.6);approx(attack.t,7.75);
+  const ray=new G.Player(G.DEX_BY[384]);ray.ability='airlock';s.players.push(ray);
+  G.Combat.tick(1,p,2);approx(attack.t,6.75);
+  G.Weather.current={kind:'rain'};ray.dead=true;G.Combat.tick(1,p,3);approx(attack.t,5.75);
+});
+
+test('Defiant rejects attack reductions without blocking damage or removal of positive buffs',()=>{
+  const s=context(),{G}=s,p=s.player(641,'defiant'),atk=p.atk;
+  assert.equal(p.applyAttackDebuff(.25,3),false);approx(p.atk,atk);
+  p.hurt(10,null,true);assert.ok(p.hp<p.maxHp);
+  p.ability=null;assert.equal(p.applyAttackDebuff(.25,3),true);approx(p.atk,atk*.75);
+  p.ability='defiant';approx(p.atk,atk);p.atkMul+=.4;p.atkMul-=.4;approx(p.atk,atk);
+});
+
+test('shield bonuses distinguish shield-only amplification, additional bypass and conditional melee bypass',()=>{
+  const s=context(),{G}=s,p=s.player(643,'turboblaze');
+  const hit=(e,n,kind='projectile')=>e.hurt(n,'#fff',0,0,0,null,p,{kind,type:'normal'});
+  let e=s.enemy();e.shield=200;hit(e,100);approx(e.shield,70);assert.equal(e.hp,500);
+  e=s.enemy();e.shield=65;hit(e,100);approx(e.shield,0);assert.equal(e.hp,450);
+  p.ability='teravolt';e=s.enemy();e.shield=200;hit(e,100);assert.equal(e.shield,100);assert.equal(e.hp,450);
+  e=s.enemy();e.shield=20;hit(e,100);assert.equal(e.shield,0);assert.equal(e.hp,370);
+  p.ability='unseenfist';e=s.enemy();e.shield=200;s.random([.299999]);hit(e,100,'melee');assert.equal(e.shield,200);assert.equal(e.hp,380);
+  e=s.enemy();e.shield=200;s.random([.3]);hit(e,100,'melee');assert.equal(e.shield,100);assert.equal(e.hp,500);
+  e=s.enemy();e.shield=200;hit(e,100);assert.equal(e.shield,100);assert.equal(e.hp,500);
+  e=s.enemy();hit(e,100,'melee');assert.equal(e.hp,400);
+  e=s.enemy();e.shield=200;hit(e,100,'dash');assert.equal(e.shield,100);assert.equal(e.hp,500);
+});
+
+test('Sheer Force strips real melee and projectile debuffs, knockback and drain while preserving buff moves',()=>{
+  const s=combatContext(),{G}=s,p=s.player(645,'sheerforce'),e=s.enemy();e.x=25;p.aim=0;p.target=e;
+  const m=G.Moves.instance('tackle');Object.assign(m,{burn:1,poison:1,slow:.5,knock:200});
+  p.moves=[m];p.slots=[[m]];G.Combat.tick(0,p,0);
+  assert.equal(e.maxHp-e.hp,Math.round(m.dmg*p.atk*1.15));assert.equal(e.burn,0);assert.equal(e.poison,0);assert.equal(e.slow,0);assert.equal(e.kx,0);
+  assert.equal(m.burn,1);assert.equal(m.knock,200);
+  const ember=G.Moves.instance('ember');p.moves=[ember];p.slots=[[ember]];G.Combat.tick(0,p,1);
+  const shot=G.Projectiles.all()[0];assert.equal(shot.burn,0);assert.equal(shot.moveId,'ember');
+  shot.x=e.x;shot.y=e.y;const before=e.hp;G.Combat.resolve(.01,p,2);
+  assert.equal(before-e.hp,Math.round(ember.dmg*p.atk*1.15));assert.equal(e.burn,0);
+  p.hp=10;const aura=G.Moves.instance('giga-drain');p.moves=[aura];p.slots=[[aura]];G.Combat.tick(0,p,3);assert.equal(p.hp,10);
+  const buff={kind:'buff',stat:'atk',amount:.2,dur:5,stacks:3};assert.equal(G.Abilities.move(p,buff),buff);
+});
+
+test('level growth procs once for every XP level and extra card choices never create growth',()=>{
+  const s=context(),{G}=s,p=s.player(888,'intrepidsword'),base=p.atk;
+  const cost=G.Player.xpFor(1)+G.Player.xpFor(2)+G.Player.xpFor(3);
+  assert.equal(p.gainXp(cost),3);approx(p.atk,base*1.06);
+  G.Abilities.levelChoices(p);G.Abilities.levelChoices(p);approx(p.atk,base*1.06);
+  p.ability='dauntlessshield';p.gainXp(p.xpNext);p.maxHp=p.hp=100;p.dmgReduce=.4;
+  p.hurt(100,null,false,{kind:'ranged'});approx(p.hp,100-60*.99);
+  p.invuln=0;p.hp=100;p.hurt(100,null,true,{kind:'attack'});approx(p.hp,1);
+});
+
+test('Download compares normalized permanent growth and can improve each of five stats',()=>{
+  for(let pick=0;pick<5;pick++){
+    const s=context(),{G}=s,p=s.player(649,'download'),st=G.Abilities.state(p);
+    const baseHp=G.MonProgression.stats(p.dex).hp;p.maxHp=p.hp=baseHp*1.2;
+    p.atkMul=p.spdMul=1.2;p.cdMul=1/1.2;p.dmgReduce=1-1/1.2;
+    s.random([(pick+.01)/5]);const hp=p.maxHp;G.Abilities.onLevel(p);
+    assert.equal(st.downloadLast,['hp','atk','spd','cd','def'][pick]);
+    if(pick===0)approx(p.maxHp,hp+baseHp*.02);
+    if(pick===1)approx(p.atk,p.baseAtk*1.22);
+    if(pick===2)approx(p.spd,p.baseSpd*1.22);
+    if(pick===3)approx(G.Abilities.cooldownRate(p,{kind:'melee'}),1.02);
+    if(pick===4)approx(G.Abilities.damageFactor(p,{kind:'attack'}),.98);
+    p.buffs.atk={n:50,t:5,amount:1};p.buffs.spd={n:50,t:5,amount:1};
+    G.Abilities.onLevel(p);assert.notEqual(st.downloadLast,['hp','atk','spd','cd','def'][pick]);
+  }
+});
+
+test('Volt Absorb heals every Electric hit without damage, invulnerability, damage timers or lethal triggers',()=>{
+  const s=context(),{G}=s,p=s.player(807,'voltabsorb');p.hp=10;p.maxHp=100;
+  const st=G.Abilities.state(p);st.safeTime=9;p.invuln=1;
+  assert.equal(p.hurt(10000,'electric',true,{kind:'ranged'}),false);assert.equal(p.hp,35);
+  p.hurt(10000,'electric');assert.equal(p.hp,60);assert.equal(st.safeTime,9);assert.equal(p.dead,false);
+  p.invuln=0;p.hurt(1,'normal',true);assert.equal(p.hp,59);assert.equal(st.safeTime,0);
+});
+
+test('Intimidate applies Repel only on melee damage, refreshes three seconds and leaves old Fear independent',()=>{
+  const s=combatContext(),{G}=s,p=s.player(373,'intimidate'),e=s.enemy();e.x=25;p.target=e;p.aim=0;
+  e.hurt(1,'#fff',0,0,0,null,p,{kind:'projectile'});assert.equal(e.repelT,undefined);
+  const m=G.Moves.instance('tackle');p.moves=[m];p.slots=[[m]];G.Combat.tick(0,p,0);
+  assert.equal(e.repelT,3);approx(G.Abilities.slowFactor(e),.5);approx(G.Abilities.enemyDamage(e,100),75);
+  G.Abilities.enemyTick(e,2);m.t=0;G.Combat.tick(0,p,1);assert.equal(e.repelT,3);
+  G.Abilities.applyEffect(e,'fear');approx(G.Abilities.enemyDamage(e,100),75);
+  G.Abilities.enemyTick(e,3);approx(G.Abilities.slowFactor(e),1);approx(G.Abilities.enemyDamage(e,100),100);
+});
+
+test('attack and damage bonuses sum in separate buckets; Electric field affects both sides once and never stacks',()=>{
+  const s=context(),{G}=s,p=s.player(894,'transistor');
+  s.load('js/data/items.js');s.load('js/systems/levelup.js');
+  p.atkMul=1.4;G.LevelUp.STATS.find(x=>x.id==='atk').apply(p);p.buffs.atk={n:1,t:5,amount:.2};
+  approx(p.atk,p.baseAtk*1.7);p.equip('lifeorb');approx(p.atk,p.baseAtk*1.7);
+  approx(G.Abilities.outgoingDamage(p,{kind:'projectile',type:'electric'}),1.4);
+  let e=s.enemy();e.hurt(100,'#fff',0,0,0,null,p,{kind:'projectile',type:'electric'});assert.equal(e.hp,360);
+  const ally=new G.Player(G.DEX_BY[894]);ally.ability='transistor';s.players.push(ally);
+  approx(G.Abilities.outgoingDamage(p,{type:'electric'}),1.4);
+  p.maxHp=p.hp=200;p.hurt(100,'electric',true,{kind:'ranged'});approx(p.hp,90);
+  p.dead=ally.dead=true;approx(G.Abilities.fieldDamage('electric'),1);
+  p.equip(null);approx(p.damageBonus,0);
+});
+
+test('new medals remain species-specific and obtainable in Alola and Galar banners',()=>{
+  const s=context(),{G}=s,save=G.DB.save;
+  assert.deepEqual(Array.from(G.AbilityGacha.GENS),[1,2,3,4,5,7,8]);
+  for(const [gen,dex] of [[7,807],[8,888],[8,889],[8,892],[8,894]]){
+    const pool=G.AbilityGacha.pool(5,gen),i=pool.findIndex(m=>m.dex===dex);assert.ok(i>=0);
+    save.abilityGems=1;save.abilityPity[gen]=69;s.random([(i+.01)/pool.length,0]);
+    const r=G.AbilityGacha.pull(save,1,gen)[0];assert.equal(r.dex,dex);assert.ok(r.medal);assert.equal(G.AbilityDefs.BY_ID[r.medal].dex,dex);
+  }
+  for(const lang of ['zh','en']){const localized=context(lang).G;for(const dex of [638,641,643,644,645,649,807,888,889,892,894]){
+    for(const m of localized.AbilityDefs.medalsFor(dex)){assert.ok(localized.T(m.name));assert.ok(localized.T(m.desc));if(lang==='zh'){assert.match(localized.T(m.name),/[\u4e00-\u9fff]/);assert.match(localized.T(m.desc),/[\u4e00-\u9fff]/);}else assert.equal(localized.T(m.name),m.en);}
+  }}
+});
+
+test('co-op carries projectile move identity and host resolves shield abilities and Sheer Force once',()=>{
+  const s=combatContext(),{G}=s,p=s.player(644,'teravolt'),remote=s.enemy();remote.remote=true;remote.x=25;
+  let sent;G.Coop.hit=(...args)=>sent=args;
+  p.aim=0;p.target=remote;const m=G.Moves.instance('ember');p.moves=[m];p.slots=[[m]];G.Combat.tick(0,p,0);
+  const shot=G.Projectiles.all()[0];shot.x=25;shot.y=0;G.Combat.resolve(.01,p,1);assert.equal(sent[6].id,'ember');
+  let receive;G.Net={uid:'host',on:fn=>receive=fn,onPeer:noop};G.startMoveOf=()=> 'tackle';G.Sprites.preload=noop;
+  G.Game.st={time:10};G.Game.player=p;G.EnemyMgr.get=id=>s.enemies.find(e=>e.id===id);s.load('js/net/coop.js');
+  G.Coop.begin({host:'host',members:[{uid:'host',dex:644},{uid:'volt',dex:644},{uid:'fist',dex:892},{uid:'force',dex:645}]},p,{});
+  const frame=ability=>[0,0,0,0,100,100,0,'tackle',1,78,0,1,0,0,0,ability];
+  let e=s.enemy();e.shield=200;receive('volt',{k:'f',p:frame('teravolt'),ev:[['h',e.id,100,'#fff',0,0,0,'ember']]});assert.equal(e.hp,450);assert.equal(e.shield,100);
+  e=s.enemy();e.shield=200;s.random([.299999]);receive('fist',{k:'f',p:frame('unseenfist'),ev:[['h',e.id,100,'#fff',0,0,0,'tackle']]});assert.equal(e.hp,380);assert.equal(e.shield,200);
+  e=s.enemy();e.shield=200;s.random([.3]);receive('fist',{k:'f',p:frame('unseenfist'),ev:[['h',e.id,100,'#fff',0,0,0,'tackle']]});assert.equal(e.hp,500);assert.equal(e.shield,100);
+  e=s.enemy();receive('force',{k:'f',p:frame('sheerforce'),ev:[['h',e.id,100,'#fff',1,0,200,'ember'],['s',e.id,'b',1]]});assert.equal(e.hp,385);assert.equal(e.kx,0);assert.equal(e.burn,0);
+  e=s.enemy();const gear=frame('sheerforce');gear[19]=.3;
+  receive('force',{k:'f',p:gear,ev:[['h',e.id,100,'#fff',0,0,0,'ember']]});assert.equal(e.hp,355);
+  G.Coop.end();
+});
+
 test('repeated Pokémon rewards keep the highest IV per stat and report only real improvements', () => {
   const s = context(), { G } = s;
   s.random([0, 0, 0]);
@@ -108,15 +265,15 @@ test('max upgrade spends the exact remaining cost once and rejects insufficient 
   assert.ok(G.Upgrades.buy(6, 'hp')); assert.equal(G.DB.upgradesOf(4).hp, 1); assert.equal(save.coins, 0);
 });
 
-test('Sinnoh medals cover all fifteen five-stars; Unova currently replaces only Victini without changing odds', () => {
+test('Sinnoh stays complete and newly designed Unova medals replace only configured species without changing odds', () => {
   const s=context(),{G}=s,save=G.DB.save;
   assert.equal(G.AbilityDefs.SPECIES.filter(d=>G.DEX_BY[d].gen===4).length,15);
-  assert.equal(G.AbilityDefs.LIST.filter(m=>G.DEX_BY[m.dex].gen===5).length,1);
+  assert.equal(G.AbilityDefs.LIST.filter(m=>G.DEX_BY[m.dex].gen===5).length,14);
   const pool=G.AbilityGacha.pool(5,5);
   for(let i=0;i<pool.length;i++) {
     save.abilityGems=1;save.abilityPity[5]=69;s.random([(i+.01)/pool.length,.5]);
     const r=G.AbilityGacha.pull(save,1,5)[0];assert.equal(r.dex,pool[i].dex);
-    assert.equal(!!r.medal,r.dex===494);assert.equal(save.abilityPity[5],0);
+    assert.equal(!!r.medal,G.AbilityDefs.medalsFor(r.dex).length>0);assert.equal(save.abilityPity[5],0);
   }
   save.abilityMedals['483-telepathy']={at:1};G.Abilities.equip(save,483,'483-telepathy');
   G.DB._test.sanitize(save);assert.equal(G.Abilities.equipped(save,483),'telepathy');
@@ -322,8 +479,8 @@ test('Truant doubles every fourth real cast cooldown and heals once, including l
 
 test('Fear refreshes three seconds without stacking and reduces shots and telegraphed attacks by 20%', () => {
   const s = context(), { G } = s, p = s.player(373, 'intimidate'), e = s.enemy(), shots = [], hazards = [];
-  G.Abilities.onHit(p,e); assert.equal(e.fearT, 3); approx(G.Abilities.enemyDamage(e, 100),80);
-  G.Abilities.enemyTick(e,2); G.Abilities.onHit(p,e); assert.equal(e.fearT,3);
+  G.Abilities.applyEffect(e,'fear',0,p); assert.equal(e.fearT, 3); approx(G.Abilities.enemyDamage(e, 100),80);
+  G.Abilities.enemyTick(e,2); G.Abilities.applyEffect(e,'fear',0,p); assert.equal(e.fearT,3);
   G.Projectiles.spawn = o => {shots.push(o); return o;}; G.VFX = {forType: () => ({})};
   G.Hazards = {add: o => hazards.push(o)};
   e.shoot(1,0); approx(shots[0].dmg,e.shotDmg()*.8);
@@ -436,7 +593,7 @@ test('combat contact honors Fear, and teammate visual projectiles never damage o
   G.Combat.resolve(.1,p,2);approx(p.hp,before-8);
 });
 
-test('co-op host validates weather requests, applies on-hit Fear and credits the actual peer killer', () => {
+test('co-op host validates weather requests, applies melee Repel and credits the actual peer killer', () => {
   const s=context(),{G}=s;let receive;let time=40;const calls=[];
   G.Net={uid:'host',on:fn=>{receive=fn;},onPeer:noop};G.startMoveOf=()=> 'confusion';G.Sprites.preload=noop;
   G.Game.st={get time(){return time;}};G.EnemyMgr.get=id=>s.enemies.find(e=>e.id===id);
@@ -447,7 +604,7 @@ test('co-op host validates weather requests, applies on-hit Fear and credits the
   receive('rain',{k:'f',p:frame('drizzle'),ev:[['aw','rain'],['aw','rain'],['aw','sun']]});
   assert.deepEqual(calls,[['rain',20]]);time=80;
   receive('rain',{k:'f',p:frame('drizzle'),ev:[['aw','rain']]});assert.equal(calls.length,2);
-  const e=s.enemy();receive('fear',{k:'f',p:frame('intimidate'),ev:[['h',e.id,10,'#fff',0,0,0]]});assert.equal(e.fearT,3);
+  const e=s.enemy();receive('fear',{k:'f',p:frame('intimidate'),ev:[['h',e.id,10,'#fff',0,0,0,'tackle']]});assert.equal(e.repelT,3);
   receive('fear',{k:'f',p:frame('moxie'),ev:[['h',e.id,1000,'#fff',0,0,0]]});
   assert.ok(G.Coop.mate('fear').q.some(ev=>ev[0]==='ak'&&ev[1]===e.id));
   assert.equal(G.Abilities.state(p).confidence.length,0);G.Coop.end();
@@ -462,9 +619,9 @@ test('co-op guest receives deduplicated Moxie kill credit from host', () => {
   receive('host',frame);receive('host',frame);assert.equal(G.Abilities.state(p).confidence.length,1);G.Coop.end();
 });
 
-test('63 independent medals; ownership alone does not enable an ability; one equipped', () => {
+test('81 independent medals; ownership alone does not enable an ability; one equipped', () => {
   const s = context(), { G } = s, save = G.DB.save;
-  assert.equal(G.AbilityDefs.LIST.length, 63);
+  assert.equal(G.AbilityDefs.LIST.length, 81);
   save.owned[144] = { at: 1 }; assert.equal(G.Abilities.equipped(save, 144), null);
   assert.equal(G.Abilities.equip(save, 144, '144-pressure'), false);
   save.abilityMedals['144-pressure'] = { at: 1 }; save.abilityMedals['144-snowcloak'] = { at: 2 };

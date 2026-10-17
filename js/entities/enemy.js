@@ -102,39 +102,49 @@
     }
 
     /** @param eff  'super' | 'weak' | null (tabla de tipos, sólo para enseñarlo) */
-    hurt(amount, color = '#fff', dirX = 0, dirY = 0, knock = 0, eff = null, attacker = null) {
-      if (this.dead) return;
+    hurt(amount, color = '#fff', dirX = 0, dirY = 0, knock = 0, eff = null, attacker = null, attack = {}) {
+      if (this.dead || !(amount > 0)) return 0;
+      const shielded = this.shield > 0;
+      const bypass = !this.remote && shielded && attacker && attack.kind === 'melee' &&
+        G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
-      if (!this.remote && attacker) amount *= G.Abilities.outgoingDamage(attacker);
+      if (!this.remote && attacker) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass);
       if (!this.remote && this.mega) amount /= 1.3;
       const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
       // quien decide si cae. Aquí sólo se ve (número, destello y animación).
       if (this.remote) {
-        G.Coop.hit(this, d, color, dirX, dirY, knock);
+        G.Coop.hit(this, d, color, dirX, dirY, knock, attack);
         this.hp = Math.max(1, this.hp - d);
         this.showHurt(d, color, dirX, dirY, eff);
-        return;
+        return d;
       }
-      // Escudo: absorbe primero.
-      if (this.shield > 0) {
-        const a = Math.min(this.shield, d);
-        this.shield -= a;
-        if (a >= d) { G.FX.dmgText(this.x, this.y - this.bodyH - 4, d, '#9fd8ff'); this.flash = 0.05; return; }
-        amount = d - a;
+      let hpDamage = d, shieldDamage = 0;
+      if (shielded && !bypass) {
+        const shieldFactor = G.Abilities.has(attacker, 'turboblaze') && attack.kind ? 1.3 : 1;
+        shieldDamage = Math.min(this.shield, d * shieldFactor);
+        this.shield -= shieldDamage;
+        hpDamage = Math.max(0, d - shieldDamage / shieldFactor);
+        if (G.Abilities.has(attacker, 'teravolt') && attack.kind) hpDamage += d * 0.5;
       }
-      this.hp -= Math.max(1, Math.round(amount));
+      hpDamage = Math.round(hpDamage);
+      if (!hpDamage) {
+        G.FX.dmgText(this.x, this.y - this.bodyH - 4, Math.round(shieldDamage), '#9fd8ff'); this.flash = 0.05;
+        return shieldDamage;
+      }
+      this.hp -= hpDamage;
       if (attacker) this.lastAttacker = attacker;
-      if (attacker) G.Abilities.onHit(attacker, this);
-      G.Judgment.noteDmg(amount, this);
-      this.showHurt(d, color, dirX, dirY, eff);
+      if (attacker) G.Abilities.onHit(attacker, this, attack);
+      G.Judgment.noteDmg(hpDamage, this);
+      this.showHurt(hpDamage, color, dirX, dirY, eff);
       if (knock > 0 && !this.boss) {
         const [nx, ny] = G.U.norm(dirX, dirY);
         this.kx += nx * knock;
         this.ky += ny * knock;
       }
-      if (G.Coop.isHost) G.Coop.hurtShown(this, d, color);
+      if (G.Coop.isHost) G.Coop.hurtShown(this, hpDamage, color);
       if (this.hp <= 0) this.die();
+      return hpDamage + shieldDamage;
     }
 
     /** Lo que se VE al recibir un golpe. */
@@ -228,6 +238,7 @@
       this.staticT = Math.max(0, (this.staticT || 0) - dt);
       this.unnerveT = Math.max(0, (this.unnerveT || 0) - dt);
       this.fearT = Math.max(0, (this.fearT || 0) - dt);
+      this.repelT = Math.max(0, (this.repelT || 0) - dt);
       this.bob += dt * 6;
       if (this.shiny) {
         this.sparkT -= dt;
@@ -750,6 +761,7 @@
       if (SUP[this.behavior]) G.Icons.draw(ctx, SUP[this.behavior], Math.round(this.x - 6), Math.round(this.y - this.bodyH - (this.hp < this.maxHp ? 26 : 18)), 12);
       if (this.staticT > 0 || this.unnerveT > 0) G.Icons.draw(ctx, this.staticT > 0 ? 'type:electric' : 'type:psychic', Math.round(this.x + 8), Math.round(this.y - this.bodyH - 25), 12);
       if (this.fearT > 0) G.Icons.draw(ctx, 'type:dark', Math.round(this.x - 18), Math.round(this.y - this.bodyH - 25), 12);
+      if (this.repelT > 0) G.Icons.draw(ctx, 'type:fighting', Math.round(this.x - 18), Math.round(this.y - this.bodyH - 25), 12);
 
       if (this.boss || this.hp < this.maxHp) {
         const w = this.boss ? 90 : Math.max(22, this.r * 2);
