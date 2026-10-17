@@ -6,29 +6,32 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-17', title: ['Descripciones simplificadas · v0.10.3', 'Simplified descriptions · v0.10.3'], new: [
+    ['Las descripciones de habilidades y sistemas son ahora más breves y fáciles de leer; los detalles internos se reservan para el juego.','Ability and system descriptions are now shorter and easier to scan; internal details remain in gameplay.']
+  ], chg: [], fix: [] },
   { d: '2026-10-17', title: ['Visualización de IV simplificada · v0.10.2', 'Simplified IV display · v0.10.2'], new: [
     ['La ficha de la Pokédex muestra ahora solo los valores IV de 1 a 31; los modificadores internos siguen aplicándose en combate.',
      'Pokédex details now show only IV values from 1 to 31; internal modifiers remain active in combat.']
   ], chg: [], fix: [] },
   { d: '2026-10-17', title: ['Todas las evoluciones · v0.10.1', 'All evolutions · v0.10.1'], new: [
-    ['Las 318 familias evolutivas disponibles cubren 775 Pokémon del catálogo. Cada partida empieza en la primera forma y evoluciona en los niveles 6 y 15 siguiendo la ruta del Pokémon elegido; evolucionar concede una elección de movimiento adicional.',
-     'All 318 available evolution families now cover 775 Pokédex entries. Every run starts at the first form and evolves at levels 6 and 15 along the route of the chosen Pokémon; each evolution grants one extra move choice.']
+    ['Las rutas evolutivas del catálogo están conectadas. Cada partida comienza en la primera forma y evoluciona durante el progreso, con una elección de movimiento adicional.',
+     'Evolution routes across the catalog are connected. Runs begin in the first form and evolve as you progress, with an extra move choice.']
   ], chg: [], fix: [] },
   { d: '2026-10-17', title: ['Valores individuales y capturas · v0.10.0', 'Individual values and captures · v0.10.0'], new: [
     ['Cada Pokémon tiene valores individuales y puede evolucionar durante la partida. También puedes capturar Pokémon salvajes y revisarlos al terminar la partida.',
      'Each Pokémon has individual values and can evolve during a run. You can also capture wild Pokémon and review them when the run ends.']
   ], chg: [], fix: [] },
   { d: '2026-10-17', title: ['Dificultad más asequible · v0.9.2', 'Easier difficulty scaling · v0.9.2'], new: [], chg: [
-    ['Corrige el ajuste anterior: la curva completa se multiplica por 0,7 en vida y 0,8 en ataque (la estrella 1 baja de 0,86× a 0,60× de vida), conservando el crecimiento original por estrella.',
-     'Fixes the previous change: the whole curve is scaled to 0.7 HP and 0.8 damage (star 1 drops from 0.86× to 0.60× HP), keeping the original per-star growth.']
+    ['Ajusta toda la curva de dificultad para que las partidas sean más asequibles.',
+     'Adjusts the full difficulty curve to make runs more approachable.']
   ], fix: [] },
   { d: '2026-10-16', title: ['Dificultad, ingresos y doble velocidad · v0.9.0', 'Difficulty, offline income and double speed · v0.9.0'], new: [
-    ['Las cuentas registradas ganan ingresos sin conexión: de 100 a 5000 monedas/hora según la colección y los Shinies. Los Shinies aumentan los vales (media 1–5/h) y gemas de habilidad (0,5–2/h), con liquidación automática al volver.',
-     'Registered accounts earn offline income: 100–5000 coins/hour based on collection and Shinies. Shinies increase ticket drops (expected 1–5/h) and Ability Gems (0.5–2/h), automatically settled on return.'],
+    ['Las cuentas registradas ganan ingresos sin conexión según su colección; los Shinies aumentan las recompensas especiales y todo se liquida al volver.',
+      'Registered accounts earn offline income based on their collection; Shinies improve special rewards, settled automatically on return.'],
     ['Cambia entre 1× y 2× en el menú de pausa o con V. Acelera el combate y el tiempo de la partida; los ingresos sin conexión usan tiempo real. En grupo lo decide el anfitrión.',
      'Switch between 1× and 2× in the pause menu or with V. Combat and run time accelerate; offline income uses real time. The co-op host controls speed.'],
-    ['Elige de 1 a 8 estrellas junto a Jugar. 4 estrellas conserva el equilibrio original; cada estrella multiplica la vida enemiga por 1,05 y su ataque por 1,03. Sobrevive más de 20 minutos para ganar y desbloquear la siguiente; puedes seguir jugando.',
-     'Choose 1–8 stars beside Play. 4 stars preserves the original balance; each star multiplies enemy HP by 1.05 and attack by 1.03. Survive more than 20 minutes to win and unlock the next star; you can keep playing.'],
+    ['Elige de 1 a 8 estrellas junto a Jugar. Las estrellas más altas son más difíciles; sobrevive 20 minutos para ganar y desbloquear la siguiente.',
+      'Choose 1–8 stars beside Play. Higher stars are harder; survive 20 minutes to win and unlock the next one.'],
     ['Cada Pokémon guarda sus ocho medallas y su mejor tiempo por dificultad. La primera victoria da un marco dorado, vencer 5 estrellas da esmeralda y reunir las ocho medallas da rubí. La ficha muestra el récord en su mayor dificultad intentada.',
      'Each Pokémon tracks eight medals and best time per difficulty. First victory grants a gold frame, clearing 5 stars grants emerald, and all eight medals grant ruby. Details show the record at its highest attempted difficulty.']
   ], chg: [
@@ -36,21 +39,21 @@ G.CHANGELOG = [
      'Debug runs do not grant medals or unlocks. Co-op uses one shared difficulty limited by every member’s unlocked progress.']
   ], fix: [] },
   { d: '2026-10-16', title: ['Elecciones de nivel mejoradas · v0.8.1', 'Improved level-up choices · v0.8.1'], new: [], chg: [
-    ['Los movimientos aprendidos aparecen con más frecuencia y ganan peso con su nivel. Si una oferta no incluye una mejora aprendida, la siguiente la garantiza, también al renovar; no se aplica si todos están al máximo.',
-     'Learned moves appear more often, with increasing weight at higher levels. After an offer without a learned upgrade, the next guarantees one, including rerolls; maxed-out moves are exempt.'],
-    ['Las categorías se eligen con pesos 5:3:2 para ataques, atributos permanentes y movimientos de beneficio. Las evoluciones de movimientos dejan de ser obligatorias y tienen menos peso.',
-     'Category weights are 5:3:2 for attacks, permanent stats and buff moves. Ultimate move evolutions are no longer guaranteed and have lower weight.']
+    ['Los movimientos aprendidos aparecen con más frecuencia y las mejoras se reparten de forma más natural, con una garantía si una ronda no ofrece ninguna.',
+      'Learned moves appear more often and upgrades are distributed more naturally, with a guarantee after a round without one.'],
+    ['Las cartas favorecen los ataques y mantienen variedad entre mejoras y beneficios.',
+      'Cards favor attacks while keeping variety among upgrades and buffs.']
   ], fix: [] },
   { d: '2026-10-16', title: ['Megapiedras y megaevolución · v0.8.0', 'Mega Stones and Mega Evolution · v0.8.0'], new: [
-    ['Un 20% de las grietas contienen uno de los 36 jefes Mega disponibles. Al vencerlo, hay un 5% de obtener su Megapiedra permanente; se equipa en la ficha del Pokémon.',
-     '20% of rifts contain one of 36 available Mega bosses. Defeating it has a 5% chance to award its permanent Mega Stone; equip it in the Pokémon details.'],
-    ['Pulsa F o el nuevo botón a la izquierda de los movimientos con 120 de energía: megaevoluciona durante 60s, cambia sus tipos, gana ×1,3 vida, ×1,5 daño y recibe daño ÷1,3.',
-     'Press F or the new button left of the moves at 120 energy: Mega Evolve for 60s, change types, gain ×1.3 HP and ×1.5 damage, and take damage ÷1.3.'],
+    ['Encuentra Mega Stones en las grietas y equípalas en la ficha del Pokémon.',
+      'Find Mega Stones in rifts and equip them in the Pokémon details.'],
+    ['Activa Mega cuando esté listo para obtener una mejora temporal y efectos especiales.',
+      'Activate Mega when ready for a temporary upgrade and special effects.'],
     ['Las 15 familias de movimientos tienen mejoras Mega temporales, una paleta especial y partículas. La transformación empuja a los enemigos cercanos, incluidos los jefes.',
      'All 15 move families receive temporary Mega enhancements, a special palette and particles. Transforming pushes nearby enemies, including bosses.']
   ], chg: [
-    ['La energía sube 1/s y las derrotas añaden hasta 0,25/s; no se obtiene durante la transformación. La piedra sustituye el objeto equipado: los objetos recogidos dan un 25% de la experiencia base necesaria para el nivel actual.',
-     'Energy charges at 1/s, with kills adding up to 0.25/s; it stops during transformation. The stone replaces the held item: collected items grant 25% of the current level base XP requirement.']
+    ['La Mega Stone sustituye el objeto normal; los objetos recogidos se convierten en experiencia.',
+      'The Mega Stone replaces the normal held item; collected items become experience.']
   ], fix: [] },
   { d: '2026-10-15', title: ['Mega de todas las generaciones · v0.7.0', 'Mega across all generations · v0.7.0'], new: [
     ['La vista previa incorpora las 36 formas Mega con animaciones básicas completas de SpriteCollab, incluidas 17 nuevas formas de otras generaciones.',
@@ -69,23 +72,23 @@ G.CHANGELOG = [
      'Forms without animations are marked unavailable, and animation substitutions are documented. Artist and form attribution is preserved.']
   ], fix: [] },
   { d: '2026-10-15', title: ['Sinnoh y Tinovictoria · v0.5.0', 'Sinnoh and Victory Star · v0.5.0'], new: [
-    ['Sinnoh añade 20 medallas y Victini estrena Tinovictoria en Teselia: 63 medallas para 42 especies. Teselia conserva premios Pokémon donde aún no hay habilidades diseñadas.',
-     'Sinnoh adds 20 medals and Victini brings Victory Star to Unova: 63 medals for 42 species. Unova retains Pokémon rewards for species whose abilities are not designed yet.'],
-    ['Velo Arena acelera durante la arena; Piel Tosca contraataca con Placaje; Telepatía reduce daño del mismo tipo; Absorbe Fuego da ataque; Inicio Lento cambia experiencia y elecciones de nivel.',
-     'Sand Veil grants haste in sand; Rough Skin counters with Tackle; Telepathy halves matching damage; Flash Fire grants attack; Slow Start changes XP and level-up choices.'],
-    ['Hidratación evita estados negativos bajo lluvia; Mal Sueño drena enemigos lentos; Multitipo ignora la tabla de tipos; Tinovictoria acelera proyectiles un 30%.',
-     'Hydration prevents debuffs in rain; Bad Dreams drains slowed enemies; Multitype ignores the type chart; Victory Star speeds projectiles by 30%.']
+    ['Se amplían las medallas de habilidad a nuevas regiones y se añade Tinovictoria. Las especies sin diseño de habilidad mantienen sus recompensas habituales.',
+     'Ability medals expand to new regions and Victory Star is added. Species without a designed ability keep their usual rewards.'],
+    ['Velo Arena acelera durante la arena; Piel Tosca contraataca; Telepatía reduce el daño afín; Absorbe Fuego da ataque; Inicio Lento cambia la progresión.',
+      'Sand Veil grants haste in sand; Rough Skin counters; Telepathy reduces matching damage; Flash Fire grants attack; Slow Start changes progression.'],
+    ['Hidratación evita estados negativos bajo lluvia; Mal Sueño afecta a los enemigos lentos; Multitipo ignora los efectos de tipo; Tinovictoria acelera proyectiles.',
+      'Hydration prevents debuffs in rain; Bad Dreams affects slowed enemies; Multitype ignores type effects; Victory Star speeds projectiles.']
   ], chg: [
     ['Cuerpo Llama repele y quema enemigos cercanos con 1 s de recarga. Levitación ya no activa trampas del suelo. Se añaden pruebas de daño por tipo al panel de desarrollo.',
      'Flame Body knocks back and burns nearby enemies with a 1 s cooldown. Levitate no longer triggers ground traps. Developer tools add typed damage tests.']
   ], fix: [] },
   { d: '2026-10-15', title: ['Habilidades de Johto y Hoenn · v0.4.0', 'Johto and Hoenn abilities · v0.4.0'], new: [
-    ['Johto y Hoenn llegan al gacha de habilidades: 31 medallas nuevas, 42 en total, con garantías independientes por región y una sola medalla equipada por Pokémon.',
-     'Johto and Hoenn join the ability gacha: 31 new medals, 42 total, with separate regional pity and one equipped medal per Pokémon.'],
+    ['Johto y Hoenn llegan al gacha de habilidades, con garantías independientes y una sola medalla equipada por Pokémon.',
+     'Johto and Hoenn join the ability gacha with separate pity and one equipped medal per Pokémon.'],
     ['Nuevas habilidades: clima periódico, regeneración, inmunidad a lentitud, Miedo, confianza acumulable, beneficios más largos, aceleración al recibir daño, Robustez, Levitación y estados aleatorios.',
      'New abilities include periodic weather, regeneration, slow immunity, Fear, stacking confidence, longer buffs, haste on damage, Sturdy, Levitate and random debuffs.'],
-    ['Levitación atraviesa obstáculos sin poder lanzar movimientos: velocidad -50% dentro y -70% durante 0,3 s al entrar y salir. El panel de desarrollo añade pruebas de clima y daño.',
-     'Levitate crosses obstacles without casting: 50% slower inside and 70% slower for 0.3 s on entry and exit. The developer panel adds weather and damage tests.']
+    ['Levitación atraviesa obstáculos sin poder lanzar movimientos y añade penalizaciones de movimiento. El panel de desarrollo añade pruebas de clima y daño.',
+      'Levitate crosses obstacles without casting and adds movement penalties. The developer panel adds weather and damage tests.']
   ], chg: [
     ['El HUD muestra cargas, recargas y disponibilidad de habilidades. Bucle Aire conserva el clima, pero anula sus efectos para todos.',
      'The HUD shows ability stacks, timers and readiness. Air Lock keeps the weather present while suppressing its effects for everyone.']
@@ -94,17 +97,17 @@ G.CHANGELOG = [
      'Visual projectiles from teammates no longer deal damage or grant kills to the local player.']
   ] },
   { d: '2026-10-15', title: ['Medallas de Dragonite · v0.3.0', 'Dragonite medals · v0.3.0'], new: [
-    ['Dragonite tiene dos medallas: Foco Interno recarga todos los movimientos a la vez; Compensación reduce a la mitad el daño de ataques con la vida al máximo. Sólo se equipa una.',
-     'Dragonite has two medals: Inner Focus cools all moves simultaneously; Multiscale halves attack damage at full HP. Equip only one.']
+    ['Dragonite tiene dos medallas: Foco Interno y Compensación. Sólo se equipa una.',
+      'Dragonite has two medals: Inner Focus and Multiscale. Equip only one.']
   ], chg: [
     ['En el gacha de habilidades, los premios de Dragonite ahora son sus medallas. Las seis especies de cinco estrellas conservan sus probabilidades y comparten cada una su probabilidad entre sus medallas.',
      'Dragonite rewards in the ability gacha are now its medals. All six five-star species keep their drop chances, shared equally between each species’ medals.']
   ], fix: [] },
   { d: '2026-10-15', title: ['Controles de depuración · v0.2.1', 'Debug controls · v0.2.1'], new: [
-    ['El panel de desarrollo permite ampliar la vista entre 1× y 2× (1,5× por defecto). Al desactivarlo, la cámara vuelve a la vista normal.',
-     'The developer panel can widen the view from 1× to 2× (1.5× by default). Disabling developer mode restores the normal view.'],
-    ['Añade o resta monedas, vales de una tirada, vales de diez tiradas y gemas de habilidad con cantidades configurables.',
-     'Add or subtract coins, single-pull tickets, ten-pull tickets and ability gems with configurable amounts.']
+    ['El panel de desarrollo permite ajustar la vista y probar recursos durante las partidas de prueba.',
+     'The developer panel can adjust the view and test resources during test runs.'],
+    ['Permite modificar las monedas, los vales y las gemas de habilidad.',
+     'Coins, tickets and ability gems can be adjusted.']
   ], chg: [], fix: [] },
   { d: '2026-10-15', title: ['Habilidades de Kanto · v0.2.0', 'Kanto abilities · v0.2.0'], new: [
     ['Medallas de habilidad para Articuno, Zapdos, Moltres, Mewtwo y Mew. Cada medalla desbloquea una habilidad; equipa sólo una por Pokémon.',

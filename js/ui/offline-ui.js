@@ -24,8 +24,8 @@ G.OfflineUI = (() => {
       else if (report?.elapsed > 0) p(G.T('Última liquidación') + ' · ' + number(report.elapsed/3600000) + ' h · ' +
         '+' + report.coins + ' ' + G.T('Monedas') + ' · +' + report.tickets + ' ' + G.T('Vales') + ' · +' + report.gems + ' ' + G.T('Gemas de habilidad'));
       else p(G.T('El contador comienza en tu primera entrada. Vuelve después de salir para recibir ingresos.'));
-      p(G.T('Ingresos por tiempo real sin conexión, sin límite de horas. Los vales y gemas son aleatorios, no garantizados.'));
-      p(G.T('La colección aumenta las monedas con crecimiento decreciente; un Shiny pesa diez veces más. Más Shinies aumentan los vales y gemas.'));
+       p(G.T('Los ingresos se acumulan mientras estás fuera. Los vales y gemas aparecen de forma aleatoria.'));
+       p(G.T('Una colección más completa mejora los ingresos; los Pokémon Shiny aumentan las recompensas especiales.'));
     }
     G.UI.show('scr-offline', true);
   }
@@ -39,8 +39,8 @@ G.OfflineUI = (() => {
     'Gemas de habilidad/hora (media)':'Ability Gems/hour (expected)', 'Última liquidación':'Latest settlement', 'Vales':'Tickets',
     'Recompensas pendientes de sincronizar. Se reintentará al conectar.':'Rewards pending sync. We will retry when connected.',
     'El contador comienza en tu primera entrada. Vuelve después de salir para recibir ingresos.':'The timer starts on your first visit. Return after leaving to receive income.',
-    'Ingresos por tiempo real sin conexión, sin límite de horas. Los vales y gemas son aleatorios, no garantizados.':'Income uses real offline time with no hourly cap. Tickets and gems are random, not guaranteed.',
-    'La colección aumenta las monedas con crecimiento decreciente; un Shiny pesa diez veces más. Más Shinies aumentan los vales y gemas.':'Collection increases coin income with diminishing gains; a Shiny has ten times the weight. More Shinies increase ticket and gem drops.'
+    'Los ingresos se acumulan mientras estás fuera. Los vales y gemas aparecen de forma aleatoria.':'Income accumulates while you are away. Tickets and gems appear at random.',
+    'Una colección más completa mejora los ingresos; los Pokémon Shiny aumentan las recompensas especiales.':'A fuller collection improves income; Shiny Pokémon increase special rewards.'
   });
   G.I18n.addChinese({
     'Ingresos sin conexión':'挂机收益', 'Sólo cuentas registradas':'仅已注册玩家可获得挂机收益', 'Tasa actual':'当前产出',
@@ -48,8 +48,8 @@ G.OfflineUI = (() => {
     'Gemas de habilidad/hora (media)':'特性宝石／小时（期望）', 'Última liquidación':'本次离线结算', 'Vales':'单抽券',
     'Recompensas pendientes de sincronizar. Se reintentará al conectar.':'收益等待同步，联网后会自动重试。',
     'El contador comienza en tu primera entrada. Vuelve después de salir para recibir ingresos.':'首次进入开始计时，退出或切到后台后，返回即可自动结算。',
-    'Ingresos por tiempo real sin conexión, sin límite de horas. Los vales y gemas son aleatorios, no garantizados.':'按现实离线时间产生收益，不设时长上限。抽奖券和宝石随机掉落，期望不代表每小时必得。',
-    'La colección aumenta las monedas con crecimiento decreciente; un Shiny pesa diez veces más. Más Shinies aumentan los vales y gemas.':'图鉴越全金币越多，前期增长快、后期趋缓；普通图鉴权重 1，闪光权重 10。闪光越多，抽奖券和特性宝石产出概率越高。'
+    'Los ingresos se acumulan mientras estás fuera. Los vales y gemas aparecen de forma aleatoria.':'离线期间会累积收益，抽奖券和特性宝石随机获得。',
+    'Una colección más completa mejora los ingresos; los Pokémon Shiny aumentan las recompensas especiales.':'图鉴越丰富，挂机收益越高；闪光宝可梦会提高特殊奖励。'
   });
   return { init, open, menu, setReport, pending() { waiting = true; } };
 })();

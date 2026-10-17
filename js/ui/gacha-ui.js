@@ -73,11 +73,7 @@ G.GachaUI = (() => {
       <div><span style="color:${G.Gacha.RARITY_COLOR[r]}">${G.UI.stars(r, 10)} ${G.Gacha.RARITY_NAME[r]}</span>
       <span>${w}% · ${G.Gacha.pool(r, gen).length}</span></div>`).join('') +
       `<div><span>${G.Icons.html('shiny', 12)} Shiny</span><span>1%</span></div>
-       <p class="note">· La tirada ×10 garantiza al menos una Épica.<br>
-       · A las ${G.Gacha.PITY_5} tiradas sin Legendaria en un banner, la siguiente lo es.<br>
-       · Los repetidos dan Pokémonedas. Los shiny no se repiten.<br>
-       · Los tickets se consiguen jugando: algunos Pokémon los sueltan al caer, y
-         los jefes y los legendarios de las grietas, a veces, tickets ×10.</p>`;
+       <p class="note">${G.T('El gacha conserva sus recompensas, garantías y premios shiny.')}</p>`;
 
     const t = s.tickets;
     $('cost-1').innerHTML = `${G.Icons.html('ticket', 18)} 1`;
@@ -89,6 +85,13 @@ G.GachaUI = (() => {
     $('pull-10b').disabled = !G.Gacha.costOf(s, 10, 't10');
     G.UI.refreshCoins();
   }
+
+  G.I18n.add({
+    'El gacha conserva sus recompensas, garantías y premios shiny.': 'The gacha keeps its rewards, pity systems and shiny prizes.'
+  });
+  G.I18n.addChinese({
+    'El gacha conserva sus recompensas, garantías y premios shiny.': '抽卡奖励、保底和异色奖励均沿用。'
+  });
 
   const wait = ms => new Promise(r => setTimeout(r, ms));
 
@@ -152,7 +155,7 @@ G.GachaUI = (() => {
     $('gacha-pity').textContent = 'Tiradas sin legendaria en ' + banner.name + ': ' + (s.abilityPity[gen] || 0) + ' / ' + G.Gacha.PITY_5;
     $('gacha-rates').innerHTML = '<h3>Probabilidades</h3>' + G.Gacha.RATES.slice().reverse().map(([r, w]) =>
       '<div><span style="color:' + G.Gacha.RARITY_COLOR[r] + '">' + G.UI.stars(r, 10) + ' ' + G.Gacha.RARITY_NAME[r] + '</span><span>' + w + '%</span></div>').join('') +
-      '<p class="note">Cada especie conserva su probabilidad. Sus medallas se reparten por igual.<br>· ×10 garantiza una Épica o superior.<br>· ' + (complete ? 'Medalla de cinco estrellas garantizada en la tirada 70.' : 'Premio de cinco estrellas garantizado en la tirada 70.') + '<br>· Medalla repetida: 300 Pokémonedas.<br>· Shiny: 1% en premios Pokémon; las medallas no son shiny.<br>· Cada jefe de una grieta da 1 gema. Regalo inicial: 10 gemas.<br>· El saldo y la garantía son independientes del gacha de Pokémon.</p>';
+      '<p class="note">' + G.T('Cada especie conserva su probabilidad. Sus medallas se reparten por igual.') + '<br>· ' + G.T('La tirada ×10 y la garantía siguen activas.') + '<br>· ' + G.T('Las medallas repetidas se convierten en Pokémonedas.') + '<br>· ' + G.T('Los premios Pokémon pueden ser shiny; las medallas no.') + '<br>· ' + G.T('Las gemas de habilidad se consiguen en las grietas.') + '</p>';
     $('cost-1').innerHTML = G.Icons.html('gem', 18) + ' 1';
     $('cost-10').innerHTML = G.Icons.html('gem', 18) + ' 10';
     $('gacha-tickets').innerHTML = G.Icons.html('gem', 18) + ' <b>' + s.abilityGems + '</b> Gemas de habilidad';

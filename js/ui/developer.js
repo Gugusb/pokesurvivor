@@ -89,13 +89,13 @@ G.Dev = (() => {
       '<div class="row wrap"><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="legends">解锁全部五星伙伴</button></div>' +
       '<label>测试伙伴 <select id="dev-partner">' + G.AbilityDefs.SPECIES.map(d => '<option value="' + d + '">' + G.T(G.DEX_BY[d].name) + '</option>').join('') + '</select></label>' +
       '<button class="btn small" data-dev="partner">选择伙伴（局外）</button>' +
-      '<h4>Mega 素材预览</h4><p class="note">此处仅预览外观和动画，战斗参数沿用本体。正式进化请装备进化石并充满能量，或使用下方进化调试工具。</p>' +
+      '<h4>Mega 素材预览</h4><p class="note">此处用于预览 Mega 外观和动画。</p>' +
       '<label>Mega 形态 <select id="dev-mega">' + G.MegaPreview.LIST.map(f => '<option value="' + f.id + '"' + (f.available ? '' : ' disabled') + '>' + G.MegaPreview.label(f) + (f.available ? (!f.basicComplete ? '（未达基本标准，旧版保留）' : f.completion === 2 ? '（完整级）' : '（基本达标）') : f.completion === 0 && f.reason && f.reason.startsWith('Source animations') ? '（已有部分动画，未达基本标准）' : '（暂无动画素材）') + '</option>').join('') + '</select></label>' +
       '<label><input id="dev-mega-shiny" type="checkbox">异色（该形态需有异色素材）</label>' +
       '<div class="row wrap"><button class="btn small" data-dev="mega-partner">选择对应本体（局外）</button><button class="btn small" data-dev="mega-apply">应用 Mega 外观（局内）</button><button class="btn small" data-dev="mega-clear">恢复本体外观</button></div>' +
       '<p class="note">' + (G.Game.player && G.Game.player.megaForm ? G.MegaPreview.label(G.MegaPreview.BY_ID[G.Game.player.megaForm]) : '当前为本体外观') + '</p>' +
       '<label>测试动作 <select id="dev-mega-anim"><option value="Idle">待机 Idle</option><option value="Walk">行走 Walk</option><option value="Attack">攻击 Attack</option><option value="Shoot">远程 Shoot</option><option value="Charge">蓄力 Charge</option><option value="Hurt">受伤 Hurt</option><option value="Faint">倒下 Faint</option></select></label><button class="btn small" data-dev="mega-anim">播放测试动作</button>' +
-      '<h4>Mega 进化调试</h4><p class="note">正式规则仅开放 36 个基本达标形态。下方工具使用上面选择的 Mega。</p>' +
+      '<h4>Mega 进化调试</h4><p class="note">下方工具用于测试 Mega 相关功能。</p>' +
       '<div class="row wrap"><button class="btn small" data-dev="mega-stone">获得对应进化石</button><button class="btn small" data-dev="mega-equip">装备对应进化石（局外）</button><button class="btn small" data-dev="mega-energy">充满 Mega 能量</button><button class="btn small" data-dev="mega-end">结束 Mega 进化</button><button class="btn small" data-dev="mega-clock">Mega 计时 +30s</button><button class="btn small" data-dev="mega-rift">进入对应 Mega 裂缝</button><button class="btn small" data-dev="mega-drop">下一次 Mega 胜利测试掉石</button><button class="btn small" data-dev="mega-item">测试拾取普通道具</button></div>' +
       '<p id="dev-mega-state">' + (G.Game.player && G.Game.player.megaState ? 'Mega 能量：' + G.Game.player.megaState.energy.toFixed(1) + '/120；剩余：' + Math.ceil(G.Game.player.megaState.left) + 's' : '本局尚未开始') + '</p>' +
       '<label>指定勋章 <select id="dev-medal">' + G.AbilityDefs.LIST.map(m => '<option value="' + m.id + '">' + G.T(G.DEX_BY[m.dex].name) + ' · ' + G.T(m.name) + '</option>').join('') + '</select></label>' +

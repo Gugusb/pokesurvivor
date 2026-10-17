@@ -12,9 +12,8 @@ G.DifficultyUI = (() => {
     }
     select.value = s.difficulty.selected;
     const update = () => {
-      const f = G.Difficulty.factors(+select.value);
-      note.textContent = G.T('Vida enemiga') + ' ×' + f.hp.toFixed(3) + ' · ' + G.T('Ataque enemigo') + ' ×' + f.dmg.toFixed(3);
-      note.title = G.T('4 estrellas equivale a la dificultad original. Supera 20 minutos para desbloquear la siguiente.');
+      note.textContent = G.T('Las estrellas más altas son más difíciles.');
+      note.title = G.T('Supera una dificultad para desbloquear la siguiente.');
     };
     select.onchange = () => { if (G.Difficulty.select(s, +select.value)) G.DB.commit(); update(); };
     update(); decorate(G.UI.$('menu-partner'), s.partner);
@@ -35,28 +34,28 @@ G.DifficultyUI = (() => {
     text.textContent = best ? G.T('Récord en la dificultad más alta') + ': ' + best.stars + '★ · ' + G.U.mmss(best.best) : G.T('Sin récord de dificultad');
     section.appendChild(text);
     const hint = document.createElement('p'); hint.className = 'note';
-    hint.textContent = G.T('Primera victoria: oro. Victoria en 5 estrellas: esmeralda. Las 8 medallas: rubí.');
+    hint.textContent = G.T('Las victorias mejoran el marco de la Pokédex.');
     section.appendChild(hint); parent.appendChild(section);
   }
   G.I18n.add({
-    'Dificultad': 'Difficulty', 'Bloqueada': 'Locked', 'Vida enemiga': 'Enemy HP', 'Ataque enemigo': 'Enemy attack',
+    'Dificultad': 'Difficulty', 'Bloqueada': 'Locked', 'Las estrellas más altas son más difíciles.': 'Higher stars are more difficult.',
     'Dificultad superada': 'Difficulty cleared', 'Victoria': 'Victory', 'Sin superar': 'Not cleared',
     'Medallas de dificultad': 'Difficulty medals', 'Récord en la dificultad más alta': 'Best time at highest attempted difficulty',
     'Sin récord de dificultad': 'No difficulty record yet', 'Limitada por el desbloqueo del equipo': 'Limited by the team’s shared unlocks',
     'Velocidad de juego': 'Game speed', 'Velocidad: 1×': 'Speed: 1×', 'En grupo, sólo el anfitrión cambia la velocidad.': 'In co-op, only the host changes speed.',
     'El ranking original sólo acepta partidas limpias de 4 estrellas a velocidad normal.': 'The original leaderboard only accepts clean 4-star runs played entirely at normal speed.',
-    '4 estrellas equivale a la dificultad original. Supera 20 minutos para desbloquear la siguiente.': '4 stars matches the original difficulty. Survive more than 20 minutes to unlock the next star.',
-    'Primera victoria: oro. Victoria en 5 estrellas: esmeralda. Las 8 medallas: rubí.': 'First victory: gold. Clear 5 stars: emerald. Earn all 8 medals: ruby.'
+    'Supera una dificultad para desbloquear la siguiente.': 'Clear a difficulty to unlock the next one.',
+    'Las victorias mejoran el marco de la Pokédex.': 'Victories improve the Pokédex frame.'
   });
   G.I18n.addChinese({
-    'Dificultad': '难度', 'Bloqueada': '未解锁', 'Vida enemiga': '敌人生命', 'Ataque enemigo': '敌人攻击',
+    'Dificultad': '难度', 'Bloqueada': '未解锁', 'Las estrellas más altas son más difíciles.': '星级越高，挑战越难。',
     'Dificultad superada': '难度通关', 'Victoria': '胜利', 'Sin superar': '未通关',
     'Medallas de dificultad': '难度奖牌', 'Récord en la dificultad más alta': '挑战过的最高难度纪录',
     'Sin récord de dificultad': '暂无难度纪录', 'Limitada por el desbloqueo del equipo': '受全队共同解锁进度限制',
     'Velocidad de juego': '游戏速度', 'Velocidad: 1×': '游戏速度：1×', 'En grupo, sólo el anfitrión cambia la velocidad.': '联机速度由房主统一设置。',
     'El ranking original sólo acepta partidas limpias de 4 estrellas a velocidad normal.': '原版排行榜仅接收未使用调试、全程一倍速的四星难度成绩。',
-    '4 estrellas equivale a la dificultad original. Supera 20 minutos para desbloquear la siguiente.': '四星为原有难度；生存超过 20 分钟即可通关并解锁下一星。',
-    'Primera victoria: oro. Victoria en 5 estrellas: esmeralda. Las 8 medallas: rubí.': '首次胜利：金色边框；通关五星：绿宝石边框；集齐八星奖牌：红宝石边框。'
+    'Supera una dificultad para desbloquear la siguiente.': '通关一个难度后解锁下一个难度。',
+    'Las victorias mejoran el marco de la Pokédex.': '胜利会提升图鉴边框。'
   });
   return { menu, detail, decorate };
 })();
