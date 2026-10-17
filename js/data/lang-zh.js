@@ -1,12 +1,18 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "IV por forma · v0.10.7": "按形态计算个体值 · v0.10.7",
+  "Form-specific IVs · v0.10.7": "按形态计算个体值 · v0.10.7",
+  "Cada forma evolucionada usa sus propios IV; las formas no registradas empiezan en 1/1/1.": "每个进化形态使用自己的个体值，未收录形态从 1/1/1 开始。",
+  "Each evolved form uses its own IVs; unregistered forms start at 1/1/1.": "每个进化形态使用自己的个体值，未收录形态从 1/1/1 开始。",
   "Mejoras compartidas · v0.10.6": "共享强化与 Mega 调整 · v0.10.6",
   "Shared upgrades · v0.10.6": "共享强化与 Mega 调整 · v0.10.6",
   "Las mejoras permanentes se comparten entre las formas de una familia evolutiva; cada atributo tiene un botón para completarlo.": "同进化链共享局外强化，每个属性可一键升满。",
   "Permanent upgrades are shared across an evolution family; each stat has a button to max it.": "同进化链共享局外强化，每个属性可一键升满。",
   "La megapiedra de la forma final reserva su espacio de objeto desde el inicio; la energía Mega comienza al completar la evolución.": "最终形态装备 Mega 石后，全程不使用普通道具，完成进化后才开始积累 Mega 能量。",
   "The final form’s Mega Stone reserves the item slot from the start; Mega energy starts after the final evolution.": "最终形态装备 Mega 石后，全程不使用普通道具，完成进化后才开始积累 Mega 能量。",
+  "Una forma no registrada usa IV 1/1/1 hasta que se consigue en el catálogo.": "图鉴未收录的进化形态使用个体值 1/1/1，收录后按该形态记录生效。",
+  "An unregistered form uses IV 1/1/1 until it is added to the Pokédex.": "图鉴未收录的进化形态使用个体值 1/1/1，收录后按该形态记录生效。",
   "Mejorar al máximo": "一键强化",
   "Max upgrade": "一键强化",
   "Cada familia evolutiva comparte sus mejoras permanentes.": "同进化链宝可梦共享局外强化。",

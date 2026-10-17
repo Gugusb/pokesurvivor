@@ -15,7 +15,11 @@ G.MonProgression = (() => {
   const pathFor = dex => PATHS[dex] || chainBy[dex] || [dex];
   const rootFor = dex => pathFor(dex)[0];
   const ivMod = iv => 0.75 + 0.65 * Math.pow(Math.max(0, Math.min(30, iv - 1)) / 30, 2);
-  const values = dex => G.DB.ivOf(dex) || [16, 16, 16];
+  // Each form has its own Pokédex IV record; an unregistered form is 1/1/1.
+  const values = dex => {
+    const iv = G.DB.ivOf(dex);
+    return Array.isArray(iv) && iv.length >= 3 ? iv.slice(0, 3) : [1, 1, 1];
+  };
   const stats = (dex, ivs = values(dex)) => {
     const p = G.DEX_BY[dex], v = ivs.map(ivMod);
     return { hp: p.hp * v[0], atk: p.atk * v[1], spd: p.spd * v[2] };

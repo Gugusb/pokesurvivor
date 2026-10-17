@@ -414,7 +414,7 @@ G.Game = (() => {
     if (G.MonProgression && next !== before) {
       pl.monStage = next;
       const oldHp = pl.maxHp;
-      const ivs = G.MonProgression.values(pl.ivDex || pl.dex);
+      const ivs = G.MonProgression.values(next);
       pl.mon = Object.assign({}, G.DEX_BY[next], { types: G.DEX_BY[next].types.slice() });
       pl.spriteDex = next;
       pl.anim = new G.Sprites.Animator(next, 1, pl.shiny);
