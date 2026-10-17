@@ -247,12 +247,22 @@ G.HUD = (() => {
     // ---------- ranura de movimientos ----------
     const S = 54, GAP = 9;
     const n = Math.max(1, pl.slots.length);
-    const hasMega = !!(pl.megaState && pl.megaState.id);
+    const hasZ = !!(G.ZMoves && G.ZMoves.hasStone(pl));
+    const hasMega = hasZ || !!(pl.megaState && pl.megaState.id);
     const totalW = (n + Number(hasMega)) * S + (n - 1 + Number(hasMega)) * GAP;
     let sx = (w - totalW) / 2;
     // Por encima de la barra de inicio del iPhone (allí los toques a veces no llegan).
     const sy = h - S - 18 - (touch ? Math.min(28, G.Touch.safeArea().bottom) : 0);
-    if (hasMega) {
+    if (hasZ) {
+      const zs=G.ZMoves.state(pl),ready=zs.phase==='ready',choosing=zs.phase==='choose',casting=zs.phase==='cast';
+      roundRect(ctx,sx,sy,S,S,12);ctx.fillStyle='rgba(40,30,10,.95)';ctx.fill();
+      ctx.strokeStyle=ready||choosing?'#fff0a0':'#a7a2b8';ctx.lineWidth=choosing?4:2;ctx.stroke();
+      G.ZMoves.drawStone(ctx,sx+13,sy+3,28,zs.type);
+      ctx.font=F(800,9);ctx.fillStyle='#fff';ctx.textAlign='center';
+      ctx.fillText(choosing?G.T('Elegir Z'):casting?'Z…':ready?G.T('Lista'):Math.ceil(zs.cooldown)+'s',sx+S/2,sy+44);
+      ctx.fillText('F',sx+7,sy+11);
+      G.Touch.addButton(sx,sy,S,S,()=>G.ZMoves.arm(pl),GAP/2);sx+=S+GAP;
+    } else if (hasMega) {
       const ms = pl.megaState, running = G.Mega.active(pl), ready = !running && G.Mega.eligible(pl) && ms.energy >= G.Mega.CAP;
       roundRect(ctx, sx, sy, S, S, 12); ctx.fillStyle = 'rgba(36,16,55,.95)'; ctx.fill();
       ctx.strokeStyle = ready ? '#fff2a0' : '#dc8cff'; ctx.lineWidth = ready ? 3 : 1.5; ctx.stroke();
@@ -275,7 +285,7 @@ G.HUD = (() => {
       const x = sx + i * (S + GAP);
       const y = on ? sy - 6 : sy;
       // Tocar (o hacer clic en) un icono activa ese movimiento.
-      if (m) G.Touch.addButton(x, y, S, S, () => { if (G.Game.state === 'playing' && pl.active !== i) { pl.setActive(i); G.Audio.sfx('click'); } }, GAP / 2 + 3);
+      if (m) G.Touch.addButton(x, y, S, S, () => { if (G.Game.state === 'playing' && (pl.active !== i || hasZ && G.ZMoves.selecting(pl))) { pl.setActive(i); G.Audio.sfx('click'); } }, GAP / 2 + 3);
       const col = m ? G.U.TYPE_COLOR[m.type] : '#4a5468';
 
       // fondo
@@ -286,6 +296,13 @@ G.HUD = (() => {
       // Vínculo: borde rosa. Evolucionado: dorado.
       ctx.strokeStyle = fused ? BOND : m && m.evolved ? '#ffd23f' : on ? col : 'rgba(140,170,210,.22)';
       ctx.stroke();
+
+      if(hasZ && G.ZMoves.busy(pl)){
+        const compatible=G.ZMoves.eligible(pl,i).length>0;
+        if(compatible){ctx.strokeStyle='#fff3a1';ctx.lineWidth=3+Math.sin(performance.now()/85);ctx.stroke();
+          if(!on){ctx.font=F(800,12);ctx.fillStyle='#fff3a1';ctx.textAlign='center';ctx.fillText('Z',x+S/2,y-8);}
+        }else{ctx.fillStyle='rgba(0,0,0,.65)';ctx.fill();}
+      }
 
       if (!m) continue;
 
@@ -337,7 +354,7 @@ G.HUD = (() => {
         ctx.font = F(700, 10);
         ctx.textAlign = 'center';
         ctx.fillStyle = fused ? BOND : col;
-        ctx.fillText(fused ? m.name + ' +' + (g.length - 1) : m.name, x + S / 2, y - 7);
+        ctx.fillText((hasZ && G.ZMoves.busy(pl) ? 'Z · ' : '') + (fused ? m.name + ' +' + (g.length - 1) : m.name), x + S / 2, y - 7);
       }
     }
 

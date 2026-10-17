@@ -83,6 +83,7 @@ G.Player = class Player {
     this.bellHeal = 0;         // curación pendiente del Cascabel Concha
     this.statsTaken = {};      // mejoras de stat cogidas (condición de evolución)
     if (G.Mega) G.Mega.init(this, G.DB.save);
+    if (G.ZMoves) G.ZMoves.init(this, G.DB.save);
   }
 
   /** Segundos que hay que estar junto a un compañero caído para levantarlo. */
@@ -150,6 +151,7 @@ G.Player = class Player {
   hasMove(id) { return this.moves.some(m => m.id === id); }
 
   setActive(i) {
+    if (G.ZMoves && G.ZMoves.busy(this)) return G.ZMoves.choose(this, i);
     if (i < 0 || i >= this.slots.length || i === this.active) return;
     // Cinta Elección: no se puede cambiar de movimiento.
     if (this.hasItem('choiceband') && this.slots[this.active]) {
@@ -243,6 +245,7 @@ G.Player = class Player {
    */
   hurt(amount, type = null, pure = false, source = { kind: 'environment' }) {
     if (this.dead || !(amount > 0)) return false;
+    if (G.ZMoves && G.ZMoves.immune(this)) return false;
     if (G.Dev && G.Dev.invincible) return false;
     if (type === 'electric' && G.Abilities.has(this, 'voltabsorb')) { this.heal(this.maxHp * 0.25); return false; }
     if (this.invuln > 0) return false;
@@ -318,7 +321,7 @@ G.Player = class Player {
 
   /** Se pone un objeto (y se quita el que llevara). */
   equip(id) {
-    if (id && G.Mega && G.Mega.hasStone(this)) return false;
+    if (id && (G.Mega && G.Mega.hasStone(this) || G.ZMoves && G.ZMoves.hasStone(this))) return false;
     if (this.item) G.Items.BY[this.item].off(this);
     this.item = id;
     if (id) G.Items.BY[id].on(this);
@@ -369,7 +372,8 @@ G.Player = class Player {
 
     // --- movimiento con colisiones ---
     // (En cooperativo la pausa no para el juego: sólo te quedas quieto.)
-    const [ax, ay] = this.frozen ? [0, 0] : G.Input.axis();
+    const zDash = G.ZMoves && G.ZMoves.dashing(this);
+    const [ax, ay] = this.frozen || zDash ? [0, 0] : G.Input.axis();
     this.walking = ax !== 0 || ay !== 0;
     const s = this.spd;
     // Hielo: resbalas (la velocidad cambia despacio).
@@ -378,7 +382,7 @@ G.Player = class Player {
     this.svy = slide ? G.U.damp(this.svy || 0, ay * s * 1.15, 1.6, dt) : ay * s;
     this.x += this.svx * dt;
     this.y += this.svy * dt;
-    G.World.collide(this);
+    if (!zDash) G.World.collide(this);
     if (this.walking) this.moveAngle = Math.atan2(ay, ax);
 
     // --- terreno líquido ---
@@ -419,7 +423,7 @@ G.Player = class Player {
     // --- animación: mira al objetivo al atacar, si no a donde camina ---
     const face = this.attackFace > 0 || !this.walking ? this.aim : this.moveAngle;
     this.anim.dir = G.Sprites.dirFromAngle(face);
-    this.anim.loop(this.walking ? 'Walk' : 'Idle', this.walking ? s / 110 : 1);
+    this.anim.loop(G.ZMoves && G.ZMoves.busy(this) ? 'Charge' : this.walking ? 'Walk' : 'Idle', this.walking ? s / 110 : 1);
   }
 
   /** Vuelve a levantarse (lo revive un compañero en cooperativo). */
@@ -446,6 +450,7 @@ G.Player = class Player {
     const n = this.net;
     if (!n) return;
     if (G.Mega) G.Mega.sync(this, n.mega, n.megaLeft, n.stone);
+    if (G.ZMoves) G.ZMoves.sync(this,n.z);
     if (this.flash > 0) this.flash -= dt;
     if (this.attackFace > 0) this.attackFace -= dt;
     if (G.U.dist2(this.x, this.y, n.x, n.y) > 300 * 300) { this.x = n.x; this.y = n.y; }
@@ -471,7 +476,7 @@ G.Player = class Player {
     this.aim = n.aim;
     const face = this.attackFace > 0 || !this.walking ? this.aim : this.moveAngle;
     this.anim.dir = G.Sprites.dirFromAngle(face);
-    this.anim.loop(this.walking ? 'Walk' : 'Idle', this.walking ? this.baseSpd / 110 : 1);
+    this.anim.loop(G.ZMoves && G.ZMoves.busy(this) ? 'Charge' : this.walking ? 'Walk' : 'Idle', this.walking ? this.baseSpd / 110 : 1);
   }
 
   draw(ctx) {

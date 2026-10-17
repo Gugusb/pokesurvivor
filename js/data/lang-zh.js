@@ -1,6 +1,21 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Nuevo": "新增",
+  "Cambios": "调整",
+  "Arreglos": "修复",
+  "El historial de novedades respeta el idioma chino.": "更新内容面板现在正确显示中文。",
+  "The changelog now respects the Chinese language setting.": "更新内容面板现在正确显示中文。",
+  "Movimientos Z · v0.12.0": "Z 招式 · v0.12.0",
+  "Z Moves · v0.12.0": "Z 招式 · v0.12.0",
+  "Cristales Z con siete tipos de movimientos potenciados, disponibles primero en las herramientas de desarrollo.": "加入七类强化 Z 招式，首版通过开发者工具获取 Z 石试玩。",
+  "Z Crystals with seven powered-up move types, initially available through developer tools.": "加入七类强化 Z 招式，首版通过开发者工具获取 Z 石试玩。",
+  "Pulsa F, elige un movimiento compatible y libera su ataque Z. Eres invulnerable durante la preparación y el lanzamiento.": "按 F 后选择同属性技能释放 Z 招式，蓄力与释放全程无敌。",
+  "Press F, choose a compatible move and unleash its Z attack. You are invulnerable during selection and casting.": "按 F 后选择同属性技能释放 Z 招式，蓄力与释放全程无敌。",
+  "Los cristales Z comparten espacio con las megapiedras. La selección ralentiza el mundo y la recarga empieza al terminar el lanzamiento.": "Z 石与 Mega 石共用槽位，选择技能时进入子弹时间，整段释放结束后才开始冷却。",
+  "Z Crystals share the Mega Stone slot. Selection slows the world and cooldown begins when casting ends.": "Z 石与 Mega 石共用槽位，选择技能时进入子弹时间，整段释放结束后才开始冷却。",
+  "El ataque Z cuerpo a cuerpo gira tres veces, carga un segundo y termina con un golpe circular mayor.": "近战 Z 连转三圈，再蓄力 1 秒，追加一次更大范围的圆形重击。",
+  "Melee Z attacks spin three times, charge for one second and finish with a larger circular strike.": "近战 Z 连转三圈，再蓄力 1 秒，追加一次更大范围的圆形重击。",
   "Nuevas habilidades · v0.11.0": "新增特性 · v0.11.0",
   "New abilities · v0.11.0": "新增特性 · v0.11.0",
   "Nuevas medallas de Teselia, Alola y Galar: habilidades de escudos, crecimiento y combate.": "新增合众、阿罗拉和伽勒尔特性勋章，加入护盾交互、升级成长及战斗特性。",

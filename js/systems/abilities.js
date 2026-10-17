@@ -141,6 +141,7 @@ G.Abilities = (() => {
     return true;
   }
   function damageFactor(p, source, type = null) {
+    if (G.ZMoves && G.ZMoves.immune(p)) return 0;
     const factor = state(p).defenseFactor;
     if (has(p, 'multitype')) return factor * 0.8;
     if (has(p, 'telepathy') && type && p.mon.types.includes(type)) return factor * 0.5;

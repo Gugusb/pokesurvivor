@@ -19,6 +19,7 @@ G.Combat = (() => {
   // ---------------- ejecutar el movimiento activo ----------------
 
   function tick(dt, pl, now) {
+    if (G.ZMoves) { const locked = G.ZMoves.busy(pl); G.ZMoves.tick(pl, dt); if (locked || G.ZMoves.busy(pl)) return; }
     if (pl.dead) return;
     if (!G.Abilities.canCast(pl)) {
       for (const m of pl.activeGroup()) if (m.kind !== 'orbit') m.t = Math.max(0, m.t - dt * G.Abilities.cooldownRate(pl, m) * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1));
@@ -96,6 +97,7 @@ G.Combat = (() => {
   function typeK(type, e, pl) { return G.Abilities.outgoingType(pl, type, e.types) * G.Weather.mult(type); }
 
   function counterTackle(pl, attacker) {
+    if (G.ZMoves && G.ZMoves.busy(pl)) return;
     const m = G.Moves.instance('tackle', 1), aim = pl.aim;
     if (attacker) pl.aim = Math.atan2(attacker.y - pl.y, attacker.x - pl.x);
     try { pl.cast(m); if (G.Coop.active) G.Coop.cast(pl, m); run(pl, m); }
@@ -541,6 +543,7 @@ G.Combat = (() => {
 
   /** Orbes de un compañero que tiene activo un movimiento de órbita (sólo visual). */
   function ghostOrbit(pl, dt, now) {
+    if (G.ZMoves && G.ZMoves.busy(pl)) { G.Projectiles.clearOrbs(pl); return; }
     const m = pl.activeMove();
     if (m && m.kind === 'orbit' && !pl.dead) orbit(pl, m, dt, now, true);
     else if (G.Projectiles.all().some(p => p.orb && p.owner === pl)) G.Projectiles.clearOrbs(pl);
@@ -551,14 +554,14 @@ G.Combat = (() => {
 
   function hit(pl, e, dmg, col, dx, dy, knock, m) {
     const k = typeK(m.type, e, pl);
-    const crit = isCrit(pl);
+    const crit = m.zCrit || isCrit(pl);
     dmg *= k * (crit ? G.Abilities.critMultiplier(pl) : 1);
     const dealt = e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Abilities.outgoingType(pl, m.type, e.types)), ghost ? null : pl, m) || 0;
     if (!ghost) pl.onDealt(dealt);
     pl.dmgDealt += dealt;
     if (m.burn) e.applyBurn(m.burn, pl);
     if (m.poison) e.applyPoison(m.poison, pl);
-    if (m.slow) e.applySlow(m.slow);
+    if (m.slow) e.applySlow(m.slow, m.zMove ? 2 : 1.2);
   }
 
   // ---------------- colisiones ----------------
@@ -695,5 +698,6 @@ G.Combat = (() => {
   }
 
   return { tick, resolve, ghostCast, ghostOrbit, counterTackle, updateFields, drawGroundFields, drawAirFields, clearFields,
+           zHit(pl, e, dmg, m) { hit(pl,e,dmg,G.U.TYPE_COLOR[m.type],e.x-pl.x,e.y-pl.y,m.knock||0,{...m,zMove:true}); },
            get fieldCount() { return fields.length; } };
 })();

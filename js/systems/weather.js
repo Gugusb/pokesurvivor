@@ -114,7 +114,7 @@ G.Weather = (() => {
       chipT = 2;
       if (pl && !pl.dead && cur && !(cur.kind === 'sand' && G.Abilities.has(pl, 'sandveil')) && hurts(pl.mon.types) && level() > 0.5) {
         const d = Math.max(1, pl.maxHp * 0.012) * G.Abilities.damageFactor(pl, {kind: 'environment'});
-        if (pl.hp > d + 1) {
+        if (d > 0 && pl.hp > d + 1) {
           pl.hp -= d;
           G.Abilities.onDamage(pl);
           G.FX.dmgText(pl.x, pl.y - pl.bodyH - 4, '-' + Math.round(d), def().color);

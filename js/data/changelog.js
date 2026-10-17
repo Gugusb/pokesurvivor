@@ -6,6 +6,13 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-18', title: ['Movimientos Z · v0.12.0', 'Z Moves · v0.12.0'], new: [
+    ['Cristales Z con siete tipos de movimientos potenciados, disponibles primero en las herramientas de desarrollo.', 'Z Crystals with seven powered-up move types, initially available through developer tools.'],
+    ['Pulsa F, elige un movimiento compatible y libera su ataque Z. Eres invulnerable durante la preparación y el lanzamiento.', 'Press F, choose a compatible move and unleash its Z attack. You are invulnerable during selection and casting.']
+  ], chg: [
+    ['Los cristales Z comparten espacio con las megapiedras. La selección ralentiza el mundo y la recarga empieza al terminar el lanzamiento.', 'Z Crystals share the Mega Stone slot. Selection slows the world and cooldown begins when casting ends.'],
+    ['El ataque Z cuerpo a cuerpo gira tres veces, carga un segundo y termina con un golpe circular mayor.', 'Melee Z attacks spin three times, charge for one second and finish with a larger circular strike.']
+  ], fix: [['El historial de novedades respeta el idioma chino.', 'The changelog now respects the Chinese language setting.']] },
   { d: '2026-10-17', title: ['Nuevas habilidades · v0.11.0', 'New abilities · v0.11.0'], new: [
     ['Nuevas medallas de Teselia, Alola y Galar: habilidades de escudos, crecimiento y combate.', 'New Unova, Alola and Galar medals add shield, growth and combat abilities.']
   ], chg: [

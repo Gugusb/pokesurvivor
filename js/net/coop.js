@@ -139,14 +139,15 @@ G.Coop = (() => {
             local.dead ? 1 : 0, m ? m.id : '', m ? m.lvl : 1, r1(local.magnet), r2(local.aim), r2(local.effectiveXpMul),
             r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq, local.ability || null,
             G.Mega && G.Mega.active(local) ? local.megaState.id : null, r2(local.megaState && local.megaState.left || 0),
-            G.Mega && G.Mega.hasStone(local) ? local.megaState.id : null, r2(local.damageBonus || 0)];
+            G.Mega && G.Mega.hasStone(local) ? local.megaState.id : null, r2(local.damageBonus || 0),
+            G.ZMoves && G.ZMoves.hasStone(local) ? [local.zState.type,local.zState.phase,r2(local.zState.cooldown)] : null];
   }
 
   function readState(a) {
     return { x: a[0], y: a[1], ang: a[2], walk: a[3], hp: a[4], maxHp: a[5], dead: a[6], mv: a[7], ml: a[8],
              mag: a[9], aim: a[10], xpMul: a[11], rev: a[12], ch: a[13], ld: a[14], ability: a[15] || null,
              mega: a[16] || null, megaLeft: a[17] || 0, stone: a[18] || null,
-             damageBonus: Number.isFinite(a[19]) ? G.U.clamp(a[19], 0, 10) : 0 };
+             damageBonus: Number.isFinite(a[19]) ? G.U.clamp(a[19], 0, 10) : 0, z:a[20] || null };
   }
 
   // ---------------- envío ----------------
@@ -263,10 +264,16 @@ G.Coop = (() => {
       m.pl.ability = validAbility ? m.pl.net.ability : null;
       m.pl.damageBonus = m.pl.net.damageBonus;
       if (G.Mega) G.Mega.sync(m.pl, m.pl.net.mega, m.pl.net.megaLeft, m.pl.net.stone);
+      if (G.ZMoves) G.ZMoves.sync(m.pl,m.pl.net.z);
       m.xpMul = m.pl.net.xpMul || 1; reconcile(from, m.pl.net);
     }
     for (const ev of msg.ev || []) {
       switch (ev[0]) {
+        case 'zc':
+          if(G.ZMoves && G.Game.st.time-(m.zAt??-999)>=G.ZMoves.COOLDOWN && G.ZMoves.remoteCast(m.pl,ev[1],ev[2])){
+            m.zAt=G.Game.st.time;emit(['zc',from,ev[1],ev[2]],from);
+          }
+          break;
         case 'mx':
           if (G.Mega && G.Mega.active(m.pl) && m.pl.megaState.id === ev[1] && G.Game.st.time - (m.megaRepelAt ?? -999) >= G.Mega.DURATION) {
             m.megaRepelAt = G.Game.st.time; G.Mega.repel(m.pl);
@@ -403,6 +410,7 @@ G.Coop = (() => {
                               friendly: false, color: '#ff7a9e', vis: G.VFX.forType(ev[8]), mtype: ev[8] });
         break;
       case 'c': { const m = mates.get(ev[1]); if (m) G.Combat.ghostCast(m.pl, ev[2], ev[3], ev[4], ev[5]); break; }
+      case 'zc': {const m=mates.get(ev[1]);if(m&&G.ZMoves){G.ZMoves.sync(m.pl,m.pl.net?.z);G.ZMoves.remoteCast(m.pl,ev[2],ev[3]);}break;}
       case 'item': api.item(ev[1]); break;
       case 'pk': G.Pickups.addRemote(ev[1], ev[2], ev[3], ev[4], ev[5]); break;
       case 'pc': G.Pickups.removeId(ev[1]); break;
@@ -438,6 +446,11 @@ G.Coop = (() => {
     if (!active || pl !== local) return;
     if (host) emit(['c', me, m.id, m.lvl, r2(pl.aim), m.evolved ? 1 : 0]);
     else outEv.push(['c', m.id, m.lvl, r2(pl.aim), m.evolved ? 1 : 0]);
+  }
+  function zCast(pl,ms,angles){
+    if(!active||pl!==local)return;
+    const spec=ms.map(m=>[m.id,m.lvl,!!m.evolved]);
+    if(host)emit(['zc',me,spec,angles]);else {outEv.push(['zc',spec,angles]);flushClient(true);}
   }
 
   // invitado
@@ -547,7 +560,7 @@ G.Coop = (() => {
 
   return {
     ANIMS, COLORS, begin, end, leave, tick, players, puppets, xpFactor, scaleRate, scaleHp,
-    cast, hit, status, hurtShown, abilityKill, megaKill, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
+    cast, zCast, hit, status, hurtShown, abilityKill, megaKill, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
     propBroken, collected, shinyCaught, levelStart, localPicked, over, holdStart, holdEnd,
     /** Anfitrión: evento para todos. Invitado: evento para el anfitrión. */
     broadcast(ev) { emit(ev); },

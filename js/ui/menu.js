@@ -229,6 +229,7 @@ G.MenuUI = (() => {
     G.UI.sprite($('dex-big'), dex, { lively: own, spin: own, silhouette: !own, scale: 3, hero: true, shiny: own && viewShiny });
     if (G.AbilityDefs.medalsFor(dex).length) G.GachaUI.renderEquipment(box, dex);
     if (G.MegaUI && own) G.MegaUI.renderEquipment(box, dex);
+    if (G.ZMovesUI && own) G.ZMovesUI.renderEquipment(box, dex);
     box.querySelectorAll('.seg button').forEach(b => {
       b.onclick = () => { viewShiny = b.dataset.v === '1'; showDetail(dex); };
     });

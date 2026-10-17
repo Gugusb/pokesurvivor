@@ -4,6 +4,7 @@ G.Dev = (() => {
   try { enabled = localStorage.getItem('ps.dev.enabled') === 'true'; } catch (e) { /* sin persistencia */ }
   let god = false, panel, launcher;
   let viewMultiplier = 1.5;
+  let zTestMove = 'ember';
   try {
     const stored = Number(localStorage.getItem('ps.dev.view'));
     if (stored >= 1 && stored <= 2) viewMultiplier = stored;
@@ -89,6 +90,10 @@ G.Dev = (() => {
       '<div class="row wrap"><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="legends">解锁全部五星伙伴</button></div>' +
       '<label>测试伙伴 <select id="dev-partner">' + G.AbilityDefs.SPECIES.map(d => '<option value="' + d + '">' + G.T(G.DEX_BY[d].name) + '</option>').join('') + '</select></label>' +
       '<button class="btn small" data-dev="partner">选择伙伴（局外）</button>' +
+      (G.ZMoves ? '<h4>Z 招式试玩</h4><p class="note">仅用于调试。替换测试招式会清空本局原有技能，并装备同属性 Z 石。</p>' +
+      '<div class="row wrap"><button class="btn small" data-dev="z-grant">获得全部 Z 石</button><button class="btn small" data-dev="z-charge">Z 石立即就绪</button></div>' +
+      '<label>测试 Z 招式 <select id="dev-z-move">'+G.Moves.ALL.filter(m=>G.ZMoves.KINDS.includes(m.kind)).map(m=>'<option value="'+m.id+'"'+(m.id===zTestMove?' selected':'')+'>'+G.T(m.name)+' · '+m.kind+'</option>').join('')+'</select></label>'+
+      '<div class="row wrap"><button class="btn small" data-dev="z-prepare">替换为测试招式</button><button class="btn small" data-dev="z-enemies">生成测试敌群</button><button class="btn small" data-dev="z-boss">生成测试 Boss</button><button class="btn small" data-dev="z-arm">进入 Z 蓄力</button></div>':'') +
       '<h4>Mega 素材预览</h4><p class="note">此处用于预览 Mega 外观和动画。</p>' +
       '<label>Mega 形态 <select id="dev-mega">' + G.MegaPreview.LIST.map(f => '<option value="' + f.id + '"' + (f.available ? '' : ' disabled') + '>' + G.MegaPreview.label(f) + (f.available ? (!f.basicComplete ? '（未达基本标准，旧版保留）' : f.completion === 2 ? '（完整级）' : '（基本达标）') : f.completion === 0 && f.reason && f.reason.startsWith('Source animations') ? '（已有部分动画，未达基本标准）' : '（暂无动画素材）') + '</option>').join('') + '</select></label>' +
       '<label><input id="dev-mega-shiny" type="checkbox">异色（该形态需有异色素材）</label>' +
@@ -126,9 +131,26 @@ G.Dev = (() => {
       const dex = +panel.querySelector('#dev-partner').value;
       const medalId = panel.querySelector('#dev-medal').value;
       const mega = G.MegaPreview.BY_ID[panel.querySelector('#dev-mega').value];
+      if(G.ZMoves)zTestMove=panel.querySelector('#dev-z-move').value;
       action(() => {
         const s = G.DB.save;
         switch (b.dataset.dev) {
+          case 'z-grant': for(const type of G.ZMoves.TYPES)G.ZMoves.grant(s,type);G.UI.toast('已获得全部 Z 石，可在图鉴详情装备');break;
+          case 'z-charge': {const p=requireRun();if(p)G.ZMoves.debugCharge(p);break;}
+          case 'z-prepare': {
+            const p=requireRun();if(!p)break;
+            if(G.ZMoves.busy(p)||G.Mega.active(p)){G.UI.toast('请等待当前招式或 Mega 进化结束');break;}
+            const m=G.Moves.instance(zTestMove,1);G.ZMoves.grant(s,m.type);G.ZMoves.equip(s,p.ivDex||p.dex,m.type);
+            G.Projectiles.clearOrbs(p);G.Combat.clearFields(p);p.moves=[m];p.slots=[[m]];p.active=0;
+            p.zState=null;G.ZMoves.init(p,s);p.hp=p.maxHp;break;
+          }
+          case 'z-enemies': case 'z-boss': {
+            const p=requireRun();if(!p)break;const boss=b.dataset.dev==='z-boss',n=boss?1:12;
+            for(let i=0;i<n;i++){const a=boss?0:(i<10?-.7+i*.14:Math.PI+i*.1),r=boss?250:100+(i%3)*65;
+              G.EnemyMgr.add(new G.Enemy({dex:boss?150:1,hp:10000000,spd:0,dmg:0,xp:0,behavior:'melee'},p.x+Math.cos(a)*r,p.y+Math.sin(a)*r,{hp:1,spd:1,dmg:1},boss));}
+            G.EnemyMgr.rebuildGrid();break;
+          }
+          case 'z-arm': {const p=requireRun();if(p)G.ZMoves.arm(p);break;}
           case 'mega-stone': if (mega && G.Mega.BY[mega.id]) G.Mega.award(mega.id); else G.UI.toast('此形态尚未开放正式 Mega 进化'); break;
           case 'mega-equip':
             if (G.Game.state !== 'ui') { G.UI.toast('请先返回主菜单'); break; }

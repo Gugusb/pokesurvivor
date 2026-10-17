@@ -90,6 +90,7 @@ G.DB = (() => {
       abilityEquipped: {},    // una sola medalla equipada por especie
       megaStones: {},         // permanent collection keyed by Mega form
       megaEquipped: {},       // one matching stone per base species
+      zStones: {}, zEquipped: {},
       difficulty: { selected: 1, cleared: {} },
       difficultyRecords: {},  // dex -> stars -> { best: seconds, won }
       offline: { seen: 0, carry: 0, rates: null },
@@ -134,6 +135,7 @@ G.DB = (() => {
    * servidor (firestore.rules, saves).
    */
   function sanitize(s) {
+    if (G.ZMoves) G.ZMoves.normalize(s);
     if (G.Difficulty) G.Difficulty.normalize(s);
     if (G.Offline) G.Offline.normalize(s);
     if (!s.megaStones || typeof s.megaStones !== 'object' || Array.isArray(s.megaStones)) s.megaStones = {};
@@ -223,7 +225,7 @@ G.DB = (() => {
       r.tickets ||= {t1:0,t10:0}; r.tickets.t1 += delta('tickets');
       r.abilityGems = (r.abilityGems || 0) + delta('gems');
     }
-    for (const coll of ['owned', 'shiny', 'abilityMedals', 'megaStones']) {
+    for (const coll of ['owned', 'shiny', 'abilityMedals', 'megaStones', 'zStones']) {
       r[coll] = r[coll] || {};
       for (const k in older[coll] || {}) {
         if (!r[coll][k] || (older[coll][k].at || 0) < (r[coll][k].at || 0)) r[coll][k] = older[coll][k];
@@ -235,6 +237,7 @@ G.DB = (() => {
     if (r.abilityPity == null) r.abilityPity = JSON.parse(JSON.stringify(older.abilityPity || {}));
     if (r.abilityEquipped == null) r.abilityEquipped = JSON.parse(JSON.stringify(older.abilityEquipped || {}));
     if (r.megaEquipped == null) r.megaEquipped = JSON.parse(JSON.stringify(older.megaEquipped || {}));
+    if (r.zEquipped == null) r.zEquipped = JSON.parse(JSON.stringify(older.zEquipped || {}));
     r.abilityStarterGranted = !!(newer.abilityStarterGranted || older.abilityStarterGranted);
     for (const k in older.upgrades || {}) r.upgrades[k] = Math.max(r.upgrades[k] || 0, older.upgrades[k]);
     r.pupg = r.pupg || {};

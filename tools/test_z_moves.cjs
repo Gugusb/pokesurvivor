@@ -1,0 +1,173 @@
+const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
+const ROOT=path.join(__dirname,'..'),noop=()=>{},close=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`);
+function context(){
+  const store=new Map(),s={console,Math:Object.create(Math),Date,JSON,Set,Map,Promise,TextEncoder,Uint8Array,
+    performance:{now:()=>1000},setTimeout:noop,clearTimeout:noop,setInterval:noop,addEventListener:noop,
+    matchMedia:()=>({matches:false}),location:{pathname:'/',protocol:'file:'},navigator:{language:'zh-CN'},
+    localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},
+    document:{documentElement:{},addEventListener:noop},CanvasRenderingContext2D:function(){}};
+  s.window=s;vm.createContext(s);s.load=f=>vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),s,{filename:f});
+  for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/pokedex.js','js/data/sprites-meta.js','js/data/types.js','js/data/moves.js','js/data/items.js','js/data/mega-forms.js','js/data/mega-types.js','js/data/abilities.js'])s.load(f);
+  s.load('js/data/evolutions.js');s.load('js/systems/progression-mon.js');
+  const G=s.G;G.FIREBASE_CONFIG=null;G.Coop={active:false,isHost:false,scaleHp:()=>1,broadcast:noop};
+  G.FX=new Proxy({},{get:()=>noop});G.Audio={sfx:noop};G.UI={toast:noop};G.Camera={kick:noop,sees:()=>false,outerRadius:()=>500};
+  G.Sprites={PX:2,hasShiny:id=>typeof id==='number'||!!G.MEGA_SPRITE_META?.[id]?.sh,bodyRadius:()=>10,bodyHeight:()=>30,preload:noop,hovers:()=>false,dirFromAngle:()=>0,animMeta:()=>null,
+    Animator:class{constructor(dex,scale,shiny){this.dex=dex;this.dir=0;this.shiny=!!shiny;}play(){}update(){}loop(){}busy(){return false;}}};
+  G.Projectiles={clearOrbs:noop};G.Input={axis:()=>[0,0]};G.Dev={canUse:()=>false,invincible:false};
+  G.World={biome:0,liquidEffect:()=>({}),isLiquid:()=>false,collide:noop,isWall:()=>false,isFree:()=>true,
+    propsInCircle:()=>[],projectileBlock:()=>null,damageProp:noop,setArena:noop,setBiome:noop};
+  G.Weather={speedFor:()=>1,mult:()=>1,force:noop,clear:noop};G.Tiles={T:16,arenaBiome:()=>0,ARENA_THEMES:{}};
+  G.Judgment={AT:1800,noteDmg:noop};G.Pickups={drop:noop,dropXp:noop,pullAll:noop};G.Progress={event:noop,kill:noop};G.Events={golden:false};G.Hazards={clear:noop};G.Spawner={say:noop};
+  let p;s.playerRef=()=>p;G.Game={state:'playing',st:{time:100},everyone:()=>p?[p]:[],flash:noop,offerBond:noop,debugMark:noop};
+  s.load('js/systems/mega-preview.js');s.load('js/systems/mega.js');s.load('js/systems/z-moves.js');
+  const db=fs.readFileSync(path.join(ROOT,'js/core/db.js'),'utf8').replace('ready, register, login,','_test:{newSave,migrate,sanitize}, ready, register, login,');vm.runInContext(db,s);G.DB.playAsGuest();
+  for(const f of ['js/systems/abilities.js','js/entities/player.js','js/entities/enemy.js','js/entities/projectile.js','js/entities/vfx.js','js/systems/combat.js','js/systems/rift.js'])s.load(f);
+  s.player=(dex=6,stone=false)=>{if(stone){const f=G.Mega.formsFor(dex)[0];G.Mega.grant(G.DB.save,f.id);G.Mega.equip(G.DB.save,dex,f.id);}p=new G.Player(G.DEX_BY[dex]);G.Game.player=p;return p;};
+  s.enemy=(x=30,mega=null)=>G.EnemyMgr.add(new G.Enemy({dex:mega?G.Mega.BY[mega].dex:1,mega,hp:10000,spd:0,dmg:10,xp:1,behavior:'ranged'},x,0,{hp:1,spd:1,dmg:1},!!mega));
+  s.evolve=p=>{G.Mega.tick(p,120);assert.ok(G.Mega.activate(p));};
+  s.cast=(p,id,lvl=1)=>{const m=G.Moves.instance(id,lvl);p.moves=[m];p.slots=[[m]];p.active=0;p.target=G.EnemyMgr.all()[0];p.aim=0;G.EnemyMgr.rebuildGrid();G.Combat.tick(0,p,0);return m;};
+  s.loadRift=()=>{let src=fs.readFileSync(path.join(ROOT,'js/systems/rift.js'),'utf8').replace('reset, update, drawable,','_start:start, reset, update, drawable,');vm.runInContext(src,s);};
+  s.loadGame=()=>{G.UI.isOpen=()=>false;let src=fs.readFileSync(path.join(ROOT,'js/game.js'),'utf8').replace('init, startRun, everyone,',"_test:{setPlayer(p){pl=p;state='playing';},collect:onCollect,offerItem,pending:()=>pendingLevels}, init, startRun, everyone,");vm.runInContext(src,s);G.Game._test.setPlayer(p);};
+  return s;
+}
+function setup(id='ember', extras=[]) {
+  const s=context(),{G}=s,p=s.player();
+  const m=G.Moves.instance(id);G.ZMoves.grant(G.DB.save,m.type);G.ZMoves.equip(G.DB.save,p.dex,m.type);G.ZMoves.init(p,G.DB.save);
+  p.moves=[m,...extras.map(x=>G.Moves.instance(x))];p.slots=[[m],...p.moves.slice(1).map(x=>[x])];p.active=0;p.aim=0;
+  return Object.assign(s,{p,m});
+}
+function release(s){assert.ok(s.G.ZMoves.arm(s.p));assert.ok(s.G.ZMoves.choose(s.p,0));}
+function capture(s){const hits=[];s.G.Combat.zHit=(p,e,dmg,m)=>hits.push({p,e,dmg,m});return hits;}
+function advance(s,seconds,step=.01){for(let t=0;t<seconds-1e-8;t+=step)s.G.Combat.tick(Math.min(step,seconds-t),s.p,t);}
+
+test('crystals migrate empty, union ownership, retain explicit unequip and exclude Mega equipment',()=>{
+  const s=context(),{G}=s,sv=G.DB.save;
+  assert.deepEqual(Object.keys(sv.zStones),[]);assert.deepEqual(Object.keys(sv.zEquipped),[]);
+  G.ZMoves.grant(sv,'fire');G.ZMoves.equip(sv,6,'fire');
+  G.Mega.grant(sv,'6-mega-x');G.Mega.equip(sv,6,'6-mega-x');assert.equal(sv.zEquipped[6],null);
+  G.ZMoves.equip(sv,6,'fire');assert.equal(sv.megaEquipped[6],null);
+  assert.equal(G.ZMoves.equip(sv,6,'invalid'),false);
+  const older=JSON.parse(JSON.stringify(sv));older.updated=1;G.ZMoves.grant(older,'water');
+  const newer=JSON.parse(JSON.stringify(sv));newer.updated=2;G.ZMoves.equip(newer,6,null);
+  const merged=G.DB.merge(newer,older);assert.ok(merged.zStones.water);assert.equal(merged.zEquipped[6],null);
+  sv.zStones.invalid={at:1};sv.zEquipped[25]='invalid';G.ZMoves.normalize(sv);assert.equal(sv.zStones.invalid,undefined);assert.equal(sv.zEquipped[25],undefined);
+});
+
+test('arming stops ordinary fire, same-slot selection works, casting locks switches until cooldown starts',()=>{
+  const s=setup('ember',['water-gun']),{G,p}=s;
+  assert.equal(G.ZMoves.timeFactor(),1);assert.ok(G.ZMoves.arm(p));assert.equal(G.ZMoves.timeFactor(),.1);
+  const timer=s.m.t;G.Combat.tick(.2,p,0);assert.equal(G.Projectiles.count,0);assert.equal(s.m.t,timer);
+  assert.equal(p.setActive(1),false);assert.equal(p.active,0);assert.ok(p.setActive(0));assert.equal(G.Projectiles.count,5);
+  assert.equal(G.ZMoves.timeFactor(),1);assert.equal(p.setActive(1),false);assert.equal(p.active,0);
+  advance(s,G.ZMoves.state(p).casts[0].duration);assert.equal(p.zState.phase,'cooldown');close(p.zState.cooldown,180);
+  assert.equal(G.ZMoves.arm(p),false);p.setActive(1);assert.equal(p.active,1);
+  advance(s,180,1);assert.equal(p.zState.phase,'ready');
+});
+
+test('unsupported types cannot arm, fused slots release all and only supported matching moves',()=>{
+  const no=setup('flamethrower');assert.equal(no.G.ZMoves.arm(no.p),false);
+  const s=setup('ember',['fire-spin','water-gun','flamethrower']),{G,p}=s;
+  p.slots=[p.moves.slice(0,2).concat(p.moves[2],p.moves[3])];
+  const before=p.moves.map(m=>({...m}));release(s);assert.equal(p.zState.casts.length,2);
+  assert.equal(G.Projectiles.count,5);advance(s,2);assert.equal(G.ZMoves.busy(p),true);assert.equal(G.Projectiles.count,5);
+  advance(s,3);assert.equal(G.ZMoves.busy(p),false);assert.equal(p.zState.phase,'cooldown');
+  p.moves.forEach((m,i)=>{assert.equal(m.dmg,before[i].dmg);assert.equal(m.radius,before[i].radius);});
+});
+
+test('projectile Z emits five correctly sized fast piercing shots and prioritizes a boss',()=>{
+  const s=setup(),{G,p,m}=s;
+  for(let i=0;i<8;i++)s.enemy(150).y=i*5;const boss=s.enemy(-150);boss.boss=true;G.EnemyMgr.rebuildGrid();
+  release(s);const shots=G.Projectiles.all();assert.equal(shots.length,5);
+  close(Math.atan2(shots[2].vy,shots[2].vx),Math.PI);close(shots[0].r,m.size*5);
+  for(const shot of shots){close(Math.hypot(shot.vx,shot.vy),m.speed*3);assert.equal(shot.pierce,(m.pierce||0)+999);close(shot.dmg,m.dmg*p.atk*20);assert.equal(shot.moveId,m.id);assert.ok(shot.visualScale>=5);}
+});
+
+test('automatic half-plane aim handles angles crossing zero and corridor aim favors clustered enemies',()=>{
+  const s=setup(),{G,p,m}=s;
+  for(const a of [-.2,-.1,0,.1,.2]){const e=s.enemy(Math.cos(a)*100);e.y=Math.sin(a)*100;}
+  const e=s.enemy(-100);e.y=0;const a=G.ZMoves.aim(p,m);assert.ok(Math.abs(Math.sin(a))<.3);assert.ok(Math.cos(a)>0);
+  const beam=G.Moves.instance('ice-beam');const b=G.ZMoves.aim(p,beam);assert.ok(Math.cos(b)>0);
+});
+
+test('melee Z sweeps three times, charges one second, then hits a larger circle once at thirty-fold damage',()=>{
+  const s=setup('tackle'),{G,p,m}=s,hits=capture(s);
+  const near=s.enemy(m.radius*2.8),far=s.enemy(m.radius*4);G.EnemyMgr.rebuildGrid();release(s);advance(s,1.2);
+  assert.equal(hits.filter(h=>h.e===near).length,3);assert.equal(hits.filter(h=>h.e===far).length,0);
+  for(const h of hits)close(h.dmg,m.dmg*p.atk*20);assert.equal(p.zState.phase,'cast');
+  assert.equal(p.setActive(1),false);advance(s,.99);assert.equal(hits.length,3);assert.ok(G.ZMoves.immune(p));
+  advance(s,.01);assert.equal(hits.filter(h=>h.e===near).length,4);assert.equal(hits.filter(h=>h.e===far).length,1);
+  hits.slice(3).forEach(h=>close(h.dmg,m.dmg*p.atk*30));assert.equal(p.zState.phase,'cooldown');assert.equal(G.ZMoves.immune(p),false);
+});
+
+test('beam Z locks origin and angle and deals six ticks across fourfold width and 99-fold length',()=>{
+  const s=setup('ice-beam'),{G,p,m}=s,hits=capture(s);
+  const far=s.enemy(m.radius*50);far.y=m.width*1.5;const boss=s.enemy(300);boss.boss=true;G.EnemyMgr.rebuildGrid();
+  release(s);p.aim=Math.PI;p.x=150;p.y=200;advance(s,3);
+  assert.equal(hits.filter(h=>h.e===far).length,6);assert.equal(hits.filter(h=>h.e===boss).length,6);
+  hits.forEach(h=>close(h.dmg,m.dmg*p.atk*10));assert.equal(p.zState.phase,'cooldown');
+});
+
+test('chain Z has ten pulses and can bounce back to old targets with no consecutive self-target',()=>{
+  const s=setup('thunderbolt'),{G,p,m}=s,hits=capture(s);
+  const a=s.enemy(100),b=s.enemy(140);G.EnemyMgr.rebuildGrid();release(s);advance(s,5);
+  assert.equal(hits.length,10*(m.count+20));
+  for(let i=0;i<hits.length;i++){close(hits[i].dmg,m.dmg*p.atk*10);assert.equal(hits[i].m.slow,.8);if(i%(m.count+20))assert.notEqual(hits[i].e,hits[i-1].e);}
+  assert.ok(hits.some(h=>h.e===a));assert.ok(hits.some(h=>h.e===b));assert.equal(p.zState.phase,'cooldown');
+});
+
+test('orbit Z creates opposing layers with distinct damage and inner slow, and lasts five seconds',()=>{
+  const s=setup('fire-spin'),{G,p,m}=s,hits=capture(s);
+  const inner=s.enemy(m.radius*.75),outer=s.enemy(m.radius*1.5);G.EnemyMgr.rebuildGrid();release(s);
+  const hi=hits.find(h=>h.e===inner),ho=hits.find(h=>h.e===outer);assert.ok(hi);assert.ok(ho);
+  close(hi.dmg,m.dmg*p.atk*20);close(ho.dmg,m.dmg*p.atk*10);assert.equal(hi.m.slow,.8);
+  advance(s,4.99);assert.ok(G.ZMoves.busy(p));advance(s,.01);assert.equal(p.zState.phase,'cooldown');
+});
+
+test('dash Z crosses blocked terrain, guarantees critical damage and has exactly two seconds of landing immunity',()=>{
+  const s=setup('quick-attack'),{G,p,m}=s;const e=s.enemy(m.radius*5);e.hp=e.maxHp=10000000;G.EnemyMgr.rebuildGrid();
+  G.World.isFree=(x,y)=>x>m.radius*10+15;release(s);assert.ok(G.ZMoves.immune(p));advance(s,.5);
+  close(e.maxHp-e.hp,Math.round(m.dmg*p.atk*25*1.5));assert.ok(p.x>m.radius*10+15);assert.ok(G.ZMoves.immune(p));
+  const hp=p.hp;assert.equal(p.hurt(99999,null,true),false);assert.equal(p.hp,hp);
+  advance(s,1.99);assert.ok(G.ZMoves.immune(p));advance(s,.01);assert.equal(G.ZMoves.immune(p),false);
+  assert.equal(p.hurt(1,null,true),true);
+});
+
+test('a short fused dash does not repeatedly teleport or refresh immunity while another Z is still casting',()=>{
+  const s=setup('quick-attack',['tackle']),{G,p}=s; p.slots=[p.moves];release(s);advance(s,.5);
+  const x=p.x;p.x+=10;advance(s,.2);assert.equal(p.x,x+10);close(p.zState.guard,1.8);assert.ok(G.ZMoves.busy(p));
+});
+
+test('meteor Z schedules thirty impacts over three seconds and keeps the lock until the final landing',()=>{
+  const s=setup('rock-slide'),{G,p,m}=s,hits=capture(s);s.enemy(100);G.EnemyMgr.rebuildGrid();release(s);
+  const cast=p.zState.casts[0];advance(s,3.39);assert.equal(cast.pulses,30);assert.equal(hits.length,29);assert.ok(G.ZMoves.busy(p));
+  advance(s,.01);assert.equal(hits.length,30);hits.forEach(h=>close(h.dmg,m.dmg*p.atk*10));assert.equal(p.zState.phase,'cooldown');close(p.zState.cooldown,180);
+});
+
+test('death or a cancelled selection cannot leave the whole party in bullet time',()=>{
+  const s=setup(),{G,p}=s;G.ZMoves.arm(p);assert.equal(G.ZMoves.timeFactor(),.1);G.ZMoves.arm(p);assert.equal(G.ZMoves.timeFactor(),1);
+  G.ZMoves.arm(p);p.dead=true;G.Combat.tick(.01,p,0);assert.equal(G.ZMoves.timeFactor(),1);assert.equal(p.zState.phase,'cooldown');
+});
+
+test('Z selection and every casting family are invincible, while normal cooldown grants no immunity',()=>{
+  for(const id of ['ember','tackle','ice-beam','fire-spin','thunderbolt','quick-attack','rock-slide']){
+    const s=setup(id),{G,p}=s;assert.ok(G.ZMoves.arm(p));const hp=p.hp;
+    assert.equal(p.hurt(99999,'fire',true),false);assert.equal(p.hp,hp);assert.equal(G.Abilities.damageFactor(p,{kind:'environment'}),0);
+    p.setActive(0);assert.equal(p.hurt(99999,null,true),false);
+    advance(s,p.zState.casts[0].duration);if(id==='quick-attack')advance(s,2);
+    assert.equal(G.ZMoves.immune(p),false);assert.equal(p.hurt(1,null,true),true);
+  }
+});
+
+test('remote Z casts are visual only, validate types, and all living players share one bullet-time factor',()=>{
+  const s=setup(),{G,p}=s;const peer=new G.Player(G.DEX_BY[6]);peer.remote=true;
+  G.Game.everyone=()=>[p,peer];G.ZMoves.sync(peer,['fire','choose',0]);assert.equal(G.ZMoves.timeFactor(),.1);
+  assert.equal(G.ZMoves.remoteCast(peer,[['water-gun',1,false]],[0]),false);
+  assert.equal(G.ZMoves.remoteCast(peer,[['ember',1,false]],[0]),true);
+  const shots=G.Projectiles.all();assert.equal(shots.length,5);assert.ok(shots.every(p=>p.ghost));assert.equal(G.ZMoves.timeFactor(),1);
+  const e=s.enemy(30);const hp=e.hp;G.Combat.resolve(.01,p,0);assert.equal(e.hp,hp);
+});
+
+test('Z crystal reserves the item slot and ordinary item pickups convert to XP',()=>{
+  const s=setup(),{G,p}=s;s.loadGame();assert.equal(p.equip('leftovers'),false);
+  const xp=p.xp;G.Game._test.collect({kind:'item',value:'leftovers'},p);assert.equal(p.item,null);assert.ok(p.xp>xp);
+});

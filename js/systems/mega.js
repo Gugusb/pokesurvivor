@@ -13,7 +13,9 @@ G.Mega = (() => {
   const label = id => G.MegaPreview.label(BY[id]);
   function equip(s, dex, id) {
     if (id && (!owns(s, id) || BY[id].dex !== dex)) return false;
-    s.megaEquipped ||= {}; s.megaEquipped[dex] = id || null; return true;
+    s.megaEquipped ||= {}; s.megaEquipped[dex] = id || null;
+    if (id) { s.zEquipped ||= {}; s.zEquipped[dex] = null; }
+    return true;
   }
   function grant(s, id) {
     if (!s || !BY[id]) return false;

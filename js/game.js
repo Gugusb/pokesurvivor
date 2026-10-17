@@ -493,8 +493,8 @@ G.Game = (() => {
   /** Has cogido un objeto: si no llevas ninguno te lo pones; si no, eliges. */
   function offerItem(id) {
     if (!pl || !G.Items.BY[id]) return;
-    if (G.Mega && G.Mega.hasStone(pl)) { if (!G.Coop.active || G.Coop.isHost) convertItem(pl); return; }
-    if (state === 'levelup' || G.UI.isOpen('scr-levelup')) { laterItems.push(id); return; }
+    if (G.Mega && G.Mega.hasStone(pl) || G.ZMoves && G.ZMoves.hasStone(pl)) { if (!G.Coop.active || G.Coop.isHost) convertItem(pl); return; }
+    if (state === 'levelup' || G.UI.isOpen('scr-levelup') || G.ZMoves && everyone().some(G.ZMoves.busy)) { laterItems.push(id); return; }
     let mine = false;            // esta elección es la que ha parado el juego
     const take = got => {
       openItem = null;
@@ -529,7 +529,7 @@ G.Game = (() => {
       if (mine) G.Audio.sfx(PICK_SFX[p.kind]);
       return;
     }
-    const convert = p.kind === 'item' && G.Mega && G.Mega.hasStone(who);
+    const convert = p.kind === 'item' && (G.Mega && G.Mega.hasStone(who) || G.ZMoves && G.ZMoves.hasStone(who));
     if (G.Coop.active) G.Coop.collected(p, who, convert);
     if (convert) { convertItem(who); return; }
     if (mine || p.kind === 'bomb') G.Audio.sfx(PICK_SFX[p.kind]);
@@ -619,12 +619,14 @@ G.Game = (() => {
     if (G.Input.tap('escape') || G.Input.tap('keyp')) { togglePause(); return; }
     if (state !== 'playing' || !pl) return;
     if (G.Input.tap('keyv') && !document.activeElement?.closest('input,textarea,select,[contenteditable]')) setSpeed(runSpeed === 1 ? 2 : 1);
+    if (G.Input.tap('keyf') && !document.activeElement?.closest('input, textarea, select, [contenteditable]')) {
+      if (G.ZMoves && G.ZMoves.hasStone(pl)) G.ZMoves.arm(pl); else if (G.Mega) G.Mega.activate(pl);
+    }
     for (let i = 0; i < 4; i++) {
       if (G.Input.tap('digit' + (i + 1)) || G.Input.tap('numpad' + (i + 1))) pl.setActive(i);
     }
     if (G.Input.tap('keyq')) pl.cycle(-1);
     if (G.Input.tap('keye') || G.Input.tap('tab')) pl.cycle(1);
-    if (G.Input.tap('keyf') && G.Mega && !document.activeElement?.closest('input, textarea, select, [contenteditable]')) G.Mega.activate(pl);
   }
 
   // ---------------- bucle ----------------
@@ -658,12 +660,14 @@ G.Game = (() => {
 
   function frame(ts) {
     const real = (ts - last) / 1000 || 0;
-    const step = Math.min(1 / 30, real) * speedK;
+    let step = Math.min(1 / 30, real) * speedK;
     last = ts;
     if (state === 'playing') G.Settings.sample(real);
     fpsAcc += real; fpsN++;
     if (fpsAcc >= 0.5) { fpsShown = Math.round(fpsN / fpsAcc); fpsAcc = 0; fpsN = 0; }
     handleKeys();
+    const networkDt = step * runSpeed;
+    step *= G.ZMoves ? G.ZMoves.timeFactor() : 1;
     const dt = step * runSpeed;
     frameDt = state === 'playing' ? dt : 0;
 
@@ -674,7 +678,7 @@ G.Game = (() => {
     }
     else if (pl && state !== 'ui') { G.FX.update(dt * 0.25); pl.anim.update(dt * 0.25); }
     // La red se atiende siempre (también con las cartas de nivel abiertas).
-    if (G.Coop.active && pl && state !== 'ui' && state !== 'over') G.Coop.tick(dt);
+    if (G.Coop.active && pl && state !== 'ui' && state !== 'over') G.Coop.tick(networkDt);
 
     if (pl && state !== 'ui') render(); else Backdrop.render(ctx, w, h, dpr, dt);
     G.UI.tick(dt);
@@ -721,7 +725,7 @@ G.Game = (() => {
     pl.frozen = coop && (G.UI.isOpen('scr-pause') || G.UI.isOpen('scr-item'));
     pl.update(dt);
     if (coop) {
-      for (const p of G.Coop.puppets()) { p.netUpdate(dt); G.Combat.ghostOrbit(p, dt, time); }
+      for (const p of G.Coop.puppets()) { p.netUpdate(dt); if (G.ZMoves) G.ZMoves.tick(p, dt); G.Combat.ghostOrbit(p, dt, time); }
       if (pl.dead) reviveTick(dt);
     }
     G.Camera.follow(pl.x, pl.y, dt);
@@ -747,8 +751,12 @@ G.Game = (() => {
     G.FX.update(dt);
 
     G.Audio.music(G.Judgment.active ? G.Judgment.music : G.Rift.inArena ? 'rift' : G.EnemyMgr.bossAlive() ? 'boss' : G.BIOME_MUSIC[biome % G.BIOME_MUSIC.length]);
-    if (!coop || G.Coop.isHost) maybeLevelUp();
-    if (pl.bonds > 0) offerBond(true);
+    const zBusy = G.ZMoves && everyone().some(G.ZMoves.busy);
+    if (!zBusy) {
+      if (!coop || G.Coop.isHost) maybeLevelUp();
+      if (pl.bonds > 0) offerBond(true);
+      if (state === 'playing' && laterItems.length) afterLevelUp();
+    }
     if (G.Coop.isHost) checkAllDown(dt);
   }
 
@@ -809,6 +817,7 @@ G.Game = (() => {
     drawScene(G.Camera, G.Coop.active ? [pl, ...G.Coop.puppets()] : [pl]);
     G.Projectiles.draw(ctx);
     G.Combat.drawAirFields(ctx);
+    if (G.ZMoves) G.ZMoves.draw(ctx);
     G.FX.draw(ctx);
     G.Judgment.drawAir(ctx);
     ctx.restore();

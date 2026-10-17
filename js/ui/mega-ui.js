@@ -2,7 +2,7 @@ G.MegaUI = (() => {
   function renderEquipment(parent, dex) {
     const forms = G.Mega.formsFor(dex), save = G.DB.save;
     if (!forms.length) return;
-    const section = document.createElement('section'); section.className = 'ability-equipment';
+    const section = document.createElement('section'); section.className = 'ability-equipment mega-equipment';
     section.innerHTML = '<h4>' + G.Icons.html('megaStone', 22) + ' ' + G.T('Megapiedras') + '</h4><p class="note">' +
       G.T('Busca Mega Stones en las grietas.') + '</p>';
     for (const f of forms) {
@@ -14,13 +14,13 @@ G.MegaUI = (() => {
       btn.setAttribute('aria-label', G.T('Equipar') + ' ' + G.Mega.label(f.id) + ' ' + G.T('Megapiedra'));
       btn.onclick = () => {
         if (G.Game.state !== 'ui' || !G.Mega.equip(save, dex, f.id)) return;
-        G.DB.commit(true); const next = renderEquipment(parent, dex); section.replaceWith(next);
+        G.DB.commit(true); if(G.ZMovesUI)G.ZMovesUI.refresh(parent,dex);else{const next = renderEquipment(parent, dex); section.replaceWith(next);}
       };
       row.appendChild(btn); section.appendChild(row);
     }
     const off = document.createElement('button'); off.className = 'btn small ghost'; off.textContent = G.T('Quitar piedra');
     off.disabled = !(save.megaEquipped && save.megaEquipped[dex]);
-    off.onclick = () => { if (G.Game.state !== 'ui') return; G.Mega.equip(save, dex, null); G.DB.commit(true); const next = renderEquipment(parent, dex); section.replaceWith(next); };
+    off.onclick = () => { if (G.Game.state !== 'ui') return; G.Mega.equip(save, dex, null); G.DB.commit(true); if(G.ZMovesUI)G.ZMovesUI.refresh(parent,dex);else{const next = renderEquipment(parent, dex); section.replaceWith(next);} };
     section.appendChild(off);
     const note = document.createElement('p'); note.className = 'note';
     note.textContent = G.T('Equipa una Mega Stone y activa Mega cuando esté listo.');
