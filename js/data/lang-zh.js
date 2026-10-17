@@ -1,6 +1,10 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "IV visibles · v0.10.5": "个体值展示优化 · v0.10.5",
+  "IV display · v0.10.5": "个体值展示优化 · v0.10.5",
+  "Los IV aparecen junto a cada atributo de la Pokédex y el color indica su rango.": "图鉴将个体值显示在对应属性行的最右侧，并用颜色区分数值区间。",
+  "IVs appear beside each Pokédex stat, with color showing the range.": "图鉴将个体值显示在对应属性行的最右侧，并用颜色区分数值区间。",
   "IV mejorados": "个体值提升",
   "Mejoras de IV · v0.10.4": "个体值提升提示 · v0.10.4",
   "IV improvements · v0.10.4": "个体值提升提示 · v0.10.4",

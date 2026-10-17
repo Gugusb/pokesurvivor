@@ -252,9 +252,18 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
 .panel {
   background: rgba(0,0,0,.2); border: 2px solid rgba(244,248,255,.2); border-radius: 10px; padding: 14px;
 }
-.stat { display: grid; grid-template-columns: 90px 1fr 34px; gap: 8px; align-items: center; font-size: 14px; margin: 5px 0; }
+.stat { display: grid; grid-template-columns: 78px minmax(0, 1fr) 40px 46px; gap: 7px; align-items: center; font-size: 14px; margin: 5px 0; }
 .stat .bar { height: 8px; background: rgba(0,0,0,.35); border-radius: 6px; overflow: hidden; }
 .stat .bar i { display: block; height: 100%; background: var(--gold); }
+.stat .iv-value { justify-self: end; white-space: nowrap; font-size: 12px; font-weight: 700; text-shadow: 1px 1px 1px #000; }
+.stat .iv-low { color: #ffb4b4; }
+.stat .iv-mid { color: #fff0ad; }
+.stat .iv-high { color: #baf2c2; }
+.stat .iv-perfect {
+  color: transparent; background: linear-gradient(90deg, #ff9da8, #ffd17d, #fff49b, #a8f0be, #9de4ff, #d5b4ff, #ff9da8);
+  background-size: 250% 100%; background-clip: text; -webkit-background-clip: text; animation: iv-rainbow 3s linear infinite;
+}
+@keyframes iv-rainbow { to { background-position: 250% 0; } }
 .type {
   display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 700;
   color: #10131a; text-shadow: none; margin-right: 4px;
@@ -850,7 +859,8 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
   #dex-detail { min-height: 0; overflow-y: auto; padding: 6px 8px; display: flex; flex-direction: column; }
   #dex-detail .stage { width: 132px; height: 114px; margin: 2px auto 4px; }
   #dex-detail h3 { margin: 0; }
-  #dex-detail .stat { grid-template-columns: 62px 1fr 34px; gap: 4px; font-size: 12px; margin: 2px 0; }
+  #dex-detail .stat { grid-template-columns: 54px minmax(0, 1fr) 34px 38px; gap: 4px; font-size: 12px; margin: 2px 0; }
+  #dex-detail .stat .iv-value { font-size: 10px; }
   #dex-detail p { margin: 4px 0 !important; font-size: 12px !important; }
   #dex-detail .move-icons { margin-bottom: 4px; }
   /* El botón de elegir, pegado abajo de la ficha: se ve aunque la ficha no quepa. */

@@ -6,6 +6,9 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-17', title: ['IV visibles · v0.10.5', 'IV display · v0.10.5'], new: [
+    ['Los IV aparecen junto a cada atributo de la Pokédex y el color indica su rango.','IVs appear beside each Pokédex stat, with color showing the range.']
+  ], chg: [], fix: [] },
   { d: '2026-10-17', title: ['Mejoras de IV · v0.10.4', 'IV improvements · v0.10.4'], new: [
     ['Las tiradas y capturas muestran una flecha cuando mejoran los valores individuales de un Pokémon.','Gacha pulls and captures show an arrow when they improve a Pokémon’s individual values.']
   ], chg: [], fix: [] },
