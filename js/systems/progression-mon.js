@@ -1,22 +1,28 @@
 /* Individual values, evolution chains and deferred wild captures. */
 G.MonProgression = (() => {
-  const CHAINS = {
-    1: [1, 2, 3], 4: [4, 5, 6], 7: [7, 8, 9], 25: [25, 26],
-    133: [133, 134, 135, 136, 196, 197, 470, 471, 700],
-    147: [147, 148, 149], 155: [155, 156, 157], 158: [158, 159, 160],
-    252: [252, 253, 254], 255: [255, 256, 257], 258: [258, 259, 260]
+  /* Generated from all available PokeAPI evolution chains. PATHS keeps one
+     deterministic route per species so branching families can follow the
+     selected Pokédex target while every run starts at the chain root. */
+  const CHAINS = G.EVOLUTION_CHAINS || {
+    1: [1, 2, 3], 4: [4, 5, 6], 7: [7, 8, 9], 25: [25, 26]
   };
+  const PATHS = G.EVOLUTION_PATHS || CHAINS;
   const chainBy = {};
-  for (const chain of Object.values(CHAINS)) for (const dex of chain) chainBy[dex] = chain;
+  for (const [key, chain] of Object.entries(PATHS)) {
+    for (const dex of chain) chainBy[dex] = chain;
+    chainBy[+key] = chain;
+  }
+  const pathFor = dex => PATHS[dex] || chainBy[dex] || [dex];
+  const rootFor = dex => pathFor(dex)[0];
   const ivMod = iv => 0.75 + 0.65 * Math.pow(Math.max(0, Math.min(30, iv - 1)) / 30, 2);
   const values = dex => G.DB.ivOf(dex) || [16, 16, 16];
   const stats = (dex, ivs = values(dex)) => {
     const p = G.DEX_BY[dex], v = ivs.map(ivMod);
     return { hp: p.hp * v[0], atk: p.atk * v[1], spd: p.spd * v[2] };
   };
-  function stageFor(dex, level) {
-    const chain = chainBy[dex]; if (!chain) return dex;
-    const i = Math.min(chain.length - 1, Math.floor(Math.max(0, level - 1) / 3));
+  function stageFor(dex, level, selectedPath) {
+    const chain = selectedPath || pathFor(dex); if (!chain) return dex;
+    const i = Math.min(chain.length - 1, level >= 15 ? chain.length - 1 : level >= 6 ? Math.min(1, chain.length - 1) : 0);
     return chain[i];
   }
   function captureChance(enemy) { return enemy && (enemy.boss || enemy.legend) ? 0.05 : 0.002; }
@@ -35,5 +41,5 @@ G.MonProgression = (() => {
     if (out.length) G.DB.commit(true);
     return out;
   }
-  return { CHAINS, chainBy, ivMod, values, stats, stageFor, captureChance, tryCapture, commitCaptures };
+  return { CHAINS, PATHS, chainBy, pathFor, rootFor, ivMod, values, stats, stageFor, captureChance, tryCapture, commitCaptures };
 })();

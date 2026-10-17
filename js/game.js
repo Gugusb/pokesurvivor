@@ -89,9 +89,14 @@ G.Game = (() => {
   function startRun(coop = null) {
     holdBy = []; awayBy = null;
     const save = G.DB.save;
-    const mon = G.DEX_BY[save.partner];
+    // A run always starts at the first form, even when the selected Pokédex
+    // entry is an evolved form.  IVs are read from that form's collection
+    // entry and then carried through the evolution stages.
+    const startDex = G.MonProgression ? G.MonProgression.rootFor(save.partner) : save.partner;
+    const evolutionPath = G.MonProgression ? G.MonProgression.pathFor(save.partner) : [startDex];
+    const mon = G.DEX_BY[startDex];
     challenge = G.Difficulty ? G.Difficulty.begin(save, mon.dex, coop?.difficulty ?? (coop ? 1 : undefined)) : null;
-    const perks = G.Upgrades.perks(G.DB.upgradesOf(mon.dex));
+    const perks = G.Upgrades.perks(G.DB.upgradesOf(startDex));
 
     G.UI.hideAll();
     G.UI.chrome(false);
@@ -114,17 +119,20 @@ G.Game = (() => {
     runSpeed = 1; speedBonus = 0; speedK = 1; usedDouble = false;
     runReal = performance.now(); tampered = !!(G.Dev && G.Dev.enabled);
 
-    pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(mon.dex));
-    if (G.MonProgression) pl.monStage = G.MonProgression.stageFor(mon.dex, 1);
+    pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(save.partner), save.partner);
+    if (G.MonProgression) {
+      pl.evolutionPath = evolutionPath.slice();
+      pl.monStage = G.MonProgression.stageFor(startDex, 1, pl.evolutionPath);
+    }
     banked = { t1: 0, t10: 0 };
     caught = [];
     if (G.MonProgression) challenge.pendingCaptures = [];
     // Atajos: movimientos con hueco fijo (save.pbind[dex] = [id del 1, id del 2, ...]),
     // antes de aprender nada: addMove ya los coloca.
-    (save.pbind && save.pbind[mon.dex] || []).forEach((id, i) => { if (id) pl.bind[id] = i; });
-    pl.addMove(G.startMoveOf(mon.dex));
+    (save.pbind && save.pbind[startDex] || []).forEach((id, i) => { if (id) pl.bind[id] = i; });
+    pl.addMove(G.startMoveOf(startDex));
     // Mejora "Veto": movimientos que no quieres que te salgan.
-    pl.banned = new Set((save.pban && save.pban[mon.dex] || []).slice(0, perks.bans));
+    pl.banned = new Set((save.pban && save.pban[startDex] || []).slice(0, perks.bans));
     // Mejora "Repertorio": un segundo movimiento de ataque al azar.
     if (perks.startMoves >= 2) {
       const pool = G.Moves.poolFor(mon).filter(id => !pl.hasMove(id) && !pl.banned.has(id) && G.Moves.BY_ID[id].kind !== 'buff');
@@ -401,18 +409,24 @@ G.Game = (() => {
     state = 'levelup';
     G.Audio.sfx('levelup');
     const before = pl.monStage;
-    const next = G.MonProgression ? G.MonProgression.stageFor(pl.dex, pl.level) : pl.dex;
+    const next = G.MonProgression ? G.MonProgression.stageFor(pl.dex, pl.level, pl.evolutionPath) : pl.dex;
     if (G.MonProgression && next !== before) {
       pl.monStage = next;
       const oldHp = pl.maxHp;
-      const ivs = G.MonProgression.values(pl.dex);
+      const ivs = G.MonProgression.values(pl.ivDex || pl.dex);
       pl.mon = Object.assign({}, G.DEX_BY[next], { types: G.DEX_BY[next].types.slice() });
+      pl.spriteDex = next;
+      pl.anim = new G.Sprites.Animator(next, 1, pl.shiny);
+      pl.r = G.Sprites.bodyRadius(next);
+      pl.bodyH = G.Sprites.bodyHeight(next);
+      G.Sprites.preload([next], 8000, pl.shiny);
       pl.baseAtk = pl.mon.atk * G.MonProgression.ivMod(ivs[1]);
       pl.baseSpd = pl.mon.spd * G.MonProgression.ivMod(ivs[2]);
       const ratio = pl.mon.hp * G.MonProgression.ivMod(ivs[0]) / Math.max(1, oldHp);
       pl.maxHp *= ratio; pl.hp *= ratio;
-      chooseLevelCards(pl.level, () => { state = 'playing'; });
-      chooseLevelCards(pl.level, () => { state = 'playing'; });
+      // Evolution grants one additional card choice.  Keep the two offers
+      // serial so their overlays cannot race each other.
+      chooseLevelCards(pl.level, () => chooseLevelCards(pl.level, () => { state = 'playing'; }));
       return;
     }
     chooseLevelCards(pl.level, () => { state = 'playing'; });

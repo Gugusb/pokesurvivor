@@ -7,10 +7,12 @@ G.Player = class Player {
   /**
    * @param mon   entrada de G.DEX
    * @param perks mejoras permanentes ya resueltas (ver data/upgrades.js)
+   * @param ivDex entrada de la Pokédex cuyos IV se aplican durante la partida
    */
-  constructor(mon, perks = {}, shiny = false) {
+  constructor(mon, perks = {}, shiny = false, ivDex = mon.dex) {
     this.mon = mon;
     this.dex = mon.dex;
+    this.ivDex = ivDex || mon.dex;
     this.spriteDex = mon.dex; this.megaForm = null;
     this.shiny = shiny && G.Sprites.hasShiny(mon.dex);
     this.anim = new G.Sprites.Animator(mon.dex, 1, this.shiny);
@@ -27,7 +29,7 @@ G.Player = class Player {
     this.xpMul = perks.xpMul || 1;
     this.coinMul = perks.coinMul || 1;
 
-    const ivs = G.MonProgression ? G.MonProgression.values(mon.dex) : [16, 16, 16];
+    const ivs = G.MonProgression ? G.MonProgression.values(this.ivDex) : [16, 16, 16];
     const ivm = G.MonProgression ? ivs.map(G.MonProgression.ivMod) : [1, 1, 1];
     this.maxHp = mon.hp * ivm[0] + (perks.hp || 0);
     this.hp = this.maxHp;

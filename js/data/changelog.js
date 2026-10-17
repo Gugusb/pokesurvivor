@@ -6,6 +6,10 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-17', title: ['Todas las evoluciones · v0.10.1', 'All evolutions · v0.10.1'], new: [
+    ['Las 318 familias evolutivas disponibles cubren 775 Pokémon del catálogo. Cada partida empieza en la primera forma y evoluciona en los niveles 6 y 15 siguiendo la ruta del Pokémon elegido; evolucionar concede una elección de movimiento adicional.',
+     'All 318 available evolution families now cover 775 Pokédex entries. Every run starts at the first form and evolves at levels 6 and 15 along the route of the chosen Pokémon; each evolution grants one extra move choice.']
+  ], chg: [], fix: [] },
   { d: '2026-10-17', title: ['Valores individuales y capturas · v0.10.0', 'Individual values and captures · v0.10.0'], new: [
     ['Cada Pokémon tiene valores individuales y puede evolucionar durante la partida. También puedes capturar Pokémon salvajes y revisarlos al terminar la partida.',
      'Each Pokémon has individual values and can evolve during a run. You can also capture wild Pokémon and review them when the run ends.']
