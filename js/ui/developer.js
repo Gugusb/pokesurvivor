@@ -4,7 +4,7 @@ G.Dev = (() => {
   try { enabled = localStorage.getItem('ps.dev.enabled') === 'true'; } catch (e) { /* sin persistencia */ }
   let god = false, panel, launcher;
   let viewMultiplier = 1.5;
-  let zTestMove = 'ember';
+  let zTestMove = 'ember', zShortCooldown = false;
   try {
     const stored = Number(localStorage.getItem('ps.dev.view'));
     if (stored >= 1 && stored <= 2) viewMultiplier = stored;
@@ -36,7 +36,7 @@ G.Dev = (() => {
   function setEnabled(on) {
     enabled = !!on;
     if (enabled && G.Game) G.Game.debugMark();
-    if (!enabled) { god = false; if (G.AbilityGacha.clearDebug) G.AbilityGacha.clearDebug(); if (G.MegaPreview) G.MegaPreview.restore(G.Game.player); }
+    if (!enabled) { god = false; zShortCooldown = false; if (G.AbilityGacha.clearDebug) G.AbilityGacha.clearDebug(); if (G.MegaPreview) G.MegaPreview.restore(G.Game.player); }
     if (G.Camera.setViewMultiplier) G.Camera.setViewMultiplier(canUse() ? viewMultiplier : 1);
     try { localStorage.setItem('ps.dev.enabled', String(enabled)); } catch (e) { /* nada */ }
     refresh();
@@ -58,6 +58,13 @@ G.Dev = (() => {
     if (!launcher) return;
     launcher.classList.toggle('hidden', !enabled);
     if (!enabled) panel.classList.add('hidden');
+  }
+  function setZCooldown(on) {
+    if(!canUse())return false;
+    zShortCooldown=!!on;G.Game.debugMark();
+    const p=G.Game.player;
+    if(zShortCooldown&&p?.zState?.phase==='cooldown')p.zState.cooldown=Math.min(2,p.zState.cooldown);
+    return true;
   }
   function requireRun() {
     const p = G.Game.player;
@@ -92,6 +99,7 @@ G.Dev = (() => {
       '<button class="btn small" data-dev="partner">选择伙伴（局外）</button>' +
       (G.ZMoves ? '<h4>Z 招式试玩</h4><p class="note">仅用于调试。替换测试招式会清空本局原有技能，并装备同属性 Z 石。</p>' +
       '<div class="row wrap"><button class="btn small" data-dev="z-grant">获得全部 Z 石</button><button class="btn small" data-dev="z-charge">Z 石立即就绪</button></div>' +
+      '<button class="btn small '+(zShortCooldown?'gold':'')+'" data-dev="z-short-cd">Z 技能冷却固定 2s：'+(zShortCooldown?'开':'关')+'</button>'+
       '<label>测试 Z 招式 <select id="dev-z-move">'+G.Moves.ALL.filter(m=>G.ZMoves.KINDS.includes(m.kind)).map(m=>'<option value="'+m.id+'"'+(m.id===zTestMove?' selected':'')+'>'+G.T(m.name)+' · '+m.kind+'</option>').join('')+'</select></label>'+
       '<div class="row wrap"><button class="btn small" data-dev="z-prepare">替换为测试招式</button><button class="btn small" data-dev="z-enemies">生成测试敌群</button><button class="btn small" data-dev="z-boss">生成测试 Boss</button><button class="btn small" data-dev="z-arm">进入 Z 蓄力</button></div>':'') +
       '<h4>Mega 素材预览</h4><p class="note">此处用于预览 Mega 外观和动画。</p>' +
@@ -137,6 +145,7 @@ G.Dev = (() => {
         switch (b.dataset.dev) {
           case 'z-grant': for(const type of G.ZMoves.TYPES)G.ZMoves.grant(s,type);G.UI.toast('已获得全部 Z 石，可在图鉴详情装备');break;
           case 'z-charge': {const p=requireRun();if(p)G.ZMoves.debugCharge(p);break;}
+          case 'z-short-cd': setZCooldown(!zShortCooldown);break;
           case 'z-prepare': {
             const p=requireRun();if(!p)break;
             if(G.ZMoves.busy(p)||G.Mega.active(p)){G.UI.toast('请等待当前招式或 Mega 进化结束');break;}
@@ -214,6 +223,7 @@ G.Dev = (() => {
       '<button class="btn ' + (enabled ? 'gold' : '') + '" id="dev-enable">开发者模式：' + (enabled ? '开' : '关') + '</button>';
     box.querySelector('#dev-enable').onclick = () => { setEnabled(!enabled); renderSettings(box); };
   }
-  return { init, canUse, setEnabled, setView, adjustCurrency, renderSettings,
+  return { init, canUse, setEnabled, setView, setZCooldown, adjustCurrency, renderSettings,
+    get zShortCooldown() { return canUse() && zShortCooldown; },
     get viewMultiplier() { return viewMultiplier; }, get enabled() { return enabled; }, get invincible() { return canUse() && god; } };
 })();

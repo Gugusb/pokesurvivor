@@ -27,7 +27,7 @@ function context(){
   s.evolve=p=>{G.Mega.tick(p,120);assert.ok(G.Mega.activate(p));};
   s.cast=(p,id,lvl=1)=>{const m=G.Moves.instance(id,lvl);p.moves=[m];p.slots=[[m]];p.active=0;p.target=G.EnemyMgr.all()[0];p.aim=0;G.EnemyMgr.rebuildGrid();G.Combat.tick(0,p,0);return m;};
   s.loadRift=()=>{let src=fs.readFileSync(path.join(ROOT,'js/systems/rift.js'),'utf8').replace('reset, update, drawable,','_start:start, reset, update, drawable,');vm.runInContext(src,s);};
-  s.loadGame=()=>{G.UI.isOpen=()=>false;let src=fs.readFileSync(path.join(ROOT,'js/game.js'),'utf8').replace('init, startRun, everyone,',"_test:{setPlayer(p){pl=p;state='playing';},collect:onCollect,offerItem,pending:()=>pendingLevels}, init, startRun, everyone,");vm.runInContext(src,s);G.Game._test.setPlayer(p);};
+  s.loadGame=()=>{G.UI.isOpen=()=>false;let src=fs.readFileSync(path.join(ROOT,'js/game.js'),'utf8').replace('init, startRun, everyone,',"_test:{keys:handleKeys,setPlayer(p){pl=p;state='playing';},collect:onCollect,offerItem,pending:()=>pendingLevels}, init, startRun, everyone,");vm.runInContext(src,s);G.Game._test.setPlayer(p);};
   return s;
 }
 function setup(id='ember', extras=[]) {
@@ -170,4 +170,81 @@ test('remote Z casts are visual only, validate types, and all living players sha
 test('Z crystal reserves the item slot and ordinary item pickups convert to XP',()=>{
   const s=setup(),{G,p}=s;s.loadGame();assert.equal(p.equip('leftovers'),false);
   const xp=p.xp;G.Game._test.collect({kind:'item',value:'leftovers'},p);assert.equal(p.item,null);assert.ok(p.xp>xp);
+});
+
+function visuals(s){
+  const sprites=[],canvas=[];
+  s.G.Settings={fx:2,get:()=>true};s.load('js/entities/fx.js');
+  s.G.VFX.draw=(ctx,shape,pal,x,y,opts)=>sprites.push({shape,pal,x,y,...opts});
+  const ctx=new Proxy({},{get:(o,k)=>k in o?o[k]:(...args)=>canvas.push([k,...args])});
+  return {ctx,sprites,canvas,clear(){sprites.length=0;canvas.length=0;}};
+}
+
+test('Z beams retain each original animated material, quadruple sprite size and use pixel beam bodies',()=>{
+  for(const [id,shape] of [['hydro-pump','drop'],['ice-beam','shard'],['psybeam','ring'],['dragon-rage','fire'],['flash-cannon','shard']]){
+    const s=setup(id),{G,p,m}=s,v=visuals(s),vis=G.VFX.forMove(m);
+    G.FX.beam(p.x,p.y-G.LIFT,0,m.radius,m.width,G.U.TYPE_COLOR[m.type],vis);G.FX.draw(v.ctx);
+    const normal=v.sprites.find(x=>x.shape===shape);assert.ok(normal,`${id} normal material`);
+    v.clear();release(s);G.ZMoves.draw(v.ctx);
+    const z=v.sprites.find(x=>x.shape===shape);assert.ok(z,`${id} Z material`);
+    assert.equal(z.pal,normal.pal);close(z.scale,normal.scale*4);
+    assert.ok(v.canvas.filter(x=>x[0]==='fillRect').length>20,'original pixel beam body');
+    assert.equal(v.canvas.some(x=>x[0]==='lineTo'),false,'no solid replacement beam');
+    v.clear();G.Combat.tick(.5,p,0);G.ZMoves.draw(v.ctx);assert.ok(v.sprites.some(x=>x.shape===shape));
+  }
+});
+
+test('both Z orbit layers retain the normal fire, leaf and wind sprites with facing and animation',()=>{
+  for(const id of ['fire-spin','leaf-storm','gust']){
+    const s=setup(id),{G,p,m}=s,v=visuals(s),vis=G.VFX.forMove(m);
+    G.Projectiles.spawnOrb({x:p.x+m.radius,y:p.y,owner:p,vis,r:m.size,oa:0,t:.25});G.Projectiles.draw(v.ctx);
+    const normal=v.sprites[0];v.clear();release(s);G.ZMoves.drawGround(v.ctx);G.ZMoves.draw(v.ctx);
+    assert.equal(v.sprites.length,m.count*2);
+    for(const z of v.sprites){assert.equal(z.shape,normal.shape);assert.equal(z.pal,normal.pal);assert.equal(z.scale,normal.scale);}
+    assert.equal(v.sprites[0].frame,0);G.Combat.tick(.25,p,0);v.clear();G.ZMoves.draw(v.ctx);
+    assert.ok(v.sprites.every(x=>x.frame===3));assert.ok(v.canvas.some(x=>x[0]==='ellipse'));
+  }
+});
+
+test('Z meteors retain rock and ice sprites and the normal falling trajectory and ground warnings',()=>{
+  for(const id of ['rock-slide','hail','meteor-mash']){
+    const s=setup(id),{G,m}=s,v=visuals(s),vis=G.VFX.forMove(m);
+    G.FX.drawMeteor(v.ctx,{x:100,y:50,t:.25,fall:.5,vis});const normal=v.sprites[0];v.clear();
+    s.enemy(100);G.EnemyMgr.rebuildGrid();release(s);G.Combat.tick(.25,s.p,0);
+    G.ZMoves.drawGround(v.ctx);G.ZMoves.draw(v.ctx);
+    const z=v.sprites[0];assert.equal(z.shape,normal.shape);assert.equal(z.pal,normal.pal);close(z.scale,normal.scale*3);
+    close(z.x,normal.x);close(z.y,normal.y-50);close(z.angle,normal.angle);
+    assert.ok(v.canvas.some(x=>x[0]==='setLineDash'&&x[1].join(',')==='4,4'));
+    assert.ok(v.canvas.some(x=>x[0]==='ellipse'&&Math.abs(x[3]-m.radius*3)<1e-8));
+  }
+});
+
+test('Z melee accents and dash trails keep move-specific shapes instead of generic geometry',()=>{
+  for(const [id,shape] of [['tackle','impact'],['bite','jaws'],['metal-claw','claw'],['vine-whip','leaf'],['quick-attack','streak'],['aerial-ace','wind']]){
+    const s=setup(id),{G}=s,v=visuals(s);release(s);G.FX.draw(v.ctx);
+    const z=v.sprites.find(x=>x.shape===shape);assert.ok(z,`${id} retained ${shape}`);assert.equal(z.pal,G.VFX.forMove(s.m).pal);
+    assert.ok(z.scale>=3);v.clear();G.ZMoves.draw(v.ctx);
+    assert.equal(v.canvas.some(x=>x[0]==='lineTo'),false,'no replacement dash band');
+  }
+});
+
+test('Z hotkey arms and cancels selection, ignores text inputs and does not activate Mega',()=>{
+  const s=setup(),{G,p}=s;s.loadGame();G.SettingsUI={isOpen:false};G.Input.tap=key=>key==='keyz';
+  G.Game._test.keys();assert.equal(p.zState.phase,'choose');G.Game._test.keys();assert.equal(p.zState.phase,'ready');
+  s.document.activeElement={closest:()=>true};G.Game._test.keys();assert.equal(p.zState.phase,'ready');
+  s.document.activeElement=null;p.zState.type=null;let mega=0;G.Mega.activate=()=>mega++;
+  G.Game._test.keys();assert.equal(mega,0);G.Input.tap=key=>key==='keyf';G.Game._test.keys();assert.equal(mega,1);
+});
+
+test('developer two-second Z cooldown repeats after every cast, defaults off and is disabled in co-op',()=>{
+  const s=setup('quick-attack'),{G,p}=s;G.AbilityGacha={};s.load('js/ui/developer.js');
+  assert.equal(G.Dev.zShortCooldown,false);assert.equal(G.Dev.setZCooldown(true),false);
+  G.Dev.setEnabled(true);assert.equal(G.Dev.zShortCooldown,false);
+  release(s);advance(s,.5);close(p.zState.cooldown,180);
+  assert.equal(G.Dev.setZCooldown(true),true);close(p.zState.cooldown,2);
+  advance(s,2);assert.equal(p.zState.phase,'ready');release(s);advance(s,.5);close(p.zState.cooldown,2);
+  advance(s,2);release(s);advance(s,.5);close(p.zState.cooldown,2);
+  G.Dev.setZCooldown(false);G.ZMoves.debugCharge(p);release(s);advance(s,.5);close(p.zState.cooldown,180);
+  G.Dev.setZCooldown(true);G.Coop.active=true;assert.equal(G.Dev.zShortCooldown,false);assert.equal(G.Dev.setZCooldown(false),false);
+  G.Coop.active=false;G.Dev.setEnabled(false);assert.equal(G.Dev.zShortCooldown,false);G.Dev.setEnabled(true);assert.equal(G.Dev.zShortCooldown,false);
 });

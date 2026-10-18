@@ -619,8 +619,8 @@ G.Game = (() => {
     if (G.Input.tap('escape') || G.Input.tap('keyp')) { togglePause(); return; }
     if (state !== 'playing' || !pl) return;
     if (G.Input.tap('keyv') && !document.activeElement?.closest('input,textarea,select,[contenteditable]')) setSpeed(runSpeed === 1 ? 2 : 1);
-    if (G.Input.tap('keyf') && !document.activeElement?.closest('input, textarea, select, [contenteditable]')) {
-      if (G.ZMoves && G.ZMoves.hasStone(pl)) G.ZMoves.arm(pl); else if (G.Mega) G.Mega.activate(pl);
+    if ((G.Input.tap('keyz') || G.Input.tap('keyf')) && !document.activeElement?.closest('input, textarea, select, [contenteditable]')) {
+      if (G.ZMoves && G.ZMoves.hasStone(pl)) G.ZMoves.arm(pl); else if (G.Input.tap('keyf') && G.Mega) G.Mega.activate(pl);
     }
     for (let i = 0; i < 4; i++) {
       if (G.Input.tap('digit' + (i + 1)) || G.Input.tap('numpad' + (i + 1))) pl.setActive(i);
@@ -786,6 +786,7 @@ G.Game = (() => {
     G.World.drawLiquid(ctx, cam, t);
     G.Hazards.draw(ctx);
     G.Combat.drawGroundFields(ctx);
+    if (G.ZMoves) G.ZMoves.drawGround(ctx);
     G.Pickups.draw(ctx);
 
     // Todo lo que tiene "pies" se ordena por Y: objetos, enemigos, jugador.

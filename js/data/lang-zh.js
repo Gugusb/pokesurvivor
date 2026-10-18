@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "La tecla Z activa los movimientos Z. El panel de desarrollo permite fijar su recarga en 2 segundos.": "新增 Z 键启动 Z 招式，开发者面板可将 Z 招式冷却固定为 2 秒。",
+  "The Z key activates Z moves. Developer tools can keep their cooldown at 2 seconds.": "新增 Z 键启动 Z 招式，开发者面板可将 Z 招式冷却固定为 2 秒。",
+  "Efectos originales de Z · v0.12.1": "Z 原版特效修复 · v0.12.1",
+  "Original Z move effects · v0.12.1": "Z 原版特效修复 · v0.12.1",
+  "Los movimientos Z reutilizan los efectos originales ampliados: rayos de píxeles con sus partículas, orbes, meteoros, golpes y estelas propios de cada movimiento.": "Z 招式复用并放大原有效果：像素光束与流动粒子、环绕物、陨石、近战命中特效及冲刺拖尾均保留对应技能的素材。",
+  "Z moves reuse enlarged original effects: pixel beams with their particles, and each move’s own orbs, meteors, melee hits and dash trails.": "Z 招式复用并放大原有效果：像素光束与流动粒子、环绕物、陨石、近战命中特效及冲刺拖尾均保留对应技能的素材。",
   "Nuevo": "新增",
   "Cambios": "调整",
   "Arreglos": "修复",

@@ -90,18 +90,19 @@ G.FX = (() => {
   /** Golpe cuerpo a cuerpo. fx: { pal, melee } (ver G.VFX.forMove). */
   function slash(x, y, angle, radius, arc, color, fx = {}) {
     const pal = fx.pal || 'normal';
+    const scale = fx.visualScale || 1;
     slashes.push({ x, y, angle, radius, arc, pal, t: 0, life: 0.22 });
     const mx = x + Math.cos(angle) * radius * 0.7, my = y + Math.sin(angle) * radius * 0.7;
     switch (fx.melee) {
-      case 'impact': sp('impact', pal, mx, my, { life: 0.2, scale: 1.5, frameRate: 12, fade: false }); break;
-      case 'jaws':   sp('jaws', pal, mx, my, { life: 0.24, scale: 1.5, frameRate: 9, fade: false }); break;
-      case 'claw':   sp('claw', pal, mx, my, { life: 0.2, scale: 1.5, angle: angle - Math.PI / 4 }); break;
+      case 'impact': sp('impact', pal, mx, my, { life: 0.2, scale: 1.5 * scale, frameRate: 12, fade: false }); break;
+      case 'jaws':   sp('jaws', pal, mx, my, { life: 0.24, scale: 1.5 * scale, frameRate: 9, fade: false }); break;
+      case 'claw':   sp('claw', pal, mx, my, { life: 0.2, scale: 1.5 * scale, angle: angle - Math.PI / 4 }); break;
       case 'vine':
       case 'feather':
         for (let i = 0; i < 4; i++) {
           const a = angle + G.U.rand(-arc / 2, arc / 2), r = radius * G.U.rand(0.5, 1);
           sp('leaf', fx.melee === 'feather' ? 'flying' : pal, x + Math.cos(a) * r, y + Math.sin(a) * r,
-             { vx: Math.cos(a) * 40, vy: Math.sin(a) * 40 + 20, life: 0.45, spin: G.U.rand(-8, 8), grav: 60 });
+             { vx: Math.cos(a) * 40, vy: Math.sin(a) * 40 + 20, life: 0.45, scale, spin: G.U.rand(-8, 8), grav: 60 });
         }
         break;
     }
@@ -156,17 +157,18 @@ G.FX = (() => {
   function drawBeam(ctx, b) {
     const k = 1 - b.t / b.life;
     const P = G.VFX.PAL[b.pal] || G.VFX.PAL.normal;
-    const a = Math.round(b.angle / (Math.PI / 16)) * (Math.PI / 16);
+    const a = b.precise ? b.angle : Math.round(b.angle / (Math.PI / 16)) * (Math.PI / 16);
     ctx.save();
     ctx.translate(snap(b.x), snap(b.y));
     ctx.rotate(a);
     ctx.globalAlpha = step(k);
     const seg = PX * 2, now = performance.now() / 1000;
+    const from = Math.max(0, Math.floor((b.from || 0) / seg) * seg);
 
     if (b.shape === 'lightning') {
       // Zigzag que se redibuja cada fotograma.
       let py = 0;
-      for (let d = 0; d < b.len; d += seg) {
+      for (let d = from; d < b.len; d += seg) {
         const ny = d + seg >= b.len ? 0 : snap((G.U.hash(d | 0, (now * 30) | 0, b.seed | 0) - 0.5) * b.width);
         const lo = Math.min(py, ny), hi = Math.max(py, ny);
         ctx.fillStyle = P[3]; ctx.fillRect(d - PX, lo - PX * 2, seg + PX * 2, hi - lo + PX * 4);
@@ -175,7 +177,7 @@ G.FX = (() => {
       }
     } else {
       // Cuerpo del rayo a bloques, con el borde vibrando.
-      for (let d = 0; d < b.len; d += seg) {
+      for (let d = from; d < b.len; d += seg) {
         const wob = 0.7 + 0.3 * Math.sin(d * 0.18 + now * 30 + b.seed);
         const hw = Math.max(PX, snap(b.width / 2 * wob * (0.6 + 0.4 * k)));
         ctx.fillStyle = P[1]; ctx.fillRect(d, -hw - PX, seg, hw * 2 + PX * 2);
@@ -185,10 +187,10 @@ G.FX = (() => {
       }
       // Sprites que viajan por el rayo (llamas, gotas, cristales, ondas).
       if (b.shape) {
-        const gap = 26, off = (now * 420) % gap;
-        for (let d = off; d < b.len - 6; d += gap) {
+        const scale = b.visualScale || 1, gap = 26 * scale, off = (now * 420) % gap;
+        for (let d = off + Math.max(0, Math.ceil((from - off) / gap)) * gap; d < b.len - 6; d += gap) {
           const yo = Math.sin(d * 0.3 + b.seed) * b.width * 0.18;
-          G.VFX.draw(ctx, b.shape, b.pal, d, yo, { angle: 0.0001, scale: 1.5, frame: (d / gap + now * 12) | 0 });
+          G.VFX.draw(ctx, b.shape, b.pal, d, yo, { angle: 0.0001, scale: 1.5 * scale, frame: (d / gap + now * 12) | 0 });
         }
       }
     }
@@ -226,6 +228,21 @@ G.FX = (() => {
       ctx.fillRect(snap(r.x + Math.cos(a) * rad), snap(r.y + Math.sin(a) * rad * 0.9), size, size);
     }
     ctx.globalAlpha = 1;
+  }
+
+  // Shared by ordinary and Z meteors: the same warning shadow and falling sprite.
+  function drawMeteorShadow(ctx, f) {
+    const k = G.U.clamp(f.t / f.fall, 0, 1);
+    ctx.save();ctx.globalAlpha = 0.2 + k * 0.3;ctx.fillStyle = '#000';
+    ctx.beginPath();ctx.ellipse(f.x, f.y, f.r * (0.3 + k * 0.7), f.r * 0.6 * (0.3 + k * 0.7), 0, 0, 6.2832);ctx.fill();
+    ctx.globalAlpha = 0.6;ctx.strokeStyle = f.col;ctx.lineWidth = 1.5;ctx.setLineDash([4, 4]);
+    ctx.beginPath();ctx.ellipse(f.x, f.y, f.r, f.r * 0.6, 0, 0, 6.2832);ctx.stroke();ctx.restore();
+  }
+  function drawMeteor(ctx, f) {
+    if(f.t <= 0)return;
+    const k = G.U.clamp(f.t / f.fall, 0, 1);
+    G.VFX.draw(ctx, f.vis.proj, f.vis.pal, f.x + (1-k)*40, f.y - (1-k)*170 - 6,
+      {scale:1.5*(f.visualScale||1),angle:Math.atan2(170,-40),frame:Math.floor(performance.now()/1000*12)});
   }
 
   function draw(ctx) {
@@ -266,5 +283,6 @@ G.FX = (() => {
   }
 
   return { clear, px, burst, spark, sp, twinkle, trail, dmgText, ring, slash, beam, update, draw,
+           drawBeam, drawSlash, drawMeteorShadow, drawMeteor,
            get count() { return parts.length + sprites.length + texts.length; } };
 })();

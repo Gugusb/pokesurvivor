@@ -260,7 +260,7 @@ G.HUD = (() => {
       G.ZMoves.drawStone(ctx,sx+13,sy+3,28,zs.type);
       ctx.font=F(800,9);ctx.fillStyle='#fff';ctx.textAlign='center';
       ctx.fillText(choosing?G.T('Elegir Z'):casting?'Z…':ready?G.T('Lista'):Math.ceil(zs.cooldown)+'s',sx+S/2,sy+44);
-      ctx.fillText('F',sx+7,sy+11);
+      ctx.fillText('Z',sx+7,sy+11);
       G.Touch.addButton(sx,sy,S,S,()=>G.ZMoves.arm(pl),GAP/2);sx+=S+GAP;
     } else if (hasMega) {
       const ms = pl.megaState, running = G.Mega.active(pl), ready = !running && G.Mega.eligible(pl) && ms.energy >= G.Mega.CAP;

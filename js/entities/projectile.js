@@ -114,7 +114,6 @@ G.Projectiles = (() => {
   }
 
   function draw(ctx) {
-    const L = G.LIFT;
     // Sombras primero, todas juntas.
     ctx.fillStyle = 'rgba(0,0,0,.25)';
     for (const p of list) {
@@ -126,20 +125,23 @@ G.Projectiles = (() => {
       if (p.friendly) continue;
       ctx.beginPath(); ctx.ellipse(p.x, p.y, p.r * 1.5, p.r * 0.6, 0, 0, 6.2832); ctx.fill();
     }
-    for (const p of list) {
+    for (const p of list) drawSprite(ctx,p);
+  }
+
+  // Z orbit layers use exactly the normal orb sprite, palette, facing and animation.
+  function drawSprite(ctx,p) {
       const v = p.vis || G.VFX.forType('normal');
       const shape = v.proj;
       const a = p.orb ? 1 : Math.min(1, (p.life - p.t) * 4);
       let angle = 0;
       if (G.VFX.isDir(shape)) angle = p.orb ? p.oa + Math.PI / 2 : Math.atan2(p.vy, p.vx);
       else if (G.VFX.spins(shape)) angle = p.t * 9;
-      G.VFX.draw(ctx, shape, v.pal, p.x, p.y - L, {
+      G.VFX.draw(ctx, shape, v.pal, p.x, p.y - G.LIFT, {
         angle, alpha: a, scale: p.visualScale || (p.r >= 8 ? 1.5 : 1),
         frame: Math.floor(p.t * 12)
       });
-    }
   }
 
-  return { clear, all, spawn, spawnOrb, clearOrbs, update, remove, draw, nearest,
+  return { clear, all, spawn, spawnOrb, clearOrbs, update, remove, draw, drawSprite, nearest,
            get count() { return list.length; } };
 })();

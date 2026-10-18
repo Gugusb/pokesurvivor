@@ -6,6 +6,11 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-18', title: ['Efectos originales de Z · v0.12.1', 'Original Z move effects · v0.12.1'], new: [
+    ['La tecla Z activa los movimientos Z. El panel de desarrollo permite fijar su recarga en 2 segundos.', 'The Z key activates Z moves. Developer tools can keep their cooldown at 2 seconds.']
+  ], chg: [], fix: [
+    ['Los movimientos Z reutilizan los efectos originales ampliados: rayos de píxeles con sus partículas, orbes, meteoros, golpes y estelas propios de cada movimiento.', 'Z moves reuse enlarged original effects: pixel beams with their particles, and each move’s own orbs, meteors, melee hits and dash trails.']
+  ] },
   { d: '2026-10-18', title: ['Movimientos Z · v0.12.0', 'Z Moves · v0.12.0'], new: [
     ['Cristales Z con siete tipos de movimientos potenciados, disponibles primero en las herramientas de desarrollo.', 'Z Crystals with seven powered-up move types, initially available through developer tools.'],
     ['Pulsa F, elige un movimiento compatible y libera su ataque Z. Eres invulnerable durante la preparación y el lanzamiento.', 'Press F, choose a compatible move and unleash its Z attack. You are invulnerable during selection and casting.']

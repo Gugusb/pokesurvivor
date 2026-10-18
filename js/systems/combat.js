@@ -454,13 +454,7 @@ G.Combat = (() => {
         ctx.globalAlpha = 1;
         G.VFX.draw(ctx, f.vis.proj, f.vis.pal, f.x, f.y - 4, { scale: 1, alpha: blink ? 1 : 0.75, frame: 0 });
       } else if (f.kind === 'meteor') {
-        const k = G.U.clamp(f.t / f.fall, 0, 1);
-        ctx.globalAlpha = 0.2 + k * 0.3;
-        ctx.fillStyle = '#000';
-        ctx.beginPath(); ctx.ellipse(f.x, f.y, f.r * (0.3 + k * 0.7), f.r * 0.6 * (0.3 + k * 0.7), 0, 0, 6.2832); ctx.fill();
-        ctx.globalAlpha = 0.6;
-        ctx.strokeStyle = f.col; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
-        ctx.beginPath(); ctx.ellipse(f.x, f.y, f.r, f.r * 0.6, 0, 0, 6.2832); ctx.stroke();
+        G.FX.drawMeteorShadow(ctx,f);
       } else if (f.kind === 'turret') {
         ctx.globalAlpha = 0.3;
         ctx.fillStyle = '#000';
@@ -476,9 +470,7 @@ G.Combat = (() => {
     for (const f of fields) {
       if (!G.Camera.sees(f.x, f.y, 200)) continue;
       if (f.kind === 'meteor' && f.t > 0) {
-        const k = G.U.clamp(f.t / f.fall, 0, 1);
-        G.VFX.draw(ctx, f.vis.proj, f.vis.pal, f.x + (1 - k) * 40, f.y - (1 - k) * 170 - 6,
-                   { scale: 1.5, angle: Math.atan2(170, -40), frame: Math.floor(now * 12) });
+        G.FX.drawMeteor(ctx,f);
       } else if (f.kind === 'turret') {
         const fade = Math.min(1, (f.life - f.t) * 2, f.t * 5);
         const bob = Math.sin(now * 4 + f.x) * 2 - (f.kick > 0 ? 2 : 0);
