@@ -103,6 +103,28 @@ G.RunUI = (() => {
     return true;
   }
 
+  function showVictory(stars,bonus,team,waiting,onCashout,onContinue){
+    $('victory-title').textContent=G.T(waiting?'El equipo ha cumplido el objetivo de supervivencia.':'¡Has ganado esta partida!');
+    for(const id of ['victory-unlock','victory-question','victory-bonus'])$(id).classList.toggle('hidden',waiting);
+    $('victory-question').textContent=G.T(bonus?'¿Terminar ahora con el doble de monedas o seguir sobreviviendo hasta el jefe más poderoso?':'¿Terminar ahora o seguir sobreviviendo hasta el jefe más poderoso?');
+    $('victory-unlock').textContent=stars<8?G.I18n.f('Ya puedes desafiar la dificultad {x}★.',stars+1):G.T('¡Has superado las ocho dificultades!');
+    $('victory-bonus').textContent=G.T(bonus?'Termina ahora para duplicar todas las monedas de esta partida. Esta oportunidad se consume sólo al cobrar; si continúas, se conserva para otra victoria en esta dificultad.':'Ya cobraste el doble de monedas en esta dificultad. Puedes terminar con la recompensa normal o seguir luchando.');
+    $('victory-team').classList.toggle('hidden',!team);
+    $('victory-team').textContent=G.T('En grupo decide el anfitrión. Cada jugador cobra según su propia oportunidad disponible.');
+    const cash=$('victory-cashout'),next=$('victory-continue'),status=$('victory-status');
+    cash.textContent=G.T(bonus?'Terminar y cobrar el doble de monedas':'Terminar y cobrar las monedas');
+    cash.classList.toggle('hidden',waiting);next.classList.toggle('hidden',waiting);
+    cash.disabled=next.disabled=false;status.textContent=waiting?G.T('Esperando la decisión del anfitrión…'):'';
+    let busy=false,done=false;
+    cash.onclick=async()=>{
+      if(busy||done||waiting)return;busy=true;cash.disabled=next.disabled=true;status.textContent=G.T('Guardando la recompensa…');
+      if(await onCashout()){done=true;return;}
+      busy=false;cash.disabled=next.disabled=false;status.textContent=G.T('No se pudo guardar. Puedes reintentar o continuar sin consumir la oportunidad.');
+    };
+    next.onclick=()=>{if(busy||done||waiting)return;done=true;onContinue();};
+    G.UI.show('scr-victory');
+  }
+
   function showOver(r, onBack) {
     $('over-title').textContent = r.victory ? 'Dificultad superada' : r.completed ? G.T('Objetivo de supervivencia cumplido') : r.dead ? 'Has caído…' : 'Run terminada';
     $('over-stats').innerHTML = `
@@ -245,5 +267,5 @@ G.RunUI = (() => {
     $('btn-quit').onclick = onQuit;
   }
 
-  return { showLevelUp, reroll, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showOver, wirePause, showPause };
+  return { showLevelUp, reroll, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showVictory, showOver, wirePause, showPause };
 })();

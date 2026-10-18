@@ -188,7 +188,7 @@ G.Coop = (() => {
     }
     const ev = m.q; m.q = [];
     const f = { k: 'f', t: r2(st.time), lv: st.level, xp: r2(st.xp), xn: st.xpNext, ki: st.kills, bo: st.bosses, co: st.coins, tk: [st.t1, st.t10],
-                p, e: enemyList(m.pl), ev, speed: G.Game.speed || 1 };
+                p, e: enemyList(m.pl), ev, speed: G.Game.speed || 1,victory:!!st.victory };
     const ja = G.Judgment.netState();       // Arceus en la Sentencia
     if (ja) f.ja = ja;
     // Siempre: quién está eligiendo y, si hay cartas de nivel, cuáles (ver arriba).
@@ -268,6 +268,7 @@ G.Coop = (() => {
       m.xpMul = m.pl.net.xpMul || 1; reconcile(from, m.pl.net);
     }
     for (const ev of msg.ev || []) {
+      if(api.team?.().victory&&ev[0]!=='bye')continue;
       switch (ev[0]) {
         case 'zc':
           if(G.ZMoves && G.Game.st.time-(m.zAt??-999)>=G.ZMoves.COOLDOWN && G.ZMoves.remoteCast(m.pl,ev[1],ev[2])){
@@ -359,6 +360,12 @@ G.Coop = (() => {
   function onHostFrame(msg) {
     lastHostAt = performance.now();
     if (stalled) { stalled = false; updateAway(); }
+    // Sync the clock and the victory overlay before processing hold events,
+    // so a bond/level overlay cannot replace the shared victory decision.
+    if (G.Game.setSpeed) G.Game.setSpeed(msg.speed === 2 ? 2 : 1, true);
+    api.syncTeam({ time: msg.t, level: msg.lv, xp: msg.xp, xpNext: msg.xn, kills: msg.ki, bosses: msg.bo, coins: msg.co,
+                   t1: (msg.tk || [])[0], t10: (msg.tk || [])[1] });
+    if(api.victory)api.victory(!!msg.victory);
     for (const ev of msg.ev || []) applyHostEvent(ev);
     if (msg.ja) G.Judgment.netApply(msg.ja);
     // Quién elige y las cartas de nivel, aunque se haya perdido algún aviso.
@@ -368,9 +375,6 @@ G.Coop = (() => {
       if (msg.lu && msg.lu[0] > seenSeq) { seenSeq = msg.lu[0]; api.levelStart(msg.lu[1]); }
       else if (!msg.lu && api.inLevelUp && api.inLevelUp()) api.resume();
     }
-    if (G.Game.setSpeed) G.Game.setSpeed(msg.speed === 2 ? 2 : 1, true);
-    api.syncTeam({ time: msg.t, level: msg.lv, xp: msg.xp, xpNext: msg.xn, kills: msg.ki, bosses: msg.bo, coins: msg.co,
-                   t1: (msg.tk || [])[0], t10: (msg.tk || [])[1] });
     for (const u in msg.p || {}) {
       const m = mates.get(u);
       if (m) m.pl.net = readState(msg.p[u]);

@@ -5,6 +5,7 @@ G.Difficulty = (() => {
   const level = n => Number.isInteger(n) && n >= 1 && n <= 8 ? n : 1;
   const map = x => x && typeof x === 'object' && !Array.isArray(x) ? x : {};
   const seconds = x => Number.isFinite(x) && x > 0 ? x : 0;
+  const receipt=r=>r&&Number.isSafeInteger(r.coins)&&r.coins>0&&r.coins<=1e9&&seconds(r.at);
   const factors = (n = current) => ({ hp: 0.7 * (level(n) === 1 ? 0.8 : 1), dmg: 0.8 * (level(n) <= 2 ? 0.5 : 1), spd: level(n) <= 3 ? 0.67 : 1 });
   const HP_CAP=[8,10,13,17,22,28,35,43], DMG_CAP=[1.6,2.1,2.8,3.6,4.5,5.6,6.9,8.4];
   const REWARD=[1,1.15,1.3,1.5,1.75,2,2.3,2.6];
@@ -44,9 +45,13 @@ G.Difficulty = (() => {
     return n;
   }
   function normalize(s) {
-    const d = map(s.difficulty), cleared = {};
+    const d = map(s.difficulty), cleared = {}, cashouts={};
     for (let n = 1; n <= 8; n++) if (d.cleared?.[n] === true) cleared[n] = true;
-    s.difficulty = { selected: level(d.selected), cleared };
+    for(let n=1;n<=8;n++){
+      const r=d.cashouts?.[n];
+      if(receipt(r))cashouts[n]={coins:r.coins,at:r.at};
+    }
+    s.difficulty = { selected: level(d.selected), cleared, cashouts };
     s.difficulty.selected = Math.min(s.difficulty.selected, unlocked(s));
     const records = {};
     for (const [dex, rows] of Object.entries(map(s.difficultyRecords))) {
@@ -61,9 +66,13 @@ G.Difficulty = (() => {
     s.difficultyRecords = records;
   }
   function merge(a, b) {
-    const out = { difficulty: { selected: a.difficulty?.selected ?? b.difficulty?.selected, cleared: {} }, difficultyRecords: {} };
+    const out = { difficulty: { selected: a.difficulty?.selected ?? b.difficulty?.selected, cleared: {},cashouts:{} }, difficultyRecords: {} };
     for (const s of [a, b]) {
       for (let n = 1; n <= 8; n++) if (s.difficulty?.cleared?.[n] === true) out.difficulty.cleared[n] = true;
+      for(let n=1;n<=8;n++){
+        const r=s.difficulty?.cashouts?.[n],old=out.difficulty.cashouts[n];
+        if(receipt(r)&&(!old||r.at<old.at||r.at===old.at&&r.coins<old.coins))out.difficulty.cashouts[n]=r;
+      }
       for (const [dex, rows] of Object.entries(map(s.difficultyRecords))) {
         if (G.DEX_BY[dex]?.dex !== +dex) continue;
         const dest = out.difficultyRecords[dex] ||= {};
@@ -96,6 +105,13 @@ G.Difficulty = (() => {
     if (win) { s.difficulty.cleared[run.stars] = true; run.victory = true; }
     return win;
   }
+  const cashoutTotal=s=>Object.values(s.difficulty?.cashouts||{}).reduce((n,r)=>n+(receipt(r)?r.coins:0),0);
+  const bonusAvailable=(s,n)=>level(n)===n&&!receipt(s.difficulty?.cashouts?.[n]);
+  function claimBonus(s,run,coins){
+    if(!run?.eligible||!run.victory||!s.difficulty?.cleared?.[run.stars]||!bonusAvailable(s,run.stars)||!Number.isSafeInteger(coins)||coins<=0||coins>5e8)return 0;
+    s.difficulty.cashouts||={};s.difficulty.cashouts[run.stars]={coins:coins*2,at:Date.now()};
+    s.coins+=coins*2;s.stats.coinsEarned+=coins*2;return coins;
+  }
   function highest(s, dex) {
     const rows = s.difficultyRecords?.[dex] || {};
     for (let n = 8; n >= 1; n--) if (rows[n]?.best > 0) return { stars: n, best: rows[n].best };
@@ -108,6 +124,6 @@ G.Difficulty = (() => {
     return Object.values(rows).some(r => r.won) ? 'gold' : '';
   }
   return { WIN, level, factors, growth, rewards, eliteChance, treasureChance, corruptionChance, traits, onHurt,debugLevel,
-    normalize, merge, unlocked, select, partyLevel, begin, record, highest, frame,
+    normalize, merge, unlocked, select, partyLevel, begin, record, highest, frame,cashoutTotal,bonusAvailable,claimBonus,
     get current() { return current; } };
 })();

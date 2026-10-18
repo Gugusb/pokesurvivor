@@ -6,6 +6,12 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-18', title: ['Victoria y doble de monedas · v0.14.0', 'Victory and double coins · v0.14.0'], new: [
+    ['Al superar 20 minutos puedes terminar con doble de monedas o seguir hasta el jefe final. La batalla se pausa mientras decides.', 'After surviving over 20 minutes, finish for double coins or keep going to the final boss. Battle pauses while you decide.'],
+    ['Cada dificultad tiene una oportunidad de doble recompensa por cuenta. Sólo se consume al cobrar; continuar o caer después no la gasta.', 'Each difficulty has one double-reward opportunity per account. It is consumed only when claimed; continuing or dying later preserves it.']
+  ], chg: [
+    ['En cooperativo decide el anfitrión y cada jugador cobra según sus propias recompensas pendientes.', 'In co-op, the host decides and each player is paid according to their own unclaimed reward.']
+  ], fix: [] },
   { d: '2026-10-18', title: ['Resultado de supervivencia · v0.13.1', 'Survival results · v0.13.1'], new: [], chg: [], fix: [
     ['Morir después de sobrevivir más de 20 minutos ya no puede invalidar una victoria en solitario por faltar el aviso previo.', 'Dying after surviving more than 20 minutes can no longer invalidate a solo victory because the earlier checkpoint was missed.'],
     ['Las partidas de desarrollo muestran cuándo se ha cumplido el objetivo, explicando que no conceden medallas ni desbloqueos.', 'Developer runs show when the survival objective was met and explain that medals and difficulty unlocks are not recorded.']

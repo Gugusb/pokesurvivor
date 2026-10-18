@@ -73,7 +73,7 @@
   ]
 }
 </script>
-<link rel="stylesheet" href="css/style.css?v=55f5603f3d">
+<link rel="stylesheet" href="css/style.css?v=47f37f0fa7">
 </head>
 <body>
 
@@ -541,6 +541,21 @@
   </div>
 </section>
 
+<section id="scr-victory" class="scr dim hidden" role="dialog" aria-modal="true" aria-labelledby="victory-title">
+  <div class="box center" style="width:min(540px,100%)">
+    <h2 id="victory-title">¡Has ganado esta partida!</h2>
+    <p id="victory-unlock" class="sub"></p>
+    <p id="victory-question" class="sub">¿Terminar ahora o seguir sobreviviendo hasta el jefe más poderoso?</p>
+    <p id="victory-bonus" class="note"></p>
+    <p id="victory-team" class="note hidden"></p>
+    <div class="row wrap" style="justify-content:center;margin-top:18px">
+      <button id="victory-cashout" class="btn gold">Terminar y cobrar el doble de monedas</button>
+      <button id="victory-continue" class="btn">Seguir luchando</button>
+    </div>
+    <p id="victory-status" class="note" role="status"></p>
+  </div>
+</section>
+
 <section id="scr-pause" class="scr dim hidden">
   <div class="box center" style="width:min(460px,100%)">
     <h2>Pausa</h2>
@@ -566,6 +581,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=55f5603f3d"></script>
+<script defer src="js/app.min.js?v=47f37f0fa7"></script>
 </body>
 </html>

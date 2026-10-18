@@ -4,6 +4,23 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  'El equipo ha cumplido el objetivo de supervivencia.':'The team has met the survival objective.',
+  '¿Terminar ahora con el doble de monedas o seguir sobreviviendo hasta el jefe más poderoso?':'Finish now for double coins, or keep surviving to face the strongest boss?',
+  '¡Has ganado esta partida!':'You have won this run!',
+  'Ya puedes desafiar la dificultad {x}★.':'You can now challenge difficulty {x}★.',
+  '¡Has superado las ocho dificultades!':'You have cleared all eight difficulties!',
+  '¿Terminar ahora o seguir sobreviviendo hasta el jefe más poderoso?':'Finish now, or keep surviving to face the strongest boss?',
+  'Termina ahora para duplicar todas las monedas de esta partida. Esta oportunidad se consume sólo al cobrar; si continúas, se conserva para otra victoria en esta dificultad.':'Finish now to double all coins earned this run. This opportunity is consumed only when claimed; continuing preserves it for a future victory at this difficulty.',
+  'Ya cobraste el doble de monedas en esta dificultad. Puedes terminar con la recompensa normal o seguir luchando.':'You have already claimed double coins at this difficulty. Finish for the normal reward or keep fighting.',
+  'En grupo decide el anfitrión. Cada jugador cobra según su propia oportunidad disponible.':'In co-op, the host decides. Each player is paid according to their own remaining opportunity.',
+  'Terminar y cobrar el doble de monedas':'Finish and claim double coins',
+  'Terminar y cobrar las monedas':'Finish and claim coins',
+  'Seguir luchando':'Keep fighting',
+  'Esperando la decisión del anfitrión…':'Waiting for the host’s decision…',
+  'Guardando la recompensa…':'Saving your reward…',
+  'No se pudo guardar. Puedes reintentar o continuar sin consumir la oportunidad.':'Saving failed. Retry or keep fighting without consuming the opportunity.',
+  'No se pudo cobrar el extra; la oportunidad sigue disponible.':'The bonus could not be claimed; the opportunity remains available.',
+  'Bonificación de victoria':'Victory bonus',
   'Objetivo de supervivencia cumplido':'Survival objective completed',
   'Objetivo cumplido, sin registrar':'Objective completed, unrecorded',
   'Partida de desarrollo: no concede medallas ni desbloquea dificultades. Desactiva el modo de desarrollo antes de empezar una nueva partida.':'Developer run: medals and difficulty unlocks are not recorded. Disable developer mode before starting a new run.',

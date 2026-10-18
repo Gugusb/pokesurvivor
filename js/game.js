@@ -21,7 +21,7 @@ G.Game = (() => {
   let pl = null;
   let caught = [];          // shinies y capturas pendientes de esta run
   let biome = -1;
-  let challenge = null;
+  let challenge = null, victoryBusy=false;
 
   const st = { get time() { return time; }, get difficulty() { return challenge?.stars || 4; } };
 
@@ -116,6 +116,7 @@ G.Game = (() => {
     G.World.setBiome(0, true);
     biome = 0;
     time = 0; pendingLevels = 0;
+    victoryBusy=false;
     runSpeed = 1; speedBonus = 0; speedK = 1; usedDouble = false;
     runReal = performance.now(); tampered = !!(G.Dev && G.Dev.enabled);
 
@@ -165,10 +166,46 @@ G.Game = (() => {
     challenge.survived = true;
     if (challenge.victory || !clean()) return;
     if (!G.Difficulty.record(G.DB.save, challenge, time, true, true)) return;
+    challenge.choicePending=true;
     G.DB.commit(true);
     G.UI.toast(G.T('Dificultad superada') + ' · ' + challenge.stars + '★ · ' + pl.mon.name, 5000);
     G.Audio.sfx('legend');
     if (G.Social.refreshMember) G.Social.refreshMember();
+  }
+
+  function victoryChoice(waiting=false){
+    state='victory';challenge.choiceShown=true;challenge.choicePending=false;
+    G.RunUI.showVictory(challenge.stars,G.Difficulty.bonusAvailable(G.DB.save,challenge.stars),G.Coop.active,waiting,
+      ()=>cashoutVictory(),()=>{
+        if(state!=='victory'||victoryBusy)return;
+        G.UI.hide('scr-victory');state='playing';
+        if(G.Coop.active)G.Coop.holdEnd();
+      });
+  }
+  function maybeVictoryChoice(){
+    if(state!=='playing'||!challenge?.victory||challenge.choiceShown||!challenge.choicePending||pl.dead||!clean()||G.Coop.active&&!G.Coop.isHost)return false;
+    if(G.ZMoves&&everyone().some(G.ZMoves.busy)||['scr-levelup','scr-item','scr-bond','scr-pause'].some(G.UI.isOpen))return false;
+    victoryChoice();if(G.Coop.active)G.Coop.holdStart();return true;
+  }
+  function coinPayout(){
+    const parts={tiempo:Math.floor(time/5),derrotados:Math.floor(pl.kills*.25),jefes:pl.bosses*80,recogidas:pl.coins};
+    const difficultyReward=G.Difficulty?G.Difficulty.rewards(challenge?.stars):1;
+    return {parts,difficultyReward,base:Math.round(Object.values(parts).reduce((a,b)=>a+b,0)*pl.coinMul*difficultyReward)};
+  }
+  async function cashoutVictory(fromHost=false){
+    if(victoryBusy||!pl||state!=='victory')return false;
+    const actor=pl,run=challenge,account=G.DB.save;
+    victoryBusy=true;let extra=0;
+    try{
+      if(challenge?.victory&&clean()&&G.Difficulty.bonusAvailable(G.DB.save,challenge.stars))extra=await G.DB.claimVictoryBonus(challenge,coinPayout().base);
+    }catch(e){
+      victoryBusy=false;
+      if(!fromHost)return false;
+      G.UI.toast(G.T('No se pudo cobrar el extra; la oportunidad sigue disponible.'));
+    }
+    if(pl!==actor||challenge!==run||G.DB.save!==account||state!=='victory'){victoryBusy=false;return false;}
+    if(G.Coop.active&&G.Coop.isHost)G.Coop.over({...summary(),why:'victory',victoryCashout:true});
+    endRun(false,extra);victoryBusy=false;return true;
   }
 
   function setSpeed(value, fromHost = false) {
@@ -192,7 +229,7 @@ G.Game = (() => {
   function flash(col, dur) { flashCol = col; flashDur = dur; flashT = dur; }
 
   function teamState() {
-    return { time, level: pl.level, xp: pl.xp, xpNext: pl.xpNext, kills: pl.kills, bosses: pl.bosses, coins: pl.coins, t1: pl.t1, t10: pl.t10 };
+    return { time, level: pl.level, xp: pl.xp, xpNext: pl.xpNext, kills: pl.kills, bosses: pl.bosses, coins: pl.coins, t1: pl.t1, t10: pl.t10,victory:state==='victory' };
   }
   function summary() { return { t: time, ki: pl.kills, bo: pl.bosses, co: pl.coins, lv: pl.level, t1: pl.t1, t10: pl.t10 }; }
 
@@ -227,6 +264,11 @@ G.Game = (() => {
       if (t.t1 > pl.t1 || t.t10 > pl.t10) G.Audio.sfx('shiny');
       pl.t1 = t.t1 || 0; pl.t10 = t.t10 || 0;
       bankTickets();
+      checkChallenge();
+    },
+    victory(open){
+      if(open&&state!=='victory'&&state!=='over'){checkChallenge();victoryChoice(true);}
+      else if(!open&&state==='victory'&&!victoryBusy){G.UI.hide('scr-victory');state=holdBy.length||awayBy?'held':'playing';}
     },
     levelStart(level) {
       // (Si tenías abierta la elección de objeto, vuelve al terminar: afterLevelUp.)
@@ -249,6 +291,7 @@ G.Game = (() => {
       if (d) Object.assign(pl, { kills: d.ki, bosses: d.bo, coins: d.co, level: Math.max(pl.level, d.lv || 1), t1: d.t1 || pl.t1, t10: d.t10 || pl.t10 });
       if (d && d.t) time = d.t;
       if (d && d.why === 'host') G.UI.toast('El anfitrión ha terminado la partida', 3200);
+      if(d?.victoryCashout){state='victory';checkChallenge();cashoutVictory(true);return;}
       endRun(!(d && d.why === 'host'));
     },
     lost(msg) { G.UI.toast(msg, 3600); endRun(false); },
@@ -308,8 +351,9 @@ G.Game = (() => {
     G.Audio.sfx('shinyGet');
   };
 
-  function endRun(dead = true) {
+  function endRun(dead = true, victoryBonus=0) {
     if (state === 'over' || !pl) return;
+    G.UI.hide('scr-victory');
     const coop = !!pl.uid;                    // sólo las partidas en grupo le ponen uid
     const wasHost = !!pl.coopHost;
     const team = coop ? G.Coop.members.slice() : [];
@@ -320,8 +364,7 @@ G.Game = (() => {
     G.Audio.sfx(dead ? 'gameover' : 'back');
     const save = G.DB.save;
     const confirmed = G.MonProgression ? G.MonProgression.commitCaptures(save, challenge || {}) : [];
-    const difficultyReward=G.Difficulty?G.Difficulty.rewards(challenge?.stars):1;
-    const mul = pl.coinMul*difficultyReward;
+    const {parts,difficultyReward,base}=coinPayout();
     const ok = clean();
     // In solo, the clock stops on death. A late death cannot undo having
     // survived twenty minutes, even if the checkpoint was missed that frame.
@@ -329,23 +372,17 @@ G.Game = (() => {
     const completed=!!(G.Difficulty&&challenge&&time>G.Difficulty.WIN&&(challenge.survived||challenge.victory||!coop));
     if (G.Difficulty) G.Difficulty.record(save, challenge, time, completed||!pl.dead, ok);
     const progressExcluded=challenge&&!challenge.victory?(tampered?'debug':!challenge.eligible?'locked':!ok?'validation':null):null;
-    const parts = {
-      tiempo: Math.floor(time / 5),
-      derrotados: Math.floor(pl.kills * 0.25),
-      jefes: pl.bosses * 80,
-      recogidas: pl.coins
-    };
-    const coins = Math.round((parts.tiempo + parts.derrotados + parts.jefes + parts.recogidas) * mul);
+    const coins=base+victoryBonus;
     const record = time > save.stats.bestTime;
 
-    save.coins += coins;
+    if(!victoryBonus)save.coins += base; // A cashout receipt already credits the full doubled payout.
     bankTickets(false);
     save.stats.runs++;
     save.stats.totalKills += pl.kills;
     save.stats.bestTime = Math.max(save.stats.bestTime, Math.floor(time));
     if (coop) save.stats.bestGroupTime = Math.max(save.stats.bestGroupTime || 0, Math.floor(time));
     save.stats.bestLevel = Math.max(save.stats.bestLevel, pl.level);
-    save.stats.coinsEarned += coins;
+    if(!victoryBonus)save.stats.coinsEarned += base;
     const judge = G.Judgment.summary();
     if (judge) G.Progress.event('judgeEnd', judge);
     G.Judgment.reset();
@@ -369,7 +406,8 @@ G.Game = (() => {
       moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (pl.coinMul > 1 ? ` · ×${pl.coinMul.toFixed(2)} Fortuna` : '')+
-                 (difficultyReward > 1 ? ` · ×${difficultyReward.toFixed(2)} ${G.T('Dificultad')}` : '')
+                 (difficultyReward > 1 ? ` · ×${difficultyReward.toFixed(2)} ${G.T('Dificultad')}` : '')+
+                 (victoryBonus>0?` · ×2 ${G.T('Bonificación de victoria')}`:'')
     }, () => { pl = null; G.Flow.afterRun(); });
   }
 
@@ -594,6 +632,7 @@ G.Game = (() => {
   // ---------------- teclado ----------------
 
   function handleKeys() {
+    if(state==='victory')return;
     if (G.SettingsUI.isOpen) { if (G.Input.tap('escape')) G.SettingsUI.close(); return; }
     // La Sentencia de Arceus: Espacio, Intro o Esc saltan la animación (si se puede).
     if (G.Judgment.cinematic && state === 'playing') {
@@ -762,6 +801,7 @@ G.Game = (() => {
     G.Audio.music(G.Judgment.active ? G.Judgment.music : G.Rift.inArena ? 'rift' : G.EnemyMgr.bossAlive() ? 'boss' : G.BIOME_MUSIC[biome % G.BIOME_MUSIC.length]);
     const zBusy = G.ZMoves && everyone().some(G.ZMoves.busy);
     if (!zBusy) {
+      if(maybeVictoryChoice())return;
       if (!coop || G.Coop.isHost) maybeLevelUp();
       if (pl.bonds > 0) offerBond(true);
       if (state === 'playing' && laterItems.length) afterLevelUp();

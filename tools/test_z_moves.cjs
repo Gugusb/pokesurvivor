@@ -422,3 +422,19 @@ test('weather chip respects Z immunity and triggers the eight-star curse only on
   G.Weather.update(2,100,p);assert.equal(p.hp,hp);assert.equal(p.buffs.atk.n,3);
   G.ZMoves.cancel(p);G.Weather.update(2,100,p);assert.ok(p.hp<hp);assert.equal(p.buffs.atk.n,0);assert.equal(p.slowT,2.5);
 });
+
+test('co-op snapshots preserve a shared victory pause, reject late combat, resume, and deliver the host cashout decision',()=>{
+  const h=setup(),c=setup(),host=h.G,guest=c.G;let fromPeer,fromHost;const packets=[],order=[];
+  host.Net={uid:'host',on:fn=>fromPeer=fn,onPeer:noop,slow:()=>false,viaTurn:()=>false,send:(uid,msg)=>packets.push(msg)};
+  guest.Net={uid:'peer',on:fn=>fromHost=fn,onPeer:noop};
+  for(const s of [h,c]){s.G.Social={me:null};s.G.startMoveOf=()=> 'ember';s.G.Judgment.netState=()=>null;s.G.Judgment.netApply=noop;s.load('js/net/coop.js');}
+  const cfg={host:'host',members:[{uid:'host',dex:6},{uid:'peer',dex:6}]};
+  const team={time:1201,level:1,xp:0,xpNext:100,kills:0,bosses:0,coins:0,t1:0,t10:0,victory:true};
+  host.Coop.begin(cfg,h.p,{team:()=>team});guest.Coop.begin(cfg,c.p,{syncTeam:()=>order.push('team'),victory:v=>order.push(v?'open':'close'),hold:()=>order.push('hold'),over:d=>order.push(d.victoryCashout?'cashout':'over')});
+  const enemy=h.enemy(100),hp=enemy.hp;host.Coop.holdStart();const pause=packets.at(-1);assert.equal(pause.victory,true);
+  fromHost('host',pause);assert.equal(order[0],'team');assert.equal(order[1],'open');assert.ok(order.indexOf('hold')>1);
+  fromPeer('peer',{k:'f',ev:[['h',enemy.id,10,'#fff',0,0,0,'ember']]});assert.equal(enemy.hp,hp);
+  team.victory=false;host.Coop.holdEnd();fromHost('host',packets.at(-1));assert.ok(order.includes('close'));
+  host.Coop.over({why:'victory',victoryCashout:true});fromHost('host',packets.at(-1));assert.equal(order.at(-1),'cashout');
+  assert.equal(guest.Coop.active,false);
+});

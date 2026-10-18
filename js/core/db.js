@@ -91,7 +91,7 @@ G.DB = (() => {
       megaStones: {},         // permanent collection keyed by Mega form
       megaEquipped: {},       // one matching stone per base species
       zStones: {}, zEquipped: {},
-      difficulty: { selected: 1, cleared: {} },
+      difficulty: { selected: 1, cleared: {}, cashouts:{} },
       difficultyRecords: {},  // dex -> stars -> { best: seconds, won }
       offline: { seen: 0, carry: 0, rates: null },
       legends: {},            // dex -> fecha: legendarios vencidos en grietas
@@ -218,6 +218,7 @@ G.DB = (() => {
     const older = newer === a ? b : a;
     const r = JSON.parse(JSON.stringify(newer));
     if (G.Difficulty) Object.assign(r, G.Difficulty.merge(newer, older));
+    if(G.Difficulty)r.coins=Math.max(0,(r.coins||0)+G.Difficulty.cashoutTotal(r)-G.Difficulty.cashoutTotal(newer));
     if (G.Offline) {
       r.offline = G.Offline.merge(newer, older);
       const delta = k => Math.max(0, r.offline.total[k] - (newer.offline?.total?.[k] || 0));
@@ -264,6 +265,7 @@ G.DB = (() => {
       });
     }
     for (const k in older.stats || {}) r.stats[k] = Math.max(r.stats[k] || 0, older.stats[k] || 0);
+    if(G.Difficulty)r.stats.coinsEarned=Math.max(0,(newer.stats?.coinsEarned||0)-G.Difficulty.cashoutTotal(newer),(older.stats?.coinsEarned||0)-G.Difficulty.cashoutTotal(older))+G.Difficulty.cashoutTotal(r);
     if (r.starter == null) r.starter = older.starter;
     if (r.personality == null) r.personality = older.personality;
     if (r.partner == null || !r.owned[r.partner]) { r.partner = older.partner; r.partnerShiny = older.partnerShiny; }
@@ -735,6 +737,37 @@ G.DB = (() => {
     return navigator.locks ? navigator.locks.request('ps.offline.' + account, settle) : settle();
   }
 
+  /** Commit the full doubled payout with its once-per-star receipt. */
+  async function claimVictoryBonus(run,coins){
+    if(!save||!G.Difficulty||!run?.eligible||!run.victory)return 0;
+    const account=key,target=save;
+    const claim=async()=>{
+      if(save!==target||key!==account)throw new Error('Account changed');
+      if(guest||mode==='local'){
+        const stored=!guest&&read(K_SAVE+key);
+        if(stored)applyInPlace(merge(plain(save),migrate(stored)));
+        const before=plain(save),extra=G.Difficulty.claimBonus(save,run,coins);
+        if(extra&&!guest&&!commit(true)){applyInPlace(before);throw new Error('Save failed');}
+        return extra;
+      }
+      if(navigator.onLine===false)throw new Error('Offline');
+      if(pushing)await pushing;
+      let settled,extra;
+      await fs.runTransaction(async tx=>{
+        if(save!==target||key!==account)throw new Error('Account changed');
+        const ref=docRef(),snap=await tx.get(ref);
+        settled=snap.exists?merge(plain(save),migrate(snap.data().save)):plain(save);
+        extra=G.Difficulty.claimBonus(settled,run,coins);settled.updated=Date.now();
+        const doc={save:settled,updatedAt:firebase.firestore.FieldValue.serverTimestamp(),v:VERSION};
+        if(snap.exists&&snap.data().ban===true)doc.ban=true;
+        tx.set(ref,doc);
+      });
+      if(save!==target||key!==account)throw new Error('Account changed');
+      applyInPlace(merge(plain(save),settled));write(K_CLOUD+uid,save);return extra;
+    };
+    return navigator.locks?navigator.locks.request('ps.victory.'+account,claim):claim();
+  }
+
   async function logout() {
     for (const fn of leaveHooks) { try { await fn('logout'); } catch (e) { /* nada */ } }
     if (mode === 'cloud' && !guest && save) {
@@ -872,7 +905,7 @@ G.DB = (() => {
   }
 
   return {
-    ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, settleOffline, flush: pushNow,
+    ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, settleOffline, claimVictoryBonus, flush: pushNow,
     owns, grant, ownsShiny, grantShiny, ivOf, merge, setName, upgradesOf,
     onSync(fn) { listeners.add(fn); },
     onLeave(fn) { leaveHooks.push(fn); },
