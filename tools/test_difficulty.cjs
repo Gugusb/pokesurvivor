@@ -122,6 +122,55 @@ test('real game checkpoint grants victory once after 20 minutes, keeps playing, 
 test('real game rejects debug or dead checkpoints and debug end times, while clean failed attempts retain time only',()=>{
   const s=context(),G=s.G;s.loadGame();const p=s.player();let r=s.run(1);
   G.Game._test.setRun(p,r,1300,true);G.Game._test.checkChallenge();G.Game._test.endRun(false);assert.equal(G.Difficulty.unlocked(G.DB.save),1);assert.equal(G.Difficulty.highest(G.DB.save,6),null);
-  r=s.run(1);p.dead=true;G.Game._test.setRun(p,r,1300);G.Game._test.checkChallenge();assert.equal(r.victory,false);
-  G.Game._test.endRun(true);assert.equal(G.Difficulty.unlocked(G.DB.save),1);assert.equal(G.Difficulty.highest(G.DB.save,6).best,1300);assert.equal(G.Difficulty.frame(G.DB.save,6),'');
+  r=s.run(1);p.dead=true;G.Game._test.setRun(p,r,1100);G.Game._test.checkChallenge();assert.equal(r.victory,false);
+  G.Game._test.endRun(true);assert.equal(G.Difficulty.unlocked(G.DB.save),1);assert.equal(G.Difficulty.highest(G.DB.save,6).best,1100);assert.equal(G.Difficulty.frame(G.DB.save,6),'');
+});
+
+test('solo deaths after twenty minutes award victory even without an earlier checkpoint, including Arceus at thirty minutes',()=>{
+  for(const t of [1199.99,1200,1200.01,1801]){
+    const s=context(),G=s.G;s.loadGame();const p=s.player();p.dead=true;p.hp=0;const r=s.run(1);
+    G.Game._test.setRun(p,r,t);G.Game._test.endRun(true);
+    assert.equal(s.over.victory,t>1200);assert.equal(s.over.completed,t>1200);
+    assert.equal(G.Difficulty.unlocked(G.DB.save),t>1200?2:1);
+    assert.equal(G.Difficulty.frame(G.DB.save,6),t>1200?'gold':'');
+  }
+});
+
+test('thirty-minute developer and locked-difficulty runs show completion without granting medals or unlocks',()=>{
+  for(const [dirty,stars,reason] of [[true,1,'debug'],[false,8,'locked']]){
+    const s=context(),G=s.G;s.loadGame();const p=s.player();p.dead=true;p.hp=0;
+    G.Game._test.setRun(p,s.run(stars),1801,dirty);G.Game._test.endRun(true);
+    assert.equal(s.over.completed,true);assert.equal(s.over.victory,false);assert.equal(s.over.progressExcluded,reason);
+    assert.equal(G.Difficulty.unlocked(G.DB.save),1);assert.equal(G.Difficulty.highest(G.DB.save,6),null);
+  }
+});
+
+test('a dead co-op player cannot use the team clock to claim solo completion, but a living checkpoint preserves their victory',()=>{
+  for(const survived of [false,true]){
+    const s=context(),G=s.G;s.loadGame();G.Coop.members=[];G.Social.setPlaying=noop;
+    const p=s.player();p.uid='peer';const r=s.run(1);G.Game._test.setRun(p,r,1300);
+    if(survived)G.Game._test.checkChallenge();p.dead=true;p.hp=0;
+    G.Game._test.setRun(p,r,1801);G.Game._test.endRun(true);
+    assert.equal(s.over.completed,survived);assert.equal(s.over.victory,survived);
+    assert.equal(G.Difficulty.unlocked(G.DB.save),survived?2:1);
+  }
+});
+
+test('a validation failure is explained rather than conflated with failing the survival objective',()=>{
+  const s=context(),G=s.G;s.loadGame();const p=s.player();p.dead=true;p.hp=0;p.cdMul=.001;
+  G.Game._test.setRun(p,s.run(1),1801);G.Game._test.endRun(true);
+  assert.equal(s.over.completed,true);assert.equal(s.over.victory,false);assert.equal(s.over.progressExcluded,'validation');
+  assert.equal(G.Difficulty.unlocked(G.DB.save),1);
+});
+
+test('the actual result UI distinguishes a recorded win from completed developer runs in Chinese',()=>{
+  const s=context(),{G}=s;s.loadGame();s.load('js/ui/difficulty-ui.js');assert.equal(G.I18n.lang,'zh');const elements=new Map();
+  G.UI.$=id=>id==='over-ask'?null:(elements.get(id)||elements.set(id,{textContent:'',innerHTML:''}).get(id));
+  G.UI.show=noop;G.Icons={html:()=>''};s.load('js/ui/run-ui.js');
+  const result={difficulty:1,completed:true,dead:true,time:1801,level:20,kills:100,bosses:3,coins:100,moves:[],breakdown:''};
+  G.RunUI.showOver({...result,victory:true},noop);assert.equal(elements.get('over-title').textContent,'Dificultad superada');
+  assert.ok(elements.get('over-stats').innerHTML.includes('胜利'));assert.ok(!elements.get('over-stats').innerHTML.includes('未通关'));
+  G.RunUI.showOver({...result,victory:false,progressExcluded:'debug'},noop);
+  assert.equal(elements.get('over-title').textContent,'生存挑战已达标');assert.ok(elements.get('over-stats').innerHTML.includes('已达标，但不计入进度'));
+  assert.ok(elements.get('over-stats').innerHTML.includes('关闭开发者模式'));assert.ok(!elements.get('over-stats').innerHTML.includes('未通关'));
 });

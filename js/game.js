@@ -161,7 +161,9 @@ G.Game = (() => {
   }
 
   function checkChallenge() {
-    if (!G.Difficulty || !challenge || challenge.victory || pl.dead || time <= G.Difficulty.WIN || !clean()) return;
+    if (!G.Difficulty || !challenge || pl.dead || time <= G.Difficulty.WIN) return;
+    challenge.survived = true;
+    if (challenge.victory || !clean()) return;
     if (!G.Difficulty.record(G.DB.save, challenge, time, true, true)) return;
     G.DB.commit(true);
     G.UI.toast(G.T('Dificultad superada') + ' · ' + challenge.stars + '★ · ' + pl.mon.name, 5000);
@@ -321,7 +323,12 @@ G.Game = (() => {
     const difficultyReward=G.Difficulty?G.Difficulty.rewards(challenge?.stars):1;
     const mul = pl.coinMul*difficultyReward;
     const ok = clean();
-    if (G.Difficulty) G.Difficulty.record(save, challenge, time, !pl.dead, ok);
+    // In solo, the clock stops on death. A late death cannot undo having
+    // survived twenty minutes, even if the checkpoint was missed that frame.
+    // In co-op, team time may continue while this player is already down.
+    const completed=!!(G.Difficulty&&challenge&&time>G.Difficulty.WIN&&(challenge.survived||challenge.victory||!coop));
+    if (G.Difficulty) G.Difficulty.record(save, challenge, time, completed||!pl.dead, ok);
+    const progressExcluded=challenge&&!challenge.victory?(tampered?'debug':!challenge.eligible?'locked':!ok?'validation':null):null;
     const parts = {
       tiempo: Math.floor(time / 5),
       derrotados: Math.floor(pl.kills * 0.25),
@@ -359,7 +366,7 @@ G.Game = (() => {
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge,
-      moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, rankingExcluded: !ranked,
+      moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (pl.coinMul > 1 ? ` · ×${pl.coinMul.toFixed(2)} Fortuna` : '')+
                  (difficultyReward > 1 ? ` · ×${difficultyReward.toFixed(2)} ${G.T('Dificultad')}` : '')

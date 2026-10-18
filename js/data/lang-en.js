@@ -4,6 +4,11 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  'Objetivo de supervivencia cumplido':'Survival objective completed',
+  'Objetivo cumplido, sin registrar':'Objective completed, unrecorded',
+  'Partida de desarrollo: no concede medallas ni desbloquea dificultades. Desactiva el modo de desarrollo antes de empezar una nueva partida.':'Developer run: medals and difficulty unlocks are not recorded. Disable developer mode before starting a new run.',
+  'La dificultad de esta partida no estaba desbloqueada; no se registra el progreso.':'This run used a locked difficulty; progress is not recorded.',
+  'No se ha podido validar esta partida para las medallas y los desbloqueos.':'This run could not be validated for medals and difficulty unlocks.',
   'Los Pokémon se vuelven más robustos.':'Pokémon become sturdier.',
   'Los Pokémon se vuelven más feroces.':'Pokémon become more ferocious.',
   'Los Pokémon se vuelven más ágiles.':'Pokémon become more agile.',

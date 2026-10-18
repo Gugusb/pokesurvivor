@@ -1,6 +1,17 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Resultado de supervivencia · v0.13.1": "生存通关结算修复 · v0.13.1",
+  "Survival results · v0.13.1": "生存通关结算修复 · v0.13.1",
+  "Morir después de sobrevivir más de 20 minutos ya no puede invalidar una victoria en solitario por faltar el aviso previo.": "单人生存超过 20 分钟后，结算会兜底确认胜利，之后死亡不影响通关。",
+  "Dying after surviving more than 20 minutes can no longer invalidate a solo victory because the earlier checkpoint was missed.": "单人生存超过 20 分钟后，结算会兜底确认胜利，之后死亡不影响通关。",
+  "Las partidas de desarrollo muestran cuándo se ha cumplido el objetivo, explicando que no conceden medallas ni desbloqueos.": "调试局达到生存目标后，会明确显示已达标，但不发奖牌、不解锁难度。",
+  "Developer runs show when the survival objective was met and explain that medals and difficulty unlocks are not recorded.": "调试局达到生存目标后，会明确显示已达标，但不发奖牌、不解锁难度。",
+  "Objetivo de supervivencia cumplido": "生存挑战已达标",
+  "Objetivo cumplido, sin registrar": "已达标，但不计入进度",
+  "Partida de desarrollo: no concede medallas ni desbloquea dificultades. Desactiva el modo de desarrollo antes de empezar una nueva partida.": "开发者调试局：不发放奖牌、不解锁难度。正式挑战前，请先关闭开发者模式，再开始新的一局。",
+  "La dificultad de esta partida no estaba desbloqueada; no se registra el progreso.": "本局使用了尚未解锁的难度，因此不记录通关进度。",
+  "No se ha podido validar esta partida para las medallas y los desbloqueos.": "本局未通过通关有效性校验，奖牌和难度解锁未计入。",
   "Dificultad, élites y cargas Z · v0.13.0": "难度、精英与 Z 充能 · v0.13.0",
   "Difficulty, elites and Z charges · v0.13.0": "难度、精英与 Z 充能 · v0.13.0",
   "Los Pokémon de élite tienen cinco veces más vida y botín, doble ataque y un aura violeta. Son más frecuentes desde 6 estrellas.": "新增紫色光环精英：五倍生命与掉落、双倍攻击；六星起更常出现。",

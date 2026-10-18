@@ -6,6 +6,10 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-18', title: ['Resultado de supervivencia · v0.13.1', 'Survival results · v0.13.1'], new: [], chg: [], fix: [
+    ['Morir después de sobrevivir más de 20 minutos ya no puede invalidar una victoria en solitario por faltar el aviso previo.', 'Dying after surviving more than 20 minutes can no longer invalidate a solo victory because the earlier checkpoint was missed.'],
+    ['Las partidas de desarrollo muestran cuándo se ha cumplido el objetivo, explicando que no conceden medallas ni desbloqueos.', 'Developer runs show when the survival objective was met and explain that medals and difficulty unlocks are not recorded.']
+  ] },
   { d: '2026-10-18', title: ['Dificultad, élites y cargas Z · v0.13.0', 'Difficulty, elites and Z charges · v0.13.0'], new: [
     ['Los Pokémon de élite tienen cinco veces más vida y botín, doble ataque y un aura violeta. Son más frecuentes desde 6 estrellas.', 'Elite Pokémon have fivefold HP and loot, double attack and a purple aura. They become more frequent from 6 stars.'],
     ['Desde 7 estrellas hay cartas contaminadas que cuestan 10 de vida máxima; a 8 estrellas, recibir daño puede ralentizarte y borrar beneficios temporales.', 'From 7 stars, corrupted cards cost 10 maximum HP; at 8 stars, taking damage may slow you and clear temporary buffs.']

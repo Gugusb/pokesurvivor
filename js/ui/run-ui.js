@@ -104,9 +104,10 @@ G.RunUI = (() => {
   }
 
   function showOver(r, onBack) {
-    $('over-title').textContent = r.victory ? 'Dificultad superada' : r.dead ? 'Has caído…' : 'Run terminada';
+    $('over-title').textContent = r.victory ? 'Dificultad superada' : r.completed ? G.T('Objetivo de supervivencia cumplido') : r.dead ? 'Has caído…' : 'Run terminada';
     $('over-stats').innerHTML = `
-      ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : G.T('Sin superar')}</b></div>` : ''}
+      ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : r.completed ? G.T('Objetivo cumplido, sin registrar') : G.T('Sin superar')}</b></div>` : ''}
+      ${r.progressExcluded ? `<p class="note" style="grid-column:1/-1">${G.T({debug:'Partida de desarrollo: no concede medallas ni desbloquea dificultades. Desactiva el modo de desarrollo antes de empezar una nueva partida.',locked:'La dificultad de esta partida no estaba desbloqueada; no se registra el progreso.',validation:'No se ha podido validar esta partida para las medallas y los desbloqueos.'}[r.progressExcluded])}</p>` : ''}
       ${r.rankingExcluded ? `<p class="note" style="grid-column:1/-1">${G.T('El ranking original sólo acepta partidas limpias de 4 estrellas a velocidad normal.')}</p>` : ''}
       <div><span>Tiempo</span><b>${G.U.mmss(r.time)}</b></div>
       <div><span>Nivel</span><b>${r.level}</b></div>
