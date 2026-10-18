@@ -29,7 +29,7 @@ G.MonProgression = (() => {
     const i = Math.min(chain.length - 1, level >= 15 ? chain.length - 1 : level >= 6 ? Math.min(1, chain.length - 1) : 0);
     return chain[i];
   }
-  function captureChance(enemy) { return enemy && (enemy.boss || enemy.legend) ? 0.05 : 0.002; }
+  function captureChance(enemy) { return (enemy && (enemy.boss || enemy.legend) ? 0.05 : 0.002)*(G.Difficulty?G.Difficulty.rewards():1); }
   function tryCapture(enemy, run) {
     if (!enemy || enemy.judge || enemy.remote || Math.random() >= captureChance(enemy)) return false;
     run.pendingCaptures ||= [];

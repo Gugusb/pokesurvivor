@@ -1,11 +1,43 @@
-/* Eight-star difficulty; four stars is the original combat balance. */
+/* Eight-star rules and smooth, bounded in-run growth. */
 G.Difficulty = (() => {
   const WIN = 20 * 60;
   let current = 4;
   const level = n => Number.isInteger(n) && n >= 1 && n <= 8 ? n : 1;
   const map = x => x && typeof x === 'object' && !Array.isArray(x) ? x : {};
   const seconds = x => Number.isFinite(x) && x > 0 ? x : 0;
-  const factors = (n = current) => ({ hp: 0.7 * 1.05 ** (level(n) - 4), dmg: 0.8 * 1.03 ** (level(n) - 4) });
+  const factors = (n = current) => ({ hp: 0.7 * (level(n) === 1 ? 0.8 : 1), dmg: 0.8 * (level(n) <= 2 ? 0.5 : 1), spd: level(n) <= 3 ? 0.67 : 1 });
+  const HP_CAP=[8,10,13,17,22,28,35,43], DMG_CAP=[1.6,2.1,2.8,3.6,4.5,5.6,6.9,8.4];
+  const REWARD=[1,1.15,1.3,1.5,1.75,2,2.3,2.6];
+  function growth(t, kind='normal', n=current){
+    const i=level(n)-1,x=(Math.max(0,t-120)/(900-i*50))**3,p=x/(1+x);
+    const h=kind==='boss'?.13:kind==='rift'?.3:1,d=kind==='boss'?.55:kind==='rift'?.7:1;
+    return {hp:1+HP_CAP[i]*h*p,dmg:1+DMG_CAP[i]*d*p,spd:1+Math.min(.35,Math.max(0,t)/1400)};
+  }
+  const rewards=(n=current)=>REWARD[level(n)-1];
+  const eliteChance=(n=current)=>level(n)>=6?.01:.005;
+  const treasureChance=(n=current)=>.002*rewards(n);
+  const corruptionChance=(n=current)=>level(n)>=8?.2:level(n)>=7?.15:0;
+  const TRAITS=[
+    [2,'Los Pokémon se vuelven más robustos.'],[3,'Los Pokémon se vuelven más feroces.'],
+    [4,'Los Pokémon se vuelven más ágiles.'],[5,'Los Pokémon tienden a rodearte.'],
+    [5,'Aparecen más variedades de Pokémon.'],[6,'Aparecen más Pokémon de élite.'],
+    [7,'Pueden aparecer mejoras contaminadas.'],[8,'Recibir daño puede ralentizarte y eliminar tus beneficios.']
+  ];
+  const traits=(n=current)=>TRAITS.filter(([at])=>level(n)>=at).map(([,s])=>s);
+  function onHurt(p){
+    if(current<8||p.dead||G.Abilities?.debuffImmune(p)||p.difficultyCurseT>0||Math.random()>=.1)return false;
+    p.difficultyCurseT=5;
+    for(const b of Object.values(p.buffs||{})){b.n=0;b.t=0;}
+    if(p.abilityState){p.abilityState.confidence=[];p.abilityState.haste=p.abilityState.hasteT=p.abilityState.justiceT=p.abilityState.kindleT=0;}
+    if(p.power){p.power.def.off(p);p.power=null;}
+    if(!G.Abilities?.slowImmune(p))p.slowT=Math.max(p.slowT||0,2.5);
+    G.UI.toast(G.T('¡Tus beneficios se han disipado!'));return true;
+  }
+  function debugLevel(n){
+    if(!G.Dev?.canUse())return false;current=level(n);G.Game.debugMark();
+    if(G.Game.challenge){G.Game.challenge.stars=current;G.Game.challenge.eligible=false;}
+    return true;
+  }
   function unlocked(s) {
     let n = 1;
     while (n < 8 && s.difficulty?.cleared?.[n]) n++;
@@ -75,6 +107,7 @@ G.Difficulty = (() => {
     if (rows[5]?.won) return 'emerald';
     return Object.values(rows).some(r => r.won) ? 'gold' : '';
   }
-  return { WIN, level, factors, normalize, merge, unlocked, select, partyLevel, begin, record, highest, frame,
+  return { WIN, level, factors, growth, rewards, eliteChance, treasureChance, corruptionChance, traits, onHurt,debugLevel,
+    normalize, merge, unlocked, select, partyLevel, begin, record, highest, frame,
     get current() { return current; } };
 })();

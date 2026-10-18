@@ -165,7 +165,8 @@ G.Judgment = (() => {
     G.Progress.event('judge');
     // Vida del primer legendario: unos 3 s de vuestro daño a un enemigo (y un mínimo).
     const n = G.Game.everyone().length, t = G.Game.st.time;
-    const floor = (3200 + t * 9) * 0.35 * G.Coop.scaleHp(n);
+    const growth=G.Difficulty?.growth(t,'rift');
+    const floor = (growth?3200*growth.hp:3200+t*9) * 0.35 * G.Coop.scaleHp(n);
     base = Math.max(floor, singleDps() * 3);
     G.Spawner.say('¡Huye de Arceus! Es invencible', 3, true);
   }
@@ -361,13 +362,14 @@ G.Judgment = (() => {
       if (G.Game.everyone().every(p => G.U.dist2(p.x, p.y, x, y) > 280 * 280)) break;
     }
     const k = Math.pow(2, bossN);          // cada uno, el doble que el anterior
+    const growth=G.Difficulty?.growth(t,'rift');
     const def = {
       dex, name: mon.name,
       hp: Math.round(base * k),
       spd: Math.round(G.U.clamp(48 + (mon.spd - 78) * 0.6, 48, 105)),
-      dmg: Math.round((36 + t / 20) * k), xp: Math.round(500 + t * 1.2),
+      dmg: Math.round((growth?36*growth.dmg:36+t/20) * k), xp: Math.round(500 + t * 1.2),
       behavior: mon.types.some(x => ['psychic', 'electric', 'ghost', 'fairy', 'fire', 'water', 'ice', 'dragon'].includes(x)) ? 'ranged' : 'charger',
-      shotDmg: Math.round((18 + t / 40) * k), shotCd: 0.9, range: 300
+      shotDmg: Math.round((growth?18*growth.dmg:18+t/40) * k), shotCd: 0.9, range: 300
     };
     const e = new G.Enemy(def, x, y, { hp: 1, spd: 1, dmg: 1 }, true);
     e.judge = true;

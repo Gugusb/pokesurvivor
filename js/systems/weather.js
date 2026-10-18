@@ -112,11 +112,12 @@ G.Weather = (() => {
     chipT -= dt;
     if (chipT <= 0) {
       chipT = 2;
-      if (pl && !pl.dead && cur && !(cur.kind === 'sand' && G.Abilities.has(pl, 'sandveil')) && hurts(pl.mon.types) && level() > 0.5) {
+      if (pl && !pl.dead && !G.ZMoves?.immune(pl) && !G.Dev?.invincible && cur && !(cur.kind === 'sand' && G.Abilities.has(pl, 'sandveil')) && hurts(pl.mon.types) && level() > 0.5) {
         const d = Math.max(1, pl.maxHp * 0.012) * G.Abilities.damageFactor(pl, {kind: 'environment'});
         if (d > 0 && pl.hp > d + 1) {
           pl.hp -= d;
           G.Abilities.onDamage(pl);
+          if(G.Difficulty)G.Difficulty.onHurt(pl);
           G.FX.dmgText(pl.x, pl.y - pl.bodyH - 4, '-' + Math.round(d), def().color);
         }
       }

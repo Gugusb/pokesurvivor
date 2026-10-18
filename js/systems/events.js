@@ -90,8 +90,9 @@ G.Events = (() => {
 
   function say(text, secs) { G.Spawner.say(text, secs, true); }
 
-  function end() {
+  function end(success=true) {
     if (!cur) return;
+    if(success&&G.ZMoves)G.ZMoves.eventReward();
     cur = null;
     if (G.Coop.isHost) G.Coop.broadcast(['ev', 'e']);
   }
@@ -108,7 +109,7 @@ G.Events = (() => {
     if (!mon || !G.SPRITE_META[dex]) return;
     const pl = G.U.pick(players.filter(p => !p.dead).length ? players.filter(p => !p.dead) : players);
     G.Sprites.preload([dex]);
-    const def = { dex, name: mon.name, behavior: 'thief', hp: Math.round(60 * (1 + time / 95) * (gold ? 1.5 : 1)),
+    const def = { dex, name: mon.name, behavior: 'thief', hp: Math.round(60 * (G.Difficulty?G.Difficulty.growth(time).hp:1+time/95) * (gold ? 1.5 : 1)),
                   spd: 92, dmg: 0, xp: 10, loot: gold ? 'ticket10' : 'coins' };
     for (let i = 0; i < 12; i++) {
       const a = Math.random() * 6.2832, d = G.U.rand(230, 300);
@@ -116,6 +117,7 @@ G.Events = (() => {
       if (!G.World.isFree(x, y, 14)) continue;
       const e = new G.Enemy(def, x, y, { hp: 1, spd: 1, dmg: 1 });
       e.life = THIEF_LIFE;
+      if(Math.random()<(G.Difficulty?G.Difficulty.eliteChance():.005))e.makeElite();
       G.EnemyMgr.add(e);
       G.FX.ring(x, y, 4, 40, '#ffd23f', 0.5, 3);
       G.Spawner.say(gold ? '¡Un ' + mon.name + ' con un ticket ×10! ¡Atrápalo antes de que huya!'
@@ -226,7 +228,7 @@ G.Events = (() => {
     if (G.Coop.isHost) G.Coop.broadcast(['ev', 'lx', msg]);
     say(msg, 3);
     lost = null;
-    end();
+    end(false);
   }
 
   // ---------------- red ----------------

@@ -140,7 +140,7 @@ G.Coop = (() => {
             r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq, local.ability || null,
             G.Mega && G.Mega.active(local) ? local.megaState.id : null, r2(local.megaState && local.megaState.left || 0),
             G.Mega && G.Mega.hasStone(local) ? local.megaState.id : null, r2(local.damageBonus || 0),
-            G.ZMoves && G.ZMoves.hasStone(local) ? [local.zState.type,local.zState.phase,r2(local.zState.cooldown)] : null];
+            G.ZMoves && G.ZMoves.hasStone(local) ? [local.zState.type,local.zState.phase,r2(local.zState.cooldown),local.zState.charges] : null];
   }
 
   function readState(a) {
@@ -398,9 +398,10 @@ G.Coop = (() => {
     switch (ev[0]) {
       case 'ix': G.UI.toast(G.T('Objeto convertido en experiencia')); break;
       case 'mk': if (G.Mega) G.Mega.onKill(local, ev[1]); break;
+      case 'za': if(G.ZMoves)G.ZMoves.grantCharge(local,ev[1]);break;
       case 'ak': G.Abilities.onKill(local, ev[1]); break;
       case 'ne':
-        G.EnemyMgr.addRemote({ id: ev[1], dex: ev[2], x: ev[3], y: ev[4], boss: !!ev[5], shiny: !!ev[6], hp: ev[7], dmg: ev[8], beh: ev[9], mega: ev[10] });
+        G.EnemyMgr.addRemote({ id: ev[1], dex: ev[2], x: ev[3], y: ev[4], boss: !!ev[5], shiny: !!ev[6], hp: ev[7], dmg: ev[8], beh: ev[9], mega: ev[10],elite:!!ev[11] });
         break;
       case 'ed': G.EnemyMgr.removeRemote(ev[1], true); break;
       case 'eg': G.EnemyMgr.removeRemote(ev[1], false); break;
@@ -461,8 +462,9 @@ G.Coop = (() => {
   function hurtShown(e, d, color) { emitNear(['hn', e.id, d, color], e.x, e.y, hitFrom); }
   function abilityKill(p, id) { const m = mates.get(p.uid); if (m && m.connected) m.q.push(['ak', id]); }
   function megaKill(p, id) { const m = mates.get(p.uid); if (m && m.connected) m.q.push(['mk', id]); }
+  function zAward(p,key){const m=mates.get(p.uid);if(m&&m.connected)m.q.push(['za',key]);}
   function enemyAdded(e) {
-    emit(['ne', e.id, e.dex, r1(e.x), r1(e.y), e.boss ? 1 : 0, e.shiny ? 1 : 0, Math.ceil(e.maxHp), r2(e.dmg), e.behavior, e.mega || null]);
+    emit(['ne', e.id, e.dex, r1(e.x), r1(e.y), e.boss ? 1 : 0, e.shiny ? 1 : 0, Math.ceil(e.maxHp), r2(e.dmg), e.behavior, e.mega || null,e.elite?1:0]);
   }
   function enemyGone(e, died) { emit([died ? 'ed' : 'eg', e.id]); }
   function enemyShot(p, type) { emit(['es', r1(p.x), r1(p.y), r1(p.vx), r1(p.vy), r2(p.dmg), p.r, p.life, type]); }
@@ -561,7 +563,7 @@ G.Coop = (() => {
   return {
     ANIMS, COLORS, begin, end, leave, tick, players, puppets, xpFactor, scaleRate, scaleHp,
     cast, zCast, hit, status, hurtShown, abilityKill, megaKill, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
-    propBroken, collected, shinyCaught, levelStart, localPicked, over, holdStart, holdEnd,
+    propBroken, collected, shinyCaught, levelStart, localPicked, over, holdStart, holdEnd,zAward,
     /** Anfitrión: evento para todos. Invitado: evento para el anfitrión. */
     broadcast(ev) { emit(ev); },
     toHost(ev) { if (active && !host) { outEv.push(ev); flushClient(true); } },

@@ -43,6 +43,7 @@ G.RunUI = (() => {
     list.forEach((c, i) => {
       const el = document.createElement('div');
       el.className = 'card';
+      if(c.corrupted)el.classList.add('corrupted');
       const tag = c.type === 'new'
         ? `<span class="tag-chip" style="background:${c.color}">Nuevo · ${c.tag}</span>`
         : c.type === 'up' || c.type === 'evo'
@@ -51,7 +52,7 @@ G.RunUI = (() => {
       if (c.type === 'evo') el.classList.add('evo');
       el.innerHTML =
         `<div class="ico" style="background:${c.color}33">${G.Icons.html(c.icon, 32)}</div>
-         <div class="txt"><div class="nm">${c.title} ${tag}</div><div class="ds">${c.desc}</div></div>
+         <div class="txt"><div class="nm">${c.corrupted?G.T('CONTAMINADA')+' · ':''}${c.title} ${tag}</div><div class="ds">${c.desc}</div></div>
          <div class="key">${i + 1}</div>`;
       el.dataset.sfx = 'none';             // el juego pone su propio sonido al elegir
       el.onclick = () => pick(i);

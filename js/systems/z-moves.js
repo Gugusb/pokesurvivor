@@ -1,9 +1,9 @@
 /* Z crystals share the special equipment slot with Mega Stones. */
 G.ZMoves = (() => {
-  const COOLDOWN = 180, BULLET_TIME = 0.1, TAU = Math.PI * 2;
+  const COOLDOWN = 5, MAX_CHARGES=3, BULLET_TIME = 0.1, TAU = Math.PI * 2;
   const KINDS = ['projectile', 'melee', 'beam', 'orbit', 'chain', 'dash', 'meteor'];
   const TYPES = Object.keys(G.U.TYPE_COLOR);
-  const state = p => p.zState || (p.zState = { type: null, phase: 'ready', cooldown: 0, elapsed: 0, casts: [], guard: 0 });
+  const state = p => p.zState || (p.zState = { type: null, phase: 'ready', charges:1, rewards:new Set(), cooldown: 0, elapsed: 0, casts: [], guard: 0 });
   const hasStone = p => !!(p && p.zState && TYPES.includes(p.zState.type));
   const selecting = p => hasStone(p) && state(p).phase === 'choose' && !p.dead;
   const busy = p => hasStone(p) && !p.dead && ['choose', 'cast'].includes(state(p).phase);
@@ -49,6 +49,7 @@ G.ZMoves = (() => {
     const s = state(p);
     if (s.phase === 'choose') { s.phase = 'ready'; return true; }
     if (s.phase !== 'ready' || !G.Abilities.canCast(p)) return false;
+    if(!(s.charges>0)){G.UI.toast(G.T('No quedan cargas Z.'));return false;}
     if (!p.slots.some((g, i) => eligible(p, i).length)) { G.UI.toast(G.T('No hay movimientos Z compatibles.')); return false; }
     s.phase = 'choose'; s.elapsed = 0;
     G.Projectiles.clearOrbs(p); G.Combat.clearFields(p);
@@ -93,7 +94,7 @@ G.ZMoves = (() => {
   function choose(p,i) {
     if(!selecting(p)) return false;
     const ms=eligible(p,i); if(!ms.length)return false;
-    const s=state(p);p.active=i;s.phase='cast';s.elapsed=0;s.casts=ms.map(m=>entry(p,m));
+    const s=state(p);if(!(s.charges>0))return false;s.charges--;p.active=i;s.phase='cast';s.elapsed=0;s.casts=ms.map(m=>entry(p,m));
     p.anim.play('Charge');
     if(G.Coop.active && G.Coop.zCast)G.Coop.zCast(p,ms,s.casts.map(e=>e.angle));
     tick(p,0); return true;
@@ -242,10 +243,11 @@ G.ZMoves = (() => {
   function sync(p,packed) {
     if(!p.remote)return;
     if(!Array.isArray(packed)){if(p.zState){p.zState.type=null;p.zState.casts=[];}return;}
-    const [type,phase,cooldown]=packed;
+    const [type,phase,cooldown,charges]=packed;
     if(!TYPES.includes(type)){if(p.zState){p.zState.type=null;p.zState.casts=[];}return;}
     const s=state(p);s.type=type;s.phase=['ready','choose','cast','cooldown'].includes(phase)?phase:'ready';
     s.cooldown=Number.isFinite(cooldown)?Math.max(0,Math.min(COOLDOWN,cooldown)):0;
+    s.charges=Number.isInteger(charges)?Math.max(0,Math.min(MAX_CHARGES,charges)):1;
     if(p.megaState)p.megaState.id=null;
   }
   function remoteCast(p,spec,angles) {
@@ -315,7 +317,24 @@ G.ZMoves = (() => {
     ctx.beginPath();ctx.moveTo(x+size*.5,y);ctx.lineTo(x+size*.9,y+size*.5);ctx.lineTo(x+size*.5,y+size);ctx.lineTo(x+size*.1,y+size*.5);ctx.closePath();ctx.fill();ctx.stroke();
     ctx.font='bold '+Math.round(size*.6)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.fillText('Z',x+size/2,y+size*.54);ctx.restore();
   }
-  function debugCharge(p){if(!G.Dev?.canUse()||!hasStone(p)||busy(p))return false;G.Game.debugMark();state(p).phase='ready';state(p).cooldown=0;return true;}
-  return { COOLDOWN,BULLET_TIME,KINDS,TYPES,state,hasStone,selecting,busy,dashing,immune,timeFactor,matches,eligible,
+  function grantCharge(p,key){
+    if(!hasStone(p)||p.dead)return false;
+    if(p.remote){G.Coop.zAward?.(p,key);return true;}
+    const s=state(p);s.rewards||=new Set();if(s.rewards.has(key))return false;s.rewards.add(key);
+    if(s.rewards.size>512)s.rewards.delete(s.rewards.values().next().value);
+    const before=s.charges;s.charges=Math.min(MAX_CHARGES,s.charges+1);
+    if(s.charges>before)G.FX.dmgText(p.x,p.y-p.bodyH,'+1 Z','#fff3a1');return s.charges>before;
+  }
+  function onKill(e){
+    if(G.Coop.active&&!G.Coop.isHost)return;
+    if(e.boss){for(const p of all())grantCharge(p,'boss:'+e.id);return;}
+    const chance=e.elite?.05:(G.MonProgression?.captureChance(e)||.002);
+    if(Math.random()<chance)grantCharge(e.lastAttacker,'kill:'+e.id);
+  }
+  let eventN=0;
+  function eventReward(){if(G.Coop.active&&!G.Coop.isHost)return;const key='event:'+(++eventN);if(Math.random()<.8)for(const p of all())grantCharge(p,key);}
+  function debugCharge(p){if(!G.Dev?.canUse()||!hasStone(p)||busy(p))return false;G.Game.debugMark();state(p).charges=MAX_CHARGES;state(p).phase='ready';state(p).cooldown=0;return true;}
+  return { COOLDOWN,MAX_CHARGES,BULLET_TIME,KINDS,TYPES,state,hasStone,selecting,busy,dashing,immune,timeFactor,matches,eligible,
+    grantCharge,onKill,eventReward,
     owns,grant,equip,normalize,init,arm,choose,cancel,aim,landing,tick,sync,remoteCast,draw,drawGround,drawStone,debugCharge };
 })();

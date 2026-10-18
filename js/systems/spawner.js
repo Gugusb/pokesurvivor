@@ -11,10 +11,9 @@
  * jugáis (ver G.Coop.scaleRate / scaleHp).
  */
 G.Spawner = (() => {
-  // Tope de enemigos a la vez (antes 420: con tantos se ralentizaba). Cuando
-  // se llega al tope, los que siguen saliendo son "élite" (más vida, daño y
-  // experiencia), así la dificultad no baja.
-  const CAP = 64, ELITE_FROM = 0.85;
+  // Tope de enemigos simultáneos. La élite se decide por una tirada propia
+  // al aparecer, sin depender de la saturación de la pantalla.
+  const CAP = 64;
   // Menos Pokémon pero más fuertes (la pantalla no se satura): salen ~24% de
   // los de antes, cada uno con más vida, daño y experiencia.
   const DENSITY = 0.24, DMG_K = 2.4, XP_K = 5.6;
@@ -24,9 +23,11 @@ G.Spawner = (() => {
   const SHINY_RATE = 1 / 4096;
   let acc = 0, bossIdx = 0, surgeT = 32, announce = null, announceT = 0, preloadT = 0;
   let forceShiny = 0;           // para pruebas: los N próximos salen shiny
+  let sector=0,sectorT=0;
 
   function reset() {
     acc = 0; bossIdx = 0; surgeT = 32; announce = null; announceT = 0; preloadT = 0;
+    sector=Math.random()*Math.PI*2;sectorT=G.U.rand(30,50);
     G.Enemies.rollRun();
     G.Sprites.preload(G.Enemies.upcomingDex(0, 80));
   }
@@ -78,12 +79,13 @@ G.Spawner = (() => {
 
   function spawnOne(pl, t, angle) {
     const def = G.U.pick(G.Enemies.bagAt(t));
-    const pt = freePoint(pl, angle == null ? Math.random() * 6.2832 : angle, isFlyer(def));
+    const a=angle==null?spawnAngle():angle;
+    const pt = freePoint(pl, a, isFlyer(def)) || freePoint(pl,Math.random()*Math.PI*2,isFlyer(def));
     if (!pt) return null;
     const shiny = rollShiny(def.dex);
     const e = new G.Enemy(def, pt[0], pt[1], scaled(G.Enemies.scale(t), G.Coop.scaleHp(players.length) * hpK(t)));
     e.dmg *= DMG_K; e.xp = Math.round(e.xp * XP_K);
-    if (G.EnemyMgr.count >= CAP * ELITE_FROM) { e.maxHp = e.hp = Math.round(e.maxHp * 1.6); e.dmg *= 1.25; e.xp = Math.round(e.xp * 1.6); }
+    if(Math.random()<(G.Difficulty?G.Difficulty.eliteChance():.005))e.makeElite();
     if (shiny) e.makeShiny();
     if (G.Events.golden) e.makeGolden();
     G.EnemyMgr.add(e);
@@ -92,6 +94,10 @@ G.Spawner = (() => {
       G.Audio.sfx('shiny');
     }
     return e;
+  }
+  function spawnAngle(){
+    if(!G.Difficulty||G.Difficulty.current>=5)return Math.random()*Math.PI*2;
+    return sector+(Math.random()<.8?G.U.rand(-Math.PI/3,Math.PI/3):G.U.rand(Math.PI/3,Math.PI*5/3));
   }
 
   function spawnBoss(pl, t, b) {
@@ -112,6 +118,7 @@ G.Spawner = (() => {
     // En la arena de la grieta no sale nada más (y el reloj de jefes espera).
     // En la Sentencia de Arceus, sólo sus legendarios (systems/judgment.js).
     if (G.Rift.inArena || G.Judgment.active) return;
+    sectorT-=dt;if(sectorT<=0){sector+=G.U.rand(Math.PI*.65,Math.PI*1.35);sectorT=G.U.rand(30,50);}
 
     // Precarga lo que va a salir en el próximo minuto.
     preloadT -= dt;
@@ -137,7 +144,7 @@ G.Spawner = (() => {
     if (!bossFight) surgeT -= dt;
     if (surgeT <= 0) {
       surgeT = G.U.rand(38, 56);
-      const base = Math.random() * 6.2832;
+      const base = G.Difficulty&&G.Difficulty.current<=4?spawnAngle():Math.random()*6.2832;
       const target = anchor();
       const n = Math.min(CAP - G.EnemyMgr.count, Math.round((14 + Math.floor(t / 22)) * G.Coop.scaleRate(players.length) * 0.4));
       for (let i = 0; i < n; i++) spawnOne(target, t, base + G.U.rand(-0.55, 0.55));
@@ -148,7 +155,7 @@ G.Spawner = (() => {
 
   /** Unos cuantos de golpe desde un lado (al empezar una horda). */
   function burst(n) {
-    const base = Math.random() * 6.2832, target = anchor() || G.Game.player, t = G.Game.st.time;
+    const base = spawnAngle(), target = anchor() || G.Game.player, t = G.Game.st.time;
     for (let i = 0; i < n && G.EnemyMgr.count < CAP + 10; i++) spawnOne(target, t, base + G.U.rand(-0.6, 0.6));
   }
 
@@ -159,11 +166,12 @@ G.Spawner = (() => {
   function ahead(e, pl) {
     if (!players.length) players = [pl];
     const sp = Math.hypot(pl._vx || 0, pl._vy || 0);
-    const a0 = sp > 20 ? Math.atan2(pl._vy, pl._vx) : Math.random() * 6.2832;
-    const pt = freePoint(pl, a0 + G.U.rand(-0.9, 0.9), e.flying);
+    const directional=G.Difficulty&&G.Difficulty.current<=4;
+    const a0 = directional?spawnAngle():sp > 20 ? Math.atan2(pl._vy, pl._vx) : Math.random() * 6.2832;
+    const pt = freePoint(pl, directional?a0:a0 + G.U.rand(-0.9, 0.9), e.flying);
     if (!pt) return false;
     e.x = pt[0]; e.y = pt[1]; e.kx = e.ky = 0;
-    e.phase = 'walk'; e.pt = 0; e.jump = null; e.jumpLift = 0;
+    e.phase = 'walk'; e.pt = 0; e.jump = null; e.jumpLift = 0;e.contactHold=0;
     return true;
   }
 
@@ -179,6 +187,6 @@ G.Spawner = (() => {
   /** Invitado en cooperativo: sólo corre el reloj del aviso. */
   function tickBanner(dt) { if (announceT > 0) announceT -= dt; }
 
-  return { reset, update, ahead, burst, tickBanner, banner, say, rate, SHINY_RATE, CAP,
+  return { reset, update, ahead, burst, tickBanner, banner, say, rate, SHINY_RATE, CAP, spawnAngle,
            debugForceShiny(n = 1) { forceShiny = n; } };
 })();

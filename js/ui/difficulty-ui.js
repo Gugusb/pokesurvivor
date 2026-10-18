@@ -12,7 +12,9 @@ G.DifficultyUI = (() => {
     }
     select.value = s.difficulty.selected;
     const update = () => {
-      note.textContent = G.T('Las estrellas más altas son más difíciles.');
+      const n=s.difficulty.selected;
+      note.style.whiteSpace='pre-line';
+      note.textContent=G.T('Recompensas')+' ×'+G.Difficulty.rewards(n).toFixed(2)+'\n'+G.Difficulty.traits(n).map(x=>'• '+G.T(x)).join('\n');
       note.title = G.T('Supera una dificultad para desbloquear la siguiente.');
     };
     select.onchange = () => { if (G.Difficulty.select(s, +select.value)) G.DB.commit(); update(); };

@@ -139,7 +139,12 @@ G.LevelUp = (() => {
       picked.push(c);
     }
     if (picked.length) missed.set(pl, eligible && !picked.some(c => c.type === 'up'));
-    return picked;
+    return picked.map(c=>{
+      if(!G.Difficulty||Math.random()>=G.Difficulty.corruptionChance())return c;
+      return {...c,corrupted:true,desc:c.desc+' '+G.T('Contaminada: -10 de vida máxima.'),apply:p=>{
+        c.apply(p);const k=G.Mega?.active(p)?G.Mega.HP:1;p.maxHp=Math.max(k,p.maxHp-10*k);p.hp=Math.min(p.hp,p.maxHp);
+      }};
+    });
   }
 
   return { offer, STATS };

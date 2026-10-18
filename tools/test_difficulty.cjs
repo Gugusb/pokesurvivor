@@ -27,12 +27,13 @@ function context() {
   };
   return s;
 }
-test('every star keeps the original 5%/3% growth while the whole curve is scaled to 70% HP and 80% damage',()=>{
+test('star-specific growth replaces fixed HP/damage multipliers while lower stars have explicit assistance',()=>{
   const s=context(),D=s.G.Difficulty;
   close(D.factors(4).hp,0.7);close(D.factors(4).dmg,0.8);
-  for(let n=1;n<8;n++){close(D.factors(n+1).hp/D.factors(n).hp,1.05);close(D.factors(n+1).dmg/D.factors(n).dmg,1.03);}
+  close(D.factors(1).hp,.56);close(D.factors(2).dmg,.4);close(D.factors(3).spd,.67);
+  for(let n=1;n<8;n++){assert.equal(D.growth(0,'normal',n).hp,1);assert.ok(D.growth(1800,'normal',n+1).hp>D.growth(1800,'normal',n).hp);}
   s.run(4);let e=s.enemy();assert.equal(e.maxHp,1400);assert.equal(e.dmg,240);assert.equal(e.shotDmg(),48);
-  s.run(8);e=s.enemy(true);assert.equal(e.maxHp,Math.round(2000*0.7*1.05**4));close(e.dmg,300*0.8*1.03**4);close(e.shotDmg(),60*0.8*1.03**4);
+  s.run(8);e=s.enemy(true);assert.equal(e.maxHp,Math.round(2000*.7));close(e.dmg,300*.8);close(e.shotDmg(),60*.8);
   assert.equal(e.spd,20);assert.equal(e.xp,5);
 });
 
@@ -64,9 +65,20 @@ test('original leaderboard accepts clean normal four-star runs but excludes easi
     G.Game._test.endRun(false);assert.equal(sent,expected);assert.equal(s.over.rankingExcluded,!expected);
   }
 });
+
+test('final coin payout multiplies the whole subtotal by difficulty and keeps Fortune separate',()=>{
+  for(const [stars,reward] of [[1,1],[4,1.5],[8,2.6]]){
+    const s=context(),G=s.G;s.loadGame();const p=s.player();p.coins=50;p.kills=40;p.bosses=1;p.coinMul=1.2;
+    G.Game._test.setRun(p,s.run(stars),100);G.Game._test.endRun(false);
+    assert.equal(s.over.coins,Math.round((20+10+80+50)*reward*1.2));
+    if(stars>1)assert.ok(s.over.breakdown.includes('×'+reward.toFixed(2)));
+    assert.ok(s.over.breakdown.includes('×1.20 Fortuna'));
+  }
+});
 test('summons inherit the original spawn scale once; remote enemies keep host HP and damage unchanged',()=>{
   const s=context(),G=s.G;s.run(8);const e=s.enemy(true);e.summon();
-  assert.equal(e.minions.length,2);assert.equal(e.minions[0].maxHp,Math.round(350*2*0.7*1.05**4));close(e.minions[0].dmg,60*3*0.8*1.03**4);
+  assert.equal(e.minions.length,2);assert.ok([Math.round(350*2*.7),Math.round(350*2*.7)*5].includes(e.minions[0].maxHp));
+  close(e.minions[0].dmg,60*3*.8*(e.minions[0].elite?2:1));
   const copy=G.EnemyMgr.addRemote({id:999,dex:1,hp:e.maxHp,dmg:e.dmg,x:0,y:0,boss:true});assert.equal(copy.maxHp,e.maxHp);close(copy.dmg,e.dmg);
 });
 test('new and legacy saves start at one star, and progression cannot skip a locked tier',()=>{
@@ -99,7 +111,7 @@ test('a registered local save persists selected tier, medals and record through 
 test('co-op chooses one tier within every member’s unlocked range, including legacy member fallback',()=>{
   const {G}=context(),s=G.DB.save,D=G.Difficulty;for(let n=1;n<=8;n++)s.difficulty.cleared[n]=true;s.difficulty.selected=7;
   assert.equal(D.partyLevel(s,[{difficultyLimit:8},{difficultyLimit:3}]),3);assert.equal(D.partyLevel(s,[{difficultyLimit:8},{}]),1);
-  assert.equal(D.begin(s,6,3).stars,3);close(D.factors().hp,0.7/1.05);
+  assert.equal(D.begin(s,6,3).stars,3);close(D.factors().hp,.7);
 });
 test('real game checkpoint grants victory once after 20 minutes, keeps playing, then persists the longer end time',()=>{
   const s=context(),G=s.G;s.loadGame();const p=s.player(),r=s.run(1);G.Game._test.setRun(p,r,1200);G.Game._test.checkChallenge();assert.equal(r.victory,false);

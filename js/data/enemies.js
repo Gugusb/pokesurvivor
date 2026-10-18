@@ -174,6 +174,7 @@ G.Enemies = (() => {
   // (El "tiempo extra" del minuto 60 se quitó al llegar la Sentencia de Arceus,
   //  que acaba todas las partidas en el minuto 30: ver systems/judgment.js.)
   function scale(t) {
+    if(G.Difficulty)return G.Difficulty.growth(t);
     return { hp: 1 + t / 95, dmg: 1 + t / 420, spd: 1 + Math.min(0.35, t / 1400) };
   }
 
@@ -181,7 +182,7 @@ G.Enemies = (() => {
    * Los jefes ya traen su vida base creciente (1.400 ... 16.000), así que
    * escalan mucho más suave: con la curva normal el último llegaba a 168.000 PV.
    */
-  function bossScale(t) { return { hp: 1 + t / 600, dmg: 1 + t / 600, spd: 1 }; }
+  function bossScale(t) { return G.Difficulty ? {...G.Difficulty.growth(t,'boss'),spd:1} : { hp: 1 + t / 600, dmg: 1 + t / 600, spd: 1 }; }
 
   /** Tramo que toca en el segundo `t`. */
   function tierAt(t) { let ti = 0; TIERS.forEach((tr, i) => { if (t >= tr.from) ti = i; }); return ti; }
@@ -203,7 +204,7 @@ G.Enemies = (() => {
   function bagAt(t) {
     // Durante una horda de un tipo sólo salen los de ese tipo (systems/events.js).
     const horde = G.Events && G.Events.bag();
-    if (horde) return horde;
+    if (horde) return weightedBag(horde);
     if (!cast) rollRun();
     const bag = [];
     for (const tier of cast) {
@@ -211,7 +212,11 @@ G.Enemies = (() => {
       const w = t - tier.from > 260 ? 3 : 10;       // los tramos viejos pierden peso
       for (const e of tier.list) for (let i = 0; i < w; i++) bag.push(e);
     }
-    return bag.length ? bag : cast[0].list;
+    return weightedBag(bag.length ? bag : cast[0].list);
+  }
+  function weightedBag(bag){
+    if(!G.Difficulty||G.Difficulty.current>=5)return bag;
+    return bag.flatMap(e=>Array(['ranged','fan','beamer','zoner'].includes(e.behavior)?1:8).fill(e));
   }
 
   /** dex del elenco que aparecerán pronto (para precargar sprites). */

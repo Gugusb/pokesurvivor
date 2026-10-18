@@ -17,7 +17,7 @@ function context(){
   G.World={biome:0,liquidEffect:()=>({}),isLiquid:()=>false,collide:noop,isWall:()=>false,isFree:()=>true,
     propsInCircle:()=>[],projectileBlock:()=>null,damageProp:noop,setArena:noop,setBiome:noop};
   G.Weather={speedFor:()=>1,mult:()=>1,force:noop,clear:noop};G.Tiles={T:16,arenaBiome:()=>0,ARENA_THEMES:{}};
-  G.Judgment={AT:1800,noteDmg:noop};G.Pickups={drop:noop,dropXp:noop,pullAll:noop};G.Progress={event:noop,kill:noop};G.Events={golden:false};G.Hazards={clear:noop};G.Spawner={say:noop};
+  G.Judgment={AT:1800,noteDmg:noop};G.Pickups={drop:noop,dropXp:noop,pullAll:noop};G.Progress={event:noop,kill:noop};G.Events={golden:false,bag:()=>null};G.Hazards={clear:noop};G.Spawner={say:noop};
   let p;s.playerRef=()=>p;G.Game={state:'playing',st:{time:100},everyone:()=>p?[p]:[],flash:noop,offerBond:noop,debugMark:noop};
   s.load('js/systems/mega-preview.js');s.load('js/systems/mega.js');s.load('js/systems/z-moves.js');
   const db=fs.readFileSync(path.join(ROOT,'js/core/db.js'),'utf8').replace('ready, register, login,','_test:{newSave,migrate,sanitize}, ready, register, login,');vm.runInContext(db,s);G.DB.playAsGuest();
@@ -59,9 +59,9 @@ test('arming stops ordinary fire, same-slot selection works, casting locks switc
   const timer=s.m.t;G.Combat.tick(.2,p,0);assert.equal(G.Projectiles.count,0);assert.equal(s.m.t,timer);
   assert.equal(p.setActive(1),false);assert.equal(p.active,0);assert.ok(p.setActive(0));assert.equal(G.Projectiles.count,8);
   assert.equal(G.ZMoves.timeFactor(),1);assert.equal(p.setActive(1),false);assert.equal(p.active,0);
-  advance(s,G.ZMoves.state(p).casts[0].duration);assert.equal(p.zState.phase,'cooldown');close(p.zState.cooldown,180);
+  advance(s,G.ZMoves.state(p).casts[0].duration);assert.equal(p.zState.phase,'cooldown');close(p.zState.cooldown,5);
   assert.equal(G.ZMoves.arm(p),false);p.setActive(1);assert.equal(p.active,1);
-  advance(s,180,1);assert.equal(p.zState.phase,'ready');
+  advance(s,5,1);assert.equal(p.zState.phase,'ready');assert.equal(G.ZMoves.arm(p),false,'no charge regenerates with time');
 });
 
 test('unsupported types cannot arm, fused slots release all and only supported matching moves',()=>{
@@ -141,7 +141,7 @@ test('a short fused dash does not repeatedly teleport or refresh immunity while 
 test('meteor Z schedules thirty impacts over three seconds and keeps the lock until the final landing',()=>{
   const s=setup('rock-slide'),{G,p,m}=s,hits=capture(s);s.enemy(100);G.EnemyMgr.rebuildGrid();release(s);
   const cast=p.zState.casts[0];advance(s,3.39);assert.equal(cast.pulses,30);assert.equal(hits.length,29);assert.ok(G.ZMoves.busy(p));
-  advance(s,.01);assert.equal(hits.length,30);hits.forEach(h=>close(h.dmg,m.dmg*p.atk*10));assert.equal(p.zState.phase,'cooldown');close(p.zState.cooldown,180);
+  advance(s,.01);assert.equal(hits.length,30);hits.forEach(h=>close(h.dmg,m.dmg*p.atk*10));assert.equal(p.zState.phase,'cooldown');close(p.zState.cooldown,5);
 });
 
 test('death or a cancelled selection cannot leave the whole party in bullet time',()=>{
@@ -241,11 +241,11 @@ test('developer two-second Z cooldown repeats after every cast, defaults off and
   const s=setup('quick-attack'),{G,p}=s;G.AbilityGacha={};s.load('js/ui/developer.js');
   assert.equal(G.Dev.zShortCooldown,false);assert.equal(G.Dev.setZCooldown(true),false);
   G.Dev.setEnabled(true);assert.equal(G.Dev.zShortCooldown,false);
-  release(s);advance(s,.5);close(p.zState.cooldown,180);
+  release(s);advance(s,.5);close(p.zState.cooldown,5);G.ZMoves.grantCharge(p,'test:1');
   assert.equal(G.Dev.setZCooldown(true),true);close(p.zState.cooldown,2);
   advance(s,2);assert.equal(p.zState.phase,'ready');release(s);advance(s,.5);close(p.zState.cooldown,2);
-  advance(s,2);release(s);advance(s,.5);close(p.zState.cooldown,2);
-  G.Dev.setZCooldown(false);G.ZMoves.debugCharge(p);release(s);advance(s,.5);close(p.zState.cooldown,180);
+  advance(s,2);G.ZMoves.grantCharge(p,'test:2');release(s);advance(s,.5);close(p.zState.cooldown,2);
+  G.Dev.setZCooldown(false);G.ZMoves.debugCharge(p);release(s);advance(s,.5);close(p.zState.cooldown,5);
   G.Dev.setZCooldown(true);G.Coop.active=true;assert.equal(G.Dev.zShortCooldown,false);assert.equal(G.Dev.setZCooldown(false),false);
   G.Coop.active=false;G.Dev.setEnabled(false);assert.equal(G.Dev.zShortCooldown,false);G.Dev.setEnabled(true);assert.equal(G.Dev.zShortCooldown,false);
 });
@@ -276,4 +276,149 @@ test('Z movement removes preexisting ice sliding momentum while the scripted das
   G.World.isLiquid=()=>true;G.World.liquidEffect=()=>({slide:true});p.inLiquid=true;p.svx=p.spd*5;p.svy=100;
   const speed=p.spd;G.ZMoves.arm(p);const x=p.x,y=p.y;p.update(.1);close(p.x-x,speed*.001*.1);close(p.y,y);
   const d=setup('quick-attack');release(d);advance(d,.5);close(Math.hypot(d.p.x,d.p.y),d.m.radius*10);
+});
+
+function tier(s,n){s.load('js/systems/difficulty.js');s.G.Difficulty.begin(s.G.DB.save,6,n);return s.G.Difficulty;}
+
+test('bounded cubic growth shares its first two minutes and separates stars later without exceeding caps',()=>{
+  const s=context(),D=tier(s,4);
+  for(const t of [0,30,120])for(let n=1;n<=8;n++){assert.equal(D.growth(t,'normal',n).hp,1);assert.equal(D.growth(t,'normal',n).dmg,1);}
+  for(let n=1;n<=8;n++){
+    let last=1;for(let t=0;t<=3600;t+=30){const h=D.growth(t,'normal',n).hp;assert.ok(h>=last);last=h;}
+    assert.ok(D.growth(1e8,'normal',n).hp<=[9,11,14,18,23,29,36,44][n-1]);
+    if(n<8){assert.ok(D.growth(1200,'normal',n+1).hp>D.growth(1200,'normal',n).hp);assert.ok(D.rewards(n+1)>D.rewards(n));}
+  }
+  assert.ok(D.growth(180,'normal',8).hp/D.growth(180,'normal',4).hp<1.06);
+  assert.ok(D.growth(1200,'normal',8).hp/D.growth(1200,'normal',4).hp>2);
+});
+
+test('low tiers reduce ranged weight while tiers five through eight retain the original bag',()=>{
+  const s=context(),{G}=s,D=tier(s,1);s.load('js/data/enemies.js');G.Enemies.rollRun();
+  const source=G.Enemies.cast[5].list;assert.ok(source.length);
+  const types=new Set(['ranged','fan','beamer','zoner']);
+  const ratio=bag=>bag.filter(x=>types.has(x.behavior)).length/bag.length;
+  // Same run roster; only weights change, and every species remains obtainable.
+  const low=G.Enemies.bagAt(600);D.begin(G.DB.save,6,5);const high=G.Enemies.bagAt(600);
+  assert.deepEqual([...new Set(low.map(x=>x.dex))].sort(),[...new Set(high.map(x=>x.dex))].sort());
+  assert.ok(ratio(low)<=ratio(high));D.begin(G.DB.save,6,8);assert.equal(G.Enemies.bagAt(600).length,high.length);
+});
+
+test('directional spawns concentrate at low tiers and the preferred direction changes on its timer',()=>{
+  const s=context(),{G}=s,D=tier(s,1);G.Enemies={rollRun:noop,upcomingDex:()=>[]};s.load('js/systems/spawner.js');
+  let seed=19;s.Math.random=()=>{seed=(seed*16807)%2147483647;return seed/2147483647;};G.Spawner.reset();
+  const sample=()=>{const a=Array.from({length:2000},()=>G.Spawner.spawnAngle());return [a.reduce((v,x)=>v+Math.cos(x),0)/a.length,a.reduce((v,x)=>v+Math.sin(x),0)/a.length];};
+  const first=sample();assert.ok(Math.hypot(...first)>.5);
+  G.Enemies.BOSSES=[];G.EnemyMgr.count;G.Rift={inArena:false};G.Judgment.active=false;G.Coop.scaleRate=()=>1;
+  // Keep the live cap full so this test advances only the direction clock.
+  const original=G.EnemyMgr;G.EnemyMgr={count:64,bossAlive:()=>true};G.Spawner.update(51,[s.player()],100);
+  const next=sample();assert.ok(first[0]*next[0]+first[1]*next[1]<0);G.EnemyMgr=original;
+  D.begin(G.DB.save,6,5);assert.ok(Math.hypot(...sample())<.08);
+});
+
+test('real low-star and high-star waves keep equal counts, with elite rolls applied before network publication',()=>{
+  const counts=[];
+  for(const n of [1,5,6]){
+    const s=context(),{G}=s,p=s.player();tier(s,n);G.Coop.scaleRate=()=>1;
+    s.Math.random=()=>.0075;s.load('js/data/enemies.js');s.load('js/systems/spawner.js');G.Spawner.reset();
+    const published=[];G.Coop.isHost=true;G.Coop.enemyAdded=e=>published.push({elite:!!e.elite,hp:e.hp});
+    for(let i=0;i<20;i++)G.Spawner.update(.5,[p],i*.5);
+    counts.push(G.EnemyMgr.count);assert.ok(counts.at(-1)>0);
+    assert.ok(G.EnemyMgr.all().every(e=>!!e.elite===(n===6)));
+    assert.deepEqual(published,Array.from(G.EnemyMgr.all(),e=>({elite:!!e.elite,hp:e.hp})));
+  }
+  assert.ok(counts.every(n=>n===counts[0]));
+});
+
+test('non-boss contact attackers stop for at least 0.6 seconds after the target runs away',()=>{
+  const s=context(),{G}=s,p=s.player();tier(s,4);G.Path={dirFor:()=>null};
+  const e=new G.Enemy({dex:1,hp:100,spd:100,dmg:10,xp:1,behavior:'chase'},20,0,{hp:1,spd:1,dmg:1});
+  e.update(.01,p);assert.ok(e.contactHold>=.6);p.x=1000;const x=e.x;e.update(.5,p);assert.ok(e.contactHold>0);assert.ok(e.x-x<2);
+  e.update(.16,p);assert.equal(e.contactHold,0);assert.ok(e.x-x>10);
+  const boss=new G.Enemy({dex:1,hp:100,spd:100,dmg:10,xp:1,behavior:'chase'},p.x+20,0,{hp:1,spd:1,dmg:1},true);boss.update(.01,p);assert.equal(boss.contactHold,0);
+});
+
+test('elites multiply stats once, enlarge their sprite and keep those visuals in network copies',()=>{
+  const s=context(),{G}=s;tier(s,6);const e=s.enemy(100),hp=e.hp,dmg=e.dmg,xp=e.xp,scale=e.scale;
+  assert.ok(e.makeElite());assert.equal(e.hp,hp*5);assert.equal(e.dmg,dmg*2);assert.equal(e.xp,xp*5);assert.equal(e.scale,scale*1.5);
+  assert.equal(e.makeElite(),false);assert.equal(e.hp,hp*5);assert.equal(G.Difficulty.eliteChance(5),.005);assert.equal(G.Difficulty.eliteChance(6),.01);
+  const remote=G.EnemyMgr.addRemote({id:999,dex:1,hp:e.maxHp,dmg:e.dmg,x:10,y:0,elite:true});assert.ok(remote.elite);assert.equal(remote.maxHp,e.maxHp);assert.equal(remote.dmg,e.dmg);assert.equal(remote.scale,e.scale);
+});
+
+test('elite loot supplies five times XP and five ordinary bonus-drop rolls, plus difficulty treasure',()=>{
+  const s=context(),{G}=s,p=s.player();tier(s,8);const e=s.enemy(100);e.makeElite();e.lastAttacker=p;
+  G.Settings={fx:0};s.load('js/entities/pickup.js');s.Math.random=()=>0;e.die();
+  const drops=G.Pickups.all();assert.equal(drops.filter(x=>x.kind==='ticket').length,5);assert.equal(drops.filter(x=>x.kind==='treasure').length,5);
+  assert.equal(drops.filter(x=>['xp','xpBig'].includes(x.kind)).reduce((n,x)=>n+x.value,0),5);
+});
+
+test('corrupted cards reveal the ten-HP penalty and apply it only when picked, with a one-HP floor',()=>{
+  const s=setup('ember'),{G,p}=s;tier(s,7);s.load('js/systems/levelup.js');s.Math.random=()=>0;
+  const before=p.maxHp,cards=G.LevelUp.offer(p);assert.ok(cards.every(c=>c.corrupted));assert.equal(p.maxHp,before);
+  const move=cards.find(c=>c.type!=='stat')||cards[0];move.apply(p);close(p.maxHp,before+(move.key==='stat:hp'?20:0)-10);
+  p.maxHp=p.hp=5;move.apply(p);assert.equal(p.maxHp,1);assert.equal(p.hp,1);
+  G.Difficulty.begin(G.DB.save,6,6);assert.ok(G.LevelUp.offer(p).every(c=>!c.corrupted));
+});
+
+test('eight-star damage curse clears temporary effects but preserves permanent growth and cannot chain during cooldown',()=>{
+  const s=setup('ember'),{G,p}=s,D=tier(s,8);s.Math.random=()=>0;
+  p.buffs.atk.n=3;p.buffs.spd.n=2;p.atkMul=1.4;G.Abilities.state(p).growthAtk=.2;G.Abilities.state(p).justiceT=5;
+  assert.ok(D.onHurt(p));assert.equal(p.buffs.atk.n,0);assert.equal(p.buffs.spd.n,0);assert.equal(p.atkMul,1.4);assert.equal(G.Abilities.state(p).growthAtk,.2);assert.equal(G.Abilities.state(p).justiceT,0);assert.equal(p.slowT,2.5);
+  p.buffs.atk.n=1;assert.equal(D.onHurt(p),false);assert.equal(p.buffs.atk.n,1);
+  p.difficultyCurseT=0;D.begin(G.DB.save,6,7);assert.equal(D.onHurt(p),false);
+});
+
+test('Z charges start at one, spend once per fused cast, cap at three and never regenerate on cooldown',()=>{
+  const s=setup('quick-attack',['tackle']),{G,p}=s;p.slots=[p.moves];assert.equal(p.zState.charges,1);
+  G.ZMoves.arm(p);G.ZMoves.arm(p);assert.equal(p.zState.charges,1);release(s);assert.equal(p.zState.charges,0);advance(s,2.2);advance(s,5);assert.equal(G.ZMoves.arm(p),false);
+  for(let i=0;i<5;i++)G.ZMoves.grantCharge(p,'reward:'+i);assert.equal(p.zState.charges,3);release(s);assert.equal(p.zState.charges,2);
+  assert.equal(G.ZMoves.grantCharge(p,'reward:4'),false);assert.equal(p.zState.charges,2);
+});
+
+test('Z recharge chances distinguish ordinary kills, elites, guaranteed bosses and successful events',()=>{
+  const s=setup(),{G,p}=s;tier(s,1);p.zState.charges=0;
+  s.Math.random=()=>.002;G.ZMoves.onKill({id:1,lastAttacker:p});assert.equal(p.zState.charges,0);
+  s.Math.random=()=>.0019;G.ZMoves.onKill({id:2,lastAttacker:p});assert.equal(p.zState.charges,1);
+  s.Math.random=()=>.049;G.ZMoves.onKill({id:3,elite:true,lastAttacker:p});assert.equal(p.zState.charges,2);
+  s.Math.random=()=>.99;G.ZMoves.onKill({id:4,boss:true,lastAttacker:null});assert.equal(p.zState.charges,3);
+  p.zState.charges=0;s.Math.random=()=>.8;G.ZMoves.eventReward();assert.equal(p.zState.charges,0);
+  s.Math.random=()=>.799;G.ZMoves.eventReward();assert.equal(p.zState.charges,1);
+});
+
+test('host grants remote Z charge rewards through one idempotent targeted message without rerolling on clients',()=>{
+  const s=setup(),{G,p}=s,peer=new G.Player(G.DEX_BY[6]);peer.remote=true;peer.uid='peer';G.ZMoves.sync(peer,['fire','ready',0,0]);
+  const sent=[];G.Coop.active=true;G.Coop.isHost=true;G.Coop.zAward=(p,k)=>sent.push([p.uid,k]);G.Game.everyone=()=>[p,peer];G.ZMoves.onKill({id:77,boss:true});
+  assert.deepEqual(sent,[['peer','boss:77']]);p.zState.charges=0;G.ZMoves.grantCharge(p,'boss:77');assert.equal(p.zState.charges,0,'already delivered reward is not replayed after spending');
+  G.Coop.isHost=false;G.ZMoves.onKill({id:78,boss:true});assert.equal(sent.length,1);
+});
+
+test('successful timed events recharge once, while an expired lost-Pokémon rescue gives no Z reward',()=>{
+  const s=setup(),{G,p}=s;p.zState.charges=0;s.Math.random=()=>0;
+  s.load('js/systems/events.js');G.Events.reset();G.Events.debugStart('gold');G.Events.update(31,[p],100);
+  assert.equal(p.zState.charges,1);G.Events.update(.1,[p],100);assert.equal(p.zState.charges,1);
+  G.Events.reset();G.Events.debugStart('lost');assert.equal(G.Events.current,'lost');
+  G.Events.update(121,[p],100);assert.equal(G.Events.current,null);assert.equal(p.zState.charges,1);
+});
+
+test('guest protocol deduplicates Z recharge packets and preserves elite stats and size',()=>{
+  const s=setup(),{G,p}=s;let receive;p.zState.charges=0;
+  G.Net={uid:'peer',on:fn=>receive=fn,onPeer:noop};G.startMoveOf=()=> 'ember';G.Judgment.netApply=noop;
+  s.load('js/net/coop.js');G.Coop.begin({host:'host',members:[{uid:'host',dex:6},{uid:'peer',dex:6}]},p,{syncTeam:noop});
+  const frame={k:'f',ev:[['za','boss:42'],['ne',42,1,100,0,0,0,500,20,'chase',null,1]],p:{},t:1,lv:1,xp:0,xn:100,ki:1,bo:0,co:0};
+  receive('host',frame);assert.equal(p.zState.charges,1);const elite=G.EnemyMgr.get(42);
+  assert.ok(elite.elite);assert.equal(elite.scale,1.5);assert.equal(elite.maxHp,500);assert.equal(elite.dmg,20);
+  p.zState.charges=0;receive('host',frame);assert.equal(p.zState.charges,0);assert.equal(G.EnemyMgr.all().length,1);G.Coop.end();
+});
+
+test('capture and treasure chances rise together, and treasure pickups add their full coin value',()=>{
+  const s=setup(),{G,p}=s,D=tier(s,1);const e=s.enemy(100),base=G.MonProgression.captureChance(e);
+  D.begin(G.DB.save,6,8);close(G.MonProgression.captureChance(e),base*2.6);close(D.treasureChance(),.002*2.6);
+  close(G.MonProgression.captureChance({boss:true}),.05*2.6);
+  s.loadGame();const before=p.coins;G.Game._test.collect({kind:'treasure',value:50},p);assert.equal(p.coins,before+50);
+});
+
+test('weather chip respects Z immunity and triggers the eight-star curse only on actual HP loss',()=>{
+  const s=setup(),{G,p}=s;tier(s,8);s.Math.random=()=>0;s.load('js/systems/weather.js');
+  G.Weather.force('sand',30);p.buffs.atk.n=3;const hp=p.hp;G.ZMoves.arm(p);
+  G.Weather.update(2,100,p);assert.equal(p.hp,hp);assert.equal(p.buffs.atk.n,3);
+  G.ZMoves.cancel(p);G.Weather.update(2,100,p);assert.ok(p.hp<hp);assert.equal(p.buffs.atk.n,0);assert.equal(p.slowT,2.5);
 });

@@ -254,12 +254,13 @@ G.HUD = (() => {
     // Por encima de la barra de inicio del iPhone (allí los toques a veces no llegan).
     const sy = h - S - 18 - (touch ? Math.min(28, G.Touch.safeArea().bottom) : 0);
     if (hasZ) {
-      const zs=G.ZMoves.state(pl),ready=zs.phase==='ready',choosing=zs.phase==='choose',casting=zs.phase==='cast';
+      const zs=G.ZMoves.state(pl),ready=zs.phase==='ready'&&zs.charges>0,choosing=zs.phase==='choose',casting=zs.phase==='cast';
       roundRect(ctx,sx,sy,S,S,12);ctx.fillStyle='rgba(40,30,10,.95)';ctx.fill();
       ctx.strokeStyle=ready||choosing?'#fff0a0':'#a7a2b8';ctx.lineWidth=choosing?4:2;ctx.stroke();
       G.ZMoves.drawStone(ctx,sx+13,sy+3,28,zs.type);
       ctx.font=F(800,9);ctx.fillStyle='#fff';ctx.textAlign='center';
-      ctx.fillText(choosing?G.T('Elegir Z'):casting?'Z…':ready?G.T('Lista'):Math.ceil(zs.cooldown)+'s',sx+S/2,sy+44);
+      ctx.fillText(choosing?G.T('Elegir Z'):casting?'Z…':zs.phase==='cooldown'?Math.ceil(zs.cooldown)+'s':zs.charges+'/3',sx+S/2,sy+44);
+      ctx.textAlign='right';ctx.fillText(zs.charges+'/3',sx+S-4,sy+11);ctx.textAlign='center';
       ctx.fillText('Z',sx+7,sy+11);
       G.Touch.addButton(sx,sy,S,S,()=>G.ZMoves.arm(pl),GAP/2);sx+=S+GAP;
     } else if (hasMega) {

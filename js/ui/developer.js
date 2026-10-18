@@ -97,6 +97,7 @@ G.Dev = (() => {
       '<div class="row wrap"><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="legends">解锁全部五星伙伴</button></div>' +
       '<label>测试伙伴 <select id="dev-partner">' + G.AbilityDefs.SPECIES.map(d => '<option value="' + d + '">' + G.T(G.DEX_BY[d].name) + '</option>').join('') + '</select></label>' +
       '<button class="btn small" data-dev="partner">选择伙伴（局外）</button>' +
+      (G.Difficulty?'<h4>难度与精英测试</h4><label>测试难度 <select id="dev-difficulty">'+Array.from({length:8},(_,i)=>'<option value="'+(i+1)+'"'+(G.Difficulty.current===i+1?' selected':'')+'>'+(i+1)+'★</option>').join('')+'</select></label><div class="row wrap"><button class="btn small" data-dev="difficulty">本局切换难度</button><button class="btn small" data-dev="elite">生成测试精英</button><button class="btn small" data-dev="z-add">Z 充能 +1</button></div>':'')+
       (G.ZMoves ? '<h4>Z 招式试玩</h4><p class="note">仅用于调试。替换测试招式会清空本局原有技能，并装备同属性 Z 石。</p>' +
       '<div class="row wrap"><button class="btn small" data-dev="z-grant">获得全部 Z 石</button><button class="btn small" data-dev="z-charge">Z 石立即就绪</button></div>' +
       '<button class="btn small '+(zShortCooldown?'gold':'')+'" data-dev="z-short-cd">Z 技能冷却固定 2s：'+(zShortCooldown?'开':'关')+'</button>'+
@@ -146,6 +147,10 @@ G.Dev = (() => {
           case 'z-grant': for(const type of G.ZMoves.TYPES)G.ZMoves.grant(s,type);G.UI.toast('已获得全部 Z 石，可在图鉴详情装备');break;
           case 'z-charge': {const p=requireRun();if(p)G.ZMoves.debugCharge(p);break;}
           case 'z-short-cd': setZCooldown(!zShortCooldown);break;
+          case 'difficulty': if(requireRun())G.Difficulty.debugLevel(+panel.querySelector('#dev-difficulty').value);break;
+          case 'z-add': {const p=requireRun();if(p)G.ZMoves.grantCharge(p,'dev:'+performance.now());break;}
+          case 'elite': {const p=requireRun();if(!p)break;
+            const e=new G.Enemy({dex:1,hp:200,spd:65,dmg:8,xp:20,behavior:'chase'},p.x+140,p.y,G.Enemies.scale(G.Game.st.time));e.makeElite();G.EnemyMgr.add(e);G.EnemyMgr.rebuildGrid();break;}
           case 'z-prepare': {
             const p=requireRun();if(!p)break;
             if(G.ZMoves.busy(p)||G.Mega.active(p)){G.UI.toast('请等待当前招式或 Mega 进化结束');break;}

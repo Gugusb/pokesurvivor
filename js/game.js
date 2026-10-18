@@ -318,7 +318,8 @@ G.Game = (() => {
     G.Audio.sfx(dead ? 'gameover' : 'back');
     const save = G.DB.save;
     const confirmed = G.MonProgression ? G.MonProgression.commitCaptures(save, challenge || {}) : [];
-    const mul = pl.coinMul;
+    const difficultyReward=G.Difficulty?G.Difficulty.rewards(challenge?.stars):1;
+    const mul = pl.coinMul*difficultyReward;
     const ok = clean();
     if (G.Difficulty) G.Difficulty.record(save, challenge, time, !pl.dead, ok);
     const parts = {
@@ -360,7 +361,8 @@ G.Game = (() => {
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge,
       moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, rankingExcluded: !ranked,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
-                 (mul > 1 ? ` · ×${mul.toFixed(2)} Fortuna` : '')
+                 (pl.coinMul > 1 ? ` · ×${pl.coinMul.toFixed(2)} Fortuna` : '')+
+                 (difficultyReward > 1 ? ` · ×${difficultyReward.toFixed(2)} ${G.T('Dificultad')}` : '')
     }, () => { pl = null; G.Flow.afterRun(); });
   }
 
@@ -468,7 +470,7 @@ G.Game = (() => {
 
   // ---------------- recogida ----------------
 
-  const PICK_SFX = { xp: 'xp', xpBig: 'xp', coin: 'coin', heal: 'heal', bomb: 'break', magnet: 'confirm', ticket: 'shiny', ticket10: 'legend', item: 'legend' };
+  const PICK_SFX = { xp: 'xp', xpBig: 'xp', coin: 'coin', treasure:'legend', heal: 'heal', bomb: 'break', magnet: 'confirm', ticket: 'shiny', ticket10: 'legend', item: 'legend' };
 
   /*
    * Cooperativo: la elección de objeto y las cartas de nivel no pueden taparse.
@@ -537,7 +539,7 @@ G.Game = (() => {
       pendingLevels += pl.gainXp(p.value * (G.Coop.active ? G.Coop.xpFactor() : 1));
       return;
     }
-    if (p.kind === 'coin') {
+    if (p.kind === 'coin'||p.kind==='treasure') {
       pl.coins += p.value;
       G.FX.dmgText(who.x, who.y - who.bodyH - 6, '+' + p.value, '#ffd23f');
       return;

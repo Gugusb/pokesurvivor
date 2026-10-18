@@ -265,6 +265,7 @@ G.Player = class Player {
     this.hp -= d;
     G.Abilities.onDamage(this);
     G.Abilities.afterHurt(this, source, type);
+    if(d>0&&G.Difficulty)G.Difficulty.onHurt(this);
     this.invuln = 0.45;
     this.flash = 0.14;
     G.Audio.sfx('hurt');
@@ -351,6 +352,7 @@ G.Player = class Player {
 
   // ---------------- ciclo ----------------
   update(dt) {
+    this.difficultyCurseT=Math.max(0,(this.difficultyCurseT||0)-dt);
     if (G.Mega) G.Mega.tick(this, dt);
     this.megaDashGuard = Math.max(0, (this.megaDashGuard || 0) - dt);
     this.anim.update(dt);

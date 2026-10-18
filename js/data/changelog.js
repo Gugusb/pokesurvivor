@@ -6,6 +6,15 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-18', title: ['Dificultad, élites y cargas Z · v0.13.0', 'Difficulty, elites and Z charges · v0.13.0'], new: [
+    ['Los Pokémon de élite tienen cinco veces más vida y botín, doble ataque y un aura violeta. Son más frecuentes desde 6 estrellas.', 'Elite Pokémon have fivefold HP and loot, double attack and a purple aura. They become more frequent from 6 stars.'],
+    ['Desde 7 estrellas hay cartas contaminadas que cuestan 10 de vida máxima; a 8 estrellas, recibir daño puede ralentizarte y borrar beneficios temporales.', 'From 7 stars, corrupted cards cost 10 maximum HP; at 8 stars, taking damage may slow you and clear temporary buffs.']
+  ], chg: [
+    ['Las dificultades bajas reducen vida, daño, velocidad y ataques a distancia, y concentran las oleadas en una dirección cambiante sin reducir su cantidad.', 'Lower difficulties reduce enemy HP, damage, speed and ranged encounters, concentrating waves in a changing direction without reducing their size.'],
+    ['La vida y el daño enemigos crecen con curvas limitadas por dificultad: un inicio parecido y mayores diferencias al final. Suben las monedas, las capturas y los tesoros con las estrellas.', 'Enemy HP and damage follow bounded difficulty curves: similar starts and larger late-game differences. Higher stars increase coins, captures and treasure drops.'],
+    ['Los enemigos cuerpo a cuerpo que no son jefes se detienen brevemente al alcanzar al jugador.', 'Non-boss melee enemies briefly stop after reaching the player.'],
+    ['Los cristales Z empiezan con una carga, acumulan hasta tres y se recargan mediante derrotas y eventos. Cada lanzamiento termina con 5 segundos de enfriamiento.', 'Z Crystals start with one charge, hold up to three and recharge through defeats and events. Each cast ends with a 5-second cooldown.']
+  ], fix: [] },
   { d: '2026-10-18', title: ['Proyectiles Z y concentración · v0.12.2', 'Z projectiles and concentration · v0.12.2'], new: [], chg: [
     ['Los ataques Z de proyectiles disparan ocho tiros que atraviesan paredes y obstáculos.', 'Projectile Z moves fire eight shots that pass through walls and obstacles.'],
     ['Durante la selección y el lanzamiento Z, la velocidad de movimiento se reduce un 99,9 %. Las embestidas Z conservan su desplazamiento.', 'During Z selection and casting, movement speed is reduced by 99.9%. Z dashes retain their scripted movement.']

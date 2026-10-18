@@ -40,7 +40,7 @@
       const difficulty = G.Difficulty && !def.networkStats ? G.Difficulty.factors() : { hp: 1, dmg: 1 };
       this.maxHp = Math.max(1, Math.round(def.hp * sc.hp * difficulty.hp));
       this.hp = this.maxHp;
-      this.spd = def.spd * sc.spd;
+      this.spd = def.spd * sc.spd * (difficulty.spd || 1);
       this.dmg = def.dmg * sc.dmg * difficulty.dmg;
       this.xp = def.xp;
       this.behavior = def.behavior;
@@ -92,6 +92,15 @@
       this.maxHp *= 2; this.hp = this.maxHp;
       this.xp *= 5;
       G.Sprites.preload([this.spriteDex], 4000, true);
+    }
+    makeElite(stats=true){
+      if(this.elite||this.boss)return false;
+      this.elite=true;this.scale*=1.5;
+      this.name=G.T('Élite')+' '+this.name;
+      if(stats){this.maxHp=this.hp=Math.round(this.maxHp*5);this.dmg*=2;this.xp*=5;}
+      this.anim=new G.Sprites.Animator(this.spriteDex,this.scale,!!this.shiny);
+      this.r=G.Sprites.bodyRadius(this.spriteDex,this.scale);this.bodyH=G.Sprites.bodyHeight(this.spriteDex,this.scale);
+      return true;
     }
 
     /** Hora dorada (events.js): doble de experiencia y a veces monedas. */
@@ -193,6 +202,7 @@
       }
       G.Abilities.onKill(this.lastAttacker, this.id);
       if (G.Mega) G.Mega.onKill(this.lastAttacker, this.id);
+      if(G.ZMoves)G.ZMoves.onKill(this);
       // (Los legendarios de la Sentencia de Arceus sólo dan experiencia.)
       if (this.boss && !this.judge) {
         G.Camera.kick(0.9);
@@ -201,12 +211,14 @@
         G.Pickups.drop('item', this.x - 26, this.y - 10, G.Items.roll());
       }
       G.Pickups.dropXp(this.x, this.y, this.xp, this.boss, !!this.legend, !!this.judge);
-      if (this.golden && Math.random() < 0.35) G.Pickups.drop('coin', this.x + 6, this.y - 4, 3);
+      if(this.elite)for(let i=0;i<4;i++)G.Pickups.dropXp(this.x+G.U.rand(-16,16),this.y+G.U.rand(-16,16),0);
+      if(!this.judge&&G.Difficulty)for(let i=0;i<(this.elite?5:1);i++)if(Math.random()<G.Difficulty.treasureChance())G.Pickups.drop('treasure',this.x,this.y,50);
+      if(this.golden)for(let i=0;i<(this.elite?5:1);i++)if(Math.random()<.35)G.Pickups.drop('coin',this.x+6,this.y-4,3);
       // Duende del tesoro: Meowth suelta monedas; Gholdengo, un ticket ×10.
       if (this.behavior === 'thief') {
-        const n = this.def.loot === 'ticket10' ? 6 : 20;
+        const n = (this.def.loot === 'ticket10' ? 6 : 20)*(this.elite?5:1);
         for (let i = 0; i < n; i++) G.Pickups.drop('coin', this.x + G.U.rand(-36, 36), this.y + G.U.rand(-26, 26), 5);
-        if (this.def.loot === 'ticket10') G.Pickups.drop('ticket10', this.x, this.y - 12, 1);
+        if (this.def.loot === 'ticket10') G.Pickups.drop('ticket10', this.x, this.y - 12, this.elite?5:1);
         G.FX.ring(this.x, this.y, this.r, this.r * 5, '#ffd23f', 0.6, 4);
       }
       if (this.legend) {
@@ -313,6 +325,8 @@
       const spd = this.spd * G.Abilities.slowFactor(this, terrainMul * G.Weather.speedFor(this.types));
       let [dx, dy] = G.U.norm(pl.x - this.x, pl.y - this.y);
       const dist = G.U.dist(this.x, this.y, pl.x, pl.y);
+      this.contactHold=Math.max(0,(this.contactHold||0)-dt);
+      if(!this.boss&&!this.keepsDistance()&&this.behavior!=='bomber'&&this.behavior!=='thief'&&dist<=this.r+pl.r&&this.contactHold<=0)this.contactHold=.65;
       // Duende del tesoro: huye de ti (en zigzag) en cuanto te acercas.
       if (this.behavior === 'thief') {
         this.zig = (this.zig || 0) + dt;
@@ -350,7 +364,7 @@
         this.skillCd -= dt * attackRate;
         if (this.skillCd <= 0) {
           if (this.behavior === 'shielder') { this.skillCd = 6; this.castShields(); }
-          else if (dist < 250) { this.skillCd = G.U.rand(5, 7); this.startJump(pl); return; }
+          else if (!this.contactHold&&dist < 250) { this.skillCd = G.U.rand(5, 7); this.startJump(pl); return; }
           else this.skillCd = 0.5;
         }
       }
@@ -371,7 +385,8 @@
       let vx = dx * spd, vy = dy * spd;
       let animBase = 'Walk';
 
-      if (this.boss) {
+      if(this.contactHold>0){vx*=.02;vy*=.02;animBase='Idle';}
+      else if (this.boss) {
         [vx, vy, animBase] = this.bossMove(dt, pl, dist, dx, dy, spd);
       } else if (this.behavior === 'charger') {
         this.pt -= dt * (this.phase === 'walk' ? attackRate : 1);
@@ -667,6 +682,7 @@
       for (let i = 0; i < 2; i++) {
         const a = Math.random() * 6.2832;
         const m = new Enemy(def, this.x + Math.cos(a) * 30, this.y + Math.sin(a) * 22, this.sc || { hp: 1, spd: 1, dmg: 1 });
+        if(Math.random()<(G.Difficulty?G.Difficulty.eliteChance():.005))m.makeElite();
         G.EnemyMgr.add(m);
         this.minions.push(m);
         G.FX.burst(m.x, m.y - 8, '#c47bff', 8, 90);
@@ -736,6 +752,12 @@
       ctx.restore();
 
       if (this.dead) return;
+      if(this.elite){
+        const t=performance.now()/1000;ctx.save();ctx.strokeStyle='#bc65ff';ctx.lineWidth=3;ctx.globalAlpha=.65;
+        ctx.beginPath();ctx.ellipse(this.x,this.y,this.r*1.6,this.r*.65,0,0,6.2832);ctx.stroke();
+        for(let i=0;i<5;i++){const a=t*2+i*6.2832/5;G.VFX.draw(ctx,'star','psychic',this.x+Math.cos(a)*this.r*1.6,this.y-this.bodyH*.35+Math.sin(a)*this.r*.65,{scale:.7,frame:(t*12)|0});}
+        ctx.restore();
+      }
 
       // Escudo: burbuja azul.
       if (this.shield > 0 || (this.net && this.net.st & 4)) {
@@ -803,6 +825,7 @@
       e.id = o.id;
       e.remote = true;
       if (o.shiny) e.makeShiny();
+      if(o.elite)e.makeElite(false);
       e.maxHp = o.hp; e.hp = o.hp;
       e.net = { x: o.x, y: o.y, vx: 0, vy: 0, age: 0, dir: 0, anim: 0, st: 0 };
       list.push(e);
@@ -901,8 +924,9 @@
           }
         }
         if (n) {
-          e.x += px * 42 * dt;
-          e.y += py * 42 * dt;
+          const hold=e.contactHold>0?.05:1;
+          e.x += px * 42 * dt*hold;
+          e.y += py * 42 * dt*hold;
           if (!e.flying) G.World.collide(e);
         }
       }

@@ -4,6 +4,17 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  'Los Pokémon se vuelven más robustos.':'Pokémon become sturdier.',
+  'Los Pokémon se vuelven más feroces.':'Pokémon become more ferocious.',
+  'Los Pokémon se vuelven más ágiles.':'Pokémon become more agile.',
+  'Los Pokémon tienden a rodearte.':'Pokémon tend to surround you.',
+  'Aparecen más variedades de Pokémon.':'More varieties of Pokémon appear.',
+  'Aparecen más Pokémon de élite.':'More elite Pokémon appear.',
+  'Pueden aparecer mejoras contaminadas.':'Upgrades may be corrupted, costing 10 maximum HP.',
+  'Recibir daño puede ralentizarte y eliminar tus beneficios.':'Taking damage may slow you and clear temporary buffs.',
+  'Contaminada: -10 de vida máxima.':'Corruption cost: -10 maximum HP.',
+  'CONTAMINADA':'CORRUPTED','¡Tus beneficios se han disipado!':'Your temporary buffs have been cleared!',
+  'Recompensas':'Reward multiplier','Élite':'Elite','No quedan cargas Z.':'No Z charges remaining.',
   'Mejorar al máximo': 'Max upgrade',
   'Cada familia evolutiva comparte sus mejoras permanentes.': 'Each evolution family shares its permanent upgrades.',
   'IV mejorados': 'IV improved',
