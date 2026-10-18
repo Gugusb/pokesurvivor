@@ -591,7 +591,7 @@ G.Combat = (() => {
       // --- disparos de jugadores ---
       // Orbes de un compañero: sólo se ven.
       if (p.ghost) continue;
-      if (!p.orb) {
+      if (!p.orb && !p.zMove) {
         const block = G.World.projectileBlock(p.x, p.y, p.r);
         if (block === 'wall' || (block && !block.destructible)) {
           G.FX.burst(p.x, p.y - G.LIFT, p.color, 5, 80);
@@ -614,7 +614,7 @@ G.Combat = (() => {
         p.phits.add(prop.id);
         if (!p.ghost) G.World.damageProp(prop, p.dmg, p.color);
         // La hierba no frena; lo sólido sí gasta perforación.
-        if (prop.solid) {
+        if (prop.solid && !p.zMove) {
           if (p.pierce > 0) p.pierce--;
           else { consumed = true; break; }
         }

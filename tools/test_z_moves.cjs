@@ -57,7 +57,7 @@ test('arming stops ordinary fire, same-slot selection works, casting locks switc
   const s=setup('ember',['water-gun']),{G,p}=s;
   assert.equal(G.ZMoves.timeFactor(),1);assert.ok(G.ZMoves.arm(p));assert.equal(G.ZMoves.timeFactor(),.1);
   const timer=s.m.t;G.Combat.tick(.2,p,0);assert.equal(G.Projectiles.count,0);assert.equal(s.m.t,timer);
-  assert.equal(p.setActive(1),false);assert.equal(p.active,0);assert.ok(p.setActive(0));assert.equal(G.Projectiles.count,5);
+  assert.equal(p.setActive(1),false);assert.equal(p.active,0);assert.ok(p.setActive(0));assert.equal(G.Projectiles.count,8);
   assert.equal(G.ZMoves.timeFactor(),1);assert.equal(p.setActive(1),false);assert.equal(p.active,0);
   advance(s,G.ZMoves.state(p).casts[0].duration);assert.equal(p.zState.phase,'cooldown');close(p.zState.cooldown,180);
   assert.equal(G.ZMoves.arm(p),false);p.setActive(1);assert.equal(p.active,1);
@@ -69,16 +69,17 @@ test('unsupported types cannot arm, fused slots release all and only supported m
   const s=setup('ember',['fire-spin','water-gun','flamethrower']),{G,p}=s;
   p.slots=[p.moves.slice(0,2).concat(p.moves[2],p.moves[3])];
   const before=p.moves.map(m=>({...m}));release(s);assert.equal(p.zState.casts.length,2);
-  assert.equal(G.Projectiles.count,5);advance(s,2);assert.equal(G.ZMoves.busy(p),true);assert.equal(G.Projectiles.count,5);
+  assert.equal(G.Projectiles.count,8);advance(s,2);assert.equal(G.ZMoves.busy(p),true);assert.equal(G.Projectiles.count,8);
   advance(s,3);assert.equal(G.ZMoves.busy(p),false);assert.equal(p.zState.phase,'cooldown');
   p.moves.forEach((m,i)=>{assert.equal(m.dmg,before[i].dmg);assert.equal(m.radius,before[i].radius);});
 });
 
-test('projectile Z emits five correctly sized fast piercing shots and prioritizes a boss',()=>{
+test('projectile Z emits eight symmetric fast piercing shots and prioritizes a boss',()=>{
   const s=setup(),{G,p,m}=s;
   for(let i=0;i<8;i++)s.enemy(150).y=i*5;const boss=s.enemy(-150);boss.boss=true;G.EnemyMgr.rebuildGrid();
-  release(s);const shots=G.Projectiles.all();assert.equal(shots.length,5);
-  close(Math.atan2(shots[2].vy,shots[2].vx),Math.PI);close(shots[0].r,m.size*5);
+  release(s);const shots=G.Projectiles.all();assert.equal(shots.length,8);
+  for(let i=0;i<4;i++){close(shots[i].vx,shots[7-i].vx);close(shots[i].vy,-shots[7-i].vy);}
+  close(Math.atan2(shots[0].vy,shots[0].vx),Math.PI*2/3);close(shots[0].r,m.size*5);
   for(const shot of shots){close(Math.hypot(shot.vx,shot.vy),m.speed*3);assert.equal(shot.pierce,(m.pierce||0)+999);close(shot.dmg,m.dmg*p.atk*20);assert.equal(shot.moveId,m.id);assert.ok(shot.visualScale>=5);}
 });
 
@@ -163,7 +164,7 @@ test('remote Z casts are visual only, validate types, and all living players sha
   G.Game.everyone=()=>[p,peer];G.ZMoves.sync(peer,['fire','choose',0]);assert.equal(G.ZMoves.timeFactor(),.1);
   assert.equal(G.ZMoves.remoteCast(peer,[['water-gun',1,false]],[0]),false);
   assert.equal(G.ZMoves.remoteCast(peer,[['ember',1,false]],[0]),true);
-  const shots=G.Projectiles.all();assert.equal(shots.length,5);assert.ok(shots.every(p=>p.ghost));assert.equal(G.ZMoves.timeFactor(),1);
+  const shots=G.Projectiles.all();assert.equal(shots.length,8);assert.ok(shots.every(p=>p.ghost));assert.equal(G.ZMoves.timeFactor(),1);
   const e=s.enemy(30);const hp=e.hp;G.Combat.resolve(.01,p,0);assert.equal(e.hp,hp);
 });
 
@@ -247,4 +248,32 @@ test('developer two-second Z cooldown repeats after every cast, defaults off and
   G.Dev.setZCooldown(false);G.ZMoves.debugCharge(p);release(s);advance(s,.5);close(p.zState.cooldown,180);
   G.Dev.setZCooldown(true);G.Coop.active=true;assert.equal(G.Dev.zShortCooldown,false);assert.equal(G.Dev.setZCooldown(false),false);
   G.Coop.active=false;G.Dev.setEnabled(false);assert.equal(G.Dev.zShortCooldown,false);G.Dev.setEnabled(true);assert.equal(G.Dev.zShortCooldown,false);
+});
+
+test('Z projectiles cross walls and solid props without consuming pierce and still damage enemies beyond them',()=>{
+  const s=setup('ember'),{G,p}=s;const e=s.enemy(120);e.hp=e.maxHp=1000000;e.boss=true;G.EnemyMgr.rebuildGrid();
+  const solid={id:1,x:60,y:0,r:20,solid:true,destructible:true},fixed={id:2,solid:true,destructible:false};
+  G.Camera.sees=()=>true;G.World.projectileBlock=()=> 'wall';G.World.propsInCircle=()=>[solid,fixed];
+  let propHits=0;G.World.damageProp=prop=>{if(prop.destructible)propHits++;};
+  release(s);const shots=G.Projectiles.all().slice();
+  for(let i=0;i<3;i++){G.Projectiles.update(.05,p,G.EnemyMgr.all());G.Combat.resolve(.05,p,i*.05);}
+  assert.equal(G.Projectiles.count,8);assert.ok(e.hp<e.maxHp);assert.ok(propHits>0);
+  for(const shot of shots){const enemyHits=shot.hits.size;assert.equal(shot.pierce,999-enemyHits);}
+  G.Projectiles.clear();G.Projectiles.spawn({x:60,y:0,friendly:true,owner:p,hits:new Set(),pierce:10});
+  G.Combat.resolve(.05,p,1);assert.equal(G.Projectiles.count,0,'ordinary shots remain blocked by walls');
+});
+
+test('Z selection and casting reduce movement by 99.9 percent even with slow immunity, then restore it',()=>{
+  const s=setup('ice-beam'),{G,p}=s;const base=p.spd;
+  G.ZMoves.arm(p);close(p.spd,base*.001);
+  G.Abilities.slowImmune=()=>true;close(p.spd,base*.001);
+  p.setActive(0);close(p.spd,base*.001);advance(s,3);close(p.spd,base);
+  p.zState.phase='ready';G.ZMoves.arm(p);G.ZMoves.arm(p);close(p.spd,base);
+});
+
+test('Z movement removes preexisting ice sliding momentum while the scripted dash retains its full range',()=>{
+  const s=setup('ice-beam'),{G,p}=s;G.World.nearestBreakable=()=>null;G.Input.axis=()=>[1,0];
+  G.World.isLiquid=()=>true;G.World.liquidEffect=()=>({slide:true});p.inLiquid=true;p.svx=p.spd*5;p.svy=100;
+  const speed=p.spd;G.ZMoves.arm(p);const x=p.x,y=p.y;p.update(.1);close(p.x-x,speed*.001*.1);close(p.y,y);
+  const d=setup('quick-attack');release(d);advance(d,.5);close(Math.hypot(d.p.x,d.p.y),d.m.radius*10);
 });

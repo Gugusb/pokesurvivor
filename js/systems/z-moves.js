@@ -109,8 +109,8 @@ G.ZMoves = (() => {
   }
   function projectile(p,e) {
     const m=e.m,col=G.U.TYPE_COLOR[m.type],vis=G.VFX.forMove(m);
-    for(let i=0;i<5;i++){
-      const a=e.angle+(i-2)*Math.PI/6, speed=m.speed*3;
+    for(let i=0;i<8;i++){
+      const a=e.angle+(i/7-.5)*Math.PI*2/3, speed=m.speed*3;
       G.Projectiles.spawn({x:e.x,y:e.y,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,
         dmg:m.dmg*e.atk*20,r:m.size*5,life:m.life,pierce:(m.pierce||0)+999,color:col,vis,owner:p,ghost:e.ghost,
         friendly:true,hits:new Set(),burn:m.burn||0,poison:m.poison||0,slow:m.slow||0,knock:m.knock||0,

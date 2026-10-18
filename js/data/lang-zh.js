@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Proyectiles Z y concentración · v0.12.2": "Z 投射物与蓄力调整 · v0.12.2",
+  "Z projectiles and concentration · v0.12.2": "Z 投射物与蓄力调整 · v0.12.2",
+  "Los ataques Z de proyectiles disparan ocho tiros que atraviesan paredes y obstáculos.": "投射物 Z 改为八发，能够穿透墙壁和场景障碍。",
+  "Projectile Z moves fire eight shots that pass through walls and obstacles.": "投射物 Z 改为八发，能够穿透墙壁和场景障碍。",
+  "Durante la selección y el lanzamiento Z, la velocidad de movimiento se reduce un 99,9 %. Las embestidas Z conservan su desplazamiento.": "Z 蓄力与释放期间自身移动速度降低 99.9%，冲刺 Z 保留技能位移。",
+  "During Z selection and casting, movement speed is reduced by 99.9%. Z dashes retain their scripted movement.": "Z 蓄力与释放期间自身移动速度降低 99.9%，冲刺 Z 保留技能位移。",
   "La tecla Z activa los movimientos Z. El panel de desarrollo permite fijar su recarga en 2 segundos.": "新增 Z 键启动 Z 招式，开发者面板可将 Z 招式冷却固定为 2 秒。",
   "The Z key activates Z moves. Developer tools can keep their cooldown at 2 seconds.": "新增 Z 键启动 Z 招式，开发者面板可将 Z 招式冷却固定为 2 秒。",
   "Efectos originales de Z · v0.12.1": "Z 原版特效修复 · v0.12.1",

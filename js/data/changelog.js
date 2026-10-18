@@ -6,6 +6,10 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-18', title: ['Proyectiles Z y concentración · v0.12.2', 'Z projectiles and concentration · v0.12.2'], new: [], chg: [
+    ['Los ataques Z de proyectiles disparan ocho tiros que atraviesan paredes y obstáculos.', 'Projectile Z moves fire eight shots that pass through walls and obstacles.'],
+    ['Durante la selección y el lanzamiento Z, la velocidad de movimiento se reduce un 99,9 %. Las embestidas Z conservan su desplazamiento.', 'During Z selection and casting, movement speed is reduced by 99.9%. Z dashes retain their scripted movement.']
+  ], fix: [] },
   { d: '2026-10-18', title: ['Efectos originales de Z · v0.12.1', 'Original Z move effects · v0.12.1'], new: [
     ['La tecla Z activa los movimientos Z. El panel de desarrollo permite fijar su recarga en 2 segundos.', 'The Z key activates Z moves. Developer tools can keep their cooldown at 2 seconds.']
   ], chg: [], fix: [
