@@ -38,4 +38,6 @@
 
 真实浏览器测试：先标准构建，再执行 `node tools/qa_p2p_browser.cjs`。使用隔离内存数据库和独立无头 Edge 配置，验证四人真实 WebRTC、大消息、升级选择、重连、零战斗中转、房主断线，以及最终构建的双人实战。测试用 Playwright 路径与安装方式见 [EVOLUTION_CHOICES.md](EVOLUTION_CHOICES.md)。截图存放在忽略的 `tools/cache/`。
 
+形态与特效回归：`node tools/qa_form_sync.cjs`，在四个隔离浏览器中通过真实进化方向界面选择两段进化，验证每个观察者实际绘制的精灵；同时检查房主/队员 Mega 变身和还原，以及融合 Z 招式的蓄力、投射物、光柱和结束状态。测试只控制隔离样本的等级和能量，不修改玩家存档，也不将调试局提交到公共榜单。
+
 低带宽控制面测试：`node tools/benchmark_p2p.cjs 100`。该合成测试只衡量账号、握手和在线状态；不衡量公网打洞成功率。真实浏览器验证也仅为本机网络，不代表跨运营商或移动网络结果。具体预算与实测见 [SELF_HOSTING.md](SELF_HOSTING.md)。

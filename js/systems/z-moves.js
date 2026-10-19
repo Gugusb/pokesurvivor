@@ -242,10 +242,12 @@ G.ZMoves = (() => {
   }
   function sync(p,packed) {
     if(!p.remote)return;
-    if(!Array.isArray(packed)){if(p.zState){p.zState.type=null;p.zState.casts=[];}return;}
+    if(!Array.isArray(packed)){if(p.zState){p.zState.type=null;p.zState.casts=[];p.zState.guard=0;}return;}
     const [type,phase,cooldown,charges]=packed;
     if(!TYPES.includes(type)){if(p.zState){p.zState.type=null;p.zState.casts=[];}return;}
-    const s=state(p);s.type=type;s.phase=['ready','choose','cast','cooldown'].includes(phase)?phase:'ready';
+    const s=state(p),next=['ready','choose','cast','cooldown'].includes(phase)?phase:'ready';
+    if(s.type!==type||next!=='cast'){s.casts=[];s.elapsed=0;}
+    s.type=type;s.phase=next;
     s.cooldown=Number.isFinite(cooldown)?Math.max(0,Math.min(COOLDOWN,cooldown)):0;
     s.charges=Number.isInteger(charges)?Math.max(0,Math.min(MAX_CHARGES,charges)):1;
     if(p.megaState)p.megaState.id=null;

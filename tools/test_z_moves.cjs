@@ -168,6 +168,30 @@ test('remote Z casts are visual only, validate types, and all living players sha
   const e=s.enemy(30);const hp=e.hp;G.Combat.resolve(.01,p,0);assert.equal(e.hp,hp);
 });
 
+function observer(s){
+  const {G}=s;let receive;G.Net={uid:'viewer',hostUid:'host',on:f=>receive=f,onPeer:noop};G.startMoveOf=()=> 'water-gun';
+  s.load('js/core/sprites.js');G.Sprites.preload=noop;s.load('js/net/coop.js');
+  const p=s.player(25);G.Coop.begin({host:'host',members:[{uid:'host',dex:6,equipment:{abilities:{},megas:['6-mega-x'],z:null}},{uid:'peer',dex:9,equipment:{abilities:{},megas:[],z:'water'}},{uid:'viewer',dex:25}]},p,{syncTeam:noop});
+  G.Game.everyone=()=>G.Coop.players();
+  const state=(dex,mega=null,z=null)=>[0,0,0,0,100,130,0,'water-gun',1,78,0,1,0,0,0,null,mega,mega?60:0,mega,0,z,dex,15,G.MonProgression.pathFor(dex)];
+  const send=(players,ev=[])=>receive('host',{k:'f',p:players,ev,t:100,lv:15,xp:0,xn:100,ki:0,bo:0,co:0});
+  return {G,state,send};
+}
+test('observers apply evolution and Mega visuals before casts, retain the animator across snapshots and restore the base form',()=>{
+  const s=context(),{G,state,send}=observer(s),seen=[];G.Combat.ghostCast=p=>seen.push({anim:p.anim.dex,types:p.mon.types.slice(),mega:G.Mega.active(p)});
+  send({host:state(6,'6-mega-x')},[['c','host','ember',1,0,0]]);
+  const p=G.Coop.mate('host').pl;assert.equal(p.anim.dex,'6-mega-x');assert.equal(seen[0].anim,'6-mega-x');assert.equal(seen[0].mega,true);assert.deepEqual(Array.from(seen[0].types),['fire','dragon']);
+  const anim=p.anim;send({host:state(6,'6-mega-x')});assert.equal(p.anim,anim);
+  send({host:state(6)});assert.equal(p.anim.dex,6);assert.equal(p.spriteDex,6);assert.equal(p.monStage,6);assert.equal(G.Mega.active(p),false);G.Coop.end();
+});
+test('first-snapshot fused Z effects reach an observer and cooldown clears stale casting effects',()=>{
+  const s=context(),{G,state,send}=observer(s);
+  send({peer:state(9,null,['water','cast',0,0])},[['zc','peer',[['water-gun',1,false],['hydro-pump',1,false]],[0,0]]]);
+  const p=G.Coop.mate('peer').pl;assert.equal(p.anim.dex,9);assert.equal(p.zState.casts.length,2);assert.ok(p.zState.casts.every(e=>e.ghost));assert.equal(G.Projectiles.all().filter(x=>x.owner===p&&x.ghost).length,8);
+  p.netUpdate(.01);assert.equal(p.anim.cur,'Charge');assert.equal(p.zState.casts.length,2);
+  send({peer:state(9,null,['water','cooldown',5,0])});assert.equal(p.zState.casts.length,0);assert.equal(G.ZMoves.busy(p),false);p.netUpdate(.01);assert.equal(p.anim.base,'Idle');G.Coop.end();
+});
+
 test('Z crystal reserves the item slot and ordinary item pickups convert to XP',()=>{
   const s=setup(),{G,p}=s;s.loadGame();assert.equal(p.equip('leftovers'),false);
   const xp=p.xp;G.Game._test.collect({kind:'item',value:'leftovers'},p);assert.equal(p.item,null);assert.ok(p.xp>xp);

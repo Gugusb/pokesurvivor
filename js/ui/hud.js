@@ -439,9 +439,10 @@ G.HUD = (() => {
         ctx.fillStyle = Math.sin(t * 8) > 0 ? '#ff8a96' : '#ffd0d5';
         ctx.fillText('CAÍDO', lx + 116, y + 9);
       } else if (G.Net.transport === 'p2p') {
-        const rtt = G.Net.metrics(m.uid)?.rttMs;
+        const viaHost=!G.Coop.isHost&&m.uid!==G.Net.hostUid,link=G.Coop.isHost?m.uid:G.Net.hostUid;
+        const rtt = G.Net.metrics(link)?.rttMs;
         ctx.font = F(600, 9); ctx.fillStyle = '#a8c9df';
-        ctx.fillText(G.Net.mode(m.uid) === 'direct' ? 'P2P' + (rtt == null ? '' : ' ' + rtt + 'ms') : G.T('Conectando…'), lx + 116, y + 9);
+        ctx.fillText(G.Net.mode(link) === 'direct' ? viaHost?G.T('Vía anfitrión'):'P2P' + (rtt == null ? '' : ' ' + rtt + 'ms') : G.T('Conectando…'), lx + 116, y + 9);
       }
       y += 15;
     }

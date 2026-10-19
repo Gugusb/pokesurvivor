@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Vía anfitrión": "经房主同步",
+  "Formas y efectos en cooperativo · v0.16.1": "联机形态与特效同步修复 · v0.16.1",
+  "Co-op forms and effects · v0.16.1": "联机形态与特效同步修复 · v0.16.1",
+  "Los compañeros ven la forma evolucionada correcta, incluidas las ramas, con sus animaciones y dimensiones actualizadas.": "修复队友仍显示进化前形态的问题，分支进化的动画和尺寸同步更新。",
+  "Teammates see the correct evolved form, including branches, with updated animations and dimensions.": "修复队友仍显示进化前形态的问题，分支进化的动画和尺寸同步更新。",
+  "El estado de Mega y Z se aplica antes de reproducir los ataques del mismo envío. Al terminar Z se limpian los efectos de carga antiguos.": "先同步当前帧的 Mega、Z 状态再播放攻击；Z 释放结束时清理残留吟唱特效。",
+  "Mega and Z state is applied before playing attacks from the same snapshot. Finishing Z clears stale casting effects.": "先同步当前帧的 Mega、Z 状态再播放攻击；Z 释放结束时清理残留吟唱特效。",
   "Directo P2P": "P2P 直连",
   "No se pudo conectar directamente": "直连失败",
   "Reintentar conexión directa": "重试直连",

@@ -6,6 +6,10 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-19', title: ['Formas y efectos en cooperativo · v0.16.1', 'Co-op forms and effects · v0.16.1'], new: [], chg: [], fix: [
+    ['Los compañeros ven la forma evolucionada correcta, incluidas las ramas, con sus animaciones y dimensiones actualizadas.', 'Teammates see the correct evolved form, including branches, with updated animations and dimensions.'],
+    ['El estado de Mega y Z se aplica antes de reproducir los ataques del mismo envío. Al terminar Z se limpian los efectos de carga antiguos.', 'Mega and Z state is applied before playing attacks from the same snapshot. Finishing Z clears stale casting effects.']
+  ] },
   { d: '2026-10-19', title: ['Cooperativo P2P · v0.16.0', 'P2P co-op · v0.16.0'], new: [
     ['Las partidas en grupo conectan directamente con WebRTC. El servidor sólo gestiona cuentas, salas y señalización; no retransmite el combate ni usa TURN.', 'Co-op connects directly through WebRTC. The server only manages accounts, rooms and signaling; it never relays combat or uses TURN.'],
     ['La sala muestra conexión P2P, latencia y un botón de reintento. Todos deben conectar antes de empezar.', 'The lobby shows P2P connectivity, latency and a retry button. Everyone must connect before starting.']

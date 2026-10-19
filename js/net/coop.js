@@ -160,8 +160,37 @@ G.Coop = (() => {
     if(p.monStage!==root&&at>=0&&!previous.slice(0,at+1).every((d,j)=>path[j]===d))return;
     p.evolutionPath=path.slice();p.monStage=n.dex;
     const dex=n.dex;if(dex===p.dex)return;
-    const mon=G.DEX_BY[dex];p.baseAtk*=mon.atk/p.mon.atk;p.dex=dex;p.mon=mon;p.spriteDex=dex;
+    const mon=G.DEX_BY[dex],dir=p.anim.dir;p.baseAtk*=mon.atk/p.mon.atk;p.baseSpd*=mon.spd/p.mon.spd;
+    p.dex=dex;p.mon=mon;p.spriteDex=dex;p.megaForm=null;
+    if(p.megaState)p.megaState.left=0;
+    p.anim=new G.Sprites.Animator(dex,1,p.shiny);p.anim.dir=dir;
+    p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
+    if(p.dead)p.anim.play('Faint',{hold:true});
+    G.Projectiles.clearOrbs(p);
     G.Sprites.preload([dex],8000,p.shiny);
+  }
+  function validPlayerState(a) {
+    return Array.isArray(a)&&a.length>=15&&[0,1,4,5,11].every(i=>Number.isFinite(a[i]))&&
+      Math.abs(a[0])<=2e6&&Math.abs(a[1])<=2e6&&a[5]>=1&&a[5]<=50000&&a[4]>=0&&a[4]<=a[5]&&a[11]>=0&&a[11]<=100;
+  }
+  function syncPeerState(m,a) {
+    if(!validPlayerState(a))return false;
+    m.state=a.slice();m.pl.net=readState(a);syncSpecies(m);
+    const p=m.pl,n=p.net;
+    const validAbility=G.AbilityDefs.medalsFor(p.dex).some(a=>a.ability===n.ability)&&(!m.equipment||m.equipment.abilities?.[p.dex]===n.ability);
+    p.ability=n.ability=validAbility?n.ability:null;
+    if(m.equipment){
+      const owns=id=>m.equipment.mega===id||m.equipment.megas?.includes(id);
+      if(!owns(n.mega))n.mega=null;
+      if(!owns(n.stone))n.stone=null;
+      if(m.equipment.z!==n.z?.[0])n.z=null;
+    }
+    p.damageBonus=n.damageBonus;
+    if(G.Mega)G.Mega.sync(p,n.mega,n.megaLeft,n.stone);
+    if(G.ZMoves)G.ZMoves.sync(p,n.z);
+    // Forward the validated equipment, not the original untrusted values.
+    m.state[15]=n.ability;m.state[16]=n.mega;m.state[18]=n.stone;m.state[20]=n.z;
+    return true;
   }
 
   // ---------------- envío ----------------
@@ -283,24 +312,9 @@ G.Coop = (() => {
     const m = mates.get(from);
     if (!m || !m.connected) return;
     if(!Array.isArray(msg.ev)||msg.ev.length>2000)return;
-    if(msg.p&&(!Array.isArray(msg.p)||msg.p.length<15||[0,1,4,5,11].some(i=>!Number.isFinite(msg.p[i]))||Math.abs(msg.p[0])>2e6||Math.abs(msg.p[1])>2e6||msg.p[5]<1||msg.p[5]>50000||msg.p[4]<0||msg.p[4]>msg.p[5]||msg.p[11]<0||msg.p[11]>100))return;
+    if(msg.p&&!validPlayerState(msg.p))return;
     if (msg.p) {
-      m.state = msg.p; m.pl.net = readState(msg.p);
-      syncSpecies(m);
-      const validAbility = G.AbilityDefs.medalsFor(m.pl.dex).some(a => a.ability === m.pl.net.ability) && (!m.equipment || m.equipment.abilities?.[m.pl.dex]===m.pl.net.ability);
-      m.pl.ability = validAbility ? m.pl.net.ability : null;
-      m.pl.net.ability=m.pl.ability;
-      if(m.equipment){
-        const owns=id=>m.equipment.mega===id||m.equipment.megas?.includes(id);
-        if(!owns(m.pl.net.mega))m.pl.net.mega=null;
-        if(!owns(m.pl.net.stone))m.pl.net.stone=null;
-        if(m.equipment.z!==m.pl.net.z?.[0])m.pl.net.z=null;
-      }
-      const move=G.Moves.BY_ID[m.pl.net.mv];
-      m.pl.net.ml=move&&Number.isFinite(m.pl.net.ml)?G.U.clamp(Math.floor(m.pl.net.ml),1,move.maxLvl):1;
-      m.pl.damageBonus = m.pl.net.damageBonus;
-      if (G.Mega) G.Mega.sync(m.pl, m.pl.net.mega, m.pl.net.megaLeft, m.pl.net.stone);
-      if (G.ZMoves) G.ZMoves.sync(m.pl,!m.equipment||m.equipment.z===m.pl.net.z?.[0]?m.pl.net.z:null);
+      syncPeerState(m,msg.p);
       m.xpMul = m.pl.net.xpMul || 1; reconcile(from, m.pl.net);
     }
     for (const ev of msg.ev || []) {
@@ -409,6 +423,10 @@ G.Coop = (() => {
     api.syncTeam({ time: msg.t, level: msg.lv, xp: msg.xp, xpNext: msg.xn, kills: msg.ki, bosses: msg.bo, coins: msg.co,
                    t1: (msg.tk || [])[0], t10: (msg.tk || [])[1] });
     if(api.victory)api.victory(!!msg.victory);
+    // Apply form/equipment state before any casts in this same snapshot.
+    for (const u in msg.p || {}) {
+      const m=mates.get(u);if(m)syncPeerState(m,msg.p[u]);
+    }
     for (const ev of msg.ev || []) applyHostEvent(ev);
     if (msg.ja) G.Judgment.netApply(msg.ja);
     // Quién elige y las cartas de nivel, aunque se haya perdido algún aviso.
@@ -417,10 +435,6 @@ G.Coop = (() => {
       if (k !== lastHo) { lastHo = k; api.hold && api.hold(msg.ho); }
       if (msg.lu && msg.lu[0] > seenSeq) { seenSeq = msg.lu[0]; api.levelStart(msg.lu[1]); }
       else if (!msg.lu && api.inLevelUp && api.inLevelUp()) api.resume();
-    }
-    for (const u in msg.p || {}) {
-      const m = mates.get(u);
-      if (m) {m.pl.net = readState(msg.p[u]);syncSpecies(m);}
     }
     const now = performance.now();
     for (const a of msg.e || []) {
