@@ -6,6 +6,13 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-20', title: ['Todos los ataques Z · v0.18.0', 'All attacking Z moves · v0.18.0'], new: [
+    ['Siete familias Z nuevas: bumeranes de ida y vuelta, tres ondas radiales, aura pulsante, minas encadenadas, tres torretas, un corredor de campos y seis ráfagas en abanico.', 'Seven new Z families: returning blades, three radial waves, a pulsing aura, chained mines, three turrets, a corridor of fields and six cone volleys.'],
+    ['Todos los movimientos ofensivos admiten Z; los potenciadores de atributos no. Las nuevas familias conservan sus materiales y colores originales.', 'All damaging moves support Z; attribute buffs do not. The new families retain their original materials and colors.']
+  ], chg: [
+    ['La potencia Z depende del nivel, la evolución del movimiento y tu ataque. Se equilibran las catorce familias por daño total, manteniendo sus áreas, controles y tiempos propios.', 'Z power scales with move level, move evolution and your attack. All fourteen families are balanced by total damage while retaining distinct areas, control and casting times.'],
+    ['Los saltos repetidos, las minas superpuestas y los perdigones no multiplican sin límite el daño al mismo objetivo. La cadena funciona contra un jefe aislado y el vórtice interior cubre los huecos entre anillos.', 'Repeated jumps, overlapping mines and pellets no longer multiply same-target damage without limit. Chain works against a lone boss, and the inner vortex covers gaps between rings.']
+  ], fix: [] },
   { d: '2026-10-20', title: ['Cargas Z compartidas · v0.17.0', 'Shared Z charges · v0.17.0'], new: [], chg: [
     ['En cooperativo, cada recarga Z ganada por cualquier compañero añade una carga a todos los portadores de cristales Z, incluso si quien derrota al enemigo no lleva uno.', 'In co-op, each Z recharge earned by any teammate adds one charge to every Z Crystal holder, even when the killer has no crystal.'],
     ['Cada jugador conserva su límite de tres cargas. Los compañeros caídos también reciben cargas; las probabilidades y el enfriamiento no cambian.', 'Each player keeps the three-charge cap. Downed teammates also receive charges; reward chances and cooldown are unchanged.']

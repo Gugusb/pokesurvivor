@@ -1,6 +1,16 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Todos los ataques Z · v0.18.0": "Z 招式类型补全与平衡 · v0.18.0",
+  "All attacking Z moves · v0.18.0": "Z 招式类型补全与平衡 · v0.18.0",
+  "Siete familias Z nuevas: bumeranes de ida y vuelta, tres ondas radiales, aura pulsante, minas encadenadas, tres torretas, un corredor de campos y seis ráfagas en abanico.": "新增七类 Z：往返回旋斩、三轮径向冲击波、脉冲光环、连爆雷阵、三座炮台、地面轨迹走廊和六轮扇形喷射。",
+  "Seven new Z families: returning blades, three radial waves, a pulsing aura, chained mines, three turrets, a corridor of fields and six cone volleys.": "新增七类 Z：往返回旋斩、三轮径向冲击波、脉冲光环、连爆雷阵、三座炮台、地面轨迹走廊和六轮扇形喷射。",
+  "Todos los movimientos ofensivos admiten Z; los potenciadores de atributos no. Las nuevas familias conservan sus materiales y colores originales.": "所有输出技能均可使用 Z，属性提升技能不做 Z；新增类型沿用原技能素材与配色。",
+  "All damaging moves support Z; attribute buffs do not. The new families retain their original materials and colors.": "所有输出技能均可使用 Z，属性提升技能不做 Z；新增类型沿用原技能素材与配色。",
+  "La potencia Z depende del nivel, la evolución del movimiento y tu ataque. Se equilibran las catorce familias por daño total, manteniendo sus áreas, controles y tiempos propios.": "Z 威力随技能等级、超武和自身攻击力成长；按完整释放总伤害平衡十四类，同时保留各自范围、控制与吟唱特色。",
+  "Z power scales with move level, move evolution and your attack. All fourteen families are balanced by total damage while retaining distinct areas, control and casting times.": "Z 威力随技能等级、超武和自身攻击力成长；按完整释放总伤害平衡十四类，同时保留各自范围、控制与吟唱特色。",
+  "Los saltos repetidos, las minas superpuestas y los perdigones no multiplican sin límite el daño al mismo objetivo. La cadena funciona contra un jefe aislado y el vórtice interior cubre los huecos entre anillos.": "连锁反复跳跃、地雷重叠和多弹命中不再让同目标伤害失控；孤立 Boss 也能承受完整连锁，内层漩涡覆盖环绕间隙。",
+  "Repeated jumps, overlapping mines and pellets no longer multiply same-target damage without limit. Chain works against a lone boss, and the inner vortex covers gaps between rings.": "连锁反复跳跃、地雷重叠和多弹命中不再让同目标伤害失控；孤立 Boss 也能承受完整连锁，内层漩涡覆盖环绕间隙。",
   "Cargas Z compartidas · v0.17.0": "全队共享 Z 充能 · v0.17.0",
   "Shared Z charges · v0.17.0": "全队共享 Z 充能 · v0.17.0",
   "En cooperativo, cada recarga Z ganada por cualquier compañero añade una carga a todos los portadores de cristales Z, incluso si quien derrota al enemigo no lleva uno.": "组队时，任意队员获得 Z 充能，所有佩戴 Z 石的队员各增加一层；击败敌人的队员无需佩戴 Z 石。",

@@ -653,9 +653,11 @@ G.Combat = (() => {
           break;
         }
 
+        const raw = G.ZMoves ? G.ZMoves.projectileDamage(p,e) : p.dmg;
+        if(raw<=0)continue;
         const crit = isCrit(pl);
         const k = (p.mtype ? typeK(p.mtype, e, pl) : 1) * (crit ? G.Abilities.critMultiplier(pl) : 1);
-        const dealt = e.hurt(p.dmg * k, p.color, p.vx || (e.x - pl.x), p.vy || (e.y - pl.y), p.knock,
+        const dealt = e.hurt(raw * k, p.color, p.vx || (e.x - pl.x), p.vy || (e.y - pl.y), p.knock,
                crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(pl, p.mtype, e.types)) : null, pl, { id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile') }) || 0;
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
         pl.dmgDealt += dealt;

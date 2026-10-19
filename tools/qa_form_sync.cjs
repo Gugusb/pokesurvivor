@@ -309,6 +309,25 @@ const { chromium } = require(
       try { G.ZMoves.eventReward(); } finally { Math.random = roll; }
     });
     await checkCharges(3, 3);
+    for(const [index,id] of [[2,"bubble"],[2,"bubble-beam"],[1,"substitute"]]){
+      await pages[index].waitForFunction(()=>G.Game.player.zState.phase==='ready');
+      await pages[index].evaluate((id)=>{
+        const p=G.Game.player,m=G.Moves.instance(id),s=G.ZMoves.state(p);
+        p.moves=[m];p.slots=[[m]];p.active=0;s.charges=1;
+      },id);
+      assert.equal(await pages[index].evaluate(()=>G.ZMoves.arm(G.Game.player)),true);
+      assert.equal(await pages[index].evaluate(()=>G.ZMoves.choose(G.Game.player,0)),true);
+      for(let viewer=0;viewer<4;viewer++)if(viewer!==index)
+        await pages[viewer].waitForFunction(({uid,id})=>{
+          const p=G.Coop.mate(uid)?.pl;
+          return p?.zState?.phase==='cast'&&p.zState.casts.some(e=>e.ghost&&e.m.id===id);
+        },{uid:ids[index],id});
+      for(let viewer=0;viewer<4;viewer++)
+        await pages[viewer].waitForFunction(({uid,index,viewer})=>{
+          const p=index===viewer?G.Game.player:G.Coop.mate(uid)?.pl;
+          return p?.zState?.phase==='cooldown'&&!p.zState.casts.length;
+        },{uid:ids[index],index,viewer});
+    }
     assert.deepEqual(errors, []);
     assert.equal(app.traffic.battleFramesRejected, 0);
     console.log(
@@ -324,6 +343,7 @@ const { chromium } = require(
           nonZKillerSharesChargeWithBothZOwners: true,
           eliteBossAndEventChargeShared: true,
           independentCapAndDuplicateRewardProtection: true,
+          novaConeAndTurretZVisibleToAllObservers: true,
           relayBattleFrames: 0,
           pageErrors: 0,
         },
