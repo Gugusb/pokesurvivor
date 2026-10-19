@@ -89,11 +89,20 @@ G.Server = (() => {
         "Un jugador está desconectado.",
         "有玩家尚未连接。",
       ],
+      "P2P connection not ready": [
+        "Espera a la conexión directa de todos los jugadores.",
+        "请等待所有玩家完成 P2P 直连；本版不提供战斗中转。",
+      ],
     };
     const m = messages[message];
     return m ? text(m[0], message, m[1]) : message;
   }
   function error(e) {
+    if (
+      e.status === 409 &&
+      /Save changed|存档已被|guardado cambió/.test(e.message)
+    )
+      conflict = true;
     G.DB.serverSync(e.status === 409 ? "pending" : "offline");
     if (Date.now() - lastError > 8000) {
       lastError = Date.now();
@@ -146,6 +155,14 @@ G.Server = (() => {
   }
   function accept(value, full = false) {
     if (value.rev) rev = value.rev;
+    if (value.progress && G.DB.save) {
+      const remote = copy(baseline || G.DB.save),
+        p = value.progress;
+      if (p.offline) remote.offline = p.offline;
+      if (p.difficulty) remote.difficulty = p.difficulty;
+      if (p.records) Object.assign(remote.difficultyRecords, p.records);
+      value = { ...value, save: remote };
+    }
     if (!value.save || !G.DB.save) return;
     baseline = copy(value.save);
     if (full) G.DB.serverApply(value.save);
@@ -194,7 +211,7 @@ G.Server = (() => {
   async function probe() {
     try {
       const h = await api("/health");
-      available = h.protocol === 1;
+      available = h.protocol === 2 && h.transport === "p2p";
       return available;
     } catch {
       return false;
@@ -315,10 +332,17 @@ G.Server = (() => {
     if (!run) return;
     const b = snapshot();
     return enqueue(async () => {
-      const r = await api("/run/beat", b);
+      const r = await api("/run/beat", { ...b, rev });
       accept(r);
       return r;
     });
+  }
+  function presence() {
+    if (!G.DB.online || G.DB.mode !== "server" || run) return Promise.resolve();
+    return enqueue(async () => {
+      const r = await api("/presence", { rev });
+      accept(r);
+    }).catch(error);
   }
   async function claimBonus(challenge, coins) {
     await runPromise;
@@ -436,6 +460,7 @@ G.Server = (() => {
     prepareRun,
     startRun,
     heartbeat,
+    presence,
     finish,
     retryRuns,
     logout,
@@ -456,173 +481,7 @@ G.Server = (() => {
   };
 })();
 
-/* Authenticated server relay replaces WebRTC/TURN for this fork. */
-G.SelfNet = (() => {
-  let ws = null,
-    retry = null,
-    room = null,
-    host = false,
-    connected = false,
-    stopped = true,
-    lostAt = 0;
-  const handlers = new Set(),
-    peerHandlers = new Set(),
-    events = new Set(),
-    stats = { sent: 0, recv: 0, relaySent: 0 };
-  function emitPeer(mode, members = room?.members || []) {
-    for (const m of members)
-      if (m.uid !== G.Server.user?.uid)
-        for (const fn of peerHandlers) fn(m.uid, mode);
-  }
-  function connect() {
-    if (
-      !G.Server.user ||
-      ws?.readyState === WebSocket.OPEN ||
-      ws?.readyState === WebSocket.CONNECTING
-    )
-      return;
-    stopped = false;
-    ws = new WebSocket(
-      `${location.protocol === "https:" ? "wss" : "ws"}://${location.host}/ws`,
-    );
-    ws.onopen = () => {
-      connected = true;
-      lostAt = 0;
-      emitPeer("direct");
-      if (room && G.Coop?.active) G.Coop.resync();
-    };
-    ws.onmessage = (e) => {
-      let m;
-      try {
-        m = JSON.parse(e.data);
-      } catch {
-        return;
-      }
-      if (m.k === "room") {
-        const old = room;
-        room = m.room;
-        host = room?.isHost || false;
-        if (old && !room) emitPeer("closed", old.members);
-        for (const fn of events) fn(m);
-        if (room) emitPeer("direct");
-      } else if (m.k === "net") {
-        stats.recv++;
-        for (const fn of handlers) fn(m.from, m.msg);
-      } else for (const fn of events) fn(m);
-    };
-    ws.onclose = (e) => {
-      ws = null;
-      connected = false;
-      lostAt ||= Date.now();
-      if (stopped) return;
-      if ([4001, 4003].includes(e.code)) {
-        stopped = true;
-        emitPeer("closed");
-        G.UI?.toast(
-          G.Server.text(
-            "Sesión cerrada.",
-            "Session closed.",
-            "登录已失效，请重新登录。",
-          ),
-          5000,
-        );
-        return;
-      }
-      emitPeer("connecting");
-      retry = setTimeout(() => {
-        if (Date.now() - lostAt > 15000) emitPeer("failed");
-        connect();
-      }, 2000);
-    };
-    ws.onerror = () => {};
-  }
-  function disconnect() {
-    stopped = true;
-    clearTimeout(retry);
-    ws?.close();
-    ws = null;
-    connected = false;
-    room = null;
-  }
-  function send(to, msg) {
-    if (!connected || !room || ws.bufferedAmount > 1e6) return;
-    stats.sent++;
-    stats.relaySent++;
-    ws.send(JSON.stringify({ k: "net", to, msg }));
-  }
-  const net = {
-    open(id, isHost, hostId) {
-      host = isHost;
-      connect();
-    },
-    close() {},
-    syncMembers() {},
-    send,
-    toHost(msg) {
-      if (room) send(room.host, msg);
-    },
-    broadcast(msg, except) {
-      if (msg.k === "start") return;
-      for (const m of room?.members || [])
-        if (m.uid !== G.Server.user?.uid && m.uid !== except) send(m.uid, msg);
-    },
-    on(fn) {
-      handlers.add(fn);
-    },
-    off(fn) {
-      handlers.delete(fn);
-    },
-    onPeer(fn) {
-      peerHandlers.add(fn);
-    },
-    mode() {
-      return connected ? "direct" : "connecting";
-    },
-    slow() {
-      return false;
-    },
-    viaTurn() {
-      return false;
-    },
-    peers() {
-      return (room?.members || [])
-        .map((m) => m.uid)
-        .filter((u) => u !== G.Server.user?.uid);
-    },
-    stats,
-    get open_() {
-      return !!room;
-    },
-    get isHost() {
-      return host;
-    },
-    get uid() {
-      return G.Server.user?.uid;
-    },
-    get hostUid() {
-      return room?.host;
-    },
-    get turn() {
-      return false;
-    },
-  };
-  return {
-    connect,
-    disconnect,
-    net,
-    on(fn) {
-      events.add(fn);
-    },
-    setRoom(r) {
-      room = r;
-      host = r?.isHost || false;
-    },
-    get room() {
-      return room;
-    },
-  };
-})();
-G.Net = G.SelfNet.net;
+/* P2P transport is defined in p2p.js before this module. */
 G.Social = (() => {
   let started = false,
     friends = [],

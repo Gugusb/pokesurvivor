@@ -15,8 +15,8 @@ const { openStore } = require("./store.cjs"),
   { ROOT, G, fresh, sanitize, clone, record } = require("./domain.cjs");
 const derive = promisify(scrypt),
   digest = (s) => createHash("sha256").update(s).digest("hex");
-const VERSION = "0.15.0",
-  PROTOCOL = 1,
+const VERSION = "0.16.0",
+  PROTOCOL = 2,
   MAX_BODY = 1024 * 1024;
 const fail = (status, message) => Object.assign(new Error(message), { status });
 async function hashPassword(pass) {
@@ -48,6 +48,22 @@ function createApp(opts = {}) {
     rooms = new Map(),
     invites = new Map(),
     limits = new Map();
+  const iceServers = (
+    opts.stunUrls ||
+    process.env.STUN_URLS ||
+    "stun:stun.cloudflare.com:3478"
+  )
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean)
+    .slice(0, 4)
+    .filter((s) => /^stuns?:[^\s]{1,500}$/.test(s))
+    .map((urls) => ({ urls }));
+  const traffic = {
+    signalingMessages: 0,
+    signalingBytes: 0,
+    battleFramesRejected: 0,
+  };
   const q = (sql, ...a) => db.prepare(sql).get(...a),
     all = (sql, ...a) => db.prepare(sql).all(...a),
     exec = (sql, ...a) => db.prepare(sql).run(...a);
@@ -72,13 +88,14 @@ function createApp(opts = {}) {
       throw e;
     }
   }
-  function rate(key, max, ms) {
+  function rate(key, max, ms, cost = 1) {
     let r = limits.get(key);
     if (!r || now() > r.until) {
       r = { n: 0, until: now() + ms };
       limits.set(key, r);
     }
-    if (++r.n > max) throw fail(429, "Too many requests; try again later");
+    r.n += cost;
+    if (r.n > max) throw fail(429, "Too many requests; try again later");
   }
   function cookie(req) {
     const raw = (req.headers.cookie || "")
@@ -187,6 +204,11 @@ function createApp(opts = {}) {
           host: r.host,
           isHost: r.host === uid,
           open: r.open,
+          transport: "p2p",
+          protocol: PROTOCOL,
+          ready: [...(r.links || new Map())]
+            .filter(([, l]) => l.ready.size === 2)
+            .map(([uid]) => uid),
           members: [...r.members.values()],
         }
       : null;
@@ -204,6 +226,7 @@ function createApp(opts = {}) {
         emit(m, { k: "room", room: null, closed: true });
     } else {
       r.members.delete(uid);
+      r.links?.delete(uid);
       emit(uid, { k: "room", room: null });
       notifyRoom(r);
     }
@@ -271,7 +294,9 @@ function createApp(opts = {}) {
       difficultyLimit: G.Difficulty.unlocked(s),
       equipment: {
         abilities,
-        megas:G.MonProgression.familyFor(dex).map(d=>s.megaEquipped?.[d]).filter(id=>id&&s.megaStones?.[id]),
+        megas: G.MonProgression.familyFor(dex)
+          .map((d) => s.megaEquipped?.[d])
+          .filter((id) => id && s.megaStones?.[id]),
         mega: s.megaStones?.[s.megaEquipped?.[dex]]
           ? s.megaEquipped[dex]
           : null,
@@ -302,8 +327,17 @@ function createApp(opts = {}) {
   }
   function runUpdate(u, b, end = false) {
     return atomic(() => {
+      const current = saved(u.uid);
+      if (!end && b.rev !== current.rev)
+        throw fail(
+          409,
+          "Save changed on another device. Reload before continuing.",
+        );
       const r = checkRun(u, b),
-        s = saved(u.uid).save;
+        s = current.save;
+      const beforeRecords = JSON.stringify(s.difficultyRecords),
+        beforeDifficulty = JSON.stringify(s.difficulty);
+      const oldRecords = clone(s.difficultyRecords);
       const won = record(
         s,
         r,
@@ -334,7 +368,21 @@ function createApp(opts = {}) {
         }
       }
       score(u.uid, s);
-      return { ...save(u.uid, s), won };
+      G.Offline.stamp(s, now());
+      const value = save(u.uid, s);
+      if (end) return { ...value, won };
+      const progress = { offline: s.offline };
+      if (beforeDifficulty !== JSON.stringify(s.difficulty))
+        progress.difficulty = s.difficulty;
+      if (beforeRecords !== JSON.stringify(s.difficultyRecords)) {
+        progress.records = Object.fromEntries(
+          Object.entries(s.difficultyRecords).filter(
+            ([dex, data]) =>
+              JSON.stringify(data) !== JSON.stringify(oldRecords[dex]),
+          ),
+        );
+      }
+      return { rev: value.rev, won, progress };
     });
   }
   async function api(req, res, url) {
@@ -342,7 +390,13 @@ function createApp(opts = {}) {
     const route = url.pathname.slice(4),
       method = req.method;
     if (route === "/health" && method === "GET")
-      return json(res, 200, { ok: true, version: VERSION, protocol: PROTOCOL });
+      return json(res, 200, {
+        ok: true,
+        version: VERSION,
+        protocol: PROTOCOL,
+        transport: "p2p",
+        relay: false,
+      });
     rate("api:" + clientIp(req), 6000, 60e3);
     const reads = [
       "/session",
@@ -552,6 +606,20 @@ function createApp(opts = {}) {
         return json(res, 200, { ...saved(u.uid), alreadyEnded: true });
       return json(res, 200, runUpdate(u, b, route === "/run/end"));
     }
+    if (route === "/presence") {
+      const value = atomic(() => {
+        const current = saved(u.uid);
+        if (b.rev !== current.rev)
+          throw fail(
+            409,
+            "Save changed on another device. Reload before continuing.",
+          );
+        const s = current.save;
+        G.Offline.stamp(s, now());
+        return { rev: save(u.uid, s).rev, progress: { offline: s.offline } };
+      });
+      return json(res, 200, value);
+    }
     if (route === "/run/bonus") {
       const value = atomic(() => {
         const r = checkRun(u, b),
@@ -595,7 +663,6 @@ function createApp(opts = {}) {
       });
     }
     if (route === "/social" && method === "GET") {
-      notifySocial(u.uid);
       return json(res, 200, {
         friends: friendList(u.uid),
         invites: [...invites.values()].filter(
@@ -637,6 +704,7 @@ function createApp(opts = {}) {
           host: u.uid,
           open: true,
           members: new Map([[u.uid, member(u)]]),
+          links: new Map(),
         };
         rooms.set(r.id, r);
       }
@@ -715,6 +783,12 @@ function createApp(opts = {}) {
         throw fail(403, "Cannot start room");
       if ([...r.members.keys()].some((uid) => !sockets.has(uid)))
         throw fail(409, "Player disconnected");
+      if (
+        [...r.members.keys()].some(
+          (uid) => uid !== r.host && r.links?.get(uid)?.ready.size !== 2,
+        )
+      )
+        throw fail(409, "P2P connection not ready");
       const difficulty = Math.min(
         G.Difficulty.unlocked(saved(u.uid).save),
         G.Difficulty.level(b.difficulty),
@@ -728,6 +802,7 @@ function createApp(opts = {}) {
         members: [...r.members.values()],
         difficulty,
         protocol: PROTOCOL,
+        transport: "p2p",
       };
       notifyRoom(r);
       for (const uid of r.members.keys())
@@ -901,7 +976,7 @@ function createApp(opts = {}) {
   });
   const wss = new WebSocketServer({
     noServer: true,
-    maxPayload: 200000,
+    maxPayload: 24576,
     perMessageDeflate: false,
   });
   server.on("upgrade", (req, socket, head) => {
@@ -921,7 +996,12 @@ function createApp(opts = {}) {
     sockets.get(u.uid)?.close(4001, "Connected on another device");
     sockets.set(u.uid, ws);
     ws.alive = true;
-    emit(u.uid, { k: "hello", protocol: PROTOCOL });
+    emit(u.uid, {
+      k: "hello",
+      protocol: PROTOCOL,
+      transport: "p2p",
+      iceServers,
+    });
     notifyFriends(u.uid);
     const r = roomOf(u.uid);
     if (r) notifyRoom(r);
@@ -930,21 +1010,103 @@ function createApp(opts = {}) {
     });
     ws.on("message", (raw) => {
       try {
-        rate("ws:" + u.uid, 90, 1000);
+        if (sockets.get(u.uid) !== ws) return;
+        rate("ws:" + u.uid, 240, 60000);
         const current = q("SELECT ban,deleted FROM users WHERE uid=?", u.uid);
         if (!current || current.ban || current.deleted)
           throw fail(403, "Account unavailable");
         const m = JSON.parse(raw);
         const r = roomOf(u.uid);
-        if (!r || m.k !== "net") return;
+        if (m.k === "net") {
+          traffic.battleFramesRejected++;
+          throw fail(400, "Battle relay disabled");
+        }
+        if (!r || m.k !== "signal" || m.room !== r.id)
+          throw fail(400, "Invalid signaling room");
         const target = String(m.to);
         if (!r.members.has(target) || target === u.uid)
           throw fail(403, "Invalid recipient");
         if (u.uid !== r.host && target !== r.host)
           throw fail(403, "Guests may only send to host");
-        if (!m.msg || m.msg.k !== "f" || r.open)
-          throw fail(400, "Invalid frame");
-        emit(target, { k: "net", from: u.uid, msg: m.msg });
+        const guest = u.uid === r.host ? target : u.uid;
+        r.links ||= new Map();
+        let link = r.links.get(guest);
+        if (
+          typeof m.attempt !== "string" ||
+          !/^[a-zA-Z0-9_-]{8,64}$/.test(m.attempt)
+        )
+          throw fail(400, "Invalid attempt");
+        rate("signal-budget:" + u.uid, 98304, 60000, raw.length);
+        let sig;
+        if (m.description) {
+          const d = m.description;
+          if (
+            typeof d.sdp !== "string" ||
+            Buffer.byteLength(d.sdp) > 16384 ||
+            !d.sdp.startsWith("v=0") ||
+            !d.sdp.includes("m=application") ||
+            !["offer", "answer"].includes(d.type) ||
+            (d.type === "offer") !== (u.uid === r.host)
+          )
+            throw fail(400, "Invalid SDP");
+          if (d.type === "offer") {
+            // Only a new host negotiation can change the active generation.
+            link = { attempt: m.attempt, ready: new Set() };
+            r.links.set(guest, link);
+          } else if (!link || link.attempt !== m.attempt) return;
+          sig = { description: { type: d.type, sdp: d.sdp } };
+        } else {
+          if (!link || link.attempt !== m.attempt) return;
+          if (m.ready === true) {
+            if (!link.ready.has(u.uid)) {
+              link.ready.add(u.uid);
+              notifyRoom(r);
+            }
+            return;
+          }
+          if (m.retry === true && u.uid !== r.host) {
+            rate("retry:" + u.uid, 6, 30000);
+            link.ready.clear();
+            sig = { retry: true };
+          } else if (m.candidate && typeof m.candidate === "object") {
+            const c = m.candidate;
+            if (
+              typeof c.candidate !== "string" ||
+              c.candidate.length > 2048 ||
+              !c.candidate.startsWith("candidate:") ||
+              (c.sdpMid != null &&
+                (typeof c.sdpMid !== "string" || c.sdpMid.length > 32)) ||
+              (c.sdpMLineIndex != null &&
+                (!Number.isInteger(c.sdpMLineIndex) ||
+                  c.sdpMLineIndex < 0 ||
+                  c.sdpMLineIndex > 8)) ||
+              (c.usernameFragment != null &&
+                (typeof c.usernameFragment !== "string" ||
+                  c.usernameFragment.length > 256))
+            )
+              throw fail(400, "Invalid candidate");
+            sig = {
+              candidate: {
+                candidate: c.candidate,
+                sdpMid: c.sdpMid ?? null,
+                sdpMLineIndex: c.sdpMLineIndex ?? null,
+                ...(c.usernameFragment
+                  ? { usernameFragment: c.usernameFragment }
+                  : {}),
+              },
+            };
+          } else throw fail(400, "Invalid signaling payload");
+        }
+        const out = {
+          k: "signal",
+          room: r.id,
+          from: u.uid,
+          attempt: m.attempt,
+          ...sig,
+        };
+        traffic.signalingMessages++;
+        traffic.signalingBytes += Buffer.byteLength(JSON.stringify(out));
+        emit(target, out);
       } catch {
         ws.close(1008, "Invalid message");
       }
@@ -952,6 +1114,13 @@ function createApp(opts = {}) {
     ws.on("close", () => {
       if (sockets.get(u.uid) !== ws) return;
       sockets.delete(u.uid);
+      const currentRoom = roomOf(u.uid);
+      if (currentRoom) {
+        for (const [guest, link] of currentRoom.links || [])
+          if (u.uid === currentRoom.host || u.uid === guest)
+            link.ready.delete(u.uid);
+        notifyRoom(currentRoom);
+      }
       notifyFriends(u.uid);
       const grace = setTimeout(() => {
         if (!sockets.has(u.uid)) leaveRoom(u.uid);
@@ -979,6 +1148,7 @@ function createApp(opts = {}) {
     server,
     db,
     rooms,
+    traffic,
     sockets,
     async close() {
       clearInterval(housekeeping);

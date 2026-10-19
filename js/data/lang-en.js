@@ -4,6 +4,11 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  "Directo P2P": "P2P direct",
+  "No se pudo conectar directamente": "Direct connection failed",
+  "Reintentar conexión directa": "Retry direct connection",
+  "Sólo conexión directa: no hay retransmisión de combate. Si no conecta, probad otra red.": "Direct connections only; combat is never relayed. If connection fails, try another network.",
+  "Las partidas en grupo usan conexión directa WebRTC. El servidor sólo gestiona cuentas, salas y señalización. Tu dirección IP pública puede ser visible para los compañeros. No hay retransmisión de combate.": "Co-op uses direct WebRTC connections. The server only manages accounts, rooms and signaling. Your public IP address may be visible to teammates. Combat is never relayed.",
   "Dirección evolutiva": "Evolution direction",
   "+60 de vida máxima (y la recupera).": "+60 maximum HP (and restores that amount).",
   "+30% de daño con todos los movimientos.": "+30% attack multiplier for all moves.",

@@ -6,6 +6,14 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-19', title: ['Cooperativo P2P · v0.16.0', 'P2P co-op · v0.16.0'], new: [
+    ['Las partidas en grupo conectan directamente con WebRTC. El servidor sólo gestiona cuentas, salas y señalización; no retransmite el combate ni usa TURN.', 'Co-op connects directly through WebRTC. The server only manages accounts, rooms and signaling; it never relays combat or uses TURN.'],
+    ['La sala muestra conexión P2P, latencia y un botón de reintento. Todos deben conectar antes de empezar.', 'The lobby shows P2P connectivity, latency and a retry button. Everyone must connect before starting.']
+  ], chg: [
+    ['Los latidos sólo descargan cambios de progreso. La presencia no vuelve a enviar todo el guardado.', 'Heartbeats only download progress changes. Presence updates no longer resend the entire save.']
+  ], fix: [
+    ['Los mensajes grandes se fragmentan y las reconexiones vuelven a sincronizar el mundo. Las redes que bloquean P2P muestran un error, sin cambiar a un relé de pago.', 'Large messages are chunked and reconnects resynchronize the world. Networks blocking P2P show an error without falling back to a paid relay.']
+  ] },
   { d: '2026-10-19', title: ['Cuentas, rankings y evolución · v0.15.0', 'Accounts, rankings and evolution · v0.15.0'], new: [
     ['La elección extra de evolución sólo ofrece atributos permanentes de triple potencia. Cada carta muestra una dirección; al elegirla te conviertes en ese Pokémon.', 'Evolution bonus choices offer only permanent attributes at triple strength. Each card shows a direction; choosing it evolves into that Pokémon.'],
     ['Las familias con más de tres ramas muestran tres direcciones aleatorias; con dos ramas se muestran ambas. El cooperativo sincroniza la rama elegida.', 'Families with more than three branches show three random directions; two-branch families show both. Co-op synchronizes the chosen branch.'],

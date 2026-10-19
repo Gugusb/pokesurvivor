@@ -27,6 +27,7 @@
 - 游戏功能或故障修复同时更新 `js/data/changelog.js` 的西班牙语和英语条目；纯开发文档变更无需游戏构建或游戏内更新日志。
 - 选择与改动相称的验证；玩法变更至少用本地网页实际验证对应流程。
 - v0.15.0 起，自建账号/排行榜/联机服务：`npm --prefix server ci`，再执行 `node server/server.cjs`，默认监听 `127.0.0.1:8000`。部署说明见 `docs/SELF_HOSTING.md`。
+- v0.16.0 使用 WebRTC P2P 直连，服务端禁止战斗中转与 TURN；用户预算为 4 核 4GB、3Mbps。旧中转版保存在 `v0.15.0` 与 `codex/relay-v0.15`。联机传输改动还需运行 `node --test tools/test_p2p.cjs`，并用隔离浏览器执行 `node tools/qa_p2p_browser.cjs`；本机验证不能当作公网 NAT 成功率或云服务器容量保证。
 - 纯静态游客/旧本地账号试玩：`python -m http.server 8001 --bind 127.0.0.1`；此模式没有自建联网 API。
 - 试玩入口 `http://127.0.0.1:8000/`；调试源码入口 `/dev.html`。
 - 开发测试优先使用游客或独立测试环境；云存档、排行榜和联机的更改必须明确测试目标。

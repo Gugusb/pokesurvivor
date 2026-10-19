@@ -152,6 +152,7 @@
       };
       $('lobby-menu').onclick = () => G.MenuUI.open();
       $('lobby-start').onclick = start;
+      $('lobby-retry').onclick = () => G.Net.retry?.();
       $('lobby-start').dataset.sfx = 'confirm';
       // Conecta / desconecta la red al entrar o salir de una sala.
       G.Social.on(what => {
@@ -181,9 +182,14 @@
     function close() { G.UI.hide('scr-lobby'); }
 
     function connText(m, room) {
-      if (m.uid === room.host) return 'Anfitrión';
-      if (!room.isHost) return m.uid === G.Social.uid ? 'Tú' : 'En la sala';
+      if (m.uid === room.host && room.isHost) return 'Anfitrión';
+      if (!room.isHost && m.uid !== room.host) return m.uid === G.Social.uid ? 'Tú' : 'En la sala';
       const mode = G.Net.mode(m.uid);
+      if (G.Net.transport === 'p2p') {
+        const rtt = G.Net.metrics(m.uid)?.rttMs;
+        return mode === 'direct' ? G.T('Directo P2P') + (rtt == null ? '' : ' · ' + rtt + ' ms')
+          : mode === 'failed' ? G.T('No se pudo conectar directamente') : 'Conectando…';
+      }
       return mode === 'direct' ? 'Conectado' : mode === 'relay' ? 'Conectado (por servidor)' : mode === 'failed' ? 'No se pudo conectar (reintentando…)' : 'Conectando…';
     }
 
@@ -243,8 +249,10 @@
       }
 
       const btn = $('lobby-start');
+      $('lobby-retry').classList.toggle('hidden', !room.isHost || G.Net.transport !== 'p2p');
       btn.classList.toggle('hidden', !room.isHost);
-      const connecting = ms.some(m => m.uid !== room.host && G.Net.mode(m.uid) === 'connecting');
+      const connecting = ms.some(m => m.uid !== room.host && (G.Net.mode(m.uid) === 'connecting' ||
+        G.Net.transport === 'p2p' && (G.Net.mode(m.uid) !== 'direct' || !room.ready?.includes(m.uid))));
       const failed = ms.some(m => m.uid !== room.host && G.Net.mode(m.uid) === 'failed');
       btn.disabled = !room.isHost || ms.length < 2 || connecting || failed;
       btn.textContent = 'Empezar partida (' + ms.length + '/' + G.Social.MAX_PLAYERS + ')';
@@ -254,6 +262,7 @@
         : connecting ? 'Conectando con tus amigos…' : 'La partida empieza para todos a la vez.';
       if (G.Difficulty && room.isHost) $('lobby-note').textContent += ' · ' + G.T('Dificultad') + ' ' +
         G.Difficulty.partyLevel(G.DB.save, ms) + '★ · ' + G.T('Limitada por el desbloqueo del equipo');
+      if (G.Net.transport === 'p2p') $('lobby-note').textContent += ' ' + G.T('Sólo conexión directa: no hay retransmisión de combate. Si no conecta, probad otra red.');
     }
 
     async function start() {

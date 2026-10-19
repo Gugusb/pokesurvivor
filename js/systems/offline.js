@@ -45,6 +45,7 @@ G.Offline = (() => {
   }
   function suspend() {
     if (!ready || !G.DB.save || G.DB.guest || session !== G.DB.user) return;
+    if (G.DB.mode === 'server') { G.Server.presence(); return; }
     stamp(G.DB.save); G.DB.commit();
   }
   async function settle() {

@@ -64,6 +64,14 @@ test('active heartbeat yields no income, hidden time settles once on return, and
   s.document.hidden=false;s.handlers.visibilitychange();await new Promise(setImmediate);assert.equal(s.report.coins,100);assert.equal(G.DB.save.coins,coins+100);
   await G.DB.logout();assert.doesNotThrow(()=>s.intervals.at(-1)());
 });
+
+test('self-hosted routine presence does not upload the full save every thirty seconds',async()=>{
+  const s=context(),{G}=s,save=G.DB.save;let full=0,presence=0;
+  G.DB={save,guest:false,user:'ServerFixture',mode:'server',loggedIn:true,onLeave:()=>{},settleOffline:async()=>null,commit:()=>full++};
+  G.Server={presence:()=>{presence++;}};G.Offline.init();G.Offline.start();await new Promise(setImmediate);
+  const initial=full;for(let i=0;i<5;i++)s.intervals.at(-1)();assert.equal(full,initial);assert.equal(presence,5);
+  s.document.hidden=true;s.handlers.visibilitychange();assert.equal(presence,6);assert.equal(full,initial);
+});
 test('cloud transaction serializes simultaneous devices and pays an overlapping absence once',async()=>{
   const a=context(),b=context(),base=clone(a.G.DB.save);a.G.Offline.stamp(base,a.now);let remote=base,chain=Promise.resolve();
   const server={collection:()=>({doc:()=>({})}),runTransaction:fn=>{const job=chain.then(()=>fn({get:async()=>({exists:true,data:()=>({save:clone(remote)})}),set:(ref,doc)=>{remote=clone(doc.save);}}));chain=job.catch(noop);return job;}};

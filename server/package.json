@@ -1,8 +1,8 @@
 {
   "name": "pokesurvivor-private-server",
-  "version": "0.15.0",
+  "version": "0.16.0",
   "private": true,
-  "description": "Self-hosted accounts, saves, rankings and authenticated co-op relay",
+  "description": "Self-hosted accounts, saves, rankings and bounded P2P signaling without battle relay",
   "engines": {"node": ">=24.14.0"},
   "scripts": {"start": "node server.cjs", "admin": "node admin.cjs", "test": "node --test ../tools/test_server.cjs"},
   "dependencies": {"ws": "^8.18.3"}

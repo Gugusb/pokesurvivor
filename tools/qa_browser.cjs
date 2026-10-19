@@ -14,7 +14,8 @@ const OUT=path.join(__dirname,'cache');
     browser=await chromium.launch({headless:true,channel:process.env.BROWSER_CHANNEL||'msedge'});
     const context=await browser.newContext({viewport:{width:1280,height:900},locale:'zh-CN'}),page=await context.newPage(),errors=[];
     page.on('pageerror',e=>errors.push(e.message));
-    async function boot(url){await page.goto(url);await page.locator('#tap-start').click();await page.locator('#scr-login:not(.hidden)').waitFor();}
+    async function tap(p){await p.waitForFunction(()=>!document.getElementById('tap-start').classList.contains('hidden')||!document.getElementById('scr-login').classList.contains('hidden'));if(await p.locator('#tap-start').isVisible())await p.locator('#tap-start').click();await p.locator('#scr-login:not(.hidden)').waitFor();}
+    async function boot(url){await page.goto(url);await tap(page);}
     await boot(base+'/');assert.equal(await page.locator('#btn-google').count(),0);
     await page.locator('#f-user').fill(username);await page.locator('#f-pass').fill(pass);await page.locator('#btn-auth').click();await page.locator('#scr-menu:not(.hidden)').waitFor();
     await page.locator('[data-go="rank"]').click();await page.getByRole('button',{name:'满勋章通关数量榜',exact:true}).waitFor();await page.locator('#rk-list .rk-row').waitFor();assert.equal(await page.locator('#rk-list .time').textContent(),'9');
@@ -23,13 +24,13 @@ const OUT=path.join(__dirname,'cache');
     await page.locator('#rk-mod').click();await page.getByText(username+' · admin',{exact:true}).waitFor();await context.close();
     const built=await browser.newContext({viewport:{width:1280,height:900},locale:'zh-CN'});
     await built.addInitScript(()=>{localStorage.setItem('ps.dev.enabled','true');window.qaTexts=[];const fill=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t,...a){if(window.qaTexts.length>2000)window.qaTexts=[];window.qaTexts.push(t);return fill.call(this,t,...a);};});
-    const b=await built.newPage();b.on('pageerror',e=>errors.push(e.message));await b.goto(base+'/');await b.locator('#tap-start').click();await b.locator('#scr-login:not(.hidden)').waitFor();
+    const b=await built.newPage();b.on('pageerror',e=>errors.push(e.message));await b.goto(base+'/');await tap(b);
     await b.locator('#f-user').fill(username);await b.locator('#f-pass').fill(pass);await b.locator('#btn-auth').click();await b.locator('#scr-menu:not(.hidden)').waitFor();await b.locator('[data-go="play"]').click();
     for(let n=0;n<5;n++){await b.locator('#dev-launcher').click();await b.locator('[data-dev="level"]').click();await b.locator('#dev-close').click();await b.locator('#scr-levelup:not(.hidden) .card').first().click();}
     await b.locator('#lvl-evolution-title:not(.hidden)').waitFor();assert.equal(await b.locator('#cards .card').count(),3);await b.locator('#lvl-reroll').click();
     const builtName=await b.locator('#cards .card .evolution-target strong').first().textContent();await b.locator('#cards .card').first().click();await b.waitForFunction(name=>window.qaTexts.includes(name),builtName);await built.close();
     const guest=await browser.newContext({viewport:{width:1280,height:900},locale:'zh-CN'}),p=await guest.newPage();p.on('pageerror',e=>errors.push(e.message));
-    await p.goto(base+'/dev.html');await p.locator('#tap-start').click();await p.locator('#scr-login:not(.hidden)').waitFor();
+    await p.goto(base+'/dev.html');await tap(p);
     await p.evaluate(()=>{G.DB.playAsGuest();G.DB.grant(133,'qa');G.DB.save.partner=133;G.Flow.afterLogin();});
     await p.locator('[data-go="play"]').click();await p.waitForFunction(()=>G.Game.state==='playing');
     await p.evaluate(()=>{for(let n=0;n<5;n++)G.Game.debugLevelUp();});

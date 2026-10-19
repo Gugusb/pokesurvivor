@@ -281,7 +281,7 @@
     <p>Las cuentas y partidas se guardan en nuestro servidor. No necesitas Google ni correo electrónico. Tu contraseña y tu código de recuperación se guardan como hashes. Los invitados juegan sin cuenta.</p>
     <p>Amigos y ranking: tu <b>apodo</b> es público para otros jugadores. Guardamos tu lista de
       amigos, si estás en línea y tus mejores tiempos (con tu apodo y tu Pokémon).</p>
-    <p>El servidor retransmite las partidas en grupo. Los compañeros no reciben tu dirección IP a través del juego.</p>
+    <p>Las partidas en grupo usan conexión directa WebRTC. El servidor sólo gestiona cuentas, salas y señalización. Tu dirección IP pública puede ser visible para los compañeros. No hay retransmisión de combate.</p>
     <p>Al borrar la cuenta se eliminan la partida, las amistades y las marcas. Se conserva un identificador de cuenta no reutilizable y el registro de moderación para impedir eludir suspensiones.</p>
     <div class="row">
       <button class="btn small" id="legal-delete">Borrar mi cuenta y mi partida</button>
@@ -368,6 +368,7 @@
     <div id="lobby-invite" class="fr-list"></div>
     <div class="row" style="margin-top:14px">
       <button id="lobby-start" class="btn gold grow">Empezar partida</button>
+      <button id="lobby-retry" class="btn ghost hidden">Reintentar conexión directa</button>
     </div>
     <p class="note" id="lobby-note"></p>
   </div>
@@ -638,6 +639,7 @@
 <script defer src="js/systems/progress.js"></script>
 <script defer src="js/systems/hazards.js"></script>
 <!-- red: amigos, salas, cooperativo y ranking -->
+<script defer src="js/net/p2p.js"></script>
 <script defer src="js/net/server-client.js"></script>
 <script defer src="js/net/coop.js"></script>
 <script defer src="js/net/ranking.js"></script>

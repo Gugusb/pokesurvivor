@@ -24,9 +24,8 @@
 G.Coop = (() => {
   const ANIMS = ['Idle', 'Walk', 'Attack', 'Shoot', 'Charge', 'Hurt', 'Faint'];
   const COLORS = ['#ffcb3d', '#5fc8ff', '#7ee07a', '#ff8ad8'];
-  // Mensajes por segundo: 15 directo, 4 por el TURN de Cloudflare (se paga por
-  // GB: era 7 y se iban unos 110 GB al día, el 12-10-2026) y 3 por el relé de
-  // la Realtime Database (1 $ el GB: sólo si todo lo demás falla).
+  // P2P runs at 15 Hz. Slow/reconnecting links use 3 Hz while recovering;
+  // v0.16 never sends those frames through an application server or TURN.
   const RATE_FAST = 1 / 15, RATE_TURN = 1 / 4, RATE_SLOW = 1 / 3;
   const rateFor = u => (G.Net.slow(u) ? RATE_SLOW : G.Net.viaTurn(u) ? RATE_TURN : RATE_FAST);
   const NEAR = 950;                     // radio de enemigos que se mandan a cada uno

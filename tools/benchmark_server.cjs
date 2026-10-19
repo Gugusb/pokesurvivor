@@ -6,6 +6,10 @@ const { WebSocket } = require("../server/node_modules/ws"),
   { randomUUID, createHash } = require("node:crypto"),
   { once } = require("node:events");
 const { monitorEventLoopDelay, performance } = require("node:perf_hooks");
+if (require('../server/server.cjs').VERSION !== '0.15.0') {
+  console.error('This relay benchmark is retained for v0.15.0. Use node tools/benchmark_p2p.cjs 100 on the P2P version.');
+  process.exit(1);
+}
 const clients = Math.max(4, Math.min(400, Number(process.argv[2]) || 100)),
   seconds = 8;
 (async () => {

@@ -1,6 +1,21 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Directo P2P": "P2P 直连",
+  "No se pudo conectar directamente": "直连失败",
+  "Reintentar conexión directa": "重试直连",
+  "Sólo conexión directa: no hay retransmisión de combate. Si no conecta, probad otra red.": "仅提供 P2P 直连，不中转战斗数据；若连接失败，请换网络重试。",
+  "Las partidas en grupo usan conexión directa WebRTC. El servidor sólo gestiona cuentas, salas y señalización. Tu dirección IP pública puede ser visible para los compañeros. No hay retransmisión de combate.": "联机使用玩家间的 WebRTC 直连。服务器仅处理账号、房间和握手，不中转战斗数据。队友可能获知你的公网 IP 地址。",
+  "Cooperativo P2P · v0.16.0": "P2P 直连联机 · v0.16.0",
+  "P2P co-op · v0.16.0": "P2P 直连联机 · v0.16.0",
+  "Las partidas en grupo conectan directamente con WebRTC. El servidor sólo gestiona cuentas, salas y señalización; no retransmite el combate ni usa TURN.": "联机改为 WebRTC 玩家直连；服务器仅处理账号、房间与握手，禁止中转战斗帧，也不使用 TURN。",
+  "Co-op connects directly through WebRTC. The server only manages accounts, rooms and signaling; it never relays combat or uses TURN.": "联机改为 WebRTC 玩家直连；服务器仅处理账号、房间与握手，禁止中转战斗帧，也不使用 TURN。",
+  "La sala muestra conexión P2P, latencia y un botón de reintento. Todos deben conectar antes de empezar.": "房间显示 P2P 直连状态、延迟与重试按钮；所有队员完成直连后才能开始。",
+  "The lobby shows P2P connectivity, latency and a retry button. Everyone must connect before starting.": "房间显示 P2P 直连状态、延迟与重试按钮；所有队员完成直连后才能开始。",
+  "Los latidos sólo descargan cambios de progreso. La presencia no vuelve a enviar todo el guardado.": "心跳只下发进度变化，在线状态更新不再重复传输整份存档。",
+  "Heartbeats only download progress changes. Presence updates no longer resend the entire save.": "心跳只下发进度变化，在线状态更新不再重复传输整份存档。",
+  "Los mensajes grandes se fragmentan y las reconexiones vuelven a sincronizar el mundo. Las redes que bloquean P2P muestran un error, sin cambiar a un relé de pago.": "大消息分片传输，重连后重新同步世界；阻止直连的网络会明确提示，不自动切换到付费中转。",
+  "Large messages are chunked and reconnects resynchronize the world. Networks blocking P2P show an error without falling back to a paid relay.": "大消息分片传输，重连后重新同步世界；阻止直连的网络会明确提示，不自动切换到付费中转。",
   "Cuentas, rankings y evolución · v0.15.0": "自建账号、双排行榜与进化方向 · v0.15.0",
   "Accounts, rankings and evolution · v0.15.0": "自建账号、双排行榜与进化方向 · v0.15.0",
   "La elección extra de evolución sólo ofrece atributos permanentes de triple potencia. Cada carta muestra una dirección; al elegirla te conviertes en ese Pokémon.": "进化额外选择仅提供三倍收益的永久属性；卡片展示进化方向，选中后进化为对应宝可梦。",
