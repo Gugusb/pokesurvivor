@@ -1,0 +1,5 @@
+# Set PUBLIC_ORIGIN=https://YOUR_DOMAIN and TRUST_PROXY=1 for the Node service.
+YOUR_DOMAIN {
+    encode zstd gzip
+    reverse_proxy 127.0.0.1:8000
+}

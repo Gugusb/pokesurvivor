@@ -402,7 +402,7 @@ test('co-op host applies peer Multitype once and synchronizes Flame Body knockba
   const p=s.player(144,'pressure');G.Game.player=p;s.load('js/net/coop.js');
   G.Coop.begin({host:'host',members:[{uid:'host',dex:144},{uid:'arc',dex:493},{uid:'fire',dex:485}]},p,{});
   const frame=ability=>[0,0,0,0,100,100,0,'confusion',1,78,0,1,0,0,0,ability],e=s.enemy();
-  receive('arc',{k:'f',p:frame('multitype'),ev:[['h',e.id,10,'#fff',0,0,0]]});assert.equal(e.hp,488);
+  receive('arc',{k:'f',p:frame('multitype'),ev:[['h',e.id,10,'#fff',0,0,0,'confusion']]});assert.equal(e.hp,488);
   receive('fire',{k:'f',p:frame('flamebody'),ev:[['ab',e.id,'flamebody',50]]});assert.equal(e.abilityBurn.owner,G.Coop.mate('fire').pl);assert.ok(e.kx>0);
   G.Coop.end();
 });
@@ -605,9 +605,31 @@ test('co-op host validates weather requests, applies melee Repel and credits the
   assert.deepEqual(calls,[['rain',20]]);time=80;
   receive('rain',{k:'f',p:frame('drizzle'),ev:[['aw','rain']]});assert.equal(calls.length,2);
   const e=s.enemy();receive('fear',{k:'f',p:frame('intimidate'),ev:[['h',e.id,10,'#fff',0,0,0,'tackle']]});assert.equal(e.repelT,3);
-  receive('fear',{k:'f',p:frame('moxie'),ev:[['h',e.id,1000,'#fff',0,0,0]]});
+  receive('fear',{k:'f',p:frame('moxie'),ev:[['h',e.id,1000,'#fff',0,0,0,'tackle']]});
   assert.ok(G.Coop.mate('fear').q.some(ev=>ev[0]==='ak'&&ev[1]===e.id));
   assert.equal(G.Abilities.state(p).confidence.length,0);G.Coop.end();
+});
+
+test('co-op rejects invalid hits, checks saved equipment and resends world state after a short disconnect',()=>{
+  const s=context(),{G}=s;let receive;const sent=[];G.Net={uid:'host',on:f=>receive=f,onPeer:noop,send:(uid,msg)=>sent.push(msg)};
+  G.startMoveOf=()=> 'confusion';G.Sprites.preload=noop;G.Game.st={time:40};G.EnemyMgr.get=id=>s.enemies.find(e=>e.id===id);G.EnemyMgr.all=()=>s.enemies;
+  G.Pickups={all:()=>[{id:99,kind:'coin',x:1,y:2,value:1}]};G.Judgment={netState:()=>null};s.load('js/net/coop.js');
+  const p=s.player(144,'pressure');G.Game.player=p;
+  G.Coop.begin({host:'host',members:[{uid:'host',dex:144},{uid:'peer',dex:493,equipment:{abilities:{493:null},mega:null,z:null}}]},p,{team:()=>({time:40,level:1,xp:0,xpNext:10,kills:0,bosses:0,coins:0})});
+  const e=s.enemy(),hp=e.hp,frame=[0,0,0,0,100,100,0,'confusion',1,78,0,1,0,0,0,'multitype'];
+  receive('peer',{k:'f',p:frame,ev:[['h',e.id,Infinity,'#fff',0,0,0,'confusion']]});assert.equal(e.hp,hp);assert.equal(G.Coop.mate('peer').pl.net.ability,null);
+  receive('peer',{k:'f',p:frame,ev:[['h',e.id,10,'#fff',0,0,0,'missing']]});assert.equal(e.hp,hp);
+  receive('peer',{k:'f',p:frame,ev:[['rs']]});assert.ok(sent.some(m=>m.ev.some(ev=>ev[0]==='reset')));assert.ok(sent.some(m=>m.ev.some(ev=>ev[0]==='ne'&&ev[1]===e.id)));assert.ok(sent.some(m=>m.ev.some(ev=>ev[0]==='pk'&&ev[1]===99)));
+  G.Coop.end();
+});
+
+test('co-op synchronizes a legal alternative evolution branch and refuses a late switch to its sibling',()=>{
+  const s=context(),{G}=s;let receive;G.Net={uid:'host',on:f=>receive=f,onPeer:noop};G.startMoveOf=()=> 'confusion';G.Sprites.preload=noop;G.Game.st={time:1};s.load('js/net/coop.js');
+  const p=s.player(144);G.Coop.begin({host:'host',members:[{uid:'host',dex:144},{uid:'peer',dex:282,equipment:{abilities:{},megas:[],z:null}}]},p,{});
+  const frame=(dex,path,level)=>[0,0,0,0,100,100,0,'confusion',1,78,0,1,0,0,0,null,null,0,null,0,null,dex,level,path];
+  receive('peer',{k:'f',p:frame(475,[280,281,475],14),ev:[]});assert.equal(G.Coop.mate('peer').pl.dex,280);
+  receive('peer',{k:'f',p:frame(475,[280,281,475],15),ev:[]});assert.equal(G.Coop.mate('peer').pl.dex,475);
+  receive('peer',{k:'f',p:frame(282,[280,281,282],15),ev:[]});assert.equal(G.Coop.mate('peer').pl.dex,475);G.Coop.end();
 });
 
 test('co-op guest receives deduplicated Moxie kill credit from host', () => {

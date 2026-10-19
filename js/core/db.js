@@ -507,6 +507,7 @@ G.DB = (() => {
 
   /** Sube la partida fusionándola con lo que haya en la nube (transacción). */
   function pushNow() {
+    if (mode === 'server') return G.Server.flush();
     if (mode !== 'cloud' || guest || !save || !uid) return Promise.resolve();
     // Si ya hay una subida en marcha, se hace otra justo después (para lo que haya cambiado mientras).
     if (pushing) { pending = true; return pushing.then(() => (pending ? pushNow() : undefined)); }
@@ -615,7 +616,8 @@ G.DB = (() => {
   function ready() {
     if (readyP) return readyP;
     readyP = (async () => {
-      try { if (await initCloud()) mode = 'cloud'; }
+      if (G.Server && await G.Server.probe()) { mode = 'server'; return G.Server.restore(); }
+      try { localReason = 'config'; }
       catch (e) { console.warn('[DB] sin nube:', e.message); localReason = 'error'; mode = 'local'; }
       if (mode === 'local') { setSync('local'); return restoreLocal(); }
       const u = await new Promise(res => { const off = auth.onAuthStateChanged(x => { off(); res(x); }); });
@@ -627,6 +629,7 @@ G.DB = (() => {
   }
 
   async function register(name, pass) {
+    if (mode === 'server') return G.Server.authenticate('register',name,pass);
     name = (name || '').trim();
     if (!VALID.test(name)) return { ok: false, error: 'El nombre debe tener 3-16 letras, números o _.' };
     const min = mode === 'cloud' ? 6 : 4;
@@ -644,6 +647,7 @@ G.DB = (() => {
   }
 
   async function login(name, pass) {
+    if (mode === 'server') return G.Server.authenticate('login',name,pass);
     name = (name || '').trim();
     if (mode === 'local') return loginLocal(name, pass);
     try {
@@ -693,6 +697,7 @@ G.DB = (() => {
   function commit(urgent = false) {
     if (guest || !key || !save) return false;
     save.updated = Date.now();
+    if (mode === 'server') return G.Server.commit(urgent);
     if (mode === 'local') return write(K_SAVE + key, save);
     write(K_CLOUD + uid, save);
     pending = true;
@@ -707,6 +712,7 @@ G.DB = (() => {
 
   /** Offline rewards commit with the cursor, atomically for cloud accounts. */
   async function settleOffline(now) {
+    if (mode === 'server' && !guest) return G.Server.settleOffline();
     if (guest || !save || !key || !G.Offline) return null;
     const account = key;
     const settle = async () => {
@@ -739,6 +745,7 @@ G.DB = (() => {
 
   /** Commit the full doubled payout with its once-per-star receipt. */
   async function claimVictoryBonus(run,coins){
+    if (mode === 'server' && !guest) return G.Server.claimBonus(run,coins);
     if(!save||!G.Difficulty||!run?.eligible||!run.victory)return 0;
     const account=key,target=save;
     const claim=async()=>{
@@ -770,7 +777,8 @@ G.DB = (() => {
 
   async function logout() {
     for (const fn of leaveHooks) { try { await fn('logout'); } catch (e) { /* nada */ } }
-    if (mode === 'cloud' && !guest && save) {
+    if (mode === 'server' && !guest) { await G.Server.logout(); }
+    else if (mode === 'cloud' && !guest && save) {
       if (pending) { try { await pushNow(); } catch (e) { /* queda la copia local */ } }
       stopListening();
       try { await auth.signOut(); } catch (e) { /* nada */ }
@@ -815,6 +823,7 @@ G.DB = (() => {
    * @param pass  contraseña (cuentas de nombre y contraseña)
    */
   async function deleteAccount(pass) {
+    if (mode === 'server') return G.Server.deleteAccount(pass);
     if (guest || !key) return { ok: false, error: 'No hay cuenta que borrar.' };
     if (mode === 'local') {
       const accs = read(K_ACC) || {};
@@ -905,16 +914,21 @@ G.DB = (() => {
   }
 
   return {
+    fresh: newSave, normalize: migrate,
+    serverOpen(data) { mode='server'; uid=key=data.user.uid; user=data.user.name; guest=false; save=migrate(data.save || newSave(user),user); setSync('ok'); },
+    serverApply(data) { if (save) applyInPlace(migrate(data, user)); },
+    serverSync: setSync,
+    serverClear() {user=key=save=uid=null;guest=false;setSync('ok');},
     ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, settleOffline, claimVictoryBonus, flush: pushNow,
     owns, grant, ownsShiny, grantShiny, ivOf, merge, setName, upgradesOf,
     onSync(fn) { listeners.add(fn); },
     onLeave(fn) { leaveHooks.push(fn); },
     /** Acceso de bajo nivel para los módulos de red (sólo en modo nube). */
-    get fb() { return mode === 'cloud' ? { auth, fs, rtdb, uid, emulator: !!(G.FIREBASE_CONFIG || {}).emulator } : null; },
+    get fb() { return mode === 'server' ? {uid} : mode === 'cloud' ? { auth, fs, rtdb, uid, emulator: !!(G.FIREBASE_CONFIG || {}).emulator } : null; },
     /** ¿Está disponible lo online (amigos, ranking, multijugador)? */
-    get online() { return mode === 'cloud' && !guest && !!uid && !!save; },
+    get online() { return (mode === 'server' || mode === 'cloud') && !guest && !!uid && !!save; },
     /** ¿La cuenta es de usuario y contraseña (no de Google)? */
-    get nameAccount() { return nameAccount(); },
+    get nameAccount() { return mode === 'server' || nameAccount(); },
     get hasGoogle() { return hasGoogle(); }, linkGoogle,
     get mode() { return mode; },
     get localReason() { return localReason; },

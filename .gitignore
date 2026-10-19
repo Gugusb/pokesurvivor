@@ -10,6 +10,8 @@ __pycache__/
 *-debug.log
 *.log
 node_modules/
+server/data/
+.env
 
 # Sistema
 Thumbs.db

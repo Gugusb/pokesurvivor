@@ -120,7 +120,7 @@ test('co-op validates Mega species, applies one damage multiplier, pushes once a
   const s=context(),{G}=s;let receive;G.Net={uid:'host',on:f=>receive=f,onPeer:noop};G.startMoveOf=()=> 'ember';s.load('js/net/coop.js');
   const p=s.player(65);G.Coop.begin({host:'host',members:[{uid:'host',dex:65,name:'Host'},{uid:'peer',dex:6,name:'Peer'}]},p,{});
   const e=s.enemy(50);const frame=(mega,left)=>[0,0,0,0,100,130,0,'ember',1,78,0,1,0,0,0,null,mega,left];
-  receive('peer',{k:'f',p:frame('6-mega-x',60),ev:[['mx','6-mega-x'],['h',e.id,10,'#fff',0,0,0]]});
+  receive('peer',{k:'f',p:frame('6-mega-x',60),ev:[['mx','6-mega-x'],['h',e.id,10,'#fff',0,0,0,'ember']]});
   assert.equal(e.maxHp-e.hp,15);const knock=e.kx;assert.ok(knock>0);const mate=G.Coop.mate('peer').pl;assert.equal(mate.spriteDex,'6-mega-x');
   receive('peer',{k:'f',p:frame('6-mega-x',59),ev:[['mx','6-mega-x']]});assert.equal(e.kx,knock);
   e.lastAttacker=mate;e.die();assert.ok(G.Coop.mate('peer').q.some(ev=>ev[0]==='mk'&&ev[1]===e.id));

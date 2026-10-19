@@ -86,13 +86,21 @@ G.Game = (() => {
   // ---------------- run ----------------
 
   /** @param coop  { seed, host, members } para una partida en grupo */
-  function startRun(coop = null) {
+  let startingRun=false;
+  async function startRun(coop = null) {
+    if(startingRun)return;
     holdBy = []; awayBy = null;
     const save = G.DB.save;
     // A run always starts at the first form, even when the selected Pokédex
     // entry is an evolved form.  IVs are read from that form's collection
     // entry and then carried through the evolution stages.
     const startDex = G.MonProgression ? G.MonProgression.rootFor(save.partner) : save.partner;
+    if(G.DB.mode==='server'&&G.DB.online){
+      startingRun=true;
+      try{await G.Server.prepareRun(coop?'g':'s',startDex,coop?.difficulty??save.difficulty.selected);}
+      catch(e){G.UI.toast(e.message,6000);G.MenuUI.open();return;}
+      finally{startingRun=false;}
+    }
     const evolutionPath = G.MonProgression ? G.MonProgression.pathFor(save.partner) : [startDex];
     const mon = G.DEX_BY[startDex];
     challenge = G.Difficulty ? G.Difficulty.begin(save, mon.dex, coop?.difficulty ?? (coop ? 1 : undefined)) : null;
@@ -150,7 +158,8 @@ G.Game = (() => {
     G.Sprites.preload([mon.dex], 8000, pl.shiny);
     G.Audio.music(G.BIOME_MUSIC[0]);
     // Para el ranking: el servidor apunta cuándo empieza la partida (anti-trampas).
-    if (!coop || G.Coop.isHost) G.Ranking.runStarted(coop ? 'g' : 's');
+    if (G.DB.mode === 'server') G.Server.startRun(coop ? 'g' : 's');
+    else if (!coop || G.Coop.isHost) G.Ranking.runStarted(coop ? 'g' : 's');
     deathT = 0;
 
     state = 'playing';
@@ -211,7 +220,10 @@ G.Game = (() => {
   function setSpeed(value, fromHost = false) {
     if (value !== 1 && value !== 2 || !pl || !['playing','paused','held','levelup'].includes(state)) return false;
     if (G.Coop.active && !G.Coop.isHost && !fromHost) return false;
-    runSpeed = value; if (value === 2) usedDouble = true; return true;
+    const changed=runSpeed!==value;
+    runSpeed = value; if (value === 2) usedDouble = true;
+    if(changed&&G.DB.mode==='server')G.Server.heartbeat().catch(()=>{});
+    return true;
   }
 
   /** Todos los jugadores de la partida (tú primero). */
@@ -276,7 +288,7 @@ G.Game = (() => {
       state = 'levelup';
       G.UI.hide('scr-pause');
       G.Audio.sfx('levelup');
-      chooseLevelCards(level, () => G.Coop.localPicked(), true);
+      chooseLevelRewards(level, () => G.Coop.localPicked(), true);
     },
     waiting(names) { G.RunUI.setWaiting(names); },
     resume() {
@@ -396,7 +408,8 @@ G.Game = (() => {
     // Ranking: en solitario cada uno lo suyo; en grupo lo sube el anfitrión.
     const mark = { t: Math.floor(time), lv: pl.level, kills: pl.kills };
     // Si la partida se ha tocado (ver clean()), no sube al ranking (sin avisar); lo demás, sí.
-    const ranked = ok && !usedDouble && (!challenge || challenge.stars === 4);
+    const ranked = ok && !usedDouble && (!challenge || challenge.stars === 8) && !coop;
+    if(G.DB.mode==='server')G.Server.finish(ok).catch(()=>{});
     const sent = ranked && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.dex, shiny: pl.shiny }))
                : ranked && wasHost ? G.Ranking.submitGroup(Object.assign(mark, { members: team })) : null;
     if (sent) sent.then(b => { if (b && b.some(p => p !== 'a')) G.DB.commit(true); }).catch(() => {});
@@ -442,6 +455,14 @@ G.Game = (() => {
     }
     offer();
   }
+  function chooseLevelRewards(level,done,coop=false){
+    function evolution(){
+      const cards=G.LevelUp.evolutionOffer?.(pl) || [];
+      if(!cards.length){done();return;}
+      G.RunUI.showLevelUp(level,cards,card=>{G.Audio.sfx('confirm');card.apply(pl);evolution();},coop,true);
+    }
+    chooseLevelCards(level,evolution,coop);
+  }
 
   function maybeLevelUp() {
     if (pendingLevels <= 0 || state !== 'playing') return;
@@ -457,28 +478,7 @@ G.Game = (() => {
     pendingLevels--;
     state = 'levelup';
     G.Audio.sfx('levelup');
-    const before = pl.monStage;
-    const next = G.MonProgression ? G.MonProgression.stageFor(pl.dex, pl.level, pl.evolutionPath) : pl.dex;
-    if (G.MonProgression && next !== before) {
-      pl.monStage = next;
-      const oldHp = pl.maxHp;
-      const ivs = G.MonProgression.values(next);
-      pl.mon = Object.assign({}, G.DEX_BY[next], { types: G.DEX_BY[next].types.slice() });
-      pl.spriteDex = next;
-      pl.anim = new G.Sprites.Animator(next, 1, pl.shiny);
-      pl.r = G.Sprites.bodyRadius(next);
-      pl.bodyH = G.Sprites.bodyHeight(next);
-      G.Sprites.preload([next], 8000, pl.shiny);
-      pl.baseAtk = pl.mon.atk * G.MonProgression.ivMod(ivs[1]);
-      pl.baseSpd = pl.mon.spd * G.MonProgression.ivMod(ivs[2]);
-      const ratio = pl.mon.hp * G.MonProgression.ivMod(ivs[0]) / Math.max(1, oldHp);
-      pl.maxHp *= ratio; pl.hp *= ratio;
-      // Evolution grants one additional card choice.  Keep the two offers
-      // serial so their overlays cannot race each other.
-      chooseLevelCards(pl.level, () => chooseLevelCards(pl.level, () => { state = 'playing'; }));
-      return;
-    }
-    chooseLevelCards(pl.level, () => { state = 'playing'; });
+    chooseLevelRewards(pl.level, () => { state = 'playing'; });
   }
 
   // ---------------- vínculos ----------------
@@ -998,7 +998,7 @@ G.Game = (() => {
   })();
 
   return {
-    init, startRun, everyone, levelXp, flash, offerBond, setSpeed, get challenge() { return challenge; }, get speed() { return runSpeed; },
+    init, startRun, everyone, levelXp, flash, offerBond, setSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
     debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },

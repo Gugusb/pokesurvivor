@@ -58,8 +58,8 @@ test('co-op speed is set by the host while guests follow host snapshots',()=>{
   G.Coop.isHost=true;assert.equal(G.Game.setSpeed(1),true);
 });
 
-test('original leaderboard accepts clean normal four-star runs but excludes easier tiers and any use of double speed',()=>{
-  for(const [tier,double,expected] of [[4,false,1],[1,false,0],[4,true,0]]){
+test('survival leaderboard accepts clean normal eight-star runs but excludes easier tiers and any use of double speed',()=>{
+  for(const [tier,double,expected] of [[8,false,1],[4,false,0],[1,false,0],[8,true,0]]){
     const s=context(),G=s.G;s.loadGame();let sent=0;G.Ranking.submitSolo=()=>{sent++;};
     G.Game._test.setRun(s.player(),s.run(tier),1300);if(double){G.Game.setSpeed(2);G.Game.setSpeed(1);}
     G.Game._test.endRun(false);assert.equal(sent,expected);assert.equal(s.over.rankingExcluded,!expected);

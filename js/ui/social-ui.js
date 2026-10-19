@@ -256,9 +256,15 @@
         G.Difficulty.partyLevel(G.DB.save, ms) + '★ · ' + G.T('Limitada por el desbloqueo del equipo');
     }
 
-    function start() {
+    async function start() {
       const room = G.Social.room;
       if (!room || !room.isHost || room.members.length < 2) return;
+      if(G.DB.mode==='server') {
+        $('lobby-start').disabled=true;
+        try { await G.Server.flush(); await G.Server.api('/room/start',{difficulty:G.Difficulty.partyLevel(G.DB.save,room.members)}); }
+        catch(e){G.UI.toast(e.message,5000);render();}
+        return;
+      }
       const cfg = {
         k: 'start', seed: Math.floor(Math.random() * 1e6), host: room.host,
         difficulty: G.Difficulty ? G.Difficulty.partyLevel(G.DB.save, room.members) : 1,

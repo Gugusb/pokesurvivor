@@ -1,0 +1,25 @@
+[Unit]
+Description=PokeSurvivor private game services
+After=network.target
+
+[Service]
+Type=simple
+User=pokesurvivor
+WorkingDirectory=/srv/pokesurvivor
+Environment=HOST=127.0.0.1
+Environment=PORT=8000
+Environment=PUBLIC_ORIGIN=https://YOUR_DOMAIN
+Environment=TRUST_PROXY=1
+Environment=DB_FILE=/var/lib/pokesurvivor/game.sqlite
+ExecStart=/usr/bin/node server/server.cjs
+Restart=on-failure
+RestartSec=3
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/pokesurvivor
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

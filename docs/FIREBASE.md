@@ -1,5 +1,9 @@
 # Configurar Firebase (base de datos y cuentas)
 
+> Historical upstream instructions. From v0.15.0 this fork uses its own account,
+> leaderboard and WebSocket server. See [SELF_HOSTING.md](SELF_HOSTING.md).
+> Firebase and Google login are no longer part of the active game startup.
+
 Con esto las partidas se guardan en la nube y se pueden seguir en cualquier
 ordenador. Todo es **gratis** (plan Spark de Firebase). Se tarda unos 10 minutos.
 

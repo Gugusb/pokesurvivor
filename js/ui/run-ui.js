@@ -1,11 +1,16 @@
 /* ============ run-ui.js — cartas de nivel, pausa y fin de run ============ */
 G.RunUI = (() => {
   const $ = G.UI.$;
-  let offers = null, offerCb = null, coopMode = false;
+  let offers = null, offerCb = null, coopMode = false, evolutionMode=false;
 
   /** @param coop  en grupo: tras elegir, se queda esperando a los demás */
-  function showLevelUp(level, list, cb, coop = false) {
-    offerCb = cb; coopMode = coop;
+  function showLevelUp(level, list, cb, coop = false, evolution=false) {
+    offerCb = cb; coopMode = coop;evolutionMode=evolution;
+    const heading=$('lvl-num').parentElement;
+    let evolutionHeading=document.getElementById('lvl-evolution-title');
+    if(!evolutionHeading){evolutionHeading=document.createElement('h2');evolutionHeading.id='lvl-evolution-title';heading.insertAdjacentElement('afterend',evolutionHeading);}
+    heading.classList.toggle('hidden',evolution);evolutionHeading.classList.toggle('hidden',!evolution);
+    evolutionHeading.textContent=G.T('Dirección evolutiva');
     $('lvl-num').textContent = level;
     $('lvl-wait').textContent = '';
     $('lvl-wait').classList.toggle('hidden', !coop);
@@ -30,7 +35,7 @@ G.RunUI = (() => {
     const p = G.Game.player;
     p.rerolls = (p.rerolls || 0) + 1;
     G.Audio.sfx('select');
-    renderCards(G.LevelUp.offer(p));
+    renderCards(evolutionMode?G.LevelUp.evolutionOffer(p):G.LevelUp.offer(p));
   }
 
   function renderCards(list) {
@@ -49,11 +54,18 @@ G.RunUI = (() => {
         : c.type === 'up' || c.type === 'evo'
           ? `<span class="tag-chip" style="background:${c.color}">${c.tag}</span>`
           : `<span class="tag-chip" style="background:${c.color === '#ffd23f' ? '#ffd23f' : '#9fb1c9'}">${c.tag}</span>`;
-      if (c.type === 'evo') el.classList.add('evo');
+      if (c.type === 'evo'||c.type==='evolution') el.classList.add('evo');
       el.innerHTML =
         `<div class="ico" style="background:${c.color}33">${G.Icons.html(c.icon, 32)}</div>
          <div class="txt"><div class="nm">${c.corrupted?G.T('CONTAMINADA')+' · ':''}${c.title} ${tag}</div><div class="ds">${c.desc}</div></div>
          <div class="key">${i + 1}</div>`;
+      if(c.type==='evolution'){
+        el.dataset.evolutionDex=c.evolutionDex;el.dataset.statId=c.statId;
+        const direction=document.createElement('div');direction.className='evolution-target';
+        direction.appendChild(G.UI.spriteCanvas(c.evolutionDex,64,56,{scale:1,shiny:!!G.Game.player?.shiny}));
+        const name=document.createElement('strong');name.textContent=G.T(G.DEX_BY[c.evolutionDex].name);direction.appendChild(name);
+        el.prepend(direction);
+      }
       el.dataset.sfx = 'none';             // el juego pone su propio sonido al elegir
       el.onclick = () => pick(i);
       box.appendChild(el);
@@ -130,7 +142,7 @@ G.RunUI = (() => {
     $('over-stats').innerHTML = `
       ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : r.completed ? G.T('Objetivo cumplido, sin registrar') : G.T('Sin superar')}</b></div>` : ''}
       ${r.progressExcluded ? `<p class="note" style="grid-column:1/-1">${G.T({debug:'Partida de desarrollo: no concede medallas ni desbloquea dificultades. Desactiva el modo de desarrollo antes de empezar una nueva partida.',locked:'La dificultad de esta partida no estaba desbloqueada; no se registra el progreso.',validation:'No se ha podido validar esta partida para las medallas y los desbloqueos.'}[r.progressExcluded])}</p>` : ''}
-      ${r.rankingExcluded ? `<p class="note" style="grid-column:1/-1">${G.T('El ranking original sólo acepta partidas limpias de 4 estrellas a velocidad normal.')}</p>` : ''}
+      ${r.rankingExcluded ? `<p class="note" style="grid-column:1/-1">${G.T('El ranking de supervivencia sólo acepta partidas individuales limpias de 8 estrellas a velocidad normal.')}</p>` : ''}
       <div><span>Tiempo</span><b>${G.U.mmss(r.time)}</b></div>
       <div><span>Nivel</span><b>${r.level}</b></div>
       <div><span>Derrotados</span><b>${r.kills}</b></div>

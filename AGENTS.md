@@ -26,10 +26,12 @@
 - 游戏源码或页面变更后，按现有流程运行 `node tools/build.js`、`node tools/export_data.js`、`py -3.14 tools/make_seo_pages.py`，检查生成结果。SEO 脚本要求 Python 3.12+，不要使用本机默认的旧版 `python`。
 - 游戏功能或故障修复同时更新 `js/data/changelog.js` 的西班牙语和英语条目；纯开发文档变更无需游戏构建或游戏内更新日志。
 - 选择与改动相称的验证；玩法变更至少用本地网页实际验证对应流程。
-- 本地服务：在项目目录执行 `python -m http.server 8000 --bind 127.0.0.1`。
+- v0.15.0 起，自建账号/排行榜/联机服务：`npm --prefix server ci`，再执行 `node server/server.cjs`，默认监听 `127.0.0.1:8000`。部署说明见 `docs/SELF_HOSTING.md`。
+- 纯静态游客/旧本地账号试玩：`python -m http.server 8001 --bind 127.0.0.1`；此模式没有自建联网 API。
 - 试玩入口 `http://127.0.0.1:8000/`；调试源码入口 `/dev.html`。
 - 开发测试优先使用游客或独立测试环境；云存档、排行榜和联机的更改必须明确测试目标。
 - 保留原项目的许可证和素材署名。
 - 本分支支持简体中文；新增用户界面文案要补充中文，保留西语/英语兼容。中文词典来源见 `js/data/lang-zh.js`。
 - 特性、抽卡、存档和开发工具改动后运行 `node --test tools/test_abilities.cjs`，并验证相关本地页面。
+- 自建账号、排行榜、房间、服务器存档改动后，同时运行 `node --test tools/test_server.cjs`，使用隔离数据库验证，不操作玩家真实存档。不得缓存 `/api/*` 响应，不得提交 `server/data/`、Cookie、密码、恢复码或数据库备份。
 - 开发者模式默认关闭；调试入口在设置中，F2 展开面板。调试功能只允许单人使用，调试局不提交排行榜。

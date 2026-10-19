@@ -1,114 +1,158 @@
-/* ============ login.js — inicio: entrar, crear cuenta o invitado ============ */
 G.LoginUI = (() => {
-  const $ = G.UI.$;
-  let mode = 'login';
-
+  const $ = (id) => G.UI.$(id),
+    T = (es, en, zh) => G.Server.text(es, en, zh);
+  let mode = "login",
+    recovery = null;
   function init() {
-    document.querySelectorAll('#scr-login .tab').forEach(t => {
+    document.querySelectorAll("#scr-login .tab").forEach((t) => {
       t.onclick = () => setMode(t.dataset.tab);
     });
-    $('login-form').onsubmit = async e => {
+    $("login-form").onsubmit = async (e) => {
       e.preventDefault();
-      $('login-err').textContent = '';
-      $('btn-auth').disabled = true;
-      const fn = mode === 'login' ? G.DB.login : G.DB.register;
-      const r = await fn($('f-user').value, $('f-pass').value);
-      $('btn-auth').disabled = false;
-      if (!r.ok) { $('login-err').textContent = r.error; return; }
-      $('f-pass').value = '';
+      $("login-err").textContent = "";
+      $("btn-auth").disabled = true;
+      const r = await (mode === "login" ? G.DB.login : G.DB.register)(
+        $("f-user").value,
+        $("f-pass").value,
+      );
+      $("btn-auth").disabled = false;
+      if (!r.ok) {
+        $("login-err").textContent = r.error;
+        return;
+      }
+      $("f-pass").value = "";
+      if (r.recovery) {
+        recovery = r.recovery;
+        showCode();
+      } else G.Flow.afterLogin();
+    };
+    $("btn-guest").onclick = () => {
+      G.DB.playAsGuest();
       G.Flow.afterLogin();
     };
-    $('btn-guest').onclick = () => { G.DB.playAsGuest(); G.Flow.afterLogin(); };
-    $('f-forgot').onclick = e => {
+    $("f-forgot").onclick = (e) => {
       e.preventDefault();
-      $('login-err').textContent = '';
-      $('forgot-note').classList.toggle('hidden');
+      $("forgot-note").classList.toggle("hidden");
     };
-    // Vincular Gmail para poder recuperar la cuenta (ver offerRecovery).
-    $('rec-link').onclick = async () => {
-      $('rec-err').textContent = '';
-      $('rec-link').disabled = true;
-      const r = await G.DB.linkGoogle();
-      $('rec-link').disabled = false;
-      if (!r.ok) { $('rec-err').textContent = r.error; return; }
-      $('scr-recover').classList.add('hidden');
-      G.UI.toast('¡Gmail vinculado! Si olvidas la contraseña, entra con Google.', 4500);
-    };
-    $('rec-later').onclick = () => $('scr-recover').classList.add('hidden');
-    $('rec-never').onclick = () => {
-      try { localStorage.setItem('ps.recover.no.' + G.DB.fb.uid, '1'); } catch (e) { /* nada */ }
-      $('scr-recover').classList.add('hidden');
-    };
-    $('btn-google').onclick = async () => {
-      $('login-err').textContent = '';
-      $('btn-google').disabled = true;
-      const r = await G.DB.loginWithGoogle();
-      $('btn-google').disabled = false;
-      if (!r.ok) { $('login-err').textContent = r.error; return; }
+    $("rec-link").onclick = () => {
+      recovery = null;
+      G.UI.hide("scr-recover");
       G.Flow.afterLogin();
     };
+    $("rec-later").classList.add("hidden");
+    $("rec-never").closest("p").classList.add("hidden");
+    $("login-form").insertAdjacentElement("afterend", $("forgot-note"));
+    const form = document.createElement("form");
+    form.id = "self-recovery";
+    for (const [id, type, placeholder] of [
+      ["recovery-name", "text", T("Usuario", "Username", "用户名")],
+      [
+        "recovery-code",
+        "text",
+        T("Código de recuperación", "Recovery code", "恢复码"),
+      ],
+      [
+        "recovery-pass",
+        "password",
+        T(
+          "Contraseña nueva (8–128)",
+          "New password (8–128)",
+          "新密码（8～128 位）",
+        ),
+      ],
+    ]) {
+      const i = document.createElement("input");
+      i.id = id;
+      i.type = type;
+      i.className = "field";
+      i.placeholder = placeholder;
+      i.required = true;
+      i.autocomplete = type === "password" ? "new-password" : "off";
+      form.appendChild(i);
+    }
+    const submit = document.createElement("button");
+    submit.className = "btn";
+    submit.textContent = T("Recuperar cuenta", "Recover account", "找回账号");
+    form.appendChild(submit);
+    $("forgot-note").replaceChildren(form);
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      submit.disabled = true;
+      try {
+        const r = await G.Server.api("/recover", {
+          name: $("recovery-name").value,
+          recovery: $("recovery-code").value,
+          pass: $("recovery-pass").value,
+        });
+        $("recovery-pass").value = "";
+        $("recovery-code").value = "";
+        $("forgot-note").classList.add("hidden");
+        const note = document.createElement("p");
+        note.setAttribute("translate", "no");
+        note.textContent =
+          T(
+            "Nuevo código (guárdalo): ",
+            "New recovery code (save it): ",
+            "请保存新的恢复码：",
+          ) + r.recovery;
+        $("login-err").replaceChildren(note);
+      } catch (e) {
+        $("login-err").textContent = e.message;
+      } finally {
+        submit.disabled = false;
+      }
+    };
   }
-
-  /**
-   * Al entrar (o recién creada la cuenta) con nombre y contraseña, si aún no
-   * hay Gmail vinculado: "¿te da miedo perder tu cuenta?". Una vez por sesión,
-   * hasta que lo vincule o diga que no le vuelvan a preguntar.
-   */
-  let offered = false;
-  function offerRecovery() {
-    if (offered || G.DB.mode !== 'cloud' || !G.DB.fb || !G.DB.nameAccount || G.DB.hasGoogle) return;
-    try { if (localStorage.getItem('ps.recover.no.' + G.DB.fb.uid)) return; } catch (e) { /* nada */ }
-    offered = true;
-    $('rec-err').textContent = '';
-    $('scr-recover').classList.remove('hidden');
+  function showCode() {
+    const box = $("scr-recover");
+    box.querySelector("h2").textContent = T(
+      "Guarda tu código",
+      "Save your recovery code",
+      "请保存账号恢复码",
+    );
+    box.querySelector("p").textContent = T(
+      "Es la única forma de recuperar tu contraseña. Se muestra una sola vez.",
+      "This is your password recovery method. Shown only once.",
+      "恢复码用于重置密码，只显示这一次。请妥善保存，不要分享给他人。",
+    );
+    $("rec-err").textContent = recovery;
+    $("rec-err").setAttribute("translate", "no");
+    $("rec-err").style.overflowWrap = "anywhere";
+    $("rec-link").textContent = T(
+      "Guardado, continuar",
+      "Saved, continue",
+      "已保存，继续",
+    );
+    G.UI.show("scr-recover", true);
   }
-
-  /** Explica dónde se guarda la partida según el modo de la base de datos. */
-  function modeNote() {
-    if (G.DB.mode === 'cloud') return 'Tu partida se guarda en la nube: entra desde cualquier ordenador. Como invitado no se guarda.';
-    const why = G.DB.localReason === 'file'
-      ? 'Abierto desde un archivo: la partida sólo se guarda en este navegador. Para guardar en la nube, juega en la versión publicada.'
-      : G.DB.localReason === 'config'
-        ? 'Nube sin configurar: la partida sólo se guarda en este navegador.'
-        : 'No se pudo conectar con la nube: la partida sólo se guarda en este navegador.';
-    return why;
-  }
-
   function setMode(m) {
     mode = m;
-    document.querySelectorAll('#scr-login .tab').forEach(t => t.classList.toggle('on', t.dataset.tab === m));
-    $('btn-auth').textContent = m === 'login' ? 'Entrar' : 'Crear cuenta';
-    $('f-pass').autocomplete = m === 'login' ? 'current-password' : 'new-password';
-    $('login-err').textContent = '';
-    // Sólo se pregunta si quedan plazas al ir a crear cuenta (cada llamada al Worker cuenta).
-    if (m === 'register' && G.DB.mode === 'cloud' && G.Signups) G.Signups.check().then(applySignups);
+    document
+      .querySelectorAll("#scr-login .tab")
+      .forEach((t) => t.classList.toggle("on", t.dataset.tab === m));
+    $("btn-auth").textContent = m === "login" ? "Entrar" : "Crear cuenta";
+    $("f-pass").autocomplete =
+      m === "login" ? "current-password" : "new-password";
+    $("f-pass").minLength = G.DB.mode === "server" ? 8 : 4;
+    $("login-err").textContent = "";
   }
-
-  /** Tope de cuentas del mes alcanzado: sin "Crear cuenta" hasta el mes siguiente. */
-  function applySignups(open) {
-    const reg = document.querySelector('#scr-login .tab[data-tab="register"]');
-    if (reg) reg.classList.toggle('hidden', !open);
-    if (!open && mode === 'register') setMode('login');
-    const note = $('signup-closed');
-    note.classList.toggle('hidden', open);
-    if (!open) note.textContent = 'Este mes se han llenado las plazas de cuentas nuevas: vuelven el 1 de ' + G.Signups.nextMonthName() +
-      '. Si ya tienes cuenta, entra normal. Si no, juega como invitado.';
-    $('btn-google').textContent = open ? 'Entrar con Google' : 'Entrar con Google (si ya tienes cuenta)';
-  }
-
   function open() {
     G.UI.chrome(false);
-    G.UI.show('scr-login');
-    // Abiertas: no se pregunta hasta ir a "Crear cuenta". Cerradas (con la pestaña
-    // escondida): se vuelve a preguntar (va con caché de 30 min) para reabrir a tiempo.
-    if (G.DB.mode === 'cloud' && G.Signups) {
-      if (G.Signups.closed) G.Signups.check().then(applySignups); else applySignups(true);
-    }
-    if (!G.DB.storageOk) $('login-err').textContent = 'Este navegador no deja guardar datos: juega como invitado.';
-    $('btn-google').classList.toggle('hidden', G.DB.mode !== 'cloud');
-    $('login-mode').textContent = modeNote();
-    setTimeout(() => $('f-user').focus(), 50);
+    G.UI.show("scr-login");
+    $("signup-closed").classList.add("hidden");
+    $("login-mode").textContent =
+      G.DB.mode === "server"
+        ? T(
+            "Cuenta propia: guardado en el servidor, sin Google.",
+            "Private account system: server saves, no Google.",
+            "自建账号系统：存档保存在自己的服务器，无需绑定 Google。",
+          )
+        : T(
+            "Modo local: sólo este navegador.",
+            "Local mode: this browser only.",
+            "本地模式：账号与存档仅保存在当前浏览器。",
+          );
+    setTimeout(() => $("f-user").focus(), 50);
   }
-
-  return { init, open, offerRecovery };
+  return { init, open, offerRecovery() {} };
 })();

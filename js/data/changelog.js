@@ -6,6 +6,16 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-19', title: ['Cuentas, rankings y evolución · v0.15.0', 'Accounts, rankings and evolution · v0.15.0'], new: [
+    ['La elección extra de evolución sólo ofrece atributos permanentes de triple potencia. Cada carta muestra una dirección; al elegirla te conviertes en ese Pokémon.', 'Evolution bonus choices offer only permanent attributes at triple strength. Each card shows a direction; choosing it evolves into that Pokémon.'],
+    ['Las familias con más de tres ramas muestran tres direcciones aleatorias; con dos ramas se muestran ambas. El cooperativo sincroniza la rama elegida.', 'Families with more than three branches show three random directions; two-branch families show both. Co-op synchronizes the chosen branch.'],
+    ['Dos rankings: especies con las ocho medallas y supervivencia individual a ocho estrellas.', 'Two leaderboards: species with all eight medals, and solo eight-star survival.'],
+    ['Al ganar, toda la familia evolutiva recibe la medalla. Cada especie cuenta por separado.', 'Winning awards the medal to the entire evolution family. Every species counts separately.'],
+    ['Cuentas de usuario y contraseña con código de recuperación, sin Google. Amigos y cooperativo usan nuestro servidor.', 'Username and password accounts with recovery codes, without Google. Friends and co-op use our own server.']
+  ], chg: [], fix: [
+    ['La evolución conserva las mejoras de vida máxima y actualiza la especie, el aspecto y la habilidad equipada.', 'Evolution preserves maximum-HP upgrades and updates the species, appearance and equipped ability.'],
+    ['Las medallas, los rankings y las suspensiones se controlan en el servidor. Se detectan conflictos de guardado entre dispositivos.', 'Medals, rankings and suspensions are controlled on the server. Save conflicts between devices are detected.']
+  ] },
   { d: '2026-10-18', title: ['Victoria y doble de monedas · v0.14.0', 'Victory and double coins · v0.14.0'], new: [
     ['Al superar 20 minutos puedes terminar con doble de monedas o seguir hasta el jefe final. La batalla se pausa mientras decides.', 'After surviving over 20 minutes, finish for double coins or keep going to the final boss. Battle pauses while you decide.'],
     ['Cada dificultad tiene una oportunidad de doble recompensa por cuenta. Sólo se consume al cobrar; continuar o caer después no la gasta.', 'Each difficulty has one double-reward opportunity per account. It is consumed only when claimed; continuing or dying later preserves it.']

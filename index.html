@@ -77,7 +77,7 @@
 }
 </script>
 
-<link rel="stylesheet" href="css/style.css?v=47f37f0fa7">
+<link rel="stylesheet" href="css/style.css?v=14c62ad294">
 </head>
 <body>
 
@@ -102,18 +102,14 @@
       <label for="f-user">Nombre</label>
       <input id="f-user" class="field" maxlength="16" spellcheck="false">
       <label for="f-pass">Contraseña</label>
-      <input id="f-pass" class="field" type="password" maxlength="64">
+      <input id="f-pass" class="field" type="password" maxlength="128">
       <p id="login-err" class="err"></p>
       <p class="note"><a href="#" id="f-forgot">¿Olvidaste tu contraseña?</a></p>
-      <p id="forgot-note" class="note hidden">Si vinculaste tu Gmail, pulsa <b>Entrar con Google</b> con ese Gmail: es tu misma cuenta.
-        Si no lo vinculaste, no se puede recuperar: crea una cuenta nueva (y esta vez vincula tu Gmail desde el aviso que sale al entrar).</p>
+      <div id="forgot-note" class="note hidden"></div>
       <div class="row">
         <button id="btn-auth" class="btn gold grow" type="submit">Entrar</button>
       </div>
     </form>
-    <div class="row" style="margin-top:10px">
-      <button id="btn-google" class="btn google grow hidden" type="button">Entrar con Google</button>
-    </div>
     <div class="row" style="margin-top:10px">
       <button id="btn-guest" class="btn ghost grow" type="button">Jugar como invitado</button>
     </div>
@@ -189,7 +185,7 @@
         <button class="menu-item" data-go="goals">Misiones<small id="menu-goals-sub">Misiones, logros y perfil</small></button>
         <button class="menu-item" data-go="offline">Ingresos sin conexión<small id="menu-offline-rate">Sólo cuentas registradas</small></button>
         <button class="menu-item" data-go="friends">Amigos<small id="menu-friends-sub">Juega en grupo, hasta 4</small></button>
-        <button class="menu-item" data-go="rank">Ranking<small>Quién aguanta más</small></button>
+        <button class="menu-item" data-go="rank">Ranking<small>Medallas completas y supervivencia 8★</small></button>
         <button class="menu-item" data-go="settings">Ajustes<small>Sonido, gráficos, controles y cuenta</small></button>
       </div>
     </div>
@@ -221,14 +217,14 @@
   </div>
 </section>
 
-<!-- ====== Vincular Gmail para recuperar la cuenta (js/ui/login.js, offerRecovery) ====== -->
+<!-- ====== Account recovery code, displayed once after registration ====== -->
 <section id="scr-recover" class="scr dim hidden">
   <div class="box" style="width:min(440px,100%)">
-    <h2>¿Te da miedo perder tu cuenta?</h2>
-    <p>Vincula tu Gmail: si un día olvidas la contraseña, pulsas <b>Entrar con Google</b> y es tu misma cuenta, con todo lo tuyo.</p>
+    <h2>Código de recuperación</h2>
+    <p>Guarda este código para recuperar tu contraseña.</p>
     <p class="err" id="rec-err"></p>
     <div class="row" style="gap:8px;flex-wrap:wrap">
-      <button class="btn gold grow" id="rec-link" type="button">Vincular mi Gmail</button>
+      <button class="btn gold grow" id="rec-link" type="button">Continuar</button>
       <button class="btn ghost" id="rec-later" type="button">Ahora no</button>
     </div>
     <p class="note center"><a href="#" id="rec-never">No volver a preguntar</a></p>
@@ -281,19 +277,11 @@
       antes posible: <a id="legal-mail" href="#"></a></p>
     <p>Código fuente: <a id="legal-repo" href="#" target="_blank" rel="noopener"></a></p>
     <h3>Privacidad</h3>
-    <p>Si creas una cuenta, guardamos tu nombre de jugador y tu partida (colección, monedas,
-      mejoras y estadísticas) en Google Firebase para que puedas seguir en cualquier ordenador.
-      Si entras con Google, Firebase guarda también tu correo de Google para identificarte
-      (nunca se enseña a otros jugadores).
-      No usamos tus datos para nada más, ni los compartimos, ni hay publicidad ni seguimiento.
-      Como invitado no se guarda nada fuera de tu navegador.</p>
+    <p>Las cuentas y partidas se guardan en nuestro servidor. No necesitas Google ni correo electrónico. Tu contraseña y tu código de recuperación se guardan como hashes. Los invitados juegan sin cuenta.</p>
     <p>Amigos y ranking: tu <b>apodo</b> es público para otros jugadores. Guardamos tu lista de
       amigos, si estás en línea y tus mejores tiempos (con tu apodo y tu Pokémon).</p>
-    <p>Partidas en grupo: tu navegador se conecta <b>directamente</b> con el de tus compañeros
-      (como en una videollamada), así que cada uno puede llegar a ver la dirección IP del otro.
-      Juega en grupo sólo con gente que conozcas. Si la conexión directa no es posible, la partida
-      pasa por los servidores de Firebase.</p>
-    <p>Puedes borrar tu cuenta cuando quieras (se borran también tu apodo, tus amigos y tus marcas):</p>
+    <p>El servidor retransmite las partidas en grupo. Los compañeros no reciben tu dirección IP a través del juego.</p>
+    <p>Al borrar la cuenta se eliminan la partida, las amistades y las marcas. Se conserva un identificador de cuenta no reutilizable y el registro de moderación para impedir eludir suspensiones.</p>
     <div class="row">
       <button class="btn small" id="legal-delete">Borrar mi cuenta y mi partida</button>
       <span id="legal-del-msg" class="note" style="margin:0"></span>
@@ -387,7 +375,7 @@
 <!-- ====== Ranking ====== -->
 <section id="scr-rank" class="scr dim hidden">
   <div class="box wide">
-    <div class="row between"><h2>Ranking <span class="sub" style="font-size:15px">· tiempo aguantado</span></h2><span class="row" style="gap:6px"><button id="rk-mod" class="btn small ghost hidden">Moderación</button><button class="btn small ghost" data-back>Volver</button></span></div>
+    <div class="row between"><h2>Ranking</h2><span class="row" style="gap:6px"><button id="rk-mod" class="btn small ghost hidden">Moderación</button><button class="btn small ghost" data-back>Volver</button></span></div>
     <div class="gen-tabs" id="rk-mode"></div>
     <div class="filters" id="rk-period"></div>
     <div class="row rk-tools">
@@ -586,6 +574,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=47f37f0fa7"></script>
+<script defer src="js/app.min.js?v=14c62ad294"></script>
 </body>
 </html>

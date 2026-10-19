@@ -59,7 +59,7 @@ G.Difficulty = (() => {
       const result = {};
       for (let n = 1; n <= 8; n++) {
         const r = map(rows?.[n]), best = seconds(r.best);
-        if (best) result[n] = { best, won: r.won === true && best > WIN };
+        if (best || r.inherited === true) result[n] = { best, won: r.won === true && (best > WIN || r.inherited === true), ...(r.inherited === true ? {inherited:true} : {}) };
       }
       if (Object.keys(result).length) records[dex] = result;
     }
@@ -77,9 +77,9 @@ G.Difficulty = (() => {
         if (G.DEX_BY[dex]?.dex !== +dex) continue;
         const dest = out.difficultyRecords[dex] ||= {};
         for (let n = 1; n <= 8; n++) {
-          const r = map(rows?.[n]); if (!seconds(r.best)) continue;
+          const r = map(rows?.[n]); if (!seconds(r.best) && r.inherited !== true) continue;
           const old = dest[n] || {};
-          dest[n] = { best: Math.max(seconds(old.best), r.best), won: old.won === true || r.won === true };
+          dest[n] = { best: Math.max(seconds(old.best), seconds(r.best)), won: old.won === true || r.won === true, ...(old.inherited || r.inherited ? {inherited:true} : {}) };
         }
       }
     }
@@ -102,7 +102,13 @@ G.Difficulty = (() => {
     const old = rows[run.stars] || { best: 0, won: false };
     const win = alive && time > WIN;
     rows[run.stars] = { best: Math.max(old.best, time), won: old.won || win };
-    if (win) { s.difficulty.cleared[run.stars] = true; run.victory = true; }
+    if (win) {
+      s.difficulty.cleared[run.stars] = true; run.victory = true;
+      for (const dex of G.MonProgression?.familyFor?.(run.dex) || [run.dex]) {
+        const familyRows = s.difficultyRecords[dex] ||= {}, previous = familyRows[run.stars];
+        if (dex !== run.dex) familyRows[run.stars] = {best: previous?.best || 0, won:true, inherited:true};
+      }
+    }
     return win;
   }
   const cashoutTotal=s=>Object.values(s.difficulty?.cashouts||{}).reduce((n,r)=>n+(receipt(r)?r.coins:0),0);
@@ -123,7 +129,8 @@ G.Difficulty = (() => {
     if (rows[5]?.won) return 'emerald';
     return Object.values(rows).some(r => r.won) ? 'gold' : '';
   }
+  const completedCount = s => Object.keys(s.difficultyRecords || {}).filter(d => G.DEX_BY[d] && frame(s,+d) === 'ruby').length;
   return { WIN, level, factors, growth, rewards, eliteChance, treasureChance, corruptionChance, traits, onHurt,debugLevel,
-    normalize, merge, unlocked, select, partyLevel, begin, record, highest, frame,cashoutTotal,bonusAvailable,claimBonus,
+    normalize, merge, unlocked, select, partyLevel, begin, record, highest, frame,completedCount,cashoutTotal,bonusAvailable,claimBonus,
     get current() { return current; } };
 })();

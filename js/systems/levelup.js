@@ -146,6 +146,30 @@ G.LevelUp = (() => {
       }};
     });
   }
+  const EVOLUTION_STATS={
+    hp:{desc:'+60 de vida máxima (y la recupera).',apply:p=>p.addMaxHp(60)},
+    atk:{desc:'+30% de daño con todos los movimientos.',apply:p=>p.atkMul+=.30},
+    spd:{desc:'+21% de velocidad de movimiento.',apply:p=>p.spdMul*=1.21},
+    cd:{desc:'-24% de recarga en todos los movimientos.',apply:p=>p.cdMul*=.76},
+    def:{desc:'+18% de reducción de daño recibido.',apply:p=>p.dmgReduce=Math.min(.7,p.dmgReduce+.18)},
+    rgn:{desc:'+2.7 de vida regenerada por segundo.',apply:p=>p.regenFlat+=2.7},
+    mag:{desc:'+90% de radio de recogida de experiencia.',apply:p=>p.magnet*=1.90},
+    xp:{desc:'+36% de experiencia ganada.',apply:p=>p.xpMul*=1.36}
+  };
+  function shuffled(a){const out=a.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
+  function evolutionOffer(pl){
+    const options=G.MonProgression.evolutionOptions(pl);
+    if(!options.length)return [];
+    const directions=shuffled(options).slice(0,3), count=options.length===1?3:directions.length;
+    const pool=shuffled(STATS.filter(s=>EVOLUTION_STATS[s.id]&&(!s.max||(pl.statsTaken[s.id]||0)+3<=s.max)&&
+      (s.id!=='def'||pl.dmgReduce+.18<=.70000001)));
+    return Array.from({length:count},(_,i)=>{
+      const direction=directions[options.length===1?0:i],s=pool[i%pool.length],bonus=EVOLUTION_STATS[s.id];
+      return {type:'evolution',key:'direction:'+direction.dex+':'+s.id,category:'stat',evolutionDex:direction.dex,evolutionPath:direction.path,
+        statId:s.id,icon:s.icon,color:'#ffd23f',tag:G.T('Dirección evolutiva')+' · ×3',title:s.title,
+        desc:bonus.desc,apply:p=>{if(!G.MonProgression.evolve(p,direction))return false;bonus.apply(p);p.statsTaken[s.id]=(p.statsTaken[s.id]||0)+3;return true;}};
+    });
+  }
 
-  return { offer, STATS };
+  return { offer, STATS, evolutionOffer };
 })();

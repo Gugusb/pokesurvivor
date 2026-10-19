@@ -45,7 +45,7 @@ G.DifficultyUI = (() => {
     'Medallas de dificultad': 'Difficulty medals', 'Récord en la dificultad más alta': 'Best time at highest attempted difficulty',
     'Sin récord de dificultad': 'No difficulty record yet', 'Limitada por el desbloqueo del equipo': 'Limited by the team’s shared unlocks',
     'Velocidad de juego': 'Game speed', 'Velocidad: 1×': 'Speed: 1×', 'En grupo, sólo el anfitrión cambia la velocidad.': 'In co-op, only the host changes speed.',
-    'El ranking original sólo acepta partidas limpias de 4 estrellas a velocidad normal.': 'The original leaderboard only accepts clean 4-star runs played entirely at normal speed.',
+    'El ranking de supervivencia sólo acepta partidas individuales limpias de 8 estrellas a velocidad normal.': 'The survival leaderboard only accepts clean solo 8-star runs played entirely at normal speed.',
     'Supera una dificultad para desbloquear la siguiente.': 'Clear a difficulty to unlock the next one.',
     'Las victorias mejoran el marco de la Pokédex.': 'Victories improve the Pokédex frame.'
   });
@@ -55,7 +55,7 @@ G.DifficultyUI = (() => {
     'Medallas de dificultad': '难度奖牌', 'Récord en la dificultad más alta': '挑战过的最高难度纪录',
     'Sin récord de dificultad': '暂无难度纪录', 'Limitada por el desbloqueo del equipo': '受全队共同解锁进度限制',
     'Velocidad de juego': '游戏速度', 'Velocidad: 1×': '游戏速度：1×', 'En grupo, sólo el anfitrión cambia la velocidad.': '联机速度由房主统一设置。',
-    'El ranking original sólo acepta partidas limpias de 4 estrellas a velocidad normal.': '原版排行榜仅接收未使用调试、全程一倍速的四星难度成绩。',
+    'El ranking de supervivencia sólo acepta partidas individuales limpias de 8 estrellas a velocidad normal.': '生存时间榜仅接收未使用调试、全程一倍速的八星单人对局。',
     'Supera una dificultad para desbloquear la siguiente.': '通关一个难度后解锁下一个难度。',
     'Las victorias mejoran el marco de la Pokédex.': '胜利会提升图鉴边框。'
   });

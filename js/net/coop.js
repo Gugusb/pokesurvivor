@@ -77,14 +77,15 @@ G.Coop = (() => {
     cfg.members.forEach((m, i) => {
       const x = (i - (cfg.members.length - 1) / 2) * 34, y = 0;
       if (m.uid === me) { pl.x = x; pl.y = y; pl.uid = me; pl.coopHost = host; pl.tagColor = COLORS[i]; return; }
-      const mon = G.DEX_BY[m.dex] || G.DEX_BY[25];
+      const mon = G.DEX_BY[m.equipment&&G.MonProgression?G.MonProgression.rootFor(m.dex):m.dex] || G.DEX_BY[25];
       const p = new G.Player(mon, {}, !!m.shiny);
+      if(G.MonProgression){p.evolutionPath=G.MonProgression.pathFor(m.dex).slice();p.monStage=mon.dex;}
       p.remote = true; p.uid = m.uid; p.tag = m.name; p.tagColor = COLORS[i]; p.revLabel = 'Quédate a su lado';
       p.ability = null;
       p.x = x; p.y = y;
       p.net = { x, y, ang: Math.PI / 2, walk: 0, hp: p.maxHp, maxHp: p.maxHp, dead: 0, mv: G.startMoveOf(mon.dex), ml: 1, mag: 78, aim: Math.PI / 2, rev: 0 };
       G.Sprites.preload([mon.dex], 8000, p.shiny);
-      mates.set(m.uid, { uid: m.uid, name: m.name, color: COLORS[i], pl: p, connected: true, q: [], flushT: 0, xpMul: 1 });
+      mates.set(m.uid, { uid: m.uid, name: m.name, selectedDex:m.dex, color: COLORS[i], pl: p, equipment:m.equipment, connected: true, q: [], flushT: 0, xpMul: 1 });
     });
   }
 
@@ -140,14 +141,28 @@ G.Coop = (() => {
             r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq, local.ability || null,
             G.Mega && G.Mega.active(local) ? local.megaState.id : null, r2(local.megaState && local.megaState.left || 0),
             G.Mega && G.Mega.hasStone(local) ? local.megaState.id : null, r2(local.damageBonus || 0),
-            G.ZMoves && G.ZMoves.hasStone(local) ? [local.zState.type,local.zState.phase,r2(local.zState.cooldown),local.zState.charges] : null];
+            G.ZMoves && G.ZMoves.hasStone(local) ? [local.zState.type,local.zState.phase,r2(local.zState.cooldown),local.zState.charges] : null,local.dex,local.level,local.evolutionPath];
   }
 
   function readState(a) {
-    return { x: a[0], y: a[1], ang: a[2], walk: a[3], hp: a[4], maxHp: a[5], dead: a[6], mv: a[7], ml: a[8],
-             mag: a[9], aim: a[10], xpMul: a[11], rev: a[12], ch: a[13], ld: a[14], ability: a[15] || null,
+    const def=G.Moves.BY_ID[a[7]];
+    return { x: a[0], y: a[1], ang: Number.isFinite(a[2])?a[2]:0, walk: a[3], hp: a[4], maxHp: a[5], dead: a[6], mv: a[7], ml: def&&Number.isFinite(a[8])?G.U.clamp(Math.floor(a[8]),1,def.maxLvl):1,
+             mag: Number.isFinite(a[9])?G.U.clamp(a[9],0,10000):78, aim: Number.isFinite(a[10])?a[10]:0, xpMul: a[11], rev: Number.isFinite(a[12])?G.U.clamp(a[12],0,30):0, ch: a[13], ld: a[14], ability: a[15] || null,
              mega: a[16] || null, megaLeft: a[17] || 0, stone: a[18] || null,
-             damageBonus: Number.isFinite(a[19]) ? G.U.clamp(a[19], 0, 10) : 0, z:a[20] || null };
+             damageBonus: Number.isFinite(a[19]) ? G.U.clamp(a[19], 0, 10) : 0, z:a[20] || null,dex:a[21],level:a[22],path:a[23] };
+  }
+  function syncSpecies(m) {
+    const n=m.pl.net,p=m.pl;
+    if(!G.MonProgression?.stageFor||!Number.isInteger(n.level)||n.level<1||n.level>1000)return;
+    const root=G.MonProgression.rootFor(m.selectedDex),path=n.path||G.MonProgression.pathFor(m.selectedDex);
+    if(!Array.isArray(path))return;const i=path.indexOf(n.dex);
+    if(!G.MonProgression.validPath(path,root)||i<0||n.level<G.MonProgression.evolutionLevel(i)||!G.DEX_BY[n.dex])return;
+    const previous=p.evolutionPath||G.MonProgression.pathFor(m.selectedDex),at=previous.indexOf(p.monStage||p.dex);
+    if(p.monStage!==root&&at>=0&&!previous.slice(0,at+1).every((d,j)=>path[j]===d))return;
+    p.evolutionPath=path.slice();p.monStage=n.dex;
+    const dex=n.dex;if(dex===p.dex)return;
+    const mon=G.DEX_BY[dex];p.baseAtk*=mon.atk/p.mon.atk;p.dex=dex;p.mon=mon;p.spriteDex=dex;
+    G.Sprites.preload([dex],8000,p.shiny);
   }
 
   // ---------------- envío ----------------
@@ -198,6 +213,16 @@ G.Coop = (() => {
   }
 
   function flushAll() { for (const m of mates.values()) if (m.connected) G.Net.send(m.uid, hostFrame(m)); }
+  function resyncPeer(m) {
+    if(!m?.connected)return;
+    const events=[['reset']];
+    for(const e of G.EnemyMgr.all())if(!e.dead)events.push(['ne',e.id,e.dex,r1(e.x),r1(e.y),e.boss?1:0,e.shiny?1:0,Math.ceil(e.maxHp),r2(e.dmg),e.behavior,e.mega||null,e.elite?1:0]);
+    for(const o of G.Pickups.all())events.push(['pk',o.id,o.kind,r1(o.x),r1(o.y),o.value]);
+    const pending=m.q.filter(e=>!['ne','ed','eg','pk','pc'].includes(e[0]));m.q=[];
+    while(events.length){m.q=events.splice(0,400);G.Net.send(m.uid,hostFrame(m));}
+    m.q.push(...pending);
+  }
+  function resync() {if(!active)return;if(host){for(const m of mates.values())resyncPeer(m);}else {outEv.push(['rs']);flushClient(true);}}
 
   function flushClient(force) {
     if (!force && !outEv.length && flushT > 0) return;
@@ -231,7 +256,7 @@ G.Coop = (() => {
 
   G.Net.on((from, msg) => {
     if (!msg) return;
-    if (msg.k === 'start') { if (G.Flow.startCoop) G.Flow.startCoop(msg); return; }
+    if (msg.k === 'start') { if(from!==G.Net.hostUid||msg.host!==from)return; if (G.Flow.startCoop) G.Flow.startCoop(msg); return; }
     if (!active || msg.k !== 'f') return;
     if (host) onClientFrame(from, msg); else if (from === hostUid) onHostFrame(msg);
   });
@@ -258,18 +283,33 @@ G.Coop = (() => {
   function onClientFrame(from, msg) {
     const m = mates.get(from);
     if (!m || !m.connected) return;
+    if(!Array.isArray(msg.ev)||msg.ev.length>2000)return;
+    if(msg.p&&(!Array.isArray(msg.p)||msg.p.length<15||[0,1,4,5,11].some(i=>!Number.isFinite(msg.p[i]))||Math.abs(msg.p[0])>2e6||Math.abs(msg.p[1])>2e6||msg.p[5]<1||msg.p[5]>50000||msg.p[4]<0||msg.p[4]>msg.p[5]||msg.p[11]<0||msg.p[11]>100))return;
     if (msg.p) {
       m.state = msg.p; m.pl.net = readState(msg.p);
-      const validAbility = G.AbilityDefs.medalsFor(m.pl.dex).some(a => a.ability === m.pl.net.ability);
+      syncSpecies(m);
+      const validAbility = G.AbilityDefs.medalsFor(m.pl.dex).some(a => a.ability === m.pl.net.ability) && (!m.equipment || m.equipment.abilities?.[m.pl.dex]===m.pl.net.ability);
       m.pl.ability = validAbility ? m.pl.net.ability : null;
+      m.pl.net.ability=m.pl.ability;
+      if(m.equipment){
+        const owns=id=>m.equipment.mega===id||m.equipment.megas?.includes(id);
+        if(!owns(m.pl.net.mega))m.pl.net.mega=null;
+        if(!owns(m.pl.net.stone))m.pl.net.stone=null;
+        if(m.equipment.z!==m.pl.net.z?.[0])m.pl.net.z=null;
+      }
+      const move=G.Moves.BY_ID[m.pl.net.mv];
+      m.pl.net.ml=move&&Number.isFinite(m.pl.net.ml)?G.U.clamp(Math.floor(m.pl.net.ml),1,move.maxLvl):1;
       m.pl.damageBonus = m.pl.net.damageBonus;
       if (G.Mega) G.Mega.sync(m.pl, m.pl.net.mega, m.pl.net.megaLeft, m.pl.net.stone);
-      if (G.ZMoves) G.ZMoves.sync(m.pl,m.pl.net.z);
+      if (G.ZMoves) G.ZMoves.sync(m.pl,!m.equipment||m.equipment.z===m.pl.net.z?.[0]?m.pl.net.z:null);
       m.xpMul = m.pl.net.xpMul || 1; reconcile(from, m.pl.net);
     }
     for (const ev of msg.ev || []) {
       if(api.team?.().victory&&ev[0]!=='bye')continue;
       switch (ev[0]) {
+        case 'rs':
+          if(G.Game.st.time-(m.resyncAt??-999)>=5){m.resyncAt=G.Game.st.time;resyncPeer(m);}
+          break;
         case 'zc':
           if(G.ZMoves && G.Game.st.time-(m.zAt??-999)>=G.ZMoves.COOLDOWN && G.ZMoves.remoteCast(m.pl,ev[1],ev[2])){
             m.zAt=G.Game.st.time;emit(['zc',from,ev[1],ev[2]],from);
@@ -281,6 +321,7 @@ G.Coop = (() => {
           }
           break;
         case 'h': {
+          if(!Number.isFinite(ev[2])||ev[2]<=0||ev[2]>1e9||!G.Moves.BY_ID[ev[7]]||[4,5,6].some(i=>!Number.isFinite(ev[i])))break;
           const e = G.EnemyMgr.get(ev[1]);
           if (!e || e.dead || e.remote) break;
           hitFrom = from;
@@ -320,10 +361,13 @@ G.Coop = (() => {
           break;
         }
         case 'c':
+          if(!G.Moves.BY_ID[ev[1]]||!Number.isFinite(ev[2])||!Number.isFinite(ev[3]))break;
+          ev[2]=G.U.clamp(Math.floor(ev[2]),1,G.Moves.BY_ID[ev[1]].maxLvl);
           G.Combat.ghostCast(m.pl, ev[1], ev[2], ev[3], ev[4]);
           emit(['c', from, ev[1], ev[2], ev[3], ev[4]], from);
           break;
         case 'pb':
+          if(!Number.isInteger(ev[1])||!Number.isInteger(ev[2])||Math.abs(ev[1])>1e6||Math.abs(ev[2])>1e6)break;
           G.World.breakAt(ev[1], ev[2]);
           emit(['pb', ev[1], ev[2]], from);
           break;
@@ -377,7 +421,7 @@ G.Coop = (() => {
     }
     for (const u in msg.p || {}) {
       const m = mates.get(u);
-      if (m) m.pl.net = readState(msg.p[u]);
+      if (m) {m.pl.net = readState(msg.p[u]);syncSpecies(m);}
     }
     const now = performance.now();
     for (const a of msg.e || []) {
@@ -400,6 +444,7 @@ G.Coop = (() => {
 
   function applyHostEvent(ev) {
     switch (ev[0]) {
+      case 'reset': G.EnemyMgr.clearRemote();G.Pickups.clear();G.Projectiles.clear();break;
       case 'ix': G.UI.toast(G.T('Objeto convertido en experiencia')); break;
       case 'mk': if (G.Mega) G.Mega.onKill(local, ev[1]); break;
       case 'za': if(G.ZMoves)G.ZMoves.grantCharge(local,ev[1]);break;
@@ -565,7 +610,7 @@ G.Coop = (() => {
   }
 
   return {
-    ANIMS, COLORS, begin, end, leave, tick, players, puppets, xpFactor, scaleRate, scaleHp,
+    ANIMS, COLORS, begin, end, leave, tick, players, puppets, xpFactor, scaleRate, scaleHp,resync,
     cast, zCast, hit, status, hurtShown, abilityKill, megaKill, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
     propBroken, collected, shinyCaught, levelStart, localPicked, over, holdStart, holdEnd,zAward,
     /** Anfitrión: evento para todos. Invitado: evento para el anfitrión. */

@@ -4,6 +4,19 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  "Dirección evolutiva": "Evolution direction",
+  "+60 de vida máxima (y la recupera).": "+60 maximum HP (and restores that amount).",
+  "+30% de daño con todos los movimientos.": "+30% attack multiplier for all moves.",
+  "+21% de velocidad de movimiento.": "+21% movement speed.",
+  "-24% de recarga en todos los movimientos.": "-24% cooldown for all moves.",
+  "+18% de reducción de daño recibido.": "+18% damage reduction.",
+  "+2.7 de vida regenerada por segundo.": "+2.7 HP regenerated per second.",
+  "+90% de radio de recogida de experiencia.": "+90% XP pickup radius.",
+  "+36% de experiencia ganada.": "+36% XP gained.",
+  "Medallas completas y supervivencia 8★": "Full medals and 8-star survival",
+  "Las cuentas y partidas se guardan en nuestro servidor. No necesitas Google ni correo electrónico. Tu contraseña y tu código de recuperación se guardan como hashes. Los invitados juegan sin cuenta.": "Accounts and saves are stored on our own server. No Google or email is required. Passwords and recovery codes are stored as hashes. Guests play without an account.",
+  "El servidor retransmite las partidas en grupo. Los compañeros no reciben tu dirección IP a través del juego.": "The server relays co-op sessions. The game does not send your IP address to teammates.",
+  "Al borrar la cuenta se eliminan la partida, las amistades y las marcas. Se conserva un identificador de cuenta no reutilizable y el registro de moderación para impedir eludir suspensiones.": "Deleting an account removes saves, friendships and scores. An unreusable account identifier and moderation records are retained to prevent suspension bypass.",
   'El equipo ha cumplido el objetivo de supervivencia.':'The team has met the survival objective.',
   '¿Terminar ahora con el doble de monedas o seguir sobreviviendo hasta el jefe más poderoso?':'Finish now for double coins, or keep surviving to face the strongest boss?',
   '¡Has ganado esta partida!':'You have won this run!',

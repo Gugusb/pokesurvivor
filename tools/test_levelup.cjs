@@ -9,7 +9,7 @@ function setup() {
   for (const f of ['js/core/util.js', 'js/data/moves.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), s);
   s.G.FX = { ring: noop, burst: noop }; s.G.Audio = { sfx: noop }; s.G.Progress = { event: noop };
   vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/systems/levelup.js'), 'utf8').replace(
-    'return { offer, STATS };', 'return { offer, STATS, _candidates: candidates, _draw: draw };'), s);
+    'return { offer, STATS, evolutionOffer };', 'return { offer, STATS, evolutionOffer, _candidates: candidates, _draw: draw };'), s);
   let seed = 271828;
   s.Math.random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 2 ** 32);
   s.player = (ids = ['ember']) => ({
@@ -120,8 +120,10 @@ test('real level-up UI reroll uses the same guarantee and still consumes its exi
   const s = setup(), p = s.player(), G = s.G, nodes = new Map();
   const node = () => ({ children: [], classList: { add: noop, remove: noop, toggle: noop }, dataset: {},
     appendChild(c) { this.children.push(c); }, set innerHTML(v) { this.children = []; this.html = v; } });
-  s.document = { createElement: node };
+  s.document = { createElement: node, getElementById:()=>null };
+  const heading=node();heading.insertAdjacentElement=noop;
   G.UI = { $: id => { if (!nodes.has(id)) nodes.set(id, node()); return nodes.get(id); }, show: noop, hide: noop };
+  G.UI.$('lvl-num').parentElement=heading;G.T=s=>s;
   G.Icons = { html: () => '' }; G.Game = { player: p };
   vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/ui/run-ui.js'), 'utf8'), s);
   s.Math.random = () => .99;

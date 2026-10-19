@@ -872,3 +872,7 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 }
 .card.corrupted { border-color:#bd62e5; box-shadow:inset 0 0 24px #6c236933,0 0 12px #9e43ca44; }
 .card.corrupted .nm { color:#e3a9ff; }
+#self-recovery { display:grid; gap:10px; }
+#self-recovery .field { width:100%; }
+.card.evo:has(.evolution-target) { flex-wrap:wrap; }
+.evolution-target { display:flex;align-items:center;gap:8px;width:100%;padding:0 0 6px;color:#ffd23f; }
