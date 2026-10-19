@@ -15,7 +15,7 @@ const { openStore } = require("./store.cjs"),
   { ROOT, G, fresh, sanitize, clone, record } = require("./domain.cjs");
 const derive = promisify(scrypt),
   digest = (s) => createHash("sha256").update(s).digest("hex");
-const VERSION = "0.16.1",
+const VERSION = "0.17.0",
   PROTOCOL = 2,
   MAX_BODY = 1024 * 1024;
 const fail = (status, message) => Object.assign(new Error(message), { status });

@@ -320,23 +320,33 @@ G.ZMoves = (() => {
     ctx.font='bold '+Math.round(size*.6)+'px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.fillText('Z',x+size/2,y+size*.54);ctx.restore();
   }
   function grantCharge(p,key){
-    if(!hasStone(p)||p.dead)return false;
-    if(p.remote){G.Coop.zAward?.(p,key);return true;}
+    if(!hasStone(p))return false;
     const s=state(p);s.rewards||=new Set();if(s.rewards.has(key))return false;s.rewards.add(key);
     if(s.rewards.size>512)s.rewards.delete(s.rewards.values().next().value);
+    if(p.remote){G.Coop.zAward?.(p,key);return true;}
     const before=s.charges;s.charges=Math.min(MAX_CHARGES,s.charges+1);
     if(s.charges>before)G.FX.dmgText(p.x,p.y-p.bodyH,'+1 Z','#fff3a1');return s.charges>before;
   }
+  function grantTeamCharge(key){
+    if(G.Coop.active&&!G.Coop.isHost)return false;
+    let granted=false;
+    // Include downed teammates: their charges remain available after revival.
+    for(const p of G.Game?.everyone?.()||[])granted=grantCharge(p,key)||granted;
+    return granted;
+  }
   function onKill(e){
     if(G.Coop.active&&!G.Coop.isHost)return;
-    if(e.boss){for(const p of all())grantCharge(p,'boss:'+e.id);return;}
+    if(e.boss){grantTeamCharge('boss:'+e.id);return;}
     const chance=e.elite?.05:(G.MonProgression?.captureChance(e)||.002);
-    if(Math.random()<chance)grantCharge(e.lastAttacker,'kill:'+e.id);
+    if(Math.random()<chance){
+      if(G.Coop.active)grantTeamCharge('kill:'+e.id);
+      else grantCharge(e.lastAttacker,'kill:'+e.id);
+    }
   }
   let eventN=0;
-  function eventReward(){if(G.Coop.active&&!G.Coop.isHost)return;const key='event:'+(++eventN);if(Math.random()<.8)for(const p of all())grantCharge(p,key);}
+  function eventReward(){if(G.Coop.active&&!G.Coop.isHost)return;const key='event:'+(++eventN);if(Math.random()<.8)grantTeamCharge(key);}
   function debugCharge(p){if(!G.Dev?.canUse()||!hasStone(p)||busy(p))return false;G.Game.debugMark();state(p).charges=MAX_CHARGES;state(p).phase='ready';state(p).cooldown=0;return true;}
   return { COOLDOWN,MAX_CHARGES,BULLET_TIME,KINDS,TYPES,state,hasStone,selecting,busy,dashing,immune,timeFactor,matches,eligible,
-    grantCharge,onKill,eventReward,
+    grantCharge,grantTeamCharge,onKill,eventReward,
     owns,grant,equip,normalize,init,arm,choose,cancel,aim,landing,tick,sync,remoteCast,draw,drawGround,drawStone,debugCharge };
 })();

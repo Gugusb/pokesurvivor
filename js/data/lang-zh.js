@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Cargas Z compartidas · v0.17.0": "全队共享 Z 充能 · v0.17.0",
+  "Shared Z charges · v0.17.0": "全队共享 Z 充能 · v0.17.0",
+  "En cooperativo, cada recarga Z ganada por cualquier compañero añade una carga a todos los portadores de cristales Z, incluso si quien derrota al enemigo no lleva uno.": "组队时，任意队员获得 Z 充能，所有佩戴 Z 石的队员各增加一层；击败敌人的队员无需佩戴 Z 石。",
+  "In co-op, each Z recharge earned by any teammate adds one charge to every Z Crystal holder, even when the killer has no crystal.": "组队时，任意队员获得 Z 充能，所有佩戴 Z 石的队员各增加一层；击败敌人的队员无需佩戴 Z 石。",
+  "Cada jugador conserva su límite de tres cargas. Los compañeros caídos también reciben cargas; las probabilidades y el enfriamiento no cambian.": "每人仍最多三层充能，倒地队员也可获得；获取概率和冷却保持不变。",
+  "Each player keeps the three-charge cap. Downed teammates also receive charges; reward chances and cooldown are unchanged.": "每人仍最多三层充能，倒地队员也可获得；获取概率和冷却保持不变。",
   "Vía anfitrión": "经房主同步",
   "Formas y efectos en cooperativo · v0.16.1": "联机形态与特效同步修复 · v0.16.1",
   "Co-op forms and effects · v0.16.1": "联机形态与特效同步修复 · v0.16.1",

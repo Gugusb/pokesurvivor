@@ -38,6 +38,10 @@ const { chromium } = require(
         s.zStones.water = { at: Date.now() };
         s.zEquipped[9] = "water";
       }
+      if (i === 1) {
+        s.zStones.normal = { at: Date.now() };
+        s.zEquipped[133] = "normal";
+      }
       app.db
         .prepare(
           "INSERT INTO users(uid,name,lower,pass,recovery,created) VALUES(?,?,?,?,?,?)",
@@ -232,7 +236,7 @@ const { chromium } = require(
       }, ids[2]);
     const out = path.join(__dirname, "cache");
     fs.mkdirSync(out, { recursive: true });
-    await pages[1].screenshot({ path: path.join(out, "v0.16.1-forms-z.png") });
+    await pages[1].screenshot({ path: path.join(out, "forms-z.png") });
     for (const p of pages)
       await p.waitForFunction((uid) => {
         const r = G.Coop.mate(uid)?.pl || G.Game.player;
@@ -254,6 +258,57 @@ const { chromium } = require(
           }),
         { ids, i },
       );
+    // Disposable fixtures: award handlers use controlled rolls; packets travel
+    // through the actual host -> guest P2P channels, without developer mode.
+    async function setCharges(a, b) {
+      for (const [index, n] of [[1, a], [2, b]])
+        await pages[index].evaluate((n) => {
+          G.ZMoves.state(G.Game.player).charges = n;
+        }, n);
+      await pages[0].waitForFunction(({ ids, a, b }) =>
+        G.Coop.mate(ids[1])?.pl.zState?.charges === a &&
+        G.Coop.mate(ids[2])?.pl.zState?.charges === b,
+        { ids, a, b });
+    }
+    async function checkCharges(a, b) {
+      for (const [index, n] of [[1, a], [2, b]])
+        await pages[index].waitForFunction((n) =>
+          G.ZMoves.state(G.Game.player).charges === n, n);
+      await pages[0].waitForFunction(({ ids, a, b }) =>
+        G.Coop.mate(ids[1])?.pl.zState?.charges === a &&
+        G.Coop.mate(ids[2])?.pl.zState?.charges === b,
+        { ids, a, b });
+    }
+    async function award(enemy) {
+      await pages[0].evaluate((enemy) => {
+        const roll = Math.random;
+        Math.random = () => 0;
+        try {
+          G.ZMoves.onKill({ ...enemy, lastAttacker: G.Game.player });
+        } finally { Math.random = roll; }
+      }, enemy);
+    }
+    assert.equal(await pages[0].evaluate(() => G.ZMoves.hasStone(G.Game.player)), false);
+    await setCharges(0, 0);
+    await award({ id: 900001 });
+    await checkCharges(1, 1);
+    await setCharges(3, 1);
+    await award({ id: 900002, elite: true });
+    await checkCharges(3, 2);
+    await award({ id: 900003, boss: true });
+    await checkCharges(3, 3);
+    await setCharges(2, 2);
+    await award({ id: 900003, boss: true });
+    // A repeated source cannot refill a charge spent after reaching the cap.
+    assert.equal(await pages[0].evaluate(() =>
+      G.ZMoves.grantTeamCharge("boss:900003")), false);
+    await checkCharges(2, 2);
+    await pages[0].evaluate(() => {
+      const roll = Math.random;
+      Math.random = () => 0;
+      try { G.ZMoves.eventReward(); } finally { Math.random = roll; }
+    });
+    await checkCharges(3, 3);
     assert.deepEqual(errors, []);
     assert.equal(app.traffic.battleFramesRejected, 0);
     console.log(
@@ -266,6 +321,9 @@ const { chromium } = require(
           hostAndGuestMegaAppearAndRestore: true,
           fusedZVisibleToHostAndOtherGuests: true,
           zChargeAndCooldownSynced: true,
+          nonZKillerSharesChargeWithBothZOwners: true,
+          eliteBossAndEventChargeShared: true,
+          independentCapAndDuplicateRewardProtection: true,
           relayBattleFrames: 0,
           pageErrors: 0,
         },

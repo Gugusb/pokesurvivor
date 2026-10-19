@@ -415,6 +415,26 @@ test('host grants remote Z charge rewards through one idempotent targeted messag
   G.Coop.isHost=false;G.ZMoves.onKill({id:78,boss:true});assert.equal(sent.length,1);
 });
 
+test('a kill by a teammate without a Z stone shares one roll with all Z owners, including downed teammates',()=>{
+  const s=setup(),{G,p}=s,killer=new G.Player(G.DEX_BY[25]),water=new G.Player(G.DEX_BY[9]),grass=new G.Player(G.DEX_BY[3]);
+  p.zState.charges=0;water.remote=true;water.uid='water';water.dead=true;grass.remote=true;grass.uid='grass';
+  G.ZMoves.sync(water,['water','ready',0,0]);G.ZMoves.sync(grass,['grass','ready',0,3]);
+  const sent=[];let rolls=0;G.Coop.active=true;G.Coop.isHost=true;G.Coop.zAward=(p,key)=>sent.push([p.uid,key]);G.Game.everyone=()=>[p,killer,water,grass];s.Math.random=()=>{rolls++;return 0;};
+  G.ZMoves.onKill({id:801,lastAttacker:killer});assert.equal(rolls,1);assert.equal(p.zState.charges,1);assert.equal(G.ZMoves.hasStone(killer),false);
+  assert.deepEqual(sent,[['water','kill:801'],['grass','kill:801']]);G.ZMoves.grantTeamCharge('kill:801');assert.equal(sent.length,2);assert.equal(p.zState.charges,1);
+  G.ZMoves.onKill({id:802,elite:true,lastAttacker:killer});assert.equal(rolls,2);assert.equal(p.zState.charges,2);assert.equal(sent.length,4);
+});
+
+test('shared Z awards cap independently, do not replay after spending, and guests cannot fan out a reward',()=>{
+  const s=setup(),{G,p}=s,full=new G.Player(G.DEX_BY[9]),downed=new G.Player(G.DEX_BY[3]);G.ZMoves.sync(full,[]);
+  G.ZMoves.grant(G.DB.save,'water');G.ZMoves.equip(G.DB.save,9,'water');G.ZMoves.init(full,G.DB.save);
+  G.ZMoves.grant(G.DB.save,'grass');G.ZMoves.equip(G.DB.save,3,'grass');G.ZMoves.init(downed,G.DB.save);downed.dead=true;
+  p.zState.charges=0;full.zState.charges=3;downed.zState.charges=0;G.Game.everyone=()=>[p,full,downed];G.Coop.active=true;G.Coop.isHost=true;
+  assert.equal(G.ZMoves.grantTeamCharge('pickup:900'),true);assert.deepEqual([p.zState.charges,full.zState.charges,downed.zState.charges],[1,3,1]);
+  full.zState.charges=2;assert.equal(G.ZMoves.grantTeamCharge('pickup:900'),false);assert.equal(full.zState.charges,2);
+  G.Coop.isHost=false;assert.equal(G.ZMoves.grantTeamCharge('pickup:901'),false);assert.deepEqual([p.zState.charges,full.zState.charges,downed.zState.charges],[1,2,1]);
+});
+
 test('successful timed events recharge once, while an expired lost-Pokémon rescue gives no Z reward',()=>{
   const s=setup(),{G,p}=s;p.zState.charges=0;s.Math.random=()=>0;
   s.load('js/systems/events.js');G.Events.reset();G.Events.debugStart('gold');G.Events.update(31,[p],100);

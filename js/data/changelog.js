@@ -6,6 +6,10 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-20', title: ['Cargas Z compartidas · v0.17.0', 'Shared Z charges · v0.17.0'], new: [], chg: [
+    ['En cooperativo, cada recarga Z ganada por cualquier compañero añade una carga a todos los portadores de cristales Z, incluso si quien derrota al enemigo no lleva uno.', 'In co-op, each Z recharge earned by any teammate adds one charge to every Z Crystal holder, even when the killer has no crystal.'],
+    ['Cada jugador conserva su límite de tres cargas. Los compañeros caídos también reciben cargas; las probabilidades y el enfriamiento no cambian.', 'Each player keeps the three-charge cap. Downed teammates also receive charges; reward chances and cooldown are unchanged.']
+  ], fix: [] },
   { d: '2026-10-19', title: ['Formas y efectos en cooperativo · v0.16.1', 'Co-op forms and effects · v0.16.1'], new: [], chg: [], fix: [
     ['Los compañeros ven la forma evolucionada correcta, incluidas las ramas, con sus animaciones y dimensiones actualizadas.', 'Teammates see the correct evolved form, including branches, with updated animations and dimensions.'],
     ['El estado de Mega y Z se aplica antes de reproducir los ataques del mismo envío. Al terminar Z se limpian los efectos de carga antiguos.', 'Mega and Z state is applied before playing attacks from the same snapshot. Finishing Z clears stale casting effects.']
