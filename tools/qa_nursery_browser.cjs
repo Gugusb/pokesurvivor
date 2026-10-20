@@ -68,7 +68,10 @@ const { chromium } = require(
     async function login(context, i, entry = null) {
       const p = await context.newPage();
       p.on("pageerror", (e) => errors.push(e.message));
-      await p.goto(base + (entry || (process.argv.includes("--built") ? "/" : "/dev.html")));
+      await p.goto(
+        base +
+          (entry || (process.argv.includes("--built") ? "/" : "/dev.html")),
+      );
       await p.waitForFunction(
         () =>
           !document.getElementById("tap-start").classList.contains("hidden") ||
@@ -92,6 +95,7 @@ const { chromium } = require(
             .evaluateAll((es) => es.map((e) => e.id)),
         );
         await p.screenshot({
+          animations: "disabled",
           path: path.join(__dirname, "cache/nursery-login-error.png"),
         });
         throw e;
@@ -101,23 +105,46 @@ const { chromium } = require(
     }
     const a = await login(mobile, 0);
     assert.equal(await a.locator("#rotate").count(), 0);
-    assert.equal((await(await mobile.request.get(base+'/manifest.webmanifest')).json()).orientation,'any');
-    await a.evaluate(()=>{window.qaOrientationLocks=0;Object.defineProperty(screen.orientation,'lock',{value:()=>{window.qaOrientationLocks++;return Promise.resolve();},configurable:true});});
-    await a.locator('[data-go="settings"]').click();await a.locator('#set-tabs [data-t="gfx"]').click();
-    if(await a.locator('#set-full').count()){
-      await a.locator('#set-full').click();await a.waitForFunction(()=>!!document.fullscreenElement);
-      assert.equal(await a.evaluate(()=>window.qaOrientationLocks),0);
-      await a.locator('#set-full').click();await a.waitForFunction(()=>!document.fullscreenElement);
-      results.push('Fullscreen does not lock orientation; installed app manifest allows any orientation');
+    assert.equal(
+      (await (await mobile.request.get(base + "/manifest.webmanifest")).json())
+        .orientation,
+      "any",
+    );
+    await a.evaluate(() => {
+      window.qaOrientationLocks = 0;
+      Object.defineProperty(screen.orientation, "lock", {
+        value: () => {
+          window.qaOrientationLocks++;
+          return Promise.resolve();
+        },
+        configurable: true,
+      });
+    });
+    await a.locator('[data-go="settings"]').click();
+    await a.locator('#set-tabs [data-t="gfx"]').click();
+    if (await a.locator("#set-full").count()) {
+      await a.locator("#set-full").click();
+      await a.waitForFunction(() => !!document.fullscreenElement);
+      assert.equal(await a.evaluate(() => window.qaOrientationLocks), 0);
+      await a.locator("#set-full").click();
+      await a.waitForFunction(() => !document.fullscreenElement);
+      results.push(
+        "Fullscreen does not lock orientation; installed app manifest allows any orientation",
+      );
     }
-    await a.locator('#set-close').click();
+    await a.locator("#set-close").click();
     await a.locator('[data-go="nursery"]').click();
     await a.locator("#nursery-primary").selectOption("6");
+    assert.equal(
+      await a.locator(".nursery-preview").getAttribute("data-dex"),
+      "6",
+    );
     await a.locator(".nursery-place").click();
     await a.locator(".nursery-invite").waitFor();
     await a.locator(".nursery-invite").click();
     await a.locator(".nursery-invite[disabled]").waitFor();
     await a.screenshot({
+      animations: "disabled",
       path: path.join(__dirname, "cache/nursery-mobile.png"),
     });
     const b = await login(desktop, 1);
@@ -126,6 +153,56 @@ const { chromium } = require(
     await b.locator("#nursery-partner").selectOption("9");
     await b.locator(".nursery-start").click();
     await b.locator(".nursery-clock").first().waitFor();
+    assert.deepEqual(
+      await b
+        .locator(".nursery-hatch .nursery-mon")
+        .evaluateAll((es) => es.map((e) => e.dataset.dex)),
+      ["6", "9"],
+    );
+    await b.waitForFunction(() =>
+      [...document.querySelectorAll(".nursery-hatch canvas")].every((c) =>
+        c
+          .getContext("2d")
+          .getImageData(0, 0, c.width, c.height)
+          .data.some(
+            (v, i, a) =>
+              i % 4 === 3 && v > 128 && a[i - 1] + a[i - 2] + a[i - 3] > 100,
+          ),
+      ),
+    );
+    clock += 3 * 3600000;
+    await b.locator("#nursery-back").click();
+    await b.locator('[data-go="friends"]').click();
+    await b.locator(".nursery-invitation button").click();
+    await b.waitForFunction(
+      () => Number(document.querySelector(".nursery-progress")?.value) >= 50,
+    );
+    const progress = await b.locator(".nursery-progress").getAttribute("value");
+    assert.ok(Number(progress) >= 50 && Number(progress) < 51);
+    await b.screenshot({
+      animations: "disabled",
+      path: path.join(__dirname, "cache/nursery-v0.20.1-desktop-hatching.png"),
+    });
+    await a.locator("#nursery-back").click();
+    await a.locator('[data-go="nursery"]').click();
+    await a.locator(".nursery-hatch").waitFor();
+    assert.equal(await a.locator(".nursery-hatch canvas").count(), 2);
+    await a.screenshot({
+      animations: "disabled",
+      path: path.join(__dirname, "cache/nursery-v0.20.1-mobile-hatching.png"),
+    });
+    await a.setViewportSize({ width: 320, height: 740 });
+    assert.equal(
+      await a
+        .locator(".nursery-box")
+        .evaluate((e) => e.scrollWidth <= e.clientWidth),
+      true,
+    );
+    await a.screenshot({
+      animations: "disabled",
+      path: path.join(__dirname, "cache/nursery-v0.20.1-narrow-hatching.png"),
+    });
+    await a.setViewportSize({ width: 390, height: 844 });
     assert.ok(
       (await b.locator("#nursery-body").textContent()).includes("继承 2 项"),
     );
@@ -145,8 +222,21 @@ const { chromium } = require(
     clock += 12 * 3600000;
     await a.locator("#scr-friends [data-back]").click();
     await a.locator('[data-go="nursery"]').click();
+    await a.locator(".nursery-hatch.ready").waitFor();
+    assert.equal(
+      Number(await a.locator(".nursery-progress").getAttribute("value")),
+      100,
+    );
+    await a.screenshot({
+      animations: "disabled",
+      path: path.join(__dirname, "cache/nursery-v0.20.1-mobile-ready.png"),
+    });
     await a.locator(".nursery-claim:not([disabled])").click();
     await a.locator(".nursery-result").waitFor();
+    assert.equal(
+      await a.locator(".nursery-result .nursery-mon").getAttribute("data-dex"),
+      "6",
+    );
     assert.ok(
       (await a.locator(".nursery-result").textContent()).includes("Z 携带权限"),
     );
@@ -173,6 +263,7 @@ const { chromium } = require(
     await a.locator(".z-equipment .btn").first().click();
     assert.equal(await a.locator(".z-equipment select option").count(), 18);
     await a.screenshot({
+      animations: "disabled",
       path: path.join(__dirname, "cache/z-access-mobile.png"),
     });
     await a.locator("#scr-dex [data-back]").first().click();
@@ -209,22 +300,41 @@ const { chromium } = require(
       await a.setViewportSize({ width: 390, height: 844 });
       assert.equal(await a.evaluate(() => G.Game.state), "playing");
       await a.screenshot({
+        animations: "disabled",
         path: path.join(__dirname, "cache/gameplay-portrait.png"),
       });
     }
-    results.push(process.argv.includes('--built')?'Z permission equips any type; portrait battle starts':'Z permission equips any type; portrait play starts, touch movement and rotation do not auto-pause');
-    await mobile.close();await desktop.close();
-    if(process.argv.includes('--built'))for(const [locale,entry,label] of [['en-US','/en/','Your nursery'],['es-ES','/','Tu guardería']]){
-      const c=await browser.newContext({viewport:{width:1280,height:960},locale});
-      const p=await login(c,1,entry);await p.locator('[data-go="nursery"]').click();
-      await p.getByRole('heading',{name:label,exact:true}).waitFor();
-      await p.locator('#nursery-primary').selectOption('150');await p.locator('.nursery-place').click();
-      await p.locator('#nursery-partner').waitFor();
-      const options=await p.locator('#nursery-partner option').evaluateAll(es=>es.map(e=>e.value));
-      assert.deepEqual(options,['132']); // Own Undiscovered cannot pair with another Undiscovered.
-      await p.locator('.nursery-withdraw').click();await p.locator('#nursery-primary').waitFor();
-      await c.close();results.push(locale+' nursery and Undiscovered partner filter');
-    }
+    results.push(
+      process.argv.includes("--built")
+        ? "Z permission equips any type; portrait battle starts"
+        : "Z permission equips any type; portrait play starts, touch movement and rotation do not auto-pause",
+    );
+    await mobile.close();
+    await desktop.close();
+    if (process.argv.includes("--built"))
+      for (const [locale, entry, label] of [
+        ["en-US", "/en/", "Your nursery"],
+        ["es-ES", "/", "Tu guardería"],
+      ]) {
+        const c = await browser.newContext({
+          viewport: { width: 1280, height: 960 },
+          locale,
+        });
+        const p = await login(c, 1, entry);
+        await p.locator('[data-go="nursery"]').click();
+        await p.getByRole("heading", { name: label, exact: true }).waitFor();
+        await p.locator("#nursery-primary").selectOption("150");
+        await p.locator(".nursery-place").click();
+        await p.locator("#nursery-partner").waitFor();
+        const options = await p
+          .locator("#nursery-partner option")
+          .evaluateAll((es) => es.map((e) => e.value));
+        assert.deepEqual(options, ["132"]); // Own Undiscovered cannot pair with another Undiscovered.
+        await p.locator(".nursery-withdraw").click();
+        await p.locator("#nursery-primary").waitFor();
+        await c.close();
+        results.push(locale + " nursery and Undiscovered partner filter");
+      }
     assert.deepEqual(errors, []);
     console.log(
       JSON.stringify(

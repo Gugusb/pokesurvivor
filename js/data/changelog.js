@@ -1,5 +1,8 @@
 /* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
 G.CHANGELOG = [
+  { d:'2026-10-20', title:['Guardería renovada · v0.20.1','Nursery refresh · v0.20.1'], new:[], chg:[
+    ['La guardería muestra ambos progenitores animados alrededor del huevo, con progreso, cuenta atrás y estado de recogida. Al elegir un progenitor aparece una vista previa; las reglas y las invitaciones se agrupan para facilitar su uso en móvil.', 'The nursery shows both animated parents around the egg, with progress, a countdown and collection status. Parent selection includes a live preview; rules and invitations are grouped for a clearer mobile layout.']
+  ],fix:[] },
   {
   "d": "2026-10-20",
   "title": [

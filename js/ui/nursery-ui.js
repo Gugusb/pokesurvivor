@@ -2,10 +2,12 @@ G.NurseryUI = (() => {
   G.I18n.add({
     Guardería: "Nursery",
     "Huevos y crianza con amigos": "Hatching with friends",
+    "Un hogar para nuevos compañeros": "A home for new companions",
   });
   G.I18n.addChinese({
     Guardería: "孵蛋屋",
     "Huevos y crianza con amigos": "亲本配对，与好友共同孵蛋",
+    "Un hogar para nuevos compañeros": "相伴成长，迎接新的伙伴",
   });
   const $ = (id) => document.getElementById(id),
     t = (es, en, zh) => G.Server.text(es, en, zh);
@@ -32,6 +34,7 @@ G.NurseryUI = (() => {
     busy = false,
     poll = null,
     report = null,
+    renderKey = null,
     token = 0;
   const el = (tag, text, cls) => {
     const e = document.createElement(tag);
@@ -44,6 +47,53 @@ G.NurseryUI = (() => {
     G.NurseryRules.groups(d)
       .map((g) => t(...GROUPS[g]))
       .join(" / ");
+  function pokemonFigure(dex, role, preview = false) {
+    const figure = el(
+      "figure",
+      null,
+      "nursery-mon" + (preview ? " nursery-preview" : ""),
+    );
+    figure.append(el("span", role, "nursery-role"));
+    if (!G.DEX_BY[dex]) {
+      figure.classList.add("empty");
+      figure.append(
+        el("div", "＋", "nursery-empty-mon"),
+        el(
+          "figcaption",
+          t("Sin progenitor", "No parent selected", "尚未选择亲本"),
+        ),
+      );
+      return figure;
+    }
+    figure.dataset.dex = dex;
+    figure.style.setProperty(
+      "--mon-color",
+      G.U.TYPE_COLOR[G.DEX_BY[dex].types[0]],
+    );
+    const meta = G.Sprites.animMeta(dex, "Idle");
+    const scale = Math.max(
+      1,
+      Math.min(
+        4,
+        Math.floor(180 / (meta?.w || 50)),
+        Math.floor(130 / (meta?.ay || 32)),
+      ),
+    );
+    const cv = G.UI.spriteCanvas(dex, 200, 168, { scale, hero: true });
+    cv.setAttribute("role", "img");
+    cv.setAttribute("aria-label", mon(dex));
+    figure.append(cv, el("figcaption", mon(dex)));
+    const types = el("div", null, "nursery-types");
+    types.innerHTML = G.UI.typeChips(G.DEX_BY[dex].types);
+    figure.append(types);
+    return figure;
+  }
+  function egg() {
+    const nest = el("div", null, "nursery-nest");
+    nest.setAttribute("aria-hidden", "true");
+    nest.append(el("i", null, "nursery-egg"), el("span", "✦", "nursery-spark"));
+    return nest;
+  }
   function button(text, fn, cls = "") {
     const b = el("button", text, "btn small " + cls);
     b.disabled = busy;
@@ -95,6 +145,7 @@ G.NurseryUI = (() => {
     current = owner;
     view = null;
     report = null;
+    renderKey = null;
     token++;
     G.UI.show("scr-nursery", true);
     message(t("Cargando…", "Loading…", "正在载入…"));
@@ -115,6 +166,7 @@ G.NurseryUI = (() => {
       box = el("div", null, "nursery-picker");
     const search = el("input");
     search.type = "search";
+    search.id = id + "-search";
     search.className = "field";
     search.placeholder = t("Buscar Pokémon", "Search Pokémon", "搜索宝可梦");
     search.setAttribute("aria-label", search.placeholder);
@@ -150,16 +202,74 @@ G.NurseryUI = (() => {
       select.dispatchEvent(new Event("change"));
     }
     search.oninput = fill;
+    const preview = el("div", null, "nursery-picker-preview");
+    select.addEventListener("change", () => {
+      preview.replaceChildren(
+        pokemonFigure(
+          Number(select.value),
+          t("Vista previa", "Preview", "亲本预览"),
+          true,
+        ),
+      );
+    });
     fill();
     box.append(search, select);
-    parent.append(box);
+    parent.append(preview, box);
     return select;
   }
   function hatchCard(h, canClaim = true) {
-    const card = el("article", null, "nursery-card"),
+    const card = el("article", null, "nursery-card nursery-hatch"),
       remaining = Math.max(0, h.ends - view.now);
-    card.append(
-      el("h3", mon(h.dex) + " + " + mon(h.partner)),
+    card.dataset.started = h.started;
+    card.dataset.ends = h.ends;
+    card.dataset.offset = view.now - Date.now();
+    const heading = el("div", null, "nursery-hatch-heading");
+    heading.append(
+      el(
+        "h3",
+        t(
+          "Un nuevo compañero en camino",
+          "A new friend on the way",
+          "新的伙伴正在孕育",
+        ),
+      ),
+      el("span", "", "nursery-state"),
+    );
+    const garden = el("div", null, "nursery-garden");
+    garden.append(
+      pokemonFigure(
+        h.dex,
+        t("Progenitor principal", "Primary parent", "主亲本"),
+      ),
+      egg(),
+      pokemonFigure(
+        h.partner,
+        h.friend
+          ? t("Progenitor de amigo", "Friend’s parent", "好友亲本")
+          : t("Otro progenitor", "Partner parent", "配对亲本"),
+      ),
+    );
+    const status = el("div", null, "nursery-hatch-status");
+    const progress = el("progress", null, "nursery-progress");
+    progress.max = 100;
+    progress.value = 0;
+    progress.setAttribute(
+      "aria-label",
+      t("Progreso de eclosión", "Hatching progress", "孵化进度"),
+    );
+    const line = el("div", null, "nursery-progress-label");
+    line.append(
+      el("span", t("Progreso de eclosión", "Hatching progress", "孵化进度")),
+      el("b", "", "nursery-percent"),
+    );
+    const clock = el("p", null, "nursery-clock");
+    clock.dataset.ends = h.ends;
+    clock.dataset.offset = card.dataset.offset;
+    clock.setAttribute("role", "timer");
+    status.append(line, progress, clock);
+    const footer = el("div", null, "nursery-hatch-footer");
+    const info = el("div");
+    info.append(
       el(
         "p",
         h.friend
@@ -173,13 +283,26 @@ G.NurseryUI = (() => {
               "Own hatch: inherits 1 IV",
               "自行孵蛋：继承 1 项个体值",
             ),
+        "nursery-inheritance",
+      ),
+    );
+    if (h.guestName)
+      info.append(
+        el("p", t("Con ", "With ", "参与好友：") + h.guestName, "note"),
+      );
+    info.append(
+      el(
+        "p",
+        t(
+          "La crianza continúa sin conexión",
+          "Hatching continues while offline",
+          "离线后仍会继续孵化",
+        ),
         "note",
       ),
     );
-    const clock = el("p", null, "nursery-clock");
-    clock.dataset.ends = h.ends;
-    clock.dataset.offset = view.now - Date.now();
-    card.append(clock);
+    footer.append(info);
+    card.append(heading, garden, status, footer);
     if (!canClaim) return card;
     const claim = button(
       t("Recoger cría", "Collect offspring", "收获宝可梦"),
@@ -196,12 +319,33 @@ G.NurseryUI = (() => {
     claim.disabled = busy || remaining > 0;
     claim.dataset.ends = h.ends;
     claim.dataset.offset = clock.dataset.offset;
-    card.append(claim);
+    footer.append(claim);
     return card;
   }
   function render() {
     if (!view) return;
     const oldSelections = {};
+    const oldSearches = {};
+    const activeId = document.activeElement?.id;
+    const scroll = $("nursery-body").parentElement.scrollTop;
+    const key =
+      view.owner +
+      ":" +
+      (view.dex || "empty") +
+      ":" +
+      (view.hatch?.id || "setup") +
+      ":" +
+      !!report;
+    const sameState = key === renderKey;
+    const opened = new Set(
+      [...$("nursery-body").querySelectorAll("details[open]")].map(
+        (e) => e.className,
+      ),
+    );
+    $("nursery-body")
+      .querySelectorAll('input[type="search"]')
+      .forEach((e) => (oldSearches[e.id] = e.value));
+    renderKey = key;
     $("nursery-body")
       .querySelectorAll("select")
       .forEach((s) => (oldSelections[s.id] = s.value));
@@ -216,26 +360,21 @@ G.NurseryUI = (() => {
       el(
         "p",
         t(
-          "Los progenitores siguen disponibles para combatir. La crianza no se puede pausar.",
-          "Parents remain available for battle. Hatching cannot be paused.",
-          "亲本仍可正常出战；孵蛋开始后不能暂停或撤回，离线也会继续计时。",
+          "Elige dos progenitores y espera a tu nuevo compañero.",
+          "Pair your Pokémon and welcome a new companion.",
+          "让两只宝可梦结伴，等待新伙伴的到来。",
         ),
-        "note",
-      ),
-    );
-    body.append(
-      el(
-        "p",
-        t(
-          "El grupo desconocido sólo se empareja con el de un amigo o con Ditto. Ditto es comodín.",
-          "Undiscovered pairs only with a friend’s Undiscovered or with Ditto. Ditto is a wildcard.",
-          "未发现组仅能与好友的未发现组配对，或与百变怪配对；百变怪可与任意蛋组配对。",
-        ),
-        "note",
+        "nursery-intro",
       ),
     );
     if (report) {
       const box = el("article", null, "nursery-result");
+      box.append(
+        pokemonFigure(
+          report.dex,
+          t("Nuevo compañero", "New companion", "新伙伴"),
+        ),
+      );
       box.append(
         el(
           "h3",
@@ -302,17 +441,16 @@ G.NurseryUI = (() => {
       body.append(box);
     }
     const parents = el("div", null, "nursery-parents");
+    if (view.hatch) parents.classList.add("nursery-active");
     body.append(parents);
-    if (view.dex) {
+    if (view.dex && !view.hatch) {
       const primary = el("article", null, "nursery-card");
       primary.append(
-        el(
-          "h3",
-          t("Progenitor principal", "Primary parent", "主亲本") +
-            " · " +
-            mon(view.dex),
+        el("h3", t("Progenitor principal", "Primary parent", "主亲本")),
+        pokemonFigure(
+          view.dex,
+          t("En la guardería", "In the nursery", "已入孵蛋屋"),
         ),
-        G.UI.spriteCanvas(view.dex, 140, 110, { scale: 2, lively: true }),
         el("p", groupText(view.dex), "note"),
       );
       if (own && !view.hatch)
@@ -324,7 +462,7 @@ G.NurseryUI = (() => {
           ),
         );
       parents.append(primary);
-    } else if (own) {
+    } else if (!view.dex && own) {
       const card = el("article", null, "nursery-card");
       card.append(
         el(
@@ -337,18 +475,22 @@ G.NurseryUI = (() => {
         ),
       );
       const select = picker(card, "nursery-primary");
-      card.append(
-        button(
-          t("Colocar", "Place", "放入"),
-          () =>
-            G.Server.socialAction("/nursery/primary", {
-              dex: Number(select.value),
-            }),
-          "gold nursery-place",
-        ),
+      const place = button(
+        t("Colocar", "Place", "放入"),
+        () =>
+          G.Server.socialAction("/nursery/primary", {
+            dex: Number(select.value),
+          }),
+        "gold nursery-place",
       );
+      select.addEventListener(
+        "change",
+        () => (place.disabled = busy || !select.value),
+      );
+      place.disabled = busy || !select.value;
+      card.append(place);
       parents.append(card);
-    } else
+    } else if (!view.dex)
       body.append(
         el(
           "p",
@@ -440,10 +582,11 @@ G.NurseryUI = (() => {
         ),
       );
     if (own && view.dex) {
-      const section = el("section", null, "nursery-invites");
+      const section = el("details", null, "nursery-invites");
+      section.open = !view.hatch;
       section.append(
         el(
-          "h3",
+          "summary",
           t(
             "Invitar amigos a criar",
             "Invite friends to hatch",
@@ -451,6 +594,18 @@ G.NurseryUI = (() => {
           ),
         ),
       );
+      if (!G.Social.friends.some((f) => f.status === "ok"))
+        section.append(
+          el(
+            "p",
+            t(
+              "Añade amigos para criar juntos.",
+              "Add friends to hatch together.",
+              "在好友栏添加好友，就能邀请他们一起孵蛋。",
+            ),
+            "note",
+          ),
+        );
       for (const f of G.Social.friends.filter((f) => f.status === "ok")) {
         const row = el("div", null, "fr-row");
         row.append(el("b", f.name));
@@ -469,7 +624,10 @@ G.NurseryUI = (() => {
       }
       body.append(section);
     }
-    if (view.participating.length) {
+    const otherHatches = view.participating.filter(
+      (h) => h.id !== view.hatch?.id,
+    );
+    if (otherHatches.length) {
       body.append(
         el(
           "h3",
@@ -480,10 +638,53 @@ G.NurseryUI = (() => {
           ),
         ),
       );
-      for (const h of view.participating)
-        if (h.id !== view.hatch?.id) body.append(hatchCard(h));
+      for (const h of otherHatches) body.append(hatchCard(h));
     }
-    body.append(
+    const rules = el("details", null, "nursery-rules");
+    rules.append(
+      el(
+        "summary",
+        t(
+          "Cómo funciona la crianza",
+          "How hatching works",
+          "孵蛋规则与额外奖励",
+        ),
+      ),
+    );
+    rules.append(
+      el(
+        "p",
+        t(
+          "Los progenitores pueden combatir; la crianza continúa sin conexión y no se puede pausar.",
+          "Parents can still battle. Hatching continues offline and cannot be paused.",
+          "亲本仍可出战；离线继续孵蛋，开始后不能暂停或撤回。",
+        ),
+        "note",
+      ),
+    );
+    rules.append(
+      el(
+        "p",
+        t(
+          "Hereda 1 IV en solitario o 2 con un amigo. Ambos reciben una cría de la especie principal.",
+          "Inherit 1 IV solo or 2 with a friend. Both friends collect the primary parent’s species.",
+          "自行继承 1 项个体值，好友孵蛋继承 2 项；好友双方各收获一只主亲本物种的宝可梦。",
+        ),
+        "note",
+      ),
+    );
+    rules.append(
+      el(
+        "p",
+        t(
+          "El grupo desconocido sólo se empareja con el de un amigo o con Ditto. Ditto es comodín.",
+          "Undiscovered pairs only with a friend’s Undiscovered or with Ditto. Ditto is a wildcard.",
+          "未发现组仅能与好友的未发现组配对，或与百变怪配对；百变怪可与任意蛋组配对。",
+        ),
+        "note",
+      ),
+    );
+    rules.append(
       el(
         "p",
         t(
@@ -494,6 +695,12 @@ G.NurseryUI = (() => {
         "note",
       ),
     );
+    body.append(rules);
+    for (const [id, value] of Object.entries(oldSearches))
+      if ($(id)) {
+        $(id).value = value;
+        $(id).dispatchEvent(new Event("input"));
+      }
     for (const [id, value] of Object.entries(oldSelections)) {
       const select = $(id);
       if (select && [...select.options].some((o) => o.value === value)) {
@@ -502,9 +709,33 @@ G.NurseryUI = (() => {
       }
     }
     clocks();
+    if (sameState) {
+      body
+        .querySelectorAll("details")
+        .forEach((d) => (d.open = opened.has(d.className)));
+      if (activeId && $(activeId)) $(activeId).focus({ preventScroll: true });
+    }
+    body.parentElement.scrollTop = sameState ? scroll : 0;
   }
   function clocks() {
     if (!G.UI.isOpen("scr-nursery")) return;
+    document.querySelectorAll(".nursery-hatch").forEach((card) => {
+      const now = Date.now() + Number(card.dataset.offset),
+        start = Number(card.dataset.started),
+        end = Number(card.dataset.ends);
+      const percent = Math.max(
+        0,
+        Math.min(100, ((now - start) / Math.max(1, end - start)) * 100),
+      );
+      const ready = now >= end;
+      card.classList.toggle("ready", ready);
+      card.querySelector(".nursery-progress").value = percent;
+      card.querySelector(".nursery-percent").textContent =
+        Math.floor(percent) + "%";
+      card.querySelector(".nursery-state").textContent = ready
+        ? t("¡Listo!", "Ready!", "待收获")
+        : t("Incubando", "Hatching", "孵化中");
+    });
     document.querySelectorAll(".nursery-clock").forEach((c) => {
       const n = Math.max(
         0,

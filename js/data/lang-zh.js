@@ -1,6 +1,8 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  'Guardería renovada · v0.20.1':'孵蛋屋界面优化 · v0.20.1',
+  'La guardería muestra ambos progenitores animados alrededor del huevo, con progreso, cuenta atrás y estado de recogida. Al elegir un progenitor aparece una vista previa; las reglas y las invitaciones se agrupan para facilitar su uso en móvil.':'孵蛋屋展示两只亲本的动态形象和中间的宝可梦蛋，增加孵化进度条、倒计时及待收获状态；选择亲本时即时预览，规则与好友邀请折叠收纳，优化手机布局。',
   "Índice de megaevolución · v0.19.0": "Mega 进化图鉴索引 · v0.19.0",
   "Mega Evolution index · v0.19.0": "Mega 进化图鉴索引 · v0.19.0",
   "La Pokédex tiene una pestaña de megaevolución que reúne las 36 especies disponibles de todas las regiones, con contador y filtros de colección, shiny y rareza.": "图鉴新增 Mega 进化标签，跨地区汇总目前开放的 36 只宝可梦，支持收集计数与已拥有、未拥有、闪光、稀有度筛选。",
