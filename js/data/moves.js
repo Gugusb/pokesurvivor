@@ -128,7 +128,7 @@
       cd: 0.50, dmg: 13, radius: 48, arc: 1.7, knock: 90 },
 
     { id: 'quick-attack', name: 'Ataque Rápido', type: 'normal', kind: 'dash',
-      desc: 'Cruzas como un rayo hacia el enemigo y golpeas todo el camino.',
+      desc: 'Cruzas como un rayo hacia el enemigo. Protección de 0,3 s; con recarga efectiva menor de 0,3 s, dura el 90% de la recarga.',
       cd: 0.75, dmg: 20, radius: 110, width: 34, knock: 40 },
 
     { id: 'swords-dance', name: 'Danza Espada', type: 'normal', kind: 'buff',
@@ -385,7 +385,7 @@
       cd: 4.0, dmg: 14, rate: 0.4, dur: 6, count: 1, range: 280, speed: 320, size: 6 },
 
     { id: 'aerial-ace', name: 'Golpe Aéreo', type: 'flying', kind: 'dash',
-      desc: 'Te lanzas en picado y cortas todo lo que cruzas.',
+      desc: 'Te lanzas en picado y cortas todo lo que cruzas. Protección de 0,3 s; con recarga efectiva menor de 0,3 s, dura el 90% de la recarga.',
       cd: 0.75, dmg: 18, radius: 120, width: 40, knock: 60 },
 
     { id: 'flame-wheel', name: 'Rueda Fuego', type: 'fire', kind: 'trail',

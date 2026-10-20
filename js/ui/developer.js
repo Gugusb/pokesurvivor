@@ -206,10 +206,10 @@ G.Dev = (() => {
           case 'god': god = !god; break;
           case 'weather': if (requireRun()) G.Weather.debugStart(panel.querySelector('#dev-weather').value, 20); break;
           case 'clear-weather': if (requireRun()) G.Weather.clear(); break;
-          case 'damage': { const p = requireRun(); if (p) { p.invuln = 0; p.hurt(p.maxHp * 0.1); } break; }
-          case 'same-type': { const p = requireRun(); if (p) { p.invuln = 0; p.hurt(p.maxHp * 0.2, p.mon.types[0], false, {kind:'attack'}); } break; }
-          case 'fire-damage': { const p = requireRun(); if (p) { p.invuln = 0; p.hurt(p.maxHp * 0.2, 'fire', false, {kind:'attack'}); } break; }
-          case 'lethal': { const p = requireRun(); if (p) { p.invuln = 0; p.hurt(p.maxHp * 10); } break; }
+          case 'damage': { const p = requireRun(); if (p) { p.invuln = p.dashGuardT = 0; p.hurt(p.maxHp * 0.1); } break; }
+          case 'same-type': { const p = requireRun(); if (p) { p.invuln = p.dashGuardT = 0; p.hurt(p.maxHp * 0.2, p.mon.types[0], false, {kind:'attack'}); } break; }
+          case 'fire-damage': { const p = requireRun(); if (p) { p.invuln = p.dashGuardT = 0; p.hurt(p.maxHp * 0.2, 'fire', false, {kind:'attack'}); } break; }
+          case 'lethal': { const p = requireRun(); if (p) { p.invuln = p.dashGuardT = 0; p.hurt(p.maxHp * 10); } break; }
           case 'heal': { const p = requireRun(); if (p) p.heal(p.maxHp); break; }
           case 'level': if (requireRun()) G.Game.debugLevelUp(); break;
           case 'slow': { const p = requireRun(); if (p) p.slowT = 3.5; break; }

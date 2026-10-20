@@ -1,5 +1,8 @@
 /* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
 G.CHANGELOG = [
+  { d:'2026-10-20', title:['Protección de embestida · v0.20.2','Dash protection balance · v0.20.2'],new:[],chg:[
+    ['Las embestidas normales protegen durante 0,3 segundos. Si la recarga efectiva de ese lanzamiento es inferior a 0,3 segundos, la protección dura el 90% de esa recarga, incluidas las aceleraciones y penalizaciones. Chocar contra un muro sin desplazarse no la activa.', 'Ordinary dashes protect for 0.3 seconds. When the effective cooldown of that cast is below 0.3 seconds, protection lasts 90% of that cooldown, including cooldown acceleration and penalties. Dashing into a wall without moving does not trigger it.']
+  ],fix:[]},
   { d:'2026-10-20', title:['Guardería renovada · v0.20.1','Nursery refresh · v0.20.1'], new:[], chg:[
     ['La guardería muestra ambos progenitores animados alrededor del huevo, con progreso, cuenta atrás y estado de recogida. Al elegir un progenitor aparece una vista previa; las reglas y las invitaciones se agrupan para facilitar su uso en móvil.', 'The nursery shows both animated parents around the egg, with progress, a countdown and collection status. Parent selection includes a live preview; rules and invitations are grouped for a clearer mobile layout.']
   ],fix:[] },

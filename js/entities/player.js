@@ -68,6 +68,7 @@ G.Player = class Player {
     this.dmgDealt = 0;
 
     this.invuln = 0;
+    this.dashGuardT = 0;
     this.flash = 0;
     this.aim = Math.PI / 2;
     this.moveAngle = Math.PI / 2;
@@ -240,6 +241,14 @@ G.Player = class Player {
   }
 
   // ---------------- daño y curación ----------------
+  // Short cooldowns leave 10% of the cast interval without dash protection.
+  // Post-hit immunity has its own timer and is never extended by a dash.
+  grantDashGuard(cooldown) {
+    if (this.dead || !(cooldown > 0) || !Number.isFinite(cooldown)) return false;
+    const duration = cooldown < 0.3 ? cooldown * 0.9 : 0.3;
+    this.dashGuardT = Math.max(this.dashGuardT, duration);
+    return true;
+  }
   /**
    * @param type  tipo del ataque (tabla de tipos y clima); sin tipo, daño tal cual
    * @param pure  daño que no baja con la defensa ni el cuerpo a cuerpo (Arceus)
@@ -249,7 +258,7 @@ G.Player = class Player {
     if (G.ZMoves && G.ZMoves.immune(this)) return false;
     if (G.Dev && G.Dev.invincible) return false;
     if (type === 'electric' && G.Abilities.has(this, 'voltabsorb')) { this.heal(this.maxHp * 0.25); return false; }
-    if (this.invuln > 0) return false;
+    if (this.invuln > 0 || this.dashGuardT > 0) return false;
     if (!G.Abilities.beforeHurt(this, source)) return false;
     let eff = null;
     if (type) {
@@ -361,6 +370,7 @@ G.Player = class Player {
     this.attackDebuffT = Math.max(0, this.attackDebuffT - dt);
     if (!this.attackDebuffT || G.Abilities.has(this, 'defiant') || G.Abilities.debuffImmune(this)) this.attackDebuff = this.attackDebuffT = 0;
     if (this.invuln > 0) this.invuln -= dt;
+    this.dashGuardT = Math.max(0, this.dashGuardT - dt);
     if (this.flash > 0) this.flash -= dt;
     if (this.attackFace > 0) this.attackFace -= dt;
 
@@ -395,7 +405,7 @@ G.Player = class Player {
       if (le.dmg) {
         this.lavaTick -= dt;
         if (this.lavaTick <= 0) {
-          this.lavaTick = le.every; this.invuln = 0;
+          this.lavaTick = le.every; this.invuln = this.dashGuardT = 0;
           this.hurt(Math.max(le.flat, this.maxHp * le.dmg * 0.5));
           G.FX.burst(this.x, this.y - 4, le.color, 5, 70);
         }
@@ -503,7 +513,8 @@ G.Player = class Player {
       ctx.restore();
     }
 
-    const alpha = this.invuln > 0 && !this.dead ? (Math.floor(this.invuln * 18) % 2 ? 0.45 : 1) : 1;
+    const protection = Math.max(this.invuln, this.dashGuardT);
+    const alpha = protection > 0 && !this.dead ? (Math.floor(protection * 18) % 2 ? 0.45 : 1) : 1;
     this.anim.draw(ctx, this.x, this.y, { flash: this.flash > 0, softFlash: true, alpha, color: '#ffcb3d' });
 
     // Arcos de buff alrededor de los pies.

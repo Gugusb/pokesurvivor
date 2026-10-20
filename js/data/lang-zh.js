@@ -1,6 +1,10 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  'Cruzas como un rayo hacia el enemigo. Protección de 0,3 s; con recarga efectiva menor de 0,3 s, dura el 90% de la recarga.':'冲向敌人并打击沿途目标。无敌持续 0.3 秒；本次实际冷却低于 0.3 秒时，无敌持续实际冷却的 90%。',
+  'Te lanzas en picado y cortas todo lo que cruzas. Protección de 0,3 s; con recarga efectiva menor de 0,3 s, dura el 90% de la recarga.':'俯冲切开沿途目标。无敌持续 0.3 秒；本次实际冷却低于 0.3 秒时，无敌持续实际冷却的 90%。',
+  'Protección de embestida · v0.20.2':'冲刺保护平衡调整 · v0.20.2',
+  'Las embestidas normales protegen durante 0,3 segundos. Si la recarga efectiva de ese lanzamiento es inferior a 0,3 segundos, la protección dura el 90% de esa recarga, incluidas las aceleraciones y penalizaciones. Chocar contra un muro sin desplazarse no la activa.':'普通冲刺无敌持续 0.3 秒；本次实际冷却低于 0.3 秒时，改为实际冷却的 90%，包含冷却缩减、加速及本次冷却惩罚。原地撞墙不触发保护。',
   'Guardería renovada · v0.20.1':'孵蛋屋界面优化 · v0.20.1',
   'La guardería muestra ambos progenitores animados alrededor del huevo, con progreso, cuenta atrás y estado de recogida. Al elegir un progenitor aparece una vista previa; las reglas y las invitaciones se agrupan para facilitar su uso en móvil.':'孵蛋屋展示两只亲本的动态形象和中间的宝可梦蛋，增加孵化进度条、倒计时及待收获状态；选择亲本时即时预览，规则与好友邀请折叠收纳，优化手机布局。',
   "Índice de megaevolución · v0.19.0": "Mega 进化图鉴索引 · v0.19.0",

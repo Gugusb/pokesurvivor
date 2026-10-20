@@ -90,6 +90,87 @@ test('legacy Z equipment migrates permission without losing the selected type',(
   delete old.zAccessMigrated;delete old.zAccess;delete old.zDuplicates;
   G.DB._test.migrate(old);assert.ok(G.ZAccess.allowed(old,4));assert.equal(old.zEquipped[6],'fire');
 });
+test('ordinary dash uses 90% of effective cooldown strictly below 0.3s, including the timer floor',()=>{
+  for(const cd of [.45,.3,.299,.2,.05,.001]){
+    const s=context(),{G}=s,p=s.player(),m=G.Moves.instance('quick-attack'),e=s.enemy(80);
+    m.cd=cd;p.cdMul=1;p.moves=[m];p.slots=[[m]];p.target=e;
+    G.Combat.tick(0,p,0);const effective=Math.max(.05,cd);
+    close(m.t,effective);close(p.dashGuardT,effective<.3?effective*.9:.3);
+  }
+});
+test('actual cooldown acceleration and one Truant penalty determine protection without double-counting casts',()=>{
+  const s=context(),{G}=s,p=s.player(),m=G.Moves.instance('quick-attack'),e=s.enemy(80);
+  m.cd=.4;p.cdMul=.8;p.moves=[m];p.slots=[[m]];p.target=e;
+  G.Abilities.state(p).growthCooldown=1;
+  G.Combat.tick(0,p,0);close(m.t,.32);close(p.dashGuardT,.144);
+  p.ability='truant';G.Abilities.state(p).casts=3;p.hp=p.maxHp*.5;
+  p.dashGuardT=0;m.t=0;p.target=e;G.Combat.tick(0,p,0);
+  close(m.t,.64);close(p.dashGuardT,.3);assert.equal(G.Abilities.state(p).casts,0);close(p.hp,p.maxHp*.55);
+});
+test('Extreme Speed still attacks rapidly and leaves its prescribed gap at sub-frame resolution',()=>{
+  const s=context(),{G}=s,p=s.player(),m=G.Moves.instance('quick-attack',5);G.Moves.evolve(m);
+  p.moves=[m];p.slots=[[m]];p.cdMul=.1;p.hp=p.maxHp=10000;
+  const e=s.enemy(80);e.hp=e.maxHp=1e9;G.EnemyMgr.rebuildGrid();let casts=0,protectedFrames=0,hits=0;
+  for(let i=0;i<3000;i++){
+    p.update(.001);p.target=e;p.aim=Math.atan2(e.y-p.y,e.x-p.x);
+    const x=p.x;G.Combat.tick(.001,p,i*.001);if(p.x!==x)casts++;
+    if(p.dashGuardT>0)protectedFrames++;
+    if(p.hurt(1,null,true,{kind:'projectile',enemy:e}))hits++;
+  }
+  assert.ok(casts>=50,`movement and damage cadence retained: ${casts}`);
+  assert.ok(protectedFrames<=2760,`protection tracks 90% of interval: ${protectedFrames}/3000`);
+  assert.ok(hits>=3);assert.ok(p.hp<10000);assert.ok(e.hp<e.maxHp);
+});
+test('switching dash moves has no shared one-second restriction and preserves an existing longer window',()=>{
+  const s=context(),{G}=s,p=s.player(),a=G.Moves.instance('quick-attack'),b=G.Moves.instance('aerial-ace'),e=s.enemy(80);
+  a.cd=.2;b.cd=.1;p.cdMul=1;p.moves=[a,b];p.slots=[[a],[b]];p.target=e;
+  G.Combat.tick(0,p,0);close(p.dashGuardT,.18);
+  p.update(.05);p.active=1;p.target=e;G.Combat.tick(0,p,.05);close(p.dashGuardT,.13);
+  p.update(.14);b.t=0;p.target=e;G.Combat.tick(0,p,.19);close(p.dashGuardT,.09);
+  p.update(.091);assert.equal(p.hurt(1,null,true),true);
+});
+test('blocked, ghost and Sheer Force dash casts do not grant ordinary protection',()=>{
+  for(const mode of ['wall','ghost','sheerforce']){
+    const s=context(),{G}=s,p=s.player(),m=G.Moves.instance('quick-attack'),e=s.enemy(80);
+    p.moves=[m];p.slots=[[m]];p.target=e;
+    if(mode==='wall')G.World.isFree=()=>false;
+    if(mode==='sheerforce')p.ability='sheerforce';
+    if(mode==='ghost')G.Combat.ghostCast(p,m.id,1,0,false);else G.Combat.tick(0,p,0);
+    assert.equal(p.dashGuardT,0,mode);
+  }
+});
+test('ordinary dash protection is separate from post-hit protection and lava still bypasses it',()=>{
+  const s=context(),{G}=s,p=s.player(),m=G.Moves.instance('quick-attack'),e=s.enemy(80);
+  p.moves=[m];p.slots=[[m]];p.cdMul=1;assert.equal(p.hurt(1,null,true),true);p.update(.2);
+  p.target=e;G.Combat.tick(0,p,.2);close(p.invuln,.25);close(p.dashGuardT,.3);
+  p.update(.31);assert.equal(p.dashGuardT,0);assert.ok(p.invuln<=0);assert.equal(p.hurt(1,null,true),true);
+  const q=s.player(9);q.grantDashGuard(.2);const hp=q.hp;
+  G.World.isLiquid=()=>true;G.World.liquidEffect=()=>({dmg:.1,flat:1,every:1,color:'#f00'});
+  q.update(.01);assert.ok(q.hp<hp);assert.equal(q.dashGuardT,0);
+});
+test('hazards, traps and Arceus preserve their ordinary-protection bypass while Z immunity remains',()=>{
+  const s=context(),{G}=s,p=s.player();p.hp=p.maxHp=1000;
+  s.load('js/systems/hazards.js');s.load('js/systems/interact.js');
+  const source=fs.readFileSync(path.join(ROOT,'js/systems/judgment.js'),'utf8').replace(
+    'AT, reset, noteDmg,', '_touchForTest(p){ A={x:p.x,y:p.y,r:10,touchCd:0,anim:{play(){}}};touch(p); }, AT, reset, noteDmg,');
+  vm.runInContext(source,s);
+  const attacks=[
+    ()=>{G.Hazards.add({kind:'zone',x:p.x,y:p.y,r:50,delay:0,dmg:10,pure:true});G.Hazards.update(.01);},
+    ()=>G.Interact.trapEffect({x:p.x,y:p.y+8,kind:2}),
+    ()=>G.Judgment._touchForTest(p)
+  ];
+  for(const attack of attacks){p.invuln=.45;p.grantDashGuard(.2);const hp=p.hp;attack();assert.ok(p.hp<hp);assert.equal(p.dashGuardT,0);}
+  G.ZMoves.grant(G.DB.save,'normal');G.ZMoves.equip(G.DB.save,p.dex,'normal');G.ZMoves.init(p,G.DB.save);
+  p.moves=[G.Moves.instance('tackle')];p.slots=[p.moves];p.active=0;assert.ok(G.ZMoves.arm(p));assert.ok(G.ZMoves.choose(p,0));
+  const hp=p.hp;for(const attack of attacks)attack();assert.equal(p.hp,hp);
+});
+test('Mega dash retains its 0.6s damage reduction alongside scaled ordinary immunity',()=>{
+  const s=context(),{G}=s,p=s.player(6,true),m=G.Moves.instance('quick-attack'),e=s.enemy(80);s.evolve(p);
+  m.cd=.2;p.cdMul=1;p.moves=[m];p.slots=[[m]];p.target=e;G.Combat.tick(0,p,0);
+  close(p.dashGuardT,.18);close(p.megaDashGuard,.6);p.update(.19);
+  assert.equal(p.dashGuardT,0);assert.ok(p.megaDashGuard>0);
+  const hp=p.hp;assert.equal(p.hurt(13,null,true),true);close(hp-p.hp,3);
+});
 
 test('new Z families lock until all output completes, spend once and never alter learned move data',()=>{
   for(const id of ['razor-leaf','heat-wave','giga-drain','spikes','will-o-wisp','toxic','flamethrower']){
@@ -526,7 +607,7 @@ test('shared Z awards cap independently, do not replay after spending, and guest
   G.Coop.isHost=false;assert.equal(G.ZMoves.grantTeamCharge('pickup:901'),false);assert.deepEqual([p.zState.charges,full.zState.charges,downed.zState.charges],[1,2,1]);
 });
 
-test('successful timed events recharge once, while an expired lost-Pokémon rescue gives no Z reward',()=>{
+test('successful timed events recharge once, while an expired lost-Pok鑼卪on rescue gives no Z reward',()=>{
   const s=setup(),{G,p}=s;p.zState.charges=0;s.Math.random=()=>0;
   s.load('js/systems/events.js');G.Events.reset();G.Events.debugStart('gold');G.Events.update(31,[p],100);
   assert.equal(p.zState.charges,1);G.Events.update(.1,[p],100);assert.equal(p.zState.charges,1);

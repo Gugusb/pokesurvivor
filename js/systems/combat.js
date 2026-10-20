@@ -37,7 +37,8 @@ G.Combat = (() => {
   function tickMove(dt, pl, m, now) {
     if (m.kind === 'orbit') { orbit(pl, m, dt, now); return; }
 
-    m.t -= dt * G.Abilities.cooldownRate(pl, m) * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1);
+    const cooldownRate = G.Abilities.cooldownRate(pl, m) * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1);
+    m.t -= dt * cooldownRate;
     if (m.t > 0) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
     if (needsTarget(m) && !(pl.target && G.U.dist(pl.x, pl.y, pl.target.x, pl.target.y) <= reach(m))) {
@@ -45,16 +46,18 @@ G.Combat = (() => {
       return;
     }
     m.t = Math.max(0.05, m.cd * pl.cdMul) * G.Abilities.onCast(pl, m);
+    // Snapshot this cast's real interval, including its one-time cooldown penalty.
+    const castCooldown = m.t / cooldownRate;
     pl.cast(m);
     if (G.Coop.active) G.Coop.cast(pl, m);
     // Vínculo: su icono destella en el HUD al lanzarse (uno que explota pegado al
     // enemigo, como Ascuas tras Ataque Rápido, casi no se ve).
     m.castAt = performance.now();
 
-    run(pl, m);
+    run(pl, m, castCooldown);
   }
 
-  function run(pl, m) {
+  function run(pl, m, castCooldown) {
     if (G.Mega) G.Mega.particles(pl);
     if (G.Mega) m = G.Mega.move(pl, m);
     m = G.Abilities.move(pl, m);
@@ -70,7 +73,7 @@ G.Combat = (() => {
       case 'mine':       mines(pl, m); break;
       case 'meteor':     meteors(pl, m); break;
       case 'turret':     turret(pl, m); break;
-      case 'dash':       dash(pl, m); break;
+      case 'dash':       dash(pl, m, castCooldown); break;
       case 'trail':      trailPatch(pl, m); break;
       case 'cone':       cone(pl, m); break;
     }
@@ -314,7 +317,7 @@ G.Combat = (() => {
   }
 
   /** Embestida: cruzas como un rayo hacia el enemigo y golpeas a todo lo del camino. */
-  function dash(pl, m) {
+  function dash(pl, m, castCooldown) {
     const col = G.U.TYPE_COLOR[m.type], vis = G.VFX.forMove(m);
     const ca = Math.cos(pl.aim), sa = Math.sin(pl.aim);
     const sx = pl.x, sy = pl.y;
@@ -330,7 +333,7 @@ G.Combat = (() => {
     pl.x = sx + ca * len; pl.y = sy + sa * len;
     G.World.collide(pl);
     if (!G.Abilities.suppressEffects(pl)) {
-      pl.invuln = Math.max(pl.invuln || 0, 0.3);
+      if (len > 0) pl.grantDashGuard(castCooldown);
       if (G.Mega && G.Mega.active(pl)) pl.megaDashGuard = 0.6;
     }
     const w = m.width || 34;

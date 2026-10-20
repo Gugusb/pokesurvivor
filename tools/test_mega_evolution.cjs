@@ -105,7 +105,8 @@ test('buff effective stacks double including pre-existing stacks, and the origin
 });
 test('dash post-guard reduces damage by 70% and real outgoing damage applies Mega exactly once',()=>{
   const s=context(),{G}=s,p=s.player(),e=s.enemy();s.evolve(p);s.cast(p,'aerial-ace');assert.equal(p.megaDashGuard,.6);
-  p.hp=p.maxHp;p.invuln=0;p.hurt(13,null,true);close(p.maxHp-p.hp,3);p.megaDashGuard=0;p.invuln=0;
+  p.hp=p.maxHp;p.update(.31);assert.equal(p.dashGuardT,0);assert.ok(p.megaDashGuard>0);
+  p.hurt(13,null,true);close(p.maxHp-p.hp,3);p.megaDashGuard=0;p.invuln=0;
   p.x=0;p.y=0;G.EnemyMgr.rebuildGrid();const hp=e.hp;G.Combat.counterTackle(p,e);const tackle=G.Moves.instance('tackle');close(hp-e.hp,Math.round(tackle.dmg*p.atk*G.Types.mult('normal',e.types)*1.5));
 });
 test('every rift has a 20% Mega branch, excludes partial forms, and 5% awards are authority-driven and idempotent',()=>{

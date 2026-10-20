@@ -4,6 +4,8 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  'Cruzas como un rayo hacia el enemigo. Protección de 0,3 s; con recarga efectiva menor de 0,3 s, dura el 90% de la recarga.':'Dash through the enemy. Protection lasts 0.3 seconds; below a 0.3-second effective cooldown, it lasts 90% of that cooldown.',
+  'Te lanzas en picado y cortas todo lo que cruzas. Protección de 0,3 s; con recarga efectiva menor de 0,3 s, dura el 90% de la recarga.':'Dive through everything in your path. Protection lasts 0.3 seconds; below a 0.3-second effective cooldown, it lasts 90% of that cooldown.',
   'Megaevolución': 'Mega Evolution',
   'Sin registrar': 'Not collected',
   "Vía anfitrión": "Via host",
