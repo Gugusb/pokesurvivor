@@ -1,6 +1,16 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Índice de megaevolución · v0.19.0": "Mega 进化图鉴索引 · v0.19.0",
+  "Mega Evolution index · v0.19.0": "Mega 进化图鉴索引 · v0.19.0",
+  "La Pokédex tiene una pestaña de megaevolución que reúne las 36 especies disponibles de todas las regiones, con contador y filtros de colección, shiny y rareza.": "图鉴新增 Mega 进化标签，跨地区汇总目前开放的 36 只宝可梦，支持收集计数与已拥有、未拥有、闪光、稀有度筛选。",
+  "The Pokédex has a Mega Evolution tab gathering all 36 available species across regions, with a collection count and ownership, shiny and rarity filters.": "图鉴新增 Mega 进化标签，跨地区汇总目前开放的 36 只宝可梦，支持收集计数与已拥有、未拥有、闪光、稀有度筛选。",
+  "El índice muestra nombres y aspecto incluso de especies no registradas; los Pokémon obtenidos conservan sus opciones de compañero y equipamiento.": "索引中未收集的宝可梦也显示名称和外观；已拥有的可正常查看详情、选择伙伴与装备进化石。",
+  "The index shows names and appearances even for uncollected species; owned Pokémon retain partner and equipment options.": "索引中未收集的宝可梦也显示名称和外观；已拥有的可正常查看详情、选择伙伴与装备进化石。",
+  "Consultar una especie no obtenida ya no puede registrarla por generar sus IV. Los filtros vacíos limpian la ficha y se recuperan sin cambiar de índice.": "修正查看未收集宝可梦时生成个体值可能误记为已拥有的问题；空筛选会清理详情，恢复筛选时保留当前索引。",
+  "Viewing an unowned species no longer registers it by generating IVs. Empty filters clear the detail panel and recover without changing the index.": "修正查看未收集宝可梦时生成个体值可能误记为已拥有的问题；空筛选会清理详情，恢复筛选时保留当前索引。",
+  "Megaevolución": "Mega 进化",
+  "Sin registrar": "尚未收集",
   "Medallas y créditos · v0.18.1": "通关奖牌与开发者信息 · v0.18.1",
   "Medals and credits · v0.18.1": "通关奖牌与开发者信息 · v0.18.1",
   "Las ocho medallas de dificultad tienen cintas, bordes facetados, laureles y colores propios. Las medallas pendientes conservan su silueta; el panel muestra cuántas has conseguido.": "八枚难度奖牌采用绶带、刻面金属边与月桂装饰，各有独立配色；未获得时显示暗色轮廓，面板显示收集进度。",

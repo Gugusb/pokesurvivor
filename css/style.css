@@ -529,6 +529,13 @@ img.pix { image-rendering: pixelated; image-rendering: crisp-edges; vertical-ali
 .gen-tab:hover { border-color: var(--edge); }
 .gen-tab.on { border-color: var(--gold); background: rgba(255,210,63,.14); }
 .gen-tab.on b { color: var(--gold); }
+.gen-tab.mega-index { border-color: #a989c0; }
+.gen-tab.mega-index b { display: flex; align-items: center; justify-content: center; gap: 3px; white-space: nowrap; }
+.gen-tab.mega-index.on { border-color: #ecc0ff; background: #9457bf30; }
+.gen-tab.mega-index.on b { color: #efd1ff; }
+.mega-dex-status { display: block; margin-top: 4px; color: #c8b4df; font-size: 10px; }
+.cell.mega-entry { cursor: pointer; }
+.cell.mega-entry:focus-visible { outline: 2px solid #ecc0ff; outline-offset: -2px; }
 
 /* ============ normal / shiny ============ */
 .seg { display: flex; justify-content: center; gap: 0; margin: 2px auto 8px; width: max-content;

@@ -2,7 +2,11 @@
 G.MenuUI = (() => {
   const $ = G.UI.$;
   const GEN_NAMES = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar', 'Paldea'];
-  let dexFilter = 'all', dexGen = 1, dexSel = null;
+  let dexFilter = 'all', dexGen = 1, dexSel;
+  const megaDexes = new Set(G.Mega.LIST.map(f => f.dex));
+  const inDexIndex = p => dexGen === 'mega' ? megaDexes.has(p.dex) : p.gen === dexGen;
+  const inDexFilter = (p,s) => dexFilter === 'own' ? !!s.owned[p.dex] : dexFilter === 'miss' ? !s.owned[p.dex] :
+    dexFilter === 'shiny' ? !!s.shiny?.[p.dex] : /^\d$/.test(dexFilter) ? p.rarity === +dexFilter : true;
 
   function init() {
     const ICON = { play: 'ball', dex: 'book', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
@@ -112,19 +116,27 @@ G.MenuUI = (() => {
   function openDex() {
     G.UI.show('scr-dex', true);
     const s = G.DB.save;
-    if (dexSel == null) { dexSel = s.partner; dexGen = G.DEX_BY[s.partner].gen; }
+    if (dexSel === undefined) { dexSel = s.partner; dexGen = G.DEX_BY[s.partner].gen; }
     const owned = Object.keys(s.owned).filter(d => G.DEX_BY[d]).length;
     $('dex-total').textContent = `${owned} / ${G.DEX.length}`;
 
     // Pestañas de generación, con cuántos tienes de cada una.
     const tabs = $('dex-gens');
     tabs.innerHTML = '';
+    const mega = document.createElement('button');
+    mega.className = 'gen-tab mega-index' + (dexGen === 'mega' ? ' on' : '');
+    mega.dataset.dexIndex = 'mega';mega.setAttribute('aria-pressed',String(dexGen === 'mega'));
+    // Preserve the Mega name across the Chinese translator's second pass.
+    const megaLabel=G.I18n.lang==='zh'?'Mega 进化':G.T('Megaevolución');
+    mega.innerHTML = '<b translate="no">'+G.Icons.html('megaStone',16)+' '+megaLabel+'</b><small>'+[...megaDexes].filter(d=>s.owned[d]).length+'/'+megaDexes.size+'</small>';
+    mega.onclick = () => {dexGen='mega';openDex();};tabs.appendChild(mega);
     GEN_NAMES.forEach((name, i) => {
       const g = i + 1;
       const total = G.DEX.filter(p => p.gen === g).length;
       const have = G.DEX.filter(p => p.gen === g && s.owned[p.dex]).length;
       const b = document.createElement('button');
       b.className = 'gen-tab' + (g === dexGen ? ' on' : '');
+      b.dataset.dexIndex = g;b.setAttribute('aria-pressed',String(g === dexGen));
       b.innerHTML = `<b>${name}</b><small>${have}/${total}</small>`;
       b.onclick = () => { dexGen = g; openDex(); };
       tabs.appendChild(b);
@@ -142,8 +154,11 @@ G.MenuUI = (() => {
       c.onclick = () => { dexFilter = k; openDex(); };
       fb.appendChild(c);
     }
+    const visible = G.DEX.filter(p=>inDexIndex(p)&&inDexFilter(p,s));
+    if(!visible.some(p=>p.dex===dexSel))dexSel=visible[0]?.dex??null;
     renderGrid();
-    showDetail(dexSel);
+    if(dexSel!=null)showDetail(dexSel);
+    else $('dex-detail').innerHTML='<p class="sub">'+G.T('Ninguno con este filtro.')+'</p>';
   }
 
   function renderGrid() {
@@ -151,28 +166,29 @@ G.MenuUI = (() => {
     const grid = $('dex-grid');
     grid.innerHTML = '';
     for (const p of G.DEX) {
-      if (p.gen !== dexGen) continue;
+      if (!inDexIndex(p)||!inDexFilter(p,s)) continue;
       const own = !!s.owned[p.dex], sh = !!(s.shiny && s.shiny[p.dex]);
-      if (dexFilter === 'own' && !own) continue;
-      if (dexFilter === 'miss' && own) continue;
-      if (dexFilter === 'shiny' && !sh) continue;
-      if (/^\d$/.test(dexFilter) && p.rarity !== +dexFilter) continue;
+      const reveal = own || dexGen === 'mega';
 
       const cell = document.createElement('div');
       cell.className = 'cell' + (own ? '' : ' locked') + (p.dex === dexSel ? ' on' : '');
+      cell.dataset.dex = p.dex;
+      if(dexGen==='mega'){cell.classList.add('mega-entry');cell.tabIndex=0;cell.setAttribute('role','button');cell.setAttribute('aria-label',G.T(p.name)+' · '+G.T(own?'Tengo':'Sin registrar'));}
       if (G.DifficultyUI && own) G.DifficultyUI.decorate(cell, p.dex);
       cell.insertAdjacentHTML('beforeend', `<span class="no">${String(p.dex).padStart(3, '0')}</span>`);
       if (p.dex === s.partner) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Compañero">${G.Icons.html('crown', 14)}</span>`);
       else if (sh) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Tienes su shiny">${G.Icons.html('shiny', 12)}</span>`);
       const useShiny = sh && p.dex === s.partner && s.partnerShiny;
-      cell.appendChild(G.UI.spriteCanvas(p.dex, 92, 80, { scale: 2, silhouette: !own, shadow: own, shiny: useShiny }));
-      cell.insertAdjacentHTML('beforeend', `<b>${own ? p.name : '???'}</b>${G.UI.stars(p.rarity, 9)}`);
+      cell.appendChild(G.UI.spriteCanvas(p.dex, 92, 80, { scale: 2, silhouette: !reveal, shadow: own, shiny: useShiny }));
+      cell.insertAdjacentHTML('beforeend', `<b>${reveal ? p.name : '???'}</b>${G.UI.stars(p.rarity, 9)}`);
+      if(dexGen==='mega')cell.insertAdjacentHTML('beforeend','<small class="mega-dex-status">'+G.T(own?'Tengo':'Sin registrar')+'</small>');
       cell.onclick = () => {
         dexSel = p.dex;
         grid.querySelectorAll('.cell').forEach(c => c.classList.remove('on'));
         cell.classList.add('on');
         showDetail(p.dex);
       };
+      if(dexGen==='mega')cell.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();cell.click();}};
       grid.appendChild(cell);
     }
     if (!grid.children.length) grid.innerHTML = '<p class="sub" style="grid-column:1/-1">Ninguno con este filtro.</p>';
@@ -185,6 +201,7 @@ G.MenuUI = (() => {
     const s = G.DB.save;
     const p = G.DEX_BY[dex];
     const own = !!s.owned[dex];
+    const reveal = own || dexGen === 'mega' && megaDexes.has(dex);
     const hasSh = G.DB.ownsShiny(dex);
     const isPartner = dex === s.partner;
     if (!hasSh) viewShiny = false;
@@ -192,7 +209,7 @@ G.MenuUI = (() => {
     showDetail.last = dex;
 
     const max = { hp: 183, atk: 1.55, spd: 137 };
-    const iv = G.DB.ivOf(dex) || [1, 1, 1];
+    const iv = own ? G.DB.ivOf(dex) || [1, 1, 1] : [1, 1, 1];
     const ivClass = value => value <= 10 ? 'iv-low' : value <= 20 ? 'iv-mid' : value <= 29 ? 'iv-high' : 'iv-perfect';
     const bar = (label, v, m, txt, value) =>
       `<div class="stat"><span>${label}</span><div class="bar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div><span>${txt}</span><span class="iv-value ${ivClass(value)}" title="${label} IV ${value}" aria-label="${label} IV ${value}">IV ${value}</span></div>`;
@@ -206,9 +223,9 @@ G.MenuUI = (() => {
           <button class="${viewShiny ? 'on' : ''}" data-v="1">${G.Icons.html('shiny', 12)} Shiny</button></div>` : ''}
       <div class="center">
         <div style="color:var(--muted);font-size:13px">Nº ${String(p.dex).padStart(3, '0')} · ${GEN_NAMES[p.gen - 1]}</div>
-        <h3>${own ? p.name : '???'}</h3>
+        <h3>${reveal ? p.name : '???'}</h3>
         <div style="color:${G.Gacha.RARITY_COLOR[p.rarity]}">${G.UI.stars(p.rarity, 24)} ${G.Gacha.RARITY_NAME[p.rarity]}</div>
-        <div style="margin:6px 0">${own ? G.UI.typeChips(p.types) : ''}</div>
+        <div style="margin:6px 0">${reveal ? G.UI.typeChips(p.types) : ''}</div>
       </div>
       ${own ? `
         ${bar('Vida', p.hp, max.hp, p.hp, iv[0])}
@@ -226,7 +243,7 @@ G.MenuUI = (() => {
     $('dex-big').style.setProperty('--stage-c', !own ? '#5b83d6' : viewShiny ? '#9ae6ff' : G.U.TYPE_COLOR[p.types[0]]);
     $('dex-big').classList.toggle('shiny', own && viewShiny);
     if (G.DifficultyUI && own) { G.DifficultyUI.decorate($('dex-big'), dex); G.DifficultyUI.detail(box, dex); }
-    G.UI.sprite($('dex-big'), dex, { lively: own, spin: own, silhouette: !own, scale: 3, hero: true, shiny: own && viewShiny });
+    G.UI.sprite($('dex-big'), dex, { lively: own, spin: own, silhouette: !reveal, scale: 3, hero: true, shiny: own && viewShiny });
     if (G.AbilityDefs.medalsFor(dex).length) G.GachaUI.renderEquipment(box, dex);
     if (G.MegaUI && own) G.MegaUI.renderEquipment(box, dex);
     if (G.ZMovesUI && own) G.ZMovesUI.renderEquipment(box, dex);

@@ -4,6 +4,8 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  'Megaevolución': 'Mega Evolution',
+  'Sin registrar': 'Not collected',
   "Vía anfitrión": "Via host",
   "Directo P2P": "P2P direct",
   "No se pudo conectar directamente": "Direct connection failed",

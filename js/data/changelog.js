@@ -6,6 +6,12 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-20', title: ['Índice de megaevolución · v0.19.0', 'Mega Evolution index · v0.19.0'], new: [
+    ['La Pokédex tiene una pestaña de megaevolución que reúne las 36 especies disponibles de todas las regiones, con contador y filtros de colección, shiny y rareza.', 'The Pokédex has a Mega Evolution tab gathering all 36 available species across regions, with a collection count and ownership, shiny and rarity filters.'],
+    ['El índice muestra nombres y aspecto incluso de especies no registradas; los Pokémon obtenidos conservan sus opciones de compañero y equipamiento.', 'The index shows names and appearances even for uncollected species; owned Pokémon retain partner and equipment options.']
+  ], chg: [], fix: [
+    ['Consultar una especie no obtenida ya no puede registrarla por generar sus IV. Los filtros vacíos limpian la ficha y se recuperan sin cambiar de índice.', 'Viewing an unowned species no longer registers it by generating IVs. Empty filters clear the detail panel and recover without changing the index.']
+  ] },
   { d: '2026-10-20', title: ['Medallas y créditos · v0.18.1', 'Medals and credits · v0.18.1'], new: [], chg: [
     ['Las ocho medallas de dificultad tienen cintas, bordes facetados, laureles y colores propios. Las medallas pendientes conservan su silueta; el panel muestra cuántas has conseguido.', 'All eight difficulty medals have ribbons, faceted borders, laurels and individual colors. Unearned medals retain their silhouettes; the panel shows your earned count.'],
     ['La página de apoyo conserva al autor original y sus enlaces de donación, y añade una sección de desarrollo de Gugusb con el repositorio de esta versión.', 'The support page retains the original author and donation links, and adds a Gugusb development section linking this version’s repository.']
