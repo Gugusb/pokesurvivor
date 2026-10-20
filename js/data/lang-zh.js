@@ -1,6 +1,16 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Medallas y créditos · v0.18.1": "通关奖牌与开发者信息 · v0.18.1",
+  "Medals and credits · v0.18.1": "通关奖牌与开发者信息 · v0.18.1",
+  "Las ocho medallas de dificultad tienen cintas, bordes facetados, laureles y colores propios. Las medallas pendientes conservan su silueta; el panel muestra cuántas has conseguido.": "八枚难度奖牌采用绶带、刻面金属边与月桂装饰，各有独立配色；未获得时显示暗色轮廓，面板显示收集进度。",
+  "All eight difficulty medals have ribbons, faceted borders, laurels and individual colors. Unearned medals retain their silhouettes; the panel shows your earned count.": "八枚难度奖牌采用绶带、刻面金属边与月桂装饰，各有独立配色；未获得时显示暗色轮廓，面板显示收集进度。",
+  "La página de apoyo conserva al autor original y sus enlaces de donación, y añade una sección de desarrollo de Gugusb con el repositorio de esta versión.": "支持页保留原作者及其赞助链接，另设 Gugusb 扩展开发栏目，提供本版本 GitHub 仓库入口。",
+  "The support page retains the original author and donation links, and adds a Gugusb development section linking this version’s repository.": "支持页保留原作者及其赞助链接，另设 Gugusb 扩展开发栏目，提供本版本 GitHub 仓库入口。",
+  "Proyecto original": "原版项目",
+  "Desarrollo de esta versión": "本版本扩展开发",
+  "Código y novedades de esta versión ampliada en GitHub.": "本扩展版本的源码、更新记录和开发进度可在 GitHub 查看。",
+  "Ver el repositorio": "查看 GitHub 仓库",
   "Todos los ataques Z · v0.18.0": "Z 招式类型补全与平衡 · v0.18.0",
   "All attacking Z moves · v0.18.0": "Z 招式类型补全与平衡 · v0.18.0",
   "Siete familias Z nuevas: bumeranes de ida y vuelta, tres ondas radiales, aura pulsante, minas encadenadas, tres torretas, un corredor de campos y seis ráfagas en abanico.": "新增七类 Z：往返回旋斩、三轮径向冲击波、脉冲光环、连爆雷阵、三座炮台、地面轨迹走廊和六轮扇形喷射。",

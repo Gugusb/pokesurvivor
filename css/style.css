@@ -156,11 +156,44 @@ input { font: inherit; }
 .difficulty-picker label { display: block; font-size: 12px; color: var(--gold); }
 .difficulty-picker select { width: 100%; padding: 5px 7px; font: inherit; font-weight: 700; color: #ffe59a; background: #15233d; border: 1px solid #ac9049; border-radius: 7px; }
 .difficulty-picker small { display: block; font-size: 10px; color: var(--muted); line-height: 1.25; margin-top: 3px; }
-.difficulty-record { margin: 12px 0; padding: 10px; border: 1px solid #566986; border-radius: 10px; background: #09152790; }
-.difficulty-record h4 { margin: 0 0 8px; }
-.difficulty-medals { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.difficulty-medal { display: inline-block; text-align: center; padding: 4px; border: 1px solid #47566c; border-radius: 5px 5px 10px 10px; color: #7d8da6; background: #182233; }
-.difficulty-medal.won { color: #fff2b8; border-color: #efc65a; background: linear-gradient(140deg,#765214,#b18126 45%,#4b3415); box-shadow: inset 0 1px 2px #fff9; }
+.difficulty-record { margin: 14px 0; padding: 12px; border: 1px solid #46536c; border-radius: 12px; background: linear-gradient(150deg,#1b2941e6,#0b1426f2); box-shadow: inset 0 1px #a9c8ff14,0 4px 12px #0002; }
+.difficulty-record-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.difficulty-record h4 { margin: 0; color: #e2eafb; letter-spacing: .05em; }
+.difficulty-medal-count { flex-shrink: 0; padding: 3px 9px; border: 1px solid #7d8eae55; border-radius: 20px; color: #c6d5ee; background: #070e1c66; font: 700 12px/1.3 sans-serif; font-variant-numeric: tabular-nums; }
+.difficulty-record.complete .difficulty-medal-count { color: #ffe7ba; border-color: #f0be6370; background: #74532440; }
+.difficulty-medals { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 8px 6px; }
+.difficulty-medal { --medal-tone: #52617a; --medal-hi: #7c8da5; --medal-lo: #303d55; --medal-ink: #c3ccda; --medal-cloth: #35435c; position: relative; min-width: 0; display: flex; flex-direction: column; align-items: center; padding: 5px 2px 8px; border: 1px solid #7b94bb18; border-radius: 8px; background: #060d1a38; text-align: center; color: #8f9eb5; transition: transform .14s ease,border-color .14s ease,background .14s ease; }
+.difficulty-medal-art { display: block; width: min(100%,68px); height: auto; overflow: visible; filter: drop-shadow(0 3px 2px #0005); }
+.medal-ribbon-shadow { fill: #090f1c; }
+.medal-ribbon { fill: var(--medal-cloth); }
+.medal-ribbon-stripe { fill: var(--medal-hi); opacity: .55; }
+.medal-edge { fill: var(--medal-tone); stroke: var(--medal-lo); stroke-width: 2; stroke-linejoin: bevel; }
+.medal-bevel-light { fill: var(--medal-hi); }
+.medal-bevel-dark { fill: var(--medal-lo); }
+.medal-face { fill: var(--medal-lo); }
+.medal-engraving { fill: #101a2b; stroke: var(--medal-tone); stroke-width: 1; }
+.medal-laurel { stroke: var(--medal-tone); }
+.medal-star { fill: var(--medal-hi); }
+.medal-numeral { fill: var(--medal-ink); font: 700 16px 'Pixelify',Georgia,serif; letter-spacing: 0; }
+.medal-glint { fill: #fff6d0; opacity: 0; }
+.difficulty-medal-stars { color: inherit; font: 700 12px/1.3 sans-serif; margin-top: 1px; }
+.difficulty-medal-stars > span { color: var(--medal-tone); font-size: 10px; }
+.difficulty-medal-state { display: block; max-width: 100%; margin-top: 3px; font-size: 10px; line-height: 1.2; white-space: normal; overflow-wrap: anywhere; }
+.difficulty-medal.won { color: var(--medal-hi); border-color: color-mix(in srgb,var(--medal-tone) 38%,transparent); background: linear-gradient(160deg,color-mix(in srgb,var(--medal-tone) 12%,#132036),#0c1526); box-shadow: inset 0 1px #ffffff0b; }
+.difficulty-medal.won .difficulty-medal-state { color: #ccd7e8; }
+.difficulty-medal.won .medal-glint { opacity: .9; }
+.difficulty-medal.won.tier-1 { --medal-tone: #c68b5e; --medal-hi: #ffe0b6; --medal-lo: #775036; --medal-ink: #fff0d4; --medal-cloth: #85504a; }
+.difficulty-medal.won.tier-2 { --medal-tone: #a7bfd3; --medal-hi: #eaf6ff; --medal-lo: #586d86; --medal-ink: #f2fbff; --medal-cloth: #4d6b93; }
+.difficulty-medal.won.tier-3 { --medal-tone: #e4b64f; --medal-hi: #fff1b0; --medal-lo: #8a6127; --medal-ink: #fff2c8; --medal-cloth: #90652f; }
+.difficulty-medal.won.tier-4 { --medal-tone: #ab92e9; --medal-hi: #e8dbff; --medal-lo: #65518e; --medal-ink: #f3eaff; --medal-cloth: #63539d; }
+.difficulty-medal.won.tier-5 { --medal-tone: #42c99a; --medal-hi: #c1ffe1; --medal-lo: #237459; --medal-ink: #ddfff1; --medal-cloth: #236d61; }
+.difficulty-medal.won.tier-6 { --medal-tone: #589fe9; --medal-hi: #d3efff; --medal-lo: #305d94; --medal-ink: #e3f5ff; --medal-cloth: #344d8d; }
+.difficulty-medal.won.tier-7 { --medal-tone: #d58edb; --medal-hi: #ffdcf6; --medal-lo: #855187; --medal-ink: #ffedf9; --medal-cloth: #7f477e; }
+.difficulty-medal.won.tier-8 { --medal-tone: #e56784; --medal-hi: #ffdae1; --medal-lo: #922e50; --medal-ink: #ffeaf1; --medal-cloth: #8a314d; }
+.difficulty-medal:hover,.difficulty-medal:focus-visible { transform: translateY(-2px); border-color: var(--medal-tone); background-color: #233553; outline: 2px solid transparent; outline-offset: 2px; }
+.difficulty-medal:focus-visible { outline-color: var(--medal-hi); }
+.difficulty-record > .note { line-height: 1.5; }
+@media (prefers-reduced-motion: reduce) { .difficulty-medal { transition: none; } .difficulty-medal:hover,.difficulty-medal:focus-visible { transform: none; } }
 .cell.victory-gold:not(.locked), canvas.stage.victory-gold { border: 3px solid #f4cb57; box-shadow: 0 0 10px #e5b83077, inset 0 0 5px #fff0a855; }
 .cell.victory-emerald:not(.locked), canvas.stage.victory-emerald { border: 3px solid #4ff5b4; border-image: linear-gradient(135deg,#b9ffe1,#08784d 20%,#65ffc4 35%,#0e8254 50%,#a6ffdc 65%,#0b6547 80%,#78ffd3) 1; background-color: #0c3e35c9; box-shadow: 0 0 13px #22efa577, inset 0 0 7px #72ffca77; }
 .cell.victory-ruby:not(.locked), canvas.stage.victory-ruby { border: 3px solid #ff5579; border-image: linear-gradient(135deg,#ffd2de,#840e39 20%,#ff7099 35%,#990d37 50%,#ffbad0 65%,#ff7093) 1; background-color: #490d2bc9; box-shadow: 0 0 15px #ff276f88, inset 0 0 7px #ff95b577; }
@@ -808,6 +841,14 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 /* ---------- apoyar el proyecto ---------- */
 #scr-support { z-index: 60; }
 .box.support { width: min(560px, 100%); }
+.support-original > h3 { margin-top: 8px; color: #ffe3a2; font-size: 17px; }
+.support-original > h3 a { color: inherit; text-underline-offset: 3px; }
+.support-fork { margin-top: 20px; padding: 16px; border: 1px solid #87b8ff60; border-radius: 10px; background: linear-gradient(135deg,#162f59,#111c36); box-shadow: inset 3px 0 #8dbbff; }
+.support-section-label { font-size: 12px; letter-spacing: .06em; color: #a8c9f5; }
+.support-fork h3 { margin: 6px 0; font-size: 25px; color: #eef5ff; }
+.support-fork p { margin: 6px 0 12px; line-height: 1.6; color: #c8d8ef; font-size: 14px; }
+.support-fork .btn { display: inline-flex; text-decoration: none; }
+.support-repo { display: block; margin-top: 9px; color: #a1b8d8; font: 11px/1.5 monospace; overflow-wrap: anywhere; }
 /* Mejoras: botones y veto */
 .upg-btns { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .upg-btns [data-max] { display: inline-flex; gap: 6px; align-items: center; justify-content: center; }

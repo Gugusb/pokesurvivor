@@ -530,8 +530,12 @@ puedes hacer una <b>donación voluntaria</b>. <b>Todo el dinero se usa para los 
 <table class="list"><tbody>{rows}</tbody></table>
 <p>Los servidores guardan las partidas y las cuentas, el ranking y las partidas en grupo: cuanta más gente juega, más cuestan.</p>
 <h2>Cómo apoyar</h2>
+<p>Proyecto original: <a href="https://github.com/JPTER78/pokesurvivor">JPTER78</a>.</p>
 <p>{btns or 'Muy pronto podrás donar desde aquí.'}</p>
 <p>También ayuda mucho, y gratis: compartir el juego con tus amigos, recomendarlo y avisar de fallos.</p>
+<section class="support-fork"><h2>Desarrollo de esta versión</h2><h3>Gugusb</h3>
+<p>Código y novedades de esta versión ampliada en GitHub.</p>
+<p><a href="https://github.com/Gugusb/pokesurvivor">Gugusb / pokesurvivor</a></p></section>
 {cta(pid, lang, 'Volver al juego')}</article>"""
         title, desc = 'Apoyar PokéSurvivor: donaciones para los servidores', 'PokéSurvivor es gratis y sin anuncios. Las donaciones voluntarias se usan sólo para los servidores y el dominio.'
     else:
@@ -546,8 +550,12 @@ you can make a <b>voluntary donation</b>. <b>All the money goes to the servers a
 <table class="list"><tbody>{rows}</tbody></table>
 <p>The servers store saves and accounts, the leaderboards and group games: the more people play, the more they cost.</p>
 <h2>How to support</h2>
+<p>Original project: <a href="https://github.com/JPTER78/pokesurvivor">JPTER78</a>.</p>
 <p>{btns or 'You\'ll be able to donate from here very soon.'}</p>
 <p>Sharing the game with your friends, recommending it and reporting bugs helps a lot too, and it\'s free.</p>
+<section class="support-fork"><h2>Development of this version</h2><h3>Gugusb</h3>
+<p>Source code and updates for this expanded version on GitHub.</p>
+<p><a href="https://github.com/Gugusb/pokesurvivor">Gugusb / pokesurvivor</a></p></section>
 {cta(pid, lang, 'Back to the game')}</article>"""
         title, desc = 'Support PokéSurvivor: donations for the servers', 'PokéSurvivor is free and ad-free. Voluntary donations only pay for the servers and the domain.'
     write(pid, lang, page(pid, lang, title, desc, body, {'@context': 'https://schema.org', '@graph': [crumbs(pid, lang, h1)]}))

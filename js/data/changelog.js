@@ -6,6 +6,10 @@
  * Cada línea en español y en inglés.
  */
 G.CHANGELOG = [
+  { d: '2026-10-20', title: ['Medallas y créditos · v0.18.1', 'Medals and credits · v0.18.1'], new: [], chg: [
+    ['Las ocho medallas de dificultad tienen cintas, bordes facetados, laureles y colores propios. Las medallas pendientes conservan su silueta; el panel muestra cuántas has conseguido.', 'All eight difficulty medals have ribbons, faceted borders, laurels and individual colors. Unearned medals retain their silhouettes; the panel shows your earned count.'],
+    ['La página de apoyo conserva al autor original y sus enlaces de donación, y añade una sección de desarrollo de Gugusb con el repositorio de esta versión.', 'The support page retains the original author and donation links, and adds a Gugusb development section linking this version’s repository.']
+  ], fix: [] },
   { d: '2026-10-20', title: ['Todos los ataques Z · v0.18.0', 'All attacking Z moves · v0.18.0'], new: [
     ['Siete familias Z nuevas: bumeranes de ida y vuelta, tres ondas radiales, aura pulsante, minas encadenadas, tres torretas, un corredor de campos y seis ráfagas en abanico.', 'Seven new Z families: returning blades, three radial waves, a pulsing aura, chained mines, three turrets, a corridor of fields and six cone volleys.'],
     ['Todos los movimientos ofensivos admiten Z; los potenciadores de atributos no. Las nuevas familias conservan sus materiales y colores originales.', 'All damaging moves support Z; attribute buffs do not. The new families retain their original materials and colors.']

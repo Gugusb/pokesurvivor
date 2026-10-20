@@ -28,6 +28,10 @@ main { padding: 24px 16px 40px; }
   border-radius: 12px; box-shadow: 0 0 0 3px #0b1838, 0 18px 50px rgba(0,0,0,.5); padding: 26px clamp(16px, 4vw, 34px); }
 .doc.wide { max-width: 1180px; }
 .doc.center { text-align: center; }
+.doc .support-fork { margin-top: 28px; padding: 18px; border: 1px solid #87b8ff80; border-left: 4px solid #9dc5ff; border-radius: 10px; background: #0c1d3a80; }
+.doc .support-fork h2 { margin-top: 0; font-size: 22px; color: #cce3ff; }
+.doc .support-fork h3 { margin-top: 8px; font-size: 28px; }
+.doc .support-fork a { overflow-wrap: anywhere; }
 .lead { font-size: 19px; color: #e6eeff; }
 .doc li { margin: 6px 0; }
 .doc ul.feat li::marker { color: var(--gold); }
