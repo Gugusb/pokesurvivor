@@ -33,7 +33,7 @@ G.Game = (() => {
     resize();
     addEventListener('resize', resize);
     G.Touch.init(cv);
-    // En móvil: al cambiar de app o girarlo en vertical, la partida se pausa.
+    // Switching apps pauses solo play; either screen orientation is supported.
     document.addEventListener('visibilitychange', () => { if (document.hidden) autoPause(); });
     G.RunUI.wirePause(() => { state = 'playing'; G.UI.hideAll(); }, quitRun);
     Backdrop.init();
@@ -49,17 +49,6 @@ G.Game = (() => {
     cv.width = Math.round(w * dpr);
     cv.height = Math.round(h * dpr);
     G.Camera.resize(w, h, dpr);
-    checkOrientation();
-  }
-
-  /** Móvil en vertical: aviso de girarlo (y pausa). */
-  function checkOrientation() {
-    const portrait = G.Touch.active && innerHeight > innerWidth;
-    const el = document.getElementById('rotate');
-    if (!el) return;
-    if (portrait && !document.getElementById('rotate-ico').innerHTML) document.getElementById('rotate-ico').innerHTML = G.Icons.html('phone', 48);
-    el.classList.toggle('hidden', !portrait);
-    if (portrait) autoPause();
   }
 
   /** Pausa sola (sólo en solitario: en grupo los demás siguen). */
@@ -343,8 +332,8 @@ G.Game = (() => {
   G.onRescue = (dex, name) => {
     if (!G.DB.save || !pl) return;
     const isNew = !G.DB.owns(dex);
-    if (isNew) { G.DB.grant(dex, 'rescue'); G.DB.commit(true); }
-    else pl.coins += 150;
+    G.DB.grant(dex, 'rescue'); G.DB.commit(true);
+    if (!isNew) pl.coins += 150;
     G.Spawner.say(isNew ? '¡' + name + ' se une a tu equipo!' : '¡' + name + ' te da las gracias! (+150 monedas, ya lo tenías)', 4);
     G.Audio.sfx('shinyGet');
   };
@@ -1021,7 +1010,7 @@ G.Flow = {
     G.UI.initChrome();
     G.LoginUI.init(); G.TestUI.init(); G.MenuUI.init(); G.GachaUI.init(); G.Dev.init();
     if (G.Offline) { G.Offline.init(); G.OfflineUI.init(); }
-    G.SocialUI.init(); G.RankingUI.init(); G.ModUI.init(); G.GoalsUI.init(); G.ProfileUI.init(); G.SettingsUI.init(); G.SupportUI.init(); G.NewsUI.init(); G.Updater.init();
+    G.SocialUI.init(); G.NurseryUI.init(); G.RankingUI.init(); G.ModUI.init(); G.GoalsUI.init(); G.ProfileUI.init(); G.SettingsUI.init(); G.SupportUI.init(); G.NewsUI.init(); G.Updater.init();
     // Tu nombre arriba a la derecha abre tu perfil.
     document.getElementById('user-pill').onclick = () => G.GoalsUI.open('profile');
     G.Audio.music('village');     // suena tras el primer clic (lo exige el navegador)

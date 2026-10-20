@@ -6,7 +6,7 @@
                 'World', 'FX', 'Projectiles', 'EnemyMgr', 'Pickups', 'Player', 'Combat', 'Spawner', 'LevelUp', 'Gacha',
                 'Rift', 'Weather', 'Progress', 'Hazards', 'Social', 'Net', 'Coop', 'Ranking', 'Icons', 'UI', 'HUD',
                 'MenuUI', 'RunUI', 'SettingsUI', 'Funding', 'SupportUI', 'Game', 'Flow', 'AbilityDefs', 'Abilities', 'AbilityGacha', 'Dev',
-                'Difficulty', 'DifficultyUI', 'Offline', 'OfflineUI'];
+                'Difficulty', 'DifficultyUI', 'Offline', 'OfflineUI','ZAccess','NurseryRules','NurseryUI'];
   function broken() {
     // (En la versión publicada G no está en window: va encerrado, ver tools/build.js.)
     const miss = NEED.filter(k => typeof G !== 'object' || !G[k]);

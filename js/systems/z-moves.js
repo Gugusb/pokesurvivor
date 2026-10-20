@@ -20,30 +20,32 @@ G.ZMoves = (() => {
   const timeFactor = () => all().some(selecting) ? BULLET_TIME : 1;
   const matches = (p, m) => hasStone(p) && m.type === state(p).type && KINDS.includes(m.kind);
   const eligible = (p, i) => (p.slots[i] || []).filter(m => matches(p, m));
-  function owns(save, type) { return TYPES.includes(type) && !!save?.zStones?.[type]; }
+  function owns(save, type, dex) { return TYPES.includes(type) && (dex == null ? !!save?.zStones?.[type] : G.ZAccess.allowed(save,dex)); }
   function grant(save, type) {
     if (!TYPES.includes(type)) return false;
-    save.zStones ||= {}; save.zStones[type] ||= { at: Date.now(), from: 'dev' }; return true;
+    save.zStones ||= {}; save.zStones[type] ||= { at: Date.now(), from: 'dev' };
+    for(const d of Object.keys(save.owned||{}))G.ZAccess.unlock(save,d,'dev');return true;
   }
   function equip(save, dex, type) {
-    if (!G.DEX_BY[dex] || type && !owns(save, type)) return false;
+    if (!G.DEX_BY[dex] || type && !owns(save, type, dex)) return false;
     save.zEquipped ||= {}; save.zEquipped[dex] = type || null;
     if (type) { save.megaEquipped ||= {}; save.megaEquipped[dex] = null; }
     return true;
   }
   function normalize(save) {
+    G.ZAccess?.normalize(save);
     for (const key of ['zStones', 'zEquipped']) if (!save[key] || typeof save[key] !== 'object' || Array.isArray(save[key])) save[key] = {};
     for (const type of Object.keys(save.zStones)) if (!TYPES.includes(type) || !save.zStones[type] || typeof save.zStones[type] !== 'object' || Array.isArray(save.zStones[type])) delete save.zStones[type];
     for (const dex of Object.keys(save.zEquipped)) {
       const type = save.zEquipped[dex];
-      if (!G.DEX_BY[dex] || type !== null && !owns(save, type)) delete save.zEquipped[dex];
+      if (!G.DEX_BY[dex] || type !== null && !owns(save, type, dex)) delete save.zEquipped[dex];
       else if (type && save.megaEquipped) save.megaEquipped[dex] = null;
     }
   }
   function init(p, save) {
     const path = G.MonProgression?.pathFor(p.ivDex || p.dex) || [p.dex];
     const type = save?.zEquipped?.[p.ivDex || p.dex] || save?.zEquipped?.[path[path.length - 1]];
-    if (owns(save, type)) {
+    if (owns(save, type, p.ivDex || p.dex)) {
       state(p).type = type;
       if (p.megaState) p.megaState.id = null;
       if (p.item) p.equip(null);

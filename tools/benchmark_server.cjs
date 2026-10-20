@@ -13,7 +13,7 @@ if (require('../server/server.cjs').VERSION !== '0.15.0') {
 const clients = Math.max(4, Math.min(400, Number(process.argv[2]) || 100)),
   seconds = 8;
 (async () => {
-  const app = createApp({ dbFile: ":memory:" }),
+  const app = createApp({coopEnabled:true, dbFile: ":memory:" }),
     start = Date.now(),
     ids = [],
     cookies = [];

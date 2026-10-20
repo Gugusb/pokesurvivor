@@ -79,7 +79,7 @@ async function handshake(wa, wb, room, a, b, attempt = "testattempt123") {
 }
 async function fixture(t) {
   let clock = Date.now();
-  const app = createApp({ dbFile: ":memory:", now: () => clock });
+  const app = createApp({coopEnabled:true, dbFile: ":memory:", now: () => clock });
   app.server.listen(0, "127.0.0.1");
   await once(app.server, "listening");
   t.after(() => app.close());

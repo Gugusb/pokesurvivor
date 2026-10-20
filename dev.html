@@ -83,8 +83,6 @@
 <body>
 
 <canvas id="game"></canvas>
-<!-- En móvil se juega en horizontal -->
-<div id="rotate" class="hidden"><div class="box center"><div id="rotate-ico"></div><h2>Gira el móvil</h2><p class="sub">PokéSurvivor se juega en horizontal.</p></div></div>
 
 <!-- ====== Inicio: login / registro / invitado ====== -->
 <section id="scr-login" class="scr hidden">
@@ -185,7 +183,8 @@
         <button class="menu-item" data-go="ability-gacha">Gacha de habilidades<small>Medallas de las regiones disponibles</small></button>
         <button class="menu-item" data-go="goals">Misiones<small id="menu-goals-sub">Misiones, logros y perfil</small></button>
         <button class="menu-item" data-go="offline">Ingresos sin conexión<small id="menu-offline-rate">Sólo cuentas registradas</small></button>
-        <button class="menu-item" data-go="friends">Amigos<small id="menu-friends-sub">Juega en grupo, hasta 4</small></button>
+        <button class="menu-item" data-go="nursery">Guardería<small id="menu-nursery-sub">Huevos y crianza con amigos</small></button>
+        <button class="menu-item" data-go="friends">Amigos<small id="menu-friends-sub">Guardería y regalos</small></button>
         <button class="menu-item" data-go="rank">Ranking<small>Medallas completas y supervivencia 8★</small></button>
         <button class="menu-item" data-go="settings">Ajustes<small>Sonido, gráficos, controles y cuenta</small></button>
       </div>
@@ -353,11 +352,18 @@
       <button class="btn gold" type="submit" data-sfx="confirm">Añadir amigo</button>
     </form>
     <p id="fr-msg" class="note"></p>
+    <div id="fr-inbox"></div>
     <div id="fr-list" class="fr-list"></div>
   </div>
 </section>
 
 <!-- ====== Sala (partida en grupo) ====== -->
+<section id="scr-nursery" class="scr dim hidden">
+  <div class="box wide nursery-box">
+    <div class="row between"><h2 id="nursery-title">Guardería</h2><button id="nursery-back" class="btn small ghost">Volver</button></div>
+    <p id="nursery-message" class="note" role="status"></p><div id="nursery-body"></div>
+  </div>
+</section>
 <section id="scr-lobby" class="scr dim hidden">
   <div class="box wide">
     <div class="row between"><h2>Sala</h2>
@@ -585,6 +591,9 @@
 <script defer src="js/data/music.js"></script>
 <script defer src="js/data/pokedex.js"></script>
 <script defer src="js/data/evolutions.js"></script>
+<script defer src="js/data/egg-groups.js"></script>
+<script defer src="js/systems/z-access.js"></script>
+<script defer src="js/systems/nursery-rules.js"></script>
 <script defer src="js/data/sprites-meta.js"></script>
 <script defer src="js/data/mega-forms.js"></script>
 <script defer src="js/data/mega-types.js"></script>
@@ -658,6 +667,7 @@
 <script defer src="js/ui/gacha-ui.js"></script>
 <script defer src="js/ui/run-ui.js"></script>
 <script defer src="js/ui/social-ui.js"></script>
+<script defer src="js/ui/nursery-ui.js"></script>
 <script defer src="js/ui/ranking-ui.js"></script>
 <script defer src="js/ui/mod-ui.js"></script>
 <script defer src="js/ui/goals-ui.js"></script>

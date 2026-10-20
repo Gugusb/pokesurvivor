@@ -1,6 +1,7 @@
 /* Same-origin, self-hosted accounts. No third-party identity provider. */
 G.Server = (() => {
   let available = false,
+    coopEnabled = false,
     user = null,
     rev = 0,
     dirty = false,
@@ -18,6 +19,22 @@ G.Server = (() => {
     G.I18n?.lang === "zh" ? zh : G.I18n?.lang === "en" ? en : es;
   function translatedError(message) {
     const messages = {
+      'Co-op invitations temporarily unavailable':['Las invitaciones cooperativas están desactivadas temporalmente.','邀请联机暂时关闭。'],
+      'Accepted friend required':['Se requiere una amistad aceptada.','需要先成为已接受的好友。'],
+      'Choose an owned Pokemon':['Elige un Pokémon de tu colección.','请选择已拥有的宝可梦。'],
+      'Hatch not found':['Crianza no encontrada.','未找到这次孵蛋记录。'],
+      'Hatch not ready':['La cría aún no está lista.','孵蛋尚未完成。'],
+      'Claim the current hatch first':['Recoge primero la cría actual.','请先完成并收获当前孵蛋，过程中不能撤回。'],
+      'Place a primary Pokemon first':['Coloca primero el progenitor principal.','请先放入主亲本。'],
+      'Nursery primary changed':['El progenitor principal ha cambiado.','主亲本已变更，请重新进入孵蛋屋。'],
+      'Nursery invitation required':['Necesitas una invitación para esta crianza.','需要本次主亲本的孵蛋邀请。'],
+      'Nursery is occupied':['La guardería está ocupada.','这个孵蛋屋正在孵蛋或等待收获。'],
+      'Already participating in a friend hatch':['Ya participas en la crianza de un amigo.','你正在参与另一位好友的孵蛋，请先收获。'],
+      'Incompatible egg groups':['Los grupos huevo no son compatibles.','蛋组不适配，无法开始孵蛋。'],
+      'Gift already sent today':['Ya has enviado un regalo hoy a este amigo.','今天已经向这位好友送过礼物。'],
+      'Daily gift limit reached':['Has alcanzado los 10 regalos diarios.','今天已向 10 位好友赠礼，请明日再来。'],
+      'Gift not found':['Regalo no encontrado.','未找到这份礼物。'],
+      'Wallet limit reached':['Alcanza el límite del monedero; gasta primero.','货币达到上限，请先消耗后再领取。'],
       "Sign in required": ["Inicia sesión de nuevo.", "请重新登录。"],
       "Account suspended": ["Cuenta suspendida.", "账号已被封禁。"],
       "Password must contain 8–128 characters": [
@@ -211,6 +228,7 @@ G.Server = (() => {
   async function probe() {
     try {
       const h = await api("/health");
+      coopEnabled=h.coopEnabled===true;
       available = h.protocol === 2 && h.transport === "p2p";
       return available;
     } catch {
@@ -291,6 +309,30 @@ G.Server = (() => {
         remember();
       } else accept(r, true);
       return r.report;
+    });
+  }
+  async function socialAction(route,data={},reward=false) {
+    await flush();
+    return enqueue(async()=>{
+      // Flush any edits made while waiting for another queued request.
+      if(dirty){
+        const snapshot=copy(G.DB.save),r=await api('/save',{rev,save:snapshot});
+        dirty=JSON.stringify(G.DB.save)!==JSON.stringify(snapshot);accept(r);
+      }
+      const before=copy(baseline),r=await api(route,{...data,...(reward?{rev}:{})});
+      if(reward&&r.save){
+        const s=G.DB.save,remote=r.save;
+        for(const k of ['coins','abilityGems'])s[k]+=remote[k]-before[k];
+        for(const k of ['t1','t10'])s.tickets[k]+=remote.tickets[k]-before.tickets[k];
+        for(const [d,entry]of Object.entries(remote.owned)){
+          if(!s.owned[d])s.owned[d]=copy(entry);
+          else if(entry.iv)s.owned[d].iv=entry.iv.map((v,i)=>Math.max(v,s.owned[d].iv?.[i]||1));
+        }
+        s.megaStones={...remote.megaStones,...s.megaStones};
+        Object.assign(s,G.ZAccess.merge(s,remote));
+        accept(r);commit(true);
+      }
+      return r;
     });
   }
   function snapshot(clean = true) {
@@ -456,6 +498,7 @@ G.Server = (() => {
     commit,
     flush,
     settleOffline,
+    socialAction,
     claimBonus,
     prepareRun,
     startRun,
@@ -475,6 +518,7 @@ G.Server = (() => {
     get available() {
       return available;
     },
+    get coopEnabled(){return coopEnabled;},
     get conflict() {
       return conflict;
     },
@@ -484,6 +528,7 @@ G.Server = (() => {
 /* P2P transport is defined in p2p.js before this module. */
 G.Social = (() => {
   let started = false,
+    extras = {gifts:{sent:[],inbox:[]},nurseryInvites:[],nurseryReady:false},
     friends = [],
     invites = [],
     room = null,
@@ -493,6 +538,8 @@ G.Social = (() => {
     for (const fn of listeners) fn(what);
   };
   function apply(r) {
+    for(const k of ['gifts','nurseryInvites','nurseryReady'])if(k in r)extras[k]=r[k];
+    G.NurseryUI?.notify(extras);
     if (r.friends) friends = r.friends;
     if (r.invites) invites = r.invites;
     if ("room" in r) {
@@ -528,6 +575,7 @@ G.Social = (() => {
     room = null;
     friends = [];
     invites = [];
+    extras={gifts:{sent:[],inbox:[]},nurseryInvites:[],nurseryReady:false};
     G.SelfNet.disconnect();
     emit("stop");
   }
@@ -568,6 +616,7 @@ G.Social = (() => {
     get friends() {
       return friends;
     },
+    get extras(){return extras;},
     get invites() {
       return invites;
     },

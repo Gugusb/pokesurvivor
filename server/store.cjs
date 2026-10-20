@@ -18,6 +18,14 @@ function openStore(file) {
     CREATE TABLE IF NOT EXISTS reports(id TEXT PRIMARY KEY,by_uid TEXT NOT NULL,target TEXT NOT NULL,board TEXT NOT NULL,at INTEGER NOT NULL,UNIQUE(by_uid,target,board));
     CREATE TABLE IF NOT EXISTS audit(id INTEGER PRIMARY KEY,actor TEXT NOT NULL,target TEXT NOT NULL,action TEXT NOT NULL,at INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS completion_scores(uid TEXT PRIMARY KEY REFERENCES users(uid),score INTEGER NOT NULL DEFAULT 0,at INTEGER NOT NULL);
+    CREATE TABLE IF NOT EXISTS nursery_rooms(owner TEXT PRIMARY KEY REFERENCES users(uid),dex INTEGER NOT NULL,epoch TEXT NOT NULL);
+    CREATE TABLE IF NOT EXISTS nursery_invites(owner TEXT NOT NULL REFERENCES users(uid),guest TEXT NOT NULL REFERENCES users(uid),epoch TEXT NOT NULL,at INTEGER NOT NULL,PRIMARY KEY(owner,guest));
+    CREATE INDEX IF NOT EXISTS nursery_invites_guest ON nursery_invites(guest);
+    CREATE TABLE IF NOT EXISTS nursery_hatches(id TEXT PRIMARY KEY,owner TEXT NOT NULL REFERENCES users(uid),guest TEXT REFERENCES users(uid),dex INTEGER NOT NULL,partner INTEGER NOT NULL,a TEXT NOT NULL,b TEXT NOT NULL,started INTEGER NOT NULL,ends INTEGER NOT NULL,owner_claim TEXT,guest_claim TEXT);
+    CREATE INDEX IF NOT EXISTS nursery_owner ON nursery_hatches(owner,owner_claim);
+    CREATE INDEX IF NOT EXISTS nursery_guest ON nursery_hatches(guest,guest_claim);
+    CREATE TABLE IF NOT EXISTS gifts(id TEXT PRIMARY KEY,sender TEXT NOT NULL REFERENCES users(uid),recipient TEXT NOT NULL REFERENCES users(uid),day INTEGER NOT NULL,at INTEGER NOT NULL,reward TEXT NOT NULL,claimed INTEGER NOT NULL DEFAULT 0,UNIQUE(sender,recipient,day));
+    CREATE INDEX IF NOT EXISTS gifts_recipient ON gifts(recipient,claimed);
   `);
   return db;
 }

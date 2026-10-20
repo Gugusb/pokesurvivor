@@ -90,7 +90,7 @@ G.DB = (() => {
       abilityEquipped: {},    // una sola medalla equipada por especie
       megaStones: {},         // permanent collection keyed by Mega form
       megaEquipped: {},       // one matching stone per base species
-      zStones: {}, zEquipped: {},
+      zStones: {}, zEquipped: {}, zAccess:{}, zDuplicates:{}, zAccessMigrated:true,
       difficulty: { selected: 1, cleared: {}, cashouts:{} },
       difficultyRecords: {},  // dex -> stars -> { best: seconds, won }
       offline: { seen: 0, carry: 0, rates: null },
@@ -108,6 +108,7 @@ G.DB = (() => {
 
   /** Rellena campos que falten en partidas de versiones anteriores. */
   function migrate(s, name) {
+    if(s.zAccessMigrated==null)s.zAccessMigrated=false;
     const needsAbilityGift = !s.abilityStarterGranted;
     const base = newSave(name || s.name);
     for (const k in base) if (s[k] == null) s[k] = base[k];
@@ -135,6 +136,7 @@ G.DB = (() => {
    * servidor (firestore.rules, saves).
    */
   function sanitize(s) {
+    if (G.ZAccess) G.ZAccess.normalize(s);
     if (G.ZMoves) G.ZMoves.normalize(s);
     if (G.Difficulty) G.Difficulty.normalize(s);
     if (G.Offline) G.Offline.normalize(s);
@@ -217,6 +219,7 @@ G.DB = (() => {
     const newer = (a.updated || 0) >= (b.updated || 0) ? a : b;
     const older = newer === a ? b : a;
     const r = JSON.parse(JSON.stringify(newer));
+    if (G.ZAccess) Object.assign(r,G.ZAccess.merge(newer,older));
     if (G.Difficulty) Object.assign(r, G.Difficulty.merge(newer, older));
     if(G.Difficulty)r.coins=Math.max(0,(r.coins||0)+G.Difficulty.cashoutTotal(r)-G.Difficulty.cashoutTotal(newer));
     if (G.Offline) {
@@ -870,6 +873,7 @@ G.DB = (() => {
   }
 
   function grant(dex, from) {
+    const zUnlocked=G.ZAccess?.acquired(save,dex) || false;
     const fresh = !save.owned[dex];
     if (fresh) save.owned[dex] = { at: Date.now(), from, iv: [randomIv(), randomIv(), randomIv()] };
     const old = fresh ? save.owned[dex].iv : ivOf(dex);
@@ -879,7 +883,8 @@ G.DB = (() => {
       if (next[i] > old[i]) raised.push(i);
       old[i] = Math.max(old[i], next[i]);
     }
-    return { isNew: fresh, ivUp: raised.length > 0, ivRaised: raised };
+    if(zUnlocked)G.UI?.toast(G.T('Permiso Z desbloqueado para esta familia.'),4500);
+    return { isNew: fresh, ivUp: raised.length > 0, ivRaised: raised, zUnlocked };
   }
 
   function ownsShiny(dex) { return !!(save && save.shiny && save.shiny[dex]); }

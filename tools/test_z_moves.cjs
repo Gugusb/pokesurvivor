@@ -8,7 +8,7 @@ function context(){
     document:{documentElement:{},addEventListener:noop},CanvasRenderingContext2D:function(){}};
   s.window=s;vm.createContext(s);s.load=f=>vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),s,{filename:f});
   for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/pokedex.js','js/data/sprites-meta.js','js/data/types.js','js/data/moves.js','js/data/items.js','js/data/mega-forms.js','js/data/mega-types.js','js/data/abilities.js'])s.load(f);
-  s.load('js/data/evolutions.js');s.load('js/systems/progression-mon.js');
+  s.load('js/data/evolutions.js');s.load('js/systems/z-access.js');s.load('js/systems/progression-mon.js');
   const G=s.G;G.FIREBASE_CONFIG=null;G.Coop={active:false,isHost:false,scaleHp:()=>1,broadcast:noop};
   G.FX=new Proxy({},{get:()=>noop});G.Audio={sfx:noop};G.UI={toast:noop};G.Camera={kick:noop,sees:()=>false,outerRadius:()=>500};
   G.Sprites={PX:2,hasShiny:id=>typeof id==='number'||!!G.MEGA_SPRITE_META?.[id]?.sh,bodyRadius:()=>10,bodyHeight:()=>30,preload:noop,hovers:()=>false,dirFromAngle:()=>0,animMeta:()=>null,
@@ -67,7 +67,7 @@ test('every damaging move can use Z; real collision totals stay comparable at le
 test('crystals migrate empty, union ownership, retain explicit unequip and exclude Mega equipment',()=>{
   const s=context(),{G}=s,sv=G.DB.save;
   assert.deepEqual(Object.keys(sv.zStones),[]);assert.deepEqual(Object.keys(sv.zEquipped),[]);
-  G.ZMoves.grant(sv,'fire');G.ZMoves.equip(sv,6,'fire');
+  G.ZMoves.grant(sv,'fire');G.ZAccess.unlock(sv,6);G.ZMoves.equip(sv,6,'fire');
   G.Mega.grant(sv,'6-mega-x');G.Mega.equip(sv,6,'6-mega-x');assert.equal(sv.zEquipped[6],null);
   G.ZMoves.equip(sv,6,'fire');assert.equal(sv.megaEquipped[6],null);
   assert.equal(G.ZMoves.equip(sv,6,'invalid'),false);
@@ -75,6 +75,20 @@ test('crystals migrate empty, union ownership, retain explicit unequip and exclu
   const newer=JSON.parse(JSON.stringify(sv));newer.updated=2;G.ZMoves.equip(newer,6,null);
   const merged=G.DB.merge(newer,older);assert.ok(merged.zStones.water);assert.equal(merged.zEquipped[6],null);
   sv.zStones.invalid={at:1};sv.zEquipped[25]='invalid';G.ZMoves.normalize(sv);assert.equal(sv.zStones.invalid,undefined);assert.equal(sv.zEquipped[25],undefined);
+});
+test('collection grants count evolution-family duplicates once, including shiny, with sixth-duplicate Z guarantee',()=>{
+  const s=context(),{G}=s;s.Math.random=()=>.99;
+  G.DB.grant(4,'starter');assert.equal(G.DB.save.zDuplicates[4],undefined);
+  G.DB.grant(6,'gacha');assert.equal(G.DB.save.zDuplicates[4],1);
+  G.DB.grantShiny(5,'wild');assert.equal(G.DB.save.zDuplicates[4],2);
+  for(let i=0;i<4;i++)G.DB.grant(4,'gacha');
+  assert.equal(G.DB.save.zDuplicates[4],6);assert.ok(G.ZAccess.allowed(G.DB.save,6));
+  assert.equal(G.ZMoves.equip(G.DB.save,6,'water'),true);assert.equal(Object.keys(G.DB.save.zStones).length,0);
+});
+test('legacy Z equipment migrates permission without losing the selected type',()=>{
+  const s=context(),{G}=s,old=G.DB.fresh('LegacyFixture');old.owned[6]={iv:[1,1,1]};old.zStones.fire={at:1};old.zEquipped[6]='fire';
+  delete old.zAccessMigrated;delete old.zAccess;delete old.zDuplicates;
+  G.DB._test.migrate(old);assert.ok(G.ZAccess.allowed(old,4));assert.equal(old.zEquipped[6],'fire');
 });
 
 test('new Z families lock until all output completes, spend once and never alter learned move data',()=>{

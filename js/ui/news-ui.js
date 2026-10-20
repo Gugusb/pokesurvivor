@@ -6,7 +6,7 @@ G.NewsUI = (() => {
   const $ = G.UI.$;
   const KEY = 'ps.news.seen';
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const latest = () => (G.CHANGELOG[0] || {}).d || '';
+  const latest = () => {const v=G.CHANGELOG[0];return v?v.d+' '+(v.title?.[0]||''):'';};
   function seen() { try { return localStorage.getItem(KEY) || ''; } catch (e) { return ''; } }
 
   function init() {
@@ -16,7 +16,7 @@ G.NewsUI = (() => {
     $('news-close').onclick = close;
     refresh();
   }
-  function refresh() { $('btn-news').classList.toggle('new', seen() < latest()); }
+  function refresh() { $('btn-news').classList.toggle('new', seen() !== latest()); }
 
   function fmt(d) {
     const [y, m, day] = d.split('-').map(Number);

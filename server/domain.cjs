@@ -17,6 +17,11 @@ const ctx = vm.createContext({
 for (const f of [
   "js/data/pokedex.js",
   "js/data/evolutions.js",
+  "js/data/egg-groups.js",
+  "js/data/mega-forms.js",
+  "js/data/mega-types.js",
+  "js/systems/z-access.js",
+  "js/systems/nursery-rules.js",
   "js/data/abilities.js",
   "js/systems/progression-mon.js",
   "js/systems/difficulty.js",
@@ -117,6 +122,9 @@ function sanitize(input, old, name) {
     ),
   };
   s.offline = clone(old.offline);
+  Object.assign(s,G.ZAccess.merge(s,old));
+  for(const [d,type] of Object.entries(s.zEquipped))
+    if(!G.DEX_BY[d] || type!==null && (!G.ZAccess.TYPES.includes(type)||!G.ZAccess.allowed(s,d)))delete s.zEquipped[d];
   G.Offline.stamp(s);
   return s;
 }

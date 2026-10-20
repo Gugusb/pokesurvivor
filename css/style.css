@@ -736,17 +736,19 @@ body, body * { -webkit-user-select: none; user-select: none; -webkit-touch-callo
 input, textarea, [contenteditable] { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
 /* Con táctil no tienen sentido las pistas de teclas. */
 body.touch kbd, body.touch .card .key, body.touch .kbd-hint { display: none !important; }
-#rotate {
-  position: fixed; inset: 0; z-index: 200;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(5, 10, 30, .94);
-}
-#rotate.hidden { display: none; }
-#rotate .box { max-width: 320px; }
-#rotate-ico { animation: rot-hint 1.6s steps(4) infinite; display: inline-block; }
-@keyframes rot-hint { 0%, 30% { transform: rotate(0deg); } 60%, 100% { transform: rotate(90deg); } }
-
 /* ---------- ajustes ---------- */
+.nursery-box { max-height: 88dvh; overflow-y:auto; }
+.nursery-box > .row { position:sticky; top:-22px; z-index:2; padding:8px 0; background:var(--box1); }
+#scr-nursery, #scr-friends { z-index:35; }
+#scr-friends > .box { max-height:88dvh; overflow-y:auto; }
+.nursery-parents { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr)); gap:14px; }
+.nursery-card, .nursery-result { border:1px solid #476075; border-radius:12px; background:linear-gradient(145deg,#233848,#162332); padding:16px; margin:12px 0; min-width:0; }
+.nursery-result { border-color:#77c9a0; }
+.nursery-picker { display:grid; gap:8px; margin:12px 0; }
+.nursery-picker select { width:100%; min-width:0; padding:10px; background:#132332; color:#eee; border:1px solid #536c7d; border-radius:6px; font:inherit; }
+.nursery-clock { color:#ffdf8c; font-variant-numeric:tabular-nums; }
+.nursery-invites .fr-row, #fr-inbox .fr-row { flex-wrap:wrap; }
+@media (max-width:600px) { #scr-friends .fr-row { flex-wrap:wrap; gap:7px; } #scr-friends .fr-row .st { flex-basis:50%; } .nursery-box { padding:14px; } .nursery-box > .row { top:-14px; } }
 #scr-settings { z-index: 60; }
 .box.settings { width: min(640px, 100%); max-height: calc(100dvh - 24px); display: flex; flex-direction: column; }
 .set-body { overflow-y: auto; padding-right: 4px; min-height: 0; }

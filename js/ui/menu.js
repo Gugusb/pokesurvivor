@@ -9,7 +9,7 @@ G.MenuUI = (() => {
     dexFilter === 'shiny' ? !!s.shiny?.[p.dex] : /^\d$/.test(dexFilter) ? p.rarity === +dexFilter : true;
 
   function init() {
-    const ICON = { play: 'ball', dex: 'book', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
+    const ICON = { play: 'ball', dex: 'book', nursery:'ball', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
     document.querySelectorAll('#scr-menu [data-go]').forEach(b => {
       b.insertAdjacentHTML('afterbegin', `<span class="mi-ico">${G.Icons.html(ICON[b.dataset.go], 26)}</span>`);
       b.dataset.sfx = b.dataset.go === 'play' ? 'confirm' : 'click';
@@ -22,6 +22,7 @@ G.MenuUI = (() => {
         else if (go === 'ability-gacha') G.GachaUI.open('ability');
         else if (go === 'goals') G.GoalsUI.open();
         else if (go === 'offline') G.OfflineUI.open();
+        else if (go === 'nursery') G.NurseryUI.open();
         else if (go === 'friends') G.FriendsUI.open();
         else if (go === 'rank') G.RankingUI.open();
         else if (go === 'settings') G.SettingsUI.open();
@@ -105,9 +106,11 @@ G.MenuUI = (() => {
     const on = fr.filter(f => f.status === 'ok' && f.online).length;
     const req = fr.filter(f => f.status === 'in').length;
     const parts = [];
+    $('menu-nursery-sub').textContent=G.Social.extras.nurseryReady?G.Server.text('¡Cría lista!','Offspring ready!','孵化已完成，可以收获！'):G.T('Huevos y crianza con amigos');
     if (on) parts.push(on + ' en línea');
     if (req) parts.push(req + (req === 1 ? ' solicitud' : ' solicitudes'));
-    $('menu-friends-sub').textContent = parts.length ? parts.join(' · ') : 'Juega en grupo, hasta 4';
+    if(G.Social.extras.gifts.inbox.length)parts.push(G.Server.text('Regalos pendientes','Gifts waiting','有待领取礼物'));
+    $('menu-friends-sub').textContent = parts.length ? parts.join(' · ') : G.Server.text('Guardería y regalos','Nursery and gifts','拜访孵蛋屋、赠送礼物');
     $('menu-friends-sub').classList.toggle('gold', req > 0);
   }
 

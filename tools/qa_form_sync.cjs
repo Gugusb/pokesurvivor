@@ -11,7 +11,7 @@ const { chromium } = require(
     path.join(__dirname, "cache/browser-qa/node_modules/playwright"),
 );
 (async () => {
-  const app = createApp({ dbFile: ":memory:", stunUrls: "none" }),
+  const app = createApp({coopEnabled:true, dbFile: ":memory:", stunUrls: "none" }),
     pages = [],
     contexts = [],
     ids = [],
@@ -35,10 +35,12 @@ const { chromium } = require(
         s.megaEquipped[selected[i]] = id;
       }
       if (i === 2) {
+        G.ZAccess.unlock(s,9);
         s.zStones.water = { at: Date.now() };
         s.zEquipped[9] = "water";
       }
       if (i === 1) {
+        G.ZAccess.unlock(s,133);
         s.zStones.normal = { at: Date.now() };
         s.zEquipped[133] = "normal";
       }

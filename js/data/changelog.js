@@ -1,21 +1,33 @@
-/* ============ changelog.js — novedades del juego ============
- * Lo que ve la gente en el botón "Novedades" de la barra de arriba: cambios
- * de juego y fallos arreglados (nada de servidores ni bases de datos).
- * La fecha más nueva, arriba. En cada fecha, por apartados:
- *   new  lo nuevo · chg  cambios y ajustes · fix  fallos arreglados
- * Cada línea en español y en inglés.
- */
+/* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
 G.CHANGELOG = [
-  { d: '2026-10-20', title: ['Índice de megaevolución · v0.19.0', 'Mega Evolution index · v0.19.0'], new: [
-    ['La Pokédex tiene una pestaña de megaevolución que reúne las 36 especies disponibles de todas las regiones, con contador y filtros de colección, shiny y rareza.', 'The Pokédex has a Mega Evolution tab gathering all 36 available species across regions, with a collection count and ownership, shiny and rarity filters.'],
-    ['El índice muestra nombres y aspecto incluso de especies no registradas; los Pokémon obtenidos conservan sus opciones de compañero y equipamiento.', 'The index shows names and appearances even for uncollected species; owned Pokémon retain partner and equipment options.']
-  ], chg: [], fix: [
-    ['Consultar una especie no obtenida ya no puede registrarla por generar sus IV. Los filtros vacíos limpian la ficha y se recuperan sin cambiar de índice.', 'Viewing an unowned species no longer registers it by generating IVs. Empty filters clear the detail panel and recover without changing the index.']
-  ] },
-  { d: '2026-10-20', title: ['Medallas y créditos · v0.18.1', 'Medals and credits · v0.18.1'], new: [], chg: [
-    ['Las ocho medallas de dificultad tienen cintas, bordes facetados, laureles y colores propios. Las medallas pendientes conservan su silueta; el panel muestra cuántas has conseguido.', 'All eight difficulty medals have ribbons, faceted borders, laurels and individual colors. Unearned medals retain their silhouettes; the panel shows your earned count.'],
-    ['La página de apoyo conserva al autor original y sus enlaces de donación, y añade una sección de desarrollo de Gugusb con el repositorio de esta versión.', 'The support page retains the original author and donation links, and adds a Gugusb development section linking this version’s repository.']
-  ], fix: [] },
+  {
+  "d": "2026-10-20",
+  "title": [
+    "Guardería, regalos y acceso Z · v0.20.0",
+    "Nursery, gifts and Z access · v0.20.0"
+  ],
+  "new": [
+    [
+      "Nueva guardería: cría con tus Pokémon o invita a amigos. El huevo mantiene la especie principal, hereda IV y puede traer una megapiedra. Hasta 12 horas, incluso sin conexión.",
+      "New nursery: hatch with your Pokémon or invite friends. Offspring keep the primary species, inherit IVs and may bring a Mega Stone. Up to 12 hours, including offline time."
+    ],
+    [
+      "Los duplicados de una familia tienen un 20% de desbloquear su permiso Z; el sexto lo garantiza. Elige cualquier tipo sin conseguir cristales.",
+      "Family duplicates have a 20% chance to unlock Z permission; the sixth guarantees it. Choose any type without collecting crystals."
+    ],
+    [
+      "Envía regalos gratis a un máximo de diez amigos al día. Recoge monedas, cupones o gemas desde Amigos.",
+      "Send free gifts to up to ten friends daily. Collect coins, tickets or gems from Friends."
+    ]
+  ],
+  "chg": [
+    [
+      "Se puede jugar en vertical en móvil. Las invitaciones cooperativas están desactivadas temporalmente; las visitas, invitaciones de crianza y regalos siguen disponibles.",
+      "Mobile portrait play is supported. Co-op invitations are temporarily disabled; nursery visits, hatch invitations and gifts remain available."
+    ]
+  ],
+  "fix": []
+},
   { d: '2026-10-20', title: ['Todos los ataques Z · v0.18.0', 'All attacking Z moves · v0.18.0'], new: [
     ['Siete familias Z nuevas: bumeranes de ida y vuelta, tres ondas radiales, aura pulsante, minas encadenadas, tres torretas, un corredor de campos y seis ráfagas en abanico.', 'Seven new Z families: returning blades, three radial waves, a pulsing aura, chained mines, three turrets, a corridor of fields and six cone volleys.'],
     ['Todos los movimientos ofensivos admiten Z; los potenciadores de atributos no. Las nuevas familias conservan sus materiales y colores originales.', 'All damaging moves support Z; attribute buffs do not. The new families retain their original materials and colors.']
@@ -23,22 +35,6 @@ G.CHANGELOG = [
     ['La potencia Z depende del nivel, la evolución del movimiento y tu ataque. Se equilibran las catorce familias por daño total, manteniendo sus áreas, controles y tiempos propios.', 'Z power scales with move level, move evolution and your attack. All fourteen families are balanced by total damage while retaining distinct areas, control and casting times.'],
     ['Los saltos repetidos, las minas superpuestas y los perdigones no multiplican sin límite el daño al mismo objetivo. La cadena funciona contra un jefe aislado y el vórtice interior cubre los huecos entre anillos.', 'Repeated jumps, overlapping mines and pellets no longer multiply same-target damage without limit. Chain works against a lone boss, and the inner vortex covers gaps between rings.']
   ], fix: [] },
-  { d: '2026-10-20', title: ['Cargas Z compartidas · v0.17.0', 'Shared Z charges · v0.17.0'], new: [], chg: [
-    ['En cooperativo, cada recarga Z ganada por cualquier compañero añade una carga a todos los portadores de cristales Z, incluso si quien derrota al enemigo no lleva uno.', 'In co-op, each Z recharge earned by any teammate adds one charge to every Z Crystal holder, even when the killer has no crystal.'],
-    ['Cada jugador conserva su límite de tres cargas. Los compañeros caídos también reciben cargas; las probabilidades y el enfriamiento no cambian.', 'Each player keeps the three-charge cap. Downed teammates also receive charges; reward chances and cooldown are unchanged.']
-  ], fix: [] },
-  { d: '2026-10-19', title: ['Formas y efectos en cooperativo · v0.16.1', 'Co-op forms and effects · v0.16.1'], new: [], chg: [], fix: [
-    ['Los compañeros ven la forma evolucionada correcta, incluidas las ramas, con sus animaciones y dimensiones actualizadas.', 'Teammates see the correct evolved form, including branches, with updated animations and dimensions.'],
-    ['El estado de Mega y Z se aplica antes de reproducir los ataques del mismo envío. Al terminar Z se limpian los efectos de carga antiguos.', 'Mega and Z state is applied before playing attacks from the same snapshot. Finishing Z clears stale casting effects.']
-  ] },
-  { d: '2026-10-19', title: ['Cooperativo P2P · v0.16.0', 'P2P co-op · v0.16.0'], new: [
-    ['Las partidas en grupo conectan directamente con WebRTC. El servidor sólo gestiona cuentas, salas y señalización; no retransmite el combate ni usa TURN.', 'Co-op connects directly through WebRTC. The server only manages accounts, rooms and signaling; it never relays combat or uses TURN.'],
-    ['La sala muestra conexión P2P, latencia y un botón de reintento. Todos deben conectar antes de empezar.', 'The lobby shows P2P connectivity, latency and a retry button. Everyone must connect before starting.']
-  ], chg: [
-    ['Los latidos sólo descargan cambios de progreso. La presencia no vuelve a enviar todo el guardado.', 'Heartbeats only download progress changes. Presence updates no longer resend the entire save.']
-  ], fix: [
-    ['Los mensajes grandes se fragmentan y las reconexiones vuelven a sincronizar el mundo. Las redes que bloquean P2P muestran un error, sin cambiar a un relé de pago.', 'Large messages are chunked and reconnects resynchronize the world. Networks blocking P2P show an error without falling back to a paid relay.']
-  ] },
   { d: '2026-10-19', title: ['Cuentas, rankings y evolución · v0.15.0', 'Accounts, rankings and evolution · v0.15.0'], new: [
     ['La elección extra de evolución sólo ofrece atributos permanentes de triple potencia. Cada carta muestra una dirección; al elegirla te conviertes en ese Pokémon.', 'Evolution bonus choices offer only permanent attributes at triple strength. Each card shows a direction; choosing it evolves into that Pokémon.'],
     ['Las familias con más de tres ramas muestran tres direcciones aleatorias; con dos ramas se muestran ambas. El cooperativo sincroniza la rama elegida.', 'Families with more than three branches show three random directions; two-branch families show both. Co-op synchronizes the chosen branch.'],
@@ -55,10 +51,6 @@ G.CHANGELOG = [
   ], chg: [
     ['En cooperativo decide el anfitrión y cada jugador cobra según sus propias recompensas pendientes.', 'In co-op, the host decides and each player is paid according to their own unclaimed reward.']
   ], fix: [] },
-  { d: '2026-10-18', title: ['Resultado de supervivencia · v0.13.1', 'Survival results · v0.13.1'], new: [], chg: [], fix: [
-    ['Morir después de sobrevivir más de 20 minutos ya no puede invalidar una victoria en solitario por faltar el aviso previo.', 'Dying after surviving more than 20 minutes can no longer invalidate a solo victory because the earlier checkpoint was missed.'],
-    ['Las partidas de desarrollo muestran cuándo se ha cumplido el objetivo, explicando que no conceden medallas ni desbloqueos.', 'Developer runs show when the survival objective was met and explain that medals and difficulty unlocks are not recorded.']
-  ] },
   { d: '2026-10-18', title: ['Dificultad, élites y cargas Z · v0.13.0', 'Difficulty, elites and Z charges · v0.13.0'], new: [
     ['Los Pokémon de élite tienen cinco veces más vida y botín, doble ataque y un aura violeta. Son más frecuentes desde 6 estrellas.', 'Elite Pokémon have fivefold HP and loot, double attack and a purple aura. They become more frequent from 6 stars.'],
     ['Desde 7 estrellas hay cartas contaminadas que cuestan 10 de vida máxima; a 8 estrellas, recibir daño puede ralentizarte y borrar beneficios temporales.', 'From 7 stars, corrupted cards cost 10 maximum HP; at 8 stars, taking damage may slow you and clear temporary buffs.']
@@ -68,15 +60,6 @@ G.CHANGELOG = [
     ['Los enemigos cuerpo a cuerpo que no son jefes se detienen brevemente al alcanzar al jugador.', 'Non-boss melee enemies briefly stop after reaching the player.'],
     ['Los cristales Z empiezan con una carga, acumulan hasta tres y se recargan mediante derrotas y eventos. Cada lanzamiento termina con 5 segundos de enfriamiento.', 'Z Crystals start with one charge, hold up to three and recharge through defeats and events. Each cast ends with a 5-second cooldown.']
   ], fix: [] },
-  { d: '2026-10-18', title: ['Proyectiles Z y concentración · v0.12.2', 'Z projectiles and concentration · v0.12.2'], new: [], chg: [
-    ['Los ataques Z de proyectiles disparan ocho tiros que atraviesan paredes y obstáculos.', 'Projectile Z moves fire eight shots that pass through walls and obstacles.'],
-    ['Durante la selección y el lanzamiento Z, la velocidad de movimiento se reduce un 99,9 %. Las embestidas Z conservan su desplazamiento.', 'During Z selection and casting, movement speed is reduced by 99.9%. Z dashes retain their scripted movement.']
-  ], fix: [] },
-  { d: '2026-10-18', title: ['Efectos originales de Z · v0.12.1', 'Original Z move effects · v0.12.1'], new: [
-    ['La tecla Z activa los movimientos Z. El panel de desarrollo permite fijar su recarga en 2 segundos.', 'The Z key activates Z moves. Developer tools can keep their cooldown at 2 seconds.']
-  ], chg: [], fix: [
-    ['Los movimientos Z reutilizan los efectos originales ampliados: rayos de píxeles con sus partículas, orbes, meteoros, golpes y estelas propios de cada movimiento.', 'Z moves reuse enlarged original effects: pixel beams with their particles, and each move’s own orbs, meteors, melee hits and dash trails.']
-  ] },
   { d: '2026-10-18', title: ['Movimientos Z · v0.12.0', 'Z Moves · v0.12.0'], new: [
     ['Cristales Z con siete tipos de movimientos potenciados, disponibles primero en las herramientas de desarrollo.', 'Z Crystals with seven powered-up move types, initially available through developer tools.'],
     ['Pulsa F, elige un movimiento compatible y libera su ataque Z. Eres invulnerable durante la preparación y el lanzamiento.', 'Press F, choose a compatible move and unleash its Z attack. You are invulnerable during selection and casting.']
@@ -93,26 +76,6 @@ G.CHANGELOG = [
   { d: '2026-10-17', title: ['IV por forma · v0.10.7', 'Form-specific IVs · v0.10.7'], new: [
     ['Cada forma evolucionada usa sus propios IV; las formas no registradas empiezan en 1/1/1.','Each evolved form uses its own IVs; unregistered forms start at 1/1/1.']
   ], chg: [], fix: [] },
-  { d: '2026-10-17', title: ['Mejoras compartidas · v0.10.6', 'Shared upgrades · v0.10.6'], new: [
-    ['Las mejoras permanentes se comparten entre las formas de una familia evolutiva; cada atributo tiene un botón para completarlo.','Permanent upgrades are shared across an evolution family; each stat has a button to max it.']
-  ], chg: [
-    ['Una forma no registrada usa IV 1/1/1 hasta que se consigue en el catálogo.','An unregistered form uses IV 1/1/1 until it is added to the Pokédex.'],
-    ['La megapiedra de la forma final reserva su espacio de objeto desde el inicio; la energía Mega comienza al completar la evolución.','The final form’s Mega Stone reserves the item slot from the start; Mega energy starts after the final evolution.'],
-    ['Una forma no registrada usa IV 1/1/1 hasta que se consigue en el catálogo.','An unregistered form uses IV 1/1/1 until it is added to the Pokédex.']
-  ], fix: [] },
-  { d: '2026-10-17', title: ['IV visibles · v0.10.5', 'IV display · v0.10.5'], new: [
-    ['Los IV aparecen junto a cada atributo de la Pokédex y el color indica su rango.','IVs appear beside each Pokédex stat, with color showing the range.']
-  ], chg: [], fix: [] },
-  { d: '2026-10-17', title: ['Mejoras de IV · v0.10.4', 'IV improvements · v0.10.4'], new: [
-    ['Las tiradas y capturas muestran una flecha cuando mejoran los valores individuales de un Pokémon.','Gacha pulls and captures show an arrow when they improve a Pokémon’s individual values.']
-  ], chg: [], fix: [] },
-  { d: '2026-10-17', title: ['Descripciones simplificadas · v0.10.3', 'Simplified descriptions · v0.10.3'], new: [
-    ['Las descripciones de habilidades y sistemas son ahora más breves y fáciles de leer; los detalles internos se reservan para el juego.','Ability and system descriptions are now shorter and easier to scan; internal details remain in gameplay.']
-  ], chg: [], fix: [] },
-  { d: '2026-10-17', title: ['Visualización de IV simplificada · v0.10.2', 'Simplified IV display · v0.10.2'], new: [
-    ['La ficha de la Pokédex muestra ahora solo los valores IV de 1 a 31; los modificadores internos siguen aplicándose en combate.',
-     'Pokédex details now show only IV values from 1 to 31; internal modifiers remain active in combat.']
-  ], chg: [], fix: [] },
   { d: '2026-10-17', title: ['Todas las evoluciones · v0.10.1', 'All evolutions · v0.10.1'], new: [
     ['Las rutas evolutivas del catálogo están conectadas. Cada partida comienza en la primera forma y evoluciona durante el progreso, con una elección de movimiento adicional.',
      'Evolution routes across the catalog are connected. Runs begin in the first form and evolve as you progress, with an extra move choice.']
@@ -121,10 +84,6 @@ G.CHANGELOG = [
     ['Cada Pokémon tiene valores individuales y puede evolucionar durante la partida. También puedes capturar Pokémon salvajes y revisarlos al terminar la partida.',
      'Each Pokémon has individual values and can evolve during a run. You can also capture wild Pokémon and review them when the run ends.']
   ], chg: [], fix: [] },
-  { d: '2026-10-17', title: ['Dificultad más asequible · v0.9.2', 'Easier difficulty scaling · v0.9.2'], new: [], chg: [
-    ['Ajusta toda la curva de dificultad para que las partidas sean más asequibles.',
-     'Adjusts the full difficulty curve to make runs more approachable.']
-  ], fix: [] },
   { d: '2026-10-16', title: ['Dificultad, ingresos y doble velocidad · v0.9.0', 'Difficulty, offline income and double speed · v0.9.0'], new: [
     ['Las cuentas registradas ganan ingresos sin conexión según su colección; los Shinies aumentan las recompensas especiales y todo se liquida al volver.',
       'Registered accounts earn offline income based on their collection; Shinies improve special rewards, settled automatically on return.'],
@@ -154,22 +113,6 @@ G.CHANGELOG = [
   ], chg: [
     ['La Mega Stone sustituye el objeto normal; los objetos recogidos se convierten en experiencia.',
       'The Mega Stone replaces the normal held item; collected items become experience.']
-  ], fix: [] },
-  { d: '2026-10-15', title: ['Mega de todas las generaciones · v0.7.0', 'Mega across all generations · v0.7.0'], new: [
-    ['La vista previa incorpora las 36 formas Mega con animaciones básicas completas de SpriteCollab, incluidas 17 nuevas formas de otras generaciones.',
-     'The preview now includes all 36 SpriteCollab Mega forms meeting basic animation completion, including 17 newly added forms from other generations.']
-  ], chg: [
-    ['Se conservan las cuatro vistas previas parciales anteriores. El selector distingue el nivel básico, completo, parcial y los recursos ausentes; el catálogo documenta las 96 formas registradas.',
-     'The four existing partial previews are retained. The selector distinguishes basic, full, partial and missing assets; the catalog documents all 96 registered forms.']
-  ], fix: [] },
-  { d: '2026-10-15', title: ['Vista previa de Mega · v0.6.0', 'Mega asset preview · v0.6.0'], new: [
-    ['Se importan los recursos Mega disponibles de Kanto y Hoenn, con variantes shiny donde existen. El panel de desarrollo permite probarlos dentro de una partida.',
-     'Available Kanto and Hoenn Mega assets are imported, including shiny variants where provided. Developer tools can preview them in a run.'],
-    ['La vista previa conserva estadísticas, tipos, habilidades y colisiones del Pokémon base. Las reglas de megaevolución se diseñarán más adelante.',
-     'The preview keeps the base Pokémon stats, types, abilities and collision size. Mega Evolution mechanics will be designed later.']
-  ], chg: [
-    ['Las formas sin animaciones se indican como no disponibles; los movimientos que reutilizan otra animación se documentan. Se mantienen los créditos por artista y forma.',
-     'Forms without animations are marked unavailable, and animation substitutions are documented. Artist and form attribution is preserved.']
   ], fix: [] },
   { d: '2026-10-15', title: ['Sinnoh y Tinovictoria · v0.5.0', 'Sinnoh and Victory Star · v0.5.0'], new: [
     ['Se amplían las medallas de habilidad a nuevas regiones y se añade Tinovictoria. Las especies sin diseño de habilidad mantienen sus recompensas habituales.',
@@ -203,12 +146,6 @@ G.CHANGELOG = [
     ['En el gacha de habilidades, los premios de Dragonite ahora son sus medallas. Las seis especies de cinco estrellas conservan sus probabilidades y comparten cada una su probabilidad entre sus medallas.',
      'Dragonite rewards in the ability gacha are now its medals. All six five-star species keep their drop chances, shared equally between each species’ medals.']
   ], fix: [] },
-  { d: '2026-10-15', title: ['Controles de depuración · v0.2.1', 'Debug controls · v0.2.1'], new: [
-    ['El panel de desarrollo permite ajustar la vista y probar recursos durante las partidas de prueba.',
-     'The developer panel can adjust the view and test resources during test runs.'],
-    ['Permite modificar las monedas, los vales y las gemas de habilidad.',
-     'Coins, tickets and ability gems can be adjusted.']
-  ], chg: [], fix: [] },
   { d: '2026-10-15', title: ['Habilidades de Kanto · v0.2.0', 'Kanto abilities · v0.2.0'], new: [
     ['Medallas de habilidad para Articuno, Zapdos, Moltres, Mewtwo y Mew. Cada medalla desbloquea una habilidad; equipa sólo una por Pokémon.',
      'Ability medals for Articuno, Zapdos, Moltres, Mewtwo and Mew. Each medal unlocks one ability; equip one per Pokémon.'],
@@ -219,20 +156,6 @@ G.CHANGELOG = [
     ['Modo desarrollador opcional en Ajustes: gemas, medallas, compañeros, pruebas de combate y grietas. F2 abre el panel; sólo para partidas en solitario y sin ranking.',
      'Optional developer mode in Settings: gems, medals, partners, combat tests and rifts. F2 opens the panel; solo only, with no leaderboard submissions.']
   ], chg: [], fix: [] },
-  { d: '2026-10-14', title: ['Recupera tu cuenta con Gmail', 'Recover your account with Gmail'], new: [
-    ['Si juegas con nombre y contraseña, puedes vincular tu Gmail: si un día olvidas la contraseña, entras con Google y es tu misma cuenta. Te lo ofrecemos al entrar.',
-     'If you play with a name and password, you can link your Gmail: if you ever forget your password, sign in with Google and it is the same account. We offer it when you sign in.']
-  ], chg: [
-    ['Las tablas de la semana y del mes del ranking empiezan de cero, como el histórico: ahora sólo cuentan partidas con la Sentencia de Arceus y todas las tablas cuadran entre sí.',
-     'The weekly and monthly leaderboards start from scratch, like the all-time one: now only runs with the Judgment of Arceus count, and all boards match each other.']
-  ], fix: [
-    ['Cooperativo: la partida ya no se queda parada con cada uno esperando a que el otro elija. Un objeto y las cartas de nivel ya no se tapan, y si la conexión pierde un aviso se arregla solo.',
-     'Co-op: the game no longer freezes with each player waiting for the other to choose. An item and the level-up cards no longer cover each other, and if the connection drops a message it fixes itself.'],
-    ['Cooperativo: al volver de una grieta, quien no era el anfitrión ya ve a todos los enemigos (antes algunos eran invisibles y sólo se veían sus ataques).',
-     'Co-op: after coming back from a rift, players who are not the host can see every enemy again (some used to be invisible, with only their attacks showing).'],
-    ['Amigos: si tu móvil u ordenador tiene la hora (o la zona horaria) mal puesta, tus amigos ya no salen siempre desconectados y sus invitaciones te llegan.',
-     'Friends: if your phone or computer has the wrong time (or time zone), your friends no longer always show as offline and their invitations reach you.']
-  ] },
   { d: '2026-10-13', title: ['La Sentencia de Arceus', 'The Judgment of Arceus'], new: [
     ['La Sentencia de Arceus: al llegar al minuto 30, Arceus baja del cielo y te lleva a las Ruinas del Juicio. Es invencible, te persigue cada vez más deprisa y lanza pilares de luz, rayos y ondas; si te toca, te quita casi media vida. Cada 5 segundos acude un legendario con el doble de vida y de daño que el anterior. ¿Cuánto aguantarás?',
      'The Judgment of Arceus: at minute 30, Arceus descends from the sky and takes you to the Ruins of Judgment. It is invincible, chases you faster and faster and casts pillars of light, beams and shockwaves; if it touches you, you lose almost half your HP. Every 5 seconds a legendary joins, each with twice the HP and damage of the previous one. How long can you last?'],

@@ -33,7 +33,7 @@ de personalidad y a la mazmorra.
 | `Q` / `E` | Ciclar movimientos |
 | `Esc` / `P` | Pausa |
 
-**En móvil o tablet** (en horizontal): pon el dedo en cualquier sitio y arrastra
+**En móvil o tablet** (vertical u horizontal): pon el dedo en cualquier sitio y arrastra
 para moverte (el joystick aparece donde tocas), toca un ataque de abajo para
 cambiarlo y el botón de arriba a la derecha para pausar. Se puede instalar como
 app ("Añadir a pantalla de inicio"). En **Ajustes** hay sonido, calidad gráfica
@@ -165,3 +165,5 @@ Sprites de [SpriteCollab](https://github.com/PMDCollab/SpriteCollab) bajo
 **CC BY-NC 4.0** — uso **no comercial** y con atribución; la lista de artistas
 está en [`CREDITS.md`](CREDITS.md). Pokémon es propiedad de Nintendo, Creatures
 Inc. y GAME FREAK. Proyecto de fan sin ánimo de lucro.
+
+Egg-group data: [PokéAPI](https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/pokemon_egg_groups.csv), © 2013–2023 Paul Hallett and PokéAPI contributors, BSD 3-Clause. Full notice: [assets/EGG_GROUPS_LICENSE.txt](assets/EGG_GROUPS_LICENSE.txt).

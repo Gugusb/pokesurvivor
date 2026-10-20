@@ -99,7 +99,7 @@ G.Dev = (() => {
       '<button class="btn small" data-dev="partner">选择伙伴（局外）</button>' +
       (G.Difficulty?'<h4>难度与精英测试</h4><label>测试难度 <select id="dev-difficulty">'+Array.from({length:8},(_,i)=>'<option value="'+(i+1)+'"'+(G.Difficulty.current===i+1?' selected':'')+'>'+(i+1)+'★</option>').join('')+'</select></label><div class="row wrap"><button class="btn small" data-dev="difficulty">本局切换难度</button><button class="btn small" data-dev="elite">生成测试精英</button><button class="btn small" data-dev="z-add">Z 充能 +1</button></div>':'')+
       (G.ZMoves ? '<h4>Z 招式试玩</h4><p class="note">仅用于调试。替换测试招式会清空本局原有技能，并装备同属性 Z 石。</p>' +
-      '<div class="row wrap"><button class="btn small" data-dev="z-grant">获得全部 Z 石</button><button class="btn small" data-dev="z-charge">Z 石立即就绪</button></div>' +
+      '<div class="row wrap"><button class="btn small" data-dev="z-grant">Desbloquear Z (colección)</button><button class="btn small" data-dev="z-charge">Z 石立即就绪</button></div>' +
       '<button class="btn small '+(zShortCooldown?'gold':'')+'" data-dev="z-short-cd">Z 技能冷却固定 2s：'+(zShortCooldown?'开':'关')+'</button>'+
       '<label>测试 Z 招式 <select id="dev-z-move">'+G.Moves.ALL.filter(m=>G.ZMoves.KINDS.includes(m.kind)).map(m=>'<option value="'+m.id+'"'+(m.id===zTestMove?' selected':'')+'>'+G.T(m.name)+' · '+m.kind+'</option>').join('')+'</select></label>'+
       '<div class="row wrap"><button class="btn small" data-dev="z-prepare">替换为测试招式</button><button class="btn small" data-dev="z-enemies">生成测试敌群</button><button class="btn small" data-dev="z-boss">生成测试 Boss</button><button class="btn small" data-dev="z-arm">进入 Z 蓄力</button></div>':'') +
@@ -144,7 +144,7 @@ G.Dev = (() => {
       action(() => {
         const s = G.DB.save;
         switch (b.dataset.dev) {
-          case 'z-grant': for(const type of G.ZMoves.TYPES)G.ZMoves.grant(s,type);G.UI.toast('已获得全部 Z 石，可在图鉴详情装备');break;
+          case 'z-grant': for(const d of Object.keys(s.owned))G.ZAccess.unlock(s,d);G.UI.toast(G.T('Permiso Z desbloqueado para tu colección.'));break;
           case 'z-charge': {const p=requireRun();if(p)G.ZMoves.debugCharge(p);break;}
           case 'z-short-cd': setZCooldown(!zShortCooldown);break;
           case 'difficulty': if(requireRun())G.Difficulty.debugLevel(+panel.querySelector('#dev-difficulty').value);break;
@@ -154,7 +154,7 @@ G.Dev = (() => {
           case 'z-prepare': {
             const p=requireRun();if(!p)break;
             if(G.ZMoves.busy(p)||G.Mega.active(p)){G.UI.toast('请等待当前招式或 Mega 进化结束');break;}
-            const m=G.Moves.instance(zTestMove,1);G.ZMoves.grant(s,m.type);G.ZMoves.equip(s,p.ivDex||p.dex,m.type);
+            const m=G.Moves.instance(zTestMove,1);G.ZAccess.unlock(s,p.ivDex||p.dex);G.ZMoves.equip(s,p.ivDex||p.dex,m.type);
             G.Projectiles.clearOrbs(p);G.Combat.clearFields(p);p.moves=[m];p.slots=[[m]];p.active=0;
             p.zState=null;G.ZMoves.init(p,s);p.hp=p.maxHp;break;
           }

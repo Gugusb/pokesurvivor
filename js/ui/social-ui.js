@@ -95,6 +95,7 @@
       const room = G.Social.room;
       $('fr-me').innerHTML = 'Tu apodo: <b class="gold" translate="no">' + esc(G.Social.me ? G.Social.me.name : '') + '</b> · dáselo a tus amigos para que te añadan.';
       $('fr-room').classList.toggle('hidden', !room);
+      G.NurseryUI.renderInbox();
       const list = G.Social.friends.sort((a, b) => {
         const rank = f => f.status === 'in' ? 0 : f.status === 'ok' ? (f.online ? (f.play ? 2 : 1) : 3) : 4;
         return rank(a) - rank(b) || a.name.localeCompare(b.name);
@@ -123,13 +124,21 @@
         } else if (f.status === 'out') {
           btn('Cancelar', 'ghost', () => G.Social.remove(f.uid));
         } else {
-          if (f.online && !f.play && !inRoom && (!room || room.isHost)) {
+          if (G.Server.coopEnabled && f.online && !f.play && !inRoom && (!room || room.isHost)) {
             btn('Invitar', 'gold', async () => {
               const r = await G.Social.invite(f.uid);
               msg(r.ok ? r.msg : r.error, !r.ok);
               if (r.ok) G.LobbyUI.open();
             });
           }
+          btn(G.Server.text('Visitar guardería','Visit nursery','拜访孵蛋屋'),'nursery-visit',()=>G.NurseryUI.open(f.uid));
+          const gift=btn(G.Server.text('Regalar','Send gift','送礼'),'friend-gift',async()=>{
+            gift.disabled=true;
+            try{await G.Server.socialAction('/gifts/send',{uid:f.uid});await G.Social.refreshPresence();G.UI.toast(G.Server.text('Regalo enviado','Gift sent','礼物已送出'));}
+            catch(e){msg(e.message,true);gift.disabled=false;}
+          });
+          gift.title=G.Server.text('Gratis: monedas, cupones o gemas de habilidad. Hasta 10 amigos al día.','Free: coins, tickets or Ability Gems. Up to 10 friends daily.','免费赠礼，对方可收到宝可梦币、抽奖券或特性宝石；每天最多赠送 10 位好友。');
+          gift.disabled=G.Social.extras.gifts.sent.includes(f.uid)||G.Social.extras.gifts.sent.length>=10;
           btn('Quitar', 'ghost', () => { if (confirm('¿Quitar a ' + f.name + ' de tus amigos?')) G.Social.remove(f.uid); });
         }
         box.appendChild(el);
@@ -309,6 +318,7 @@
 
     /** Enseña la invitación más antigua si estás en los menús (no en plena partida). */
     function refresh() {
+      if(!G.Server.coopEnabled){hide();return;}
       const room = G.Social.room;
       const list = G.Social.invites.filter(i => !room || i.room !== room.id).sort((a, b) => a.at - b.at);
       if (!list.length || G.Game.state !== 'ui' || !G.DB.loggedIn) { hide(); return; }

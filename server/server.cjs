@@ -15,7 +15,7 @@ const { openStore } = require("./store.cjs"),
   { ROOT, G, fresh, sanitize, clone, record } = require("./domain.cjs");
 const derive = promisify(scrypt),
   digest = (s) => createHash("sha256").update(s).digest("hex");
-const VERSION = "0.19.0",
+const VERSION = "0.20.0",
   PROTOCOL = 2,
   MAX_BODY = 1024 * 1024;
 const fail = (status, message) => Object.assign(new Error(message), { status });
@@ -43,7 +43,8 @@ function createApp(opts = {}) {
       path.join(__dirname, "data/game.sqlite"),
   );
   const origin = opts.origin || process.env.PUBLIC_ORIGIN || "",
-    now = opts.now || Date.now;
+    now = opts.now || Date.now,
+    coopEnabled = opts.coopEnabled === true; // Internal regression fixtures only; public service stays solo.
   const sockets = new Map(),
     rooms = new Map(),
     invites = new Map(),
@@ -253,6 +254,7 @@ function createApp(opts = {}) {
   function notifySocial(uid) {
     emit(uid, {
       k: "social",
+      ...services.summary(uid),
       friends: friendList(uid),
       invites: [...invites.values()].filter(
         (v) => v.to === uid && v.at > now() - 180e3,
@@ -300,7 +302,7 @@ function createApp(opts = {}) {
         mega: s.megaStones?.[s.megaEquipped?.[dex]]
           ? s.megaEquipped[dex]
           : null,
-        z: s.zStones?.[s.zEquipped?.[dex]] ? s.zEquipped[dex] : null,
+        z: G.ZAccess.allowed(s,dex) && G.ZAccess.TYPES.includes(s.zEquipped?.[dex]) ? s.zEquipped[dex] : null,
       },
     };
   }
@@ -385,6 +387,7 @@ function createApp(opts = {}) {
       return { rev: value.rev, won, progress };
     });
   }
+  const services = require('./social-services.cjs')({q,all,exec,atomic,saved,save,isFriend,now,fail,notifySocial,rng:opts.rewardRandom});
   async function api(req, res, url) {
     checkOrigin(req);
     const route = url.pathname.slice(4),
@@ -396,12 +399,14 @@ function createApp(opts = {}) {
         protocol: PROTOCOL,
         transport: "p2p",
         relay: false,
+        coopEnabled,
       });
     rate("api:" + clientIp(req), 6000, 60e3);
     const reads = [
       "/session",
       "/ranking",
       "/social",
+      "/nursery",
       "/profile",
       "/admin/users",
       "/admin/reports",
@@ -498,6 +503,8 @@ function createApp(opts = {}) {
       return json(res, 200, { user: publicUser(u), ...saved(u.uid) });
     }
     const u = auth(req);
+    if(!coopEnabled && (route.startsWith('/room/') || route==='/run/start' && b.mode==='g'))
+      throw fail(403,'Co-op invitations temporarily unavailable');
     rate("user:" + u.uid, 900, 60e3);
     if (route === "/session" && method === "GET")
       return json(res, 200, { user: publicUser(u), ...saved(u.uid) });
@@ -528,6 +535,14 @@ function createApp(opts = {}) {
         ])
           exec(`DELETE FROM ${table} WHERE uid=?`, u.uid);
         exec("DELETE FROM friends WHERE a=? OR b=?", u.uid, u.uid);
+        exec('DELETE FROM nursery_invites WHERE owner=? OR guest=?',u.uid,u.uid);
+        exec('DELETE FROM nursery_rooms WHERE owner=?',u.uid);
+        // Running pairings retain snapshots so the other participant can still collect.
+        exec("UPDATE nursery_hatches SET owner_claim=COALESCE(owner_claim,'{}') WHERE owner=?",u.uid);
+        exec("UPDATE nursery_hatches SET guest_claim=COALESCE(guest_claim,'{}') WHERE guest=?",u.uid);
+        // Keep the sent ledger: deleting a recipient must not replenish today's quota.
+        // Gifts already sent by a deleted account remain claimable by their recipients.
+        exec('UPDATE gifts SET claimed=1 WHERE recipient=?',u.uid);
         exec("DELETE FROM runs WHERE uid=?", u.uid);
         exec("DELETE FROM reports WHERE target=? OR by_uid=?", u.uid, u.uid);
       });
@@ -664,6 +679,7 @@ function createApp(opts = {}) {
     }
     if (route === "/social" && method === "GET") {
       return json(res, 200, {
+        ...services.summary(u.uid),
         friends: friendList(u.uid),
         invites: [...invites.values()].filter(
           (v) => v.to === u.uid && v.at > now() - 180e3,
@@ -671,6 +687,8 @@ function createApp(opts = {}) {
         room: roomData(roomOf(u.uid), u.uid),
       });
     }
+    if(route==='/nursery' || route.startsWith('/nursery/') || route.startsWith('/gifts/'))
+      return json(res,200,services.route(route,u.uid,b,url));
     if (route === "/friends/request") {
       const other = q(
         "SELECT uid FROM users WHERE lower=? AND deleted=0 AND ban=0",

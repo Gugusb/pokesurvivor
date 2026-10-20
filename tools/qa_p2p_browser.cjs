@@ -12,7 +12,7 @@ const { chromium } = require(
     path.join(__dirname, "cache/browser-qa/node_modules/playwright"),
 );
 (async () => {
-  const app = createApp({ dbFile: ":memory:", stunUrls: "none" });
+  const app = createApp({coopEnabled:true, dbFile: ":memory:", stunUrls: "none" });
   let browser;
   const errors = [],
     contexts = [],

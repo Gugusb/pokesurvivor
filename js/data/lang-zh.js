@@ -3562,3 +3562,11 @@ G.I18n.addChinese({
   "Las cartas favorecen los ataques y mantienen variedad entre mejoras y beneficios.": "升级卡会偏向攻击技能，同时保持强化选项的多样性。",
   "Cards favor attacks while keeping variety among upgrades and buffs.": "升级卡会偏向攻击技能，同时保持强化选项的多样性。"
 });
+
+G.I18n.addChinese({
+  "Guardería, regalos y acceso Z · v0.20.0": "孵蛋屋、好友送礼与 Z 权限 · v0.20.0",
+  "Nueva guardería: cría con tus Pokémon o invita a amigos. El huevo mantiene la especie principal, hereda IV y puede traer una megapiedra. Hasta 12 horas, incluso sin conexión.": "主菜单新增孵蛋屋，可自行配对或邀请好友，离线仍持续孵蛋，最多 12 小时。后代与主亲本同种，自行继承 1 项、好友继承 2 项个体值；好友双方各收获一只，领取时有小概率获得对应 Mega 进化石。",
+  "Los duplicados de una familia tienen un 20% de desbloquear su permiso Z; el sexto lo garantiza. Elige cualquier tipo sin conseguir cristales.": "重复获得同一进化链的宝可梦时，每次有 20% 概率解锁整条进化链的 Z 携带权限，第六次重复必定解锁；可自由选择属性，无须另抽 Z 石。",
+  "Envía regalos gratis a un máximo de diez amigos al día. Recoge monedas, cupones o gemas desde Amigos.": "每天可免费向最多 10 位好友赠礼，好友可在好友栏领取宝可梦币、抽奖券或特性宝石。",
+  "Se puede jugar en vertical en móvil. Las invitaciones cooperativas están desactivadas temporalmente; las visitas, invitaciones de crianza y regalos siguen disponibles.": "手机竖屏也可游玩；暂时关闭邀请联机，保留好友拜访、孵蛋邀请和赠礼。"
+});
