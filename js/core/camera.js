@@ -27,12 +27,12 @@ G.Camera = {
 
   setViewMultiplier(value) {
     if (!Number.isFinite(value)) return;
-    this.viewMultiplier = Math.max(1, Math.min(2, value));
+    this.viewMultiplier = Math.max(2 / 3, Math.min(2, value));
     if (this.cssW > 0 && this.cssH > 0) this.resize(this.cssW, this.cssH, this.dpr);
   },
 
   follow(tx, ty, dt) {
-    const view = G.Dev && G.Dev.canUse() ? G.Dev.viewMultiplier : 1;
+    const view = G.Dev && G.Dev.canUse() ? G.Dev.viewMultiplier : 1 / (G.Settings?.get('zoom') || 1);
     if (this.viewMultiplier !== view) this.setViewMultiplier(view);
     this.x = G.U.damp(this.x, tx, 9, dt);
     this.y = G.U.damp(this.y, ty, 9, dt);

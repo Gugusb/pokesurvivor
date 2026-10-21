@@ -37,7 +37,7 @@ G.Dev = (() => {
     enabled = !!on;
     if (enabled && G.Game) G.Game.debugMark();
     if (!enabled) { god = false; zShortCooldown = false; if (G.AbilityGacha.clearDebug) G.AbilityGacha.clearDebug(); if (G.MegaPreview) G.MegaPreview.restore(G.Game.player); }
-    if (G.Camera.setViewMultiplier) G.Camera.setViewMultiplier(canUse() ? viewMultiplier : 1);
+    if (G.Camera.setViewMultiplier) G.Camera.setViewMultiplier(canUse() ? viewMultiplier : 1 / (G.Settings?.get('zoom') || 1));
     try { localStorage.setItem('ps.dev.enabled', String(enabled)); } catch (e) { /* nada */ }
     refresh();
   }
@@ -87,7 +87,7 @@ G.Dev = (() => {
       '<p class="note">调试会修改当前本地存档。调试局不提交排行榜；联机时不可使用。</p>' +
       '<label for="dev-view">视野范围：<output id="dev-view-value">' + viewMultiplier.toFixed(2) + '×</output></label>' +
       '<input id="dev-view" type="range" min="1" max="2" step="0.05" value="' + viewMultiplier + '">' +
-      '<p class="note">向右拉可看得更远，默认 1.5×；关闭开发者模式恢复正常视野。</p>' +
+      '<p class="note">向右拉可看得更远，默认 1.5×；关闭开发者模式后恢复设置中的视野。</p>' +
       '<h4>货币增减</h4><p class="note">输入每次增减的数量。余额最低为 0，立即保存。</p>' +
       currencies.map(c => '<div class="dev-currency"><span>' + c.name + '：' + (save ? balance(c.id) : 0) + '</span>' +
         '<input type="number" id="dev-amount-' + c.id + '" aria-label="' + c.name + '增减数量" min="1" max="1000000000" step="1" value="' + c.step + '">' +

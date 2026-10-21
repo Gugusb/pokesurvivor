@@ -120,7 +120,7 @@ G.RunUI = (() => {
     for(const id of ['victory-unlock','victory-question','victory-bonus'])$(id).classList.toggle('hidden',waiting);
     $('victory-question').textContent=G.T(bonus?'¿Terminar ahora con el doble de monedas o seguir sobreviviendo hasta el jefe más poderoso?':'¿Terminar ahora o seguir sobreviviendo hasta el jefe más poderoso?');
     $('victory-unlock').textContent=stars<8?G.I18n.f('Ya puedes desafiar la dificultad {x}★.',stars+1):G.T('¡Has superado las ocho dificultades!');
-    $('victory-bonus').textContent=G.T(bonus?'Termina ahora para duplicar todas las monedas de esta partida. Esta oportunidad se consume sólo al cobrar; si continúas, se conserva para otra victoria en esta dificultad.':'Ya cobraste el doble de monedas en esta dificultad. Puedes terminar con la recompensa normal o seguir luchando.');
+    $('victory-bonus').textContent=G.T(bonus?'Recoge el doble de monedas o guarda esta recompensa para otra victoria.':'Puedes recoger tus monedas o continuar la aventura.');
     $('victory-team').classList.toggle('hidden',!team);
     $('victory-team').textContent=G.T('En grupo decide el anfitrión. Cada jugador cobra según su propia oportunidad disponible.');
     const cash=$('victory-cashout'),next=$('victory-continue'),status=$('victory-status');
@@ -131,7 +131,7 @@ G.RunUI = (() => {
     cash.onclick=async()=>{
       if(busy||done||waiting)return;busy=true;cash.disabled=next.disabled=true;status.textContent=G.T('Guardando la recompensa…');
       if(await onCashout()){done=true;return;}
-      busy=false;cash.disabled=next.disabled=false;status.textContent=G.T('No se pudo guardar. Puedes reintentar o continuar sin consumir la oportunidad.');
+      busy=false;cash.disabled=next.disabled=false;status.textContent=G.T('No se pudo guardar. Tu recompensa sigue esperándote.');
     };
     next.onclick=()=>{if(busy||done||waiting)return;done=true;onContinue();};
     G.UI.show('scr-victory');
@@ -141,8 +141,7 @@ G.RunUI = (() => {
     $('over-title').textContent = r.victory ? 'Dificultad superada' : r.completed ? G.T('Objetivo de supervivencia cumplido') : r.dead ? 'Has caído…' : 'Run terminada';
     $('over-stats').innerHTML = `
       ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : r.completed ? G.T('Objetivo cumplido, sin registrar') : G.T('Sin superar')}</b></div>` : ''}
-      ${r.progressExcluded ? `<p class="note" style="grid-column:1/-1">${G.T({debug:'Partida de desarrollo: no concede medallas ni desbloquea dificultades. Desactiva el modo de desarrollo antes de empezar una nueva partida.',locked:'La dificultad de esta partida no estaba desbloqueada; no se registra el progreso.',validation:'No se ha podido validar esta partida para las medallas y los desbloqueos.'}[r.progressExcluded])}</p>` : ''}
-      ${r.rankingExcluded ? `<p class="note" style="grid-column:1/-1">${G.T('El ranking de supervivencia sólo acepta partidas individuales limpias de 8 estrellas a velocidad normal.')}</p>` : ''}
+      ${r.progressExcluded ? `<p class="note" style="grid-column:1/-1">${G.T('Esta aventura no cuenta para las medallas.')}</p>` : ''}
       <div><span>Tiempo</span><b>${G.U.mmss(r.time)}</b></div>
       <div><span>Nivel</span><b>${r.level}</b></div>
       <div><span>Derrotados</span><b>${r.kills}</b></div>
@@ -160,8 +159,9 @@ G.RunUI = (() => {
       ${r.record ? '<div style="grid-column:1/-1;text-align:center" class="gold">¡Nuevo récord de tiempo!</div>' : ''}
       ${askSupport(r) ? `<div class="support-ask" id="over-ask" style="grid-column:1/-1">
         <button class="x" type="button" aria-label="Cerrar">×</button>
-        <p>¿Te está gustando PokéSurvivor? Lo hago yo solo y los servidores cuestan dinero. Si quieres, puedes ayudarme a mantenerlo en línea.</p>
-        <a class="btn small gold" href="${G.Funding.url}" target="_blank" rel="noopener">${G.Icons.html('heart', 14)} Apoyar en Ko-fi</a>
+        <p>${G.T('Esta versión se desarrolla sobre la obra de JPTER78 por Gugusb.')}</p>
+        <p>${G.T('El juego original fue creado en solitario por JPTER78.')}</p>
+        <a class="btn small gold" href="${G.Funding.url}" target="_blank" rel="noopener">${G.Icons.html('heart', 14)} ${G.T('Apoyar al autor original')}</a>
       </div>` : ''}`;
     const ask = $('over-ask');
     if (ask) ask.querySelector('.x').onclick = () => ask.remove();

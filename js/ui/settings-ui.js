@@ -8,12 +8,13 @@ G.SettingsUI = (() => {
   G.I18n.addChinese({'Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.':'拖动屏幕移动，点击技能切换攻击，右上角按钮暂停；支持竖屏与横屏游玩。'});
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '0.20.2 · 2026-10-20';
+  const VERSION = '0.20.3 · 2026-10-21';
   const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 
   function init() {
     document.querySelectorAll('#set-tabs .gen-tab').forEach(b => { b.onclick = () => { tab = b.dataset.t; render(); }; });
+    G.Settings.on((key) => { if (key === 'zoom' && G.Camera && !(G.Dev && G.Dev.canUse())) G.Camera.setViewMultiplier(1 / G.Settings.get('zoom')); });
     $('set-close').onclick = close;
     $('btn-settings').innerHTML = G.Icons.html('gear', 20);
     $('btn-settings').onclick = () => open();
@@ -82,6 +83,9 @@ G.SettingsUI = (() => {
         + section('Calidad', 'Cuántos efectos y partículas se dibujan. <b>Auto</b> la baja sola si el juego va a tirones (ahora: ' + auto + ').')
         + choice('quality', [['auto', 'Auto'], ['high', 'Alta'], ['mid', 'Media'], ['low', 'Baja']])
         + section('Pantalla')
+        + `<div class="set-row"><div class="grow"><label for="set-zoom"><b>${G.T('Zoom de cámara')}</b></label><small>${G.T('Aléjate para ver más del camino o acércate a tu Pokémon.')}</small></div><output id="set-zoom-value" for="set-zoom" translate="no">${Math.round(G.Settings.get('zoom') * 100)}%</output></div>
+           <input id="set-zoom" type="range" min="0.5" max="1.5" step="0.05" value="${G.Settings.get('zoom')}" aria-label="${G.T('Zoom de cámara')}">
+           <div class="row between"><span class="note">50%</span><button id="set-zoom-reset" class="btn small ghost">${G.T('Restablecer zoom')}</button><span class="note">150%</span></div>`
         + toggle('dmgNumbers', 'Números de daño', 'Los números que salen al golpear y al recibir daño.')
         + toggle('calm', 'Menos sacudidas y destellos', 'La cámara tiembla menos y los fogonazos son suaves.')
         + toggle('fps', 'Mostrar FPS', 'Fotogramas por segundo, en la esquina de abajo.')
@@ -152,6 +156,11 @@ G.SettingsUI = (() => {
     box.querySelectorAll('.chip[data-k]').forEach(b => {
       b.onclick = () => { const v = b.dataset.v; G.Settings.set(b.dataset.k, isNaN(+v) ? v : +v); render(); };
     });
+    const zoom = $('set-zoom');
+    if (zoom) {
+      zoom.oninput = () => { G.Settings.set('zoom', Number(zoom.value)); $('set-zoom-value').textContent = Math.round(G.Settings.get('zoom') * 100) + '%'; };
+      $('set-zoom-reset').onclick = () => { zoom.value = 1; zoom.oninput(); };
+    }
     const full = $('set-full'); if (full) full.onclick = toggleFull;
     box.querySelectorAll('[data-lang]').forEach(b => { b.onclick = () => { if (b.dataset.lang !== G.I18n.lang) G.I18n.set(b.dataset.lang); }; });
     const lo = $('set-login'); if (lo) lo.onclick = () => { close(); leave(); };

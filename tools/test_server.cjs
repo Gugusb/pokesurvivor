@@ -127,7 +127,7 @@ async function fixture(t) {
   async function run(
     a,
     stars,
-    { double = false, dirty = false, end = true } = {},
+    { double = false, dirty = false, end = true, duration = 1201 } = {},
   ) {
     const start = await request(
       "/run/start",
@@ -137,9 +137,13 @@ async function fixture(t) {
     assert.equal(start.status, 200, JSON.stringify(start.data));
     let seconds = 0,
       result;
-    while (seconds < 1201) {
-      const dt = Math.min(60, 1201 - seconds);
-      clock += dt * 1000;
+    if (double) {
+      const speed = await request('/run/beat', {id:start.data.id,t:0,speed:2,alive:true,clean:!dirty}, a.cookie);
+      assert.equal(speed.status,200);
+    }
+    while (seconds < duration) {
+      const dt = Math.min(60, duration - seconds);
+      clock += dt * 1000 / (double ? 2 : 1);
       seconds += dt;
       result = await request(
         "/run/beat",
@@ -159,7 +163,7 @@ async function fixture(t) {
         "/run/end",
         {
           id: start.data.id,
-          t: 1201,
+          t: duration,
           speed: 1,
           alive: false,
           clean: !dirty,
@@ -287,7 +291,7 @@ test("all eight medals propagate to the entire branched family and count each sp
   assert.equal(times.data.me.t, 1201);
   assert.equal(times.data.me.dex, 133);
 });
-test("clock checks cannot accumulate request tolerance; only clean normal solo eight-star times qualify", async (t) => {
+test("clock checks retain their budget; clean eight-star runs count at normal and double speed", async (t) => {
   const f = await fixture(t),
     a = await f.account("ClockTester");
   await f.seed(a);
@@ -307,22 +311,17 @@ test("clock checks cannot accumulate request tolerance; only clean normal solo e
   f.tick(121000);
   assert.equal((await beat(4)).status, 409);
   for (let stars = 1; stars <= 7; stars++) await f.run(a, stars);
-  await f.run(a, 8, { double: true });
-  assert.equal(
-    (await f.request("/ranking?board=survival", undefined, a.cookie)).data.me,
-    null,
-  );
-  await f.run(a, 8, { dirty: true });
-  assert.equal(
-    (await f.request("/ranking?board=survival", undefined, a.cookie)).data.me,
-    null,
-  );
+  assert.equal((await f.request('/ranking?board=survival',undefined,a.cookie)).data.me,null);
+  await f.run(a, 8, { double: true, duration: 1400 });
+  assert.equal((await f.request('/ranking?board=survival',undefined,a.cookie)).data.me.t,1400);
+  await f.run(a, 8, { dirty: true, double: true, duration: 1600 });
+  assert.equal((await f.request('/ranking?board=survival',undefined,a.cookie)).data.me.t,1400);
   await f.run(a, 8);
-  assert.equal(
-    (await f.request("/ranking?board=survival", undefined, a.cookie)).data.me.t,
-    1201,
-  );
+  assert.equal((await f.request('/ranking?board=survival',undefined,a.cookie)).data.me.t,1400);
+  await f.run(a, 8, {duration:1500});
+  assert.equal((await f.request('/ranking?board=survival',undefined,a.cookie)).data.me.t,1500);
 });
+
 test("victory cashout is atomic and once per account and difficulty", async (t) => {
   const f = await fixture(t),
     a = await f.account("BonusTester");

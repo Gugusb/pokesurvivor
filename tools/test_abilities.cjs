@@ -923,3 +923,19 @@ test('debug view expands both world dimensions, survives resize and resets outsi
   G.Dev.setEnabled(false); approx(c.w, w); approx(c.h, h);
   assert.equal(G.Dev.setView(2), false);
 });
+
+
+test('normal camera zoom persists, clamps invalid values, resizes and does not mark a run as debug',()=>{
+  const s=context(),{G}=s;let marks=0;G.Game.debugMark=()=>marks++;
+  s.load('js/core/settings.js');s.load('js/core/camera.js');
+  const c=G.Camera;c.resize(1200,800,2);const width=c.w,height=c.h;
+  G.Settings.set('zoom',.5);c.follow(0,0,.01);approx(c.w,width*2);approx(c.h,height*2);
+  c.resize(600,400,1);approx(c.w,width*2);
+  s.load('js/core/settings.js');assert.equal(G.Settings.get('zoom'),.5);
+  G.Settings.set('zoom',1.5);c.follow(0,0,.01);approx(c.w,width/1.5);
+  G.Settings.set('zoom',100);assert.equal(G.Settings.get('zoom'),1.5);
+  G.Settings.set('zoom',NaN);assert.equal(G.Settings.get('zoom'),1);
+  G.Settings.set('zoom',0);assert.equal(G.Settings.get('zoom'),.5);
+  G.Settings.set('zoom',.75);s.load('js/ui/developer.js');G.Dev.setEnabled(true);G.Dev.setEnabled(false);
+  approx(c.w,width/.75);const after=marks;c.follow(0,0,.01);assert.equal(marks,after);
+});

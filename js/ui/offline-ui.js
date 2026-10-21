@@ -35,8 +35,8 @@ G.OfflineUI = (() => {
   }
   G.I18n.add({
     'Ingresos sin conexión':'Offline income', 'Sólo cuentas registradas':'Registered accounts only', 'Tasa actual':'Current rate',
-    'Monedas/hora':'Coins/hour', 'Vales de una tirada/hora (media)':'Single-pull tickets/hour (expected)',
-    'Gemas de habilidad/hora (media)':'Ability Gems/hour (expected)', 'Última liquidación':'Latest settlement', 'Vales':'Tickets',
+    'Monedas/hora':'Coins/hour', 'Vales de una tirada/hora (media)':'Single-pull tickets/hour (average)',
+    'Gemas de habilidad/hora (media)':'Ability Gems/hour (average)', 'Última liquidación':'Latest settlement', 'Vales':'Tickets',
     'Recompensas pendientes de sincronizar. Se reintentará al conectar.':'Rewards pending sync. We will retry when connected.',
     'El contador comienza en tu primera entrada. Vuelve después de salir para recibir ingresos.':'The timer starts on your first visit. Return after leaving to receive income.',
     'Los ingresos se acumulan mientras estás fuera. Los vales y gemas aparecen de forma aleatoria.':'Income accumulates while you are away. Tickets and gems appear at random.',
@@ -44,8 +44,8 @@ G.OfflineUI = (() => {
   });
   G.I18n.addChinese({
     'Ingresos sin conexión':'挂机收益', 'Sólo cuentas registradas':'仅已注册玩家可获得挂机收益', 'Tasa actual':'当前产出',
-    'Monedas/hora':'宝可梦币／小时', 'Vales de una tirada/hora (media)':'单抽券／小时（期望）',
-    'Gemas de habilidad/hora (media)':'特性宝石／小时（期望）', 'Última liquidación':'本次离线结算', 'Vales':'单抽券',
+    'Monedas/hora':'宝可梦币／小时', 'Vales de una tirada/hora (media)':'抽奖券／小时（约）',
+    'Gemas de habilidad/hora (media)':'特性宝石／小时（约）', 'Última liquidación':'本次离线结算', 'Vales':'单抽券',
     'Recompensas pendientes de sincronizar. Se reintentará al conectar.':'收益等待同步，联网后会自动重试。',
     'El contador comienza en tu primera entrada. Vuelve después de salir para recibir ingresos.':'首次进入开始计时，退出或切到后台后，返回即可自动结算。',
     'Los ingresos se acumulan mientras estás fuera. Los vales y gemas aparecen de forma aleatoria.':'离线期间会累积收益，抽奖券和特性宝石随机获得。',

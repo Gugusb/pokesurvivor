@@ -666,9 +666,9 @@ G.NurseryUI = (() => {
       el(
         "p",
         t(
-          "Hereda 1 IV en solitario o 2 con un amigo. Ambos reciben una cría de la especie principal.",
-          "Inherit 1 IV solo or 2 with a friend. Both friends collect the primary parent’s species.",
-          "自行继承 1 项个体值，好友孵蛋继承 2 项；好友双方各收获一只主亲本物种的宝可梦。",
+          "La cría hereda los talentos de sus progenitores. Con un amigo, hereda más y ambos recibís una cría.",
+          "Your new partner inherits its parents’ talents. Hatch with a friend to pass on more, and both receive a new partner.",
+          "新伙伴会继承亲本的个体值。与好友一起孵蛋，传承更多天赋，双方都能迎接新伙伴。",
         ),
         "note",
       ),
@@ -688,9 +688,9 @@ G.NurseryUI = (() => {
       el(
         "p",
         t(
-          "Al recoger: 0,5% de obtener una megapiedra compatible con la familia.",
-          "On collection: 0.5% chance of a Mega Stone matching this evolution family.",
-          "收获时有 0.5% 概率获得这条进化链对应的 Mega 进化石（存在已开放 Mega 形态时）。",
+          "Al recoger la cría, quizá encuentres una megapiedra de su familia.",
+          "When collecting your new partner, you may find a Mega Stone for its family.",
+          "迎接新伙伴时，或许还能发现它的 Mega 进化石。",
         ),
         "note",
       ),

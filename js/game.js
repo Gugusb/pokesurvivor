@@ -114,7 +114,7 @@ G.Game = (() => {
     biome = 0;
     time = 0; pendingLevels = 0;
     victoryBusy=false;
-    runSpeed = 1; speedBonus = 0; speedK = 1; usedDouble = false;
+    runSpeed = 1; speedBonus = 0; speedK = 1;
     runReal = performance.now(); tampered = !!(G.Dev && G.Dev.enabled);
 
     pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(save.partner), save.partner);
@@ -210,7 +210,7 @@ G.Game = (() => {
     if (value !== 1 && value !== 2 || !pl || !['playing','paused','held','levelup'].includes(state)) return false;
     if (G.Coop.active && !G.Coop.isHost && !fromHost) return false;
     const changed=runSpeed!==value;
-    runSpeed = value; if (value === 2) usedDouble = true;
+    runSpeed = value;
     if(changed&&G.DB.mode==='server')G.Server.heartbeat().catch(()=>{});
     return true;
   }
@@ -397,7 +397,7 @@ G.Game = (() => {
     // Ranking: en solitario cada uno lo suyo; en grupo lo sube el anfitrión.
     const mark = { t: Math.floor(time), lv: pl.level, kills: pl.kills };
     // Si la partida se ha tocado (ver clean()), no sube al ranking (sin avisar); lo demás, sí.
-    const ranked = ok && !usedDouble && (!challenge || challenge.stars === 8) && !coop;
+    const ranked = ok && (!challenge || challenge.stars === 8) && !coop;
     if(G.DB.mode==='server')G.Server.finish(ok).catch(()=>{});
     const sent = ranked && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.dex, shiny: pl.shiny }))
                : ranked && wasHost ? G.Ranking.submitGroup(Object.assign(mark, { members: team })) : null;
@@ -670,7 +670,7 @@ G.Game = (() => {
 
   let deathT = 0;
 
-  let frameDt = 0, speedK = 1, runSpeed = 1, speedBonus = 0, usedDouble = false;
+  let frameDt = 0, speedK = 1, runSpeed = 1, speedBonus = 0;
   let fpsShown = 60, fpsAcc = 0, fpsN = 0;
   // El siguiente fotograma se pide ANTES de nada: si algo falla a mitad, el
   // juego sigue (antes se quedaba congelado para siempre y había que recargar;

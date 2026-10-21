@@ -38,9 +38,9 @@ G.RankingUI = (() => {
     const refresh = document.createElement("button");
     refresh.className = "btn small ghost";
     refresh.textContent = T(
-      "Actualizar / reintentar",
-      "Refresh / retry",
-      "刷新／重试上传",
+      "Actualizar",
+      "Refresh",
+      "刷新",
     );
     refresh.onclick = async () => {
       refresh.disabled = true;
@@ -53,14 +53,14 @@ G.RankingUI = (() => {
     $("rk-period").textContent =
       board === "completion"
         ? T(
-            "Cada especie con las ocho medallas cuenta por separado, incluso en la misma familia.",
-            "Each species with all eight medals counts separately, including evolution relatives.",
-            "八枚难度勋章集齐后计入；同一进化家族的每个图鉴编号分别计数。",
+            "Reúne las ocho medallas con tantos Pokémon como puedas.",
+            "Collect all eight medals with as many Pokémon as you can.",
+            "和更多宝可梦一起，集齐八枚挑战勋章！",
           )
         : T(
-            "Sólo partidas individuales a velocidad normal, sin depuración.",
-            "Solo runs at normal speed, without developer tools.",
-            "仅计入正常一倍速、未使用调试的八星单人对局。",
+            "Desafía las ocho estrellas y supera tu mejor tiempo.",
+            "Take on eight stars and beat your best survival time.",
+            "向八星挑战，和伙伴一起坚持得更久吧！",
           );
   }
   async function load() {

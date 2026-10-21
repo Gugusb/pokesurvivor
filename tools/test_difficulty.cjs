@@ -58,8 +58,8 @@ test('co-op speed is set by the host while guests follow host snapshots',()=>{
   G.Coop.isHost=true;assert.equal(G.Game.setSpeed(1),true);
 });
 
-test('survival leaderboard accepts clean normal eight-star runs but excludes easier tiers and any use of double speed',()=>{
-  for(const [tier,double,expected] of [[8,false,1],[4,false,0],[1,false,0],[8,true,0]]){
+test('survival leaderboard accepts normal and double-speed eight-star runs but excludes easier tiers',()=>{
+  for(const [tier,double,expected] of [[8,false,1],[4,false,0],[1,false,0],[8,true,1]]){
     const s=context(),G=s.G;s.loadGame();let sent=0;G.Ranking.submitSolo=()=>{sent++;};
     G.Game._test.setRun(s.player(),s.run(tier),1300);if(double){G.Game.setSpeed(2);G.Game.setSpeed(1);}
     G.Game._test.endRun(false);assert.equal(sent,expected);assert.equal(s.over.rankingExcluded,!expected);
@@ -172,7 +172,7 @@ test('the actual result UI distinguishes a recorded win from completed developer
   assert.ok(elements.get('over-stats').innerHTML.includes('胜利'));assert.ok(!elements.get('over-stats').innerHTML.includes('未通关'));
   G.RunUI.showOver({...result,victory:false,progressExcluded:'debug'},noop);
   assert.equal(elements.get('over-title').textContent,'生存挑战已达标');assert.ok(elements.get('over-stats').innerHTML.includes('已达标，但不计入进度'));
-  assert.ok(elements.get('over-stats').innerHTML.includes('关闭开发者模式'));assert.ok(!elements.get('over-stats').innerHTML.includes('未通关'));
+  assert.ok(elements.get('over-stats').innerHTML.includes('未计入挑战勋章'));assert.ok(!elements.get('over-stats').innerHTML.includes('开发者'));assert.ok(!elements.get('over-stats').innerHTML.includes('未通关'));
 });
 
 test('twenty-minute victory pauses for one choice; continuing preserves the opportunity through a later death',()=>{
@@ -230,7 +230,7 @@ test('the eighth-star victory UI offers the final clear instead of inventing a n
   let resolve,calls=0,kept=0;G.RunUI.showVictory(8,true,false,false,()=>{calls++;return new Promise(r=>resolve=r);},()=>kept++);
   assert.ok(els.get('victory-unlock').textContent.includes('八个'));assert.ok(!els.get('victory-unlock').textContent.includes('9'));
   const click=els.get('victory-cashout').onclick,task=click();await click();els.get('victory-continue').onclick();assert.equal(calls,1);assert.equal(kept,0);
-  resolve(false);await task;assert.equal(els.get('victory-cashout').disabled,false);assert.ok(els.get('victory-status').textContent.includes('尚未消耗'));
+  resolve(false);await task;assert.equal(els.get('victory-cashout').disabled,false);assert.ok(els.get('victory-status').textContent.includes('奖励仍在等着你'));
   G.RunUI.showVictory(1,false,false,false,async()=>true,noop);assert.ok(els.get('victory-cashout').textContent.includes('领取金币'));
   assert.ok(!els.get('victory-cashout').textContent.includes('双倍'));assert.ok(els.get('victory-unlock').textContent.includes('2★'));
   G.RunUI.showVictory(1,true,true,true,()=>{throw new Error('guest cannot decide');},()=>{throw new Error('guest cannot decide');});

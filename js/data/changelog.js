@@ -1,7 +1,8 @@
 /* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
 G.CHANGELOG = [
+  {"d": "2026-10-21", "title": ["Tu aventura, a tu ritmo · v0.20.3", "Adventure at your pace · v0.20.3"], "new": [["Ajusta el zoom de cámara en Ajustes para ver el camino a tu gusto.", "Adjust camera zoom in Settings to find your favorite view."]], "chg": [["Las aventuras a doble velocidad también cuentan en el ranking de supervivencia de ocho estrellas.", "Double-speed adventures also count toward the eight-star survival leaderboard."], ["Los resultados reconocen al creador original y al desarrollador de esta versión. Los mensajes son más breves y claros.", "Results credit the original creator and this version’s developer. Messages are shorter and clearer."]], "fix": []},
   { d:'2026-10-20', title:['Protección de embestida · v0.20.2','Dash protection balance · v0.20.2'],new:[],chg:[
-    ['Las embestidas normales protegen durante 0,3 segundos. Si la recarga efectiva de ese lanzamiento es inferior a 0,3 segundos, la protección dura el 90% de esa recarga, incluidas las aceleraciones y penalizaciones. Chocar contra un muro sin desplazarse no la activa.', 'Ordinary dashes protect for 0.3 seconds. When the effective cooldown of that cast is below 0.3 seconds, protection lasts 90% of that cooldown, including cooldown acceleration and penalties. Dashing into a wall without moving does not trigger it.']
+    ['La protección de las embestidas se acorta cuando sus movimientos se recargan muy rápido.', 'Dash protection becomes shorter when moves recharge very quickly.']
   ],fix:[]},
   { d:'2026-10-20', title:['Guardería renovada · v0.20.1','Nursery refresh · v0.20.1'], new:[], chg:[
     ['La guardería muestra ambos progenitores animados alrededor del huevo, con progreso, cuenta atrás y estado de recogida. Al elegir un progenitor aparece una vista previa; las reglas y las invitaciones se agrupan para facilitar su uso en móvil.', 'The nursery shows both animated parents around the egg, with progress, a countdown and collection status. Parent selection includes a live preview; rules and invitations are grouped for a clearer mobile layout.']
@@ -67,7 +68,7 @@ G.CHANGELOG = [
     ['Los cristales Z empiezan con una carga, acumulan hasta tres y se recargan mediante derrotas y eventos. Cada lanzamiento termina con 5 segundos de enfriamiento.', 'Z Crystals start with one charge, hold up to three and recharge through defeats and events. Each cast ends with a 5-second cooldown.']
   ], fix: [] },
   { d: '2026-10-18', title: ['Movimientos Z · v0.12.0', 'Z Moves · v0.12.0'], new: [
-    ['Cristales Z con siete tipos de movimientos potenciados, disponibles primero en las herramientas de desarrollo.', 'Z Crystals with seven powered-up move types, initially available through developer tools.'],
+    ['Cristales Z con siete tipos de movimientos potenciados.', 'Z Crystals power up seven move families.'],
     ['Pulsa F, elige un movimiento compatible y libera su ataque Z. Eres invulnerable durante la preparación y el lanzamiento.', 'Press F, choose a compatible move and unleash its Z attack. You are invulnerable during selection and casting.']
   ], chg: [
     ['Los cristales Z comparten espacio con las megapiedras. La selección ralentiza el mundo y la recarga empieza al terminar el lanzamiento.', 'Z Crystals share the Mega Stone slot. Selection slows the world and cooldown begins when casting ends.'],
@@ -99,10 +100,7 @@ G.CHANGELOG = [
       'Choose 1–8 stars beside Play. Higher stars are harder; survive 20 minutes to win and unlock the next one.'],
     ['Cada Pokémon guarda sus ocho medallas y su mejor tiempo por dificultad. La primera victoria da un marco dorado, vencer 5 estrellas da esmeralda y reunir las ocho medallas da rubí. La ficha muestra el récord en su mayor dificultad intentada.',
      'Each Pokémon tracks eight medals and best time per difficulty. First victory grants a gold frame, clearing 5 stars grants emerald, and all eight medals grant ruby. Details show the record at its highest attempted difficulty.']
-  ], chg: [
-    ['Las partidas de depuración no otorgan medallas ni desbloqueos. En grupo se usa una dificultad común limitada por lo desbloqueado por todos los miembros.',
-     'Debug runs do not grant medals or unlocks. Co-op uses one shared difficulty limited by every member’s unlocked progress.']
-  ], fix: [] },
+  ], chg: [], fix: [] },
   { d: '2026-10-16', title: ['Elecciones de nivel mejoradas · v0.8.1', 'Improved level-up choices · v0.8.1'], new: [], chg: [
     ['Los movimientos aprendidos aparecen con más frecuencia y las mejoras se reparten de forma más natural, con una garantía si una ronda no ofrece ninguna.',
       'Learned moves appear more often and upgrades are distributed more naturally, with a guarantee after a round without one.'],
@@ -128,16 +126,16 @@ G.CHANGELOG = [
     ['Hidratación evita estados negativos bajo lluvia; Mal Sueño afecta a los enemigos lentos; Multitipo ignora los efectos de tipo; Tinovictoria acelera proyectiles.',
       'Hydration prevents debuffs in rain; Bad Dreams affects slowed enemies; Multitype ignores type effects; Victory Star speeds projectiles.']
   ], chg: [
-    ['Cuerpo Llama repele y quema enemigos cercanos con 1 s de recarga. Levitación ya no activa trampas del suelo. Se añaden pruebas de daño por tipo al panel de desarrollo.',
-     'Flame Body knocks back and burns nearby enemies with a 1 s cooldown. Levitate no longer triggers ground traps. Developer tools add typed damage tests.']
+    ['Cuerpo Llama repele y quema enemigos cercanos. Levitación ya no activa trampas del suelo.',
+     'Flame Body repels and burns nearby enemies. Levitate no longer triggers ground traps.']
   ], fix: [] },
   { d: '2026-10-15', title: ['Habilidades de Johto y Hoenn · v0.4.0', 'Johto and Hoenn abilities · v0.4.0'], new: [
     ['Johto y Hoenn llegan al gacha de habilidades, con garantías independientes y una sola medalla equipada por Pokémon.',
      'Johto and Hoenn join the ability gacha with separate pity and one equipped medal per Pokémon.'],
     ['Nuevas habilidades: clima periódico, regeneración, inmunidad a lentitud, Miedo, confianza acumulable, beneficios más largos, aceleración al recibir daño, Robustez, Levitación y estados aleatorios.',
      'New abilities include periodic weather, regeneration, slow immunity, Fear, stacking confidence, longer buffs, haste on damage, Sturdy, Levitate and random debuffs.'],
-    ['Levitación atraviesa obstáculos sin poder lanzar movimientos y añade penalizaciones de movimiento. El panel de desarrollo añade pruebas de clima y daño.',
-      'Levitate crosses obstacles without casting and adds movement penalties. The developer panel adds weather and damage tests.']
+    ['Levitación permite cruzar obstáculos, pero te ralentiza y no puedes atacar al hacerlo.',
+      'Levitate lets you cross obstacles, but slows you down and prevents attacks while crossing.']
   ], chg: [
     ['El HUD muestra cargas, recargas y disponibilidad de habilidades. Bucle Aire conserva el clima, pero anula sus efectos para todos.',
      'The HUD shows ability stacks, timers and readiness. Air Lock keeps the weather present while suppressing its effects for everyone.']
