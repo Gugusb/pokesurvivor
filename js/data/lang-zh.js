@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  'Una sola cuenta · v0.20.4': '账号稳定性修复 · v0.20.4',
+  'When the account connection fails, retry without switching to a same-name local account.': '账号服务连接失败时可以重试，不再切换到同名本地账号。',
+  'Si falla la conexión con las cuentas, se puede reintentar sin cambiar a una cuenta local del mismo nombre.': '账号服务连接失败时可以重试，不再切换到同名本地账号。',
+  'Puedes descargar copias de las partidas locales antiguas de cada dirección, sin borrarlas ni sobrescribir la partida del servidor.': '可分别下载不同访问地址下的旧本地存档备份，不会删除旧存档或覆盖服务器进度。',
+  'Download backups of legacy local saves from each address without deleting them or overwriting your server save.': '可分别下载不同访问地址下的旧本地存档备份，不会删除旧存档或覆盖服务器进度。',
   "Esta versión se desarrolla sobre la obra de JPTER78 por Gugusb.": "正在游玩的版本由 Gugusb 在 JPTER78 的原版基础上开发。",
   "El juego original fue creado en solitario por JPTER78.": "本游戏原版由 JPTER78 独立开发。",
   "Apoyar al autor original": "支持原作者",

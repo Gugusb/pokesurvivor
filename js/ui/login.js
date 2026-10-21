@@ -16,6 +16,7 @@ G.LoginUI = (() => {
         $("f-pass").value,
       );
       $("btn-auth").disabled = false;
+      renderConnection();
       if (!r.ok) {
         $("login-err").textContent = r.error;
         return;
@@ -29,6 +30,21 @@ G.LoginUI = (() => {
     $("btn-guest").onclick = () => {
       G.DB.playAsGuest();
       G.Flow.afterLogin();
+    };
+    $("login-reconnect").onclick = async () => {
+      $("login-reconnect").disabled = true;
+      try {
+        const r = await G.DB.retryConnection();
+        renderConnection();
+        if (r.restored) G.Flow.afterLogin();
+      } finally { $("login-reconnect").disabled = false; }
+    };
+    $("login-legacy-backup").onclick = () => {
+      const data = G.DB.legacyBackup();
+      if (!data.entries.length) return;
+      const url = URL.createObjectURL(new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }));
+      const a = document.createElement('a'); a.href = url; a.download = 'pokesurvivor-local-saves-' + new Date().toISOString().slice(0, 10) + '.json';
+      a.click(); setTimeout(() => URL.revokeObjectURL(url), 1000);
     };
     $("f-forgot").onclick = (e) => {
       e.preventDefault();
@@ -140,8 +156,17 @@ G.LoginUI = (() => {
     G.UI.chrome(false);
     G.UI.show("scr-login");
     $("signup-closed").classList.add("hidden");
-    $("login-mode").textContent =
-      G.DB.mode === "server"
+    renderConnection();
+    setMode(mode);
+    setTimeout(() => $("f-user").focus(), 50);
+  }
+  function renderConnection() {
+    const unavailable = G.DB.mode === 'server' && !G.Server.available;
+    $("login-reconnect-row").classList.toggle('hidden', !unavailable);
+    $("login-reconnect").textContent = T('Reintentar conexión', 'Retry connection', '重试连接');
+    $("login-mode").textContent = unavailable
+      ? T('Servidor de cuentas sin conexión. No se cambiará a una cuenta local. Reintenta o juega como invitado.', 'Account server unavailable. No switch to local accounts. Retry or play as a guest.', '暂时无法连接账号服务器，不会切换到本地账号。请重试连接，或以游客试玩。')
+      : G.DB.mode === "server"
         ? T(
             "Cuenta propia: guardado en el servidor, sin Google.",
             "Private account system: server saves, no Google.",
@@ -152,7 +177,12 @@ G.LoginUI = (() => {
             "Local mode: this browser only.",
             "本地模式：账号与存档仅保存在当前浏览器。",
           );
-    setTimeout(() => $("f-user").focus(), 50);
+    const hasLegacy = G.DB.mode === 'server' && G.DB.legacyBackup().entries.length > 0;
+    $("login-legacy").classList.toggle('hidden', !hasLegacy);
+    $("login-legacy-note").textContent = T('Hay partidas locales antiguas en este navegador. Son independientes de tu cuenta del servidor; no se borran ni se fusionan automáticamente.', 'This browser has legacy local saves, separate from your server account. They are not deleted or merged automatically.', '此浏览器保留着旧本地存档，与服务器账号分别保存。不会自动删除或合并，可以先下载备份。');
+    $("login-legacy-backup").textContent = T('Descargar copia local', 'Back up local saves', '备份旧本地存档');
+    $("login-legacy-addresses").classList.toggle('hidden', G.DB.mode !== 'server');
+    $("login-legacy-link").textContent = T('Buscar partidas locales en otras direcciones', 'Find legacy saves at other addresses', '检查其他访问地址的旧本地存档');
   }
   return { init, open, offerRecovery() {} };
 })();

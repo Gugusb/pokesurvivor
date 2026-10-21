@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<link rel="icon" href="data:,"><title>PokéSurvivor · 本地存档备份</title>
+<style>body{margin:0;background:#122522;color:#eef5e9;font:16px/1.7 system-ui,sans-serif}main{max-width:680px;margin:32px auto;padding:24px}h1{font-size:25px}p,li{overflow-wrap:anywhere}button,a{color:#ffe08a}button{font:inherit;background:#25483a;border:1px solid #9bbf84;border-radius:8px;padding:10px 16px;cursor:pointer}button:disabled{opacity:.5;cursor:default}code{color:#9ee6d5}.note{color:#c4d2c5}nav{display:flex;flex-wrap:wrap;gap:16px}button:focus-visible,a:focus-visible{outline:3px solid #ffe08a;outline-offset:4px}</style>
+</head><body><main>
+<h1 id="title"></h1><p id="intro"></p><p><span id="address-label"></span> <code id="address"></code></p>
+<p class="note" id="privacy"></p><ul id="saves"></ul><p id="status" role="status"></p>
+<button id="download" disabled type="button"></button><p class="note" id="origins-note"></p>
+<nav aria-label="Other addresses"><a href="https://pokesurvivor.cn/local-save-backup.html">pokesurvivor.cn</a><a href="https://www.pokesurvivor.cn/local-save-backup.html">www.pokesurvivor.cn</a><a href="https://123.207.187.218/local-save-backup.html">123.207.187.218</a></nav>
+<p><a id="play" href="https://pokesurvivor.cn/"></a></p>
+</main><script>
+(() => {
+ const lang=(navigator.language||'').toLowerCase(),t=(zh,en,es)=>lang.startsWith('zh')?zh:lang.startsWith('es')?es:en,$=id=>document.getElementById(id);
+ document.documentElement.lang=lang.startsWith('zh')?'zh-CN':lang.startsWith('es')?'es':'en';
+ document.title=$('title').textContent=t('旧本地存档备份','Legacy local save backup','Copia de partidas locales');
+ $('intro').textContent=t('此页面只读取当前地址、当前浏览器保存的旧本地存档。服务器账号和存档不受影响。','This page reads legacy saves stored by this address in this browser. Your server account and save are unaffected.','Esta página lee partidas locales de esta dirección y navegador. No modifica tu cuenta ni partida del servidor.');
+ $('address-label').textContent=t('当前地址：','Current address:','Dirección actual:');$('address').textContent=location.origin;
+ $('privacy').textContent=t('备份不含密码、密码摘要、恢复码或登录凭据，也不会上传数据。请先保留备份，再决定如何恢复进度。','Backups exclude account passwords, password hashes, recovery codes and sessions. Nothing is uploaded. Keep the backup before choosing how to restore progress.','Las copias no contienen contraseñas, hashes, códigos ni sesiones. No se sube ningún dato. Guarda la copia antes de recuperar el progreso.');
+ $('origins-note').textContent=t('不同访问地址、HTTP/HTTPS、设备和浏览器的本地数据互相独立。请在原来游玩的浏览器里，分别打开下面三个地址检查。','Local data is separate for each address, HTTP/HTTPS, device and browser. Use your original browser to check each address below.','Los datos son independientes por dirección, HTTP/HTTPS, dispositivo y navegador. Comprueba cada dirección con el navegador original.');
+ $('play').textContent=t('返回正式游戏（使用服务器账号）','Return to the game (server account)','Volver al juego (cuenta del servidor)');
+ $('download').textContent=t('下载当前地址的旧存档备份','Download local save backup','Descargar copia local');
+ const entries=[];
+ try {
+  const accounts=JSON.parse(localStorage.getItem('ps.accounts')||'{}');
+  for(const [key,account] of Object.entries(accounts)) {
+   const save=JSON.parse(localStorage.getItem('ps.save.'+key)||'null');
+   if(account&&typeof account.name==='string'&&save&&typeof save==='object'&&!Array.isArray(save)) {
+    entries.push({name:account.name,save});const li=document.createElement('li');li.textContent=account.name;$('saves').appendChild(li);
+   }
+  }
+  $('status').textContent=entries.length?t('找到 '+entries.length+' 份旧本地存档。','Found '+entries.length+' legacy local save(s).','Se encontraron '+entries.length+' partidas locales.'):t('当前地址没有找到旧本地存档。此结果不代表其他地址或设备也没有存档。','No legacy local saves found at this address. Other addresses or devices may still have saves.','No hay partidas locales en esta dirección. Puede haberlas en otras direcciones o dispositivos.');
+  $('download').disabled=!entries.length;
+ }catch{$('status').textContent=t('无法读取本地存储。请保留浏览器数据，不要清理或重置。','Cannot read local storage. Keep your browser data; do not clear or reset it.','No se puede leer el almacenamiento. No borres ni reinicies los datos.');}
+ $('download').onclick=()=>{
+  const backup={format:'pokesurvivor-legacy-saves',version:1,origin:location.origin,exportedAt:Date.now(),entries};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(backup,null,2)],{type:'application/json'})),a=document.createElement('a');
+  a.href=url;a.download='pokesurvivor-local-'+location.hostname.replace(/[^a-zA-Z0-9.-]/g,'_')+'-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+ };
+})();
+</script></body></html>

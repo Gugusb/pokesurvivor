@@ -4,6 +4,9 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  'Una sola cuenta · v0.20.4': 'One account, one save · v0.20.4',
+  'Si falla la conexión con las cuentas, se puede reintentar sin cambiar a una cuenta local del mismo nombre.': 'When the account connection fails, retry without switching to a same-name local account.',
+  'Puedes descargar copias de las partidas locales antiguas de cada dirección, sin borrarlas ni sobrescribir la partida del servidor.': 'Download backups of legacy local saves from each address without deleting them or overwriting your server save.',
   "Esta versión se desarrolla sobre la obra de JPTER78 por Gugusb.": "This version is developed by Gugusb, based on JPTER78’s original game.",
   "El juego original fue creado en solitario por JPTER78.": "The original game was independently developed by JPTER78.",
   "Apoyar al autor original": "Support the original creator",

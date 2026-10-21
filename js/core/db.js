@@ -32,7 +32,8 @@ G.DB = (() => {
   const SDK = 'https://www.gstatic.com/firebasejs/13.0.0/';
   const NAME_DOMAIN = 'jugadores.pokesurvivor.net';   // sólo para el email interno
 
-  let mode = 'local';       // 'cloud' | 'local'
+  // A web account must never change identity just because its API is unavailable.
+  let mode = typeof location !== 'undefined' && /^https?:$/.test(location.protocol) ? 'server' : 'local';
   let localReason = '';     // por qué no hay nube: 'file' | 'config' | 'error'
   let user = null;          // nombre visible
   let key = null;           // clave local (minúsculas) o uid de Firebase
@@ -619,9 +620,21 @@ G.DB = (() => {
   function ready() {
     if (readyP) return readyP;
     readyP = (async () => {
-      if (G.Server && await G.Server.probe()) { mode = 'server'; return G.Server.restore(); }
-      try { localReason = 'config'; }
-      catch (e) { console.warn('[DB] sin nube:', e.message); localReason = 'error'; mode = 'local'; }
+      if (/^https?:$/.test(location.protocol)) {
+        mode = 'server';
+        if (G.Server && await G.Server.probe()) {
+          write('ps.accountBackend', 'server');
+          return G.Server.restore();
+        }
+        // Preserve the documented loopback-only static preview, but only when
+        // its API is explicitly absent and this origin has never been a server.
+        const loopback = /^(localhost|127\.0\.0\.1|\[?::1\]?)$/i.test(location.hostname || '');
+        if (!loopback || G.Server?.probeStatus !== 404 || read('ps.accountBackend') === 'server') {
+          setSync('offline');
+          return false;
+        }
+        mode = 'local'; localReason = 'static';
+      } else { mode = 'local'; localReason = 'file'; }
       if (mode === 'local') { setSync('local'); return restoreLocal(); }
       const u = await new Promise(res => { const off = auth.onAuthStateChanged(x => { off(); res(x); }); });
       if (!u) return false;
@@ -629,6 +642,24 @@ G.DB = (() => {
       catch (e) { console.warn('[DB] no se pudo abrir la partida:', e.code || e.message); return false; }
     })();
     return readyP;
+  }
+
+  async function retryConnection() {
+    if (mode !== 'server' || !G.Server || !await G.Server.probe()) return { ok: false, restored: false };
+    write('ps.accountBackend', 'server');
+    return { ok: true, restored: await G.Server.restore() };
+  }
+
+  // Back up legacy browser saves without exporting credentials or sessions.
+  // Deliberately do not merge them into the server's economy or medal records.
+  function legacyBackup() {
+    const entries = [];
+    for (const [k, account] of Object.entries(read(K_ACC) || {})) {
+      const data = read(K_SAVE + k);
+      if (account && typeof account.name === 'string' && data && typeof data === 'object')
+        entries.push({ name: account.name, save: data });
+    }
+    return { format: 'pokesurvivor-legacy-saves', version: 1, exportedAt: Date.now(), entries };
   }
 
   async function register(name, pass) {
@@ -920,11 +951,11 @@ G.DB = (() => {
 
   return {
     fresh: newSave, normalize: migrate,
-    serverOpen(data) { mode='server'; uid=key=data.user.uid; user=data.user.name; guest=false; save=migrate(data.save || newSave(user),user); setSync('ok'); },
+    serverOpen(data) { mode='server'; write('ps.accountBackend', 'server'); uid=key=data.user.uid; user=data.user.name; guest=false; save=migrate(data.save || newSave(user),user); setSync('ok'); },
     serverApply(data) { if (save) applyInPlace(migrate(data, user)); },
     serverSync: setSync,
     serverClear() {user=key=save=uid=null;guest=false;setSync('ok');},
-    ready, register, login, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, settleOffline, claimVictoryBonus, flush: pushNow,
+    ready, register, login, retryConnection, legacyBackup, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, settleOffline, claimVictoryBonus, flush: pushNow,
     owns, grant, ownsShiny, grantShiny, ivOf, merge, setName, upgradesOf,
     onSync(fn) { listeners.add(fn); },
     onLeave(fn) { leaveHooks.push(fn); },

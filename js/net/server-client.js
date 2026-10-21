@@ -1,6 +1,7 @@
 /* Same-origin, self-hosted accounts. No third-party identity provider. */
 G.Server = (() => {
   let available = false,
+    probeStatus = 0,
     coopEnabled = false,
     user = null,
     rev = 0,
@@ -19,6 +20,7 @@ G.Server = (() => {
     G.I18n?.lang === "zh" ? zh : G.I18n?.lang === "en" ? en : es;
   function translatedError(message) {
     const messages = {
+      'Account service unavailable. Retry the connection; your account has not changed.': ['No se puede conectar con las cuentas. Reintenta; tu cuenta no ha cambiado.', '暂时无法连接账号服务器，请重试连接；不会切换或新建本地账号。'],
       'Co-op invitations temporarily unavailable':['Las invitaciones cooperativas están desactivadas temporalmente.','邀请联机暂时关闭。'],
       'Accepted friend required':['Se requiere una amistad aceptada.','需要先成为已接受的好友。'],
       'Choose an owned Pokemon':['Elige un Pokémon de tu colección.','请选择已拥有的宝可梦。'],
@@ -145,13 +147,21 @@ G.Server = (() => {
         body: data === undefined ? undefined : JSON.stringify(data),
         signal: controller.signal,
       });
-      const value = await r.json();
+      let value;
+      try { value = await r.json(); }
+      catch {
+        throw Object.assign(new Error(translatedError('Account service unavailable. Retry the connection; your account has not changed.')), { status: r.ok ? 503 : r.status });
+      }
       if (!r.ok)
         throw Object.assign(
           new Error(translatedError(value.error || "Request failed")),
           { status: r.status },
         );
       return value;
+    } catch (e) {
+      if (!e.status || e.status >= 500) { available = false; coopEnabled = false; }
+      if (!e.status) throw Object.assign(new Error(translatedError('Account service unavailable. Retry the connection; your account has not changed.')), { status: 503 });
+      throw e;
     } finally {
       clearTimeout(timer);
     }
@@ -229,9 +239,13 @@ G.Server = (() => {
     try {
       const h = await api("/health");
       coopEnabled=h.coopEnabled===true;
-      available = h.protocol === 2 && h.transport === "p2p";
+      available = h?.ok === true && h.protocol === 2 && h.transport === "p2p";
+      probeStatus = available ? 200 : 503;
       return available;
-    } catch {
+    } catch (e) {
+      available = false;
+      coopEnabled = false;
+      probeStatus = e.status || 503;
       return false;
     }
   }
@@ -245,6 +259,8 @@ G.Server = (() => {
   }
   async function authenticate(kind, name, pass) {
     try {
+      if (!available && !await probe())
+        return { ok: false, error: translatedError('Account service unavailable. Retry the connection; your account has not changed.') };
       const r = await api("/" + kind, { name, pass });
       open(r);
       return { ok: true, isNew: !G.DB.save.partner, recovery: r.recovery };
@@ -518,6 +534,7 @@ G.Server = (() => {
     get available() {
       return available;
     },
+    get probeStatus() { return probeStatus; },
     get coopEnabled(){return coopEnabled;},
     get conflict() {
       return conflict;

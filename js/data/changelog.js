@@ -1,5 +1,9 @@
 /* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
 G.CHANGELOG = [
+  { d:'2026-10-21',title:['Una sola cuenta · v0.20.4','One account, one save · v0.20.4'],new:[],chg:[],fix:[
+    ['Si falla la conexión con las cuentas, se puede reintentar sin cambiar a una cuenta local del mismo nombre.','When the account connection fails, retry without switching to a same-name local account.'],
+    ['Puedes descargar copias de las partidas locales antiguas de cada dirección, sin borrarlas ni sobrescribir la partida del servidor.','Download backups of legacy local saves from each address without deleting them or overwriting your server save.']
+  ]},
   {"d": "2026-10-21", "title": ["Tu aventura, a tu ritmo · v0.20.3", "Adventure at your pace · v0.20.3"], "new": [["Ajusta el zoom de cámara en Ajustes para ver el camino a tu gusto.", "Adjust camera zoom in Settings to find your favorite view."]], "chg": [["Las aventuras a doble velocidad también cuentan en el ranking de supervivencia de ocho estrellas.", "Double-speed adventures also count toward the eight-star survival leaderboard."], ["Los resultados reconocen al creador original y al desarrollador de esta versión. Los mensajes son más breves y claros.", "Results credit the original creator and this version’s developer. Messages are shorter and clearer."]], "fix": []},
   { d:'2026-10-20', title:['Protección de embestida · v0.20.2','Dash protection balance · v0.20.2'],new:[],chg:[
     ['La protección de las embestidas se acorta cuando sus movimientos se recargan muy rápido.', 'Dash protection becomes shorter when moves recharge very quickly.']
