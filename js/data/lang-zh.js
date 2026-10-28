@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  'Perfiles con personalidad · v0.20.5':'更生动的个人资料 · v0.20.5',
+  'Las fichas muestran compañeros animados, una galería de victorias y marcas destacadas.':'个人资料新增动态搭档卡片、通关伙伴墙与重点成绩展示。',
+  'Profiles now feature animated partners, a victory gallery and highlighted records.':'个人资料新增动态搭档卡片、通关伙伴墙与重点成绩展示。',
+  'Los personajes usan su nombre en los rankings y tienen fichas temáticas identificadas como contenido predefinido.':'排行榜使用角色本名，人物详情加入主题配色与简介，并注明预设角色资料。',
+  'Characters use their names on leaderboards and have themed profiles identified as preset content.':'排行榜使用角色本名，人物详情加入主题配色与简介，并注明预设角色资料。',
   'Una sola cuenta · v0.20.4': '账号稳定性修复 · v0.20.4',
   'When the account connection fails, retry without switching to a same-name local account.': '账号服务连接失败时可以重试，不再切换到同名本地账号。',
   'Si falla la conexión con las cuentas, se puede reintentar sin cambiar a una cuenta local del mismo nombre.': '账号服务连接失败时可以重试，不再切换到同名本地账号。',

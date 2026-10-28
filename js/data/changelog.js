@@ -1,5 +1,8 @@
 /* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
 G.CHANGELOG = [
+  {d:'2026-10-28',title:['Perfiles con personalidad · v0.20.5','Profiles with personality · v0.20.5'],new:[
+    ['Las fichas muestran compañeros animados, una galería de victorias y marcas destacadas.','Profiles now feature animated partners, a victory gallery and highlighted records.']
+  ],chg:[['Los personajes usan su nombre en los rankings y tienen fichas temáticas identificadas como contenido predefinido.','Characters use their names on leaderboards and have themed profiles identified as preset content.']],fix:[]},
   { d:'2026-10-21',title:['Una sola cuenta · v0.20.4','One account, one save · v0.20.4'],new:[],chg:[],fix:[
     ['Si falla la conexión con las cuentas, se puede reintentar sin cambiar a una cuenta local del mismo nombre.','When the account connection fails, retry without switching to a same-name local account.'],
     ['Puedes descargar copias de las partidas locales antiguas de cada dirección, sin borrarlas ni sobrescribir la partida del servidor.','Download backups of legacy local saves from each address without deleting them or overwriting your server save.']

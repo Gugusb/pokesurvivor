@@ -1,6 +1,6 @@
 {
   "name": "pokesurvivor-private-server",
-  "version": "0.20.4",
+  "version": "0.20.5",
   "private": true,
   "description": "Self-hosted accounts, saves, rankings and bounded P2P signaling without battle relay",
   "engines": {"node": ">=24.14.0"},

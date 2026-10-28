@@ -4,6 +4,7 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  'Perfiles con personalidad · v0.20.5':'Profiles with personality · v0.20.5',
   'Una sola cuenta · v0.20.4': 'One account, one save · v0.20.4',
   'Si falla la conexión con las cuentas, se puede reintentar sin cambiar a una cuenta local del mismo nombre.': 'When the account connection fails, retry without switching to a same-name local account.',
   'Puedes descargar copias de las partidas locales antiguas de cada dirección, sin borrarlas ni sobrescribir la partida del servidor.': 'Download backups of legacy local saves from each address without deleting them or overwriting your server save.',

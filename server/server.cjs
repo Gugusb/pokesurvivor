@@ -13,9 +13,10 @@ const { promisify } = require("node:util"),
   { WebSocketServer, WebSocket } = require("ws");
 const { openStore } = require("./store.cjs"),
   { ROOT, G, fresh, sanitize, clone, record } = require("./domain.cjs");
+const {characterFor}=require('./character-profiles.cjs');
 const derive = promisify(scrypt),
   digest = (s) => createHash("sha256").update(s).digest("hex");
-const VERSION = "0.20.4",
+const VERSION = "0.20.5",
   PROTOCOL = 2,
   MAX_BODY = 1024 * 1024;
 const fail = (status, message) => Object.assign(new Error(message), { status });
@@ -118,7 +119,8 @@ function createApp(opts = {}) {
     if (u.ban) throw fail(403, "Account suspended");
     return u;
   }
-  const publicUser = (u) => ({ uid: u.uid, name: u.name, role: u.role });
+  const displayName = u => characterFor(db,u.uid)?.name || u.name;
+  const publicUser = (u) => ({ uid: u.uid, name: displayName(u), role: u.role });
   const saved = (uid) => {
     const r = q("SELECT payload,rev FROM saves WHERE uid=?", uid);
     return r ? { save: JSON.parse(r.payload), rev: r.rev } : null;
@@ -241,7 +243,7 @@ function createApp(opts = {}) {
         return (
           u && {
             uid: id,
-            name: u.name,
+            name: displayName({...u,uid:id}),
             status: f.ok ? "ok" : f.from_uid === uid ? "out" : "in",
             online: sockets.has(id),
             play: !!roomOf(id) && !roomOf(id).open,
@@ -289,7 +291,7 @@ function createApp(opts = {}) {
     );
     return {
       uid: u.uid,
-      name: u.name,
+      name: displayName(u),
       dex,
       shiny: !!s.partnerShiny && !!s.shiny[dex],
       at: now(),
@@ -672,8 +674,8 @@ function createApp(opts = {}) {
             );
       const i = rows.findIndex((v) => v.uid === u.uid);
       return json(res, 200, {
-        rows: rows.slice(0, 100).map((v, i) => ({ ...v, pos: i + 1 })),
-        me: i < 0 ? null : { ...rows[i], pos: i + 1 },
+        rows: rows.slice(0, 100).map((v, i) => ({ ...v, name:displayName(v), pos: i + 1 })),
+        me: i < 0 ? null : { ...rows[i], name:displayName(rows[i]), pos: i + 1 },
       });
     }
     if (route === "/social" && method === "GET") {
@@ -834,9 +836,14 @@ function createApp(opts = {}) {
         );
       if (!p) throw fail(404, "Player not found");
       const s = saved(id).save;
+      const character=characterFor(db,id),record=q('SELECT t FROM time_scores WHERE uid=?',id);
+      const completed=Object.keys(s.difficultyRecords||{}).map(Number).filter(dex=>G.DEX_BY[dex]&&G.Difficulty.frame(s,dex)==='ruby');
       return json(res, 200, {
-        name: p.name,
-        favs: (s.profile?.favs || []).slice(0, 3),
+        name: displayName(p),
+        character,
+        partner:s.partner||null,
+        completedDex:completed.slice(0,12),
+        favs: character ? character.team.filter(dex=>G.DEX_BY[dex]).map(dex=>({dex,shiny:false})) : (s.profile?.favs || []).filter(f=>G.DEX_BY[f?.dex]).slice(0, 3),
         title: String(s.profile?.title || "").slice(0, 40),
         best: {
           solo: s.stats.bestTime || 0,
@@ -845,6 +852,9 @@ function createApp(opts = {}) {
           kills: s.stats.totalKills || 0,
           legends: Object.keys(s.legends || {}).length,
           medals: G.Difficulty.completedCount(s),
+          eightStar:record?.t||0,
+          runs:s.stats.runs||0,
+          bosses:s.stats.bossesTotal||0,
         },
         medals: [],
       });
