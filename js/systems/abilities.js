@@ -55,7 +55,11 @@ G.Abilities = (() => {
     (G.Mega ? G.Mega.damage(p) - 1 : 0) + (attack.kind && attack.kind !== 'buff' && has(p, 'sheerforce') ? 0.15 : 0) +
     (bypass && attack.kind === 'melee' && has(p, 'unseenfist') ? 0.2 : 0) + (fieldDamage(attack.type) - 1);
   const weatherSuppressed = () => players().some(p => has(p, 'airlock'));
-  const enemyDamage = (e, dmg) => dmg * (e && e.repelT > 0 ? 0.75 : e && e.fearT > 0 ? 0.8 : 1);
+  const enemyDamage = (e, dmg, kind='contact') => {
+    const mon=e && G.DEX_BY[e.dex], max=mon && Math.max(mon.atk,mon.spa??mon.atk);
+    const power=max>0?(kind==='contact'||kind==='melee'?mon.atk:(mon.spa??mon.atk))/max:1;
+    return dmg * power * (e && e.repelT > 0 ? 0.75 : e && e.fearT > 0 ? 0.8 : 1);
+  };
   const critMultiplier = p => has(p, 'airlock') && !(G.Weather.hasWeather && G.Weather.hasWeather()) ? 2.25 : 1.5;
   function canCast(p) {
     return !(has(p, 'levitate') && G.World.overlapsSolid && G.World.overlapsSolid(p.x, p.y, p.r));
@@ -168,7 +172,7 @@ G.Abilities = (() => {
   }
   function fireballDamage(p) {
     const ember = p.moves.find(m => m.id === 'ember') || G.Moves.instance('ember', 1);
-    return ember.dmg * p.atk;
+    return ember.dmg * (p.attackFor ? p.attackFor(ember) : p.atk);
   }
   function afterHurt(p, source, type = null) {
     const s = state(p);

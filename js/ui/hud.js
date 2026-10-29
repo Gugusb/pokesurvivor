@@ -355,7 +355,7 @@ G.HUD = (() => {
         ctx.font = F(700, 10);
         ctx.textAlign = 'center';
         ctx.fillStyle = fused ? BOND : col;
-        ctx.fillText((hasZ && G.ZMoves.busy(pl) ? 'Z · ' : '') + (fused ? m.name + ' +' + (g.length - 1) : m.name), x + S / 2, y - 7);
+        ctx.fillText((hasZ && G.ZMoves.busy(pl) ? 'Z · ' : '') + (fused ? m.name + ' +' + (g.length - 1) : m.name) + ' · ' + G.Moves.classLabel(m), x + S / 2, y - 7);
       }
     }
 

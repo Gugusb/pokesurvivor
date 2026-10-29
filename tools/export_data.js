@@ -28,7 +28,7 @@ for (const f of ['js/data/lang-en.js', 'js/core/settings.js', 'js/data/pokedex.j
 const moves = Object.values(G.Moves.BY_ID).map(m => {
   const inst = G.Moves.instance(m.id, m.maxLvl || 5);
   const evo = G.Moves.evoInfo(inst, {});
-  return { id: m.id, name: m.name, type: m.type, kind: m.kind, desc: m.desc, maxLvl: m.maxLvl, evo: evo ? { name: evo.name, needs: evo.needName, text: evo.text } : null };
+  return { id: m.id, name: m.name, type: m.type, kind: m.kind, damageClass:m.damageClass, desc: m.desc, maxLvl: m.maxLvl, evo: evo ? { name: evo.name, damageClass:evo.damageClass, needs: evo.needName, text: evo.text } : null };
 });
 const out = {
   dex: G.DEX,

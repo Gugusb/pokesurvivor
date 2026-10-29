@@ -39,9 +39,10 @@ G.NurseryRules = (() => {
     return Math.min(12, ...shared.map((g) => HOURS[g])) * 3600000;
   }
   function offspring(a, b, friend, rng = Math.random) {
-    const iv = Array.from({ length: 3 }, () => 1 + Math.floor(rng() * 31)),
-      indices = [0, 1, 2];
-    for (let i = 2; i > 0; i--) {
+    a=G.MonProgression.normalizeIV(a);b=G.MonProgression.normalizeIV(b);
+    const iv = Array.from({ length: 6 }, () => 1 + Math.floor(rng() * 31)),
+      indices = [0, 1, 2, 3, 4, 5];
+    for (let i = 5; i > 0; i--) {
       const j = Math.floor(rng() * (i + 1));
       [indices[i], indices[j]] = [indices[j], indices[i]];
     }

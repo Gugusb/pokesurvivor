@@ -113,6 +113,9 @@ test("ordinary offspring inherit one distinct stat; friend offspring inherit two
             [3, 27],
             [4, 28],
             [5, 29],
+            [4, 28],
+            [4, 28],
+            [4, 28],
           ][i].includes(result.iv[i]),
         );
       assert.ok(
@@ -198,8 +201,8 @@ test("nursery runs without pausing, rejects early/foreign claims and inherits th
   assert.equal(claim.report.dex, 6);
   assert.equal(claim.report.inherited.length, 1);
   for (const i of claim.report.inherited)
-    assert.equal(claim.report.iv[i], [10, 20, 30][i]);
-  assert.deepEqual(claim.save.owned[6].iv, [31, 31, 31]);
+    assert.equal(claim.report.iv[i], [10,20,30,20,20,20][i]);
+  assert.deepEqual(claim.save.owned[6].iv, [31,31,31,31,31,31]);
   const replay = await f.ok(f.a, "/nursery/claim", { id, rev: saved.rev });
   assert.equal(replay.alreadyClaimed, true);
   assert.equal(replay.rev, claim.rev);
@@ -297,7 +300,7 @@ test('friend shiny inheritance uses the other parent only and freezes both state
       assert.equal(a.report.shiny,guestShiny);assert.equal(b.report.shiny,ownerShiny);
       if(guestShiny)assert.ok(a.save.shiny[6]);
       if(ownerShiny)assert.equal(b.save.shiny[6].from,'nursery');else assert.equal(b.save.shiny[6],undefined);
-      assert.equal(b.report.inherited.length,2);assert.deepEqual(b.save.owned[6].iv,[10,20,30].map((v,i)=>Math.max(v,b.report.iv[i])));
+      assert.equal(b.report.inherited.length,2);assert.deepEqual(b.save.owned[6].iv,[10,20,30,20,20,20].map((v,i)=>Math.max(v,b.report.iv[i])));
       f.roll(0);
       const replay=await f.ok(f.b,'/nursery/claim',{id:started.hatch.id,rev:guest.rev,shiny:true});
       assert.equal(replay.alreadyClaimed,true);assert.deepEqual(replay.report,b.report);assert.equal(replay.rev,b.rev);

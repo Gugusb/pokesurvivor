@@ -211,8 +211,8 @@ G.MenuUI = (() => {
     else if (isPartner && dex !== showDetail.last) viewShiny = !!s.partnerShiny;
     showDetail.last = dex;
 
-    const max = { hp: 183, atk: 1.55, spd: 137 };
-    const iv = own ? G.DB.ivOf(dex) || [1, 1, 1] : [1, 1, 1];
+    const max = { hp: 183, atk: 2.3, spd: 137 };
+    const iv = own ? G.DB.ivOf(dex) || [1,1,1,1,1,1] : [1,1,1,1,1,1];
     const ivClass = value => value <= 10 ? 'iv-low' : value <= 20 ? 'iv-mid' : value <= 29 ? 'iv-high' : 'iv-perfect';
     const bar = (label, v, m, txt, value) =>
       `<div class="stat"><span>${label}</span><div class="bar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div><span>${txt}</span><span class="iv-value ${ivClass(value)}" title="${label} IV ${value}" aria-label="${label} IV ${value}">IV ${value}</span></div>`;
@@ -232,11 +232,15 @@ G.MenuUI = (() => {
       </div>
       ${own ? `
         ${bar('Vida', p.hp, max.hp, p.hp, iv[0])}
-        ${bar('Ataque', p.atk, max.atk, '×' + p.atk.toFixed(2), iv[1])}
+        ${bar('At. físico', p.atk, max.atk, '×' + p.atk.toFixed(2), iv[1])}
+        ${bar('At. especial', p.spa, max.atk, '×' + p.spa.toFixed(2), iv[3])}
+        ${bar('Def. física', p.defense, max.atk, '÷' + p.defense.toFixed(2), iv[4])}
+        ${bar('Def. especial', p.spdef, max.atk, '÷' + p.spdef.toFixed(2), iv[5])}
         ${bar('Velocidad', p.spd, max.spd, p.spd, iv[2])}
+        <p class="note">${G.T('Stats base originales')}: ${Object.values(p.baseStats).join(' / ')} (${G.T('PS / At. / Def. / At. Esp. / Def. Esp. / Vel.')})</p>
         <p style="font-size:14px;margin:10px 0 4px">Empieza con <b class="gold">${G.Moves.BY_ID[G.startMoveOf(dex)].name}</b></p>
         <p class="move-icons" title="Movimientos que puede aprender">
-          ${G.Moves.poolFor(p).map(id => `<span title="${G.Moves.BY_ID[id].name}">${G.Icons.html('move:' + id, 16)}</span>`).join('')}</p>
+          ${G.Moves.poolFor(p).map(id => `<span title="${G.Moves.BY_ID[id].name} · ${G.Moves.classLabel(G.Moves.BY_ID[id])}">${G.Icons.html('move:' + id, 16)}</span>`).join('')}</p>
         ${usingThis
           ? '<button class="btn grow" disabled style="width:100%">Es tu compañero</button>'
           : `<button id="dex-pick" class="btn gold" data-sfx="confirm" style="width:100%">Elegir de compañero${viewShiny ? ' (shiny)' : ''}</button>`}

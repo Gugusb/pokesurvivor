@@ -100,10 +100,14 @@ function sanitize(input, old, name) {
       if (
         v.iv &&
         (!Array.isArray(v.iv) ||
-          v.iv.length !== 3 ||
+          ![3,6].includes(v.iv.length) ||
           v.iv.some((n) => !Number.isInteger(n) || n < 1 || n > 31))
       )
         throw new Error("Invalid IV");
+      if (k === 'owned') {
+        const iv=G.MonProgression.normalizeIV(v.iv), before=G.MonProgression.normalizeIV(old.owned?.[d]?.iv);
+        v.iv=iv.map((n,i)=>Math.max(n,before[i]));
+      }
     }
   }
   if (s.partner != null && (!G.DEX_BY[s.partner] || !s.owned[s.partner]))

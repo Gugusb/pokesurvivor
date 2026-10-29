@@ -22,8 +22,8 @@ function context(){
   s.load('js/systems/mega-preview.js');s.load('js/systems/mega.js');
   const db=fs.readFileSync(path.join(ROOT,'js/core/db.js'),'utf8').replace('ready, register, login,','_test:{newSave,migrate,sanitize}, ready, register, login,');vm.runInContext(db,s);G.DB.playAsGuest();
   for(const f of ['js/systems/abilities.js','js/entities/player.js','js/entities/enemy.js','js/entities/projectile.js','js/entities/vfx.js','js/systems/combat.js','js/systems/rift.js'])s.load(f);
-  s.player=(dex=6,stone=true)=>{if(stone){const f=G.Mega.formsFor(dex)[0];G.Mega.grant(G.DB.save,f.id);G.Mega.equip(G.DB.save,dex,f.id);}p=new G.Player(G.DEX_BY[dex]);G.Game.player=p;return p;};
-  s.enemy=(x=30,mega=null)=>G.EnemyMgr.add(new G.Enemy({dex:mega?G.Mega.BY[mega].dex:1,mega,hp:10000,spd:0,dmg:10,xp:1,behavior:'ranged'},x,0,{hp:1,spd:1,dmg:1},!!mega));
+  s.player=(dex=6,stone=true)=>{if(stone){const f=G.Mega.formsFor(dex)[0];G.Mega.grant(G.DB.save,f.id);G.Mega.equip(G.DB.save,dex,f.id);}p=new G.Player(G.DEX_BY[dex]);p.baseDefense=p.baseSpDef=1;p.baseSpa=p.baseAtk;G.Game.player=p;return p;};
+  s.enemy=(x=30,mega=null)=>{const e=G.EnemyMgr.add(new G.Enemy({dex:mega?G.Mega.BY[mega].dex:1,mega,hp:10000,spd:0,dmg:10,xp:1,behavior:'ranged'},x,0,{hp:1,spd:1,dmg:1},!!mega));e.defense=e.spdef=1;return e;};
   s.evolve=p=>{G.Mega.tick(p,120);assert.ok(G.Mega.activate(p));};
   s.cast=(p,id,lvl=1)=>{const m=G.Moves.instance(id,lvl);p.moves=[m];p.slots=[[m]];p.active=0;p.target=G.EnemyMgr.all()[0];p.aim=0;G.EnemyMgr.rebuildGrid();G.Combat.tick(0,p,0);return m;};
   s.loadRift=()=>{let src=fs.readFileSync(path.join(ROOT,'js/systems/rift.js'),'utf8').replace('reset, update, drawable,','_start:start, reset, update, drawable,');vm.runInContext(src,s);};
@@ -44,7 +44,7 @@ test('stones migrate empty, sanitize invalid equipment, merge ownership and pres
   assert.equal(s.megaStones.bad,undefined);assert.equal(s.megaEquipped[65],undefined);
   const old=JSON.parse(JSON.stringify(s));s.updated=20;old.updated=10;G.Mega.equip(s,6,null);G.Mega.grant(old,'65-mega');
   const merged=G.DB.merge(s,old);assert.equal(merged.megaEquipped[6],null);assert.ok(merged.megaStones['65-mega']);
-  const legacy=G.DB._test.migrate({name:'old',owned:{},stats:{},abilityStarterGranted:true},'old');assert.equal(legacy.v,6);assert.equal(Object.keys(legacy.megaStones).length,0);
+  const legacy=G.DB._test.migrate({name:'old',owned:{},stats:{},abilityStarterGranted:true},'old');assert.equal(legacy.v,7);assert.equal(Object.keys(legacy.megaStones).length,0);
 });
 test('a real local save retains stone ownership and equipment through logout/login',async()=>{
   const {G}=context();assert.ok((await G.DB.register('MegaTest','test-only')).ok);G.Mega.grant(G.DB.save,'6-mega-x');G.Mega.equip(G.DB.save,6,'6-mega-x');G.DB.commit(true);

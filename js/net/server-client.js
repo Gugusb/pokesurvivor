@@ -342,9 +342,10 @@ G.Server = (() => {
         for(const k of ['t1','t10'])s.tickets[k]+=remote.tickets[k]-before.tickets[k];
         for(const [d,entry]of Object.entries(remote.owned)){
           if(!s.owned[d])s.owned[d]=copy(entry);
-          else if(entry.iv)s.owned[d].iv=entry.iv.map((v,i)=>Math.max(v,s.owned[d].iv?.[i]||1));
+          else if(entry.iv){const old=G.MonProgression.normalizeIV(s.owned[d].iv),iv=G.MonProgression.normalizeIV(entry.iv);s.owned[d].iv=iv.map((v,i)=>Math.max(v,old[i]));}
         }
         s.megaStones={...remote.megaStones,...s.megaStones};
+        s.shiny={...remote.shiny,...s.shiny};
         Object.assign(s,G.ZAccess.merge(s,remote));
         accept(r);commit(true);
       }

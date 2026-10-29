@@ -13,7 +13,7 @@ G.LevelUp = (() => {
   const STATS = [
     { id: 'hp',   icon: 'heart', title: 'Vigor',        desc: '+20 de vida máxima (y la recupera).',
       apply: pl => pl.addMaxHp(20) },
-    { id: 'atk',  icon: 'fist', title: 'Potencia',     desc: '+10% de daño con todos los movimientos.',
+    { id: 'atk',  icon: 'fist', title: 'Potencia',     desc: '+10% a ambos ataques.',
       apply: pl => pl.atkMul += 0.10, max: 40 },
     { id: 'spd',  icon: 'boot', title: 'Carrera',      desc: '+7% de velocidad de movimiento.',
       apply: pl => pl.spdMul *= 1.07, max: 8 },
@@ -47,7 +47,7 @@ G.LevelUp = (() => {
         out.push({
           w: 1, category: family(d), type: 'new', key: 'new:' + id,
           icon: 'move:' + id, color: G.U.TYPE_COLOR[d.type],
-          tag: G.U.TYPE_NAME[d.type],
+          tag: G.U.TYPE_NAME[d.type] + ' · ' + G.Moves.classLabel(d),
           title: d.name, desc: d.desc,
           apply: p => p.addMove(id)
         });
@@ -62,7 +62,7 @@ G.LevelUp = (() => {
       if (!ev.ready) { waiting[ev.needs] = m; continue; }
       out.push({
         w: 0.75, category: family(m), type: 'evo', key: 'evo:' + m.id,
-        icon: 'move:' + m.id, color: '#ffd23f', tag: 'EVOLUCIÓN',
+        icon: 'move:' + m.id, color: '#ffd23f', tag: (G.T ? G.T('EVOLUCIÓN') : 'EVOLUCIÓN') + ' · ' + G.Moves.classLabel(ev),
         title: m.name + ' → ' + ev.name, desc: ev.text,
         apply: p => {
           G.Moves.evolve(m);
@@ -81,7 +81,7 @@ G.LevelUp = (() => {
       out.push({
         w: 2 + 0.75 * (m.lvl - 1), category: family(m), type: 'up', key: 'up:' + m.id,
         icon: 'move:' + m.id, color: G.U.TYPE_COLOR[m.type],
-        tag: 'Nv.' + m.lvl + ' > ' + (m.lvl + 1),
+        tag: 'Nv.' + m.lvl + ' > ' + (m.lvl + 1) + ' · ' + G.Moves.classLabel(m),
         title: m.name, desc: txt,
         apply: () => G.Moves.levelUp(m)
       });
@@ -148,7 +148,7 @@ G.LevelUp = (() => {
   }
   const EVOLUTION_STATS={
     hp:{desc:'+60 de vida máxima (y la recupera).',apply:p=>p.addMaxHp(60)},
-    atk:{desc:'+30% de daño con todos los movimientos.',apply:p=>p.atkMul+=.30},
+    atk:{desc:'+30% a ambos ataques.',apply:p=>p.atkMul+=.30},
     spd:{desc:'+21% de velocidad de movimiento.',apply:p=>p.spdMul*=1.21},
     cd:{desc:'-24% de recarga en todos los movimientos.',apply:p=>p.cdMul*=.76},
     def:{desc:'+18% de reducción de daño recibido.',apply:p=>p.dmgReduce=Math.min(.7,p.dmgReduce+.18)},

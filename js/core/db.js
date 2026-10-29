@@ -27,7 +27,7 @@
 G.DB = (() => {
   const K_ACC = 'ps.accounts', K_SES = 'ps.session', K_SAVE = 'ps.save.';
   const K_CLOUD = 'ps.cloud.', K_MIGRATED = 'ps.migrated.';
-  const VERSION = 6;
+  const VERSION = 7;
   const START_COINS = 500;
   const SDK = 'https://www.gstatic.com/firebasejs/13.0.0/';
   const NAME_DOMAIN = 'jugadores.pokesurvivor.net';   // sólo para el email interno
@@ -176,6 +176,8 @@ G.DB = (() => {
     if (G.DEX_BY) for (const coll of ['owned', 'shiny']) {
       for (const d of Object.keys(s[coll] || {})) if (!G.DEX_BY[d]) delete s[coll][d];
     }
+    for (const entry of Object.values(s.owned || {}))
+      if (entry && G.MonProgression) entry.iv = G.MonProgression.normalizeIV(entry.iv);
     // Atajos: 4 huecos con un movimiento que exista (o null), sin repetir.
     if (s.pbind && typeof s.pbind === 'object') {
       for (const d of Object.keys(s.pbind)) {
@@ -237,6 +239,10 @@ G.DB = (() => {
       }
     }
     // Un cliente antiguo no conoce estos campos: conservarlos si los omite.
+    if (G.MonProgression) for (const d of Object.keys(r.owned || {})) {
+      const aIV=G.MonProgression.normalizeIV(a.owned?.[d]?.iv),bIV=G.MonProgression.normalizeIV(b.owned?.[d]?.iv);
+      r.owned[d]={...r.owned[d],iv:aIV.map((v,i)=>Math.max(v,bIV[i]))};
+    }
     // Cuando están presentes, el saldo y el pity son los de la copia reciente.
     if (r.abilityGems == null) r.abilityGems = older.abilityGems || 0;
     if (r.abilityPity == null) r.abilityPity = JSON.parse(JSON.stringify(older.abilityPity || {}));
@@ -898,19 +904,19 @@ G.DB = (() => {
   function ivOf(dex) {
     if (!save) return null;
     const e = save.owned[dex] || (save.owned[dex] = { at: Date.now(), from: 'unknown' });
-    if (!Array.isArray(e.iv) || e.iv.length < 3) e.iv = [randomIv(), randomIv(), randomIv()];
-    e.iv = e.iv.slice(0, 3).map(v => Math.max(1, Math.min(31, v | 0)));
+    if (!Array.isArray(e.iv) || e.iv.length < 3) e.iv = Array.from({length:6},randomIv);
+    e.iv = G.MonProgression.normalizeIV(e.iv);
     return e.iv;
   }
 
   function grant(dex, from) {
     const zUnlocked=G.ZAccess?.acquired(save,dex) || false;
     const fresh = !save.owned[dex];
-    if (fresh) save.owned[dex] = { at: Date.now(), from, iv: [randomIv(), randomIv(), randomIv()] };
+    if (fresh) save.owned[dex] = { at: Date.now(), from, iv: Array.from({length:6},randomIv) };
     const old = fresh ? save.owned[dex].iv : ivOf(dex);
-    const next = fresh ? old.slice() : [randomIv(), randomIv(), randomIv()];
+    const next = fresh ? old.slice() : Array.from({length:6},randomIv);
     const raised = [];
-    if (!fresh) for (let i = 0; i < 3; i++) {
+    if (!fresh) for (let i = 0; i < 6; i++) {
       if (next[i] > old[i]) raised.push(i);
       old[i] = Math.max(old[i], next[i]);
     }

@@ -4,6 +4,12 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  '+10% a ambos ataques.':'+10% Attack and Sp. Atk.','+30% a ambos ataques.':'+30% Attack and Sp. Atk.','+4% a ambos ataques':'+4% Attack and Sp. Atk',
+  'No hace daño: acumula AMBOS ATAQUES mientras esté activo.':'Deals no damage: stacks both attacks while active.',
+  'No hace daño: acumula AMBOS ATAQUES más rápido que Danza Espada.':'Deals no damage: stacks both attacks faster than Swords Dance.',
+  'At. físico':'Attack','At. especial':'Sp. Atk','Def. física':'Defense','Def. especial':'Sp. Def',
+  'Físico':'Physical','Especial':'Special','Estado':'Status','Ataques':'Attack & Sp. Atk',
+  'Stats base originales':'Original base stats','PS / At. / Def. / At. Esp. / Def. Esp. / Vel.':'HP / Atk / Def / Sp. Atk / Sp. Def / Speed',
   'Perfiles con personalidad · v0.20.5':'Profiles with personality · v0.20.5',
   'Una sola cuenta · v0.20.4': 'One account, one save · v0.20.4',
   'Si falla la conexión con las cuentas, se puede reintentar sin cambiar a una cuenta local del mismo nombre.': 'When the account connection fails, retry without switching to a same-name local account.',

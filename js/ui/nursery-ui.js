@@ -398,16 +398,19 @@ G.NurseryUI = (() => {
         el(
           "p",
           t(
-            "IV de la cría (PS / ataque / velocidad): ",
-            "Offspring IVs (HP / attack / speed): ",
-            "本次个体值（生命 / 攻击 / 速度）：",
+            "IV (PS / At. / Vel. / At. Esp. / Def. / Def. Esp.): ",
+            "IVs (HP / Atk / Speed / Sp. Atk / Def / Sp. Def): ",
+            "本次个体值（生命 / 物攻 / 速度 / 特攻 / 物防 / 特防）：",
           ) + report.iv.join(" / "),
         ),
       );
       const names = [
         t("PS", "HP", "生命"),
-        t("Ataque", "Attack", "攻击"),
+        t("At. físico", "Attack", "物攻"),
         t("Velocidad", "Speed", "速度"),
+        t("At. especial", "Sp. Atk", "特攻"),
+        t("Def. física", "Defense", "物防"),
+        t("Def. especial", "Sp. Def", "特防"),
       ];
       box.append(
         el(

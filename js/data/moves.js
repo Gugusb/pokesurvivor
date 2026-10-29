@@ -132,7 +132,7 @@
       cd: 0.75, dmg: 20, radius: 110, width: 34, knock: 40 },
 
     { id: 'swords-dance', name: 'Danza Espada', type: 'normal', kind: 'buff',
-      desc: 'No hace daño: acumula ATAQUE mientras esté activo.',
+      desc: 'No hace daño: acumula AMBOS ATAQUES mientras esté activo.',
       cd: 0.85, stat: 'atk', amount: 0.13, dur: 7, stacks: 5 },
 
     { id: 'agility', name: 'Agilidad', type: 'normal', kind: 'buff',
@@ -317,7 +317,7 @@
       cd: 1.0, dmg: 24, radius: 230, width: 34 },
 
     { id: 'dragon-dance', name: 'Danza Dragón', type: 'dragon', kind: 'buff',
-      desc: 'No hace daño: acumula ATAQUE más rápido que Danza Espada.',
+      desc: 'No hace daño: acumula AMBOS ATAQUES más rápido que Danza Espada.',
       cd: 0.7, stat: 'atk', amount: 0.11, dur: 7, stacks: 5 },
 
     // ---------------- HADA ----------------
@@ -542,7 +542,7 @@
     const e = EVO[m.id];
     if (!e || m.evolved || m.lvl < m.def.maxLvl || !EVO_MODS[m.kind]) return null;
     const [name, needs] = e;
-    return { name, needs, needName: NEED_NAME[needs], text: EVO_MODS[m.kind].t,
+    return { name, needs, damageClass:DAMAGE_CLASSES[m.id][1], needName: NEED_NAME[needs], text: EVO_MODS[m.kind].t,
              ready: !!(statsTaken && statsTaken[needs]) };
   }
 
@@ -551,12 +551,20 @@
     const e = EVO[m.id];
     if (!e || m.evolved) return false;
     applyMods(m, EVO_MODS[m.kind].m);
+    m.damageClass = DAMAGE_CLASSES[m.id][1];
     m.baseName = m.name;
     m.name = e[0];
     m.evolved = true;
     return true;
   }
 
-  G.Moves = { ALL: RAW, BY_ID, POOL, poolFor, instance, levelUp, nextUpText, startFor,
+  // battle-classes:begin
+  // Pinned PokeAPI damage classes; offensive adaptations of status moves have explicit overrides.
+  const DAMAGE_CLASSES = {"tackle":["physical","physical"],"quick-attack":["physical","physical"],"swords-dance":["status","status"],"agility":["status","status"],"harden":["status","status"],"ember":["special","special"],"flamethrower":["special","special"],"fire-spin":["special","physical"],"heat-wave":["special","special"],"water-gun":["special","special"],"bubble":["special","special"],"hydro-pump":["special","special"],"aqua-ring":["status","status"],"vine-whip":["physical","physical"],"razor-leaf":["physical","special"],"leaf-storm":["special","special"],"giga-drain":["special","special"],"thunder-shock":["special","special"],"discharge":["special","special"],"thunderbolt":["special","special"],"confusion":["special","special"],"psybeam":["special","special"],"psychic":["special","special"],"sludge":["special","special"],"mud-shot":["special","special"],"gust":["special","special"],"wing-attack":["physical","physical"],"body-slam":["physical","physical"],"hyper-voice":["special","special"],"poison-sting":["physical","physical"],"toxic":["special","special"],"bulldoze":["physical","physical"],"bug-bite":["physical","physical"],"string-shot":["special","special"],"bug-buzz":["special","special"],"rock-throw":["physical","physical"],"rock-slide":["physical","physical"],"ice-beam":["special","special"],"powder-snow":["special","special"],"karate-chop":["physical","physical"],"aura-sphere":["special","special"],"lick":["physical","physical"],"shadow-ball":["special","physical"],"dragon-rage":["special","special"],"dragon-dance":["status","status"],"fairy-wind":["special","special"],"dazzling-gleam":["special","special"],"metal-claw":["physical","physical"],"flash-cannon":["special","special"],"bite":["physical","physical"],"dark-pulse":["special","special"],"night-shade":["special","special"],"bonemerang":["physical","physical"],"psycho-cut":["physical","physical"],"spikes":["physical","physical"],"toxic-spikes":["physical","physical"],"hail":["special","physical"],"meteor-mash":["physical","physical"],"will-o-wisp":["special","special"],"substitute":["physical","physical"],"aerial-ace":["physical","physical"],"flame-wheel":["physical","physical"],"bubble-beam":["special","physical"],"hex":["special","physical"]};
+  for (const m of RAW) m.damageClass = DAMAGE_CLASSES[m.id][0];
+  // battle-classes:end
+
+  const classLabel=m=>{const text=m.damageClass==='physical'?'Físico':m.damageClass==='special'?'Especial':'Estado';return G.T?G.T(text):text;};
+  G.Moves = { ALL: RAW, BY_ID, POOL, poolFor, instance, levelUp, nextUpText, startFor, classLabel,
               EVO, NEED_NAME, evoInfo, evolve };
 })();

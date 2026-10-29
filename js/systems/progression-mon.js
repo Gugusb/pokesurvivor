@@ -21,14 +21,21 @@ G.MonProgression = (() => {
     return [...family].filter(d => G.DEX_BY[d]).sort((a,b) => a-b);
   }
   const ivMod = iv => 0.75 + 0.65 * Math.pow(Math.max(0, Math.min(30, iv - 1)) / 30, 2);
+  // Preserve the legacy HP/Attack/Speed prefix. New slots: Sp. Atk/Defense/Sp. Def.
+  function normalizeIV(iv) {
+    if (!Array.isArray(iv) || iv.length < 3) return [1,1,1,1,1,1];
+    const old=iv.slice(0,3), expanded=iv.length>=6?iv.slice(0,6):[...old,old[1],old[1],old[1]];
+    return expanded.map(v=>Math.max(1,Math.min(31,Number.isFinite(+v)?Math.floor(+v):1)));
+  }
   // Each form has its own Pokédex IV record; an unregistered form is 1/1/1.
   const values = dex => {
     const iv = G.DB.ivOf(dex);
-    return Array.isArray(iv) && iv.length >= 3 ? iv.slice(0, 3) : [1, 1, 1];
+    return normalizeIV(iv);
   };
   const stats = (dex, ivs = values(dex)) => {
-    const p = G.DEX_BY[dex], v = ivs.map(ivMod);
-    return { hp: p.hp * v[0], atk: p.atk * v[1], spd: p.spd * v[2] };
+    const p = G.DEX_BY[dex], v = normalizeIV(ivs).map(ivMod);
+    return { hp: p.hp * v[0], atk: p.atk * v[1], spd: p.spd * v[2],
+      spa: (p.spa??p.atk)*v[3], defense: p.defense ? p.defense*v[4] : 1, spdef: p.spdef ? p.spdef*v[5] : 1 };
   };
   function stageFor(dex, level, selectedPath) {
     const chain = selectedPath || pathFor(dex); if (!chain) return dex;
@@ -57,7 +64,8 @@ G.MonProgression = (() => {
     const bonus=p.maxHp-oldBase, next=choice.dex, ivs=values(next), mon=G.DEX_BY[next], dir=p.anim?.dir || 0;
     p.evolutionPath=allowed.path.slice();p.monStage=p.dex=next;
     p.mon={...mon,types:mon.types.slice()};p.spriteDex=next;
-    p.baseAtk=mon.atk*ivMod(ivs[1]);p.baseSpd=mon.spd*ivMod(ivs[2]);
+    const nextStats=stats(next,ivs);
+    p.baseAtk=nextStats.atk;p.baseSpa=nextStats.spa;p.baseDefense=nextStats.defense;p.baseSpDef=nextStats.spdef;p.baseSpd=nextStats.spd;
     p.maxHp=Math.max(1,mon.hp*ivMod(ivs[0])+bonus);p.hp=Math.min(p.maxHp,p.maxHp*fraction);
     p.anim=new G.Sprites.Animator(next,1,p.shiny);p.anim.dir=dir;
     p.r=G.Sprites.bodyRadius(next);p.bodyH=G.Sprites.bodyHeight(next);G.Sprites.preload([next],8000,p.shiny);
@@ -82,5 +90,5 @@ G.MonProgression = (() => {
     if (out.length) G.DB.commit(true);
     return out;
   }
-  return { CHAINS, PATHS, chainBy, pathFor, rootFor, familyFor, ivMod, values, stats, stageFor, evolutionLevel, validPath, evolutionOptions, evolve, captureChance, tryCapture, commitCaptures };
+  return { CHAINS, PATHS, chainBy, pathFor, rootFor, familyFor, ivMod, normalizeIV, values, stats, stageFor, evolutionLevel, validPath, evolutionOptions, evolve, captureChance, tryCapture, commitCaptures };
 })();

@@ -40,7 +40,7 @@ module.exports = function socialServices({
     const s = saved(uid).save;
     if (!Number.isInteger(dex) || !G.DEX_BY[dex] || !s.owned[dex])
       throw fail(400, "Choose an owned Pokemon");
-    return (s.owned[dex].iv || [1, 1, 1]).slice();
+    return G.MonProgression.normalizeIV(s.owned[dex].iv);
   }
   function summary(uid) {
     return {
@@ -122,7 +122,7 @@ module.exports = function socialServices({
   function givePokemon(s, dex, iv) {
     const zUnlocked = G.ZAccess.acquired(s, dex, rng),
       entry = s.owned[dex];
-    if (entry) entry.iv = iv.map((v, i) => Math.max(v, entry.iv?.[i] || 1));
+    if (entry) { const old=G.MonProgression.normalizeIV(entry.iv);entry.iv = iv.map((v, i) => Math.max(v, old[i])); }
     else s.owned[dex] = { at: now(), from: "nursery", iv: iv.slice() };
     return zUnlocked;
   }
@@ -144,8 +144,8 @@ module.exports = function socialServices({
       if (now() < h.ends) throw fail(409, "Hatch not ready");
       const s = revision(uid, b.rev),
         roll = G.NurseryRules.offspring(
-          JSON.parse(h.a),
-          JSON.parse(h.b),
+          G.MonProgression.normalizeIV(JSON.parse(h.a)),
+          G.MonProgression.normalizeIV(JSON.parse(h.b)),
           !!h.guest,
           rng,
         );

@@ -255,7 +255,10 @@ const { chromium } = require(
     assert.equal(await b.locator('.nursery-result .nursery-mon').getAttribute('data-shiny'),'true');
     await b.getByText('后代继承了闪光！',{exact:true}).waitFor();
     assert.equal(JSON.parse(app.db.prepare('SELECT payload FROM saves WHERE uid=?').get(ids[1]).payload).shiny[6].from,'nursery');
+    if(!process.argv.includes('--built'))assert.equal(await b.evaluate(()=>G.DB.ownsShiny(6)),true);
     await b.screenshot({animations:'disabled',path:path.join(__dirname,'cache/nursery-v0.21.0-shiny-'+(process.argv.includes('--built')?'built':'source')+'.png')});
+    await b.locator('#nursery-back').click();await b.locator('[data-go="dex"]').click();
+    await b.locator('#dex-grid [data-dex="6"]').click();await b.locator('#dex-detail [data-v="1"]').waitFor();
     results.push(
       "Both players claim the primary species after server time, sixth duplicate unlocks family Z",
       "Shiny primary parent is displayed; only the guest inherits shiny from the other parent at a controlled 1.9% roll",

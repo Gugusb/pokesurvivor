@@ -161,6 +161,8 @@ G.Coop = (() => {
     p.evolutionPath=path.slice();p.monStage=n.dex;
     const dex=n.dex;if(dex===p.dex)return;
     const mon=G.DEX_BY[dex],dir=p.anim.dir;p.baseAtk*=mon.atk/p.mon.atk;p.baseSpd*=mon.spd/p.mon.spd;
+    p.baseSpa*=(mon.spa??mon.atk)/(p.mon.spa??p.mon.atk);
+    p.baseDefense*=(mon.defense||1)/(p.mon.defense||1);p.baseSpDef*=(mon.spdef||1)/(p.mon.spdef||1);
     p.dex=dex;p.mon=mon;p.spriteDex=dex;p.megaForm=null;
     if(p.megaState)p.megaState.left=0;
     p.anim=new G.Sprites.Animator(dex,1,p.shiny);p.anim.dir=dir;
@@ -339,7 +341,8 @@ G.Coop = (() => {
           if (!e || e.dead || e.remote) break;
           hitFrom = from;
           const def = G.Moves.BY_ID[ev[7]];
-          const attack = def ? { kind: def.kind, type: def.type } : {};
+          const move=G.Moves.instance(def.id,1);if(ev[8]===1)G.Moves.evolve(move);
+          const attack = { id:def.id, kind: def.kind, type: def.type, damageClass:move.damageClass, evolved:!!move.evolved };
           e.hurt(ev[2], ev[3], ev[4], ev[5], G.Abilities.suppressEffects(m.pl) ? 0 : ev[6], null, m.pl, attack);
           hitFrom = null;
           break;
@@ -517,7 +520,7 @@ G.Coop = (() => {
   }
 
   // invitado
-  function hit(e, d, color, dx, dy, knock, attack = {}) { outEv.push(['h', e.id, d, color, r1(dx), r1(dy), knock || 0, attack.id || null]); }
+  function hit(e, d, color, dx, dy, knock, attack = {}) { outEv.push(['h', e.id, d, color, r1(dx), r1(dy), knock || 0, attack.id || null, attack.evolved ? 1 : 0]); }
   function status(e, kind, val, dur) { outEv.push(['s', e.id, kind, val, dur]); }
 
   // anfitrión

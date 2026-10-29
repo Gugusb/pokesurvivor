@@ -123,7 +123,10 @@ function createApp(opts = {}) {
   const publicUser = (u) => ({ uid: u.uid, name: displayName(u), role: u.role });
   const saved = (uid) => {
     const r = q("SELECT payload,rev FROM saves WHERE uid=?", uid);
-    return r ? { save: JSON.parse(r.payload), rev: r.rev } : null;
+    if (!r) return null;
+    const s=JSON.parse(r.payload);
+    for (const entry of Object.values(s.owned || {})) if(entry) entry.iv=G.MonProgression.normalizeIV(entry.iv);
+    return { save:s, rev:r.rev };
   };
   function save(uid, s) {
     exec(

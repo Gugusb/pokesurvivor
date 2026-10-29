@@ -2,48 +2,7 @@
 const test = require('node:test'), assert = require('node:assert/strict');
 const fs = require('node:fs'), path = require('node:path'), vm = require('node:vm');
 const ROOT = path.join(__dirname, '..'), noop = () => {};
-function context(lang = 'zh') {
-  const storage = new Map([['ps.lang', lang]]);
-  const s = { console, Math: Object.create(Math), Map, Set, JSON, Date, Object, Array, Number, String, RegExp,
-    Uint8Array, TextEncoder, Promise, performance: { now: () => 1000 },
-    setTimeout: noop, clearTimeout: noop, setInterval: noop, addEventListener: noop, matchMedia: () => ({ matches: false }),
-    location: { pathname: '/', protocol: 'file:', reload: noop }, navigator: { language: 'zh-CN' },
-    localStorage: { getItem: k => storage.get(k) ?? null, setItem: (k, v) => storage.set(k, v), removeItem: k => storage.delete(k) },
-    document: { documentElement: {}, addEventListener: noop }, CanvasRenderingContext2D: function () {}, confirm: noop, alert: noop };
-  s.window = s; s.G = {}; s.players = []; s.enemies = [];
-  vm.createContext(s);
-  s.load = file => vm.runInContext(fs.readFileSync(path.join(ROOT, file), 'utf8'), s, { filename: file });
-  for (const file of ['js/core/util.js', 'js/core/i18n.js', 'js/data/lang-en.js', 'js/data/lang-zh.js',
-    'js/data/pokedex.js', 'js/data/evolutions.js', 'js/data/sprites-meta.js', 'js/data/moves.js', 'js/data/abilities.js', 'js/data/upgrades.js']) s.load(file);
-  const G = s.G;
-  G.FIREBASE_CONFIG = null;
-  G.FX = new Proxy({}, { get: () => noop }); G.Audio = { sfx: noop }; G.Camera = { kick: noop, sees: () => false };
-  G.World = { liquidEffect: () => ({ slow: 0.5 }), isLiquid: () => false, collide: () => false };
-  G.Weather = { speedFor: () => 1, mult: () => 1 }; G.Types = { mult: () => 1, label: () => null };
-  G.Coop = { active: false, isHost: false, toHost: ev => (s.events ||= []).push(ev), status: noop };
-  G.Dev = { canUse: () => false, invincible: false };
-  G.Game = { everyone: () => s.players }; G.Path = { dirFor: () => null };
-  G.Judgment = { noteDmg: noop }; G.Events = { golden: false };
-  G.Projectiles = { clearOrbs: noop }; G.UI = { toast: noop };
-  G.Sprites = { hasShiny: () => true, bodyRadius: () => 10, bodyHeight: () => 20, hovers: () => false,
-    dirFromAngle: () => 0, animMeta: () => null, PX: 2, Animator: class { play() {} update() {} loop() {} busy() { return false; } } };
-  // Exponer privados sólo en el entorno de prueba, sin ampliar la API publicada.
-  const db = fs.readFileSync(path.join(ROOT, 'js/core/db.js'), 'utf8').replace(
-    'ready, register, login,', '_test: {newSave, migrate, sanitize}, ready, register, login,');
-  vm.runInContext(db, s, { filename: 'js/core/db.js' }); G.DB.playAsGuest();
-  s.load('js/systems/progression-mon.js');
-  for (const file of ['js/systems/abilities.js', 'js/systems/gacha.js', 'js/systems/ability-gacha.js', 'js/entities/player.js', 'js/entities/enemy.js']) s.load(file);
-  G.EnemyMgr = { all: () => s.enemies, queryCircle: (x,y,r) => s.enemies.filter(e => !e.dead && (e.x-x)**2+(e.y-y)**2 <= r*r) };
-  s.player = (dex, ability) => {
-    const p = new G.Player(G.DEX_BY[dex]); p.ability = ability || null; s.players = [p]; return p;
-  };
-  s.enemy = () => {
-    const e = new G.Enemy({ dex: 1, hp: 500, spd: 0, dmg: 10, xp: 1, behavior: 'ranged', shotCd: 2, range: 300 }, 100, 0, { hp: 1, spd: 1, dmg: 1 });
-    s.enemies.push(e); return e;
-  };
-  s.random = values => { let i = 0; s.Math.random = () => values[i++] ?? 0.5; };
-  return s;
-}
+const {context}=require('./battle_fixture.cjs');
 const approx = (a, b) => assert.ok(Math.abs(a - b) < 1e-7, `${a} ≠ ${b}`);
 
 function combatContext() {
@@ -152,10 +111,10 @@ test('Intimidate applies Repel only on melee damage, refreshes three seconds and
   const s=combatContext(),{G}=s,p=s.player(373,'intimidate'),e=s.enemy();e.x=25;p.target=e;p.aim=0;
   e.hurt(1,'#fff',0,0,0,null,p,{kind:'projectile'});assert.equal(e.repelT,undefined);
   const m=G.Moves.instance('tackle');p.moves=[m];p.slots=[[m]];G.Combat.tick(0,p,0);
-  assert.equal(e.repelT,3);approx(G.Abilities.slowFactor(e),.5);approx(G.Abilities.enemyDamage(e,100),75);
+  assert.equal(e.repelT,3);approx(G.Abilities.slowFactor(e),.5);approx(G.Abilities.enemyDamage(e,100),75*G.DEX_BY[e.dex].atk/Math.max(G.DEX_BY[e.dex].atk,G.DEX_BY[e.dex].spa));
   G.Abilities.enemyTick(e,2);m.t=0;G.Combat.tick(0,p,1);assert.equal(e.repelT,3);
-  G.Abilities.applyEffect(e,'fear');approx(G.Abilities.enemyDamage(e,100),75);
-  G.Abilities.enemyTick(e,3);approx(G.Abilities.slowFactor(e),1);approx(G.Abilities.enemyDamage(e,100),100);
+  G.Abilities.applyEffect(e,'fear');approx(G.Abilities.enemyDamage(e,100),75*G.DEX_BY[e.dex].atk/Math.max(G.DEX_BY[e.dex].atk,G.DEX_BY[e.dex].spa));
+  G.Abilities.enemyTick(e,3);approx(G.Abilities.slowFactor(e),1);approx(G.Abilities.enemyDamage(e,100),100*G.DEX_BY[e.dex].atk/Math.max(G.DEX_BY[e.dex].atk,G.DEX_BY[e.dex].spa));
 });
 
 test('attack and damage bonuses sum in separate buckets; Electric field affects both sides once and never stacks',()=>{
@@ -205,20 +164,20 @@ test('co-op carries projectile move identity and host resolves shield abilities 
 
 test('repeated Pokémon rewards keep the highest IV per stat and report only real improvements', () => {
   const s = context(), { G } = s;
-  s.random([0, 0, 0]);
+  s.random([0, 0, 0, 0, 0, 0]);
   const first = G.DB.grant(25, 'test');
   assert.equal(first.isNew, true); assert.equal(first.ivUp, false); assert.equal(first.ivRaised.length, 0);
-  assert.deepEqual(Array.from(G.DB.ivOf(25)), [1, 1, 1]);
-  s.random([.99, 0, .99]);
+  assert.deepEqual(Array.from(G.DB.ivOf(25)), [1,1,1,1,1,1]);
+  s.random([.99, 0, .99, .99, 0, .99]);
   const second = G.DB.grant(25, 'test');
   assert.equal(second.isNew, false);
   assert.equal(second.ivUp, true);
-  assert.equal(second.ivRaised.length, 2); assert.equal(second.ivRaised[0], 0); assert.equal(second.ivRaised[1], 2);
-  assert.deepEqual(Array.from(G.DB.ivOf(25)), [31, 1, 31]);
-  s.random([0, 0, 0]);
+  assert.deepEqual(Array.from(second.ivRaised),[0,2,3,5]);
+  assert.deepEqual(Array.from(G.DB.ivOf(25)), [31,1,31,31,1,31]);
+  s.random([0, 0, 0, 0, 0, 0]);
   const third = G.DB.grant(25, 'test');
   assert.equal(third.ivUp, false);
-  assert.deepEqual(Array.from(G.DB.ivOf(25)), [31, 1, 31]);
+  assert.deepEqual(Array.from(G.DB.ivOf(25)), [31,1,31,31,1,31]);
 });
 
 test('evolution families share upgrade levels and max-upgrade cost sums remaining levels', () => {
@@ -479,13 +438,13 @@ test('Truant doubles every fourth real cast cooldown and heals once, including l
 
 test('Fear refreshes three seconds without stacking and reduces shots and telegraphed attacks by 20%', () => {
   const s = context(), { G } = s, p = s.player(373, 'intimidate'), e = s.enemy(), shots = [], hazards = [];
-  G.Abilities.applyEffect(e,'fear',0,p); assert.equal(e.fearT, 3); approx(G.Abilities.enemyDamage(e, 100),80);
+  G.Abilities.applyEffect(e,'fear',0,p); assert.equal(e.fearT, 3); approx(G.Abilities.enemyDamage(e, 100),80*G.DEX_BY[e.dex].atk/Math.max(G.DEX_BY[e.dex].atk,G.DEX_BY[e.dex].spa));
   G.Abilities.enemyTick(e,2); G.Abilities.applyEffect(e,'fear',0,p); assert.equal(e.fearT,3);
   G.Projectiles.spawn = o => {shots.push(o); return o;}; G.VFX = {forType: () => ({})};
   G.Hazards = {add: o => hazards.push(o)};
   e.shoot(1,0); approx(shots[0].dmg,e.shotDmg()*.8);
   e.hazard({kind:'zone',dmg:100}); assert.equal(hazards[0].dmg,80);
-  G.Abilities.enemyTick(e,3); approx(G.Abilities.enemyDamage(e,100),100);
+  G.Abilities.enemyTick(e,3); approx(G.Abilities.enemyDamage(e,100),100*G.DEX_BY[e.dex].atk/Math.max(G.DEX_BY[e.dex].atk,G.DEX_BY[e.dex].spa));
 });
 
 test('Moxie kill credit is per owner, deduplicated, capped at five and expires each stack independently', () => {
@@ -590,7 +549,7 @@ test('combat contact honors Fear, and teammate visual projectiles never damage o
   G.World.propsInCircle=()=>[];G.World.projectileBlock=()=>null;
   const hp=e.hp;s.random([0,5.1/6]);G.Combat.resolve(.1,p,1);assert.equal(e.hp,hp);assert.equal(e.fearT,undefined);
   e.x=p.x;e.y=p.y;e.fearT=3;e.touchCd=0;const before=p.hp;
-  G.Combat.resolve(.1,p,2);approx(p.hp,before-8);
+  G.Combat.resolve(.1,p,2);approx(p.hp,before-8*G.DEX_BY[e.dex].atk/Math.max(G.DEX_BY[e.dex].atk,G.DEX_BY[e.dex].spa));
 });
 
 test('co-op host validates weather requests, applies melee Repel and credits the actual peer killer', () => {

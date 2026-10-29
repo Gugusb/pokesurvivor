@@ -1,0 +1,280 @@
+{
+  "source": "PokeAPI/pokeapi",
+  "commit": "81d20919845b6a445969b9265aab5cec6b04cece",
+  "stats": 966,
+  "ivOrder": [
+    "hp",
+    "attack",
+    "speed",
+    "special-attack",
+    "defense",
+    "special-defense"
+  ],
+  "classes": {
+    "tackle": [
+      "physical",
+      "physical"
+    ],
+    "quick-attack": [
+      "physical",
+      "physical"
+    ],
+    "swords-dance": [
+      "status",
+      "status"
+    ],
+    "agility": [
+      "status",
+      "status"
+    ],
+    "harden": [
+      "status",
+      "status"
+    ],
+    "ember": [
+      "special",
+      "special"
+    ],
+    "flamethrower": [
+      "special",
+      "special"
+    ],
+    "fire-spin": [
+      "special",
+      "physical"
+    ],
+    "heat-wave": [
+      "special",
+      "special"
+    ],
+    "water-gun": [
+      "special",
+      "special"
+    ],
+    "bubble": [
+      "special",
+      "special"
+    ],
+    "hydro-pump": [
+      "special",
+      "special"
+    ],
+    "aqua-ring": [
+      "status",
+      "status"
+    ],
+    "vine-whip": [
+      "physical",
+      "physical"
+    ],
+    "razor-leaf": [
+      "physical",
+      "special"
+    ],
+    "leaf-storm": [
+      "special",
+      "special"
+    ],
+    "giga-drain": [
+      "special",
+      "special"
+    ],
+    "thunder-shock": [
+      "special",
+      "special"
+    ],
+    "discharge": [
+      "special",
+      "special"
+    ],
+    "thunderbolt": [
+      "special",
+      "special"
+    ],
+    "confusion": [
+      "special",
+      "special"
+    ],
+    "psybeam": [
+      "special",
+      "special"
+    ],
+    "psychic": [
+      "special",
+      "special"
+    ],
+    "sludge": [
+      "special",
+      "special"
+    ],
+    "mud-shot": [
+      "special",
+      "special"
+    ],
+    "gust": [
+      "special",
+      "special"
+    ],
+    "wing-attack": [
+      "physical",
+      "physical"
+    ],
+    "body-slam": [
+      "physical",
+      "physical"
+    ],
+    "hyper-voice": [
+      "special",
+      "special"
+    ],
+    "poison-sting": [
+      "physical",
+      "physical"
+    ],
+    "toxic": [
+      "special",
+      "special"
+    ],
+    "bulldoze": [
+      "physical",
+      "physical"
+    ],
+    "bug-bite": [
+      "physical",
+      "physical"
+    ],
+    "string-shot": [
+      "special",
+      "special"
+    ],
+    "bug-buzz": [
+      "special",
+      "special"
+    ],
+    "rock-throw": [
+      "physical",
+      "physical"
+    ],
+    "rock-slide": [
+      "physical",
+      "physical"
+    ],
+    "ice-beam": [
+      "special",
+      "special"
+    ],
+    "powder-snow": [
+      "special",
+      "special"
+    ],
+    "karate-chop": [
+      "physical",
+      "physical"
+    ],
+    "aura-sphere": [
+      "special",
+      "special"
+    ],
+    "lick": [
+      "physical",
+      "physical"
+    ],
+    "shadow-ball": [
+      "special",
+      "physical"
+    ],
+    "dragon-rage": [
+      "special",
+      "special"
+    ],
+    "dragon-dance": [
+      "status",
+      "status"
+    ],
+    "fairy-wind": [
+      "special",
+      "special"
+    ],
+    "dazzling-gleam": [
+      "special",
+      "special"
+    ],
+    "metal-claw": [
+      "physical",
+      "physical"
+    ],
+    "flash-cannon": [
+      "special",
+      "special"
+    ],
+    "bite": [
+      "physical",
+      "physical"
+    ],
+    "dark-pulse": [
+      "special",
+      "special"
+    ],
+    "night-shade": [
+      "special",
+      "special"
+    ],
+    "bonemerang": [
+      "physical",
+      "physical"
+    ],
+    "psycho-cut": [
+      "physical",
+      "physical"
+    ],
+    "spikes": [
+      "physical",
+      "physical"
+    ],
+    "toxic-spikes": [
+      "physical",
+      "physical"
+    ],
+    "hail": [
+      "special",
+      "physical"
+    ],
+    "meteor-mash": [
+      "physical",
+      "physical"
+    ],
+    "will-o-wisp": [
+      "special",
+      "special"
+    ],
+    "substitute": [
+      "physical",
+      "physical"
+    ],
+    "aerial-ace": [
+      "physical",
+      "physical"
+    ],
+    "flame-wheel": [
+      "physical",
+      "physical"
+    ],
+    "bubble-beam": [
+      "special",
+      "physical"
+    ],
+    "hex": [
+      "special",
+      "physical"
+    ]
+  },
+  "offensiveStatusOverrides": {
+    "toxic": "special",
+    "string-shot": "special",
+    "spikes": "physical",
+    "toxic-spikes": "physical",
+    "hail": "special",
+    "will-o-wisp": "special",
+    "substitute": "physical"
+  }
+}

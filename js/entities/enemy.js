@@ -42,6 +42,8 @@
       this.hp = this.maxHp;
       this.spd = def.spd * sc.spd * (difficulty.spd || 1);
       this.dmg = def.dmg * sc.dmg * difficulty.dmg;
+      this.defense = G.DEX_BY[this.dex]?.defense || 1;
+      this.spdef = G.DEX_BY[this.dex]?.spdef || 1;
       this.xp = def.xp;
       this.behavior = def.behavior;
 
@@ -118,6 +120,10 @@
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
       if (!this.remote && attacker) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass);
+      if (!this.remote && attack.damageClass) {
+        const defense=attack.damageClass==='special'?this.spdef:this.defense;
+        amount /= defense || 1;
+      }
       if (!this.remote && this.mega) amount /= 1.3;
       const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
@@ -513,7 +519,7 @@
 
     hazard(h) {
       return G.Hazards.add(Object.assign({ sourceKind: 'ranged', sourceId: this.id }, h,
-        { dmg: G.Abilities.enemyDamage(this, h.dmg) }));
+        { dmg: G.Abilities.enemyDamage(this, h.dmg, h.sourceKind || 'ranged') }));
     }
 
     bossStart(id, pl) {
@@ -607,7 +613,7 @@
         const a = base + (n === 1 ? 0 : (i / (n - 1) - 0.5) * spread);
         const shot = G.Projectiles.spawn({
           x: this.x, y: this.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
-          dmg: G.Abilities.enemyDamage(this, this.shotDmg() * k), r: 7, life: 2.4, friendly: false, color: '#ff7a9e', mtype: type,
+          dmg: G.Abilities.enemyDamage(this, this.shotDmg() * k, 'ranged'), r: 7, life: 2.4, friendly: false, color: '#ff7a9e', mtype: type,
           vis: G.VFX.forType(type)
         });
         if (G.Coop.isHost) G.Coop.enemyShot(shot, type);

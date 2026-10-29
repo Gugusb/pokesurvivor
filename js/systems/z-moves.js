@@ -95,8 +95,8 @@ G.ZMoves = (() => {
   function entry(p, learned, ghost=false, angle=null) {
     let m=G.Abilities.move(p,{...learned});
     return { m, learned, ghost, vis:G.VFX.forMove(m), seed:Math.random()*100,
-      x:p.x,y:p.y, angle:angle??aim(p,m), atk:p.atk, t:0, prev:0, next:0, pulses:0,
-      duration:duration(m), budget:power(m)*p.atk, damage:new Map(), groups:new Set(),
+      x:p.x,y:p.y, angle:angle??aim(p,m), atk:p.attackFor ? p.attackFor(m) : p.atk, t:0, prev:0, next:0, pulses:0,
+      duration:duration(m), budget:power(m)*(p.attackFor ? p.attackFor(m) : p.atk), damage:new Map(), groups:new Set(),
       hits:new Set(), rounds:[new Set(),new Set(),new Set()], orbitHits:new Map(), falls:[] };
   }
   function choose(p,i) {
@@ -133,7 +133,7 @@ G.ZMoves = (() => {
     G.Projectiles.spawn({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,dmg:e.budget*fraction,
       r:(m.size||6)*size,life,pierce:(m.pierce||0)+999,color:G.U.TYPE_COLOR[m.type],vis:e.vis,owner:p,ghost:e.ghost,
       friendly:true,hits:new Set(),burn:m.burn||0,poison:m.poison||0,slow:m.slow||0,knock:m.knock||0,homing,homingTarget:target,
-      mtype:m.type,moveKind:m.kind,moveId:m.id,zMove:true,zCast:e,zGroup:group,visualScale:((m.size||6)>=8?1.5:1)*size});
+      mtype:m.type,moveKind:m.kind,moveId:m.id,damageClass:m.damageClass,evolved:!!m.evolved,zMove:true,zCast:e,zGroup:group,visualScale:((m.size||6)>=8?1.5:1)*size});
   }
   function projectile(p,e) {
     const m=e.m,col=G.U.TYPE_COLOR[m.type];

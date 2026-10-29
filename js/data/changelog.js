@@ -1,5 +1,9 @@
 /* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
 G.CHANGELOG = [
+  {d:'2026-10-29',title:['Ataques y defensas separados · v0.22.0','Split attacks and defenses · v0.22.0'],new:[
+    ['Los 966 Pokémon usan sus seis stats base originales y seis IV. Los movimientos físicos y especiales usan su ataque correspondiente, también al evolucionar y en Z.','All 966 Pokémon use their six original base stats and six IVs. Physical and special moves use their corresponding attack, including evolved and Z moves.'],
+    ['El contacto y los golpes cuerpo a cuerpo se resuelven con Defensa; los ataques a distancia, con Defensa Especial. Los enemigos también usan la defensa correspondiente al movimiento recibido.','Contact and melee hits use Defense; ranged attacks use Special Defense. Enemies also use the defense matching the incoming move.']
+  ],chg:[['Los aumentos de ataque existentes mejoran ambos ataques. Los IV antiguos se amplían sin volver a sortearlos; la Pokédex y la guardería muestran los nuevos valores.','Existing attack boosts improve both attacks. Legacy IVs expand without rerolling; the Pokédex and nursery display the new values.']],fix:[]},
   {d:'2026-10-29',title:['Brillo heredado · v0.21.0','Inherited shine · v0.21.0'],new:[
     ['Al criar con amigos, cada jugador tiene un 2% de recibir una cría shiny si el progenitor del otro es shiny. El estado se registra al empezar.','In friend hatches, each player has a 2% chance to receive a shiny offspring if the other player’s parent is shiny. Parent state is recorded when hatching starts.']
   ],chg:[['La guardería muestra los progenitores shiny y destaca las crías que heredan su brillo.','The nursery displays shiny parents and highlights offspring that inherit their shine.']],fix:[]},

@@ -31,12 +31,15 @@ G.Player = class Player {
     this.xpMul = perks.xpMul || 1;
     this.coinMul = perks.coinMul || 1;
 
-    const ivs = G.MonProgression ? G.MonProgression.values(this.dex) : [16, 16, 16];
-    const ivm = G.MonProgression ? ivs.map(G.MonProgression.ivMod) : [1, 1, 1];
+    const ivs = G.MonProgression ? G.MonProgression.values(this.dex) : [16,16,16,16,16,16];
+    const ivm = G.MonProgression ? ivs.map(G.MonProgression.ivMod) : [1,1,1,1,1,1];
     this.maxHp = mon.hp * ivm[0] + (perks.hp || 0);
     this.hp = this.maxHp;
     this.baseSpd = mon.spd * ivm[2];
     this.baseAtk = mon.atk * ivm[1];
+    this.baseSpa = (mon.spa ?? mon.atk) * ivm[3];
+    this.baseDefense = mon.defense ? mon.defense * ivm[4] : 1;
+    this.baseSpDef = mon.spdef ? mon.spdef * ivm[5] : 1;
     this.ability = G.Abilities.equipped(G.DB.save, mon.dex);
     this.snowHealCd = 0; this.syncCd = 0;
 
@@ -99,8 +102,17 @@ G.Player = class Player {
 
   // ---------------- stats efectivos ----------------
   buffStacks(b) { return G.Mega ? G.Mega.buffStacks(this, b.n) : b.n; }
-  get atk() { return this.baseAtk * Math.max(0, this.atkMul + this.buffStacks(this.buffs.atk) * this.buffs.atk.amount +
+  get attackMultiplier() { return Math.max(0, this.atkMul + this.buffStacks(this.buffs.atk) * this.buffs.atk.amount +
     G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
+  get atk() { return this.baseAtk * this.attackMultiplier; }
+  get spa() { return this.baseSpa * this.attackMultiplier; }
+  attackFor(move) { return move?.damageClass === 'special' ? this.spa : this.atk; }
+  defenseFor(source) {
+    const kind=source?.kind;
+    if (kind==='contact' || kind==='melee') return Math.max(.1,this.baseDefense);
+    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,this.baseSpDef);
+    return 1;
+  }
   get spd() {
     const s = this.baseSpd * (this.spdMul + G.Abilities.state(this).growthSpeed) *
       (1 + this.buffStacks(this.buffs.spd) * this.buffs.spd.amount + G.Abilities.speedBonus(this));
@@ -270,7 +282,7 @@ G.Player = class Player {
     // Con un ataque cuerpo a cuerpo activo se recibe un 25 % menos: hay que
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
-    const d = (pure ? Math.max(1, amount) : Math.max(1, amount * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1);
+    const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1);
     this.hp -= d;
     G.Abilities.onDamage(this);
     G.Abilities.afterHurt(this, source, type);
