@@ -47,7 +47,7 @@ G.NurseryUI = (() => {
     G.NurseryRules.groups(d)
       .map((g) => t(...GROUPS[g]))
       .join(" / ");
-  function pokemonFigure(dex, role, preview = false) {
+  function pokemonFigure(dex, role, preview = false, shiny = false) {
     const figure = el(
       "figure",
       null,
@@ -66,6 +66,7 @@ G.NurseryUI = (() => {
       return figure;
     }
     figure.dataset.dex = dex;
+    figure.dataset.shiny = String(!!shiny);
     figure.style.setProperty(
       "--mon-color",
       G.U.TYPE_COLOR[G.DEX_BY[dex].types[0]],
@@ -79,10 +80,10 @@ G.NurseryUI = (() => {
         Math.floor(130 / (meta?.ay || 32)),
       ),
     );
-    const cv = G.UI.spriteCanvas(dex, 200, 168, { scale, hero: true });
+    const cv = G.UI.spriteCanvas(dex, 200, 168, { scale, hero: true, shiny });
     cv.setAttribute("role", "img");
     cv.setAttribute("aria-label", mon(dex));
-    figure.append(cv, el("figcaption", mon(dex)));
+    figure.append(cv, el("figcaption", (shiny ? '★ ' : '') + mon(dex)));
     const types = el("div", null, "nursery-types");
     types.innerHTML = G.UI.typeChips(G.DEX_BY[dex].types);
     figure.append(types);
@@ -190,6 +191,7 @@ G.NurseryUI = (() => {
               d +
               " " +
               mon(d) +
+              (G.DB.ownsShiny(d) ? ' ★' : '') +
               " · " +
               groupText(d) +
               " · IV " +
@@ -209,6 +211,7 @@ G.NurseryUI = (() => {
           Number(select.value),
           t("Vista previa", "Preview", "亲本预览"),
           true,
+          G.DB.ownsShiny(Number(select.value)),
         ),
       );
     });
@@ -240,6 +243,8 @@ G.NurseryUI = (() => {
       pokemonFigure(
         h.dex,
         t("Progenitor principal", "Primary parent", "主亲本"),
+        false,
+        h.shiny,
       ),
       egg(),
       pokemonFigure(
@@ -247,6 +252,8 @@ G.NurseryUI = (() => {
         h.friend
           ? t("Progenitor de amigo", "Friend’s parent", "好友亲本")
           : t("Otro progenitor", "Partner parent", "配对亲本"),
+        false,
+        h.partnerShiny,
       ),
     );
     const status = el("div", null, "nursery-hatch-status");
@@ -373,6 +380,8 @@ G.NurseryUI = (() => {
         pokemonFigure(
           report.dex,
           t("Nuevo compañero", "New companion", "新伙伴"),
+          false,
+          report.shiny,
         ),
       );
       box.append(
@@ -383,6 +392,8 @@ G.NurseryUI = (() => {
             mon(report.dex),
         ),
       );
+      if (report.shiny)
+        box.append(el('p', t('¡Ha heredado el brillo!', 'Shiny inherited!', '后代继承了闪光！'), 'gold nursery-shiny-result'));
       box.append(
         el(
           "p",
@@ -450,6 +461,8 @@ G.NurseryUI = (() => {
         pokemonFigure(
           view.dex,
           t("En la guardería", "In the nursery", "已入孵蛋屋"),
+          false,
+          view.shiny,
         ),
         el("p", groupText(view.dex), "note"),
       );
@@ -669,6 +682,17 @@ G.NurseryUI = (() => {
           "La cría hereda los talentos de sus progenitores. Con un amigo, hereda más y ambos recibís una cría.",
           "Your new partner inherits its parents’ talents. Hatch with a friend to pass on more, and both receive a new partner.",
           "新伙伴会继承亲本的个体值。与好友一起孵蛋，传承更多天赋，双方都能迎接新伙伴。",
+        ),
+        "note",
+      ),
+    );
+    rules.append(
+      el(
+        "p",
+        t(
+          "En la crianza con amigos, cada cría tiene un 2% de heredar el brillo si el progenitor del otro jugador es shiny. Los progenitores con shiny registrado participan como shiny; se registra al empezar.",
+          "In friend hatches, each offspring has a 2% chance to be shiny if the other player's parent is shiny. Parents with a registered shiny use that form; their state is recorded when hatching starts.",
+          "好友共同孵蛋时，双方分别按对方亲本判定：对方为闪光，自己领取的后代有 2% 概率继承闪光。已收录闪光的亲本会以闪光形态参与，状态在开始孵蛋时记录。",
         ),
         "note",
       ),

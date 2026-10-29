@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  'Brillo heredado · v0.21.0':'孵蛋闪光继承 · v0.21.0',
+  'Al criar con amigos, cada jugador tiene un 2% de recibir una cría shiny si el progenitor del otro es shiny. El estado se registra al empezar.':'好友共同孵蛋时，双方分别按对方亲本判定：对方为闪光，自己领取的后代有 2% 概率继承闪光。亲本状态在开始孵蛋时记录。',
+  'In friend hatches, each player has a 2% chance to receive a shiny offspring if the other player’s parent is shiny. Parent state is recorded when hatching starts.':'好友共同孵蛋时，双方分别按对方亲本判定：对方为闪光，自己领取的后代有 2% 概率继承闪光。亲本状态在开始孵蛋时记录。',
+  'La guardería muestra los progenitores shiny y destaca las crías que heredan su brillo.':'孵蛋屋显示闪光亲本外观，并在收获时标出继承闪光的后代。',
+  'The nursery displays shiny parents and highlights offspring that inherit their shine.':'孵蛋屋显示闪光亲本外观，并在收获时标出继承闪光的后代。',
   'Evolución más tardía · v0.20.6':'进化等级调整 · v0.20.6',
   'La segunda forma evoluciona al nivel 8 y la tercera al nivel 25. Las familias de dos formas y las ramas usan los mismos niveles.':'第二形态进化等级调整为 8 级，第三形态为 25 级；两阶段进化链及分支进化沿用相同门槛。',
   'The second form evolves at level 8 and the third at level 25. Two-form families and branching evolutions use the same thresholds.':'第二形态进化等级调整为 8 级，第三形态为 25 级；两阶段进化链及分支进化沿用相同门槛。',

@@ -27,6 +27,12 @@ function openStore(file) {
     CREATE TABLE IF NOT EXISTS gifts(id TEXT PRIMARY KEY,sender TEXT NOT NULL REFERENCES users(uid),recipient TEXT NOT NULL REFERENCES users(uid),day INTEGER NOT NULL,at INTEGER NOT NULL,reward TEXT NOT NULL,claimed INTEGER NOT NULL DEFAULT 0,UNIQUE(sender,recipient,day));
     CREATE INDEX IF NOT EXISTS gifts_recipient ON gifts(recipient,claimed);
   `);
+  // Existing hatches have no reliable shiny snapshot; preserve them as ordinary parents.
+  const hatchColumns = db.prepare('PRAGMA table_info(nursery_hatches)').all();
+  for (const column of ['a_shiny', 'b_shiny']) {
+    if (!hatchColumns.some(c => c.name === column))
+      db.exec(`ALTER TABLE nursery_hatches ADD COLUMN ${column} INTEGER NOT NULL DEFAULT 0`);
+  }
   return db;
 }
 module.exports = { openStore };

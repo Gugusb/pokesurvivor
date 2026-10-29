@@ -1,5 +1,8 @@
 /* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
 G.CHANGELOG = [
+  {d:'2026-10-29',title:['Brillo heredado · v0.21.0','Inherited shine · v0.21.0'],new:[
+    ['Al criar con amigos, cada jugador tiene un 2% de recibir una cría shiny si el progenitor del otro es shiny. El estado se registra al empezar.','In friend hatches, each player has a 2% chance to receive a shiny offspring if the other player’s parent is shiny. Parent state is recorded when hatching starts.']
+  ],chg:[['La guardería muestra los progenitores shiny y destaca las crías que heredan su brillo.','The nursery displays shiny parents and highlights offspring that inherit their shine.']],fix:[]},
   {d:'2026-10-29',title:['Evolución más tardía · v0.20.6','Later evolution · v0.20.6'],new:[],chg:[
     ['La segunda forma evoluciona al nivel 8 y la tercera al nivel 25. Las familias de dos formas y las ramas usan los mismos niveles.','The second form evolves at level 8 and the third at level 25. Two-form families and branching evolutions use the same thresholds.']
   ],fix:[]},

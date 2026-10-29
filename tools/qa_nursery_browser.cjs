@@ -11,12 +11,12 @@ const { chromium } = require(
     path.join(__dirname, "cache/browser-qa/node_modules/playwright"),
 );
 (async () => {
-  let clock = Date.now();
+  let clock = Date.now(), rewardRoll = 0.99;
   const app = createApp({
       dbFile: ":memory:",
       stunUrls: "none",
       now: () => clock,
-      rewardRandom: () => 0.99,
+      rewardRandom: () => rewardRoll,
     }),
     errors = [],
     results = [];
@@ -29,6 +29,7 @@ const { chromium } = require(
     for (let i = 0; i < 2; i++) {
       const s = fresh(names[i]);
       s.partner = 6;
+      if (i === 0) s.shiny[6] = { at: clock, from: 'fixture' };
       s.zDuplicates[4] = 5;
       for (const d of [4, 6, 9, 132, 150, 151])
         s.owned[d] = { at: clock, from: "fixture", iv: [10, 20, 30] };
@@ -135,6 +136,7 @@ const { chromium } = require(
     await a.locator("#set-close").click();
     await a.locator('[data-go="nursery"]').click();
     await a.locator("#nursery-primary").selectOption("6");
+    assert.equal(await a.locator('.nursery-preview').getAttribute('data-shiny'),'true');
     assert.equal(
       await a.locator(".nursery-preview").getAttribute("data-dex"),
       "6",
@@ -153,6 +155,9 @@ const { chromium } = require(
     await b.locator("#nursery-partner").selectOption("9");
     await b.locator(".nursery-start").click();
     await b.locator(".nursery-clock").first().waitFor();
+    assert.deepEqual(await b.locator('.nursery-hatch .nursery-mon').evaluateAll(es=>es.map(e=>e.dataset.shiny)),['true','false']);
+    await b.locator('.nursery-rules summary').click();
+    assert.ok((await b.locator('.nursery-rules').textContent()).includes('2%'));
     assert.deepEqual(
       await b
         .locator(".nursery-hatch .nursery-mon")
@@ -220,6 +225,7 @@ const { chromium } = require(
     await a.locator(".gift-claim").waitFor({ state: "detached" });
     results.push("Free friend gift, inbox delivery, one-time claim");
     clock += 12 * 3600000;
+    rewardRoll = .019;
     await a.locator("#scr-friends [data-back]").click();
     await a.locator('[data-go="nursery"]').click();
     await a.locator(".nursery-hatch.ready").waitFor();
@@ -233,6 +239,8 @@ const { chromium } = require(
     });
     await a.locator(".nursery-claim:not([disabled])").click();
     await a.locator(".nursery-result").waitFor();
+    assert.equal(await a.locator('.nursery-result .nursery-mon').getAttribute('data-shiny'),'false');
+    assert.equal(await a.locator('.nursery-shiny-result').count(),0);
     assert.equal(
       await a.locator(".nursery-result .nursery-mon").getAttribute("data-dex"),
       "6",
@@ -244,8 +252,13 @@ const { chromium } = require(
     await b.locator('[data-go="nursery"]').click();
     await b.locator(".nursery-claim:not([disabled])").click();
     await b.locator(".nursery-result").waitFor();
+    assert.equal(await b.locator('.nursery-result .nursery-mon').getAttribute('data-shiny'),'true');
+    await b.getByText('后代继承了闪光！',{exact:true}).waitFor();
+    assert.equal(JSON.parse(app.db.prepare('SELECT payload FROM saves WHERE uid=?').get(ids[1]).payload).shiny[6].from,'nursery');
+    await b.screenshot({animations:'disabled',path:path.join(__dirname,'cache/nursery-v0.21.0-shiny-'+(process.argv.includes('--built')?'built':'source')+'.png')});
     results.push(
       "Both players claim the primary species after server time, sixth duplicate unlocks family Z",
+      "Shiny primary parent is displayed; only the guest inherits shiny from the other parent at a controlled 1.9% roll",
     );
     // Own breeding uses one inherited IV and can run independently of friend breeding.
     await a.locator("#nursery-partner").selectOption("9");

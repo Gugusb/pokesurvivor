@@ -272,6 +272,62 @@ test("friend invites persist, invalidate on withdrawal, and non-invited visits c
   assert.equal(a.save.owned[150].from, "fixture");
   assert.equal((await f.ok(f.b, "/nursery")).participating.length, 0);
 });
+test('friend shiny inheritance uses the other parent only and freezes both states at hatch start', async t => {
+  for (const [ownerShiny, guestShiny] of [[true,false],[false,true],[true,true],[false,false]]) {
+    await t.test(`owner=${ownerShiny}, guest=${guestShiny}`, async t => {
+      const f=await fixture(t);
+      function setShiny(user,dex,on) {
+        const s=JSON.parse(f.app.db.prepare('SELECT payload FROM saves WHERE uid=?').get(user.uid).payload);
+        if(on)s.shiny[dex]={at:1,from:'fixture'};else delete s.shiny[dex];
+        f.app.db.prepare('UPDATE saves SET payload=? WHERE uid=?').run(JSON.stringify(s),user.uid);
+      }
+      setShiny(f.a,6,ownerShiny);setShiny(f.b,9,guestShiny);
+      const room=await f.ok(f.a,'/nursery/primary',{dex:6});
+      assert.equal(room.shiny,ownerShiny);
+      await f.ok(f.a,'/nursery/invite',{uid:f.b.uid});
+      const started=await f.ok(f.b,'/nursery/start',{owner:f.a.uid,dex:9,epoch:room.epoch,shiny:true,a_shiny:!ownerShiny,b_shiny:!guestShiny});
+      assert.equal(started.hatch.shiny,ownerShiny);assert.equal(started.hatch.partnerShiny,guestShiny);
+      // Changing the live collection cannot change the already-started egg.
+      setShiny(f.a,6,!ownerShiny);setShiny(f.b,9,!guestShiny);
+      assert.equal((await f.ok(f.a,'/nursery')).hatch.shiny,ownerShiny);
+      f.tick(12*3600000);f.roll(.019999999);
+      const host=await f.ok(f.a,'/session'),guest=await f.ok(f.b,'/session');
+      const a=await f.ok(f.a,'/nursery/claim',{id:started.hatch.id,rev:host.rev});
+      const b=await f.ok(f.b,'/nursery/claim',{id:started.hatch.id,rev:guest.rev});
+      assert.equal(a.report.shiny,guestShiny);assert.equal(b.report.shiny,ownerShiny);
+      if(guestShiny)assert.ok(a.save.shiny[6]);
+      if(ownerShiny)assert.equal(b.save.shiny[6].from,'nursery');else assert.equal(b.save.shiny[6],undefined);
+      assert.equal(b.report.inherited.length,2);assert.deepEqual(b.save.owned[6].iv,[10,20,30].map((v,i)=>Math.max(v,b.report.iv[i])));
+      f.roll(0);
+      const replay=await f.ok(f.b,'/nursery/claim',{id:started.hatch.id,rev:guest.rev,shiny:true});
+      assert.equal(replay.alreadyClaimed,true);assert.deepEqual(replay.report,b.report);assert.equal(replay.rev,b.rev);
+      assert.deepEqual(replay.save.shiny,b.save.shiny);assert.deepEqual(replay.save.zDuplicates,b.save.zDuplicates);
+    });
+  }
+});
+
+test('the exact 2% boundary does not inherit shiny and a later low roll cannot reroll the claim', async t => {
+  const f=await fixture(t),s=JSON.parse(f.app.db.prepare('SELECT payload FROM saves WHERE uid=?').get(f.a.uid).payload);
+  s.shiny[6]={at:1,from:'fixture'};f.app.db.prepare('UPDATE saves SET payload=? WHERE uid=?').run(JSON.stringify(s),f.a.uid);
+  const room=await f.ok(f.a,'/nursery/primary',{dex:6});await f.ok(f.a,'/nursery/invite',{uid:f.b.uid});
+  const run=await f.ok(f.b,'/nursery/start',{owner:f.a.uid,dex:9,epoch:room.epoch});
+  f.tick(12*3600000);f.roll(.02);const guest=await f.ok(f.b,'/session');
+  const result=await f.ok(f.b,'/nursery/claim',{id:run.hatch.id,rev:guest.rev});
+  assert.equal(result.report.shiny,false);assert.equal(result.save.shiny[6],undefined);
+  f.roll(0);const repeat=await f.ok(f.b,'/nursery/claim',{id:run.hatch.id,rev:guest.rev});
+  assert.deepEqual(repeat.report,result.report);assert.equal(repeat.rev,result.rev);
+});
+
+test('own hatches never inherit shiny and never erase existing shiny records', async t => {
+  const f=await fixture(t),s=JSON.parse(f.app.db.prepare('SELECT payload FROM saves WHERE uid=?').get(f.a.uid).payload);
+  s.shiny[6]={at:123,from:'fixture'};s.shiny[9]={at:456,from:'fixture'};
+  f.app.db.prepare('UPDATE saves SET payload=? WHERE uid=?').run(JSON.stringify(s),f.a.uid);
+  const room=await f.ok(f.a,'/nursery/primary',{dex:6}),run=await f.ok(f.a,'/nursery/start',{dex:9,epoch:room.epoch});
+  f.tick(12*3600000);f.roll(0);const owner=await f.ok(f.a,'/session');
+  const result=await f.ok(f.a,'/nursery/claim',{id:run.hatch.id,rev:owner.rev});
+  assert.equal(result.report.shiny,false);assert.deepEqual(result.save.shiny,s.shiny);assert.equal(result.report.inherited.length,1);
+});
+
 test("hatching is atomic under concurrent starts and claims, and rejects stale save revisions", async (t) => {
   const f = await fixture(t),
     room = await f.ok(f.a, "/nursery/primary", { dex: 6 });
@@ -429,6 +485,7 @@ test("nursery parents, invitations, snapshots, deadlines and gifts survive a dat
     db.prepare(
       "INSERT INTO gifts(id,sender,recipient,day,at,reward) VALUES(?,?,?,?,?,?)",
     ).run("gift", "host", "guest", 1, 1, '{"gems":1}');
+    db.exec('ALTER TABLE nursery_hatches DROP COLUMN a_shiny; ALTER TABLE nursery_hatches DROP COLUMN b_shiny');
     db.close();
     db = openStore(file);
     assert.equal(db.prepare("SELECT dex FROM nursery_rooms").get().dex, 150);
@@ -445,6 +502,8 @@ test("nursery parents, invitations, snapshots, deadlines and gifts survive a dat
       "[1,2,3]",
     );
     assert.equal(db.prepare("SELECT claimed FROM gifts").get().claimed, 0);
+    assert.equal(db.prepare('SELECT a_shiny,b_shiny FROM nursery_hatches').get().a_shiny,0);
+    assert.equal(db.prepare('SELECT a_shiny,b_shiny FROM nursery_hatches').get().b_shiny,0);
   } finally {
     db?.close();
     assert.ok(

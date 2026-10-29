@@ -74,6 +74,8 @@ module.exports = function socialServices({
           id: h.id,
           dex: h.dex,
           partner: h.partner,
+          shiny: !!h.a_shiny,
+          partnerShiny: !!h.b_shiny,
           started: h.started,
           ends: h.ends,
           friend: !!h.guest,
@@ -101,6 +103,7 @@ module.exports = function socialServices({
       owner,
       name: q("SELECT name FROM users WHERE uid=?", owner)?.name,
       dex: room?.dex || null,
+      shiny: !!room && !!saved(owner).save.shiny?.[room.dex],
       epoch: room?.epoch || null,
       hatch: publicHatch(h),
       invited: !!room && (uid === owner || invite?.epoch === room.epoch),
@@ -147,6 +150,12 @@ module.exports = function socialServices({
           rng,
         );
       const zUnlocked = givePokemon(s, h.dex, roll.iv);
+      const otherShiny = h.owner === uid ? h.b_shiny : h.a_shiny;
+      const shiny = !!h.guest && !!otherShiny && rng() < 0.02;
+      if (shiny) {
+        s.shiny ||= {};
+        s.shiny[h.dex] ||= { at: now(), from: 'nursery' };
+      }
       const family = G.MonProgression.familyFor(h.dex),
         forms = G.MEGA_FORMS.filter(
           (f) =>
@@ -161,7 +170,7 @@ module.exports = function socialServices({
         s.megaStones ||= {};
         s.megaStones[mega] ||= { at: now(), from: "nursery" };
       }
-      const report = { ...roll, dex: h.dex, zUnlocked, mega };
+      const report = { ...roll, dex: h.dex, shiny, zUnlocked, mega };
       exec(
         `UPDATE nursery_hatches SET ${column}=? WHERE id=?`,
         JSON.stringify(report),
@@ -235,7 +244,7 @@ module.exports = function socialServices({
           duration = G.NurseryRules.duration(room.dex, b.dex, friend);
         if (!duration) throw fail(400, "Incompatible egg groups");
         exec(
-          "INSERT INTO nursery_hatches(id,owner,guest,dex,partner,a,b,started,ends) VALUES(?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO nursery_hatches(id,owner,guest,dex,partner,a,b,started,ends,a_shiny,b_shiny) VALUES(?,?,?,?,?,?,?,?,?,?,?)",
           randomUUID(),
           owner,
           friend ? uid : null,
@@ -245,6 +254,8 @@ module.exports = function socialServices({
           JSON.stringify(p),
           now(),
           now() + duration,
+          saved(owner).save.shiny?.[room.dex] ? 1 : 0,
+          saved(uid).save.shiny?.[b.dex] ? 1 : 0,
         );
         return view(uid, owner);
       });
