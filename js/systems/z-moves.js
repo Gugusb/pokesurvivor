@@ -102,14 +102,14 @@ G.ZMoves = (() => {
   function choose(p,i) {
     if(!selecting(p)) return false;
     const ms=eligible(p,i); if(!ms.length)return false;
-    const s=state(p);if(!(s.charges>0))return false;s.charges--;p.active=i;s.phase='cast';s.elapsed=0;s.casts=ms.map(m=>entry(p,m));
+    const s=state(p);if(!(s.charges>0))return false;s.charges--;p.active=i;s.phase='cast';s.elapsed=0;s.ppSlot=p.slots[i].slice();s.casts=ms.map(m=>entry(p,m));
     p.anim.play('Charge');
     if(G.Coop.active && G.Coop.zCast)G.Coop.zCast(p,ms,s.casts.map(e=>e.angle));
     tick(p,0); return true;
   }
   function cancel(p) {
     if(!p?.zState)return;
-    const s=state(p);s.casts=[];s.phase='cooldown';s.cooldown=cooldownFor(p);
+    const s=state(p);s.casts=[];s.ppSlot=null;s.phase='cooldown';s.cooldown=cooldownFor(p);
   }
   function reserve(cast,target,amount,group) {
     if(cast.ghost||target.dead)return 0;
@@ -207,15 +207,20 @@ G.ZMoves = (() => {
     }
   }
   function landing(x,y,r,fallback) {
-    if(G.World.isFree(x,y,r))return [x,y];
+    if((!G.World.arenaContains||G.World.arenaContains(x,y,r))&&G.World.isFree(x,y,r))return [x,y];
     for(let radius=16;radius<=512;radius+=16)for(let i=0;i<32;i++){
       const a=i/32*TAU,px=x+Math.cos(a)*radius,py=y+Math.sin(a)*radius;
-      if(G.World.isFree(px,py,r))return [px,py];
+      if((!G.World.arenaContains||G.World.arenaContains(px,py,r))&&G.World.isFree(px,py,r))return [px,py];
     }
     return fallback;
   }
   function dash(p,e) {
-    const m=e.m,progress=Math.min(1,e.t/.5),length=m.radius*10;
+    const m=e.m,progress=Math.min(1,e.t/.5);
+    if(e.dashLength===undefined){
+      const desired=m.radius*10,end=G.World.limitArenaDash?G.World.limitArenaDash(e.x,e.y,e.x+Math.cos(e.angle)*desired,e.y+Math.sin(e.angle)*desired,p.r):null;
+      e.dashLength=end?Math.hypot(end[0]-e.x,end[1]-e.y):desired;
+    }
+    const length=e.dashLength;
     const x=e.x+Math.cos(e.angle)*length*progress,y=e.y+Math.sin(e.angle)*length*progress;
     // Emit the original move's streak sprites along the swept path, enlarged with its width.
     e.trailAt ||= 0;
@@ -353,6 +358,8 @@ G.ZMoves = (() => {
     }
     if(s.casts.length&&s.casts.every(e=>e.done)){
       for(const e of s.casts)if(e.learned)e.learned.t=Math.max(e.learned.t||0,e.learned.cd*p.cdMul);
+      if(!p.remote&&G.MovePP)G.MovePP.restore(p,s.ppSlot);
+      s.ppSlot=null;
       s.casts=[];if(!p.remote){s.phase='cooldown';s.cooldown=cooldownFor(p);}
     }
   }

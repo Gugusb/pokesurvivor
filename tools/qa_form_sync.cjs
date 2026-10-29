@@ -345,12 +345,27 @@ const { chromium } = require(
     await pages[0].waitForFunction(hp=>window.qaRiftBoss.hp>hp,bossHp);
     await pages[0].evaluate(()=>G.Game.scoreEvent());
     await pages[2].waitForFunction(()=>G.Game.scoreCounts().events===1);
+    // Keep recovery frozen only in this fixture, so the empty-PP snapshot has a
+    // deterministic window. Normal recovery is covered by the PP combat tests.
+    await pages[0].evaluate(()=>{
+      const p=G.Game.player,m=G.Moves.instance('fire-spin');m.cd=5;p.moves=[m];p.slots=[[m]];p.active=0;p.tempPP=0;
+      G.MovePP.state(p,m).current=1;window.qaPpTick=G.MovePP.tick;G.MovePP.tick=()=>{};
+    });
+    for(let viewer=1;viewer<4;viewer++)await pages[viewer].waitForFunction(uid=>{
+      const peer=G.Coop.mate(uid)?.pl;return peer&&G.Projectiles.all().some(o=>o.orb&&o.owner===peer);
+    },ids[0]);
+    await pages[0].evaluate(()=>{const p=G.Game.player;p.moves[0].t=0;G.MovePP.state(p,p.moves[0]).current=0;});
+    await pages[0].waitForFunction(()=>!G.Projectiles.all().some(o=>o.orb&&o.owner===G.Game.player));
+    for(let viewer=1;viewer<4;viewer++)await pages[viewer].waitForFunction(uid=>{
+      const peer=G.Coop.mate(uid)?.pl;return peer&&!peer.activeMove()&&!G.Projectiles.all().some(o=>o.orb&&o.owner===peer);
+    },ids[0]);
+    await pages[0].evaluate(()=>{G.MovePP.tick=window.qaPpTick;delete window.qaPpTick;});
     assert.deepEqual(errors, []);
     assert.equal(app.traffic.battleFramesRejected, 0);
     console.log(
       JSON.stringify(
         {
-          players: 4,bossFuryAndGuestLeech:true,scoreCountersSynced:true,
+          players: 4,bossFuryAndGuestLeech:true,scoreCountersSynced:true,emptyPpOrbitStopsForAllObservers:true,
           firstEvolution: first,
           finalEvolution: final,
           allObserversRenderCorrectSpecies: true,

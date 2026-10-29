@@ -100,7 +100,7 @@ function sanitize(input, old, name) {
       if (
         v.iv &&
         (!Array.isArray(v.iv) ||
-          ![3,6].includes(v.iv.length) ||
+          ![3,6,8].includes(v.iv.length) ||
           v.iv.some((n) => !Number.isInteger(n) || n < 1 || n > 31))
       )
         throw new Error("Invalid IV");

@@ -86,7 +86,7 @@ test('new and legacy saves start at one star, and progression cannot skip a lock
   let r=D.begin(s,6);assert.equal(r.stars,1);assert.equal(D.record(s,r,1200,true,true),false);assert.equal(D.unlocked(s),1);
   assert.equal(D.record(s,r,1200.01,true,true),true);assert.equal(D.unlocked(s),2);assert.equal(D.select(s,2),true);
   const locked=D.begin(s,6,4);assert.equal(D.record(s,locked,1300,true,true),false);assert.equal(D.unlocked(s),2);
-  const old=G.DB._test.migrate({name:'old',stats:{bestTime:3600}},'old');assert.equal(old.v,7);assert.equal(D.unlocked(old),1);assert.deepEqual(Object.keys(old.difficultyRecords),[]);
+  const old=G.DB._test.migrate({name:'old',stats:{bestTime:3600}},'old');assert.equal(old.v,8);assert.equal(D.unlocked(old),1);assert.deepEqual(Object.keys(old.difficultyRecords),[]);
 });
 test('medals and highest-difficulty best times belong to the actual base species, with all eight required for ruby',()=>{
   const {G}=context(),D=G.Difficulty,s=G.DB.save;

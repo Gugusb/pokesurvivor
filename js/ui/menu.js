@@ -212,7 +212,7 @@ G.MenuUI = (() => {
     showDetail.last = dex;
 
     const max = { hp: 183, atk: 2.3, spd: 137 };
-    const iv = own ? G.DB.ivOf(dex) || [1,1,1,1,1,1] : [1,1,1,1,1,1];
+    const iv = own ? G.MonProgression.normalizeIV(G.DB.ivOf(dex)) : Array(8).fill(1);
     const ivClass = value => value <= 10 ? 'iv-low' : value <= 20 ? 'iv-mid' : value <= 29 ? 'iv-high' : 'iv-perfect';
     const bar = (label, v, m, txt, value) =>
       `<div class="stat"><span>${label}</span><div class="bar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div><span>${txt}</span><span class="iv-value ${ivClass(value)}" title="${label} IV ${value}" aria-label="${label} IV ${value}">IV ${value}</span></div>`;
@@ -237,6 +237,9 @@ G.MenuUI = (() => {
         ${bar('Def. física', p.defense, max.atk, '÷' + p.defense.toFixed(2), iv[4])}
         ${bar('Def. especial', p.spdef, max.atk, '÷' + p.spdef.toFixed(2), iv[5])}
         ${bar('Velocidad', p.spd, max.spd, p.spd, iv[2])}
+        ${bar(G.T('Agilidad base'),G.MonProgression.agilityBase(p),200,Math.round(G.MonProgression.agilityBase(p)),iv[6])}
+        ${bar(G.T('Resistencia base'),G.MonProgression.staminaBase(p),200,Math.round(G.MonProgression.staminaBase(p)),iv[7])}
+        <p class="note">${G.T('La agilidad acorta la recarga; la resistencia acelera la recuperación de PP.')}</p>
         <p class="note">${G.T('Stats base originales')}: ${Object.values(p.baseStats).join(' / ')} (${G.T('PS / At. / Def. / At. Esp. / Def. Esp. / Vel.')})</p>
         <p style="font-size:14px;margin:10px 0 4px">Empieza con <b class="gold">${G.Moves.BY_ID[G.startMoveOf(dex)].name}</b></p>
         <p class="move-icons" title="Movimientos que puede aprender">

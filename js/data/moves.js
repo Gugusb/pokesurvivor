@@ -485,7 +485,7 @@
    * vez la mejora de su condición (`needs`, un id de LevelUp.STATS). Sale una
    * carta dorada. Los potenciadores (buff) no evolucionan.
    */
-  const NEED_NAME = { hp: 'Vigor', atk: 'Potencia', spd: 'Carrera', cd: 'Reflejos', def: 'Coraza',
+  const NEED_NAME = { hp: 'Baya Vital', atk: 'Baya Fiera o Baya Mental', spd: 'Baya Veloz', cd: 'Baya Ágil', def: 'Baya Firme o Baya Serena',
                       rgn: 'Síntesis', mag: 'Imán', xp: 'Aprendizaje' };
   const EVO = {
     'tackle': ['Derribo', 'hp'],             'quick-attack': ['Velocidad Extrema', 'spd'],
@@ -543,7 +543,7 @@
     if (!e || m.evolved || m.lvl < m.def.maxLvl || !EVO_MODS[m.kind]) return null;
     const [name, needs] = e;
     return { name, needs, damageClass:DAMAGE_CLASSES[m.id][1], needName: NEED_NAME[needs], text: EVO_MODS[m.kind].t,
-             ready: !!(statsTaken && statsTaken[needs]) };
+             ready: !!(statsTaken && (statsTaken[needs] || needs==='atk'&&statsTaken.spa || needs==='def'&&statsTaken.spdef)) };
   }
 
   /** Evoluciona una instancia (cambia nombre y potencia; sigue siendo del mismo tipo). */

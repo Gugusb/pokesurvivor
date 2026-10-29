@@ -10,24 +10,29 @@ G.LevelUp = (() => {
   const CATEGORY = { attack: 5, buff: 2, stat: 3 };
   const family = m => m.kind === 'buff' ? 'buff' : 'attack';
 
+  // Berries add a fraction of the species/IV base, in a separate stat layer.
+  const berry=(id,title,desc,stat,amount,max)=>({id,icon:'berry',title,desc,max,
+    apply:p=>p.growStat(stat,amount),triple:p=>p.growStat(stat,amount*3)});
   const STATS = [
-    { id: 'hp',   icon: 'heart', title: 'Vigor',        desc: '+20 de vida máxima (y la recupera).',
-      apply: pl => pl.addMaxHp(20) },
-    { id: 'atk',  icon: 'fist', title: 'Potencia',     desc: '+10% a ambos ataques.',
-      apply: pl => pl.atkMul += 0.10, max: 40 },
-    { id: 'spd',  icon: 'boot', title: 'Carrera',      desc: '+7% de velocidad de movimiento.',
-      apply: pl => pl.spdMul *= 1.07, max: 8 },
-    { id: 'cd',   icon: 'clock', title: 'Reflejos',     desc: '-8% de recarga en todos los movimientos.',
-      apply: pl => pl.cdMul *= 0.92, max: 10 },
-    { id: 'def',  icon: 'shield', title: 'Coraza',       desc: '+6% de reducción de daño recibido.',
-      apply: pl => pl.dmgReduce = Math.min(0.7, pl.dmgReduce + 0.06), max: 12 },
-    { id: 'rgn',  icon: 'sprout', title: 'Síntesis',     desc: '+0.9 de vida regenerada por segundo.',
-      apply: pl => pl.regenFlat += 0.9 },
-    { id: 'mag',  icon: 'magnet', title: 'Imán',         desc: '+30% de radio de recogida de experiencia.',
-      apply: pl => pl.magnet *= 1.30, max: 6 },
-    { id: 'xp',   icon: 'book', title: 'Aprendizaje',  desc: '+12% de experiencia ganada.',
-      apply: pl => pl.xpMul *= 1.12, max: 8 },
-    { id: 'heal', icon: 'berry', title: 'Baya Zidra',   desc: 'Recupera el 45% de tu vida ahora mismo.',
+    berry('hp','Baya Vital','Refuerza la vida natural y recupera esa energía.','hp',.12),
+    berry('atk','Baya Fiera','Refuerza el ataque físico natural.','atk',.10,40),
+    berry('spa','Baya Mental','Refuerza el ataque especial natural.','spa',.10,40),
+    berry('def','Baya Firme','Refuerza la defensa física natural.','defense',.08,30),
+    berry('spdef','Baya Serena','Refuerza la defensa especial natural.','spdef',.08,30),
+    berry('spd','Baya Veloz','Refuerza la velocidad natural.','spd',.07,8),
+    berry('cd','Baya Ágil','Refuerza la agilidad natural: tus movimientos se recargan antes.','agility',.12,10),
+    berry('stamina','Baya Tenaz','Refuerza la resistencia natural: tus PP se recuperan antes.','stamina',.12,10),
+    {id:'ppmax',icon:'berry',title:'Baya Plena',desc:'Todos los movimientos ganan 1 PP máximo.',max:20,
+      apply:p=>G.MovePP.increaseMax(p,1),triple:p=>G.MovePP.increaseMax(p,3)},
+    {id:'temppp',icon:'berry',title:'Baya Reserva',desc:'Guarda 20 PP de reserva para cuando un movimiento se quede sin PP.',
+      apply:p=>p.tempPP=(p.tempPP||0)+20},
+    { id: 'rgn', icon: 'sprout', title: 'Síntesis', desc: '+0.9 de vida regenerada por segundo.',
+      apply: pl => pl.regenFlat += 0.9, triple:p=>p.regenFlat+=2.7 },
+    { id: 'mag', icon: 'magnet', title: 'Imán', desc: '+30% de radio de recogida de experiencia.',
+      apply: pl => pl.magnet *= 1.30, triple:p=>p.magnet*=1.9, max: 6 },
+    { id: 'xp', icon: 'book', title: 'Aprendizaje', desc: '+12% de experiencia ganada.',
+      apply: pl => pl.xpMul *= 1.12, triple:p=>p.xpMul*=1.36, max: 8 },
+    { id: 'heal', icon: 'berry', title: 'Baya Zidra', desc: 'Recupera el 45% de tu vida ahora mismo.',
       apply: pl => pl.heal(pl.maxHp * 0.45) }
   ];
 
@@ -59,7 +64,7 @@ G.LevelUp = (() => {
     for (const m of pl.moves) {
       const ev = G.Moves.evoInfo(m, pl.statsTaken);
       if (!ev) continue;
-      if (!ev.ready) { waiting[ev.needs] = m; continue; }
+      if (!ev.ready) { waiting[ev.needs]=m;if(ev.needs==='atk')waiting.spa=m;if(ev.needs==='def')waiting.spdef=m;continue; }
       out.push({
         w: 0.75, category: family(m), type: 'evo', key: 'evo:' + m.id,
         icon: 'move:' + m.id, color: '#ffd23f', tag: (G.T ? G.T('EVOLUCIÓN') : 'EVOLUCIÓN') + ' · ' + G.Moves.classLabel(ev),
@@ -146,28 +151,17 @@ G.LevelUp = (() => {
       }};
     });
   }
-  const EVOLUTION_STATS={
-    hp:{desc:'+60 de vida máxima (y la recupera).',apply:p=>p.addMaxHp(60)},
-    atk:{desc:'+30% a ambos ataques.',apply:p=>p.atkMul+=.30},
-    spd:{desc:'+21% de velocidad de movimiento.',apply:p=>p.spdMul*=1.21},
-    cd:{desc:'-24% de recarga en todos los movimientos.',apply:p=>p.cdMul*=.76},
-    def:{desc:'+18% de reducción de daño recibido.',apply:p=>p.dmgReduce=Math.min(.7,p.dmgReduce+.18)},
-    rgn:{desc:'+2.7 de vida regenerada por segundo.',apply:p=>p.regenFlat+=2.7},
-    mag:{desc:'+90% de radio de recogida de experiencia.',apply:p=>p.magnet*=1.90},
-    xp:{desc:'+36% de experiencia ganada.',apply:p=>p.xpMul*=1.36}
-  };
   function shuffled(a){const out=a.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
   function evolutionOffer(pl){
     const options=G.MonProgression.evolutionOptions(pl);
     if(!options.length)return [];
     const directions=shuffled(options).slice(0,3), count=options.length===1?3:directions.length;
-    const pool=shuffled(STATS.filter(s=>EVOLUTION_STATS[s.id]&&(!s.max||(pl.statsTaken[s.id]||0)+3<=s.max)&&
-      (s.id!=='def'||pl.dmgReduce+.18<=.70000001)));
+    const pool=shuffled(STATS.filter(s=>s.triple&&(!s.max||(pl.statsTaken[s.id]||0)+3<=s.max)));
     return Array.from({length:count},(_,i)=>{
-      const direction=directions[options.length===1?0:i],s=pool[i%pool.length],bonus=EVOLUTION_STATS[s.id];
+      const direction=directions[options.length===1?0:i],s=pool[i%pool.length],bonus=s.triple;
       return {type:'evolution',key:'direction:'+direction.dex+':'+s.id,category:'stat',evolutionDex:direction.dex,evolutionPath:direction.path,
         statId:s.id,icon:s.icon,color:'#ffd23f',tag:G.T('Dirección evolutiva')+' · ×3',title:s.title,
-        desc:bonus.desc,apply:p=>{if(!G.MonProgression.evolve(p,direction))return false;bonus.apply(p);p.statsTaken[s.id]=(p.statsTaken[s.id]||0)+3;return true;}};
+        desc:s.desc+' '+G.T('Efecto triple.'),apply:p=>{if(!G.MonProgression.evolve(p,direction))return false;bonus(p);p.statsTaken[s.id]=(p.statsTaken[s.id]||0)+3;return true;}};
     });
   }
 

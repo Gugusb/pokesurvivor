@@ -35,7 +35,7 @@ function context(lang = 'zh', neutralStats = true) {
   s.player = (dex, ability) => {
     const p = new G.Player(G.DEX_BY[dex]); p.ability = ability || null;
     // These legacy modifier tests use neutral defenses and equal base attacks.
-    if(neutralStats){p.baseDefense=p.baseSpDef=1;p.baseSpa=p.baseAtk;}
+    if(neutralStats){p.baseDefense=p.baseSpDef=1;p.baseSpa=p.baseAtk;p.baseAgility=80;}
     s.players = [p]; return p;
   };
   s.enemy = () => {

@@ -31,9 +31,14 @@ G.Player = class Player {
     this.xpMul = perks.xpMul || 1;
     this.coinMul = perks.coinMul || 1;
 
-    const ivs = G.MonProgression ? G.MonProgression.values(this.dex) : [16,16,16,16,16,16];
-    const ivm = G.MonProgression ? ivs.map(G.MonProgression.ivMod) : [1,1,1,1,1,1];
-    this.maxHp = mon.hp * ivm[0] + (perks.hp || 0);
+    const ivs = G.MonProgression ? G.MonProgression.values(this.dex) : Array(8).fill(16);
+    const ivm = G.MonProgression ? ivs.map(G.MonProgression.ivMod) : Array(8).fill(1);
+    this.statGrowth = {hp:0,atk:0,spa:0,defense:0,spdef:0,spd:0,agility:0,stamina:0};
+    this.baseHp = mon.hp * ivm[0];
+    this.baseAgility = (G.MonProgression?.agilityBase(mon) || 80) * ivm[6];
+    this.baseStamina = (G.MonProgression?.staminaBase(mon) || 80) * ivm[7];
+    this.maxPpBonus = 0; this.tempPP = 0;
+    this.maxHp = this.baseHp + (perks.hp || 0);
     this.hp = this.maxHp;
     this.baseSpd = mon.spd * ivm[2];
     this.baseAtk = mon.atk * ivm[1];
@@ -104,17 +109,25 @@ G.Player = class Player {
   buffStacks(b) { return G.Mega ? G.Mega.buffStacks(this, b.n) : b.n; }
   get attackMultiplier() { return Math.max(0, this.atkMul + this.buffStacks(this.buffs.atk) * this.buffs.atk.amount +
     G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
-  get atk() { return this.baseAtk * this.attackMultiplier; }
-  get spa() { return this.baseSpa * this.attackMultiplier; }
+  get atk() { return this.baseAtk * (1+this.statGrowth.atk) * this.attackMultiplier; }
+  get spa() { return this.baseSpa * (1+this.statGrowth.spa) * this.attackMultiplier; }
+  get agility() { return this.baseAgility * (1+this.statGrowth.agility); }
+  get stamina() { return this.baseStamina * (1+this.statGrowth.stamina); }
+  get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
+  get ppInterval() { return G.MonProgression ? G.MonProgression.ppInterval(this.stamina) : 1; }
+  growStat(key, fraction) {
+    this.statGrowth[key]=(this.statGrowth[key]||0)+fraction;
+    if(key==='hp')this.addMaxHp(this.baseHp*fraction);
+  }
   attackFor(move) { return move?.damageClass === 'special' ? this.spa : this.atk; }
   defenseFor(source) {
     const kind=source?.kind;
-    if (kind==='contact' || kind==='melee') return Math.max(.1,this.baseDefense);
-    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,this.baseSpDef);
+    if (kind==='contact' || kind==='melee') return Math.max(.1,this.baseDefense*(1+this.statGrowth.defense));
+    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,this.baseSpDef*(1+this.statGrowth.spdef));
     return 1;
   }
   get spd() {
-    const s = this.baseSpd * (this.spdMul + G.Abilities.state(this).growthSpeed) *
+    const s = this.baseSpd * (1+this.statGrowth.spd) * (this.spdMul + G.Abilities.state(this).growthSpeed) *
       (1 + this.buffStacks(this.buffs.spd) * this.buffs.spd.amount + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
@@ -247,7 +260,7 @@ G.Player = class Player {
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
     const meta = G.Sprites.animMeta(this.spriteDex, anim);
     const len = meta ? meta.d.reduce((a, b) => a + b, 0) / 60 : 0.4;
-    const cd = Math.max(0.12, m.cd * this.cdMul / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
+    const cd = Math.max(0.12, m.cd * this.cdMul * this.agilityCooldown / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
     this.anim.play(anim, { speed: Math.max(1, len / (cd * 0.9)) });
     this.attackFace = 0.35;
   }
@@ -491,6 +504,7 @@ G.Player = class Player {
     if (n.dead && !this.dead) { this.dead = true; this.anim.play('Faint', { hold: true }); G.Projectiles.clearOrbs(this); }
     else if (!n.dead && this.dead) this.revive(n.hp / (n.maxHp || 1));
     // Movimiento activo (para el halo, el HUD y los orbes).
+    if(!n.mv&&this.moves.length){this.moves=[];this.slots=[];this.active=0;G.Projectiles.clearOrbs(this);}
     if (n.mv && (!this.moves[0] || this.moves[0].id !== n.mv || this.moves[0].lvl !== n.ml) && G.Moves.BY_ID[n.mv]) {
       this.moves = [G.Moves.instance(n.mv, n.ml || 1)];
       this.slots = [this.moves.slice()];

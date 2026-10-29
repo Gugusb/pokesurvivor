@@ -14,7 +14,7 @@ test('IV curve endpoints and evolution stages', () => {
   assert.equal(M.evolutionLevel(1),8); assert.equal(M.evolutionLevel(2),25);
   assert.equal(M.rootFor(3),1); assert.equal(M.rootFor(6),4);
   assert.equal(JSON.stringify(M.pathFor(3)), '[1,2,3]');
-  assert.equal(JSON.stringify(M.values(1)), '[1,16,31,16,16,16]');
-  assert.equal(JSON.stringify(M.values(3)), '[1,1,1,1,1,1]');
-  assert.equal(JSON.stringify(M.values(2)), '[31,2,20,2,2,2]');
+  assert.equal(JSON.stringify(M.values(1)), '[1,16,31,16,16,16,31,16]');
+  assert.equal(JSON.stringify(M.values(3)), '[1,1,1,1,1,1,1,1]');
+  assert.equal(JSON.stringify(M.values(2)), '[31,2,20,2,2,2,20,2]');
 });

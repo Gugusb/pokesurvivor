@@ -121,7 +121,7 @@ test('attack and damage bonuses sum in separate buckets; Electric field affects 
   const s=context(),{G}=s,p=s.player(894,'transistor');
   s.load('js/data/items.js');s.load('js/systems/levelup.js');
   p.atkMul=1.4;G.LevelUp.STATS.find(x=>x.id==='atk').apply(p);p.buffs.atk={n:1,t:5,amount:.2};
-  approx(p.atk,p.baseAtk*1.7);p.equip('lifeorb');approx(p.atk,p.baseAtk*1.7);
+  approx(p.atk,p.baseAtk*1.1*1.6);p.equip('lifeorb');approx(p.atk,p.baseAtk*1.1*1.6);
   approx(G.Abilities.outgoingDamage(p,{kind:'projectile',type:'electric'}),1.4);
   let e=s.enemy();e.hurt(100,'#fff',0,0,0,null,p,{kind:'projectile',type:'electric'});assert.equal(e.hp,360);
   const ally=new G.Player(G.DEX_BY[894]);ally.ability='transistor';s.players.push(ally);
@@ -164,20 +164,20 @@ test('co-op carries projectile move identity and host resolves shield abilities 
 
 test('repeated Pokémon rewards keep the highest IV per stat and report only real improvements', () => {
   const s = context(), { G } = s;
-  s.random([0, 0, 0, 0, 0, 0]);
+  s.random([0, 0, 0, 0, 0, 0, 0, 0]);
   const first = G.DB.grant(25, 'test');
   assert.equal(first.isNew, true); assert.equal(first.ivUp, false); assert.equal(first.ivRaised.length, 0);
-  assert.deepEqual(Array.from(G.DB.ivOf(25)), [1,1,1,1,1,1]);
-  s.random([.99, 0, .99, .99, 0, .99]);
+  assert.deepEqual(Array.from(G.DB.ivOf(25)), [1,1,1,1,1,1,1,1]);
+  s.random([.99, 0, .99, .99, 0, .99, .99, 0]);
   const second = G.DB.grant(25, 'test');
   assert.equal(second.isNew, false);
   assert.equal(second.ivUp, true);
-  assert.deepEqual(Array.from(second.ivRaised),[0,2,3,5]);
-  assert.deepEqual(Array.from(G.DB.ivOf(25)), [31,1,31,31,1,31]);
-  s.random([0, 0, 0, 0, 0, 0]);
+  assert.deepEqual(Array.from(second.ivRaised),[0,2,3,5,6]);
+  assert.deepEqual(Array.from(G.DB.ivOf(25)), [31,1,31,31,1,31,31,1]);
+  s.random([0, 0, 0, 0, 0, 0, 0, 0]);
   const third = G.DB.grant(25, 'test');
   assert.equal(third.ivUp, false);
-  assert.deepEqual(Array.from(G.DB.ivOf(25)), [31,1,31,31,1,31]);
+  assert.deepEqual(Array.from(G.DB.ivOf(25)), [31,1,31,31,1,31,31,1]);
 });
 
 test('evolution families share upgrade levels and max-upgrade cost sums remaining levels', () => {

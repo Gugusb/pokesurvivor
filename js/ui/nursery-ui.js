@@ -397,11 +397,15 @@ G.NurseryUI = (() => {
       box.append(
         el(
           "p",
-          t(
+          (report.iv.length>=8 ? t(
+            "IV (PS / At. / Vel. / At. Esp. / Def. / Def. Esp. / Agi. / Res.): ",
+            "IVs (HP / Atk / Speed / Sp. Atk / Def / Sp. Def / Agility / Stamina): ",
+            "本次个体值（生命 / 物攻 / 速度 / 特攻 / 物防 / 特防 / 敏捷 / 耐力）：",
+          ) : report.iv.length>=6 ? t(
             "IV (PS / At. / Vel. / At. Esp. / Def. / Def. Esp.): ",
             "IVs (HP / Atk / Speed / Sp. Atk / Def / Sp. Def): ",
             "本次个体值（生命 / 物攻 / 速度 / 特攻 / 物防 / 特防）：",
-          ) + report.iv.join(" / "),
+          ) : t("IV (PS / At. / Vel.): ","IVs (HP / Atk / Speed): ","本次个体值（生命 / 物攻 / 速度）：")) + report.iv.join(" / "),
         ),
       );
       const names = [
@@ -411,6 +415,8 @@ G.NurseryUI = (() => {
         t("At. especial", "Sp. Atk", "特攻"),
         t("Def. física", "Defense", "物防"),
         t("Def. especial", "Sp. Def", "特防"),
+        t("Agilidad base", "Agility", "敏捷"),
+        t("Resistencia base", "Stamina", "耐力"),
       ];
       box.append(
         el(

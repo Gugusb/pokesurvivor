@@ -19,14 +19,14 @@ test('physical ranged moves remain physical; special close-range moves remain sp
 });
 test('old HP/Attack/Speed IVs expand deterministically and mixed-format merges preserve every best value',()=>{
  const {G}=context('zh',false),old=G.DB.fresh('legacy');old.owned[6]={at:1,iv:[4,17,31]};
- G.DB.normalize(old);assert.deepEqual(Array.from(old.owned[6].iv),[4,17,31,17,17,17]);const again=JSON.stringify(old);G.DB.normalize(old);assert.equal(JSON.stringify(old),again);
+ G.DB.normalize(old);assert.deepEqual(Array.from(old.owned[6].iv),[4,17,31,17,17,17,31,17]);const again=JSON.stringify(old);G.DB.normalize(old);assert.equal(JSON.stringify(old),again);
  const newer=JSON.parse(again);newer.updated=20;newer.owned[6].iv=[2,3,4,31,30,29];old.updated=10;
- assert.deepEqual(Array.from(G.DB.merge(old,newer).owned[6].iv),[4,17,31,31,30,29]);
+ assert.deepEqual(Array.from(G.DB.merge(old,newer).owned[6].iv),[4,17,31,31,30,29,31,29]);
  const {sanitize}=require('../server/domain.cjs');const base=JSON.parse(JSON.stringify(newer));base.updated=1;
  const incoming=JSON.parse(JSON.stringify(base));incoming.owned[6].iv=[31,31,31];
- assert.deepEqual(Array.from(sanitize(incoming,base,'legacy').owned[6].iv),[31,31,31,31,31,31]);
+ assert.deepEqual(Array.from(sanitize(incoming,base,'legacy').owned[6].iv),[31,31,31,31,31,31,31,31]);
  const six=JSON.parse(JSON.stringify(base));six.owned[6].iv=[1,2,3,4,5,6];
- assert.deepEqual(Array.from(sanitize(six,base,'legacy').owned[6].iv),[2,3,4,31,30,29]);
+ assert.deepEqual(Array.from(sanitize(six,base,'legacy').owned[6].iv),[2,3,4,31,30,29,4,29]);
 });
 test('all existing attack buffs and attack debuffs affect the same additive multiplier for both attacks',()=>{
  const s=fixture(),{G}=s,p=s.player(150);p.baseAtk=2;p.baseSpa=5;p.atkMul=1.3;p.buffs.atk={n:2,t:5,amount:.1};

@@ -27,7 +27,7 @@
 G.DB = (() => {
   const K_ACC = 'ps.accounts', K_SES = 'ps.session', K_SAVE = 'ps.save.';
   const K_CLOUD = 'ps.cloud.', K_MIGRATED = 'ps.migrated.';
-  const VERSION = 7;
+  const VERSION = 8;
   const START_COINS = 500;
   const SDK = 'https://www.gstatic.com/firebasejs/13.0.0/';
   const NAME_DOMAIN = 'jugadores.pokesurvivor.net';   // sólo para el email interno
@@ -904,7 +904,7 @@ G.DB = (() => {
   function ivOf(dex) {
     if (!save) return null;
     const e = save.owned[dex] || (save.owned[dex] = { at: Date.now(), from: 'unknown' });
-    if (!Array.isArray(e.iv) || e.iv.length < 3) e.iv = Array.from({length:6},randomIv);
+    if (!Array.isArray(e.iv) || e.iv.length < 3) e.iv = Array.from({length:8},randomIv);
     e.iv = G.MonProgression.normalizeIV(e.iv);
     return e.iv;
   }
@@ -912,11 +912,11 @@ G.DB = (() => {
   function grant(dex, from) {
     const zUnlocked=G.ZAccess?.acquired(save,dex) || false;
     const fresh = !save.owned[dex];
-    if (fresh) save.owned[dex] = { at: Date.now(), from, iv: Array.from({length:6},randomIv) };
+    if (fresh) save.owned[dex] = { at: Date.now(), from, iv: Array.from({length:8},randomIv) };
     const old = fresh ? save.owned[dex].iv : ivOf(dex);
-    const next = fresh ? old.slice() : Array.from({length:6},randomIv);
+    const next = fresh ? old.slice() : Array.from({length:8},randomIv);
     const raised = [];
-    if (!fresh) for (let i = 0; i < 6; i++) {
+    if (!fresh) for (let i = 0; i < 8; i++) {
       if (next[i] > old[i]) raised.push(i);
       old[i] = Math.max(old[i], next[i]);
     }

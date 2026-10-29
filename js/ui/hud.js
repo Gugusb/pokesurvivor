@@ -287,6 +287,11 @@ G.HUD = (() => {
     }
     const BOND = '#ff8ad8';
     const cdOf = m => m.kind === 'orbit' ? 0 : G.U.clamp(m.t / (m.cd * pl.cdMul), 0, 1);
+    const ppOf=m=>G.MovePP?G.MovePP.state(pl,m):null;
+    if(pl.tempPP>0){
+      ctx.font=F(700,10);ctx.textAlign='center';ctx.fillStyle='#a0efff';
+      ctx.fillText(G.T('PP de reserva')+' '+pl.tempPP,w/2,sy-32);
+    }
 
     for (let i = 0; i < n; i++) {
       const g = pl.slots[i] || [];
@@ -329,6 +334,13 @@ G.HUD = (() => {
           // Destello al lanzarse.
           const fl = 1 - (performance.now() - (gm.castAt || 0)) / 180;
           if (fl > 0) { ctx.fillStyle = 'rgba(255,255,255,' + (fl * 0.55).toFixed(2) + ')'; ctx.fillRect(cx, cy, C, C); }
+          const pp=ppOf(gm);
+          if(pp){
+            bar(ctx,cx,cy+C-3,C,3,pp.current/pp.max,pp.current<1?'#ff8a7b':'#77e1f4');
+            ctx.font=F(800,7);ctx.textAlign='center';ctx.fillStyle='#fff';ctx.strokeStyle='#081625';ctx.lineWidth=2;
+            const text=Math.floor(pp.current+1e-8)+'/'+pp.max;
+            ctx.strokeText(text,cx+C/2,cy+C-4);ctx.fillText(text,cx+C/2,cy+C-4);
+          }
         });
       } else {
         // recarga: se vacía de abajo a arriba
@@ -351,6 +363,12 @@ G.HUD = (() => {
         for (let d = 0; d < dots; d++) {
           ctx.fillStyle = d < m.lvl ? col : 'rgba(255,255,255,.18)';
           ctx.fillRect(x + (S - tw) / 2 + d * (dw + dgap), y + S - 9, dw, 3);
+        }
+        const pp=ppOf(m);
+        if(pp){
+          bar(ctx,x+5,y+S-4,S-10,3,pp.current/pp.max,pp.current<1?'#ff8a7b':'#77e1f4');
+          ctx.font=F(800,9);ctx.fillStyle=pp.current<1?'#ffad9d':'#b7f4ff';ctx.textAlign='center';
+          ctx.fillText('PP '+Math.floor(pp.current+1e-8)+'/'+pp.max,x+S/2,y+S+11);
         }
       }
 
@@ -417,7 +435,7 @@ G.HUD = (() => {
       ctx.textAlign = 'center';
       ctx.fillStyle = 'rgba(180,200,230,.55)';
       ctx.fillText(touch ? 'Arrastra el dedo para moverte  ·  toca un ataque para cambiarlo'
-                         : 'WASD moverse  ·  1-4 / Q / E o clic en un ataque para cambiarlo  ·  Esc pausa', w / 2, h - 4);
+                         : 'WASD moverse  ·  1-4 / Q / E o clic en un ataque para cambiarlo  ·  Esc pausa', w / 2, sy - 48);
     }
 
     ctx.restore();

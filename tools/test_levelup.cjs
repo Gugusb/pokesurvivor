@@ -14,7 +14,7 @@ function setup() {
   s.Math.random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 2 ** 32);
   s.player = (ids = ['ember']) => ({
     mon: { types: ['fire'] }, moves: ids.map(id => s.G.Moves.instance(id)), slots: ids.map(id => [id]), maxMoves: 4,
-    statsTaken: {}, banned: new Set(), x: 0, y: 0, bodyH: 20,
+    statGrowth: {}, growStat(k,n){this.statGrowth[k]=(this.statGrowth[k]||0)+n;}, statsTaken: {}, banned: new Set(), x: 0, y: 0, bodyH: 20,
     hasMove(id) { return this.moves.some(m => m.id === id); },
     addMove(id) { this.moves.push(s.G.Moves.instance(id)); this.slots.push([id]); },
     addMaxHp: noop, heal: noop
@@ -26,7 +26,7 @@ test('complete pools preserve learnset, bans, slot/buff limits and capped stats'
   const s = setup(), p = s.player(), L = s.G.LevelUp;
   let cards = L._candidates(p);
   assert.equal(cards.filter(c => c.type === 'new').length, s.G.Moves.poolFor(p.mon).length - 1);
-  assert.ok(cards.some(c => c.category === 'buff')); assert.equal(cards.filter(c => c.type === 'stat').length, 9);
+  assert.ok(cards.some(c => c.category === 'buff')); assert.equal(cards.filter(c => c.type === 'stat').length, 14);
   p.banned.add('tackle'); p.moves.push(s.G.Moves.instance('swords-dance'), s.G.Moves.instance('harden'));
   p.statsTaken.spd = 8; cards = L._candidates(p);
   assert.ok(!cards.some(c => c.key === 'new:tackle' || c.type === 'new' && c.category === 'buff' || c.key === 'stat:spd'));
@@ -111,7 +111,7 @@ test('ready evolution and prerequisite stat cards still apply their real effects
   const s = setup(), p = s.player(), L = s.G.LevelUp;
   while (s.G.Moves.levelUp(p.moves[0])) {}
   const stat = L._candidates(p).find(c => c.key === 'stat:atk'); assert.equal(stat.w, 2);
-  p.atkMul = 1; stat.apply(p); assert.equal(p.statsTaken.atk, 1); assert.equal(p.atkMul, 1.1);
+  p.atkMul = 1; stat.apply(p); assert.equal(p.statsTaken.atk, 1); assert.equal(p.atkMul, 1); assert.equal(p.statGrowth.atk, .1);
   const evo = L._candidates(p).find(c => c.key === 'evo:ember'); evo.apply(p);
   assert.equal(p.moves[0].evolved, true); assert.ok(!L._candidates(p).some(c => c.type === 'evo' || c.type === 'up'));
 });

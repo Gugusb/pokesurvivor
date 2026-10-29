@@ -79,7 +79,8 @@ G.FX = (() => {
     // Ajustes → "Números de daño": los números se ocultan; los avisos de texto no.
     if ((typeof value === 'number' || /^-\d/.test(value)) && !G.Settings.get('dmgNumbers')) return;
     if (texts.length >= CAP_TEXTS[q()]) { if (!big) return; texts.shift(); }
-    texts.push({ x: x + G.U.rand(-6, 6), y, vy: -46, t: 0, life: big ? 0.95 : 0.62, s: value, color, big });
+    const text=typeof value==='number' ? Math.round(value) : value;
+    texts.push({ x: x + G.U.rand(-6, 6), y, vy: -46, t: 0, life: big ? 0.95 : 0.62, s: text, color, big });
   }
 
   /** Anillo de onda (puntos de píxel). */

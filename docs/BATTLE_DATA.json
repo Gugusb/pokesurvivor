@@ -8,7 +8,9 @@
     "speed",
     "special-attack",
     "defense",
-    "special-defense"
+    "special-defense",
+    "agility",
+    "stamina"
   ],
   "classes": {
     "tackle": [
@@ -276,5 +278,9 @@
     "hail": "special",
     "will-o-wisp": "special",
     "substitute": "physical"
+  },
+  "derivedStats": {
+    "agility": "speed",
+    "stamina": "(defense+special-defense)/2"
   }
 }

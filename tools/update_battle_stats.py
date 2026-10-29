@@ -47,6 +47,6 @@ def main():
     else:text=text.replace('  G.Moves = { ALL:',block+'\n  G.Moves = { ALL:')
     text=text.replace('    m.baseName = m.name;','    m.damageClass = DAMAGE_CLASSES[m.id][1];\n    m.baseName = m.name;') if 'm.damageClass = DAMAGE_CLASSES[m.id][1]' not in text else text
     write_source(path,text)
-    (ROOT/'docs/BATTLE_DATA.json').write_text(json.dumps({'source':'PokeAPI/pokeapi','commit':REF,'stats':count,'ivOrder':['hp','attack','speed','special-attack','defense','special-defense'],'classes':result,'offensiveStatusOverrides':custom},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+    (ROOT/'docs/BATTLE_DATA.json').write_text(json.dumps({'source':'PokeAPI/pokeapi','commit':REF,'stats':count,'ivOrder':['hp','attack','speed','special-attack','defense','special-defense','agility','stamina'],'derivedStats':{'agility':'speed','stamina':'(defense+special-defense)/2'},'classes':result,'offensiveStatusOverrides':custom},ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(f'Updated {count} species and {len(result)} move classifications from {REF}')
 if __name__=='__main__':main()

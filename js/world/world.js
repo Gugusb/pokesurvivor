@@ -245,6 +245,24 @@ G.World = (() => {
     return true;
   }
 
+  // Outer arena tiles are sealed even for terrain-piercing Z dashes.
+  function arenaContains(x,y,r=0) {
+    if(!arena)return true;
+    for(let ty=tileOf(y-r);ty<=tileOf(y+r);ty++)for(let tx=tileOf(x-r);tx<=tileOf(x+r);tx++)
+      if(arenaDist(tx,ty)>=arena.r)return false;
+    return true;
+  }
+  function limitArenaDash(sx,sy,x,y,r=0) {
+    if(!arena)return [x,y];
+    const length=Math.hypot(x-sx,y-sy),steps=Math.max(1,Math.ceil(length/4));
+    let safe=[sx,sy];
+    for(let i=1;i<=steps;i++){
+      const px=sx+(x-sx)*i/steps,py=sy+(y-sy)*i/steps;
+      if(!arenaContains(px,py,r))break;safe=[px,py];
+    }
+    return safe;
+  }
+
   /** Objetos destructibles (incluida la hierba) que tocan un círculo. */
   function propsInCircle(x, y, r) {
     const out = [];
@@ -601,7 +619,7 @@ G.World = (() => {
 
   return {
     TS, CW, reset, setBiome, biomeName, liquidKind, liquidEffect, walkable,
-    kindAt, isWall, isLiquid, isFree, collide, overlapsSolid, projectileBlock, propsInCircle, nearestBreakable,
+    kindAt, isWall, isLiquid, isFree, arenaContains, limitArenaDash, collide, overlapsSolid, projectileBlock, propsInCircle, nearestBreakable,
     damageProp, breakAt, specialsNear, update,
     breakProp(p) { if (!broken.has(p.tx + ',' + p.ty)) destroyProp(p); },
     /** Arena de la grieta: { tx, ty, r } (en tiles) o null. */

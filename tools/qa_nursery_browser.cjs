@@ -239,6 +239,7 @@ const { chromium } = require(
     });
     await a.locator(".nursery-claim:not([disabled])").click();
     await a.locator(".nursery-result").waitFor();
+    const ivReport=await a.locator(".nursery-result").textContent();assert.ok(ivReport.includes("敏捷")&&ivReport.includes("耐力")&&!ivReport.includes("undefined"));
     assert.equal(await a.locator('.nursery-result .nursery-mon').getAttribute('data-shiny'),'false');
     assert.equal(await a.locator('.nursery-shiny-result').count(),0);
     assert.equal(

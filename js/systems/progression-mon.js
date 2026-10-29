@@ -21,10 +21,22 @@ G.MonProgression = (() => {
     return [...family].filter(d => G.DEX_BY[d]).sort((a,b) => a-b);
   }
   const ivMod = iv => 0.75 + 0.65 * Math.pow(Math.max(0, Math.min(30, iv - 1)) / 30, 2);
-  // Preserve the legacy HP/Attack/Speed prefix. New slots: Sp. Atk/Defense/Sp. Def.
+  // Preserve HP/Attack/Speed/SpAtk/Defense/SpDef; append Agility and Stamina.
+  const AGILITY_STANDARD=80;
+  const agilityBase=p=>Math.max(1,p.baseStats?.spe??(((p.spd-78)/.42)||80));
+  const staminaBase=p=>Math.max(1,p.baseStats?(p.baseStats.def+p.baseStats.spd)/2:80);
+  function cooldownFactor(value){
+    const x=Math.max(0,Number(value)||0)/AGILITY_STANDARD;
+    return .25+2.75/(1+(8/3)*x*x);
+  }
+  function ppInterval(value){
+    const x=Math.max(0,Number(value)||0)/160;
+    return .2+.8/(1+x);
+  }
   function normalizeIV(iv) {
-    if (!Array.isArray(iv) || iv.length < 3) return [1,1,1,1,1,1];
-    const old=iv.slice(0,3), expanded=iv.length>=6?iv.slice(0,6):[...old,old[1],old[1],old[1]];
+    if (!Array.isArray(iv) || iv.length < 3) return Array(8).fill(1);
+    const old=iv.slice(0,3),six=iv.length>=6?iv.slice(0,6):[...old,old[1],old[1],old[1]];
+    const expanded=iv.length>=8?iv.slice(0,8):[...six,six[2],Math.floor((+six[4]+ +six[5])/2)];
     return expanded.map(v=>Math.max(1,Math.min(31,Number.isFinite(+v)?Math.floor(+v):1)));
   }
   // Each form has its own Pokédex IV record; an unregistered form is 1/1/1.
@@ -34,7 +46,7 @@ G.MonProgression = (() => {
   };
   const stats = (dex, ivs = values(dex)) => {
     const p = G.DEX_BY[dex], v = normalizeIV(ivs).map(ivMod);
-    return { hp: p.hp * v[0], atk: p.atk * v[1], spd: p.spd * v[2],
+    return { hp: p.hp * v[0], atk: p.atk * v[1], spd: p.spd * v[2], agility:agilityBase(p)*v[6],stamina:staminaBase(p)*v[7],
       spa: (p.spa??p.atk)*v[3], defense: p.defense ? p.defense*v[4] : 1, spdef: p.spdef ? p.spdef*v[5] : 1 };
   };
   function stageFor(dex, level, selectedPath) {
@@ -61,12 +73,13 @@ G.MonProgression = (() => {
     if(!allowed)return false;
     const oldDex=p.monStage || p.dex, oldBase=stats(oldDex).hp, fraction=p.maxHp>0?p.hp/p.maxHp:1;
     if(G.Mega?.active(p))G.Mega.finish(p);
-    const bonus=p.maxHp-oldBase, next=choice.dex, ivs=values(next), mon=G.DEX_BY[next], dir=p.anim?.dir || 0;
+    const growthHp=p.statGrowth?.hp||0,bonus=p.maxHp-oldBase*(1+growthHp), next=choice.dex, ivs=values(next), mon=G.DEX_BY[next], dir=p.anim?.dir || 0;
     p.evolutionPath=allowed.path.slice();p.monStage=p.dex=next;
     p.mon={...mon,types:mon.types.slice()};p.spriteDex=next;
     const nextStats=stats(next,ivs);
     p.baseAtk=nextStats.atk;p.baseSpa=nextStats.spa;p.baseDefense=nextStats.defense;p.baseSpDef=nextStats.spdef;p.baseSpd=nextStats.spd;
-    p.maxHp=Math.max(1,mon.hp*ivMod(ivs[0])+bonus);p.hp=Math.min(p.maxHp,p.maxHp*fraction);
+    p.baseHp=nextStats.hp;p.baseAgility=nextStats.agility;p.baseStamina=nextStats.stamina;
+    p.maxHp=Math.max(1,nextStats.hp*(1+growthHp)+bonus);p.hp=Math.min(p.maxHp,p.maxHp*fraction);
     p.anim=new G.Sprites.Animator(next,1,p.shiny);p.anim.dir=dir;
     p.r=G.Sprites.bodyRadius(next);p.bodyH=G.Sprites.bodyHeight(next);G.Sprites.preload([next],8000,p.shiny);
     p.ability=G.Abilities?.equipped(G.DB.save,next) || null;
@@ -90,5 +103,5 @@ G.MonProgression = (() => {
     if (out.length) G.DB.commit(true);
     return out;
   }
-  return { CHAINS, PATHS, chainBy, pathFor, rootFor, familyFor, ivMod, normalizeIV, values, stats, stageFor, evolutionLevel, validPath, evolutionOptions, evolve, captureChance, tryCapture, commitCaptures };
+  return { CHAINS, PATHS, chainBy, pathFor, rootFor, familyFor, ivMod, normalizeIV, AGILITY_STANDARD,agilityBase,staminaBase,cooldownFactor,ppInterval,values, stats, stageFor, evolutionLevel, validPath, evolutionOptions, evolve, captureChance, tryCapture, commitCaptures };
 })();

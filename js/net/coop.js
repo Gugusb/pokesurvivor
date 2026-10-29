@@ -134,7 +134,7 @@ G.Coop = (() => {
   function myState() {
     // Con un vínculo se manda la órbita si la hay (es lo único que los demás no ven por los 'c').
     const g = local.activeGroup();
-    const m = g.find(x => x.kind === 'orbit') || g[0];
+    const m = g.find(x => x.kind === 'orbit' && G.Projectiles.all().some(s=>s.orb&&s.owner===local&&s.mid===x.id)) || g.find(x=>x.kind!=='orbit');
     return [r1(local.x), r1(local.y), r2(local.moveAngle), local.walking ? 1 : 0, r1(local.hp), r1(local.maxHp),
             local.dead ? 1 : 0, m ? m.id : '', m ? m.lvl : 1, r1(local.magnet), r2(local.aim), r2(local.effectiveXpMul),
             r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq, local.ability || null,
@@ -161,6 +161,7 @@ G.Coop = (() => {
     p.evolutionPath=path.slice();p.monStage=n.dex;
     const dex=n.dex;if(dex===p.dex)return;
     const mon=G.DEX_BY[dex],dir=p.anim.dir;p.baseAtk*=mon.atk/p.mon.atk;p.baseSpd*=mon.spd/p.mon.spd;
+    p.baseHp*=mon.hp/p.mon.hp;p.baseAgility*=G.MonProgression.agilityBase(mon)/G.MonProgression.agilityBase(p.mon);p.baseStamina*=G.MonProgression.staminaBase(mon)/G.MonProgression.staminaBase(p.mon);
     p.baseSpa*=(mon.spa??mon.atk)/(p.mon.spa??p.mon.atk);
     p.baseDefense*=(mon.defense||1)/(p.mon.defense||1);p.baseSpDef*=(mon.spdef||1)/(p.mon.spdef||1);
     p.dex=dex;p.mon=mon;p.spriteDex=dex;p.megaForm=null;

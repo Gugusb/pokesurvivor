@@ -40,9 +40,9 @@ G.NurseryRules = (() => {
   }
   function offspring(a, b, friend, rng = Math.random) {
     a=G.MonProgression.normalizeIV(a);b=G.MonProgression.normalizeIV(b);
-    const iv = Array.from({ length: 6 }, () => 1 + Math.floor(rng() * 31)),
-      indices = [0, 1, 2, 3, 4, 5];
-    for (let i = 5; i > 0; i--) {
+    const iv = Array.from({ length: 8 }, () => 1 + Math.floor(rng() * 31)),
+      indices = [0, 1, 2, 3, 4, 5, 6, 7];
+    for (let i = 7; i > 0; i--) {
       const j = Math.floor(rng() * (i + 1));
       [indices[i], indices[j]] = [indices[j], indices[i]];
     }

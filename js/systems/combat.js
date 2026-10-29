@@ -19,32 +19,44 @@ G.Combat = (() => {
   // ---------------- ejecutar el movimiento activo ----------------
 
   function tick(dt, pl, now) {
+    if(G.MovePP)G.MovePP.tick(pl,dt);
     if (G.ZMoves) { const locked = G.ZMoves.busy(pl); G.ZMoves.tick(pl, dt); if (locked || G.ZMoves.busy(pl)) return; }
     if (pl.dead) return;
     if (!G.Abilities.canCast(pl)) {
-      for (const m of pl.activeGroup()) if (m.kind !== 'orbit') m.t = Math.max(0, m.t - dt * G.Abilities.cooldownRate(pl, m) * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1));
+      for (const m of pl.activeGroup()) m.t = Math.max(0, m.t - dt * rateFor(pl,m));
       G.Projectiles.clearOrbs(pl); return;
     }
     const active = pl.activeGroup();
     if (G.Abilities.has(pl, 'innerfocus')) {
       // Los huecos inactivos sólo se recargan: nunca lanzan ataques por sí solos.
-      for (const m of pl.moves) if (!active.includes(m) && m.kind !== 'orbit') m.t = Math.max(0, m.t - dt * G.Abilities.cooldownRate(pl, m) * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1));
+      for (const m of pl.moves) if (!active.includes(m)) m.t = Math.max(0, m.t - dt * rateFor(pl,m));
     }
     // Vínculos: todos los movimientos del hueco activo, cada uno con su recarga.
     for (const m of active) tickMove(dt, pl, m, now);
   }
 
+  const rateFor=(pl,m)=>G.Abilities.cooldownRate(pl,m)*(G.Mega?G.Mega.cooldownRate(pl,m):1)/(pl.agilityCooldown||1);
   function tickMove(dt, pl, m, now) {
-    if (m.kind === 'orbit') { orbit(pl, m, dt, now); return; }
-
-    const cooldownRate = G.Abilities.cooldownRate(pl, m) * (G.Mega ? G.Mega.cooldownRate(pl, m) : 1);
+    const cooldownRate = rateFor(pl,m);
     m.t -= dt * cooldownRate;
+    if(m.kind==='orbit'){
+      // One PP sustains one cooldown cycle; no charge per frame or per orb hit.
+      if(m.t<=0){
+        if(G.MovePP&&!G.MovePP.consume(pl,m)){
+          for(const shot of G.Projectiles.all().filter(s=>s.orb&&s.owner===pl&&s.mid===m.id))G.Projectiles.remove(shot);
+          m.t=0;return;
+        }
+        m.t=Math.max(.05,m.cd*pl.cdMul)*G.Abilities.onCast(pl,m);
+      }
+      orbit(pl,m,dt,now);return;
+    }
     if (m.t > 0) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
     if (needsTarget(m) && !(pl.target && G.U.dist(pl.x, pl.y, pl.target.x, pl.target.y) <= reach(m))) {
       m.t = 0.05;
       return;
     }
+    if(G.MovePP&&!G.MovePP.consume(pl,m)){m.t=0;return;}
     m.t = Math.max(0.05, m.cd * pl.cdMul) * G.Abilities.onCast(pl, m);
     // Snapshot this cast's real interval, including its one-time cooldown penalty.
     const castCooldown = m.t / cooldownRate;
@@ -485,6 +497,7 @@ G.Combat = (() => {
   function clearFields(owner) { fields = owner ? fields.filter(f => f.owner !== owner) : []; }
 
   function orbit(pl, m, dt, now, isGhost = false) {
+    const rehit=Math.max(.12,m.cd)*pl.cdMul/rateFor(pl,m);
     if (G.Mega) m = G.Mega.move(pl, m);
     m = G.Abilities.move(pl, m);
     const col = G.U.TYPE_COLOR[m.type];
@@ -504,7 +517,7 @@ G.Combat = (() => {
         x: pl.x, y: pl.y, r: m.size, color: col, vis: G.VFX.forMove(m),
         dmg: m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk),
         oa: (i / want) * 6.2832, orad: m.radius, ospeed: m.speed,
-        rehit: Math.max(0.12, m.cd),
+        rehit,
         ...payload(m)
       });
     }
@@ -514,6 +527,7 @@ G.Combat = (() => {
       p.dmg = m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk);
       p.orad = m.radius;
       p.ospeed = m.speed;
+      p.rehit = rehit;
       p.r = m.size;
       if (relayout) p.oa = base + (i / live.length) * 6.2832;
     });

@@ -16,7 +16,7 @@ const { openStore } = require("./store.cjs"),
 const {characterFor}=require('./character-profiles.cjs');
 const derive = promisify(scrypt),
   digest = (s) => createHash("sha256").update(s).digest("hex");
-const VERSION = "0.23.0",
+const VERSION = require('./package.json').version,
   PROTOCOL = 2,
   MAX_BODY = 1024 * 1024;
 const fail = (status, message) => Object.assign(new Error(message), { status });
