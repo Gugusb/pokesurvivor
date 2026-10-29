@@ -1027,3 +1027,5 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 #self-recovery .field { width:100%; }
 .card.evo:has(.evolution-target) { flex-wrap:wrap; }
 .evolution-target { display:flex;align-items:center;gap:8px;width:100%;padding:0 0 6px;color:#ffd23f; }
+
+.run-score-result small { display:block; margin-top:6px; color:var(--muted); line-height:1.6; overflow-wrap:anywhere; }

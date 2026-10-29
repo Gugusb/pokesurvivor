@@ -8,13 +8,28 @@ G.Difficulty = (() => {
   const receipt=r=>r&&Number.isSafeInteger(r.coins)&&r.coins>0&&r.coins<=1e9&&seconds(r.at);
   const factors = (n = current) => ({ hp: 0.7 * (level(n) === 1 ? 0.8 : 1), dmg: 0.8 * (level(n) <= 2 ? 0.5 : 1), spd: level(n) <= 3 ? 0.67 : 1 });
   const HP_CAP=[8,10,13,17,22,28,35,43], DMG_CAP=[1.6,2.1,2.8,3.6,4.5,5.6,6.9,8.4];
-  const REWARD=[1,1.15,1.3,1.5,1.75,2,2.3,2.6];
+  const SCORE_MULT=[.8,1.2,1.8,2.6,3.8,5.2,7.2,10];
+  const SCORE_KEYS=['normal','elite','boss','rift','events'];
+  function scoreCounts(input={}) {
+    return Object.fromEntries(SCORE_KEYS.map(k=>[k,Math.max(0,Math.min(2e6,Math.floor(Number(input[k])||0)))]));
+  }
+  const scoreMultiplier=(n=current)=>SCORE_MULT[level(n)-1];
+  function score(input={},time=0,n=current) {
+    const counts=scoreCounts(input),t=Math.max(0,Math.min(7200,Number(time)||0));
+    const kills=counts.normal+counts.elite*5+counts.boss*100+counts.rift*120;
+    const survival=Math.floor(2*t+t*t/1200),events=counts.events*450;
+    const base=kills+survival+events,multiplier=scoreMultiplier(n);
+    return {version:1,counts,kills,survival,events,base,multiplier,total:Math.floor(base*multiplier)};
+  }
+  const rewardCoins=points=>Math.floor(Math.max(0,points)*.1);
   function growth(t, kind='normal', n=current){
     const i=level(n)-1,x=(Math.max(0,t-120)/(900-i*50))**3,p=x/(1+x);
-    const h=kind==='boss'?.13:kind==='rift'?.3:1,d=kind==='boss'?.55:kind==='rift'?.7:1;
-    return {hp:1+HP_CAP[i]*h*p,dmg:1+DMG_CAP[i]*d*p,spd:1+Math.min(.35,Math.max(0,t)/1400)};
+    const q0=(Math.max(0,t-300)/600)**2,q=q0/(1+q0);
+    const h=kind==='boss'?.13+.57*q:kind==='rift'?.3+.65*q:1,d=kind==='boss'?.55:kind==='rift'?.7:1;
+    const bx=(Math.max(0,t-120)/(600-i*32))**3,bp=bx/(1+bx);
+    return {hp:1+HP_CAP[i]*h*(kind==='normal'?p:bp),dmg:1+DMG_CAP[i]*d*p,spd:1+Math.min(.35,Math.max(0,t)/1400)};
   }
-  const rewards=(n=current)=>REWARD[level(n)-1];
+  const rewards=()=>1; // Legacy callers receive no direct difficulty reward multiplier.
   const eliteChance=(n=current)=>level(n)>=6?.01:.005;
   const treasureChance=(n=current)=>.002*rewards(n);
   const corruptionChance=(n=current)=>level(n)>=8?.2:level(n)>=7?.15:0;
@@ -130,7 +145,7 @@ G.Difficulty = (() => {
     return Object.values(rows).some(r => r.won) ? 'gold' : '';
   }
   const completedCount = s => Object.keys(s.difficultyRecords || {}).filter(d => G.DEX_BY[d] && frame(s,+d) === 'ruby').length;
-  return { WIN, level, factors, growth, rewards, eliteChance, treasureChance, corruptionChance, traits, onHurt,debugLevel,
+  return { WIN, level, factors, growth, rewards, scoreCounts,scoreMultiplier,score,rewardCoins,SCORE_KEYS, eliteChance, treasureChance, corruptionChance, traits, onHurt,debugLevel,
     normalize, merge, unlocked, select, partyLevel, begin, record, highest, frame,completedCount,cashoutTotal,bonusAvailable,claimBonus,
     get current() { return current; } };
 })();

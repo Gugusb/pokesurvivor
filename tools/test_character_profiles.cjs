@@ -11,6 +11,7 @@ async function setup(t){
   app.db.prepare('INSERT INTO saves(uid,payload) VALUES(?,?)').run(uid,JSON.stringify(s));
   app.db.prepare('INSERT INTO completion_scores VALUES(?,?,?)').run(uid,G.Difficulty.completedCount(s),1);
   app.db.prepare('INSERT INTO time_scores VALUES(?,?,?,?,?,?,?)').run(uid,1602,25,78,7420,'demo-anime-v1-'+key,1);
+  const result=G.Difficulty.score({normal:7420},1602,8);app.db.prepare('INSERT INTO run_scores VALUES(?,?,?,?,?,?,?,?,?,?)').run(uid,result.total,8,1602,25,78,7420,'fixture-score',1,JSON.stringify(result));
   if(marked)app.db.prepare('INSERT INTO audit(actor,target,action,at) VALUES(?,?,?,?)').run('system:anime-demo-v1',uid,'seed-demo-rankings:anime-v1',1);
   return uid;
  };

@@ -142,6 +142,7 @@ G.RunUI = (() => {
     $('over-stats').innerHTML = `
       ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : r.completed ? G.T('Objetivo cumplido, sin registrar') : G.T('Sin superar')}</b></div>` : ''}
       ${r.progressExcluded ? `<p class="note" style="grid-column:1/-1">${G.T('Esta aventura no cuenta para las medallas.')}</p>` : ''}
+      ${r.score?`<div class="run-score-result" style="grid-column:1/-1"><span>${G.T('Puntuación de aventura')}</span><b class="gold">${r.score.total.toLocaleString()}</b><small>${G.T('Derrotas')} ${r.score.kills.toLocaleString()} · ${G.T('Supervivencia')} ${r.score.survival.toLocaleString()} · ${G.T('Eventos')} ${r.score.events.toLocaleString()} · ×${r.score.multiplier}</small></div>`:''}
       <div><span>Tiempo</span><b>${G.U.mmss(r.time)}</b></div>
       <div><span>Nivel</span><b>${r.level}</b></div>
       <div><span>Derrotados</span><b>${r.kills}</b></div>
@@ -156,7 +157,7 @@ G.RunUI = (() => {
         ${r.moves.map(m => `${G.Icons.html('move:' + m.id, 16)} ${m.name} Nv.${m.lvl}`).join(' · ') || '—'}</b></div>
       ${r.caught && r.caught.length ? `<div style="grid-column:1/-1" class="caught"><span>${G.Icons.html('shiny', 12)} Pokémon encontrados</span>
         <div class="caught-row" id="over-caught"></div></div>` : ''}
-      ${r.record ? '<div style="grid-column:1/-1;text-align:center" class="gold">¡Nuevo récord de tiempo!</div>' : ''}
+      ${r.record ? `<div style="grid-column:1/-1;text-align:center" class="gold">${G.T('¡Nueva mejor puntuación!')}</div>` : ''}
       ${askSupport(r) ? `<div class="support-ask" id="over-ask" style="grid-column:1/-1">
         <button class="x" type="button" aria-label="Cerrar">×</button>
         <p>${G.T('Esta versión se desarrolla sobre la obra de JPTER78 por Gugusb.')}</p>

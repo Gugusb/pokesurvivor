@@ -311,7 +311,7 @@ test("clock checks retain their budget; clean eight-star runs count at normal an
   f.tick(121000);
   assert.equal((await beat(4)).status, 409);
   for (let stars = 1; stars <= 7; stars++) await f.run(a, stars);
-  assert.equal((await f.request('/ranking?board=survival',undefined,a.cookie)).data.me,null);
+  assert.equal((await f.request('/ranking?board=survival',undefined,a.cookie)).data.me.stars,7);
   await f.run(a, 8, { double: true, duration: 1400 });
   assert.equal((await f.request('/ranking?board=survival',undefined,a.cookie)).data.me.t,1400);
   await f.run(a, 8, { dirty: true, double: true, duration: 1600 });
@@ -739,4 +739,41 @@ test("room capacity is checked atomically before the fifth member can join", asy
     }
   }
   assert.equal(f.app.rooms.get(room.id).members.size, 4);
+});
+
+
+test('all difficulties use server-computed score components and never trust a posted total',async t=>{
+  const f=await fixture(t),a=await f.account('ScoreComponents');await f.seed(a);
+  const start=await f.request('/run/start',{dex:133,stars:1,clean:true},a.cookie);
+  const counts={normal:20,elite:2,boss:1,rift:1,events:1},kills=24;
+  f.tick(10000);
+  const end=await f.request('/run/end',{id:start.data.id,t:10,alive:false,clean:true,kills,scoreCounts:counts,score:999999999},a.cookie);
+  assert.equal(end.status,200,JSON.stringify(end.data));
+  const row=(await f.request('/ranking?board=survival',undefined,a.cookie)).data.me;
+  assert.equal(row.stars,1);assert.equal(row.score,G.Difficulty.score(counts,10,1).total);assert.equal(row.t,10);
+  const duplicate=await f.request('/run/end',{id:start.data.id,t:10,alive:false,clean:true,kills,scoreCounts:counts},a.cookie);
+  assert.equal(duplicate.data.alreadyEnded,true);assert.equal(f.app.db.prepare('SELECT COUNT(*) AS n FROM run_scores WHERE uid=?').get(a.user.uid).n,1);
+});
+test('invalid, decreasing and implausible score counters are rejected without advancing a run',async t=>{
+  const f=await fixture(t),a=await f.account('ScoreValidation');await f.seed(a);
+  const start=await f.request('/run/start',{dex:133,stars:1,clean:true},a.cookie);f.tick(10000);
+  const base={id:start.data.id,t:10,alive:true,clean:true,kills:10,scoreCounts:{normal:10,elite:0,boss:0,rift:0,events:0}};
+  assert.equal((await f.request('/run/beat',base,a.cookie)).status,200);
+  for(const bad of [{normal:9},{elite:-1},{events:999},{boss:1.5}]){
+    const r=await f.request('/run/beat',{...base,scoreCounts:{...base.scoreCounts,...bad}},a.cookie);assert.equal(r.status,400);
+  }
+  assert.equal((await f.request('/run/beat',{...base,kills:11},a.cookie)).status,400);
+  assert.equal(f.app.db.prepare('SELECT score_counts FROM runs WHERE id=?').get(start.data.id).score_counts,JSON.stringify(base.scoreCounts));
+});
+test('score ranking can place a shorter higher-tier run above a longer easy run; old time-only records stay archived',async t=>{
+  const f=await fixture(t),a=await f.account('LongEasyScore'),b=await f.account('ShortHardScore');await f.seed(a);await f.seed(b);
+  await f.run(a,1,{duration:1500});await f.run(b,1);await f.run(b,2);
+  const rows=(await f.request('/ranking?board=survival',undefined,a.cookie)).data.rows;
+  assert.equal(rows[0].uid,b.user.uid);assert.ok(rows[0].t<rows[1].t);assert.ok(rows[0].score>rows[1].score);
+  f.app.db.prepare('INSERT INTO time_scores VALUES(?,?,?,?,?,?,?)').run(a.user.uid,7200,133,99,99999,'archived-only',1);
+  assert.equal((await f.request('/ranking?board=survival',undefined,a.cookie)).data.rows[0].uid,b.user.uid);
+  f.app.db.prepare('UPDATE users SET role=? WHERE uid=?').run('admin',a.user.uid);
+  assert.equal((await f.request('/admin/remove-score',{board:'survival',uid:a.user.uid},a.cookie)).status,200);
+  assert.equal(f.app.db.prepare('SELECT score FROM run_scores WHERE uid=?').get(a.user.uid),undefined);
+  assert.equal(f.app.db.prepare('SELECT t FROM time_scores WHERE uid=?').get(a.user.uid).t,7200);
 });

@@ -482,7 +482,7 @@ test('bounded cubic growth shares its first two minutes and separates stars late
   for(let n=1;n<=8;n++){
     let last=1;for(let t=0;t<=3600;t+=30){const h=D.growth(t,'normal',n).hp;assert.ok(h>=last);last=h;}
     assert.ok(D.growth(1e8,'normal',n).hp<=[9,11,14,18,23,29,36,44][n-1]);
-    if(n<8){assert.ok(D.growth(1200,'normal',n+1).hp>D.growth(1200,'normal',n).hp);assert.ok(D.rewards(n+1)>D.rewards(n));}
+    if(n<8){assert.ok(D.growth(1200,'normal',n+1).hp>D.growth(1200,'normal',n).hp);assert.ok(D.scoreMultiplier(n+1)>D.scoreMultiplier(n));}
   }
   assert.ok(D.growth(180,'normal',8).hp/D.growth(180,'normal',4).hp<1.06);
   assert.ok(D.growth(1200,'normal',8).hp/D.growth(1200,'normal',4).hp>2);
@@ -625,10 +625,10 @@ test('guest protocol deduplicates Z recharge packets and preserves elite stats a
   p.zState.charges=0;receive('host',frame);assert.equal(p.zState.charges,0);assert.equal(G.EnemyMgr.all().length,1);G.Coop.end();
 });
 
-test('capture and treasure chances rise together, and treasure pickups add their full coin value',()=>{
+test('capture and treasure no longer multiply by difficulty; treasure pickups keep their full coin value',()=>{
   const s=setup(),{G,p}=s,D=tier(s,1);const e=s.enemy(100),base=G.MonProgression.captureChance(e);
-  D.begin(G.DB.save,6,8);close(G.MonProgression.captureChance(e),base*2.6);close(D.treasureChance(),.002*2.6);
-  close(G.MonProgression.captureChance({boss:true}),.05*2.6);
+  D.begin(G.DB.save,6,8);close(G.MonProgression.captureChance(e),base);close(D.treasureChance(),.002);
+  close(G.MonProgression.captureChance({boss:true}),.05);
   s.loadGame();const before=p.coins;G.Game._test.collect({kind:'treasure',value:50},p);assert.equal(p.coins,before+50);
 });
 

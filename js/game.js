@@ -114,7 +114,7 @@ G.Game = (() => {
     biome = 0;
     time = 0; pendingLevels = 0;
     victoryBusy=false;
-    runSpeed = 1; speedBonus = 0; speedK = 1;
+    runSpeed = 1; speedBonus = 0; speedK = 1; scoreCounters={normal:0,elite:0,boss:0,rift:0,events:0};
     runReal = performance.now(); tampered = !!(G.Dev && G.Dev.enabled);
 
     pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(save.partner), save.partner);
@@ -185,10 +185,18 @@ G.Game = (() => {
     if(G.ZMoves&&everyone().some(G.ZMoves.busy)||['scr-levelup','scr-item','scr-bond','scr-pause'].some(G.UI.isOpen))return false;
     victoryChoice();if(G.Coop.active)G.Coop.holdStart();return true;
   }
+  let scoreCounters={normal:0,elite:0,boss:0,rift:0,events:0};
+  function scoreCounts(){
+    const c=G.Difficulty.scoreCounts(scoreCounters);
+    const counted=c.normal+c.elite+c.boss+c.rift;
+    c.normal+=Math.max(0,(pl?.kills||0)-counted);return c;
+  }
+  function runScore(){return G.Difficulty.score(scoreCounts(),time,challenge?.stars);}
+  function scoreKill(e){scoreCounters[e.legend?'rift':e.boss?'boss':e.elite?'elite':'normal']++;}
+  function scoreEvent(){scoreCounters.events++;}
   function coinPayout(){
-    const parts={tiempo:Math.floor(time/5),derrotados:Math.floor(pl.kills*.25),jefes:pl.bosses*80,recogidas:pl.coins};
-    const difficultyReward=G.Difficulty?G.Difficulty.rewards(challenge?.stars):1;
-    return {parts,difficultyReward,base:Math.round(Object.values(parts).reduce((a,b)=>a+b,0)*pl.coinMul*difficultyReward)};
+    const score=runScore(),parts={puntuación:G.Difficulty.rewardCoins(score.total),recogidas:pl.coins};
+    return {parts,score,base:Math.round(Object.values(parts).reduce((a,b)=>a+b,0)*pl.coinMul)};
   }
   async function cashoutVictory(fromHost=false){
     if(victoryBusy||!pl||state!=='victory')return false;
@@ -230,9 +238,9 @@ G.Game = (() => {
   function flash(col, dur) { flashCol = col; flashDur = dur; flashT = dur; }
 
   function teamState() {
-    return { time, level: pl.level, xp: pl.xp, xpNext: pl.xpNext, kills: pl.kills, bosses: pl.bosses, coins: pl.coins, t1: pl.t1, t10: pl.t10,victory:state==='victory' };
+    return { time, level: pl.level, xp: pl.xp, xpNext: pl.xpNext, kills: pl.kills, bosses: pl.bosses, coins: pl.coins, t1: pl.t1, t10: pl.t10,scoreCounts:scoreCounts(),victory:state==='victory' };
   }
-  function summary() { return { t: time, ki: pl.kills, bo: pl.bosses, co: pl.coins, lv: pl.level, t1: pl.t1, t10: pl.t10 }; }
+  function summary() { return { t: time, ki: pl.kills, bo: pl.bosses, co: pl.coins, lv: pl.level, t1: pl.t1, t10: pl.t10,scoreCounts:scoreCounts() }; }
 
   /** Lo que el cooperativo necesita del juego. */
   /**
@@ -248,7 +256,7 @@ G.Game = (() => {
     const d1 = Math.max(0, pl.t1 - banked.t1), d10 = Math.max(0, pl.t10 - banked.t10);
     if (!d1 && !d10) return;
     sv.tickets.t1 += d1; sv.tickets.t10 += d10;
-    banked = { t1: pl.t1, t10: pl.t10 };
+    banked = { t1: pl.t1, t10: pl.t10,scoreCounts:scoreCounts() };
     if (save_) G.DB.commit('run');
   }
 
@@ -262,6 +270,7 @@ G.Game = (() => {
       for (let level = pl.level; level < t.level; level++) G.Abilities.onLevel(pl);
       pl.level = t.level; pl.xp = t.xp; pl.xpNext = t.xpNext;
       pl.kills = t.kills; pl.bosses = t.bosses; pl.coins = t.coins;
+      if(t.scoreCounts)scoreCounters=G.Difficulty.scoreCounts(t.scoreCounts);
       if (t.t1 > pl.t1 || t.t10 > pl.t10) G.Audio.sfx('shiny');
       pl.t1 = t.t1 || 0; pl.t10 = t.t10 || 0;
       bankTickets();
@@ -289,6 +298,7 @@ G.Game = (() => {
     inLevelUp() { return state === 'levelup'; },
     shiny(dex) { G.onShinyCaught({ dex, name: (G.DEX_BY[dex] || {}).name || '' }); },
     over(d) {
+      if(d?.scoreCounts)scoreCounters=G.Difficulty.scoreCounts(d.scoreCounts);
       if (d) Object.assign(pl, { kills: d.ki, bosses: d.bo, coins: d.co, level: Math.max(pl.level, d.lv || 1), t1: d.t1 || pl.t1, t10: d.t10 || pl.t10 });
       if (d && d.t) time = d.t;
       if (d && d.why === 'host') G.UI.toast('El anfitrión ha terminado la partida', 3200);
@@ -365,7 +375,7 @@ G.Game = (() => {
     G.Audio.sfx(dead ? 'gameover' : 'back');
     const save = G.DB.save;
     const confirmed = G.MonProgression ? G.MonProgression.commitCaptures(save, challenge || {}) : [];
-    const {parts,difficultyReward,base}=coinPayout();
+    const {parts,score,base}=coinPayout();
     const ok = clean();
     // In solo, the clock stops on death. A late death cannot undo having
     // survived twenty minutes, even if the checkpoint was missed that frame.
@@ -374,7 +384,8 @@ G.Game = (() => {
     if (G.Difficulty) G.Difficulty.record(save, challenge, time, completed||!pl.dead, ok);
     const progressExcluded=challenge&&!challenge.victory?(tampered?'debug':!challenge.eligible?'locked':!ok?'validation':null):null;
     const coins=base+victoryBonus;
-    const record = time > save.stats.bestTime;
+    const record = score.total > (save.stats.bestScore || 0);
+    save.stats.bestScore=Math.max(save.stats.bestScore||0,score.total);
 
     if(!victoryBonus)save.coins += base; // A cashout receipt already credits the full doubled payout.
     bankTickets(false);
@@ -397,7 +408,7 @@ G.Game = (() => {
     // Ranking: en solitario cada uno lo suyo; en grupo lo sube el anfitrión.
     const mark = { t: Math.floor(time), lv: pl.level, kills: pl.kills };
     // Si la partida se ha tocado (ver clean()), no sube al ranking (sin avisar); lo demás, sí.
-    const ranked = ok && (!challenge || challenge.stars === 8) && !coop;
+    const ranked = ok && (!challenge || challenge.eligible) && !coop;
     if(G.DB.mode==='server')G.Server.finish(ok).catch(()=>{});
     const sent = ranked && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.dex, shiny: pl.shiny }))
                : ranked && wasHost ? G.Ranking.submitGroup(Object.assign(mark, { members: team })) : null;
@@ -405,10 +416,9 @@ G.Game = (() => {
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge,
-      moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked,
+      moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (pl.coinMul > 1 ? ` · ×${pl.coinMul.toFixed(2)} Fortuna` : '')+
-                 (difficultyReward > 1 ? ` · ×${difficultyReward.toFixed(2)} ${G.T('Dificultad')}` : '')+
                  (victoryBonus>0?` · ×2 ${G.T('Bonificación de victoria')}`:'')
     }, () => { pl = null; G.Flow.afterRun(); });
   }
@@ -987,7 +997,7 @@ G.Game = (() => {
   })();
 
   return {
-    init, startRun, everyone, levelXp, flash, offerBond, setSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
+    init, startRun, everyone, scoreKill,scoreEvent,scoreCounts,runScore, levelXp, flash, offerBond, setSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
     debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },

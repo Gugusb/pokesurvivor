@@ -93,6 +93,7 @@ G.Events = (() => {
   function end(success=true) {
     if (!cur) return;
     if(success&&G.ZMoves)G.ZMoves.eventReward();
+    if(success&&authority()&&G.Game.scoreEvent)G.Game.scoreEvent();
     cur = null;
     if (G.Coop.isHost) G.Coop.broadcast(['ev', 'e']);
   }

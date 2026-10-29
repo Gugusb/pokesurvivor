@@ -20,6 +20,7 @@ G.Server = (() => {
     G.I18n?.lang === "zh" ? zh : G.I18n?.lang === "en" ? en : es;
   function translatedError(message) {
     const messages = {
+      'Invalid score counters':['No se pudo confirmar la puntuación de esta aventura.','本局得分记录无法确认。'],
       'Account service unavailable. Retry the connection; your account has not changed.': ['No se puede conectar con las cuentas. Reintenta; tu cuenta no ha cambiado.', '暂时无法连接账号服务器，请重试连接；不会切换或新建本地账号。'],
       'Co-op invitations temporarily unavailable':['Las invitaciones cooperativas están desactivadas temporalmente.','邀请联机暂时关闭。'],
       'Accepted friend required':['Se requiere una amistad aceptada.','需要先成为已接受的好友。'],
@@ -362,6 +363,7 @@ G.Server = (() => {
       speed: G.Game?.speed || 1,
       lv: p?.level || 1,
       kills: p?.kills || 0,
+      scoreCounts:G.Game?.scoreCounts?.(),
     };
   }
   async function prepareRun(mode, dex, stars) {

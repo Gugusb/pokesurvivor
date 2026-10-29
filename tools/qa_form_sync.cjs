@@ -89,7 +89,7 @@ const { chromium } = require(
       await p.locator("#f-user").fill("FormsFixture" + i);
       await p.locator("#f-pass").fill(pass);
       await p.locator("#btn-auth").click();
-      await p.locator("#scr-menu:not(.hidden)").waitFor();
+      try{await p.locator("#scr-menu:not(.hidden)").waitFor();}catch(e){console.log('Login diagnostics',i,await p.locator('#login-err').textContent(),await p.locator('#login-mode').textContent(),errors);throw e;}
       await p.evaluate(() => G.Social.start());
     }
     const room = await pages[0].evaluate(async () => {
@@ -330,12 +330,27 @@ const { chromium } = require(
           return p?.zState?.phase==='cooldown'&&!p.zState.casts.length;
         },{uid:ids[index],index,viewer});
     }
+    // Boss resistance and lifesteal are resolved once by the real P2P host.
+    for(const p of pages)await p.evaluate(()=>{G.Game.player.moves=[];G.Game.player.slots=[];});
+    const bossId=await pages[0].evaluate(()=>{
+      G.Spawner.update=()=>{};G.EnemyMgr.clear();G.Projectiles.clear();
+      const p=G.Game.player,e=new G.Enemy({dex:150,hp:100000,dmg:1,spd:0,xp:0,behavior:'ranged',networkStats:true},p.x+100,p.y,{hp:1,dmg:1,spd:1},true);
+      e.spawnTime=900;e.legend=true;e.hp=60000;G.EnemyMgr.add(e);G.EnemyMgr.rebuildGrid();window.qaRiftBoss=e;return e.id;
+    });
+    for(const p of pages.slice(1))await p.waitForFunction(id=>G.EnemyMgr.get(id)?.legend,bossId);
+    await pages[1].evaluate(id=>G.EnemyMgr.get(id).hurt(1e9,'#fff',0,0,0,null,G.Game.player,{id:'tackle',kind:'melee',damageClass:'physical'}),bossId);
+    await pages[0].waitForFunction(()=>window.qaRiftBoss.ai?.fury);
+    const bossHp=await pages[0].evaluate(()=>window.qaRiftBoss.hp);assert.ok(bossHp>0&&bossHp<50000);
+    await pages[1].evaluate(id=>{const p=G.Game.player;p.invuln=p.dashGuardT=0;p.hp=p.maxHp;p.hurt(p.maxHp*.1,null,true,{kind:'contact',enemy:G.EnemyMgr.get(id)});},bossId);
+    await pages[0].waitForFunction(hp=>window.qaRiftBoss.hp>hp,bossHp);
+    await pages[0].evaluate(()=>G.Game.scoreEvent());
+    await pages[2].waitForFunction(()=>G.Game.scoreCounts().events===1);
     assert.deepEqual(errors, []);
     assert.equal(app.traffic.battleFramesRejected, 0);
     console.log(
       JSON.stringify(
         {
-          players: 4,
+          players: 4,bossFuryAndGuestLeech:true,scoreCountersSynced:true,
           firstEvolution: first,
           finalEvolution: final,
           allObserversRenderCorrectSpecies: true,

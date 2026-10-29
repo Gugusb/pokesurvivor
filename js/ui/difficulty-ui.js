@@ -14,7 +14,7 @@ G.DifficultyUI = (() => {
     const update = () => {
       const n=s.difficulty.selected;
       note.style.whiteSpace='pre-line';
-      note.textContent=G.T('Recompensas')+' ×'+G.Difficulty.rewards(n).toFixed(2)+'\n'+G.Difficulty.traits(n).map(x=>'• '+G.T(x)).join('\n');
+      note.textContent=G.T('Multiplicador de puntuación')+' ×'+G.Difficulty.scoreMultiplier(n).toFixed(2)+'\n'+G.Difficulty.traits(n).map(x=>'• '+G.T(x)).join('\n');
       note.title = G.T('Supera una dificultad para desbloquear la siguiente.');
     };
     select.onchange = () => { if (G.Difficulty.select(s, +select.value)) G.DB.commit(); update(); };

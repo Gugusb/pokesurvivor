@@ -16,7 +16,7 @@ const { openStore } = require("./store.cjs"),
 const {characterFor}=require('./character-profiles.cjs');
 const derive = promisify(scrypt),
   digest = (s) => createHash("sha256").update(s).digest("hex");
-const VERSION = "0.20.5",
+const VERSION = "0.23.0",
   PROTOCOL = 2,
   MAX_BODY = 1024 * 1024;
 const fail = (status, message) => Object.assign(new Error(message), { status });
@@ -319,6 +319,16 @@ function createApp(opts = {}) {
       budget = r.budget + ((now() - r.beat) / 1000) * r.speed;
     if (!Number.isFinite(t) || t < r.t || t > 7200 || t > budget + 3)
       throw fail(400, "Invalid run clock");
+    const previous=G.Difficulty.scoreCounts(JSON.parse(r.score_counts)),previousKills=previous.normal+previous.elite+previous.boss+previous.rift;
+    let counts;
+    if(b.scoreCounts!==undefined){
+      if(!b.scoreCounts||Array.isArray(b.scoreCounts)||typeof b.scoreCounts!=='object')throw fail(400,'Invalid score counters');
+      for(const key of G.Difficulty.SCORE_KEYS)if(!Number.isSafeInteger(b.scoreCounts[key])||b.scoreCounts[key]<previous[key]||b.scoreCounts[key]>2e6)throw fail(400,'Invalid score counters');
+      counts=G.Difficulty.scoreCounts(b.scoreCounts);
+    }else counts={...previous,normal:previous.normal+Math.max(0,(b.kills||0)-previousKills)};
+    const totalKills=counts.normal+counts.elite+counts.boss+counts.rift;
+    if((b.kills!==undefined&&(!Number.isSafeInteger(b.kills)||b.kills!==totalKills))||totalKills>256+t*160||counts.boss+counts.rift>20+Math.floor(t/30)||counts.events>2+Math.floor(t/60))throw fail(400,'Invalid score counters');
+    exec('UPDATE runs SET score_counts=? WHERE id=?',JSON.stringify(counts),r.id);
     const dirty = r.dirty || b.clean !== true;
     exec(
       "UPDATE runs SET t=?,budget=?,beat=?,dirty=?,speed=?,doubled=? WHERE id=?",
@@ -330,7 +340,7 @@ function createApp(opts = {}) {
       r.doubled || b.speed === 2 ? 1 : 0,
       r.id,
     );
-    return { ...r, t, dirty, doubled: r.doubled || b.speed === 2 };
+    return { ...r, t, dirty, counts, doubled: r.doubled || b.speed === 2 };
   }
   function runUpdate(u, b, end = false) {
     return atomic(() => {
@@ -354,6 +364,11 @@ function createApp(opts = {}) {
       );
       if (end) {
         exec("UPDATE runs SET ended=1 WHERE id=?", r.id);
+        if(!r.dirty&&r.mode==='s'&&r.t>=1){
+          const result=G.Difficulty.score(r.counts,r.t,r.stars);
+          exec('INSERT INTO run_scores VALUES(?,?,?,?,?,?,?,?,?,?) ON CONFLICT(uid) DO UPDATE SET score=excluded.score,stars=excluded.stars,t=excluded.t,dex=excluded.dex,lv=excluded.lv,kills=excluded.kills,run=excluded.run,at=excluded.at,breakdown=excluded.breakdown WHERE excluded.score>run_scores.score',
+            u.uid,result.total,r.stars,Math.floor(r.t),r.dex,Math.max(1,Math.min(1000,b.lv|0)),r.counts.normal+r.counts.elite+r.counts.boss+r.counts.rift,r.id,now(),JSON.stringify(result));
+        }
         if (
           !r.dirty &&
           r.stars === 8 &&
@@ -535,6 +550,7 @@ function createApp(opts = {}) {
           "sessions",
           "saves",
           "time_scores",
+          "run_scores",
           "completion_scores",
         ])
           exec(`DELETE FROM ${table} WHERE uid=?`, u.uid);
@@ -673,7 +689,7 @@ function createApp(opts = {}) {
               "SELECT c.uid,u.name,c.score,c.at FROM completion_scores c JOIN users u ON u.uid=c.uid WHERE u.ban=0 AND u.deleted=0 AND c.score>0 ORDER BY c.score DESC,c.at ASC,c.uid ASC",
             )
           : all(
-              "SELECT t.*,u.name FROM time_scores t JOIN users u ON u.uid=t.uid WHERE u.ban=0 AND u.deleted=0 ORDER BY t.t DESC,t.at ASC,t.uid ASC",
+              "SELECT t.uid,t.score,t.stars,t.t,t.dex,t.lv,t.kills,t.run,t.at,u.name FROM run_scores t JOIN users u ON u.uid=t.uid WHERE u.ban=0 AND u.deleted=0 ORDER BY t.score DESC,t.at ASC,t.uid ASC",
             );
       const i = rows.findIndex((v) => v.uid === u.uid);
       return json(res, 200, {
@@ -839,7 +855,7 @@ function createApp(opts = {}) {
         );
       if (!p) throw fail(404, "Player not found");
       const s = saved(id).save;
-      const character=characterFor(db,id),record=q('SELECT t FROM time_scores WHERE uid=?',id);
+      const character=characterFor(db,id),record=q('SELECT t FROM time_scores WHERE uid=?',id),bestScore=q('SELECT score,stars,t FROM run_scores WHERE uid=?',id);
       const completed=Object.keys(s.difficultyRecords||{}).map(Number).filter(dex=>G.DEX_BY[dex]&&G.Difficulty.frame(s,dex)==='ruby');
       return json(res, 200, {
         name: displayName(p),
@@ -856,6 +872,7 @@ function createApp(opts = {}) {
           legends: Object.keys(s.legends || {}).length,
           medals: G.Difficulty.completedCount(s),
           eightStar:record?.t||0,
+          score:bestScore?.score||0,scoreStars:bestScore?.stars||0,
           runs:s.stats.runs||0,
           bosses:s.stats.bossesTotal||0,
         },
@@ -915,7 +932,7 @@ function createApp(opts = {}) {
       }
       if (route === "/admin/remove-score") {
         if (b.board === "survival")
-          exec("DELETE FROM time_scores WHERE uid=?", b.uid);
+          exec("DELETE FROM run_scores WHERE uid=?", b.uid);
         else
           throw fail(
             400,

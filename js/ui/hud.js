@@ -91,6 +91,15 @@ G.HUD = (() => {
     ctx.fillStyle = '#8fa3c4';
     ctx.fillText(G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' MONEDAS', w / 2, 58);
 
+    // Live score stays clear of the health bar, boss bar and touch controls.
+    if(G.Game.runScore){
+      const score=G.Game.runScore();ctx.textAlign='right';ctx.font=F(800,12);
+      const label=G.T('Puntuación estimada')+' '+score.total.toLocaleString();
+      const width=ctx.measureText(label).width+16;
+      roundRect(ctx,w-width-12,98,width,24,8);ctx.fillStyle='rgba(15,24,52,.8)';ctx.fill();
+      ctx.fillStyle='#ffe19b';ctx.fillText(label,w-20,114);
+    }
+
     // ---------- clima (arriba a la derecha) ----------
     const wx = G.Weather.current;
     if (wx) {
@@ -109,11 +118,12 @@ G.HUD = (() => {
     // ---------- barra del jefe ----------
     const boss = G.EnemyMgr.all().find(e => e.boss && !e.dead);
     if (boss) {
+      ctx.textAlign='center';
       const bw = Math.min(420, w - 80);
       bar(ctx, (w - bw) / 2, 70, bw, 12, boss.hp / boss.maxHp, '#ffcb3d');
       ctx.font = F(800, 10);
       ctx.fillStyle = '#20160a';
-      ctx.fillText(boss.name.toUpperCase(), w / 2, 80);
+      ctx.fillText((boss.name+(boss.bossGuard?.resistance>.1?' · '+G.T('Guardia furiosa'):'')).toUpperCase(), w / 2, 80);
     }
 
     // ---------- aviso ----------

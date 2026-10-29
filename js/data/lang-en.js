@@ -4,6 +4,18 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  '¡Nueva mejor puntuación!': 'New best score!',
+  "Multiplicador de puntuación": "Score multiplier",
+  "Puntuación estimada": "Estimated score",
+  "Puntuación de aventura": "Adventure score",
+  "Derrotas": "Defeat points",
+  "Supervivencia": "Survival",
+  "Eventos": "Events",
+  "Guardia furiosa": "Fury guard",
+  "puntuación": "score reward",
+  "Aventuras que dejan huella · v0.23.0": "Adventures worth remembering · v0.23.0",
+  "Los jefes tardíos son más resistentes. Su furia amortigua las ráfagas de daño, y los jefes de grieta recuperan vida al herirte.": "Late-game bosses are tougher. Fury softens damage bursts, and rift bosses recover health when they hurt you.",
+  "Todas las dificultades participan en el ranking de puntuación. Derrota Pokémon, sobrevive y completa eventos; tu puntuación también mejora las monedas al volver.": "Every difficulty can enter the score leaderboard. Defeat Pokémon, survive and complete events; your score also improves the coins you bring home.",
   '+10% a ambos ataques.':'+10% Attack and Sp. Atk.','+30% a ambos ataques.':'+30% Attack and Sp. Atk.','+4% a ambos ataques':'+4% Attack and Sp. Atk',
   'No hace daño: acumula AMBOS ATAQUES mientras esté activo.':'Deals no damage: stacks both attacks while active.',
   'No hace daño: acumula AMBOS ATAQUES más rápido que Danza Espada.':'Deals no damage: stacks both attacks faster than Swords Dance.',

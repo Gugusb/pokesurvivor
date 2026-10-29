@@ -32,6 +32,7 @@
       if (this.mega) this.name = G.Mega.label(this.mega);
       this.x = x; this.y = y;
       this.boss = boss;
+      this.spawnTime = G.Game?.st?.time || 0;
       this.scale = boss ? bossScale(this.spriteDex) : 1;
       this.anim = new G.Sprites.Animator(this.spriteDex, this.scale);
       this.r = G.Sprites.bodyRadius(this.spriteDex, this.scale);
@@ -147,6 +148,8 @@
         G.FX.dmgText(this.x, this.y - this.bodyH - 4, Math.round(shieldDamage), '#9fd8ff'); this.flash = 0.05;
         return shieldDamage;
       }
+      if (G.BossCombat) hpDamage = G.BossCombat.damage(this,hpDamage);
+      if (!(hpDamage > 0)) return shieldDamage;
       this.hp -= hpDamage;
       if (attacker) this.lastAttacker = attacker;
       if (attacker) G.Abilities.onHit(attacker, this, attack);
@@ -251,6 +254,7 @@
       this.anim.update(dt);
       if (this.flash > 0) this.flash -= dt;
       if (this.dead) { this.fade -= dt; return; }
+      if(G.BossCombat)G.BossCombat.tick(this,dt);
       const attackRate = G.Abilities.pressure(this);
       if (this.touchCd > 0) this.touchCd -= dt * attackRate;
       this.staticT = Math.max(0, (this.staticT || 0) - dt);
@@ -289,6 +293,7 @@
       if (seen || this.dead) this.anim.update(dt);
       if (this.flash > 0) this.flash -= dt;
       if (this.dead) { this.fade -= dt; return; }
+      if(G.BossCombat)G.BossCombat.tick(this,dt);
       if (this.shiny && seen) {
         this.sparkT -= dt;
         if (this.sparkT <= 0) {
@@ -613,7 +618,7 @@
         const a = base + (n === 1 ? 0 : (i / (n - 1) - 0.5) * spread);
         const shot = G.Projectiles.spawn({
           x: this.x, y: this.y, vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
-          dmg: G.Abilities.enemyDamage(this, this.shotDmg() * k, 'ranged'), r: 7, life: 2.4, friendly: false, color: '#ff7a9e', mtype: type,
+          dmg: G.Abilities.enemyDamage(this, this.shotDmg() * k, 'ranged'), r: 7, life: 2.4, friendly: false, color: '#ff7a9e', mtype: type, sourceId:this.id,
           vis: G.VFX.forType(type)
         });
         if (G.Coop.isHost) G.Coop.enemyShot(shot, type);
@@ -829,7 +834,7 @@
       const def = { dex: o.dex, mega: o.mega, hp: o.hp, spd: 0, dmg: o.dmg, xp: 0, behavior: o.beh || 'remote', networkStats: true };
       const e = new Enemy(def, o.x, o.y, { hp: 1, spd: 1, dmg: 1 }, o.boss);
       e.id = o.id;
-      e.remote = true;
+      e.remote = true; e.legend=!!o.legend;
       if (o.shiny) e.makeShiny();
       if(o.elite)e.makeElite(false);
       e.maxHp = o.hp; e.hp = o.hp;
@@ -979,6 +984,7 @@
         if (e.remote) continue;
         if (e.dead) {
           pl.kills++;
+          if(G.Game.scoreKill)G.Game.scoreKill(e);
           if (e.boss && !e.judge) pl.bosses++;
           G.Progress.kill(e);
           corpses.push(e);

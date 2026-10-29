@@ -283,7 +283,9 @@ G.Player = class Player {
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1);
+    const hpLost=Math.min(this.hp,d);
     this.hp -= d;
+    if(G.BossCombat&&source.enemy)G.BossCombat.leech(source.enemy,hpLost,this.maxHp);
     G.Abilities.onDamage(this);
     G.Abilities.afterHurt(this, source, type);
     if(d>0&&G.Difficulty)G.Difficulty.onHurt(this);

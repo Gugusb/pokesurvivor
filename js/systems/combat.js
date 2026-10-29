@@ -585,7 +585,7 @@ G.Combat = (() => {
           continue;
         }
         if (G.U.dist2(p.x, p.y, pl.x, pl.y) < (p.r + pl.r) * (p.r + pl.r)) {
-          pl.hurt(p.dmg, p.mtype, false, { kind: 'ranged' });
+          pl.hurt(p.dmg, p.mtype, false, { kind: 'ranged', enemy: p.sourceId && G.EnemyMgr.get(p.sourceId) });
           G.FX.burst(p.x, p.y - G.LIFT, p.color, 7, 110);
           projectiles.splice(i, 1);
         }

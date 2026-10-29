@@ -58,20 +58,20 @@ test('co-op speed is set by the host while guests follow host snapshots',()=>{
   G.Coop.isHost=true;assert.equal(G.Game.setSpeed(1),true);
 });
 
-test('survival leaderboard accepts normal and double-speed eight-star runs but excludes easier tiers',()=>{
-  for(const [tier,double,expected] of [[8,false,1],[4,false,0],[1,false,0],[8,true,1]]){
-    const s=context(),G=s.G;s.loadGame();let sent=0;G.Ranking.submitSolo=()=>{sent++;};
+test('score leaderboard accepts every unlocked tier at normal and double speed',()=>{
+  for(const [tier,double,expected] of [[8,false,1],[4,false,1],[1,false,1],[8,true,1]]){
+    const s=context(),G=s.G;s.loadGame();for(let n=1;n<8;n++)G.DB.save.difficulty.cleared[n]=true;let sent=0;G.Ranking.submitSolo=()=>{sent++;};
     G.Game._test.setRun(s.player(),s.run(tier),1300);if(double){G.Game.setSpeed(2);G.Game.setSpeed(1);}
     G.Game._test.endRun(false);assert.equal(sent,expected);assert.equal(s.over.rankingExcluded,!expected);
   }
 });
 
-test('final coin payout multiplies the whole subtotal by difficulty and keeps Fortune separate',()=>{
-  for(const [stars,reward] of [[1,1],[4,1.5],[8,2.6]]){
+test('final coin payout uses score-derived coins and pickups, with Fortune kept separate',()=>{
+  for(const [stars,reward] of [[1,.8],[4,2.6],[8,10]]){
     const s=context(),G=s.G;s.loadGame();const p=s.player();p.coins=50;p.kills=40;p.bosses=1;p.coinMul=1.2;
     G.Game._test.setRun(p,s.run(stars),100);G.Game._test.endRun(false);
-    assert.equal(s.over.coins,Math.round((20+10+80+50)*reward*1.2));
-    if(stars>1)assert.ok(s.over.breakdown.includes('×'+reward.toFixed(2)));
+    assert.equal(s.over.coins,Math.round((G.Difficulty.rewardCoins(G.Difficulty.score({normal:40},100,stars).total)+50)*1.2));
+    assert.equal(s.over.score.multiplier,reward);assert.ok(!s.over.breakdown.includes('Dificultad'));
     assert.ok(s.over.breakdown.includes('×1.20 Fortuna'));
   }
 });
@@ -185,11 +185,11 @@ test('twenty-minute victory pauses for one choice; continuing preserves the oppo
   p.dead=true;G.Game._test.setRun(p,r,1801);G.Game._test.endRun(true);assert.equal(s.over.victory,true);assert.equal(G.Difficulty.bonusAvailable(G.DB.save,1),true);
 });
 
-test('immediate victory cashout doubles the final amount once, including Fortune and difficulty, and keeps other currencies unchanged',async()=>{
+test('immediate victory cashout doubles the final amount once, including Fortune and score, and keeps other currencies unchanged',async()=>{
   const s=context(),{G}=s;s.loadGame();G.DB.save.difficulty.cleared={1:true,2:true,3:true};
   const p=s.player();p.coinMul=1.2;p.coins=50;p.kills=40;p.bosses=1;
   const r=s.run(4);G.Game._test.setRun(p,r,1201);G.Game._test.checkChallenge();G.Game._test.maybeVictoryChoice();
-  const before=G.DB.save.coins,base=Math.round((240+10+80+50)*1.2*1.5),gems=G.DB.save.abilityGems;
+  const before=G.DB.save.coins,base=Math.round((G.Difficulty.rewardCoins(G.Difficulty.score({normal:40},1201,4).total)+50)*1.2),gems=G.DB.save.abilityGems;
   await Promise.all([s.takeVictory(),s.takeVictory()]);assert.equal(s.over.coins,base*2);assert.equal(G.DB.save.coins,before+base*2);
   assert.equal(G.DB.save.stats.coinsEarned,base*2);assert.equal(G.DB.save.stats.runs,1);assert.equal(G.DB.save.abilityGems,gems);
   assert.equal(G.Difficulty.bonusAvailable(G.DB.save,4),false);assert.ok(s.over.breakdown.includes('×2'));
@@ -209,7 +209,7 @@ test('failed bonus saving leaves the choice paused and spendable, and a retry se
   const s=context(),{G}=s;s.loadGame();const p=s.player();G.Game._test.setRun(p,s.run(1),1201);G.Game._test.checkChallenge();G.Game._test.maybeVictoryChoice();
   const claim=G.DB.claimVictoryBonus;G.DB.claimVictoryBonus=()=>Promise.reject(new Error('offline'));
   assert.equal(await s.takeVictory(),false);assert.equal(G.Game.state,'victory');assert.equal(G.Difficulty.bonusAvailable(G.DB.save,1),true);
-  G.DB.claimVictoryBonus=claim;assert.equal(await s.takeVictory(),true);assert.equal(G.Game.state,'over');assert.equal(s.over.coins,480);
+  G.DB.claimVictoryBonus=claim;assert.equal(await s.takeVictory(),true);assert.equal(G.Game.state,'over');assert.equal(s.over.coins,G.Difficulty.rewardCoins(G.Difficulty.score({},1201,1).total)*2);
 });
 
 test('legacy saves retain unclaimed opportunities; per-star receipts survive merge, spending and registered local relogin',async()=>{

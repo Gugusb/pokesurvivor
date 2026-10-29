@@ -220,7 +220,7 @@ G.Coop = (() => {
       if (e.dead || G.U.dist2(e.x, e.y, near.x, near.y) > r2n) continue;
       const a = ANIMS.indexOf(e.anim.cur);
       out.push([e.id, r1(e.x), r1(e.y), Math.ceil(e.hp), a < 0 ? 0 : a, e.anim.dir,
-                (e.burn > 0 || e.abilityBurn ? 1 : 0) | (e.poison > 0 ? 2 : 0) | (e.shield > 0 ? 4 : 0), r2(e.staticT || 0), r2(e.unnerveT || 0), r2(e.fearT || 0), r2(e.repelT || 0)]);
+                (e.burn > 0 || e.abilityBurn ? 1 : 0) | (e.poison > 0 ? 2 : 0) | (e.shield > 0 ? 4 : 0), r2(e.staticT || 0), r2(e.unnerveT || 0), r2(e.fearT || 0), r2(e.repelT || 0), e.ai?.fury?1:0,Math.round((e.bossGuard?.resistance||0)*100)]);
     }
     return out;
   }
@@ -233,7 +233,7 @@ G.Coop = (() => {
     }
     const ev = m.q; m.q = [];
     const f = { k: 'f', t: r2(st.time), lv: st.level, xp: r2(st.xp), xn: st.xpNext, ki: st.kills, bo: st.bosses, co: st.coins, tk: [st.t1, st.t10],
-                p, e: enemyList(m.pl), ev, speed: G.Game.speed || 1,victory:!!st.victory };
+                p, e: enemyList(m.pl), ev, speed: G.Game.speed || 1,victory:!!st.victory,scoreCounts:st.scoreCounts };
     const ja = G.Judgment.netState();       // Arceus en la Sentencia
     if (ja) f.ja = ja;
     // Siempre: quién está eligiendo y, si hay cartas de nivel, cuáles (ver arriba).
@@ -246,7 +246,7 @@ G.Coop = (() => {
   function resyncPeer(m) {
     if(!m?.connected)return;
     const events=[['reset']];
-    for(const e of G.EnemyMgr.all())if(!e.dead)events.push(['ne',e.id,e.dex,r1(e.x),r1(e.y),e.boss?1:0,e.shiny?1:0,Math.ceil(e.maxHp),r2(e.dmg),e.behavior,e.mega||null,e.elite?1:0]);
+    for(const e of G.EnemyMgr.all())if(!e.dead)events.push(['ne',e.id,e.dex,r1(e.x),r1(e.y),e.boss?1:0,e.shiny?1:0,Math.ceil(e.maxHp),r2(e.dmg),e.behavior,e.mega||null,e.elite?1:0,e.legend?1:0]);
     for(const o of G.Pickups.all())events.push(['pk',o.id,o.kind,r1(o.x),r1(o.y),o.value]);
     const pending=m.q.filter(e=>!['ne','ed','eg','pk','pc'].includes(e[0]));m.q=[];
     while(events.length){m.q=events.splice(0,400);G.Net.send(m.uid,hostFrame(m));}
@@ -347,6 +347,12 @@ G.Coop = (() => {
           hitFrom = null;
           break;
         }
+        case 'bl': {
+          const e=G.EnemyMgr.get(ev[1]);
+          if(e&&!e.dead&&e.legend&&Number.isFinite(ev[2])&&ev[2]>0&&ev[2]<=m.pl.maxHp&&G.BossCombat)
+            G.BossCombat.leech(e,ev[2],m.pl.maxHp);
+          break;
+        }
         case 's': {
           const e = G.EnemyMgr.get(ev[1]);
           if (!e || e.dead) break;
@@ -424,7 +430,7 @@ G.Coop = (() => {
     // so a bond/level overlay cannot replace the shared victory decision.
     if (G.Game.setSpeed) G.Game.setSpeed(msg.speed === 2 ? 2 : 1, true);
     api.syncTeam({ time: msg.t, level: msg.lv, xp: msg.xp, xpNext: msg.xn, kills: msg.ki, bosses: msg.bo, coins: msg.co,
-                   t1: (msg.tk || [])[0], t10: (msg.tk || [])[1] });
+                   t1: (msg.tk || [])[0], t10: (msg.tk || [])[1],scoreCounts:msg.scoreCounts });
     if(api.victory)api.victory(!!msg.victory);
     // Apply form/equipment state before any casts in this same snapshot.
     for (const u in msg.p || {}) {
@@ -451,6 +457,7 @@ G.Coop = (() => {
       } else { n.vx = 0; n.vy = 0; }
       n.x = a[1]; n.y = a[2]; n.age = 0; n.last = now;
       e.hp = Math.min(e.maxHp, a[3]);
+      if(e.boss){e.ai={fury:!!a[11]};e.bossGuard={resistance:(a[12]||0)/100};}
       n.anim = a[4]; n.dir = a[5]; n.st = a[6];
       e.staticT = a[7] || 0; e.unnerveT = a[8] || 0;
       e.fearT = a[9] || 0;
@@ -466,14 +473,14 @@ G.Coop = (() => {
       case 'za': if(G.ZMoves)G.ZMoves.grantCharge(local,ev[1]);break;
       case 'ak': G.Abilities.onKill(local, ev[1]); break;
       case 'ne':
-        G.EnemyMgr.addRemote({ id: ev[1], dex: ev[2], x: ev[3], y: ev[4], boss: !!ev[5], shiny: !!ev[6], hp: ev[7], dmg: ev[8], beh: ev[9], mega: ev[10],elite:!!ev[11] });
+        G.EnemyMgr.addRemote({ id: ev[1], dex: ev[2], x: ev[3], y: ev[4], boss: !!ev[5], shiny: !!ev[6], hp: ev[7], dmg: ev[8], beh: ev[9], mega: ev[10],elite:!!ev[11],legend:!!ev[12] });
         break;
       case 'ed': G.EnemyMgr.removeRemote(ev[1], true); break;
       case 'eg': G.EnemyMgr.removeRemote(ev[1], false); break;
       case 'hn': { const e = G.EnemyMgr.get(ev[1]); if (e && !e.dead) e.showHurt(ev[2], ev[3]); break; }
       case 'es':
         G.Projectiles.spawn({ x: ev[1], y: ev[2], vx: ev[3], vy: ev[4], dmg: ev[5], r: ev[6], life: ev[7],
-                              friendly: false, color: '#ff7a9e', vis: G.VFX.forType(ev[8]), mtype: ev[8] });
+                              friendly: false, color: '#ff7a9e', vis: G.VFX.forType(ev[8]), mtype: ev[8],sourceId:ev[9]||0 });
         break;
       case 'c': { const m = mates.get(ev[1]); if (m) G.Combat.ghostCast(m.pl, ev[2], ev[3], ev[4], ev[5]); break; }
       case 'zc': {const m=mates.get(ev[1]);if(m&&G.ZMoves){G.ZMoves.sync(m.pl,m.pl.net?.z);G.ZMoves.remoteCast(m.pl,ev[2],ev[3]);}break;}
@@ -529,10 +536,11 @@ G.Coop = (() => {
   function megaKill(p, id) { const m = mates.get(p.uid); if (m && m.connected) m.q.push(['mk', id]); }
   function zAward(p,key){const m=mates.get(p.uid);if(m&&m.connected)m.q.push(['za',key]);}
   function enemyAdded(e) {
-    emit(['ne', e.id, e.dex, r1(e.x), r1(e.y), e.boss ? 1 : 0, e.shiny ? 1 : 0, Math.ceil(e.maxHp), r2(e.dmg), e.behavior, e.mega || null,e.elite?1:0]);
+    emit(['ne', e.id, e.dex, r1(e.x), r1(e.y), e.boss ? 1 : 0, e.shiny ? 1 : 0, Math.ceil(e.maxHp), r2(e.dmg), e.behavior, e.mega || null,e.elite?1:0,e.legend?1:0]);
   }
   function enemyGone(e, died) { emit([died ? 'ed' : 'eg', e.id]); }
-  function enemyShot(p, type) { emit(['es', r1(p.x), r1(p.y), r1(p.vx), r1(p.vy), r2(p.dmg), p.r, p.life, type]); }
+  function bossLeech(e,damage){if(!host)outEv.push(['bl',e.id,Math.max(0,Math.min(local.maxHp,damage))]);}
+  function enemyShot(p, type) { emit(['es', r1(p.x), r1(p.y), r1(p.vx), r1(p.vy), r2(p.dmg), p.r, p.life, type,p.sourceId||0]); }
   function pickupAdded(o) { emit(['pk', o.id, o.kind, r1(o.x), r1(o.y), o.value]); }
   function pickupGone(id) { emit(['pc', id]); }
   function say(text, secs) { emit(['say', text, secs]); }
@@ -627,7 +635,7 @@ G.Coop = (() => {
 
   return {
     ANIMS, COLORS, begin, end, leave, tick, players, puppets, xpFactor, scaleRate, scaleHp,resync,
-    cast, zCast, hit, status, hurtShown, abilityKill, megaKill, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
+    cast, zCast, hit, status, bossLeech, hurtShown, abilityKill, megaKill, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
     propBroken, collected, shinyCaught, levelStart, localPicked, over, holdStart, holdEnd,zAward,
     /** Anfitrión: evento para todos. Invitado: evento para el anfitrión. */
     broadcast(ev) { emit(ev); },

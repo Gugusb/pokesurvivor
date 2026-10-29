@@ -23,7 +23,7 @@ G.RankingUI = (() => {
         "completion",
         T("Colección completada", "Full-medal collection", "满勋章通关数量榜"),
       ],
-      ["survival", T("Supervivencia · 8★", "Survival · 8★", "八星生存时间榜")],
+      ["survival", T("Puntuación de aventura", "Adventure score", "冒险得分榜")],
     ]) {
       const b = document.createElement("button");
       b.className = "gen-tab" + (board === id ? " on" : "");
@@ -58,9 +58,9 @@ G.RankingUI = (() => {
             "和更多宝可梦一起，集齐八枚挑战勋章！",
           )
         : T(
-            "Desafía las ocho estrellas y supera tu mejor tiempo.",
-            "Take on eight stars and beat your best survival time.",
-            "向八星挑战，和伙伴一起坚持得更久吧！",
+            "Cada aventura cuenta. ¡Supera tu mejor puntuación!",
+            "Every adventure counts. Beat your best score!",
+            "每一场冒险都算数，和伙伴一起挑战最高分！",
           );
   }
   async function load() {
@@ -102,7 +102,8 @@ G.RankingUI = (() => {
         const value = document.createElement("span");
         value.className = "time";
         value.textContent =
-          board === "completion" ? String(row.score) : G.U.mmss(row.t);
+          board === 'completion' ? String(row.score) : Number(row.score).toLocaleString();
+        if(board!=='completion'){const detail=document.createElement('small');detail.style.display='block';detail.textContent=row.stars+'★ · '+G.U.mmss(row.t);value.appendChild(detail);}
         el.appendChild(value);
         const report = document.createElement("button");
         report.className = "btn small ghost";

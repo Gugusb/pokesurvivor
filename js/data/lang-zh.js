@@ -1,6 +1,18 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  '¡Nueva mejor puntuación!': '新的冒险得分纪录！',
+  "Multiplicador de puntuación": "得分倍率",
+  "Puntuación estimada": "预计得分",
+  "Puntuación de aventura": "冒险得分",
+  "Derrotas": "击败",
+  "Supervivencia": "生存",
+  "Eventos": "事件",
+  "Guardia furiosa": "怒气护体",
+  "puntuación": "得分奖励",
+  "Aventuras que dejan huella · v0.23.0": "书写新的冒险纪录 · v0.23.0",
+  "Los jefes tardíos son más resistentes. Su furia amortigua las ráfagas de daño, y los jefes de grieta recuperan vida al herirte.": "后期首领变得更顽强，愤怒时会抵御密集攻击；裂缝首领还能从造成的伤害中恢复生命。",
+  "Todas las dificultades participan en el ranking de puntuación. Derrota Pokémon, sobrevive y completa eventos; tu puntuación también mejora las monedas al volver.": "所有难度均可挑战冒险得分榜。击败宝可梦、坚持生存并完成事件，写下更高纪录，也带回更多宝可梦币。",
   'Ataques y defensas separados · v0.22.0':'物攻特攻与物防特防 · v0.22.0',
   'Los 966 Pokémon usan sus seis stats base originales y seis IV. Los movimientos físicos y especiales usan su ataque correspondiente, también al evolucionar y en Z.':'966 只宝可梦更新为原作六项种族值与六项个体值，物理／特殊招式分别使用物攻／特攻，超武和 Z 招式同样适用。',
   'All 966 Pokémon use their six original base stats and six IVs. Physical and special moves use their corresponding attack, including evolved and Z moves.':'966 只宝可梦更新为原作六项种族值与六项个体值，物理／特殊招式分别使用物攻／特攻，超武和 Z 招式同样适用。',

@@ -13,6 +13,7 @@ function openStore(file) {
     CREATE TABLE IF NOT EXISTS saves(uid TEXT PRIMARY KEY REFERENCES users(uid),payload TEXT NOT NULL,rev INTEGER NOT NULL DEFAULT 1);
     CREATE TABLE IF NOT EXISTS runs(id TEXT PRIMARY KEY,uid TEXT NOT NULL REFERENCES users(uid),dex INTEGER NOT NULL,stars INTEGER NOT NULL,started INTEGER NOT NULL,beat INTEGER NOT NULL,t REAL NOT NULL DEFAULT 0,budget REAL NOT NULL DEFAULT 0,speed INTEGER NOT NULL DEFAULT 1,doubled INTEGER NOT NULL DEFAULT 0,dirty INTEGER NOT NULL DEFAULT 0,ended INTEGER NOT NULL DEFAULT 0,mode TEXT NOT NULL,room TEXT);
     CREATE INDEX IF NOT EXISTS runs_uid ON runs(uid);
+    CREATE TABLE IF NOT EXISTS run_scores(uid TEXT PRIMARY KEY REFERENCES users(uid),score INTEGER NOT NULL,stars INTEGER NOT NULL,t INTEGER NOT NULL,dex INTEGER NOT NULL,lv INTEGER NOT NULL,kills INTEGER NOT NULL,run TEXT NOT NULL,at INTEGER NOT NULL,breakdown TEXT NOT NULL);
     CREATE TABLE IF NOT EXISTS time_scores(uid TEXT PRIMARY KEY REFERENCES users(uid),t INTEGER NOT NULL,dex INTEGER NOT NULL,lv INTEGER NOT NULL,kills INTEGER NOT NULL,run TEXT NOT NULL,at INTEGER NOT NULL);
     CREATE TABLE IF NOT EXISTS friends(a TEXT NOT NULL,b TEXT NOT NULL,from_uid TEXT NOT NULL,ok INTEGER NOT NULL DEFAULT 0,PRIMARY KEY(a,b));
     CREATE TABLE IF NOT EXISTS reports(id TEXT PRIMARY KEY,by_uid TEXT NOT NULL,target TEXT NOT NULL,board TEXT NOT NULL,at INTEGER NOT NULL,UNIQUE(by_uid,target,board));
@@ -33,6 +34,8 @@ function openStore(file) {
     if (!hatchColumns.some(c => c.name === column))
       db.exec(`ALTER TABLE nursery_hatches ADD COLUMN ${column} INTEGER NOT NULL DEFAULT 0`);
   }
+  if(!db.prepare('PRAGMA table_info(runs)').all().some(c=>c.name==='score_counts'))
+    db.exec("ALTER TABLE runs ADD COLUMN score_counts TEXT NOT NULL DEFAULT '{}'");
   return db;
 }
 module.exports = { openStore };

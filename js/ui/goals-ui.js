@@ -268,7 +268,7 @@
         </div>
         <div class="prof-marks">
           <div><span>${T('Colección completa','Full-medal Pokémon','满勋章宝可梦')}</span><b>${number(b.medals)}</b></div>
-          <div><span>${T('Supervivencia · 8★','Survival · 8★','八星生存纪录')}</span><b>${b.eightStar?fmt(b.eightStar):'—'}</b></div>
+          <div><span>${T('Puntuación de aventura','Adventure score','冒险最高得分')}</span><b>${b.score?number(b.score):'—'}</b></div>
           <div><span>${T('Nivel máximo','Highest level','最高等级')}</span><b>${number(b.level)}</b></div>
           <div><span>${T('Derrotados','Pokémon defeated','累计击败')}</span><b>${number(b.kills)}</b></div>
         </div>
