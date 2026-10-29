@@ -29,7 +29,7 @@ G.Player = class Player {
     this.regenFlat = perks.regen || 0;
     this.magnet = 78 * (perks.magnetMul || 1);
     this.xpMul = perks.xpMul || 1;
-    this.coinMul = perks.coinMul || 1;
+    this.baseCoinMul = perks.coinMul || 1;
 
     const ivs = G.MonProgression ? G.MonProgression.values(this.dex) : Array(8).fill(16);
     const ivm = G.MonProgression ? ivs.map(G.MonProgression.ivMod) : Array(8).fill(1);
@@ -87,8 +87,8 @@ G.Player = class Player {
     this.dead = false;
     this.power = null;         // poder de altar activo: { def, t, dur }
     this.slowT = 0;            // pegado por una trampa
-    this.item = null;          // objeto equipado (data/items.js), uno por run
-    this.sashT = -999;         // última vez que salvó la Banda Focus
+    this.item = null; this.specialItems={};
+    this.activeItem=G.Settings?.get('activeItem')||'superpotion';this.activeItemCd=0;          // objeto equipado (data/items.js), uno por run
     this.bellHeal = 0;         // curación pendiente del Cascabel Concha
     this.statsTaken = {};      // mejoras de stat cogidas (condición de evolución)
     if (G.Mega) G.Mega.init(this, G.DB.save);
@@ -127,16 +127,18 @@ G.Player = class Player {
     return 1;
   }
   get spd() {
-    const s = this.baseSpd * (1+this.statGrowth.spd) * (this.spdMul + G.Abilities.state(this).growthSpeed) *
+    const s = this.baseSpd * (1+this.statGrowth.spd) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
       (1 + this.buffStacks(this.buffs.spd) * this.buffs.spd.amount + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return s * (G.Abilities.slowImmune(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
       (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1);
   }
-  get reduction() { return Math.min(0.8, this.dmgReduce + this.buffStacks(this.buffs.def) * this.buffs.def.amount); }
-  get regen() { return this.regenFlat + this.buffStacks(this.buffs.regen) * this.buffs.regen.amount; }
-  get effectiveXpMul() { return this.xpMul * G.Abilities.xpFactor(this); }
+  get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0) + this.buffStacks(this.buffs.def) * this.buffs.def.amount); }
+  get regen() { return this.regenFlat + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0) + this.buffStacks(this.buffs.regen) * this.buffs.regen.amount; }
+  get effectiveXpMul() { return this.xpMul * G.Abilities.xpFactor(this) * (1+.06*(G.Items?.count(this,'luckyegg')||0)); }
+
+  get coinMul(){return this.baseCoinMul*(1+.1*(G.Items?.count(this,'amuletcoin')||0));}
 
   // ---------------- movimientos ----------------
   addMove(id) {
@@ -245,7 +247,7 @@ G.Player = class Player {
     // Vidasfera: cada ataque cuesta un poco de vida (nunca te deja KO).
     if (this.hasItem('lifeorb') && m.kind !== 'orbit' && m.kind !== 'trail' && !this.remote) {
       const before = this.hp;
-      this.hp = Math.max(1, this.hp - Math.max(1, this.maxHp * 0.01) * G.Abilities.damageFactor(this, {kind: 'environment'}));
+      this.hp = Math.max(1, this.hp - Math.max(1, this.maxHp * 0.01) * .2 * G.Items.count(this,'lifeorb') * G.Abilities.damageFactor(this, {kind: 'environment'}));
       if (this.hp < before) G.Abilities.onDamage(this);
     }
     const anim = { melee: 'Attack', beam: 'Shoot', projectile: 'Shoot', nova: 'Attack',
@@ -260,7 +262,7 @@ G.Player = class Player {
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
     const meta = G.Sprites.animMeta(this.spriteDex, anim);
     const len = meta ? meta.d.reduce((a, b) => a + b, 0) / 60 : 0.4;
-    const cd = Math.max(0.12, m.cd * this.cdMul * this.agilityCooldown / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
+    const cd = Math.max(0.12, m.cd * this.cdMul * this.agilityCooldown * (G.Items?.cooldownFactor(this)||1) / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
     this.anim.play(anim, { speed: Math.max(1, len / (cd * 0.9)) });
     this.attackFace = 0.35;
   }
@@ -309,13 +311,13 @@ G.Player = class Player {
     G.FX.dmgText(this.x, this.y - this.bodyH - 4, '-' + Math.round(d), eff === 'super' ? '#ff3048' : eff === 'weak' ? '#c9a0a8' : '#ff6b7a', eff === 'super');
     G.FX.burst(this.x, this.y - this.bodyH * 0.5, '#ff5f6d', 6, 90);
     if (this.hp <= 0) G.Abilities.saveLethal(this);
-    // Banda Focus: aguanta el golpe con 1 de vida (una vez cada 60 s).
-    if (this.hp <= 0 && this.hasItem('focussash') && performance.now() - this.sashT > 60000) {
-      this.sashT = performance.now();
-      this.hp = 1; this.invuln = 1.2;
-      G.FX.dmgText(this.x, this.y - this.bodyH - 16, '¡Banda Focus!', '#ff9a3d', true);
-      G.FX.ring(this.x, this.y, 6, 70, '#ff9a3d', 0.5, 4);
+    // Cada Banda Focus evita un golpe mortal y se consume.
+    if(this.hp<=0&&this.hasItem('focussash')){
+      G.Items.remove(this,'focussash');this.hp=1;this.invuln=1.2;
+      G.FX.dmgText(this.x,this.y-this.bodyH-16,'¡Banda Focus!','#ff9a3d',true);
+      G.FX.ring(this.x,this.y,6,70,'#ff9a3d',.5,4);
     }
+
     if (this.hp <= 0) {
       this.hp = 0; this.dead = true;
       this.anim.play('Faint', { hold: true });
@@ -355,19 +357,11 @@ G.Player = class Player {
   }
 
   // ---------------- objeto equipado ----------------
-  hasItem(id) { return this.item === id; }
-
-  /** Se pone un objeto (y se quita el que llevara). */
-  equip(id) {
-    if (id && (G.Mega && G.Mega.hasStone(this) || G.ZMoves && G.ZMoves.hasStone(this))) return false;
-    if (this.item) G.Items.BY[this.item].off(this);
-    this.item = id;
-    if (id) G.Items.BY[id].on(this);
-  }
-
-  /** Cascabel Concha: un poco de vida por el daño que haces (tope 4/s). */
+  hasItem(id) { return (G.Items?.count(this,id)||0)>0; }
+  equip(id) { return G.Items?.gain(this,id)||false; }
   onDealt(dmg) {
-    if (this.item === 'shellbell') this.bellHeal = Math.min(4, this.bellHeal + dmg * 0.04);
+    const n=G.Items?.count(this,'shellbell')||0;
+    if(n)this.bellHeal=Math.min(.8*n,this.bellHeal+dmg*.008*n);
   }
 
   /** Poder de un altar (ver systems/interact.js): se aplica y se quita solo. */
@@ -393,6 +387,7 @@ G.Player = class Player {
     this.megaDashGuard = Math.max(0, (this.megaDashGuard || 0) - dt);
     this.anim.update(dt);
     if (this.dead) return;
+    this.activeItemCd=Math.max(0,this.activeItemCd-dt);
     G.Abilities.playerTick(this, dt);
     this.attackDebuffT = Math.max(0, this.attackDebuffT - dt);
     if (!this.attackDebuffT || G.Abilities.has(this, 'defiant') || G.Abilities.debuffImmune(this)) this.attackDebuff = this.attackDebuffT = 0;
@@ -406,7 +401,7 @@ G.Player = class Player {
       if (b.n > 0) { b.t -= dt; if (b.t <= 0) b.n = 0; }
     }
     if (this.slowT > 0) this.slowT -= dt;
-    if (this.bellHeal > 0) { const h = Math.min(this.bellHeal, 4 * dt); this.hp = Math.min(this.maxHp, this.hp + h); this.bellHeal -= h; }
+    if (this.bellHeal > 0) { const h = Math.min(this.bellHeal, .8*G.Items.count(this,'shellbell')*dt); this.hp = Math.min(this.maxHp, this.hp + h); this.bellHeal -= h; }
     if (this.power && (this.power.t -= dt) <= 0) { this.power.def.off(this); this.power = null; }
     if (this.regen > 0) this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
 

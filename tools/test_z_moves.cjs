@@ -364,9 +364,9 @@ test('first-snapshot fused Z effects reach an observer and cooldown clears stale
   send({peer:state(9,null,['water','cooldown',5,0])});assert.equal(p.zState.casts.length,0);assert.equal(G.ZMoves.busy(p),false);p.netUpdate(.01);assert.equal(p.anim.base,'Idle');G.Coop.end();
 });
 
-test('Z crystal reserves the item slot and ordinary item pickups convert to XP',()=>{
-  const s=setup(),{G,p}=s;s.loadGame();assert.equal(p.equip('leftovers'),false);
-  const xp=p.xp;G.Game._test.collect({kind:'item',value:'leftovers'},p);assert.equal(p.item,null);assert.ok(p.xp>xp);
+test('Z crystal coexists with special items and an active potion',()=>{
+  const s=setup(),{G,p}=s;s.loadGame();assert.equal(p.equip('leftovers'),true);
+  const xp=p.xp;G.Game._test.collect({kind:'item',value:'leftovers'},p);assert.equal(G.Items.count(p,'leftovers'),2);assert.equal(p.xp,xp);assert.equal(p.activeItem,'superpotion');
 });
 
 function visuals(s){

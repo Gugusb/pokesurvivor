@@ -152,7 +152,7 @@
       if (!(hpDamage > 0)) return shieldDamage;
       this.hp -= hpDamage;
       if (attacker) this.lastAttacker = attacker;
-      if (attacker) G.Abilities.onHit(attacker, this, attack);
+      if (attacker) {G.Abilities.onHit(attacker, this, attack);G.Items?.onHit(attacker,this,attack);}
       G.Judgment.noteDmg(hpDamage, this);
       this.showHurt(hpDamage, color, dirX, dirY, eff);
       if (knock > 0 && !this.boss) {

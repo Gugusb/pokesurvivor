@@ -8,7 +8,7 @@ G.SettingsUI = (() => {
   G.I18n.addChinese({'Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.':'拖动屏幕移动，点击技能切换攻击，右上角按钮暂停；支持竖屏与横屏游玩。'});
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '0.23.0 · 2026-10-29';
+  const VERSION = '0.25.0 · 2026-10-29';
   const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 
@@ -93,7 +93,9 @@ G.SettingsUI = (() => {
              <button class="btn small" id="set-full">${isFull() ? 'Salir' : 'Activar'}</button></div>`
            : iosTip() ? `<div class="set-row"><div class="grow"><b>Pantalla completa</b><small>${esc(IOS_TIP)}</small></div></div>` : '');
     } else if (tab === 'ctl') {
-      box.innerHTML = section('En móvil o tablet')
+      box.innerHTML = section('Uso de movimientos','Sólo actúa el hueco seleccionado. La selección Z no cambia.')
+        + choice('castMode',[['auto','Siempre activo'],['toggle','Activar o desactivar'],['click','Un lanzamiento por clic']])
+        + section('En móvil o tablet')
         + `<p class="sub">Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.</p>`
         + `<div class="set-row"><div class="grow"><b>Tamaño del joystick</b><small>Cuánto hay que arrastrar el dedo.</small></div></div>`
         + choice('stick', [[0.8, 'Pequeño'], [1, 'Normal'], [1.25, 'Grande']])
@@ -101,9 +103,10 @@ G.SettingsUI = (() => {
         + `<div class="keys">
              <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> o flechas</div><span>moverse</span>
              <div><kbd>1</kbd>–<kbd>4</kbd> o clic en el icono</div><span>elegir ataque</span>
+             <div><kbd>0</kbd></div><span>usar objeto activo</span>
              <div><kbd>Q</kbd> / <kbd>E</kbd></div><span>ataque anterior / siguiente</span>
              <div><kbd>Esc</kbd> o <kbd>P</kbd></div><span>pausa</span>
-             <div><kbd>1</kbd>–<kbd>3</kbd></div><span>elegir carta al subir de nivel</span>
+             <div><kbd>1</kbd>–<kbd>9</kbd></div><span>elegir carta al subir de nivel</span>
            </div>`;
     } else if (tab === 'dev') {
       G.Dev.renderSettings(box);

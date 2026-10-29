@@ -180,6 +180,7 @@
           <button class="menu-item play" data-go="play">Jugar<small>Entra en la mazmorra</small></button>
           <div class="difficulty-picker"><label for="menu-difficulty">Dificultad</label><select id="menu-difficulty"></select><small id="difficulty-note"></small></div>
         </div>
+        <label class="active-loadout">Objeto activo <select id="menu-active-item"><option value="superpotion">Superpoción</option><option value="none">Ninguno</option></select><small>Se elige antes de salir · tecla 0</small></label>
         <button class="menu-item" data-go="dex">Pokémon<small id="menu-dex-count">Tu colección</small></button>
         <button class="menu-item" data-go="upgrades">Mejoras<small>Haz más fuerte cada run</small></button>
         <button class="menu-item" data-go="gacha">Gacha<small>9 regiones · Pokémon y shinies</small></button>
@@ -513,7 +514,7 @@
 <section id="scr-levelup" class="scr dim hidden">
   <div class="box center">
     <h2>¡Nivel <span id="lvl-num">2</span>!</h2>
-    <p class="sub">Elige una recompensa · <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd></p>
+    <p class="sub">Elige una recompensa</p>
     <div id="cards" class="cards"></div>
     <button id="lvl-reroll" class="btn small ghost hidden" data-sfx="none" style="margin-top:10px">Cambiar opciones (<span id="lvl-rr-n">1</span>) · <kbd>R</kbd></button>
     <p id="lvl-wait" class="note hidden"></p>
@@ -532,8 +533,8 @@
 
 <section id="scr-item" class="scr dim hidden">
   <div class="box center">
-    <h2>¡Un objeto!</h2>
-    <p class="sub">Sólo puedes llevar uno · <kbd>1</kbd> <kbd>2</kbd></p>
+    <h2>Objetos especiales</h2>
+    <p class="sub">Elige un objeto especial para esta aventura.</p>
     <div id="item-cards" class="cards"></div>
   </div>
 </section>
@@ -566,6 +567,7 @@
     <p class="sub kbd-hint"><kbd>WASD</kbd> moverse · <kbd>1</kbd>–<kbd>4</kbd> movimiento · <kbd>Q</kbd>/<kbd>E</kbd> ciclar · <kbd>Esc</kbd> pausa</p>
     <p class="sub touch-hint">Arrastra el dedo para moverte · toca un ataque para cambiarlo</p>
     <p id="pause-coop" class="note hidden">Partida en grupo: el juego sigue mientras estás aquí.</p>
+    <div id="pause-items" class="special-items-list"></div>
     <div id="pause-sound" class="sound-inline"></div>
     <div class="row" style="justify-content:center">
       <button id="btn-resume" class="btn gold">Continuar</button>
@@ -637,6 +639,7 @@
 <script defer src="js/entities/pickup.js"></script>
 <script defer src="js/entities/player.js"></script>
 <!-- sistemas -->
+<script defer src="js/systems/move-control.js"></script>
 <script defer src="js/systems/move-pp.js"></script>
 <script defer src="js/systems/combat.js"></script>
 <script defer src="js/systems/spawner.js"></script>

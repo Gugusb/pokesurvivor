@@ -1,0 +1,59 @@
+/* Real UI/input flows, isolated in-memory account; no player saves are touched. */
+const assert=require('node:assert/strict'),path=require('node:path'),{once}=require('node:events'),{randomBytes,randomUUID}=require('node:crypto');
+const {createApp,hashPassword}=require('../server/server.cjs'),{fresh}=require('../server/domain.cjs');
+const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cache/browser-qa/node_modules/playwright'));
+(async()=>{
+ const app=createApp({dbFile:':memory:',stunUrls:'none'}),errors=[],results=[];let browser;
+ try{
+  const name='ItemsFixture',password=randomBytes(24).toString('hex'),uid=randomUUID(),save=fresh(name);save.partner=6;
+  for(const dex of [4,5,6])save.owned[dex]={at:1,iv:Array(8).fill(31)};
+  app.db.prepare('INSERT INTO users(uid,name,lower,pass,recovery,created) VALUES(?,?,?,?,?,?)').run(uid,name,name.toLowerCase(),await hashPassword(password),'unused',Date.now());
+  app.db.prepare('INSERT INTO saves(uid,payload) VALUES(?,?)').run(uid,JSON.stringify(save));app.server.listen(0,'127.0.0.1');await once(app.server,'listening');const base='http://127.0.0.1:'+app.server.address().port;
+  browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL||'msedge',headless:true});
+  for(const built of (process.argv.includes('--built')?[true]:process.argv.includes('--source')?[false]:[false,true]))for(const lang of (process.argv.includes('--zh')?['zh']:['zh','en','es'])){
+   const c=await browser.newContext({viewport:{width:1280,height:900},locale:lang==='zh'?'zh-CN':lang});
+   await c.addInitScript(lang=>{localStorage.setItem('ps.lang',lang);localStorage.setItem('ps.dev.enabled','true');window.qaText=[];const f=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t,...a){window.qaText.push(String(t));if(window.qaText.length>10000)window.qaText.splice(0,5000);return f.call(this,t,...a);};},lang);
+   const page=await c.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(base+(built?'/':'/dev.html'));
+   await page.waitForFunction(()=>!document.getElementById('tap-start').classList.contains('hidden')||!document.getElementById('scr-login').classList.contains('hidden'));if(await page.locator('#tap-start').isVisible())await page.locator('#tap-start').click();
+   await page.locator('#f-user').fill(name);await page.locator('#f-pass').fill(password);await page.locator('#btn-auth').click();try{await page.locator('#scr-menu:not(.hidden)').waitFor();}catch(e){console.error('Login diagnostics:',JSON.stringify({lang,built,text:await page.locator('#scr-login').innerText()}));throw e;}
+   await page.locator('#menu-active-item').selectOption('none');await page.locator('#menu-active-item').selectOption('superpotion');
+   await page.locator('#btn-settings').click();await page.locator('#set-tabs [data-t="ctl"]').click();assert.equal(await page.locator('[data-k="castMode"]').count(),3);
+   for(const v of ['auto','click','toggle'])await page.locator(`[data-k="castMode"][data-v="${v}"]`).click();
+   await page.screenshot({path:path.join(__dirname,`cache/items-${built?'built':'source'}-${lang}-settings.png`),animations:'disabled'});await page.locator('#set-close').click();
+   await page.locator('[data-go="play"]').click();await page.locator('#scr-menu').waitFor({state:'hidden'});await page.waitForFunction(()=>window.qaText.some(t=>/^PP \d+\/\d+$/.test(t)));
+   if(!built){
+    await page.evaluate(()=>{
+     G.Game.debugMark();G.Spawner.update=()=>{};G.Events.update=()=>{};G.EnemyMgr.clear();G.Projectiles.clear();G.Hazards.clear();const p=G.Game.player;p.ability=null;p.invuln=1000;p.maxHp=1000;p.hp=100;
+     const m=G.Moves.instance('ember');m.cd=.25;p.moves=[m];p.slots=[[m]];p.active=0;p.xpNext=1e12;
+     const e=new G.Enemy({dex:143,hp:1e9,dmg:0,spd:0,xp:0,behavior:'ranged'},p.x+100,p.y,{hp:1,spd:1,dmg:1});e.update=()=>{};G.EnemyMgr.add(e);G.EnemyMgr.rebuildGrid();p.target=e;
+     const cast=p.cast.bind(p);window.qaCasts=0;p.cast=m=>{window.qaCasts++;cast(m);};
+    });
+    assert.equal(await page.evaluate(()=>window.qaCasts),0);await page.keyboard.press('1');await page.waitForFunction(()=>window.qaCasts>=1);
+    await page.keyboard.press('1');const count=await page.evaluate(()=>{window.qaStoppedAt=G.Game.st.time;return window.qaCasts;});await page.waitForFunction(()=>G.Game.st.time>window.qaStoppedAt+.5);assert.equal(await page.evaluate(()=>window.qaCasts),count);
+    await page.keyboard.press('0');await page.waitForFunction(()=>G.Game.player.activeItemCd>0);const healed=await page.evaluate(()=>({hp:G.Game.player.hp,cd:G.Game.player.activeItemCd}));assert.equal(healed.hp,400);assert.ok(healed.cd>29&&healed.cd<=30);
+    await page.keyboard.press('Escape');await page.locator('#btn-pause-settings').click();await page.locator('#set-tabs [data-t="ctl"]').click();await page.locator('[data-k="castMode"][data-v="click"]').click();await page.locator('#set-close').click();await page.locator('#btn-resume').click();
+    await page.evaluate(()=>{G.Game.player.moves[0].t=0;window.qaCasts=0;});await page.keyboard.press('1');await page.waitForFunction(()=>window.qaCasts===1);await page.evaluate(()=>{window.qaStoppedAt=G.Game.st.time;});await page.waitForFunction(()=>G.Game.st.time>window.qaStoppedAt+.5);assert.equal(await page.evaluate(()=>window.qaCasts),1);
+    await page.evaluate(()=>{const p=G.Game.player;for(const id of ['leftovers','leftovers','candyjar'])G.Pickups.drop('item',p.x,p.y,id);});await page.waitForFunction(()=>G.Items.count(G.Game.player,'leftovers')===2&&G.Items.count(G.Game.player,'candyjar')===1);
+    const won=await page.evaluate(()=>{
+     const p=G.Game.player,before=p.bonds;G.Items.rewardChoices=()=>['linker','luckymedal','candyjar'];G.Rift.debugArena('fire');const e=G.EnemyMgr.get(G.Rift.arena.bossId);e.hurt(1e12,'#fff',0,0,0,null,p);G.Rift.update(.01,p,G.Game.st.time);const noBond=p.bonds===before;G.Rift.update(5.1,p,G.Game.st.time);return {noBond,leftArena:!G.Rift.inArena,clearedWorld:!G.World.arena};
+    });
+    assert.ok(won.noBond&&won.leftArena&&won.clearedWorld);await page.locator('#scr-item:not(.hidden)').waitFor();assert.equal(await page.locator('#item-cards .card').count(),3);
+    await page.screenshot({path:path.join(__dirname,`cache/items-source-${lang}-rift-reward.png`),animations:'disabled'});await page.locator('#item-cards [data-item="candyjar"]').click();assert.equal(await page.evaluate(()=>G.Items.count(G.Game.player,'candyjar')),2);
+    await page.evaluate(()=>G.Game.offerSpecialChoice(['luckymedal','focussash','bugnet']));await page.locator('#item-cards [data-item="luckymedal"]').click();await page.evaluate(()=>{G.Game.player.xp=0;G.Pickups.clear();G.Game.debugLevelUp();});await page.locator('#scr-levelup:not(.hidden)').waitFor();assert.equal(await page.locator('#cards .card').count(),4);await page.locator('#lvl-reroll').click();assert.equal(await page.locator('#cards .card').count(),4);await page.locator('#cards .card').first().click();
+    await page.evaluate(()=>{const p=G.Game.player;const list=['hp','atk','spa','heal'].map(id=>{const s=G.LevelUp.STATS.find(c=>c.id===id);return {...s,type:'stat',tag:'Mejora',color:'#83cdae'};});G.RunUI.showLevelUp(p.level,list,c=>c.apply(p));});
+    assert.equal(await page.locator('#cards .ico img').count(),4);const images=await page.locator('#cards .ico img').evaluateAll(es=>es.map(e=>e.src));assert.equal(new Set(images).size,4);
+    await page.screenshot({path:path.join(__dirname,`cache/items-source-${lang}-berries-potion.png`),animations:'disabled'});await page.locator('#cards .card').last().click();
+    await page.evaluate(()=>G.Items.gain(G.Game.player,'focussash'));await page.evaluate(()=>{const p=G.Game.player;p.invuln=p.dashGuardT=0;p.hurt(1e8,null,true);});assert.equal(await page.evaluate(()=>G.Items.count(G.Game.player,'focussash')),0);assert.equal(await page.evaluate(()=>G.Game.player.dead),false);
+    await page.keyboard.press('Escape');await page.locator('#scr-pause:not(.hidden)').waitFor();assert.ok((await page.locator('#pause-items').textContent()).includes('×2'));await page.screenshot({path:path.join(__dirname,`cache/items-source-${lang}-bag.png`),animations:'disabled'});await page.locator('#btn-resume').click();
+    await page.evaluate(()=>{const p=G.Game.player;p.moves=['ember','water-gun','tackle','hail'].map(id=>G.Moves.instance(id));p.slots=p.moves.map(m=>[m]);p.active=0;G.ZMoves.grant(G.DB.save,'fire');G.ZMoves.equip(G.DB.save,p.ivDex||p.dex,'fire');G.ZMoves.init(p,G.DB.save);G.Spawner.say('',0,true);});
+    results.push({lang,toggleAndClick:true,activePotion:true,stackedItems:true,riftThreeChoices:true,luckyRerollFour:true,coloredBerriesAndPotion:true,focusSashConsumed:true});
+   }else{
+    await page.keyboard.press('F2');await page.locator('#dev-panel [data-dev="damage"]').click();await page.keyboard.press('F2');await page.evaluate(()=>{window.qaText=[];});await page.keyboard.press('0');await page.waitForFunction(()=>window.qaText.some(t=>t==='30s'||t==='29s'));assert.equal(await page.evaluate(()=>typeof G),'undefined');
+   }
+   if(await page.locator('.toast').count())await page.locator('.toast').waitFor({state:'hidden',timeout:5000});
+   await page.evaluate(()=>{window.qaText=[];});await page.waitForFunction(()=>window.qaText.some(t=>/^PP \d+\/\d+$/.test(t)));await page.screenshot({path:path.join(__dirname,`cache/items-${built?'built':'source'}-${lang}-gameplay.png`),animations:'disabled'});
+   await page.setViewportSize({width:320,height:740});await page.screenshot({path:path.join(__dirname,`cache/items-${built?'built':'source'}-${lang}-mobile.png`),animations:'disabled'});await c.close();
+  }
+  assert.deepEqual(errors,[]);console.log(JSON.stringify({ok:true,built:!process.argv.includes('--source'),languages:process.argv.includes('--zh')?1:3,results,pageErrors:errors.length},null,2));
+ }catch(e){console.error("Page errors:",JSON.stringify(errors));throw e;}finally{await browser?.close();await app.close();}
+})().catch(e=>{console.error(e);process.exitCode=1;});

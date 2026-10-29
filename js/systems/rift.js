@@ -5,8 +5,8 @@
  * a una arena cerrada en el Mundo Distorsión, contra un Pokémon LEGENDARIO.
  *
  *   ganas    el legendario suelta tickets (el ×10, la mitad de las veces) y monedas, y cada uno se lleva un
- *            VÍNCULO (fusiona movimientos, ver Player.fuse); a los pocos
- *            segundos volvéis al mapa donde estabais y se elige la fusión
+ *            objeto especial a elegir entre tres; a los pocos
+ *            segundos volvéis al mapa donde estabais y se elige la recompensa
  *   pierdes  (caéis todos o se acaba el tiempo) volvéis sin premio, con algo
  *            de vida; la partida sigue
  *
@@ -207,11 +207,7 @@ G.Rift = (() => {
     G.Spawner.say('¡Has vencido a ' + (arena.mega ? G.Mega.label(arena.mega) : G.DEX_BY[arena.dex].name) + '! Recoge el premio…', 3.4, true);
     G.Audio.sfx('legend');
     const pl = G.Game.player;
-    if (pl) {
-      pl.bonds++;
-      G.FX.dmgText(pl.x, pl.y - pl.bodyH - 10, '¡Vínculo!', '#ff8ad8', true);
-      G.FX.ring(pl.x, pl.y, 8, 90, '#ff8ad8', 0.7, 5);
-    }
+    if(pl)arena.reward=G.Items.rewardChoices();
   }
 
   function lost() {
@@ -226,6 +222,7 @@ G.Rift = (() => {
     const pl = G.Game.player;
     const a = arena;
     arena = null;
+    G.World.setArena(null);
     G.World.setBiome(a.biome, true);
     G.Weather.clear();
     // Invitado: no se borra nada. El anfitrión avisa de los de la arena que se
@@ -241,7 +238,8 @@ G.Rift = (() => {
     if (pl.dead) pl.revive(0.3);
     G.Camera.x = pl.x; G.Camera.y = pl.y;
     G.Game.flash('#c9a6ff', 0.8);
-    if (pl.bonds > 0) G.Game.offerBond();
+    if(a.phase==='won'&&a.reward&&G.Game.offerSpecialChoice)G.Game.offerSpecialChoice(a.reward);
+    else if(pl.bonds>0)G.Game.offerBond();
   }
 
   // ---------------- dibujo ----------------

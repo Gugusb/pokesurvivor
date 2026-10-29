@@ -11,7 +11,7 @@ G.LevelUp = (() => {
   const family = m => m.kind === 'buff' ? 'buff' : 'attack';
 
   // Berries add a fraction of the species/IV base, in a separate stat layer.
-  const berry=(id,title,desc,stat,amount,max)=>({id,icon:'berry',title,desc,max,
+  const berry=(id,title,desc,stat,amount,max)=>({id,icon:'berry:'+id,title,desc,max,
     apply:p=>p.growStat(stat,amount),triple:p=>p.growStat(stat,amount*3)});
   const STATS = [
     berry('hp','Baya Vital','Refuerza la vida natural y recupera esa energía.','hp',.12),
@@ -22,9 +22,9 @@ G.LevelUp = (() => {
     berry('spd','Baya Veloz','Refuerza la velocidad natural.','spd',.07,8),
     berry('cd','Baya Ágil','Refuerza la agilidad natural: tus movimientos se recargan antes.','agility',.12,10),
     berry('stamina','Baya Tenaz','Refuerza la resistencia natural: tus PP se recuperan antes.','stamina',.12,10),
-    {id:'ppmax',icon:'berry',title:'Baya Plena',desc:'Todos los movimientos ganan 1 PP máximo.',max:20,
+    {id:'ppmax',icon:'berry:ppmax',title:'Baya Plena',desc:'Todos los movimientos ganan 1 PP máximo.',max:20,
       apply:p=>G.MovePP.increaseMax(p,1),triple:p=>G.MovePP.increaseMax(p,3)},
-    {id:'temppp',icon:'berry',title:'Baya Reserva',desc:'Guarda 20 PP de reserva para cuando un movimiento se quede sin PP.',
+    {id:'temppp',icon:'berry:temppp',title:'Baya Reserva',desc:'Guarda 20 PP de reserva para cuando un movimiento se quede sin PP.',
       apply:p=>p.tempPP=(p.tempPP||0)+20},
     { id: 'rgn', icon: 'sprout', title: 'Síntesis', desc: '+0.9 de vida regenerada por segundo.',
       apply: pl => pl.regenFlat += 0.9, triple:p=>p.regenFlat+=2.7 },
@@ -32,7 +32,7 @@ G.LevelUp = (() => {
       apply: pl => pl.magnet *= 1.30, triple:p=>p.magnet*=1.9, max: 6 },
     { id: 'xp', icon: 'book', title: 'Aprendizaje', desc: '+12% de experiencia ganada.',
       apply: pl => pl.xpMul *= 1.12, triple:p=>p.xpMul*=1.36, max: 8 },
-    { id: 'heal', icon: 'berry', title: 'Baya Zidra', desc: 'Recupera el 45% de tu vida ahora mismo.',
+    { id: 'heal', icon: 'potion', title: 'Poción', desc: 'Recupera el 45% de tu vida ahora mismo.',
       apply: pl => pl.heal(pl.maxHp * 0.45) }
   ];
 
@@ -132,7 +132,7 @@ G.LevelUp = (() => {
   }
 
   /** Three distinct cards; never two consecutive displays without an available upgrade. */
-  function offer(pl, n = 3) {
+  function offer(pl, n = 3+(G.Items?.count(pl,'luckymedal')||0)) {
     const pool = candidates(pl);
     const picked = [];
     const eligible = pool.some(c => c.type === 'up');

@@ -4,7 +4,7 @@ const {G:rules}=require('../server/domain.cjs');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`),noop=()=>{};
 function fixture(time=900){
   const s=context(),{G}=s;s.load('js/systems/difficulty.js');s.load('js/systems/boss-combat.js');
-  G.Game.st={time};G.Spawner={say:noop};G.Pickups={drop:noop,dropXp:noop};G.Items={roll:()=>null};
+  G.Game.st={time};G.Spawner={say:noop};G.Pickups={drop:noop,dropXp:noop};G.Items={...G.Items,roll:()=>null};
   s.boss=()=>new G.Enemy({dex:6,hp:10000,dmg:10,spd:10,xp:0,behavior:'ranged',networkStats:true},100,0,{hp:1,spd:1,dmg:1},true);
   return s;
 }

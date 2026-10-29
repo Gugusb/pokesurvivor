@@ -27,19 +27,17 @@ G.Combat = (() => {
       G.Projectiles.clearOrbs(pl); return;
     }
     const active = pl.activeGroup();
-    if (G.Abilities.has(pl, 'innerfocus')) {
-      // Los huecos inactivos sólo se recargan: nunca lanzan ataques por sí solos.
-      for (const m of pl.moves) if (!active.includes(m)) m.t = Math.max(0, m.t - dt * rateFor(pl,m));
-    }
     // Vínculos: todos los movimientos del hueco activo, cada uno con su recarga.
     for (const m of active) tickMove(dt, pl, m, now);
   }
 
-  const rateFor=(pl,m)=>G.Abilities.cooldownRate(pl,m)*(G.Mega?G.Mega.cooldownRate(pl,m):1)/(pl.agilityCooldown||1);
+  const rateFor=(pl,m)=>G.Abilities.cooldownRate(pl,m)*(G.Mega?G.Mega.cooldownRate(pl,m):1)/(pl.agilityCooldown||1)/(G.Items?.cooldownFactor(pl)||1);
   function tickMove(dt, pl, m, now) {
     const cooldownRate = rateFor(pl,m);
     m.t -= dt * cooldownRate;
+    const wanted=!G.MoveControl||G.MoveControl.wants(pl,m);
     if(m.kind==='orbit'){
+      if(!wanted&&!G.MoveControl.sustaining(pl,m)){for(const shot of G.Projectiles.all().filter(s=>s.orb&&s.owner===pl&&s.mid===m.id))G.Projectiles.remove(shot);m.t=Math.max(0,m.t);return;}
       // One PP sustains one cooldown cycle; no charge per frame or per orb hit.
       if(m.t<=0){
         if(G.MovePP&&!G.MovePP.consume(pl,m)){
@@ -47,10 +45,11 @@ G.Combat = (() => {
           m.t=0;return;
         }
         m.t=Math.max(.05,m.cd*pl.cdMul)*G.Abilities.onCast(pl,m);
+        G.MoveControl?.cast(pl,m);G.Items?.onCast(pl,m);
       }
       orbit(pl,m,dt,now);return;
     }
-    if (m.t > 0) return;
+    if (m.t > 0||!wanted) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
     if (needsTarget(m) && !(pl.target && G.U.dist(pl.x, pl.y, pl.target.x, pl.target.y) <= reach(m))) {
       m.t = 0.05;
@@ -58,6 +57,7 @@ G.Combat = (() => {
     }
     if(G.MovePP&&!G.MovePP.consume(pl,m)){m.t=0;return;}
     m.t = Math.max(0.05, m.cd * pl.cdMul) * G.Abilities.onCast(pl, m);
+    G.MoveControl?.cast(pl,m);G.Items?.onCast(pl,m);
     // Snapshot this cast's real interval, including its one-time cooldown penalty.
     const castCooldown = m.t / cooldownRate;
     pl.cast(m);
@@ -703,7 +703,7 @@ G.Combat = (() => {
       e.touchCd = 0.55;
       e.strike(pl);
       const landed = pl.hurt(G.Abilities.enemyDamage(e, e.dmg), e.atkType, false, { kind: 'contact', enemy: e });
-      if (landed && pl.hasItem('rockyhelmet')) e.hurt(15 + pl.level * 4, '#9aa6b5', e.x - pl.x, e.y - pl.y, 80, null, pl);
+      if (landed && pl.hasItem('rockyhelmet')) e.hurt((15 + pl.level * 4)*.2*G.Items.count(pl,'rockyhelmet'), '#9aa6b5', e.x - pl.x, e.y - pl.y, 16*G.Items.count(pl,'rockyhelmet'), null, pl);
       const [nx, ny] = G.U.norm(e.x - pl.x, e.y - pl.y);
       e.kx += nx * 150; e.ky += ny * 150;
     }

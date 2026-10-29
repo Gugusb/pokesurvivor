@@ -87,7 +87,7 @@ G.MonProgression = (() => {
     G.Projectiles?.clearOrbs(p);G.FX?.ring(p.x,p.y,8,120,'#ffd23f',.8,6);G.Audio?.sfx('legend');
     return true;
   }
-  function captureChance(enemy) { return (enemy && (enemy.boss || enemy.legend) ? 0.05 : 0.002)*(G.Difficulty?G.Difficulty.rewards():1); }
+  function captureChance(enemy) { const p=enemy?.lastAttacker||G.Game?.player;return .0002*(G.Items?.count(p,'bugnet')||0)+(enemy && (enemy.boss || enemy.legend) ? 0.05 : 0.002)*(G.Difficulty?G.Difficulty.rewards():1); }
   function tryCapture(enemy, run) {
     if (!enemy || enemy.judge || enemy.remote || Math.random() >= captureChance(enemy)) return false;
     run.pendingCaptures ||= [];

@@ -41,6 +41,7 @@ G.MenuUI = (() => {
 
   function open() {
     const s = G.DB.save;
+    const active=$('menu-active-item');if(active){active.value=G.Settings.get('activeItem')||'superpotion';active.onchange=()=>G.Settings.set('activeItem',active.value);}
     const mon = G.DEX_BY[s.partner];
     const shiny = !!s.partnerShiny && G.DB.ownsShiny(mon.dex);
     G.UI.chrome(true);

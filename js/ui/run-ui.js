@@ -182,22 +182,15 @@ G.RunUI = (() => {
     G.UI.show('scr-over');
   }
 
-  /** Has encontrado un objeto llevando ya otro: ¿con cuál te quedas? */
-  function showItemChoice(cur, next, cb) {
-    const box = $('item-cards');
-    box.innerHTML = '';
-    [[cur, 'Quedarme con'], [next, 'Cambiar a']].forEach(([id, verb], i) => {
-      const it = G.Items.BY[id];
-      const el = document.createElement('div');
-      el.className = 'card' + (i === 1 ? ' evo' : '');
-      el.innerHTML = `<div class="ico">${G.Icons.html(id, 36)}</div>
-        <div class="txt"><div class="nm">${verb} ${it.name}</div><div class="ds">${it.desc}</div></div>
-        <div class="key">${i + 1}</div>`;
-      el.onclick = () => { G.UI.hide('scr-item'); cb(id); };
-      box.appendChild(el);
-    });
-    G.UI.show('scr-item');
+  function showSpecialChoice(options,cb){
+    const box=$('item-cards');box.innerHTML='';
+    options.forEach((id,i)=>{
+      const it=G.Items.BY[id],el=document.createElement('div');el.className='card'+(it.boss?' evo':'');el.dataset.item=id;
+      el.innerHTML=`<div class="ico">${G.Icons.html(G.Items.icon(id),36)}</div><div class="txt"><div class="nm">${it.name}</div><div class="ds">${it.desc}</div></div><div class="key">${i+1}</div>`;
+      el.onclick=()=>{G.UI.hide('scr-item');cb(id);};box.appendChild(el);
+    });G.UI.show('scr-item');
   }
+  function showItemChoice(cur,next,cb){showSpecialChoice([cur,next],cb);}
 
   // ---------------- vínculo: qué movimientos se fusionan ----------------
 
@@ -265,6 +258,7 @@ G.RunUI = (() => {
 
   function showPause(coop = false) {
     G.UI.soundControls($('pause-sound'));
+    const bag=$('pause-items');if(bag){const entries=Object.entries(G.Game.player?.specialItems||{});bag.innerHTML='<h3>'+G.T('Objetos especiales')+'</h3>'+entries.map(([id,n])=>'<div>'+G.Icons.html(G.Items.icon(id),24)+' <b>'+G.T(G.Items.BY[id].name)+' ×'+n+'</b><small>'+G.T(G.Items.BY[id].desc)+'</small></div>').join('');}
     $('pause-coop').classList.toggle('hidden', !coop);
     $('btn-quit').textContent = coop ? 'Salir de la partida' : 'Abandonar run';
     const speed = $('btn-run-speed');
@@ -280,5 +274,5 @@ G.RunUI = (() => {
     $('btn-quit').onclick = onQuit;
   }
 
-  return { showLevelUp, reroll, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showVictory, showOver, wirePause, showPause };
+  return { showLevelUp, reroll, showSpecialChoice, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showVictory, showOver, wirePause, showPause };
 })();

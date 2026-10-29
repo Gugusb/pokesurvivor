@@ -127,21 +127,19 @@ test('co-op validates Mega species, applies one damage multiplier, pushes once a
   e.lastAttacker=mate;e.die();assert.ok(G.Coop.mate('peer').q.some(ev=>ev[0]==='mk'&&ev[1]===e.id));
   receive('peer',{k:'f',p:frame('65-mega',60),ev:[]});assert.equal(mate.spriteDex,6);assert.equal(G.Mega.active(mate),false);
 });
-test('a held Mega stone converts item pickups to XP without equipping or offering a choice, normal items still equip',()=>{
-  const s=context(),{G}=s,p=s.player();s.loadGame();p.xpMul=2;const xp=G.Mega.itemXp(p)*2,threshold=p.xpNext;
-  G.Game._test.collect({kind:'item',value:'leftovers'},p);close(p.xp,xp);assert.equal(p.item,null);assert.equal(p.equip('leftovers'),false);
-  G.Game._test.offerItem('quickclaw');close(p.xp,xp*2);assert.equal(p.level,1);
-  G.Game._test.offerItem('quickclaw');close(p.xp,xp*3-threshold);assert.equal(p.level,2);assert.equal(G.Game._test.pending(),1);
-  const q=s.player(65,false);G.Game._test.setPlayer(q);G.Game._test.collect({kind:'item',value:'leftovers'},q);assert.equal(q.item,'leftovers');assert.equal(q.xp,0);
+test('Mega stones coexist with stacked special items without XP conversion',()=>{
+  const s=context(),{G}=s,p=s.player();s.loadGame();G.Game._test.collect({kind:'item',value:'leftovers'},p);
+  G.Game._test.offerItem('quickclaw');G.Game._test.offerItem('quickclaw');assert.equal(p.xp,0);assert.equal(G.Items.count(p,'leftovers'),1);assert.equal(G.Items.count(p,'quickclaw'),2);
 });
-test('a final-form stone blocks items throughout the run but energy and Mega unlock only after evolution',()=>{
+
+test('a final-form stone permits special items while Mega energy still waits for evolution',()=>{
   const s=context(),{G}=s;
   G.Mega.grant(G.DB.save,'6-mega-x');G.Mega.equip(G.DB.save,6,'6-mega-x');
   const p=s.player(4,false);p.evolutionPath=[4,5,6];p.monStage=4;s.loadGame();G.Dev.canUse=()=>true;
   assert.ok(G.Mega.hasStone(p));assert.equal(G.Mega.eligible(p),false);
   G.Mega.tick(p,120);G.Mega.onKill(p,1);assert.equal(p.megaState.energy,0);assert.equal(p.megaState.bonus,0);
   assert.equal(G.Mega.debugCharge(p),false);p.megaState.energy=120;assert.equal(G.Mega.activate(p),false);p.megaState.energy=0;
-  G.Game._test.collect({kind:'item',value:'leftovers'},p);assert.equal(p.item,null);assert.ok(p.xp>0);assert.equal(p.equip('leftovers'),false);
+  G.Game._test.collect({kind:'item',value:'leftovers'},p);assert.equal(p.xp,0);assert.equal(G.Items.count(p,'leftovers'),1);
   p.monStage=5;G.Mega.tick(p,120);G.Mega.onKill(p,2);assert.equal(p.megaState.energy,0);
   p.monStage=6;p.mon=G.DEX_BY[6];p.spriteDex=6;assert.ok(G.Mega.eligible(p));
   G.Mega.tick(p,1);close(p.megaState.energy,1);G.Mega.tick(p,119);assert.ok(G.Mega.activate(p));
@@ -155,21 +153,23 @@ test('stone selection follows the selected evolution branch and does not borrow 
   G.Mega.grant(G.DB.save,'475-mega');G.Mega.equip(G.DB.save,475,'475-mega');
   const ready=new G.Player(G.DEX_BY[280],{},false,475);assert.equal(ready.megaState.id,'475-mega');assert.equal(G.Mega.eligible(ready),false);
 });
-test('co-op recognizes a stone before activation and converts a peer item into shared XP once',()=>{
+test('co-op routes special items to the collecting peer without shared XP conversion',()=>{
   const s=context(),{G}=s;let receive;G.Net={uid:'host',on:f=>receive=f,onPeer:noop};G.startMoveOf=()=> 'ember';s.load('js/net/coop.js');
   const p=s.player(65,false);s.loadGame();G.Coop.begin({host:'host',members:[{uid:'host',dex:65,name:'Host'},{uid:'peer',dex:6,name:'Peer'}]},p,{});
   const a=[0,0,0,0,100,100,0,'ember',1,78,0,1,0,0,0,null,null,0,'6-mega-x'];receive('peer',{k:'f',p:a,ev:[]});
   const mate=G.Coop.mate('peer');assert.ok(G.Mega.hasStone(mate.pl));assert.equal(G.Mega.active(mate.pl),false);
   const expected=G.Mega.itemXp(p)*G.Coop.xpFactor();G.Game._test.collect({id:900,kind:'item',value:'leftovers'},mate.pl);
-  close(p.xp,expected);assert.equal(mate.q.filter(e=>e[0]==='ix').length,1);assert.equal(mate.q.filter(e=>e[0]==='item').length,0);assert.equal(p.item,null);
+  close(p.xp,0);assert.equal(mate.q.filter(e=>e[0]==='ix').length,0);assert.equal(mate.q.filter(e=>e[0]==='item').length,1);assert.equal(p.item,null);
 });
-test('real HUD hides ordinary equipment for stone users and keeps the Mega and move buttons separate at mobile and desktop widths',()=>{
+test('HUD keeps the active potion, Mega and move buttons separate at mobile and desktop widths',()=>{
   const s=context(),{G}=s,p=s.player();p.item='leftovers';p.slots=['ember','ice-beam','tackle','hail'].map(id=>[G.Moves.instance(id)]);
   const icons=[],buttons=[];G.Touch={active:false,clearButtons:()=>{buttons.length=0;},addButton:(x,y,w,h,fn)=>buttons.push({x,y,w,h,fn})};G.Icons={draw:(ctx,name)=>icons.push(name)};
   G.World.biomeName=()=> 'Forest';G.Events.drawHud=noop;G.Spawner.banner=()=>null;
   const ctx=new Proxy({measureText:txt=>({width:txt.length*5}),createLinearGradient:()=>({addColorStop:noop})},{get:(o,k)=>o[k]||noop});s.load('js/ui/hud.js');
-  for(const width of [320,758,1280]){icons.length=0;G.HUD.draw(ctx,width,720,p,{time:100});assert.ok(icons.includes('megaStone'));assert.ok(!icons.includes('leftovers'));assert.equal(buttons.length,5);
+  for(const width of [320,758,1280]){icons.length=0;G.HUD.draw(ctx,width,720,p,{time:100});assert.ok(icons.includes('megaStone'));assert.ok(!icons.includes('leftovers'));assert.equal(buttons.length,6);
     assert.ok(buttons[0].x>=0);assert.ok(buttons[0].x+buttons[0].w<buttons[1].x);assert.ok(buttons[4].x+buttons[4].w<=width);
+    for(const a of buttons)assert.ok(a.x>=0&&a.x+a.w<=width);
+    for(let i=0;i<buttons.length;i++)for(let j=i+1;j<buttons.length;j++){const a=buttons[i],b=buttons[j];assert.ok(a.x+a.w<=b.x||b.x+b.w<=a.x||a.y+a.h<=b.y||b.y+b.h<=a.y);}
   }
-  p.megaState.id=null;icons.length=0;G.HUD.draw(ctx,758,720,p,{time:100});assert.ok(icons.includes('leftovers'));assert.ok(!icons.includes('megaStone'));
+  p.megaState.id=null;icons.length=0;G.HUD.draw(ctx,758,720,p,{time:100});assert.ok(icons.includes('superpotion'));assert.ok(!icons.includes('megaStone'));
 });

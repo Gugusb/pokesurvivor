@@ -1,5 +1,7 @@
 # Mega 进化系统
 
+v0.25.0 更新：主动好伤药与 Mega／Z 分开保留；普通掉落改为可叠加的特殊道具，不再转为经验。最新规则见 [SPECIAL_ITEMS_AND_CONTROLS.md](SPECIAL_ITEMS_AND_CONTROLS.md)。下文的早期道具槽说明属于历史实现。
+
 版本 v0.8.0，2026-10-16。
 
 ## 获取和装备

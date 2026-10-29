@@ -38,11 +38,11 @@ test('PP maxima follow the type hierarchy, spend only on an actual cast and inde
 test('inactive moves recover PP; fractional ordinary PP is preserved when reserve PP is used; dead players do not recover',()=>{
   const s=setup(),{G}=s,p=s.player(6),ms=s.learn(p,['ember','tackle']);p.baseStamina=0;
   for(const m of ms)G.MovePP.state(p,m).current=0;
-  G.MovePP.tick(p,.75);for(const m of ms)close(G.MovePP.state(p,m).current,.75);
+  G.MovePP.tick(p,1.5);close(G.MovePP.state(p,ms[0]).current,.75);close(G.MovePP.state(p,ms[1]).current,2.25);
   assert.equal(G.MovePP.consume(p,ms[0]),false);p.tempPP=1;assert.equal(G.MovePP.consume(p,ms[0]),true);close(G.MovePP.state(p,ms[0]).current,.75);
-  G.MovePP.tick(p,.25);assert.equal(G.MovePP.consume(p,ms[0]),true);close(G.MovePP.state(p,ms[0]).current,0);
+  G.MovePP.tick(p,.5);assert.equal(G.MovePP.consume(p,ms[0]),true);close(G.MovePP.state(p,ms[0]).current,0);
   p.dead=true;G.MovePP.tick(p,30);close(G.MovePP.state(p,ms[0]).current,0);
-  p.dead=false;p.baseStamina=1000000000;G.MovePP.tick(p,1);assert.ok(G.MovePP.state(p,ms[0]).current>4.99);
+  p.dead=false;p.baseStamina=1000000000;G.MovePP.tick(p,1);assert.ok(G.MovePP.state(p,ms[0]).current>2.49);
 });
 test('linked moves spend PP separately; max-PP berries affect learned and future moves and preserve level-up PP',()=>{
   const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);p.slots=[[a,b]];
@@ -56,7 +56,7 @@ test('orbit PP sustains a cooldown cycle then removes exhausted orbs without aff
   const s=setup(),{G}=s,p=s.player(6),[m]=s.learn(p,['fire-spin']);p.baseAgility=80;p.baseStamina=0;m.cd=.5;G.MovePP.state(p,m).current=1;
   G.Combat.tick(0,p,0);assert.ok(G.Projectiles.all().some(o=>o.orb));assert.equal(G.MovePP.state(p,m).current,0);
   G.Combat.tick(.5,p,.5);assert.ok(!G.Projectiles.all().some(o=>o.orb));
-  G.Combat.tick(.5,p,1);assert.ok(G.Projectiles.all().some(o=>o.orb));
+  G.Combat.tick(1.5,p,2);assert.ok(G.Projectiles.all().some(o=>o.orb));
   p.baseAgility=160;G.Combat.tick(0,p,1);for(const o of G.Projectiles.all())close(o.rehit,.5*p.agilityCooldown);
 });
 test('Z ignores PP and agility, restores every move of the selected slot only after completion and preserves reserve PP',()=>{

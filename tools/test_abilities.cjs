@@ -122,10 +122,10 @@ test('attack and damage bonuses sum in separate buckets; Electric field affects 
   s.load('js/data/items.js');s.load('js/systems/levelup.js');
   p.atkMul=1.4;G.LevelUp.STATS.find(x=>x.id==='atk').apply(p);p.buffs.atk={n:1,t:5,amount:.2};
   approx(p.atk,p.baseAtk*1.1*1.6);p.equip('lifeorb');approx(p.atk,p.baseAtk*1.1*1.6);
-  approx(G.Abilities.outgoingDamage(p,{kind:'projectile',type:'electric'}),1.4);
-  let e=s.enemy();e.hurt(100,'#fff',0,0,0,null,p,{kind:'projectile',type:'electric'});assert.equal(e.hp,360);
+  approx(G.Abilities.outgoingDamage(p,{kind:'projectile',type:'electric'}),1.16);
+  let e=s.enemy();e.hurt(100,'#fff',0,0,0,null,p,{kind:'projectile',type:'electric'});assert.equal(e.hp,384);
   const ally=new G.Player(G.DEX_BY[894]);ally.ability='transistor';s.players.push(ally);
-  approx(G.Abilities.outgoingDamage(p,{type:'electric'}),1.4);
+  approx(G.Abilities.outgoingDamage(p,{type:'electric'}),1.16);
   p.maxHp=p.hp=200;p.hurt(100,'electric',true,{kind:'ranged'});approx(p.hp,90);
   p.dead=ally.dead=true;approx(G.Abilities.fieldDamage('electric'),1);
   p.equip(null);approx(p.damageBonus,0);
@@ -686,19 +686,11 @@ test('Dragonite five-star rewards become either medal; duplicates refund, normal
   const reward = G.Gacha.pull(save, 1)[0]; assert.equal(reward.dex, 149); assert.ok(save.owned[149]);
 });
 
-test('Inner Focus cools inactive and linked moves once, holds them ready and only casts the active slot', () => {
-  const s = context(), { G } = s, p = s.player(149, 'innerfocus'); s.load('js/systems/combat.js');
-  G.VFX = { forMove: () => ({ pal: [] }) };
-  const move = t => ({ kind: 'buff', type: 'normal', stat: 'atk', amount: .1, dur: 5, stacks: 5, cd: 2, t });
-  const a = move(1), b = move(.2), linked = move(2), orbit = { kind: 'orbit', t: 0 };
-  p.moves = [a, b, linked, orbit]; p.slots = [[a], [b, linked], [orbit]]; p.active = 0;
-  let casts = 0; p.cast = () => casts++;
-  G.Combat.tick(.5, p, 0); approx(a.t, .5); assert.equal(b.t, 0); approx(linked.t, 1.5);
-  assert.equal(orbit.t, 0); assert.equal(casts, 0);
-  G.Combat.tick(.5, p, 1); assert.equal(casts, 1); approx(a.t, 2); assert.equal(b.t, 0);
-  p.active = 1; G.Combat.tick(.1, p, 2); assert.equal(casts, 2); approx(a.t, 1.9); approx(linked.t, .9);
-  p.ability = 'multiscale'; G.Combat.tick(.1, p, 3); approx(a.t, 1.9);
-  p.dead = true; const before = linked.t; G.Combat.tick(5, p, 4); approx(linked.t, before);
+test('Inner Focus now boosts unused PP and never cools inactive moves',()=>{
+  const s=context(),{G}=s,p=s.player(149,'innerfocus');s.load('js/systems/move-pp.js');s.load('js/systems/combat.js');
+  const a=G.Moves.instance('swords-dance'),b=G.Moves.instance('harden');a.t=b.t=10;p.moves=[a,b];p.slots=[[a],[b]];p.active=0;p.baseStamina=0;
+  G.MovePP.state(p,a).current=G.MovePP.state(p,b).current=0;
+  G.Combat.tick(1,p,0);approx(a.t,9);approx(b.t,10);approx(G.MovePP.state(p,a).current,.5);approx(G.MovePP.state(p,b).current,1.8);
 });
 
 test('Multiscale halves final contact, ranged and pure attack damage only while full; healing reactivates it', () => {
@@ -808,7 +800,7 @@ test('rift victory awards exactly one gem, duplicate victory and defeat award no
     'reset, update, drawable,', '_setArena(a) { arena = a; }, reset, update, drawable,');
   vm.runInContext(source, s);
   G.Rift._setArena({ phase: 'fight', dex: 150, type: 'psychic' });
-  G.Rift.onEvent(['aw']); assert.equal(G.DB.save.abilityGems, 11); assert.equal(p.bonds, 1);
+  G.Rift.onEvent(['aw']); assert.equal(G.DB.save.abilityGems, 11); assert.equal(p.bonds, 0);assert.equal(G.Rift.arena.reward.length,3);
   G.Rift.onEvent(['aw']); assert.equal(G.DB.save.abilityGems, 11);
   G.Rift._setArena({ phase: 'fight', dex: 150, type: 'psychic' }); G.Rift.onEvent(['al']);
   assert.equal(G.DB.save.abilityGems, 11);

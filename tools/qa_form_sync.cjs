@@ -360,12 +360,18 @@ const { chromium } = require(
       const peer=G.Coop.mate(uid)?.pl;return peer&&!peer.activeMove()&&!G.Projectiles.all().some(o=>o.orb&&o.owner===peer);
     },ids[0]);
     await pages[0].evaluate(()=>{G.MovePP.tick=window.qaPpTick;delete window.qaPpTick;});
+    await pages[1].evaluate(()=>{const p=G.Game.player;G.Items.gain(p,'leftovers');G.Items.gain(p,'focussash');G.Items.gain(p,'focussash');});
+    for(const viewer of [0,2,3])await pages[viewer].waitForFunction(uid=>G.Items.count(G.Coop.mate(uid)?.pl,'focussash')===2,ids[1]);
+    await pages[1].evaluate(()=>{const p=G.Game.player;p.invuln=p.dashGuardT=0;p.hurt(1e8,null,true);});
+    for(const viewer of [0,2,3])await pages[viewer].waitForFunction(uid=>G.Items.count(G.Coop.mate(uid)?.pl,'focussash')===1,ids[1]);
+    assert.equal(await pages[1].evaluate(()=>G.Game.player.dead),false);
+    assert.equal(await pages[1].evaluate(()=>G.Items.useActive(G.Game.player)),true);
     assert.deepEqual(errors, []);
     assert.equal(app.traffic.battleFramesRejected, 0);
     console.log(
       JSON.stringify(
         {
-          players: 4,bossFuryAndGuestLeech:true,scoreCountersSynced:true,emptyPpOrbitStopsForAllObservers:true,
+          players: 4,bossFuryAndGuestLeech:true,scoreCountersSynced:true,emptyPpOrbitStopsForAllObservers:true,specialItemStacksAndSashConsumptionSynced:true,
           firstEvolution: first,
           finalEvolution: final,
           allObserversRenderCorrectSpecies: true,

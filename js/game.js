@@ -112,7 +112,7 @@ G.Game = (() => {
     G.World.reset(coop ? coop.seed : Math.floor(Math.random() * 1e6));
     G.World.setBiome(0, true);
     biome = 0;
-    time = 0; pendingLevels = 0;
+    time = 0; pendingLevels = 0;openItem=null;laterItems.length=0;
     victoryBusy=false;
     runSpeed = 1; speedBonus = 0; speedK = 1; scoreCounters={normal:0,elite:0,boss:0,rift:0,events:0};
     runReal = performance.now(); tampered = !!(G.Dev && G.Dev.enabled);
@@ -311,7 +311,7 @@ G.Game = (() => {
     /** Grupo: quién está eligiendo fusión. Mientras haya alguien, todo parado. */
     hold(names) {
       holdBy = names || [];
-      const mine = G.UI.isOpen('scr-bond');
+      const mine = G.UI.isOpen('scr-bond')||G.UI.isOpen('scr-item');
       if (holdBy.length) {
         if (state === 'playing') state = 'held';
         if (pl && pl.bonds > 0) offerBond(true);      // si tú también tienes vínculo, eliges a la vez
@@ -523,48 +523,28 @@ G.Game = (() => {
    * terminar. (Antes una cerraba la otra, nadie podía terminar de elegir y la
    * partida se quedaba parada para todos.)
    */
-  let openItem = null;           // { cur, next, take } elección de objeto sin terminar
-  const laterItems = [];         // objetos recogidos con las cartas de nivel abiertas
-  function afterLevelUp() {
-    if (state !== 'playing' && state !== 'held') return;
-    if (openItem && !G.UI.isOpen('scr-item')) {
-      const o = openItem;
-      if (o.mine) { state = 'choice'; if (G.Coop.active) G.Coop.holdStart(); }
-      G.RunUI.showItemChoice(o.cur, o.next, o.take);
-      return;
-    }
-    if (laterItems.length) offerItem(laterItems.shift());
+  let openItem=null;
+  const laterItems=[];
+  function afterLevelUp(){
+    if(state!=='playing'&&state!=='held')return;
+    if(openItem&&!G.UI.isOpen('scr-item')){state='choice';if(G.Coop.active)G.Coop.holdStart();G.RunUI.showSpecialChoice(openItem.options,openItem.take);return;}
+    if(laterItems.length)offerSpecialChoice(laterItems.shift());
   }
-
-  /** Has cogido un objeto: si no llevas ninguno te lo pones; si no, eliges. */
-  function offerItem(id) {
-    if (!pl || !G.Items.BY[id]) return;
-    if (G.Mega && G.Mega.hasStone(pl) || G.ZMoves && G.ZMoves.hasStone(pl)) { if (!G.Coop.active || G.Coop.isHost) convertItem(pl); return; }
-    if (state === 'levelup' || G.UI.isOpen('scr-levelup') || G.ZMoves && everyone().some(G.ZMoves.busy)) { laterItems.push(id); return; }
-    let mine = false;            // esta elección es la que ha parado el juego
-    const take = got => {
-      openItem = null;
-      if (got !== pl.item) {
-        pl.equip(got);
-        G.Spawner.say('¡Llevas ' + G.Items.BY[got].name + '!', 2.6, true);
-        G.Progress.event('item', { id: got });
-      }
-      if (!mine) { afterLevelUp(); return; }
-      if (state === 'choice') state = holdBy.length ? 'held' : 'playing';
-      if (G.Coop.active) G.Coop.holdEnd();
-      afterLevelUp();
+  function offerItem(id){
+    if(!pl||!G.Items.gain(pl,id))return;
+    G.Progress.event('item',{id});
+    G.UI.toast(G.T('Objeto especial obtenido')+' · '+G.T(G.Items.BY[id].name));
+  }
+  function offerSpecialChoice(options){
+    if(!pl||pl.dead)return;
+    options=(options||G.Items.rewardChoices()).filter(id=>G.Items.BY[id]);if(!options.length)return;
+    if(!['playing','held'].includes(state)||G.Rift.inArena||openItem||G.ZMoves&&everyone().some(G.ZMoves.busy)) {laterItems.push(options);return;}
+    state='choice';if(G.Coop.active)G.Coop.holdStart();
+    const take=id=>{
+      if(!openItem||!openItem.options.includes(id))return;
+      openItem=null;offerItem(id);state=holdBy.length?'held':'playing';if(G.Coop.active)G.Coop.holdEnd();afterLevelUp();
     };
-    if (!pl.item) { take(id); return; }
-    if (pl.item === id) { G.Spawner.say('Ya llevas ' + G.Items.BY[id].name, 2, true); return; }
-    // Se para el juego mientras eliges; en grupo, para todos (como con las
-    // fusiones). Antes en grupo seguía y te pegaban mientras elegías.
-    if (state === 'playing' || state === 'held') {
-      mine = true;
-      state = 'choice';
-      if (G.Coop.active) G.Coop.holdStart();
-    }
-    openItem = { cur: pl.item, next: id, take, get mine() { return mine; } };
-    G.RunUI.showItemChoice(pl.item, id, take);
+    openItem={options:options.slice(),take};G.RunUI.showSpecialChoice(options,take);
   }
 
   /** @param who  quien lo ha cogido (en cooperativo puede ser un compañero) */
@@ -575,9 +555,7 @@ G.Game = (() => {
       if (mine) G.Audio.sfx(PICK_SFX[p.kind]);
       return;
     }
-    const convert = p.kind === 'item' && (G.Mega && G.Mega.hasStone(who) || G.ZMoves && G.ZMoves.hasStone(who));
-    if (G.Coop.active) G.Coop.collected(p, who, convert);
-    if (convert) { convertItem(who); return; }
+    if (G.Coop.active) G.Coop.collected(p, who);
     if (mine || p.kind === 'bomb') G.Audio.sfx(PICK_SFX[p.kind]);
     if (p.kind === 'xp' || p.kind === 'xpBig') {
       pendingLevels += pl.gainXp(p.value * (G.Coop.active ? G.Coop.xpFactor() : 1));
@@ -620,14 +598,6 @@ G.Game = (() => {
     }
   }
 
-  function convertItem(who) {
-    const xp = G.Mega.itemXp(pl) * (G.Coop.active ? G.Coop.xpFactor() : 1);
-    pendingLevels += pl.gainXp(xp);
-    G.FX.dmgText(who.x, who.y - who.bodyH - 10, '+' + Math.round(xp * pl.effectiveXpMul) + ' XP', '#8beaff', true);
-    if (who === pl) G.UI.toast(G.T('Objeto convertido en experiencia'));
-    G.Audio.sfx('xp');
-  }
-
   // ---------------- teclado ----------------
 
   function handleKeys() {
@@ -639,7 +609,7 @@ G.Game = (() => {
       return;
     }
     if (state === 'levelup') {
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < Math.min(9,document.querySelectorAll('#cards .card').length); i++) {
         if (G.Input.tap('digit' + (i + 1)) || G.Input.tap('numpad' + (i + 1))) G.RunUI.pick(i);
       }
       if (G.Input.tap('keyr')) G.RunUI.reroll();
@@ -652,7 +622,7 @@ G.Game = (() => {
       return;
     }
     if (G.UI.isOpen('scr-item')) {
-      for (let i = 0; i < 2; i++) {
+      for (let i = 0; i < Math.min(9,document.querySelectorAll('#item-cards .card').length); i++) {
         if (G.Input.tap('digit' + (i + 1)) || G.Input.tap('numpad' + (i + 1))) document.querySelectorAll('#item-cards .card')[i].click();
       }
       return;
@@ -669,11 +639,12 @@ G.Game = (() => {
     if ((G.Input.tap('keyz') || G.Input.tap('keyf')) && !document.activeElement?.closest('input, textarea, select, [contenteditable]')) {
       if (G.ZMoves && G.ZMoves.hasStone(pl)) G.ZMoves.arm(pl); else if (G.Input.tap('keyf') && G.Mega) G.Mega.activate(pl);
     }
+    if((G.Input.tap('digit0')||G.Input.tap('numpad0'))&&!document.activeElement?.closest('input,textarea,select,[contenteditable]'))G.Items.useActive(pl);
     for (let i = 0; i < 4; i++) {
-      if (G.Input.tap('digit' + (i + 1)) || G.Input.tap('numpad' + (i + 1))) pl.setActive(i);
+      if (G.Input.tap('digit' + (i + 1)) || G.Input.tap('numpad' + (i + 1))) G.MoveControl?G.MoveControl.input(pl,i):pl.setActive(i);
     }
-    if (G.Input.tap('keyq')) pl.cycle(-1);
-    if (G.Input.tap('keye') || G.Input.tap('tab')) pl.cycle(1);
+    if (G.Input.tap('keyq')) G.MoveControl?G.MoveControl.input(pl,(pl.active+pl.slots.length-1)%pl.slots.length):pl.cycle(-1);
+    if (G.Input.tap('keye') || G.Input.tap('tab')) G.MoveControl?G.MoveControl.input(pl,(pl.active+1)%pl.slots.length):pl.cycle(1);
   }
 
   // ---------------- bucle ----------------
@@ -997,7 +968,7 @@ G.Game = (() => {
   })();
 
   return {
-    init, startRun, everyone, scoreKill,scoreEvent,scoreCounts,runScore, levelXp, flash, offerBond, setSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
+    init, startRun, everyone, scoreKill,scoreEvent,scoreCounts,runScore, levelXp, flash, offerBond, offerSpecialChoice, setSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
     debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },

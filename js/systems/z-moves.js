@@ -19,7 +19,7 @@ G.ZMoves = (() => {
   const enemies = () => G.EnemyMgr.all().filter(e => !e.dead);
   const timeFactor = () => all().some(selecting) ? BULLET_TIME : 1;
   const matches = (p, m) => hasStone(p) && m.type === state(p).type && KINDS.includes(m.kind);
-  const eligible = (p, i) => (p.slots[i] || []).filter(m => matches(p, m));
+  const eligible = (p, i) => (p.hasItem?.('choiceband')&&i!==p.active?[]:p.slots[i]||[]).filter(m => matches(p, m));
   function owns(save, type, dex) { return TYPES.includes(type) && (dex == null ? !!save?.zStones?.[type] : G.ZAccess.allowed(save,dex)); }
   function grant(save, type) {
     if (!TYPES.includes(type)) return false;

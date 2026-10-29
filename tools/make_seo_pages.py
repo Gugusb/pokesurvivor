@@ -199,7 +199,7 @@ navegador: eliges un compañero, te mueves por un mapa infinito y tus ataques sa
 <li><a href="{lk('types')}"><b>Clima y tabla de tipos</b></a>: con lluvia el Agua se potencia y el Fuego se debilita; sol, arena, nieve y niebla.</li>
 <li><a href="{lk('shinies')}"><b>Shinies</b></a> salvajes (1 entre 4096) y en el gacha.</li>
 <li><b>Gacha con forma de tragaperras</b>, por región, con tickets que se ganan jugando.</li>
-<li><a href="{lk('items')}"><b>Objetos equipables</b></a> como Restos, Cinta Elección o Vidasfera.</li>
+<li><a href="{lk('items')}"><b>Objetos especiales acumulables</b></a> como Restos, Cinta Elección o Vidasfera.</li>
 <li><b>Amigos, guardería y regalos diarios</b>. Las invitaciones cooperativas están desactivadas temporalmente.</li>
 <li><b>Misiones</b> diarias y semanales, <a href="{lk('achievements')}"><b>127 logros</b></a> con medallas y títulos, perfil público y ranking.</li>
 <li>En <b>español y en inglés</b>, en PC y en móvil, e <b>instalable como app</b>.</li>
@@ -230,7 +230,7 @@ How long can you last?</p>
 <li><b>On PC:</b> move with <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or the arrow keys. Switch moves with <kbd>1</kbd>–<kbd>4</kbd>, <kbd>Q</kbd>/<kbd>E</kbd> or by clicking their icon. Pause with <kbd>Esc</kbd>.</li>
 <li><b>On phone or tablet (portrait or landscape):</b> drag your finger anywhere to move, tap a move to switch to it and the top-right button to pause.</li>
 <li>Your Pokémon <b>attacks on its own</b> with the active move. Your job is to dodge and position yourself well.</li>
-<li>Collect experience to <b>level up</b> and pick one of three cards: new <a href="{lk('moves')}">moves</a>, upgrades to the ones you have, or boosts for your Pokémon.</li>
+<li>Collect experience to <b>level up</b> and pick a reward from the cards: new <a href="{lk('moves')}">moves</a>, upgrades to the ones you have, or boosts for your Pokémon.</li>
 </ul>
 <h2>Features</h2>
 <ul class="feat">
@@ -241,7 +241,7 @@ How long can you last?</p>
 <li><a href="{lk('types')}"><b>Weather and type chart</b></a>: in the rain Water gets stronger and Fire weaker; plus sun, sand, snow and fog.</li>
 <li>Wild <a href="{lk('shinies')}"><b>shinies</b></a> (1 in 4096) and in the gacha.</li>
 <li>A <b>slot-machine gacha</b> for each region, with tickets you earn by playing.</li>
-<li><a href="{lk('items')}"><b>Held items</b></a> such as Leftovers, Choice Band and Life Orb.</li>
+<li><a href="{lk('items')}"><b>Stackable special items</b></a> such as Leftovers, Choice Band and Life Orb.</li>
 <li><b>Friends, nurseries and daily gifts</b>. Co-op invitations are temporarily disabled.</li>
 <li>Daily and weekly <b>missions</b>, <a href="{lk('achievements')}"><b>127 achievements</b></a> with medals and titles, a public profile and leaderboards.</li>
 <li>In <b>English and Spanish</b>, on PC and mobile, and <b>installable as an app</b>.</li>
@@ -431,15 +431,15 @@ def items_page(lang):
     rows = ''.join(f'<li><b>{esc(L(lang, i["name"]))}</b><span>{esc(L(lang, i["desc"]))}</span></li>' for i in D['items'])
     ni = len(D['items'])
     if lang == 'es':
-        h1 = 'Objetos equipables de PokéSurvivor'
-        intro = ('<p class="lead">Durante la partida puedes encontrar <b>objetos equipables</b> en los cofres y al derrotar a los jefes. Sólo puedes llevar <b>uno</b> '
-                 'a la vez: si encuentras otro, eliges con cuál quedarte. Duran lo que dura la run.</p>')
-        title, desc, c = f'Objetos de PokéSurvivor: los {ni} objetos equipables', f'Los {ni} objetos equipables de PokéSurvivor (Restos, Cinta Elección, Banda Focus, Vidasfera…) y qué hace cada uno.', 'Encuéntralos: jugar gratis'
+        h1 = 'Objetos especiales de PokéSurvivor'
+        intro = ('<p class="lead">Los cofres y jefes dejan <b>objetos especiales</b> que se acumulan y duran toda la aventura. '
+                 'En las grietas eliges entre tres, con posibilidad de premios exclusivos. La Superpoción ocupa un hueco activo independiente: se elige antes de salir y se usa con <kbd>0</kbd>.</p>')
+        title, desc, c = f'Objetos de PokéSurvivor: {ni} objetos especiales', f'Los {ni} objetos especiales de PokéSurvivor, sus efectos y la Superpoción activa.', 'Encuéntralos: jugar gratis'
     else:
-        h1 = 'PokéSurvivor held items'
-        intro = ('<p class="lead">During a run you can find <b>held items</b> in chests and by defeating bosses. You can only hold <b>one</b> at a time: '
-                 'if you find another, you choose which one to keep. They last for the whole run.</p>')
-        title, desc, c = f'PokéSurvivor items: all {ni} held items', f'The {ni} held items in PokéSurvivor (Leftovers, Choice Band, Focus Sash, Life Orb…) and what each one does.', 'Find them: play free'
+        h1 = 'PokéSurvivor special items'
+        intro = ('<p class="lead">Chests and bosses drop <b>special items</b> that stack for the entire adventure. '
+                 'Rifts offer a choice of three, sometimes with exclusive rewards. Super Potion has its own active slot: choose it before departure and use it with <kbd>0</kbd>.</p>')
+        title, desc, c = f'PokéSurvivor items: {ni} special items', f'The {ni} special items in PokéSurvivor, their effects and the active Super Potion.', 'Find them: play free'
     body = f'<article class="doc"><h1>{h1}</h1>{intro}<ul class="items">{rows}</ul>{cta(pid, lang, c)}</article>'
     write(pid, lang, page(pid, lang, title, desc, body, {'@context': 'https://schema.org', '@graph': [crumbs(pid, lang, h1)]}))
 

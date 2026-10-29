@@ -51,7 +51,7 @@ G.Abilities = (() => {
   const levelChoices = p => has(p, 'slowstart') && Math.random() < 0.5 ? 2 : 1;
   const projectileSpeed = p => has(p, 'victorystar') ? 1.3 : 1;
   const outgoingType = (p, type, types) => has(p, 'multitype') ? 1 : type ? G.Types.mult(type, types) : 1;
-  const outgoingDamage = (p, attack = {}, bypass = false) => 1 + (p && p.damageBonus || 0) + (has(p, 'multitype') ? 0.2 : 0) +
+  const outgoingDamage = (p, attack = {}, bypass = false) => 1 + (p && p.damageBonus || 0) + (G.Items?.damageBonus(p)||0) + (has(p, 'multitype') ? 0.2 : 0) +
     (G.Mega ? G.Mega.damage(p) - 1 : 0) + (attack.kind && attack.kind !== 'buff' && has(p, 'sheerforce') ? 0.15 : 0) +
     (bypass && attack.kind === 'melee' && has(p, 'unseenfist') ? 0.2 : 0) + (fieldDamage(attack.type) - 1);
   const weatherSuppressed = () => players().some(p => has(p, 'airlock'));

@@ -183,6 +183,13 @@ G.Icons = (() => {
       '....kkkk....', '..kkrrrrkk..', '.krwrrrrrrk.', '.krwrrrrrsk.', 'krrrrkkrrssk', 'kkkkkwwkkkkk',
       'kwwwkwwkwwwk', 'kwwwwkkwwwwk', '.kwwwwwwwwk.', '.kwwwwwwwwk.', '..kkwwwwkk..', '....kkkk....'] }
   };
+  // Native palette variants keep berries replaceable without new raster assets.
+  const berries={hp:['#ff9bb7','#ce567b','#ffe2ed'],atk:['#f65b4e','#a82b29','#ffd2a4'],spa:['#bd82f4','#7944b2','#eddbff'],def:['#efb15d','#aa692e','#fff0bc'],spdef:['#729afa','#3f5eaf','#d9e7ff'],spd:['#56dbec','#248b9e','#d8ffff'],cd:['#cddd5a','#819a27','#f6ffd0'],stamina:['#74d88a','#34824c','#deffe3'],ppmax:['#f9da5c','#ba8b24','#fff8c0'],temppp:['#f7f0cf','#aaa178','#ffffff']};
+  for(const [id,[r,s,w]]of Object.entries(berries))UI['berry:'+id]={rows:UI.berry.rows,pal:{...UI.berry.pal,r,s,w}};
+  UI.potion={pal:{b:'#b38cf2',d:'#6a438e',w:'#f3eaff',c:'#a5d8ed',l:'#e670ac'},rows:[
+    '.....kkk....','....kccck...','...kkkkkk...','...kwwbbk...','..kbwwbbdk..','..kbbllbdk..',
+    '..kblllllk..','..kbbllbdk..','..kbbbbbdk..','..kbbbbddk..','...kddddk...','....kkkk....']};
+  UI.superpotion={rows:UI.potion.rows,pal:{b:'#ff9c6b',d:'#a85339',w:'#fff0d6',c:'#a8e8ff',l:'#f4f8ff'}};
   // Variantes de paleta.
   UI.starDim = { rows: UI.star.rows, pal: { y: '#3a4870', o: '#2a3458', w: '#4a5a88' } };
 
