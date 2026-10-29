@@ -7,9 +7,11 @@ vm.runInContext(fs.readFileSync(path.join(__dirname,'..','js/systems/progression
 test('IV curve endpoints and evolution stages', () => {
   const M=s.G.MonProgression;
   assert.equal(M.ivMod(1),.75); assert.equal(M.ivMod(31),1.4);
-  assert.equal(M.stageFor(1,5),1); assert.equal(M.stageFor(1,6),2);
-  assert.equal(M.stageFor(1,14),2); assert.equal(M.stageFor(1,15),3);
-  assert.equal(M.stageFor(4,5),4); assert.equal(M.stageFor(4,6),6);
+  for (const level of [1,6,7]) assert.equal(M.stageFor(1,level),1);
+  for (const level of [8,15,24]) assert.equal(M.stageFor(1,level),2);
+  assert.equal(M.stageFor(1,25),3); assert.equal(M.stageFor(1,100),3);
+  assert.equal(M.stageFor(4,7),4); assert.equal(M.stageFor(4,8),6); assert.equal(M.stageFor(4,25),6);
+  assert.equal(M.evolutionLevel(1),8); assert.equal(M.evolutionLevel(2),25);
   assert.equal(M.rootFor(3),1); assert.equal(M.rootFor(6),4);
   assert.equal(JSON.stringify(M.pathFor(3)), '[1,2,3]');
   assert.equal(JSON.stringify(M.values(1)), '[1,16,31]');

@@ -627,11 +627,12 @@ test('co-op synchronizes a legal alternative evolution branch and refuses a late
   const s=context(),{G}=s;s.load('js/core/sprites.js');let receive;G.Net={uid:'host',on:f=>receive=f,onPeer:noop};G.startMoveOf=()=> 'confusion';G.Sprites.preload=noop;G.Game.st={time:1};s.load('js/net/coop.js');
   const p=s.player(144);G.Coop.begin({host:'host',members:[{uid:'host',dex:144},{uid:'peer',dex:282,equipment:{abilities:{},megas:[],z:null}}]},p,{});
   const frame=(dex,path,level)=>[0,0,0,0,100,100,0,'confusion',1,78,0,1,0,0,0,null,null,0,null,0,null,dex,level,path];
-  receive('peer',{k:'f',p:frame(475,[280,281,475],14),ev:[]});assert.equal(G.Coop.mate('peer').pl.dex,280);
+  receive('peer',{k:'f',p:frame(281,[280,281,475],7),ev:[]});assert.equal(G.Coop.mate('peer').pl.dex,280);
+  receive('peer',{k:'f',p:frame(475,[280,281,475],24),ev:[]});assert.equal(G.Coop.mate('peer').pl.dex,280);
   const mate=G.Coop.mate('peer').pl;mate.anim.dir=3;
-  receive('peer',{k:'f',p:frame(475,[280,281,475],15),ev:[]});assert.equal(mate.dex,475);assert.equal(mate.anim.dex,475);assert.equal(mate.anim.dir,3);
+  receive('peer',{k:'f',p:frame(475,[280,281,475],25),ev:[]});assert.equal(mate.dex,475);assert.equal(mate.anim.dex,475);assert.equal(mate.anim.dir,3);
   assert.equal(mate.spriteDex,475);assert.equal(mate.r,G.Sprites.bodyRadius(475));assert.equal(mate.bodyH,G.Sprites.bodyHeight(475));
-  receive('peer',{k:'f',p:frame(282,[280,281,282],15),ev:[]});assert.equal(G.Coop.mate('peer').pl.dex,475);G.Coop.end();
+  receive('peer',{k:'f',p:frame(282,[280,281,282],25),ev:[]});assert.equal(G.Coop.mate('peer').pl.dex,475);G.Coop.end();
 });
 
 test('co-op guest receives deduplicated Moxie kill credit from host', () => {

@@ -140,10 +140,10 @@ const { chromium } = require(
       );
       for (let i = 0; i < 4; i++) {
         await pages[i].locator("#cards .card").first().click();
-        if (n === 6 || i !== 1) {
+        if (n === 8 || i !== 1) {
           await pages[i].locator("#lvl-evolution-title:not(.hidden)").waitFor();
           const target =
-            n === 15 && i === 3
+            n === 25 && i === 3
               ? '#cards [data-evolution-dex="475"]'
               : "#cards [data-evolution-dex]";
           await pages[i].locator(target).first().click();
@@ -172,8 +172,8 @@ const { chromium } = require(
         );
       return expected;
     }
-    const first = await level(6),
-      final = await level(15);
+    const first = await level(8),
+      final = await level(25);
     assert.equal(final[0], 6);
     assert.equal(final[2], 9);
     assert.equal(final[3], 475);

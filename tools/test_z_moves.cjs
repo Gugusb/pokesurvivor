@@ -345,8 +345,8 @@ function observer(s){
   s.load('js/core/sprites.js');G.Sprites.preload=noop;s.load('js/net/coop.js');
   const p=s.player(25);G.Coop.begin({host:'host',members:[{uid:'host',dex:6,equipment:{abilities:{},megas:['6-mega-x'],z:null}},{uid:'peer',dex:9,equipment:{abilities:{},megas:[],z:'water'}},{uid:'viewer',dex:25}]},p,{syncTeam:noop});
   G.Game.everyone=()=>G.Coop.players();
-  const state=(dex,mega=null,z=null)=>[0,0,0,0,100,130,0,'water-gun',1,78,0,1,0,0,0,null,mega,mega?60:0,mega,0,z,dex,15,G.MonProgression.pathFor(dex)];
-  const send=(players,ev=[])=>receive('host',{k:'f',p:players,ev,t:100,lv:15,xp:0,xn:100,ki:0,bo:0,co:0});
+  const state=(dex,mega=null,z=null)=>[0,0,0,0,100,130,0,'water-gun',1,78,0,1,0,0,0,null,mega,mega?60:0,mega,0,z,dex,25,G.MonProgression.pathFor(dex)];
+  const send=(players,ev=[])=>receive('host',{k:'f',p:players,ev,t:100,lv:25,xp:0,xn:100,ki:0,bo:0,co:0});
   return {G,state,send};
 }
 test('observers apply evolution and Mega visuals before casts, retain the animator across snapshots and restore the base form',()=>{

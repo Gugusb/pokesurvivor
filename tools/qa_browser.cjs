@@ -26,14 +26,14 @@ const OUT=path.join(__dirname,'cache');
     await built.addInitScript(()=>{localStorage.setItem('ps.dev.enabled','true');window.qaTexts=[];const fill=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t,...a){if(window.qaTexts.length>2000)window.qaTexts=[];window.qaTexts.push(t);return fill.call(this,t,...a);};});
     const b=await built.newPage();b.on('pageerror',e=>errors.push(e.message));await b.goto(base+'/');await tap(b);
     await b.locator('#f-user').fill(username);await b.locator('#f-pass').fill(pass);await b.locator('#btn-auth').click();await b.locator('#scr-menu:not(.hidden)').waitFor();await b.locator('[data-go="play"]').click();
-    for(let n=0;n<5;n++){await b.locator('#dev-launcher').click();await b.locator('[data-dev="level"]').click();await b.locator('#dev-close').click();await b.locator('#scr-levelup:not(.hidden) .card').first().click();}
+    for(let n=0;n<7;n++){await b.locator('#dev-launcher').click();await b.locator('[data-dev="level"]').click();await b.locator('#dev-close').click();await b.locator('#scr-levelup:not(.hidden) .card').first().click();}
     await b.locator('#lvl-evolution-title:not(.hidden)').waitFor();assert.equal(await b.locator('#cards .card').count(),3);await b.locator('#lvl-reroll').click();
     const builtName=await b.locator('#cards .card .evolution-target strong').first().textContent();await b.locator('#cards .card').first().click();await b.waitForFunction(name=>window.qaTexts.includes(name),builtName);await built.close();
     const guest=await browser.newContext({viewport:{width:1280,height:900},locale:'zh-CN'}),p=await guest.newPage();p.on('pageerror',e=>errors.push(e.message));
     await p.goto(base+'/dev.html');await tap(p);
     await p.evaluate(()=>{G.DB.playAsGuest();G.DB.grant(133,'qa');G.DB.save.partner=133;G.Flow.afterLogin();});
     await p.locator('[data-go="play"]').click();await p.waitForFunction(()=>G.Game.state==='playing');
-    await p.evaluate(()=>{for(let n=0;n<5;n++)G.Game.debugLevelUp();});
+    await p.evaluate(()=>{for(let n=0;n<7;n++)G.Game.debugLevelUp();});
     await p.locator('#scr-levelup:not(.hidden) .card').first().click();
     await p.locator('#lvl-evolution-title:not(.hidden)').waitFor();assert.equal(await p.locator('#lvl-evolution-title').textContent(),'进化方向');
     const before=await p.locator('#cards .card').evaluateAll(cs=>cs.map(c=>({dex:+c.dataset.evolutionDex,stat:c.dataset.statId})));assert.equal(before.length,3);assert.equal(new Set(before.map(c=>c.dex)).size,3);assert.ok(before.every(c=>c.stat!=='heal'));

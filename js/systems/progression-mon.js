@@ -32,10 +32,10 @@ G.MonProgression = (() => {
   };
   function stageFor(dex, level, selectedPath) {
     const chain = selectedPath || pathFor(dex); if (!chain) return dex;
-    const i = Math.min(chain.length - 1, level >= 15 ? chain.length - 1 : level >= 6 ? Math.min(1, chain.length - 1) : 0);
+    const i = Math.min(chain.length - 1, level >= evolutionLevel(2) ? chain.length - 1 : level >= evolutionLevel(1) ? Math.min(1, chain.length - 1) : 0);
     return chain[i];
   }
-  const evolutionLevel = index => index === 0 ? 1 : index === 1 ? 6 : 15;
+  const evolutionLevel = index => index === 0 ? 1 : index === 1 ? 8 : 25;
   function validPath(path, root) {
     return Array.isArray(path) && path.length <= 4 && path[0] === root &&
       Object.values(PATHS).some(p => p.length === path.length && p.every((d,i) => d === path[i]));

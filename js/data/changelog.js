@@ -1,5 +1,8 @@
 /* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
 G.CHANGELOG = [
+  {d:'2026-10-29',title:['Evolución más tardía · v0.20.6','Later evolution · v0.20.6'],new:[],chg:[
+    ['La segunda forma evoluciona al nivel 8 y la tercera al nivel 25. Las familias de dos formas y las ramas usan los mismos niveles.','The second form evolves at level 8 and the third at level 25. Two-form families and branching evolutions use the same thresholds.']
+  ],fix:[]},
   {d:'2026-10-28',title:['Perfiles con personalidad · v0.20.5','Profiles with personality · v0.20.5'],new:[
     ['Las fichas muestran compañeros animados, una galería de victorias y marcas destacadas.','Profiles now feature animated partners, a victory gallery and highlighted records.']
   ],chg:[['Los personajes usan su nombre en los rankings y tienen fichas temáticas identificadas como contenido predefinido.','Characters use their names on leaderboards and have themed profiles identified as preset content.']],fix:[]},

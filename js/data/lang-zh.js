@@ -1,6 +1,9 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  'Evolución más tardía · v0.20.6':'进化等级调整 · v0.20.6',
+  'La segunda forma evoluciona al nivel 8 y la tercera al nivel 25. Las familias de dos formas y las ramas usan los mismos niveles.':'第二形态进化等级调整为 8 级，第三形态为 25 级；两阶段进化链及分支进化沿用相同门槛。',
+  'The second form evolves at level 8 and the third at level 25. Two-form families and branching evolutions use the same thresholds.':'第二形态进化等级调整为 8 级，第三形态为 25 级；两阶段进化链及分支进化沿用相同门槛。',
   'Perfiles con personalidad · v0.20.5':'更生动的个人资料 · v0.20.5',
   'Las fichas muestran compañeros animados, una galería de victorias y marcas destacadas.':'个人资料新增动态搭档卡片、通关伙伴墙与重点成绩展示。',
   'Profiles now feature animated partners, a victory gallery and highlighted records.':'个人资料新增动态搭档卡片、通关伙伴墙与重点成绩展示。',
