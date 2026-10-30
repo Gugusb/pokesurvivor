@@ -101,11 +101,11 @@ test("egg groups cover all 966 playable species; Undiscovered and Ditto follow c
   ])
     assert.ok(G.NurseryRules.duration(a, b, friend) <= 12 * 3600000);
 });
-test("ordinary offspring inherit one distinct stat; friend offspring inherit two; the rest are random", () => {
+test("ordinary offspring inherit three distinct stats; friend offspring inherit five; the rest are random", () => {
   for (let n = 0; n < 100; n++)
     for (const friend of [false, true]) {
       const result = G.NurseryRules.offspring([3, 4, 5], [27, 28, 29], friend);
-      assert.equal(result.inherited.length, friend ? 2 : 1);
+      assert.equal(result.inherited.length, friend ? 5 : 3);
       assert.equal(new Set(result.inherited).size, result.inherited.length);
       for (const i of result.inherited)
         assert.ok(
@@ -201,7 +201,7 @@ test("nursery runs without pausing, rejects early/foreign claims and inherits th
   assert.equal(ready.hatch.id, id);
   const claim = await f.ok(f.a, "/nursery/claim", { id, rev: saved.rev });
   assert.equal(claim.report.dex, 6);
-  assert.equal(claim.report.inherited.length, 1);
+  assert.equal(claim.report.inherited.length, 3);
   for (const i of claim.report.inherited)
     assert.equal(claim.report.iv[i], [10,20,30,20,20,20,30,20][i]);
   assert.deepEqual(claim.save.owned[6].iv, [31,31,31,31,31,31,31,31]);
@@ -272,8 +272,8 @@ test("friend invites persist, invalidate on withdrawal, and non-invited visits c
     });
   assert.equal(a.report.dex, 150);
   assert.equal(b.report.dex, 150);
-  assert.equal(a.report.inherited.length, 2);
-  assert.equal(b.report.inherited.length, 2);
+  assert.equal(a.report.inherited.length, 5);
+  assert.equal(b.report.inherited.length, 5);
   assert.equal(a.save.owned[150].from, "fixture");
   assert.equal((await f.ok(f.b, "/nursery")).participating.length, 0);
 });
@@ -302,7 +302,7 @@ test('friend shiny inheritance uses the other parent only and freezes both state
       assert.equal(a.report.shiny,guestShiny);assert.equal(b.report.shiny,ownerShiny);
       if(guestShiny)assert.ok(a.save.shiny[6]);
       if(ownerShiny)assert.equal(b.save.shiny[6].from,'nursery');else assert.equal(b.save.shiny[6],undefined);
-      assert.equal(b.report.inherited.length,2);assert.deepEqual(b.save.owned[6].iv,[10,20,30,20,20,20,30,20].map((v,i)=>Math.max(v,b.report.iv[i])));
+      assert.equal(b.report.inherited.length,5);assert.deepEqual(b.save.owned[6].iv,[10,20,30,20,20,20,30,20].map((v,i)=>Math.max(v,b.report.iv[i])));
       f.roll(0);
       const replay=await f.ok(f.b,'/nursery/claim',{id:started.hatch.id,rev:guest.rev,shiny:true});
       assert.equal(replay.alreadyClaimed,true);assert.deepEqual(replay.report,b.report);assert.equal(replay.rev,b.rev);
@@ -330,7 +330,7 @@ test('own hatches never inherit shiny and never erase existing shiny records', a
   const room=await f.ok(f.a,'/nursery/primary',{dex:6}),run=await f.ok(f.a,'/nursery/start',{dex:9,epoch:room.epoch});
   f.tick(12*3600000);f.roll(0);const owner=await f.ok(f.a,'/session');
   const result=await f.ok(f.a,'/nursery/claim',{id:run.hatch.id,rev:owner.rev});
-  assert.equal(result.report.shiny,false);assert.deepEqual(result.save.shiny,s.shiny);assert.equal(result.report.inherited.length,1);
+  assert.equal(result.report.shiny,false);assert.deepEqual(result.save.shiny,s.shiny);assert.equal(result.report.inherited.length,3);
 });
 
 test("hatching is atomic under concurrent starts and claims, and rejects stale save revisions", async (t) => {

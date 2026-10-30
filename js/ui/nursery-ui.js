@@ -281,14 +281,14 @@ G.NurseryUI = (() => {
         "p",
         h.friend
           ? t(
-              "Crianza con amigo: hereda 2 IV",
-              "Friend hatch: inherits 2 IVs",
-              "好友孵蛋：继承 2 项个体值",
+              "Crianza con amigo: hereda 5 IV",
+              "Friend hatch: inherits 5 IVs",
+              "好友孵蛋：继承 5 项个体值",
             )
           : t(
-              "Crianza propia: hereda 1 IV",
-              "Own hatch: inherits 1 IV",
-              "自行孵蛋：继承 1 项个体值",
+              "Crianza propia: hereda 3 IV",
+              "Own hatch: inherits 3 IVs",
+              "自行孵蛋：继承 3 项个体值",
             ),
         "nursery-inheritance",
       ),

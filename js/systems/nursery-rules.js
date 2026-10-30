@@ -46,7 +46,7 @@ G.NurseryRules = (() => {
       const j = Math.floor(rng() * (i + 1));
       [indices[i], indices[j]] = [indices[j], indices[i]];
     }
-    const inherited = indices.slice(0, friend ? 2 : 1);
+    const inherited = indices.slice(0, friend ? 5 : 3);
     for (const i of inherited) iv[i] = (rng() < 0.5 ? a : b)[i];
     return { iv, inherited };
   }

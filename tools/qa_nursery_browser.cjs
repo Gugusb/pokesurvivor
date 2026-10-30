@@ -209,10 +209,10 @@ const { chromium } = require(
     });
     await a.setViewportSize({ width: 390, height: 844 });
     assert.ok(
-      (await b.locator("#nursery-body").textContent()).includes("继承 2 项"),
+      (await b.locator("#nursery-body").textContent()).includes("继承 5 项"),
     );
     results.push(
-      "Offline friend invitation, persistent pairing, two inherited IVs, mobile nursery controls",
+      "Offline friend invitation, persistent pairing, five inherited IVs, mobile nursery controls",
     );
     await b.locator("#nursery-back").click();
     await b.locator('[data-go="friends"]').click();
@@ -264,21 +264,24 @@ const { chromium } = require(
       "Both players claim the primary species after server time, sixth duplicate unlocks family Z",
       "Shiny primary parent is displayed; only the guest inherits shiny from the other parent at a controlled 1.9% roll",
     );
-    // Own breeding uses one inherited IV and can run independently of friend breeding.
+    for(const id of ids){const report=app.db.prepare('SELECT owner_claim,guest_claim FROM nursery_hatches WHERE owner=? AND guest IS NOT NULL').get(ids[0]);assert.equal(JSON.parse(id===ids[0]?report.owner_claim:report.guest_claim).inherited.length,5);}
+    // Own breeding uses three inherited IVs and can run independently of friend breeding.
     await a.locator("#nursery-partner").selectOption("9");
     await a.locator(".nursery-start").click();
     await a.locator(".nursery-clock").first().waitFor();
     assert.ok(
       (await a.locator("#nursery-body").textContent()).includes(
-        "自行孵蛋：继承 1 项",
+        "自行孵蛋：继承 3 项",
       ),
     );
+    clock+=12*3600000;await a.locator('#nursery-back').click();await a.locator('[data-go="nursery"]').click();await a.locator('.nursery-claim:not([disabled])').click();await a.locator('.nursery-result').waitFor();
+    assert.equal(JSON.parse(app.db.prepare('SELECT owner_claim FROM nursery_hatches WHERE owner=? AND guest IS NULL').get(ids[0]).owner_claim).inherited.length,3);
     await a.locator("#nursery-back").click();
     await a.locator('[data-go="dex"]').click();
     await a.locator('#dex-grid [data-dex="6"]').click();
-    await a.locator(".z-equipment select").selectOption("water");
-    await a.locator(".z-equipment .btn").first().click();
-    assert.equal(await a.locator(".z-equipment select option").count(), 18);
+    await a.locator("#dex-carried-item").selectOption("z:water");
+    await a.locator("#dex-equip-item").click();
+    assert.equal(await a.locator('#dex-carried-item option[value^="z:"]').count(), 18);
     await a.screenshot({
       animations: "disabled",
       path: path.join(__dirname, "cache/z-access-mobile.png"),

@@ -1,6 +1,8 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Más talentos heredados · v0.29.0": "继承亲本的更多天赋 · v0.29.0",
+  "La crianza propia transmite tres IV distintos de los progenitores; con un amigo, transmite cinco. Los demás se generan al azar.": "自行孵蛋随机继承亲本的 3 项不同个体值，与好友孵蛋继承 5 项，其余随机生成。",
   "Entrenamiento natural · v0.28.0": "培养伙伴的天生力量 · v0.28.0",
   "Las mejoras de vida, ataques, defensas, velocidad y agilidad refuerzan los stats base del Pokémon. Síntesis recupera una parte de su vida base. El entrenamiento acompaña a cada evolución.": "强化生命、双攻、双防、速度和敏捷，现改为提升伙伴的基础能力。光合作用按基础生命回复，培养成果也会随进化成长。",
   "+3% vida base": "每级 +3% 基础生命",
