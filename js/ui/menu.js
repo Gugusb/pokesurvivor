@@ -41,7 +41,6 @@ G.MenuUI = (() => {
 
   function open() {
     const s = G.DB.save;
-    const active=$('menu-active-item');if(active){active.value=G.Settings.get('activeItem')||'superpotion';active.onchange=()=>G.Settings.set('activeItem',active.value);}
     const mon = G.DEX_BY[s.partner];
     const shiny = !!s.partnerShiny && G.DB.ownsShiny(mon.dex);
     G.UI.chrome(true);
@@ -256,8 +255,7 @@ G.MenuUI = (() => {
     if (G.DifficultyUI && own) { G.DifficultyUI.decorate($('dex-big'), dex); G.DifficultyUI.detail(box, dex); }
     G.UI.sprite($('dex-big'), dex, { lively: own, spin: own, silhouette: !reveal, scale: 3, hero: true, shiny: own && viewShiny });
     if (G.AbilityDefs.medalsFor(dex).length) G.GachaUI.renderEquipment(box, dex);
-    if (G.MegaUI && own) G.MegaUI.renderEquipment(box, dex);
-    if (G.ZMovesUI && own) G.ZMovesUI.renderEquipment(box, dex);
+    if (G.EquipmentUI && own) G.EquipmentUI.render(box, dex);
     box.querySelectorAll('.seg button').forEach(b => {
       b.onclick = () => { viewShiny = b.dataset.v === '1'; showDetail(dex); };
     });

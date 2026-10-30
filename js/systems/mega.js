@@ -14,7 +14,7 @@ G.Mega = (() => {
   function equip(s, dex, id) {
     if (id && (!owns(s, id) || BY[id].dex !== dex)) return false;
     s.megaEquipped ||= {}; s.megaEquipped[dex] = id || null;
-    if (id) { s.zEquipped ||= {}; s.zEquipped[dex] = null; }
+    if (id) { s.zEquipped ||= {}; s.zEquipped[dex] = null; s.activeEquipped ||= {}; s.activeEquipped[dex]=null; }
     return true;
   }
   function grant(s, id) {
@@ -24,9 +24,9 @@ G.Mega = (() => {
     s.megaStones[id] = { at: Date.now() }; return true;
   }
   function init(p, save) {
-    const path = p.evolutionPath || G.MonProgression?.pathFor(p.ivDex || p.dex) || [p.dex];
-    const finalDex = path[path.length - 1], id = save?.megaEquipped?.[finalDex];
+    const finalDex=p.ivDex||p.dex, id=save?.megaEquipped?.[finalDex];
     p.megaState = { id: owns(save, id) && BY[id].dex === finalDex ? id : null, energy: 0, left: 0, bonus: 0, kills: new Set() };
+    if(p.megaState.id)p.activeItem=null;
   }
   function setVisual(p, id) {
     const f = BY[id], dir = p.anim.dir;
@@ -89,11 +89,13 @@ G.Mega = (() => {
   function sync(p, id, left, stone) {
     if (p.remote) {
       p.megaState ||= { energy: 0, left: 0, kills: new Set() };
+    if(p.megaState.id)p.activeItem=null;
       p.megaState.id = BY[stone] && BY[stone].dex === p.dex ? stone : null;
     }
     const valid = BY[id] && BY[id].dex === p.dex && Number.isFinite(left) && left > 0 && left <= DURATION;
     if (valid) {
       p.megaState ||= { energy: 0, kills: new Set() };
+    if(p.megaState.id)p.activeItem=null;
       p.megaState.id = id; p.megaState.left = left;
       if (p.spriteDex !== id) setVisual(p, id);
     } else if (active(p)) { p.megaState.left = 0; setVisual(p, null); }

@@ -1,8 +1,8 @@
-/* Run-long, stackable special items; the active item has its own slot. */
+/* Run-long, stackable special items; carried potions share a slot with Mega and Z. */
 G.Items = (() => {
   const LIST=[
     {id:'leftovers',name:'Restos',desc:'Recupera un poco de vida de forma continua.'},
-    {id:'choiceband',name:'Cinta Elección',desc:'Aumenta el daño, pero impide cambiar de movimiento.'},
+    {id:'choiceband',name:'Cinta Elección',desc:'Aumenta el daño. Mientras atacas, los demás movimientos no recuperan PP.',boss:true},
     {id:'quickclaw',name:'Garra Rápida',desc:'Acorta la recarga de los movimientos.'},
     {id:'focussash',name:'Banda Focus',desc:'Evita un golpe mortal. Se consume al activarse.'},
     {id:'shellbell',name:'Cascabel Concha',desc:'El daño causado recupera un poco de vida.'},

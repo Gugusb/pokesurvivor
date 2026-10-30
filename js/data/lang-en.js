@@ -4,6 +4,7 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  "Aumenta el daño. Mientras atacas, los demás movimientos no recuperan PP.": "Increases damage. While casting, other moves cannot automatically recover PP.",
   "Una mochila para la aventura · v0.25.0": "A backpack for adventure · v0.25.0",
   "Elige una Superpoción antes de salir y úsala con 0. Los objetos encontrados se acumulan como objetos especiales durante toda la aventura, también con Mega o Z.": "Choose a Super Potion before departure and use it with 0. Found items stack as special items for the whole adventure, including with Mega or Z.",
   "Las grietas ofrecen tres objetos para elegir, a veces con premios exclusivos: enlaces, más opciones al subir de nivel, PP de reserva y otras ayudas. Consulta tu colección de objetos en la pausa.": "Rifts offer three items to choose from, sometimes with exclusive rewards: move links, extra level choices, surplus PP and other boosts. View your items in the pause menu.",

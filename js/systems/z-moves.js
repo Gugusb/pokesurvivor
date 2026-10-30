@@ -19,7 +19,7 @@ G.ZMoves = (() => {
   const enemies = () => G.EnemyMgr.all().filter(e => !e.dead);
   const timeFactor = () => all().some(selecting) ? BULLET_TIME : 1;
   const matches = (p, m) => hasStone(p) && m.type === state(p).type && KINDS.includes(m.kind);
-  const eligible = (p, i) => (p.hasItem?.('choiceband')&&i!==p.active?[]:p.slots[i]||[]).filter(m => matches(p, m));
+  const eligible = (p, i) => (p.slots[i]||[]).filter(m => matches(p, m));
   function owns(save, type, dex) { return TYPES.includes(type) && (dex == null ? !!save?.zStones?.[type] : G.ZAccess.allowed(save,dex)); }
   function grant(save, type) {
     if (!TYPES.includes(type)) return false;
@@ -29,7 +29,7 @@ G.ZMoves = (() => {
   function equip(save, dex, type) {
     if (!G.DEX_BY[dex] || type && !owns(save, type, dex)) return false;
     save.zEquipped ||= {}; save.zEquipped[dex] = type || null;
-    if (type) { save.megaEquipped ||= {}; save.megaEquipped[dex] = null; }
+    if (type) { save.megaEquipped ||= {}; save.megaEquipped[dex] = null; save.activeEquipped ||= {}; save.activeEquipped[dex]=null; }
     return true;
   }
   function normalize(save) {
@@ -43,10 +43,9 @@ G.ZMoves = (() => {
     }
   }
   function init(p, save) {
-    const path = G.MonProgression?.pathFor(p.ivDex || p.dex) || [p.dex];
-    const type = save?.zEquipped?.[p.ivDex || p.dex] || save?.zEquipped?.[path[path.length - 1]];
+    const type = save?.zEquipped?.[p.ivDex || p.dex];
     if (owns(save, type, p.ivDex || p.dex)) {
-      state(p).type = type;
+      state(p).type = type; p.activeItem=null;
       if (p.megaState) p.megaState.id = null;
       if (p.item) p.equip(null);
     }

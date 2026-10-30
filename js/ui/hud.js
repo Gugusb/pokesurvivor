@@ -259,7 +259,9 @@ G.HUD = (() => {
     const n = Math.max(1, pl.slots.length);
     const hasZ = !!(G.ZMoves && G.ZMoves.hasStone(pl));
     const hasMega = hasZ || !!(pl.megaState && pl.megaState.id);
-    const totalW = (n + Number(hasMega)) * S + (n - 1 + Number(hasMega)) * GAP;
+    const activeItem=!hasMega&&G.Items?.ACTIVE[pl.activeItem];
+    const hasEquipment=hasMega||!!activeItem;
+    const totalW = (n + Number(hasEquipment)) * S + (n - 1 + Number(hasEquipment)) * GAP;
     let sx = (w - totalW) / 2;
     // Por encima de la barra de inicio del iPhone (allí los toques a veces no llegan).
     const sy = h - S - 18 - (touch ? Math.min(28, G.Touch.safeArea().bottom) : 0);
@@ -285,6 +287,18 @@ G.HUD = (() => {
       G.Touch.addButton(sx, sy, S, S, () => G.Mega.activate(pl), GAP / 2);
       sx += S + GAP;
     }
+    if(activeItem){
+      const ix=sx,iy=sy;
+      roundRect(ctx,ix,iy,S,S,12);ctx.fillStyle='rgba(20,35,45,.9)';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=pl.activeItemCd<=0?'#9ef5c1':'#63708b';ctx.stroke();
+      ctx.font=F(700,9);ctx.textAlign='center';ctx.fillStyle='#c6efda';ctx.fillText(G.T(activeItem.name),ix+S/2,iy-6);
+      G.Icons.draw(ctx,activeItem.icon,ix+11,iy+5,32);ctx.font=F(800,9);ctx.textAlign='center';ctx.fillStyle='#d8f4ff';
+      ctx.fillText(pl.activeItemCd>0?Math.ceil(pl.activeItemCd)+'s':G.T('Lista'),ix+S/2,iy+S-7);
+      bar(ctx,ix+5,iy+S-4,S-10,3,1-pl.activeItemCd/activeItem.cooldown,'#82e8b0');
+      G.Touch.addButton(ix,iy,S,S,()=>G.Items.useActive(pl),GAP/2);
+      ctx.font=F(800,10);ctx.textAlign='left';ctx.fillStyle='#fff';ctx.fillText('0',ix+4,iy+11);
+      sx+=S+GAP;
+    }
+
     const BOND = '#ff8ad8';
     const cdOf = m => m.kind === 'orbit' ? 0 : G.U.clamp(m.t / (m.cd * pl.cdMul), 0, 1);
     const ppOf=m=>G.MovePP?G.MovePP.state(pl,m):null;
@@ -400,20 +414,6 @@ G.HUD = (() => {
       }
     }
 
-    // Active items remain available alongside Mega or Z equipment.
-    const itemLeft=(w-totalW)/2-S-18,itemWrap=itemLeft<8;
-    const ix=itemWrap?10:itemLeft,iy=itemWrap?sy-S-28:sy;
-    const activeItem=G.Items?.ACTIVE[pl.activeItem];
-    roundRect(ctx,ix,iy,S,S,12);ctx.fillStyle='rgba(20,35,45,.9)';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=activeItem&&pl.activeItemCd<=0?'#9ef5c1':'#63708b';ctx.stroke();
-    if(activeItem){
-      ctx.font=F(700,9);ctx.textAlign='center';ctx.fillStyle='#c6efda';ctx.fillText(G.T(activeItem.name),ix+S/2,iy-6);
-      G.Icons.draw(ctx,activeItem.icon,ix+11,iy+5,32);ctx.font=F(800,9);ctx.textAlign='center';ctx.fillStyle='#d8f4ff';
-      ctx.fillText(pl.activeItemCd>0?Math.ceil(pl.activeItemCd)+'s':G.T('Lista'),ix+S/2,iy+S-7);
-      bar(ctx,ix+5,iy+S-4,S-10,3,1-pl.activeItemCd/activeItem.cooldown,'#82e8b0');
-      G.Touch.addButton(ix,iy,S,S,()=>G.Items.useActive(pl),GAP/2);
-    }
-    ctx.font=F(800,10);ctx.textAlign='left';ctx.fillStyle='#fff';ctx.fillText('0',ix+4,iy+11);
-
     // ---------- botón de pausa (táctil) ----------
     if (touch) {
       const sa = G.Touch.safeArea();
@@ -432,7 +432,7 @@ G.HUD = (() => {
       ctx.textAlign = 'center';
       ctx.fillStyle = 'rgba(180,200,230,.55)';
       ctx.fillText(touch ? 'Arrastra el dedo para moverte  ·  toca un ataque para cambiarlo'
-                         : 'WASD moverse  ·  1-4 / Q / E o clic en un ataque para cambiarlo  ·  Esc pausa', w / 2, itemWrap?sy-110:sy-48);
+                         : 'WASD moverse  ·  1-4 / Q / E o clic en un ataque para cambiarlo  ·  Esc pausa', w / 2, sy-48);
     }
 
     ctx.restore();

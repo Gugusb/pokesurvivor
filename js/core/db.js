@@ -27,7 +27,7 @@
 G.DB = (() => {
   const K_ACC = 'ps.accounts', K_SES = 'ps.session', K_SAVE = 'ps.save.';
   const K_CLOUD = 'ps.cloud.', K_MIGRATED = 'ps.migrated.';
-  const VERSION = 8;
+  const VERSION = 9;
   const START_COINS = 500;
   const SDK = 'https://www.gstatic.com/firebasejs/13.0.0/';
   const NAME_DOMAIN = 'jugadores.pokesurvivor.net';   // sólo para el email interno
@@ -90,7 +90,7 @@ G.DB = (() => {
       abilityPity: {},        // contador independiente por banner de habilidades
       abilityEquipped: {},    // una sola medalla equipada por especie
       megaStones: {},         // permanent collection keyed by Mega form
-      megaEquipped: {},       // one matching stone per base species
+      activeEquipped: {}, megaEquipped: {},       // one matching stone per base species
       zStones: {}, zEquipped: {}, zAccess:{}, zDuplicates:{}, zAccessMigrated:true,
       difficulty: { selected: 1, cleared: {}, cashouts:{} },
       difficultyRecords: {},  // dex -> stars -> { best: seconds, won }
@@ -151,6 +151,7 @@ G.DB = (() => {
         if (!G.Mega.owns(s, id) || G.Mega.BY[id].dex !== +dex) delete s.megaEquipped[dex];
       }
     }
+    G.Equipment?.normalize(s);
     const n = v => (Number.isFinite(+v) && +v > 0 ? Math.floor(+v) : 0);
     s.coins = n(s.coins);
     s.tickets.t1 = n(s.tickets.t1);
@@ -248,6 +249,7 @@ G.DB = (() => {
     if (r.abilityPity == null) r.abilityPity = JSON.parse(JSON.stringify(older.abilityPity || {}));
     if (r.abilityEquipped == null) r.abilityEquipped = JSON.parse(JSON.stringify(older.abilityEquipped || {}));
     if (r.megaEquipped == null) r.megaEquipped = JSON.parse(JSON.stringify(older.megaEquipped || {}));
+    if (r.activeEquipped == null) r.activeEquipped = JSON.parse(JSON.stringify(older.activeEquipped || {}));
     if (r.zEquipped == null) r.zEquipped = JSON.parse(JSON.stringify(older.zEquipped || {}));
     r.abilityStarterGranted = !!(newer.abilityStarterGranted || older.abilityStarterGranted);
     for (const k in older.upgrades || {}) r.upgrades[k] = Math.max(r.upgrades[k] || 0, older.upgrades[k]);
@@ -282,6 +284,7 @@ G.DB = (() => {
     r.created = Math.min(a.created || Date.now(), b.created || Date.now());
     r.updated = Math.max(a.updated || 0, b.updated || 0);
     normalizeUpgrades(r);
+    G.Equipment?.normalize(r);
     return r;
   }
 

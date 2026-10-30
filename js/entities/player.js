@@ -88,7 +88,7 @@ G.Player = class Player {
     this.power = null;         // poder de altar activo: { def, t, dur }
     this.slowT = 0;            // pegado por una trampa
     this.item = null; this.specialItems={};
-    this.activeItem=G.Settings?.get('activeItem')||'superpotion';this.activeItemCd=0;          // objeto equipado (data/items.js), uno por run
+    this.activeItem=G.Equipment?.active(G.DB.save,this.ivDex)||null;this.activeItemCd=0;          // objeto equipado (data/items.js), uno por run
     this.bellHeal = 0;         // curación pendiente del Cascabel Concha
     this.statsTaken = {};      // mejoras de stat cogidas (condición de evolución)
     if (G.Mega) G.Mega.init(this, G.DB.save);
@@ -162,8 +162,8 @@ G.Player = class Player {
   arrange() {
     const n = this.slots.length;
     if (n < 2 || !this.bind) return;
-    const want = g => { let k = Infinity; for (const m of g) if (this.bind[m.id] != null) k = Math.min(k, this.bind[m.id]); return k; };
     const cur = this.slots[this.active];
+    const want = g => { let k = Infinity; for (const m of g) if (this.bind[m.id] != null) k = Math.min(k, this.bind[m.id]); return k; };
     const out = new Array(n).fill(null);
     const bound = this.slots.filter(g => want(g) < Infinity).sort((a, b) => want(a) - want(b));
     for (const g of bound) {
@@ -182,11 +182,6 @@ G.Player = class Player {
   setActive(i) {
     if (G.ZMoves && G.ZMoves.busy(this)) return G.ZMoves.choose(this, i);
     if (i < 0 || i >= this.slots.length || i === this.active) return;
-    // Cinta Elección: no se puede cambiar de movimiento.
-    if (this.hasItem('choiceband') && this.slots[this.active]) {
-      G.FX.dmgText(this.x, this.y - this.bodyH - 8, 'Cinta Elección', '#ff8ad8');
-      return;
-    }
     this.active = i;
     G.Projectiles.clearOrbs(this);
     G.Audio.sfx('select');
@@ -217,7 +212,6 @@ G.Player = class Player {
   /** Junta `moves` (sueltos) en el grupo `group` (o en uno nuevo) y gasta un vínculo. */
   fuse(moves, group = null) {
     const target = group || this.slots.find(s => s[0] === moves[0]);
-    const cur = this.slots[this.active];
     for (const m of moves) {
       if (target.includes(m)) continue;
       const i = this.slots.findIndex(s => s.length === 1 && s[0] === m);
@@ -226,9 +220,7 @@ G.Player = class Player {
       target.push(m);
     }
     this.arrange();
-    // Se pasa al grupo, salvo con la Cinta Elección (sigues en el hueco que tenías, si queda).
-    const a = this.slots.indexOf(cur);
-    this.active = this.hasItem('choiceband') && a >= 0 ? a : this.slots.indexOf(target);
+    this.active = this.slots.indexOf(target);
     this.bonds = Math.max(0, this.bonds - 1);
     G.Projectiles.clearOrbs(this);
     return target;

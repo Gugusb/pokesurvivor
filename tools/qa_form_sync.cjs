@@ -365,7 +365,7 @@ const { chromium } = require(
     await pages[1].evaluate(()=>{const p=G.Game.player;p.invuln=p.dashGuardT=0;p.hurt(1e8,null,true);});
     for(const viewer of [0,2,3])await pages[viewer].waitForFunction(uid=>G.Items.count(G.Coop.mate(uid)?.pl,'focussash')===1,ids[1]);
     assert.equal(await pages[1].evaluate(()=>G.Game.player.dead),false);
-    assert.equal(await pages[1].evaluate(()=>G.Items.useActive(G.Game.player)),true);
+    assert.equal(await pages[1].evaluate(()=>G.Items.useActive(G.Game.player)),false);
     assert.deepEqual(errors, []);
     assert.equal(app.traffic.battleFramesRejected, 0);
     console.log(

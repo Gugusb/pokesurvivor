@@ -7,7 +7,7 @@ function context(){
     localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},
     document:{documentElement:{},addEventListener:noop},CanvasRenderingContext2D:function(){}};
   s.window=s;vm.createContext(s);s.load=f=>vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),s,{filename:f});
-  for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/pokedex.js','js/data/sprites-meta.js','js/data/types.js','js/data/moves.js','js/data/items.js','js/data/mega-forms.js','js/data/mega-types.js','js/data/abilities.js'])s.load(f);
+  for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/pokedex.js','js/data/sprites-meta.js','js/data/types.js','js/data/moves.js','js/data/items.js', 'js/systems/equipment.js','js/data/mega-forms.js','js/data/mega-types.js','js/data/abilities.js'])s.load(f);
   s.load('js/data/evolutions.js');s.load('js/systems/progression-mon.js');
   const G=s.G;G.FIREBASE_CONFIG=null;G.Coop={active:false,isHost:false,scaleHp:()=>1,broadcast:noop};
   G.FX=new Proxy({},{get:()=>noop});G.Audio={sfx:noop};G.UI={toast:noop};G.Camera={kick:noop,sees:()=>false,outerRadius:()=>500};
@@ -22,7 +22,7 @@ function context(){
   s.load('js/systems/mega-preview.js');s.load('js/systems/mega.js');
   const db=fs.readFileSync(path.join(ROOT,'js/core/db.js'),'utf8').replace('ready, register, login,','_test:{newSave,migrate,sanitize}, ready, register, login,');vm.runInContext(db,s);G.DB.playAsGuest();
   for(const f of ['js/systems/abilities.js','js/entities/player.js','js/entities/enemy.js','js/entities/projectile.js','js/entities/vfx.js','js/systems/combat.js','js/systems/rift.js'])s.load(f);
-  s.player=(dex=6,stone=true)=>{if(stone){const f=G.Mega.formsFor(dex)[0];G.Mega.grant(G.DB.save,f.id);G.Mega.equip(G.DB.save,dex,f.id);}p=new G.Player(G.DEX_BY[dex]);p.baseDefense=p.baseSpDef=1;p.baseSpa=p.baseAtk;p.baseAgility=80;G.Game.player=p;return p;};
+  s.player=(dex=6,stone=true,ivDex=dex)=>{if(stone){const f=G.Mega.formsFor(dex)[0];G.Mega.grant(G.DB.save,f.id);G.Mega.equip(G.DB.save,dex,f.id);}p=new G.Player(G.DEX_BY[dex],{},false,ivDex);p.baseDefense=p.baseSpDef=1;p.baseSpa=p.baseAtk;p.baseAgility=80;G.Game.player=p;return p;};
   s.enemy=(x=30,mega=null)=>{const e=G.EnemyMgr.add(new G.Enemy({dex:mega?G.Mega.BY[mega].dex:1,mega,hp:10000,spd:0,dmg:10,xp:1,behavior:'ranged'},x,0,{hp:1,spd:1,dmg:1},!!mega));e.defense=e.spdef=1;return e;};
   s.evolve=p=>{G.Mega.tick(p,120);assert.ok(G.Mega.activate(p));};
   s.cast=(p,id,lvl=1)=>{const m=G.Moves.instance(id,lvl);p.moves=[m];p.slots=[[m]];p.active=0;p.target=G.EnemyMgr.all()[0];p.aim=0;G.EnemyMgr.rebuildGrid();G.Combat.tick(0,p,0);return m;};
@@ -44,7 +44,7 @@ test('stones migrate empty, sanitize invalid equipment, merge ownership and pres
   assert.equal(s.megaStones.bad,undefined);assert.equal(s.megaEquipped[65],undefined);
   const old=JSON.parse(JSON.stringify(s));s.updated=20;old.updated=10;G.Mega.equip(s,6,null);G.Mega.grant(old,'65-mega');
   const merged=G.DB.merge(s,old);assert.equal(merged.megaEquipped[6],null);assert.ok(merged.megaStones['65-mega']);
-  const legacy=G.DB._test.migrate({name:'old',owned:{},stats:{},abilityStarterGranted:true},'old');assert.equal(legacy.v,8);assert.equal(Object.keys(legacy.megaStones).length,0);
+  const legacy=G.DB._test.migrate({name:'old',owned:{},stats:{},abilityStarterGranted:true},'old');assert.equal(legacy.v,9);assert.equal(Object.keys(legacy.megaStones).length,0);
 });
 test('a real local save retains stone ownership and equipment through logout/login',async()=>{
   const {G}=context();assert.ok((await G.DB.register('MegaTest','test-only')).ok);G.Mega.grant(G.DB.save,'6-mega-x');G.Mega.equip(G.DB.save,6,'6-mega-x');G.DB.commit(true);
@@ -135,7 +135,7 @@ test('Mega stones coexist with stacked special items without XP conversion',()=>
 test('a final-form stone permits special items while Mega energy still waits for evolution',()=>{
   const s=context(),{G}=s;
   G.Mega.grant(G.DB.save,'6-mega-x');G.Mega.equip(G.DB.save,6,'6-mega-x');
-  const p=s.player(4,false);p.evolutionPath=[4,5,6];p.monStage=4;s.loadGame();G.Dev.canUse=()=>true;
+  const p=s.player(4,false,6);p.evolutionPath=[4,5,6];p.monStage=4;s.loadGame();G.Dev.canUse=()=>true;
   assert.ok(G.Mega.hasStone(p));assert.equal(G.Mega.eligible(p),false);
   G.Mega.tick(p,120);G.Mega.onKill(p,1);assert.equal(p.megaState.energy,0);assert.equal(p.megaState.bonus,0);
   assert.equal(G.Mega.debugCharge(p),false);p.megaState.energy=120;assert.equal(G.Mega.activate(p),false);p.megaState.energy=0;
@@ -161,15 +161,15 @@ test('co-op routes special items to the collecting peer without shared XP conver
   const expected=G.Mega.itemXp(p)*G.Coop.xpFactor();G.Game._test.collect({id:900,kind:'item',value:'leftovers'},mate.pl);
   close(p.xp,0);assert.equal(mate.q.filter(e=>e[0]==='ix').length,0);assert.equal(mate.q.filter(e=>e[0]==='item').length,1);assert.equal(p.item,null);
 });
-test('HUD keeps the active potion, Mega and move buttons separate at mobile and desktop widths',()=>{
+test('HUD uses one equipment button with four move buttons at mobile and desktop widths',()=>{
   const s=context(),{G}=s,p=s.player();p.item='leftovers';p.slots=['ember','ice-beam','tackle','hail'].map(id=>[G.Moves.instance(id)]);
   const icons=[],buttons=[];G.Touch={active:false,clearButtons:()=>{buttons.length=0;},addButton:(x,y,w,h,fn)=>buttons.push({x,y,w,h,fn})};G.Icons={draw:(ctx,name)=>icons.push(name)};
   G.World.biomeName=()=> 'Forest';G.Events.drawHud=noop;G.Spawner.banner=()=>null;
   const ctx=new Proxy({measureText:txt=>({width:txt.length*5}),createLinearGradient:()=>({addColorStop:noop})},{get:(o,k)=>o[k]||noop});s.load('js/ui/hud.js');
-  for(const width of [320,758,1280]){icons.length=0;G.HUD.draw(ctx,width,720,p,{time:100});assert.ok(icons.includes('megaStone'));assert.ok(!icons.includes('leftovers'));assert.equal(buttons.length,6);
+  for(const width of [320,758,1280]){icons.length=0;G.HUD.draw(ctx,width,720,p,{time:1});assert.ok(icons.includes('megaStone'));assert.ok(!icons.includes('leftovers'));assert.equal(buttons.length,5);
     assert.ok(buttons[0].x>=0);assert.ok(buttons[0].x+buttons[0].w<buttons[1].x);assert.ok(buttons[4].x+buttons[4].w<=width);
     for(const a of buttons)assert.ok(a.x>=0&&a.x+a.w<=width);
     for(let i=0;i<buttons.length;i++)for(let j=i+1;j<buttons.length;j++){const a=buttons[i],b=buttons[j];assert.ok(a.x+a.w<=b.x||b.x+b.w<=a.x||a.y+a.h<=b.y||b.y+b.h<=a.y);}
   }
-  p.megaState.id=null;icons.length=0;G.HUD.draw(ctx,758,720,p,{time:100});assert.ok(icons.includes('superpotion'));assert.ok(!icons.includes('megaStone'));
+  p.megaState.id=null;p.activeItem='superpotion';icons.length=0;G.HUD.draw(ctx,758,720,p,{time:100});assert.ok(icons.includes('superpotion'));assert.ok(!icons.includes('megaStone'));
 });

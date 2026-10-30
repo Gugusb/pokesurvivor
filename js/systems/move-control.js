@@ -16,9 +16,10 @@ G.MoveControl = (()=>{
   function releasing(p,m){return wants(p,m)||p.activeGroup().includes(m)&&sustaining(p,m);}
   function input(p,i){
     if(G.ZMoves?.busy(p))return G.ZMoves.choose(p,i);
+    const previous=p.active;
     p.setActive(i);if(p.active!==i||!p.slots[i])return false;
     const s=state(p),g=p.slots[i];
-    if(s.mode==='toggle')s.enabled.set(g,!s.enabled.get(g));
+    if(s.mode==='toggle')s.enabled.set(g,previous!==i||!s.enabled.get(g));
     if(s.mode==='click'){s.pending=new Set(g);s.leases.clear();}
     return true;
   }

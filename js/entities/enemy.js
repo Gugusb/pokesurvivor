@@ -79,6 +79,7 @@
       this.sc = sc;                       // escala de la run (para sus invocaciones)
       this.shield = 0; this.shieldT = 0;  // escudo que absorbe daño
       this.skillCd = G.U.rand(1, 4);      // escudos / saltos
+      this.supportUses = ['healer', 'shielder'].includes(this.behavior) ? 3 : 0;
       this.minions = [];
       this.jump = null;                   // { sx, sy, tx, ty, t, dur }
       // Rezagados: si se quedan atrás, fuera de la vista, mientras huyes,
@@ -654,6 +655,10 @@
     }
 
     healAround() {
+      if (this.dead || this.remote || this.supportUses <= 0) return false;
+      const near = G.EnemyMgr.queryCircle(this.x, this.y, 150).filter(e => !e.dead && e.hp < e.maxHp);
+      if (!near.length) return false;
+      this.supportUses--;
       // 7 % de la vida (era 15 %: con varios curanderos curaban más de lo que
       // pegabas), y más cuanto más fuerte pegas, pero cada vez menos: con el
       // doble de ataque cura un 27 % más, con 10 veces más un 124 %, y como
@@ -661,8 +666,7 @@
       const pow = Math.max(1, ...G.Game.everyone().map(p => (p.atk > 0 && p.baseAtk > 0 ? p.atk / p.baseAtk : 1)));
       const k = 0.07 * Math.min(2.5, Math.pow(pow, 0.35));
       let n = 0;
-      for (const e of G.EnemyMgr.queryCircle(this.x, this.y, 150)) {
-        if (e.dead || e.hp >= e.maxHp) continue;
+      for (const e of near) {
         G.Abilities.healEnemy(e, e.maxHp * k);
         G.FX.burst(e.x, e.y - e.bodyH * 0.6, '#7dffb0', 5, 60);
         n++;
@@ -671,15 +675,20 @@
       G.FX.ring(this.x, this.y, 8, 150, '#5fe08a', 0.5, 3);
       if (G.Coop.isHost) G.Coop.broadcast(['fxr', Math.round(this.x), Math.round(this.y), 150, '#5fe08a']);
       if (n && G.Camera.sees(this.x, this.y, 0)) G.Audio.sfx('heal');
+      return true;
     }
 
     castShields() {
+      if (this.dead || this.remote || this.supportUses <= 0) return false;
       const near = G.EnemyMgr.queryCircle(this.x, this.y, 160).filter(e => !e.dead)
         .sort((a, b) => G.U.dist2(a.x, a.y, this.x, this.y) - G.U.dist2(b.x, b.y, this.x, this.y)).slice(0, 6);
+      if (!near.length) return false;
+      this.supportUses--;
       for (const e of near) { e.shield = Math.max(e.shield, e.maxHp * 0.35); e.shieldT = 8; }
       this.anim.play('Charge');
       G.FX.ring(this.x, this.y, 8, 160, '#7fc8ff', 0.5, 3);
       if (G.Coop.isHost) G.Coop.broadcast(['fxr', Math.round(this.x), Math.round(this.y), 160, '#7fc8ff']);
+      return true;
     }
 
     summon() {

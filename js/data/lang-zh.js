@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Un objeto para cada compañero · v0.26.0": "为伙伴挑选携带道具 · v0.26.0",
+  "Elige el objeto de cada compañero en su ficha de la Pokédex. Superpoción, megapiedra y cristal Z comparten un único espacio.": "在图鉴详情为每只伙伴挑选携带道具。好伤药、Mega 进化石与 Z 招式石共用一个道具位。",
+  "Los Pokémon que curan o dan escudos sólo pueden usar su ayuda tres veces.": "提供治疗或护盾的野生宝可梦，每只只能发动三次支援。",
+  "Cinta Elección aparece entre los premios de jefe. Aumenta el daño, pero los movimientos sin usar no recuperan PP mientras atacas.": "讲究头带改为首领道具。提高伤害，释放技能时其他技能无法自动恢复 PP。",
+  "Al cambiar de hueco en el modo de activación, el nuevo movimiento empieza a atacar.": "切换释放模式下，切换技能槽会自动开启新槽的技能。",
+
+  "Aumenta el daño. Mientras atacas, los demás movimientos no recuperan PP.": "提高伤害。释放技能时，其他技能不再自动恢复 PP。",
   "Una mochila para la aventura · v0.25.0": "背上行囊，再度出发 · v0.25.0",
   "Elige una Superpoción antes de salir y úsala con 0. Los objetos encontrados se acumulan como objetos especiales durante toda la aventura, también con Mega o Z.": "出发前可选择好伤药，按0使用。局内拾取的特殊道具可叠加并整局生效，携带 Mega 或 Z 也能获得。",
   "Las grietas ofrecen tres objetos para elegir, a veces con premios exclusivos: enlaces, más opciones al subir de nivel, PP de reserva y otras ayudas. Consulta tu colección de objetos en la pausa.": "击败裂缝首领后可从三件道具中选一件，有机会遇到技能联合器、幸运奖章、糖果罐等珍贵奖励。暂停时可查看持有的特殊道具。",

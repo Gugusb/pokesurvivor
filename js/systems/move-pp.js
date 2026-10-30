@@ -25,9 +25,11 @@ G.MovePP = (() => {
     if(p.dead||p.remote)return;
     for(const m of p.moves){
       const s=state(p,m),next=busy(p,m);let left=Math.max(0,dt);
+      // Choice Band blocks unused recovery immediately, independent of rate inertia.
+      const recovery=!next&&p.hasItem?.('choiceband')&&p.moves.some(other=>busy(p,other))?0:1;
       if(next!==s.target){s.target=next;s.inertia=next===s.on?0:1;}
-      if(s.inertia>0){const old=Math.min(left,s.inertia);recover(s,old*factor(p,s.on)/(p.ppInterval||1));s.inertia-=old;left-=old;if(s.inertia<=1e-8){s.inertia=0;s.on=s.target;}}
-      if(left>0)recover(s,left*factor(p,s.on)/(p.ppInterval||1));
+      if(s.inertia>0){const old=Math.min(left,s.inertia);recover(s,old*factor(p,s.on)*recovery/(p.ppInterval||1));s.inertia-=old;left-=old;if(s.inertia<=1e-8){s.inertia=0;s.on=s.target;}}
+      if(left>0)recover(s,left*factor(p,s.on)*recovery/(p.ppInterval||1));
     }
   }
   function restore(p,moves){for(const m of moves||[]){const s=state(p,m);s.current=Math.max(s.current,s.max);}}

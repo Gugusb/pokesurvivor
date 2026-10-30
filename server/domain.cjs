@@ -21,6 +21,7 @@ for (const f of [
   "js/data/mega-forms.js",
   "js/data/mega-types.js",
   "js/systems/z-access.js",
+  "js/systems/equipment.js",
   "js/systems/nursery-rules.js",
   "js/data/abilities.js",
   "js/systems/progression-mon.js",
@@ -129,6 +130,8 @@ function sanitize(input, old, name) {
   Object.assign(s,G.ZAccess.merge(s,old));
   for(const [d,type] of Object.entries(s.zEquipped))
     if(!G.DEX_BY[d] || type!==null && (!G.ZAccess.TYPES.includes(type)||!G.ZAccess.allowed(s,d)))delete s.zEquipped[d];
+  if(input.activeEquipped==null)s.activeEquipped=clone(old.activeEquipped||{});
+  G.Equipment.normalize(s);
   G.Offline.stamp(s);
   return s;
 }

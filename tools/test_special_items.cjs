@@ -33,11 +33,11 @@ test('Candy Jars add five over-cap points each and halve only the above-cap reco
   pp.current=14.75;G.MovePP.tick(p,1);close(pp.current,15.125);G.MovePP.tick(p,100);close(pp.current,25);
   G.MovePP.restore(p,[m]);close(pp.current,25);G.MovePP.increaseMax(p);assert.equal(pp.max,16);assert.equal(pp.limit,26);close(pp.current,26);
 });
-test('legacy effects use one fifth strength, stack without replacing one another, and Choice Band retains its lock',()=>{
+test('legacy effects use one fifth strength, stack without replacing one another, and Choice Band permits switching',()=>{
   const s=setup(),{G}=s,p=s.player(6);s.learn(p,['ember','tackle']);p.active=0;
   for(const id of ['leftovers','quickclaw','amuletcoin','luckyegg','choicescarf','assaultvest','choiceband','choiceband','lifeorb'])assert.ok(G.Items.gain(p,id));
   close(p.regen,p.maxHp*.003);close(G.Items.cooldownFactor(p),.96);close(p.coinMul,1.1);close(p.effectiveXpMul,1.06);close(p.reduction,.04);close(G.Items.damageBonus(p),.22);
-  p.setActive(1);assert.equal(p.active,0);assert.equal(G.MoveControl.input(p,1),false);assert.equal(G.Items.count(p,'choiceband'),2);
+  p.setActive(1);assert.equal(p.active,1);assert.equal(G.MoveControl.input(p,1),true);assert.equal(G.Items.count(p,'choiceband'),2);
 });
 test('each Focus Sash is consumed by one fatal hit, with no hidden recharge or automatic replenishment',()=>{
   const s=setup(),{G}=s,p=s.player(6);p.moves=[];p.slots=[];G.Items.gain(p,'focussash');G.Items.gain(p,'focussash');
@@ -52,7 +52,7 @@ test('Boss items add level-up choices, bank a link immediately, restore the mele
   G.Items.gain(p,'bugnet');close(G.MonProgression.captureChance({lastAttacker:p}),.0022);
 });
 test('rift reward cards are distinct and may contain Boss items; normal drops exclude those items',()=>{
-  const {G}=setup();assert.deepEqual(Array.from(G.Items.rewardChoices(()=>0)),['linker','luckymedal','candyjar']);
+  const {G}=setup();assert.deepEqual(Array.from(G.Items.rewardChoices(()=>0)),['choiceband','linker','luckymedal']);
   for(let i=0;i<100;i++){const cards=G.Items.rewardChoices();assert.equal(cards.length,3);assert.equal(new Set(cards).size,3);assert.ok(!G.Items.BY[G.Items.roll()].boss);}
 });
 test('active Super Potion heals 30%, starts its thirty-second cooldown only when useful, and coexists with special items',()=>{
@@ -67,6 +67,21 @@ test('auto, toggle and click modes affect only the selected slot; a linked click
   G.Settings.set('castMode','click');G.Combat.tick(100,p,0);assert.equal(casts,2);G.MoveControl.input(p,0);G.Combat.tick(0,p,0);assert.equal(casts,4);G.Combat.tick(100,p,0);assert.equal(casts,4);
   G.Settings.set('castMode','auto');G.Combat.tick(0,p,0);assert.equal(casts,6);
 });
+test('toggle selects a new slot enabled, including a previously paused slot, but clicking the current slot pauses it',()=>{
+ const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);G.Settings.set('castMode','toggle');
+ assert.equal(G.MoveControl.wants(p,a),false);G.MoveControl.input(p,1);assert.ok(G.MoveControl.wants(p,b));assert.equal(G.MoveControl.wants(p,a),false);
+ G.MoveControl.input(p,1);assert.equal(G.MoveControl.wants(p,b),false);G.MoveControl.input(p,0);assert.ok(G.MoveControl.wants(p,a));G.MoveControl.input(p,1);assert.ok(G.MoveControl.wants(p,b));
+});
+
+test('Choice Band is Boss-only, blocks unused PP recovery immediately, and allows explicit PP restoration',()=>{
+ const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);
+ assert.equal(G.Items.BY.choiceband.boss,true);for(const m of p.moves)G.MovePP.state(p,m).current=0;G.Items.gain(p,'choiceband');G.Items.gain(p,'choiceband');
+ G.MovePP.tick(p,1);close(G.MovePP.state(p,a).current,.5);assert.equal(G.MovePP.state(p,b).current,0);
+ G.MoveControl.input(p,1);G.MovePP.tick(p,1);assert.equal(p.active,1);close(G.MovePP.state(p,a).current,.5);assert.ok(G.MovePP.state(p,b).current>0);
+ G.MovePP.add(p,[a],1);close(G.MovePP.state(p,a).current,1.5);G.MovePP.restore(p,[a]);assert.equal(G.MovePP.state(p,a).current,G.MovePP.max(p,a));
+ G.Settings.set('castMode','toggle');G.MovePP.tick(p,2);assert.ok(G.MovePP.state(p,b).current>2);
+});
+
 test('a click-triggered orbit lasts one cooldown cycle and does not restart by itself',()=>{
   const s=setup(),{G}=s,p=s.player(6),[m]=s.learn(p,['fire-spin']);m.cd=1;G.Settings.set('castMode','click');G.MoveControl.input(p,0);
   G.Combat.tick(0,p,0);assert.ok(G.Projectiles.all().some(o=>o.orb));G.Combat.tick(.5,p,.5);assert.ok(G.Projectiles.all().some(o=>o.orb));G.Combat.tick(.6,p,1.1);assert.ok(!G.Projectiles.all().some(o=>o.orb));

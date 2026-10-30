@@ -1031,9 +1031,7 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 .run-score-result small { display:block; margin-top:6px; color:var(--muted); line-height:1.6; overflow-wrap:anywhere; }
 
 /* Active loadout and the run-long special-item bag. */
-.active-loadout {display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px;color:var(--muted);font-size:14px;}
-.active-loadout select {max-width:100%;background:#203b73;color:#fff;border:1px solid #8da6d5;border-radius:7px;padding:6px;}
-.active-loadout small {font-size:12px;}
+.carried-equipment select {display:block;width:100%;max-width:100%;box-sizing:border-box;background:#203b73;color:#fff;border:1px solid #8da6d5;border-radius:7px;padding:9px;margin:8px 0;}
 .special-items-list {text-align:left;max-height:190px;overflow:auto;margin:12px 0;}
 .special-items-list>div {padding:6px;border-bottom:1px solid #7892b544;font-size:13px;}
 .special-items-list img {vertical-align:middle;}
