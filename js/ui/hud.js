@@ -292,7 +292,7 @@ G.HUD = (() => {
       roundRect(ctx,ix,iy,S,S,12);ctx.fillStyle='rgba(20,35,45,.9)';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=pl.activeItemCd<=0?'#9ef5c1':'#63708b';ctx.stroke();
       ctx.font=F(700,9);ctx.textAlign='center';ctx.fillStyle='#c6efda';ctx.fillText(G.T(activeItem.name),ix+S/2,iy-6);
       G.Icons.draw(ctx,activeItem.icon,ix+11,iy+5,32);ctx.font=F(800,9);ctx.textAlign='center';ctx.fillStyle='#d8f4ff';
-      ctx.fillText(pl.activeItemCd>0?Math.ceil(pl.activeItemCd)+'s':G.T('Lista'),ix+S/2,iy+S-7);
+      ctx.fillText(pl.activeItemCd>0?Math.ceil(pl.activeItemCd)+'s':G.T(pl.ppPotionReady?'PP preparados':'Lista'),ix+S/2,iy+S-7);
       bar(ctx,ix+5,iy+S-4,S-10,3,1-pl.activeItemCd/activeItem.cooldown,'#82e8b0');
       G.Touch.addButton(ix,iy,S,S,()=>G.Items.useActive(pl),GAP/2);
       ctx.font=F(800,10);ctx.textAlign='left';ctx.fillStyle='#fff';ctx.fillText('0',ix+4,iy+11);

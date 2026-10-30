@@ -190,6 +190,8 @@ G.Icons = (() => {
     '.....kkk....','....kccck...','...kkkkkk...','...kwwbbk...','..kbwwbbdk..','..kbbllbdk..',
     '..kblllllk..','..kbbllbdk..','..kbbbbbdk..','..kbbbbddk..','...kddddk...','....kkkk....']};
   UI.superpotion={rows:UI.potion.rows,pal:{b:'#ff9c6b',d:'#a85339',w:'#fff0d6',c:'#a8e8ff',l:'#f4f8ff'}};
+  UI.pppotion={rows:UI.potion.rows,pal:{b:'#57b9ed',d:'#2d628f',w:'#e7faff',c:'#c5f8ff',l:'#2254be'}};
+  UI.spiritspray={rows:UI.potion.rows,pal:{b:'#cb84eb',d:'#78449c',w:'#ffedff',c:'#f8d7ff',l:'#f9b9db'}};
   // Variantes de paleta.
   UI.starDim = { rows: UI.star.rows, pal: { y: '#3a4870', o: '#2a3458', w: '#4a5a88' } };
 

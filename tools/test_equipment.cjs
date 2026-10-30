@@ -9,6 +9,14 @@ test('one per-species slot switches between a free potion, permitted Z and an ow
  assert.ok(G.Equipment.equip(s,6,'superpotion'));assert.equal(s.megaEquipped[6],null);assert.equal(s.zEquipped[6],null);assert.equal(G.Equipment.active(s,6),'superpotion');
  assert.equal(G.Equipment.equip(s,6,'fire'),false);assert.ok(G.Equipment.equip(s,6,null));assert.equal(G.Equipment.active(s,6),null);assert.equal(G.Equipment.active(s,5),'superpotion');
 });
+test('both PP consumables equip, clear stones, survive save validation and remain available to the server',()=>{
+ const {G}=setup(),s=G.DB.save,domain=require('../server/domain.cjs');G.ZAccess.unlock(s,6);
+ for(const id of ['pppotion','spiritspray']){
+  G.ZMoves.equip(s,6,'fire');assert.ok(G.Equipment.equip(s,6,id));G.DB._test.sanitize(s);assert.equal(s.zEquipped[6],null);assert.equal(G.Equipment.active(s,6),id);assert.equal(new G.Player(G.DEX_BY[4],{},false,6).activeItem,id);
+  const old=domain.fresh('Fixture'),input=domain.clone(old);input.owned[6]={at:1,iv:Array(8).fill(31)};input.activeEquipped[6]=id;assert.equal(domain.sanitize(input,old,'Fixture').activeEquipped[6],id);
+ }
+});
+
 test('run equipment follows the selected species and remains exclusive before and after Mega evolution',()=>{
  const {G}=setup(),s=G.DB.save;G.Mega.grant(s,'6-mega-x');G.Mega.equip(s,6,'6-mega-x');
  const root=new G.Player(G.DEX_BY[4]);assert.equal(root.activeItem,'superpotion');assert.equal(root.megaState.id,null);

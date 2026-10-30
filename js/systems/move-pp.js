@@ -14,6 +14,7 @@ G.MovePP = (() => {
   }
   function consume(p,m){
     const s=state(p,m);
+    if(p.ppPotionReady&&!p.remote&&p.moves.includes(m)){s.current=Math.min(s.limit,s.current+p.ppPotionReady);p.ppPotionReady=0;}
     if(s.current>=1-1e-8){s.current=Math.max(0,s.current-1);return true;}
     if((p.tempPP||0)>=1){p.tempPP--;return true;}return false;
   }

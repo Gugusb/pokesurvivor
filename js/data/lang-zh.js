@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Más provisiones de PP · v0.27.0": "备好 PP，继续冒险 · v0.27.0",
+  "Dos nuevos objetos equipables: Poción PP restaura 20 PP al siguiente movimiento que uses; Bruma Mental añade 15 PP de reserva. Ambos se recargan en 90 segundos.": "新增两件携带道具：PP 药剂为下一次发动的技能恢复 20 点 PP；精神喷雾提供 15 点备用 PP。两者冷却均为 90 秒。",
+  "Poción PP": "PP 药剂",
+  "Bruma Mental": "精神喷雾",
+  "PP preparados": "PP 待生效",
+
   "Un objeto para cada compañero · v0.26.0": "为伙伴挑选携带道具 · v0.26.0",
   "Elige el objeto de cada compañero en su ficha de la Pokédex. Superpoción, megapiedra y cristal Z comparten un único espacio.": "在图鉴详情为每只伙伴挑选携带道具。好伤药、Mega 进化石与 Z 招式石共用一个道具位。",
   "Los Pokémon que curan o dan escudos sólo pueden usar su ayuda tres veces.": "提供治疗或护盾的野生宝可梦，每只只能发动三次支援。",

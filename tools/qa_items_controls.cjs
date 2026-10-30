@@ -21,6 +21,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
    assert.equal(await page.locator('#dex-carried-item option[value^="z:"]:disabled').count(),18);
    await page.locator('#dex-carried-item').selectOption('mega:6-mega-x');await page.locator('#dex-equip-item').click();assert.equal(await page.locator('#dex-carried-item').inputValue(),'mega:6-mega-x');
    await page.locator('#dex-carried-item').selectOption('none');await page.locator('#dex-equip-item').click();assert.equal(await page.locator('#dex-carried-item').inputValue(),'none');
+   for(const id of ['pppotion','spiritspray']){await page.locator('#dex-carried-item').selectOption(id);await page.locator('#dex-equip-item').click();assert.equal(await page.locator('#dex-carried-item').inputValue(),id);}
    await page.locator('#dex-carried-item').selectOption('superpotion');await page.locator('#dex-equip-item').click();assert.equal(await page.locator('#dex-carried-item').inputValue(),'superpotion');
    await page.screenshot({path:path.join(__dirname,`cache/items-${built?'built':'source'}-${lang}-equipment.png`),animations:'disabled'});
    await page.locator('#scr-dex [data-back]').click();
@@ -41,6 +42,10 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
     await page.keyboard.press('Escape');await page.locator('#btn-pause-settings').click();await page.locator('#set-tabs [data-t="ctl"]').click();await page.locator('[data-k="castMode"][data-v="click"]').click();await page.locator('#set-close').click();await page.locator('#btn-resume').click();
     await page.evaluate(()=>{G.Game.player.moves[0].t=0;window.qaCasts=0;});await page.keyboard.press('1');await page.waitForFunction(()=>window.qaCasts===1);await page.evaluate(()=>{window.qaStoppedAt=G.Game.st.time;});try{await page.waitForFunction(()=>G.Game.st.time>window.qaStoppedAt+.5);}catch(e){console.error('Click diagnostics',await page.evaluate(()=>({state:G.Game.state,time:G.Game.st.time,stoppedAt:window.qaStoppedAt,casts:window.qaCasts,hp:G.Game.player.hp,screens:[...document.querySelectorAll('.scr:not(.hidden)')].map(e=>e.id)})));throw e;}assert.equal(await page.evaluate(()=>window.qaCasts),1);
     await page.evaluate(()=>{const p=G.Game.player;for(const id of ['leftovers','leftovers','candyjar'])G.Pickups.drop('item',p.x,p.y,id);});await page.waitForFunction(()=>G.Items.count(G.Game.player,'leftovers')===2&&G.Items.count(G.Game.player,'candyjar')===1);
+    await page.evaluate(()=>{const p=G.Game.player;p.activeItem='pppotion';p.activeItemCd=0;G.MovePP.state(p,p.moves[0]).current=0;});await page.keyboard.press('0');await page.waitForFunction(()=>G.Game.player.ppPotionReady===20);
+    await page.keyboard.press('1');await page.waitForFunction(()=>G.Game.player.ppPotionReady===0);assert.ok(await page.evaluate(()=>G.MovePP.state(G.Game.player,G.Game.player.moves[0]).current>=13));
+    await page.evaluate(()=>{const p=G.Game.player;p.activeItem='spiritspray';p.activeItemCd=0;window.reserveBefore=p.tempPP;});await page.keyboard.press('0');await page.waitForFunction(()=>G.Game.player.tempPP-window.reserveBefore===15);assert.ok(await page.evaluate(()=>G.Game.player.activeItemCd>89));
+    await page.screenshot({path:path.join(__dirname,`cache/pp-items-${lang}.png`),animations:'disabled'});
     const won=await page.evaluate(()=>{
      const p=G.Game.player,before=p.bonds;G.Items.rewardChoices=()=>['linker','luckymedal','candyjar'];G.Rift.debugArena('fire');const e=G.EnemyMgr.get(G.Rift.arena.bossId);e.hurt(1e12,'#fff',0,0,0,null,p);G.Rift.update(.01,p,G.Game.st.time);const noBond=p.bonds===before;G.Rift.update(5.1,p,G.Game.st.time);return {noBond,leftArena:!G.Rift.inArena,clearedWorld:!G.World.arena};
     });

@@ -60,6 +60,26 @@ test('active Super Potion heals 30%, starts its thirty-second cooldown only when
   assert.equal(G.Items.useActive(p),false);assert.equal(p.activeItemCd,0);p.hp=p.maxHp*.1;assert.ok(G.Items.useActive(p));close(p.hp,p.maxHp*.4);assert.equal(p.activeItemCd,30);assert.equal(G.Items.useActive(p),false);
   p.update(30);assert.equal(p.activeItemCd,0);assert.ok(G.Items.useActive(p));assert.equal(G.Items.count(p,'leftovers'),1);
 });
+test('PP Potion primes one actual normal cast, refills even an empty move, respects its cap and does not refill its fused sibling',()=>{
+ const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);p.activeItem='pppotion';p.slots=[[a,b]];
+ G.MovePP.state(p,a).current=G.MovePP.state(p,b).current=0;
+ assert.ok(G.Items.useActive(p));assert.equal(p.activeItemCd,90);assert.equal(p.ppPotionReady,20);assert.equal(G.MovePP.state(p,a).current,0);
+ // Waiting for an enemy must not consume the pending potion.
+ p.slots=[[a]];p.target=null;G.Combat.tick(0,p,0);assert.equal(p.ppPotionReady,20);
+ assert.ok(G.MovePP.consume(p,a));assert.equal(G.MovePP.state(p,a).current,14);assert.equal(p.ppPotionReady,0);assert.equal(G.MovePP.consume(p,b),false);
+ p.activeItemCd=0;assert.ok(G.Items.useActive(p));p.activeItemCd=0;assert.equal(G.Items.useActive(p),false);assert.equal(p.activeItemCd,0);
+ G.Items.gain(p,'candyjar');G.MovePP.state(p,a).current=0;assert.ok(G.MovePP.consume(p,a));assert.equal(G.MovePP.state(p,a).current,19);
+});
+
+test('Spirit Spray adds fifteen shared reserve PP at full HP, stacks with existing reserves and has a ninety-second cooldown',()=>{
+ const s=setup(),{G}=s,p=s.player(6),[a]=s.learn(p,['ember']);p.activeItem='spiritspray';p.tempPP=20;G.MovePP.state(p,a).current=0;
+ assert.ok(G.Items.useActive(p));assert.equal(p.tempPP,35);assert.equal(p.activeItemCd,90);assert.equal(G.Items.useActive(p),false);
+ assert.ok(G.MovePP.consume(p,a));assert.equal(p.tempPP,34);assert.equal(G.MovePP.state(p,a).current,0);
+ p.activeItemCd=0;assert.ok(G.Items.useActive(p));assert.equal(p.tempPP,49);
+ for(const flag of ['dead','remote']){p.activeItemCd=0;p[flag]=true;assert.equal(G.Items.useActive(p),false);p[flag]=false;}
+ G.Game.state='paused';assert.equal(G.Items.useActive(p),false);
+});
+
 test('auto, toggle and click modes affect only the selected slot; a linked click casts each move once',()=>{
   const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);p.slots=[[a,b]];let casts=0;p.cast=()=>casts++;
   G.Settings.set('castMode','toggle');G.Combat.tick(0,p,0);assert.equal(casts,0);G.MoveControl.input(p,0);G.Combat.tick(0,p,0);assert.equal(casts,2);

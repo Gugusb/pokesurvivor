@@ -5,7 +5,7 @@ G.EquipmentUI=(()=>{
     const note=document.createElement('p');note.className='note';note.textContent=G.T('Elige un objeto para esta aventura. Las piedras Mega y Z ocupan el mismo espacio.');
     const select=document.createElement('select');select.id='dex-carried-item';select.setAttribute('aria-label',G.T('Objeto equipado'));
     function option(value,label,disabled=false){const o=document.createElement('option');o.value=value;o.textContent=label;o.disabled=disabled;select.append(o);}
-    option('none',G.T('Ninguno'));option('superpotion',G.T('Superpoción')+' · 0');
+    option('none',G.T('Ninguno'));for(const item of Object.values(G.Items.ACTIVE))option(item.id,G.T(item.name)+' · 0');
     const z=G.ZAccess.allowed(s,dex);
     for(const type of G.ZMoves.TYPES)option('z:'+type,G.ZMovesUI.label(type)+(z?'':' · '+G.T('Requiere permiso Z')), !z);
     for(const f of G.Mega.formsFor(dex))option('mega:'+f.id,G.Mega.label(f.id)+' · '+G.T('Megapiedra')+(G.Mega.owns(s,f.id)?'':' · '+G.T('Sin piedra')),!G.Mega.owns(s,f.id));

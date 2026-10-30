@@ -433,13 +433,13 @@ def items_page(lang):
     if lang == 'es':
         h1 = 'Objetos especiales de PokéSurvivor'
         intro = ('<p class="lead">Los cofres y jefes dejan <b>objetos especiales</b> que se acumulan y duran toda la aventura. '
-                 'En las grietas eliges entre tres, con posibilidad de premios exclusivos. La Superpoción ocupa un hueco activo independiente: se elige antes de salir y se usa con <kbd>0</kbd>.</p>')
-        title, desc, c = f'Objetos de PokéSurvivor: {ni} objetos especiales', f'Los {ni} objetos especiales de PokéSurvivor, sus efectos y la Superpoción activa.', 'Encuéntralos: jugar gratis'
+                 'En las grietas eliges entre tres, con posibilidad de premios exclusivos. Elige Superpoción, Poción PP o Bruma Mental en la Pokédex y úsala con <kbd>0</kbd>. Comparten espacio con las piedras Mega y Z.</p>')
+        title, desc, c = f'Objetos de PokéSurvivor: {ni} objetos especiales', f'Los {ni} objetos especiales de PokéSurvivor, sus efectos y los objetos activos de vida y PP.', 'Encuéntralos: jugar gratis'
     else:
         h1 = 'PokéSurvivor special items'
         intro = ('<p class="lead">Chests and bosses drop <b>special items</b> that stack for the entire adventure. '
-                 'Rifts offer a choice of three, sometimes with exclusive rewards. Super Potion has its own active slot: choose it before departure and use it with <kbd>0</kbd>.</p>')
-        title, desc, c = f'PokéSurvivor items: {ni} special items', f'The {ni} special items in PokéSurvivor, their effects and the active Super Potion.', 'Find them: play free'
+                 'Rifts offer a choice of three, sometimes with exclusive rewards. Choose Super Potion, PP Potion or Spirit Spray in the Pokédex and use it with <kbd>0</kbd>. They share their slot with Mega Stones and Z Crystals.</p>')
+        title, desc, c = f'PokéSurvivor items: {ni} special items', f'The {ni} special items in PokéSurvivor, their effects and active HP and PP supplies.', 'Find them: play free'
     body = f'<article class="doc"><h1>{h1}</h1>{intro}<ul class="items">{rows}</ul>{cta(pid, lang, c)}</article>'
     write(pid, lang, page(pid, lang, title, desc, body, {'@context': 'https://schema.org', '@graph': [crumbs(pid, lang, h1)]}))
 

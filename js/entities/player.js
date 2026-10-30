@@ -37,7 +37,7 @@ G.Player = class Player {
     this.baseHp = mon.hp * ivm[0];
     this.baseAgility = (G.MonProgression?.agilityBase(mon) || 80) * ivm[6];
     this.baseStamina = (G.MonProgression?.staminaBase(mon) || 80) * ivm[7];
-    this.maxPpBonus = 0; this.tempPP = 0;
+    this.maxPpBonus = 0; this.tempPP = 0; this.ppPotionReady=0;
     this.maxHp = this.baseHp + (perks.hp || 0);
     this.hp = this.maxHp;
     this.baseSpd = mon.spd * ivm[2];

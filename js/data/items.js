@@ -53,11 +53,18 @@ G.Items = (() => {
     const n=count(p,'flamethrower');
     if(n&&ranged(m)&&!G.Abilities.suppressEffects(p)&&Math.random()<Math.min(1,.03*n))e.applyBurn(1,p);
   }
-  const ACTIVE={superpotion:{id:'superpotion',name:'Superpoción',icon:'superpotion',cooldown:30,heal:.30}};
+  const ACTIVE={
+    superpotion:{id:'superpotion',name:'Superpoción',icon:'superpotion',cooldown:30,heal:.30},
+    pppotion:{id:'pppotion',name:'Poción PP',icon:'pppotion',cooldown:90},
+    spiritspray:{id:'spiritspray',name:'Bruma Mental',icon:'spiritspray',cooldown:90}
+  };
   function useActive(p){
     const item=ACTIVE[p?.activeItem];
-    if(!item||p.dead||p.hp>=p.maxHp||(p.activeItemCd||0)>0||G.Game?.state!=='playing')return false;
-    p.heal(p.maxHp*item.heal);p.activeItemCd=item.cooldown;G.Audio.sfx('heal');return true;
+    if(!item||p.dead||p.remote||(p.activeItemCd||0)>0||G.Game?.state!=='playing')return false;
+    if(item.heal){if(p.hp>=p.maxHp)return false;p.heal(p.maxHp*item.heal);}
+    else if(item.id==='pppotion'){if(p.ppPotionReady)return false;p.ppPotionReady=20;}
+    else if(item.id==='spiritspray')p.tempPP=(p.tempPP||0)+15;
+    p.activeItemCd=item.cooldown;G.Audio.sfx('heal');return true;
   }
   return {LIST,BY,ACTIVE,count,icon,gain,remove,roll,rewardChoices,damageBonus,cooldownFactor,ranged,onCast,onHit,useActive};
 })();

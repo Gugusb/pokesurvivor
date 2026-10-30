@@ -4,6 +4,10 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  "Poción PP": "PP Potion",
+  "Bruma Mental": "Spirit Spray",
+  "PP preparados": "PP primed",
+
   "Aumenta el daño. Mientras atacas, los demás movimientos no recuperan PP.": "Increases damage. While casting, other moves cannot automatically recover PP.",
   "Una mochila para la aventura · v0.25.0": "A backpack for adventure · v0.25.0",
   "Elige una Superpoción antes de salir y úsala con 0. Los objetos encontrados se acumulan como objetos especiales durante toda la aventura, también con Mega o Z.": "Choose a Super Potion before departure and use it with 0. Found items stack as special items for the whole adventure, including with Mega or Z.",

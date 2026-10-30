@@ -654,3 +654,9 @@ test('co-op snapshots preserve a shared victory pause, reject late combat, resum
   host.Coop.over({why:'victory',victoryCashout:true});fromHost('host',packets.at(-1));assert.equal(order.at(-1),'cashout');
   assert.equal(guest.Coop.active,false);
 });
+
+ test('Z casts do not consume a primed PP Potion; the next normal move still receives it',()=>{
+  const s=setup(),{G,p,m}=s;s.load('js/systems/move-pp.js');p.ppPotionReady=20;G.MovePP.state(p,m).current=0;release(s);
+  for(let i=0;i<200&&G.ZMoves.busy(p);i++)G.ZMoves.tick(p,.1);
+  assert.equal(G.ZMoves.busy(p),false);assert.equal(p.ppPotionReady,20);assert.ok(G.MovePP.consume(p,m));assert.equal(p.ppPotionReady,0);
+ });
