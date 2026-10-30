@@ -7,7 +7,7 @@ function context(){
     localStorage:{getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},
     document:{documentElement:{},addEventListener:noop},CanvasRenderingContext2D:function(){}};
   s.window=s;vm.createContext(s);s.load=f=>vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),s,{filename:f});
-  for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/pokedex.js','js/data/sprites-meta.js','js/data/types.js','js/data/moves.js','js/data/items.js', 'js/systems/equipment.js','js/data/mega-forms.js','js/data/mega-types.js','js/data/abilities.js'])s.load(f);
+  for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/pokedex.js','js/data/sprites-meta.js','js/data/types.js','js/data/moves.js','js/data/items.js','js/systems/boss-rewards.js', 'js/systems/equipment.js','js/data/mega-forms.js','js/data/mega-types.js','js/data/abilities.js'])s.load(f);
   s.load('js/data/evolutions.js');s.load('js/systems/progression-mon.js');
   const G=s.G;G.FIREBASE_CONFIG=null;G.Coop={active:false,isHost:false,scaleHp:()=>1,broadcast:noop};
   G.FX=new Proxy({},{get:()=>noop});G.Audio={sfx:noop};G.UI={toast:noop};G.Camera={kick:noop,sees:()=>false,outerRadius:()=>500};
@@ -112,7 +112,7 @@ test('dash post-guard reduces damage by 70% and real outgoing damage applies Meg
 test('every rift has a 20% Mega branch, excludes partial forms, and 5% awards are authority-driven and idempotent',()=>{
   const s=context(),{G}=s,p=s.player();s.loadRift();s.Math.random=()=>.1999;G.Rift._start();assert.ok(G.Rift.arena.mega);assert.equal(G.Mega.BY[G.Rift.arena.mega].basicComplete,true);
   let boss=G.EnemyMgr.get(G.Rift.arena.bossId);assert.equal(boss.spriteDex,G.Rift.arena.mega);assert.deepEqual(Array.from(boss.types),Array.from(G.MEGA_TYPES[boss.mega]));
-  const id=boss.mega;boss.die();G.EnemyMgr.clear();s.Math.random=()=>.0499;G.Rift.update(.01,p,100);assert.ok(G.Mega.owns(G.DB.save,id));assert.equal(G.DB.save.abilityGems,11);
+  const id=boss.mega;boss.die();G.EnemyMgr.clear();s.Math.random=()=>.0499;G.Rift.update(.01,p,100);assert.equal(G.Mega.owns(G.DB.save,id),false);G.Game.offerSpecialChoice=noop;G.BossRewards.receive(91,{rift:true,stone:id,options:G.Items.rewardChoices()});assert.ok(G.Mega.owns(G.DB.save,id));assert.equal(G.DB.save.abilityGems,11);
   G.Rift.onEvent(['aw',id]);assert.equal(G.DB.save.abilityGems,11);
   G.Rift.reset();s.Math.random=()=>.2;G.Rift._start();assert.equal(G.Rift.arena.mega,null);
   G.Rift.reset();s.Math.random=()=>.1;G.Rift._start(null,'65-mega');boss=G.EnemyMgr.get(G.Rift.arena.bossId);boss.die();s.Math.random=()=>.05;G.Rift.update(.01,p,100);assert.equal(G.Mega.owns(G.DB.save,'65-mega'),false);

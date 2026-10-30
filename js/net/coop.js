@@ -486,6 +486,7 @@ G.Coop = (() => {
         break;
       case 'c': { const m = mates.get(ev[1]); if (m) G.Combat.ghostCast(m.pl, ev[2], ev[3], ev[4], ev[5]); break; }
       case 'zc': {const m=mates.get(ev[1]);if(m&&G.ZMoves){G.ZMoves.sync(m.pl,m.pl.net?.z);G.ZMoves.remoteCast(m.pl,ev[2],ev[3]);}break;}
+      case 'bc': G.BossRewards?.receive(ev[1],ev[2]);break;
       case 'item': api.item(ev[1]); break;
       case 'pk': G.Pickups.addRemote(ev[1], ev[2], ev[3], ev[4], ev[5]); break;
       case 'pc': G.Pickups.removeId(ev[1]); break;

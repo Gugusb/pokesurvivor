@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "El tesoro de los jefes · v0.30.0": "首领留下的宝藏 · v0.30.0",
+  "Los jefes dejan cofres. Acércate para abrirlos: guardan experiencia, monedas y tres objetos entre los que elegir. Los cofres de las grietas ofrecen premios más variados.": "击败首领后会留下奖励箱，靠近开启，可获得经验、金币，并从三件道具中挑选一件。裂缝奖励箱的道具更加丰富。",
+  "Las gemas y megapiedras de una grieta se reciben al abrir su cofre. Si queda cerrado al salir, vuelve contigo a la superficie.": "裂缝中的特性宝石和 Mega 进化石改为开箱时领取。离开裂缝时，尚未开启的奖励箱会随你返回地表。",
+
+  "Cofre de jefe": "BOSS 奖励箱",
+  "Cofre de grieta": "裂缝 BOSS 奖励箱",
+
   "Más talentos heredados · v0.29.0": "继承亲本的更多天赋 · v0.29.0",
   "La crianza propia transmite tres IV distintos de los progenitores; con un amigo, transmite cinco. Los demás se generan al azar.": "自行孵蛋随机继承亲本的 3 项不同个体值，与好友孵蛋继承 5 项，其余随机生成。",
   "Entrenamiento natural · v0.28.0": "培养伙伴的天生力量 · v0.28.0",

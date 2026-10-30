@@ -31,11 +31,13 @@ G.Items = (() => {
   }
   function remove(p,id){if(!count(p,id))return false;if(--p.specialItems[id]===0)delete p.specialItems[id];return true;}
   function roll(){return G.U.pick(LIST.filter(i=>!i.boss)).id;}
-  function rewardChoices(rng=Math.random){
+  function rewardChoices(rng=Math.random,rift=true){
     const out=[];
     for(let i=0;i<3;i++){
-      let pool=LIST.filter(it=>!!it.boss===(rng()<.25)&&!out.includes(it.id));
-      if(!pool.length)pool=LIST.filter(it=>!out.includes(it.id));
+      const boss=rng()<(rift?.5:.2);
+      const available=LIST.filter(it=>!it.boss||rift||['choiceband','linker'].includes(it.id));
+      let pool=available.filter(it=>!!it.boss===boss&&!out.includes(it.id));
+      if(!pool.length)pool=available.filter(it=>!out.includes(it.id));
       out.push(pool[Math.min(pool.length-1,Math.floor(rng()*pool.length))].id);
     }
     return out;

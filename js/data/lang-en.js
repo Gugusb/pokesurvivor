@@ -4,6 +4,9 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  "Cofre de jefe": "Boss Reward Chest",
+  "Cofre de grieta": "Rift Boss Reward Chest",
+
   "+3% vida base": "+3% base HP per level",
   "+4% a ambos ataques base": "+4% base Attack and Sp. Atk per level",
   "+3% velocidad base": "+3% base Speed per level",

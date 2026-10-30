@@ -22,6 +22,7 @@ G.Pickups = (() => {
     treasure:{color:'#d59cff',glow:'#9c50d8',r:9},
     ticket:   { color: '#ffd23f', glow: '#c08a10', r: 7 },
     ticket10: { color: '#c47bff', glow: '#8a3fd0', r: 8 },
+    bossChest:{color:'#ffdc70',glow:'#ab6eee',r:14},
     item:     { color: '#ffd23f', glow: '#c08a10', r: 9 }       // value = id del objeto
   };
   /** Probabilidad de que un Pokémon normal suelte un ticket del gacha. */
@@ -47,7 +48,8 @@ G.Pickups = (() => {
         if (j >= 0) { list[j].value += a.value; list[j].kind = 'xpBig'; }
         if (G.Coop.isHost) G.Coop.pickupGone(a.id);
       } else {
-        const a = list.shift();
+        const victim=list.findIndex(p=>p.kind!=='bossChest');if(victim<0)return;
+        const a = list.splice(victim,1)[0];
         if (G.Coop.isHost) G.Coop.pickupGone(a.id);
       }
     }
@@ -98,7 +100,7 @@ G.Pickups = (() => {
 
   /** Suelta un objeto suelto: 'heal' | 'magnet' | 'bomb' | 'coin'. */
   function drop(kind, x, y, value = 0) {
-    push(orb(kind, x, y, value));
+    const o=orb(kind,x,y,value);push(o);return o;
   }
 
   function orb(kind, x, y, value) {
@@ -184,6 +186,7 @@ G.Pickups = (() => {
       } else {
         // Baya, imán y bomba: su icono pixel art.
         const ICON = { heal: 'berry', magnet: 'magnet', bomb: 'bomb', ticket: 'ticket', ticket10: 'ticket10',treasure:'coin' };
+        if(p.kind==='bossChest'){G.Icons.draw(ctx,p.value?.rift?'riftChest':'bossChest',p.x-16,y-16,32);if(G.Game.player&&G.U.dist2(p.x,p.y,G.Game.player.x,G.Game.player.y)<180*180){ctx.save();ctx.font='bold 9px sans-serif';ctx.textAlign='center';ctx.fillStyle=p.value?.rift?'#eed4ff':'#fff1b0';ctx.fillText(G.T(p.value?.rift?'Cofre de grieta':'Cofre de jefe'),p.x,y-22);ctx.restore();}continue;}
         const sz = p.kind === 'ticket10' || p.kind === 'item' ? 24 : 18;
         if (p.kind === 'item') {
           // Objeto: brillo dorado latiendo, para que se vea desde lejos.

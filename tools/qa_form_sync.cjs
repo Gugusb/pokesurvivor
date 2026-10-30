@@ -366,12 +366,21 @@ const { chromium } = require(
     for(const viewer of [0,2,3])await pages[viewer].waitForFunction(uid=>G.Items.count(G.Coop.mate(uid)?.pl,'focussash')===1,ids[1]);
     assert.equal(await pages[1].evaluate(()=>G.Game.player.dead),false);
     assert.equal(await pages[1].evaluate(()=>G.Items.useActive(G.Game.player)),false);
+    const beforeGems=await Promise.all(pages.map(p=>p.evaluate(()=>G.DB.save.abilityGems)));
+    for(const p of pages)await p.evaluate(()=>{G.Game.player.bonds=0;if(G.Game.player.zState)G.Game.player.zState.phase='ready';});
+    await pages[0].evaluate(()=>{const p=G.Game.player;G.Items.rewardChoices=()=>['leftovers','quickclaw','focussash'];const c=G.BossRewards.drop({x:p.x+100,y:p.y,xp:0,legend:true});window.qaBossChest=c;});
+    for(const p of pages.slice(1))await p.waitForFunction(()=>G.Pickups.all().some(o=>o.kind==='bossChest'));
+    assert.equal(await pages[0].evaluate(()=>G.DB.save.abilityGems),beforeGems[0]);
+    await pages[0].evaluate(()=>G.BossRewards.open(window.qaBossChest));
+    for(let i=0;i<pages.length;i++){await pages[i].waitForFunction(n=>G.DB.save.abilityGems===n+1,beforeGems[i]);await pages[i].locator('#scr-item:not(.hidden)').waitFor();assert.equal(await pages[i].locator('#item-cards .card').count(),3);}
+    await pages[0].evaluate(()=>G.BossRewards.open(window.qaBossChest));
+    for(let i=0;i<pages.length;i++){assert.equal(await pages[i].evaluate(()=>G.DB.save.abilityGems),beforeGems[i]+1);await pages[i].locator('#item-cards [data-item="leftovers"]').click();}
     assert.deepEqual(errors, []);
     assert.equal(app.traffic.battleFramesRejected, 0);
     console.log(
       JSON.stringify(
         {
-          players: 4,bossFuryAndGuestLeech:true,scoreCountersSynced:true,emptyPpOrbitStopsForAllObservers:true,specialItemStacksAndSashConsumptionSynced:true,
+          players: 4,bossChestRewardSyncedAndDeduplicated:true,bossFuryAndGuestLeech:true,scoreCountersSynced:true,emptyPpOrbitStopsForAllObservers:true,specialItemStacksAndSashConsumptionSynced:true,
           firstEvolution: first,
           finalEvolution: final,
           allObserversRenderCorrectSpecies: true,

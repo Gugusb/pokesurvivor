@@ -198,16 +198,12 @@ G.Rift = (() => {
   function won(stone = null) {
     if (!arena || arena.phase !== 'fight') return;
     arena.phase = 'won'; arena.endT = 5;
-    G.DB.save.abilityGems = (G.DB.save.abilityGems || 0) + 1;
-    G.DB.commit(true);
-    G.UI.toast('+1 Gema de habilidad');
-    if (stone && stone === arena.mega && G.Mega) G.Mega.award(stone);
+    if(authority()){const e=G.EnemyMgr.get(arena.bossId);G.BossRewards.drop(e||{x:arena.x,y:arena.y,xp:Math.round(500+G.Game.st.time*1.2),legend:true},stone);}
     G.Progress.event('rift', { type: arena.type });
     G.Pickups.pullAll();
     G.Spawner.say('¡Has vencido a ' + (arena.mega ? G.Mega.label(arena.mega) : G.DEX_BY[arena.dex].name) + '! Recoge el premio…', 3.4, true);
     G.Audio.sfx('legend');
-    const pl = G.Game.player;
-    if(pl)arena.reward=G.Items.rewardChoices();
+
   }
 
   function lost() {
@@ -221,6 +217,7 @@ G.Rift = (() => {
   function finish() {
     const pl = G.Game.player;
     const a = arena;
+    G.BossRewards.returnFromRift(a);
     arena = null;
     G.World.setArena(null);
     G.World.setBiome(a.biome, true);
@@ -238,8 +235,7 @@ G.Rift = (() => {
     if (pl.dead) pl.revive(0.3);
     G.Camera.x = pl.x; G.Camera.y = pl.y;
     G.Game.flash('#c9a6ff', 0.8);
-    if(a.phase==='won'&&a.reward&&G.Game.offerSpecialChoice)G.Game.offerSpecialChoice(a.reward);
-    else if(pl.bonds>0)G.Game.offerBond();
+    if(pl.bonds>0)G.Game.offerBond();
   }
 
   // ---------------- dibujo ----------------

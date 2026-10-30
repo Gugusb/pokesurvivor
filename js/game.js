@@ -77,6 +77,7 @@ G.Game = (() => {
   /** @param coop  { seed, host, members } para una partida en grupo */
   let startingRun=false;
   async function startRun(coop = null) {
+    G.BossRewards.reset();
     if(startingRun)return;
     holdBy = []; awayBy = null;
     const save = G.DB.save;
@@ -514,7 +515,7 @@ G.Game = (() => {
 
   // ---------------- recogida ----------------
 
-  const PICK_SFX = { xp: 'xp', xpBig: 'xp', coin: 'coin', treasure:'legend', heal: 'heal', bomb: 'break', magnet: 'confirm', ticket: 'shiny', ticket10: 'legend', item: 'legend' };
+  const PICK_SFX = { xp: 'xp', xpBig: 'xp', coin: 'coin', treasure:'legend', heal: 'heal', bomb: 'break', magnet: 'confirm', ticket: 'shiny', ticket10: 'legend', item: 'legend',bossChest:'legend' };
 
   /*
    * Cooperativo: la elección de objeto y las cartas de nivel no pueden taparse.
@@ -536,9 +537,9 @@ G.Game = (() => {
     G.UI.toast(G.T('Objeto especial obtenido')+' · '+G.T(G.Items.BY[id].name));
   }
   function offerSpecialChoice(options){
-    if(!pl||pl.dead)return;
+    if(!pl)return;
     options=(options||G.Items.rewardChoices()).filter(id=>G.Items.BY[id]);if(!options.length)return;
-    if(!['playing','held'].includes(state)||G.Rift.inArena||openItem||G.ZMoves&&everyone().some(G.ZMoves.busy)) {laterItems.push(options);return;}
+    if(pl.dead||!['playing','held'].includes(state)||G.Rift.inArena||openItem||G.ZMoves&&everyone().some(G.ZMoves.busy)) {laterItems.push(options);return;}
     state='choice';if(G.Coop.active)G.Coop.holdStart();
     const take=id=>{
       if(!openItem||!openItem.options.includes(id))return;
@@ -557,6 +558,7 @@ G.Game = (() => {
     }
     if (G.Coop.active) G.Coop.collected(p, who);
     if (mine || p.kind === 'bomb') G.Audio.sfx(PICK_SFX[p.kind]);
+    if(p.kind==='bossChest'){G.BossRewards.open(p);return;}
     if (p.kind === 'xp' || p.kind === 'xpBig') {
       pendingLevels += pl.gainXp(p.value * (G.Coop.active ? G.Coop.xpFactor() : 1));
       return;

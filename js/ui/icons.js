@@ -192,6 +192,8 @@ G.Icons = (() => {
   UI.superpotion={rows:UI.potion.rows,pal:{b:'#ff9c6b',d:'#a85339',w:'#fff0d6',c:'#a8e8ff',l:'#f4f8ff'}};
   UI.pppotion={rows:UI.potion.rows,pal:{b:'#57b9ed',d:'#2d628f',w:'#e7faff',c:'#c5f8ff',l:'#2254be'}};
   UI.spiritspray={rows:UI.potion.rows,pal:{b:'#cb84eb',d:'#78449c',w:'#ffedff',c:'#f8d7ff',l:'#f9b9db'}};
+  UI.bossChest={pal:{b:'#d69c42',d:'#855424',w:'#fff4aa',c:'#f9d958'},rows:['............','..kkkkkkkk..','.kcccccccck.','kccwwcccccck','kbbbbbbbbbbk','kkkcckkcckkk','kbkcckkcckbk','kbbbbccbbbbk','kbbbbccbbbbk','kddddddddddk','.kkkkkkkkkk.','............']};
+  UI.riftChest={rows:UI.bossChest.rows,pal:{b:'#aa71d8',d:'#593579',w:'#f7e4ff',c:'#e1b3ff'}};
   // Variantes de paleta.
   UI.starDim = { rows: UI.star.rows, pal: { y: '#3a4870', o: '#2a3458', w: '#4a5a88' } };
 

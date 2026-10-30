@@ -793,14 +793,14 @@ test('a real local account retains spent gems, unlocked medals and equipment aft
   assert.equal(G.DB.save.abilityGems, 3); assert.equal(G.Abilities.equipped(G.DB.save, 144), 'snowcloak');
   assert.equal(G.Abilities.equipped(G.DB.save, 149), 'multiscale');
 });
-test('rift victory awards exactly one gem, duplicate victory and defeat award none', () => {
+test('rift chest opening awards one gem; victory alone and duplicate opening award none', () => {
   const s = context(), { G } = s, p = s.player(144, 'pressure');
-  G.Game.player = p; G.Progress = { event: noop }; G.Pickups = { pullAll: noop }; G.Spawner = { say: noop };
+  G.Game.player = p; G.Progress = { event: noop }; G.Pickups = { pullAll: noop,drop:(kind,x,y,value)=>({id:91,kind,x,y,value}) };G.EnemyMgr.get=()=>null;G.Game.st={time:100};G.Game.offerSpecialChoice=noop; G.Spawner = { say: noop };
   const source = fs.readFileSync(path.join(ROOT, 'js/systems/rift.js'), 'utf8').replace(
     'reset, update, drawable,', '_setArena(a) { arena = a; }, reset, update, drawable,');
   vm.runInContext(source, s);
   G.Rift._setArena({ phase: 'fight', dex: 150, type: 'psychic' });
-  G.Rift.onEvent(['aw']); assert.equal(G.DB.save.abilityGems, 11); assert.equal(p.bonds, 0);assert.equal(G.Rift.arena.reward.length,3);
+  G.Rift.onEvent(['aw']); assert.equal(G.DB.save.abilityGems, 10); assert.equal(p.bonds, 0);G.BossRewards.receive(91,{rift:true,stone:null,options:G.Items.rewardChoices()});assert.equal(G.DB.save.abilityGems,11);
   G.Rift.onEvent(['aw']); assert.equal(G.DB.save.abilityGems, 11);
   G.Rift._setArena({ phase: 'fight', dex: 150, type: 'psychic' }); G.Rift.onEvent(['al']);
   assert.equal(G.DB.save.abilityGems, 11);
