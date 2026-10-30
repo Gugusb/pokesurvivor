@@ -1,6 +1,15 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Entrenamiento natural · v0.28.0": "培养伙伴的天生力量 · v0.28.0",
+  "Las mejoras de vida, ataques, defensas, velocidad y agilidad refuerzan los stats base del Pokémon. Síntesis recupera una parte de su vida base. El entrenamiento acompaña a cada evolución.": "强化生命、双攻、双防、速度和敏捷，现改为提升伙伴的基础能力。光合作用按基础生命回复，培养成果也会随进化成长。",
+  "+3% vida base": "每级 +3% 基础生命",
+  "+4% a ambos ataques base": "每级 +4% 基础物攻和特攻",
+  "+3% velocidad base": "每级 +3% 基础速度",
+  "+3% agilidad base": "每级 +3% 基础敏捷",
+  "+5% a ambas defensas base": "每级 +5% 基础物防和特防",
+  "Recupera 0.2% de vida base/s": "每级每秒恢复 0.2% 基础生命",
+
   "Más provisiones de PP · v0.27.0": "备好 PP，继续冒险 · v0.27.0",
   "Dos nuevos objetos equipables: Poción PP restaura 20 PP al siguiente movimiento que uses; Bruma Mental añade 15 PP de reserva. Ambos se recargan en 90 segundos.": "新增两件携带道具：PP 药剂为下一次发动的技能恢复 20 点 PP；精神喷雾提供 15 点备用 PP。两者冷却均为 90 秒。",
   "Poción PP": "PP 药剂",

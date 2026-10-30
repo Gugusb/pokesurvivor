@@ -8,7 +8,7 @@ G.SettingsUI = (() => {
   G.I18n.addChinese({'Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.':'拖动屏幕移动，点击技能切换攻击，右上角按钮暂停；支持竖屏与横屏游玩。'});
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '0.27.0 · 2026-10-30';
+  const VERSION = '0.28.0 · 2026-10-30';
   const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 

@@ -27,18 +27,19 @@ G.Player = class Player {
     this.cdMul = perks.cdMul || 1;
     this.dmgReduce = perks.dmgReduce || 0;
     this.regenFlat = perks.regen || 0;
+    this.regenBase = perks.regenBase || 0;
     this.magnet = 78 * (perks.magnetMul || 1);
     this.xpMul = perks.xpMul || 1;
     this.baseCoinMul = perks.coinMul || 1;
 
     const ivs = G.MonProgression ? G.MonProgression.values(this.dex) : Array(8).fill(16);
     const ivm = G.MonProgression ? ivs.map(G.MonProgression.ivMod) : Array(8).fill(1);
-    this.statGrowth = {hp:0,atk:0,spa:0,defense:0,spdef:0,spd:0,agility:0,stamina:0};
+    this.statGrowth = Object.assign({hp:0,atk:0,spa:0,defense:0,spdef:0,spd:0,agility:0,stamina:0},perks.statGrowth);
     this.baseHp = mon.hp * ivm[0];
     this.baseAgility = (G.MonProgression?.agilityBase(mon) || 80) * ivm[6];
     this.baseStamina = (G.MonProgression?.staminaBase(mon) || 80) * ivm[7];
     this.maxPpBonus = 0; this.tempPP = 0; this.ppPotionReady=0;
-    this.maxHp = this.baseHp + (perks.hp || 0);
+    this.maxHp = this.baseHp * (1+this.statGrowth.hp) + (perks.hp || 0);
     this.hp = this.maxHp;
     this.baseSpd = mon.spd * ivm[2];
     this.baseAtk = mon.atk * ivm[1];
@@ -135,7 +136,7 @@ G.Player = class Player {
       (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1);
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0) + this.buffStacks(this.buffs.def) * this.buffs.def.amount); }
-  get regen() { return this.regenFlat + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0) + this.buffStacks(this.buffs.regen) * this.buffs.regen.amount; }
+  get regen() { return this.regenFlat + this.baseHp*this.regenBase + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0) + this.buffStacks(this.buffs.regen) * this.buffs.regen.amount; }
   get effectiveXpMul() { return this.xpMul * G.Abilities.xpFactor(this) * (1+.06*(G.Items?.count(this,'luckyegg')||0)); }
 
   get coinMul(){return this.baseCoinMul*(1+.1*(G.Items?.count(this,'amuletcoin')||0));}

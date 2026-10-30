@@ -4,6 +4,13 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  "+3% vida base": "+3% base HP per level",
+  "+4% a ambos ataques base": "+4% base Attack and Sp. Atk per level",
+  "+3% velocidad base": "+3% base Speed per level",
+  "+3% agilidad base": "+3% base Agility per level",
+  "+5% a ambas defensas base": "+5% base Defense and Sp. Def per level",
+  "Recupera 0.2% de vida base/s": "Recover 0.2% of base HP/s per level",
+
   "Poción PP": "PP Potion",
   "Bruma Mental": "Spirit Spray",
   "PP preparados": "PP primed",
