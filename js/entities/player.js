@@ -22,6 +22,7 @@ G.Player = class Player {
 
     this.atkMul = perks.atkMul || 1;
     this.damageBonus = 0;
+    this.permanentGrowth={...(perks.statGrowth||{})};this.specTokens=0;
     this.attackDebuff = 0; this.attackDebuffT = 0;
     this.spdMul = perks.spdMul || 1;
     this.cdMul = perks.cdMul || 1;
@@ -255,7 +256,7 @@ G.Player = class Player {
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
     const meta = G.Sprites.animMeta(this.spriteDex, anim);
     const len = meta ? meta.d.reduce((a, b) => a + b, 0) / 60 : 0.4;
-    const cd = Math.max(0.12, m.cd * this.cdMul * this.agilityCooldown * (G.Items?.cooldownFactor(this)||1) / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
+    const cd = Math.max(0.12, m.cd * this.cdMul * (G.Specialization?.stats(m).cooldown||1) * this.agilityCooldown * (G.Items?.cooldownFactor(this)||1) / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
     this.anim.play(anim, { speed: Math.max(1, len / (cd * 0.9)) });
     this.attackFace = 0.35;
   }

@@ -1,0 +1,10 @@
+G.SpecializationUI=(()=>{
+  const $=id=>document.getElementById(id);let player=null,target=null,options=[],done=null;
+  const left=()=>Math.max(0,1+(player?.rerollBonus||0)-(player?.rerolls||0));
+  function button(name,desc,action,rare=false){const b=document.createElement('button');b.className='card mastery-card'+(rare?' treasure':'');const strong=document.createElement('strong');strong.textContent=name;const small=document.createElement('span');small.textContent=desc;b.append(strong,small);b.onclick=action;return b;}
+  function show(p,cb){player=p;target=null;done=cb;options=[];G.UI.show('scr-specialization');$('specialization-title').textContent=G.T('Elige un movimiento');$('specialization-help').textContent=G.T('Especializa un movimiento al máximo. Cada uno admite cinco especializaciones.');$('specialization-reroll').classList.add('hidden');const list=$('specialization-cards');list.replaceChildren();for(const m of G.Specialization.eligible(p))list.append(button(G.T(m.name),G.Specialization.ids(m).length+' / 5',()=>{target=m;roll();}));}
+  function roll(){options=G.Specialization.offers(target);$('specialization-title').textContent=G.T(target.name);$('specialization-help').textContent=G.T('Elige una especialización');const list=$('specialization-cards');list.replaceChildren();options.forEach((id,i)=>{const d=G.Specialization.BY[id];const card=button((i+1)+'. '+G.T(d.name),G.T(d.desc),()=>pick(i),d.rare);card.dataset.spec=id;card.dataset.rarity=d.rare?'treasure':'normal';list.append(card);});const b=$('specialization-reroll');b.textContent='R · '+G.T('Cambiar opciones')+' ('+left()+')';b.disabled=left()<=0;b.classList.remove('hidden');b.onclick=reroll;}
+  function reroll(){if(!target||!left())return;player.rerolls=(player.rerolls||0)+1;roll();}
+  function pick(i){if(!target||!options[i]||!G.Specialization.apply(player,target,options[i]))return;const cb=done;done=null;target=null;options=[];G.UI.hide('scr-specialization');G.Audio.sfx('legend');cb?.();}
+  return {show,reroll,pick};
+})();

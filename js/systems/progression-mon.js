@@ -25,9 +25,14 @@ G.MonProgression = (() => {
   const AGILITY_STANDARD=80;
   const agilityBase=p=>Math.max(1,p.baseStats?.spe??(((p.spd-78)/.42)||80));
   const staminaBase=p=>Math.max(1,p.baseStats?(p.baseStats.def+p.baseStats.spd)/2:80);
+  // Monotone cubic interpolation through the requested gameplay anchors.
+  const agilityX=[0,80,160,200,1280],agilityY=[2.2,1,.6,.5,.25];
+  const agilitySlope=[-.015,-.0075,-.0033333333333333335,-.0003846153846153846,0];
   function cooldownFactor(value){
-    const x=Math.max(0,Number(value)||0)/AGILITY_STANDARD;
-    return .25+2.75/(1+(8/3)*x*x);
+    const a=Math.max(0,Number(value)||0);if(a>=1280)return .25;
+    let i=0;while(a>agilityX[i+1])i++;
+    const h=agilityX[i+1]-agilityX[i],t=(a-agilityX[i])/h,t2=t*t,t3=t2*t;
+    return (2*t3-3*t2+1)*agilityY[i]+(t3-2*t2+t)*h*agilitySlope[i]+(-2*t3+3*t2)*agilityY[i+1]+(t3-t2)*h*agilitySlope[i+1];
   }
   function ppInterval(value){
     const stamina=Math.max(0,Number(value)||0);

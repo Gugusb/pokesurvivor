@@ -15,8 +15,9 @@ function setup(){
 test('agility follows original Speed and both curve limits are smooth, monotonic and bounded',()=>{
   const {G}=setup(),P=G.MonProgression;
   for(const m of G.DEX){close(P.agilityBase(m),m.baseStats.spe);close(P.staminaBase(m),(m.baseStats.def+m.baseStats.spd)/2);}
-  close(P.cooldownFactor(80),1);close(P.cooldownFactor(0),3);
-  let last=3;for(let a=1;a<=20000;a++){const k=P.cooldownFactor(a);assert.ok(k>.25&&k<last);last=k;}
+  close(P.cooldownFactor(80),1);close(P.cooldownFactor(0),2.2);
+  for(const [a,k]of [[0,2.2],[80,1],[160,.6],[200,.5],[1280,.25]])close(P.cooldownFactor(a),k);
+  let last=2.2;for(let a=1;a<=20000;a++){const k=P.cooldownFactor(a);assert.ok(k>=.25&&k<=last&&k<=2.2);last=k;}
   const a=P.stats(384,Array(8).fill(16)),b=P.stats(383,Array(8).fill(16));
   assert.ok(a.agility>b.agility);assert.ok(P.cooldownFactor(a.agility)<P.cooldownFactor(b.agility));
   close(P.ppInterval(200),.25);close(P.ppInterval(Infinity),1/7);close(P.ppInterval(-5),1);

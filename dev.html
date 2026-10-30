@@ -520,6 +520,21 @@
   </div>
 </section>
 
+<button id="backpack-open" class="bag-open hidden" title="Abrir mochila" aria-label="Abrir mochila">▣<kbd>E</kbd></button>
+<section id="scr-backpack" class="scr dim hidden">
+  <div class="box bag-panel">
+    <header class="bag-header"><div><h2>Mochila de combate</h2><small id="backpack-mode"></small></div><button id="backpack-close" class="btn">Cerrar · E</button></header>
+    <div class="bag-columns">
+      <div class="bag-profile"><div class="bag-mon"><div id="backpack-portrait"></div><div><h3 id="backpack-name"></h3><p id="backpack-vital"></p></div></div>
+        <p class="bag-legend">Base · mejoras · bayas · movimientos · otros</p><div id="backpack-stats"></div><p id="backpack-def-note" class="bag-note"></p>
+      </div>
+      <div class="bag-content"><h3>Movimientos</h3><div id="backpack-moves"></div><h3>Objeto equipado</h3><div id="backpack-active"></div><h3>Objetos especiales</h3><div id="backpack-passive"></div><p id="backpack-tokens" class="bag-note"></p></div>
+    </div><footer class="bag-note">Mochila: E · Cambiar: Q / Tab</footer>
+  </div>
+</section>
+<section id="scr-specialization" class="scr dim hidden">
+  <div class="box mastery-panel"><div class="eyebrow">Especialización</div><h2 id="specialization-title"></h2><p id="specialization-help" class="muted"></p><div id="specialization-cards"></div><button id="specialization-reroll" class="btn hidden"></button></div>
+</section>
 <section id="scr-bond" class="scr dim hidden">
   <div class="box center">
     <h2 class="bond-title">¡Vínculo!</h2>
@@ -563,7 +578,7 @@
 <section id="scr-pause" class="scr dim hidden">
   <div class="box center" style="width:min(460px,100%)">
     <h2>Pausa</h2>
-    <p class="sub kbd-hint"><kbd>WASD</kbd> moverse · <kbd>1</kbd>–<kbd>4</kbd> movimiento · <kbd>Q</kbd>/<kbd>E</kbd> ciclar · <kbd>Esc</kbd> pausa</p>
+    <p class="sub kbd-hint"><kbd>WASD</kbd> moverse · <kbd>1</kbd>–<kbd>4</kbd> movimiento · <kbd>Q</kbd>/<kbd>Tab</kbd> ciclar · <kbd>E</kbd> Mochila de combate · <kbd>Esc</kbd> pausa</p>
     <p class="sub touch-hint">Arrastra el dedo para moverte · toca un ataque para cambiarlo</p>
     <p id="pause-coop" class="note hidden">Partida en grupo: el juego sigue mientras estás aquí.</p>
     <div id="pause-items" class="special-items-list"></div>
@@ -623,6 +638,7 @@
 <script defer src="js/data/upgrades.js"></script>
 <script defer src="js/data/items.js"></script>
 <script defer src="js/systems/boss-rewards.js"></script>
+<script defer src="js/systems/specialization.js"></script>
 <script defer src="js/systems/equipment.js"></script>
 <script defer src="js/data/missions.js"></script>
 <script defer src="js/data/achievements.js"></script>
@@ -642,6 +658,7 @@
 <!-- sistemas -->
 <script defer src="js/systems/move-control.js"></script>
 <script defer src="js/systems/move-pp.js"></script>
+<script defer src="js/systems/player-stats.js"></script>
 <script defer src="js/systems/combat.js"></script>
 <script defer src="js/systems/spawner.js"></script>
 <script defer src="js/systems/levelup.js"></script>
@@ -676,6 +693,8 @@
 <script defer src="js/ui/slots.js"></script>
 <script defer src="js/ui/gacha-ui.js"></script>
 <script defer src="js/ui/run-ui.js"></script>
+<script defer src="js/ui/backpack-ui.js"></script>
+<script defer src="js/ui/specialization-ui.js"></script>
 <script defer src="js/ui/social-ui.js"></script>
 <script defer src="js/ui/nursery-ui.js"></script>
 <script defer src="js/ui/ranking-ui.js"></script>

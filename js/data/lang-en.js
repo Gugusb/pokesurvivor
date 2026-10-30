@@ -761,3 +761,55 @@ G.I18n.add({
   'Ya has reportado esta marca': 'You already reported this record',
   '¿Reportar la marca de {x} como trampa?': "Report {x}'s record as cheating?", 'Gracias: la revisaremos': 'Thanks: we will review it'
 });
+
+// Battle bag and move mastery.
+G.I18n.add({
+  "Mochila de combate": "Battle bag",
+  "Abrir mochila": "Open battle bag",
+  "El combate continúa": "Battle continues",
+  "Partida en pausa": "Battle paused",
+  "Base · mejoras · bayas · movimientos · otros": "Base · upgrades · berries · moves · other",
+  "Mejoras permanentes": "Permanent upgrades",
+  "Bayas": "Berries",
+  "Movimientos": "Moves",
+  "Otros efectos": "Other effects",
+  "Ataque físico": "Physical Attack",
+  "Ataque especial": "Special Attack",
+  "Defensa física": "Physical Defense",
+  "Defensa especial": "Special Defense",
+  "Vida actual": "Current HP",
+  "Multiplicador físico": "Physical multiplier",
+  "Multiplicador especial": "Special multiplier",
+  "Daño de contacto": "Contact damage",
+  "Daño a distancia": "Ranged damage",
+  "unidades/s": "units/s",
+  "Recarga": "Cooldown",
+  "Velocidad de recarga": "Cooldown speed",
+  "Recuperación base": "Base recovery",
+  "Reducción adicional": "Additional reduction",
+  "Recuperación al usar": "While using",
+  "Sin usar": "While unused",
+  "PP de reserva": "Reserve PP",
+  "Alcance": "Range",
+  "Cantidad": "Count",
+  "Perforación": "Pierce",
+  "Efecto de apoyo": "Support effect",
+  "Objeto equipado": "Carried item",
+  "Objetos especiales": "Special items",
+  "Sin objeto equipado": "No carried item",
+  "Aún no llevas objetos especiales": "No special items yet",
+  "Especializaciones pendientes": "Pending specializations",
+  "Especialización": "Specialization",
+  "Elige un movimiento": "Choose a move",
+  "Especializa un movimiento al máximo. Cada uno admite cinco especializaciones.": "Choose a max-level move. Each move can receive five specializations.",
+  "Elige una especialización": "Choose a specialization",
+  "MT de Especialización": "Mastery TM",
+  "Permite especializar un movimiento que haya alcanzado su nivel máximo.": "Grants one specialization for a max-level move.",
+  "Cambiar opciones": "Reroll options",
+  "Tu Pokémon": "Your Pokémon",
+  "Mochila: E · Cambiar: Q / Tab": "Bag: E · Switch: Q / Tab"
+});
+
+G.I18n.add({"Listo": "Ready", "Multiplicador del movimiento": "Move power", "Efecto por acumulación": "Effect per stack", "Cerrar · E": "Close · E", "WASD moverse · 1-4 / Q / Tab o clic en un ataque para cambiarlo · E mochila · Esc pausa": "WASD move · 1–4 / Q / Tab or click to switch · E bag · Esc pause"});
+
+G.I18n.add({"Obtener MT de Especialización": "Get Mastery TM", "Maximizar movimientos activos": "Max active moves"});

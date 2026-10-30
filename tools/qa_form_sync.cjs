@@ -130,6 +130,13 @@ const { chromium } = require(
           return draw.apply(this, args);
         };
       }, i);
+    // A guest's read-only backpack never starts a group hold.
+    const bagStart=await pages[0].evaluate(()=>G.Game.st.time);
+    await pages[1].evaluate(()=>G.Game.toggleBackpack());
+    await pages[1].locator('#scr-backpack:not(.hidden)').waitFor();
+    await pages[0].waitForFunction(t=>G.Game.st.time>t+.3,bagStart);
+    for(const p of pages)assert.equal(await p.evaluate(()=>G.Game.state),'playing');
+    await pages[1].evaluate(()=>G.Game.toggleBackpack());
     async function level(n) {
       await pages[0].evaluate((n) => {
         G.Game.player.level = n - 1;
@@ -366,8 +373,10 @@ const { chromium } = require(
     for(const viewer of [0,2,3])await pages[viewer].waitForFunction(uid=>G.Items.count(G.Coop.mate(uid)?.pl,'focussash')===1,ids[1]);
     assert.equal(await pages[1].evaluate(()=>G.Game.player.dead),false);
     assert.equal(await pages[1].evaluate(()=>G.Items.useActive(G.Game.player)),false);
+    // Freeze pickup simulation on every observer for this manual-open test:
+    // otherwise a nearby guest can consume its visual copy before the host opens it.
     const beforeGems=await Promise.all(pages.map(p=>p.evaluate(()=>G.DB.save.abilityGems)));
-    for(const p of pages)await p.evaluate(()=>{G.Game.player.bonds=0;if(G.Game.player.zState)G.Game.player.zState.phase='ready';});
+    for(const p of pages)await p.evaluate(()=>{G.Game.player.bonds=0;if(G.Game.player.zState)G.Game.player.zState.phase='ready';window.qaPickupUpdate=G.Pickups.update;G.Pickups.update=()=>{};});
     await pages[0].evaluate(()=>{const p=G.Game.player;G.Items.rewardChoices=()=>['leftovers','quickclaw','focussash'];const c=G.BossRewards.drop({x:p.x+100,y:p.y,xp:0,legend:true});window.qaBossChest=c;});
     for(const p of pages.slice(1))await p.waitForFunction(()=>G.Pickups.all().some(o=>o.kind==='bossChest'));
     assert.equal(await pages[0].evaluate(()=>G.DB.save.abilityGems),beforeGems[0]);
@@ -375,12 +384,27 @@ const { chromium } = require(
     for(let i=0;i<pages.length;i++){await pages[i].waitForFunction(n=>G.DB.save.abilityGems===n+1,beforeGems[i]);await pages[i].locator('#scr-item:not(.hidden)').waitFor();assert.equal(await pages[i].locator('#item-cards .card').count(),3);}
     await pages[0].evaluate(()=>G.BossRewards.open(window.qaBossChest));
     for(let i=0;i<pages.length;i++){assert.equal(await pages[i].evaluate(()=>G.DB.save.abilityGems),beforeGems[i]+1);await pages[i].locator('#item-cards [data-item="leftovers"]').click();}
+    for(const p of pages)await p.evaluate(()=>{G.Pickups.update=window.qaPickupUpdate;delete window.qaPickupUpdate;});
+    for(const p of pages)await p.waitForFunction(()=>G.Game.state==='playing');
+    await pages[1].evaluate(()=>{const p=G.Game.player,m=G.Moves.instance('tackle',G.Moves.BY_ID.tackle.maxLvl);m.specializations=['t2','t3','t4'];p.moves=[m];p.slots=[[m]];p.active=0;p.ability=null;p.baseStamina=0;p.hp=p.maxHp/2;G.MovePP.state(p,m).current=0;G.Settings.set('castMode','click');});
+    for(const viewer of [0,2,3])await pages[viewer].waitForFunction(uid=>G.Specialization.find(G.Coop.mate(uid).pl,'tackle')?.specializations?.includes('t4'),ids[1]);
+    const oldHp=await pages[1].evaluate(()=>G.Game.player.hp);
+    await pages[0].evaluate(uid=>{const p=G.Coop.mate(uid).pl,e=new G.Enemy({dex:143,hp:100000,dmg:0,spd:0,xp:0,behavior:'ranged'},p.x+100,p.y,{hp:1,dmg:1,spd:1});e.defense=e.spdef=1;const rng=Math.random;Math.random=()=>0;try{e.hurt(100,'#fff',0,0,0,null,p,{id:'tackle',kind:'melee',damageClass:'physical'});}finally{Math.random=rng;}},ids[1]);
+    await pages[1].waitForFunction(h=>G.Game.player.hp>=h+4&&G.MovePP.state(G.Game.player,G.Game.player.moves[0]).current>=1,oldHp);
+    for(const viewer of [0,2,3])await pages[viewer].evaluate(()=>{window.qaMasterySlash=0;const old=G.FX.slash;G.FX.slash=function(x,y,a,r,...rest){window.qaMasterySlash=r;return old.call(this,x,y,a,r,...rest);};});
+    const radius=await pages[1].evaluate(()=>{const p=G.Game.player,m=p.moves[0];G.Coop.cast(p,m);return m.radius*1.5;});
+    for(const viewer of [0,2,3])await pages[viewer].waitForFunction(r=>Math.abs(window.qaMasterySlash-r)<.01,radius);
+    await pages[1].evaluate(()=>G.Items.gain(G.Game.player,'masterytm'));await pages[1].locator('#scr-specialization:not(.hidden)').waitFor();
+    for(const viewer of [0,2,3])await pages[viewer].waitForFunction(()=>G.Game.state==='held');
+    await pages[1].locator('#specialization-cards .card').first().click();await pages[1].locator('#specialization-cards .card').first().click();
+    for(const p of pages)await p.waitForFunction(()=>G.Game.state==='playing');
+    assert.equal(await pages[1].evaluate(()=>G.Game.player.moves[0].specializations.length),4);assert.equal(await pages[1].evaluate(()=>G.Game.player.specTokens),0);
     assert.deepEqual(errors, []);
     assert.equal(app.traffic.battleFramesRejected, 0);
     console.log(
       JSON.stringify(
         {
-          players: 4,bossChestRewardSyncedAndDeduplicated:true,bossFuryAndGuestLeech:true,scoreCountersSynced:true,emptyPpOrbitStopsForAllObservers:true,specialItemStacksAndSashConsumptionSynced:true,
+          players: 4,backpackDoesNotPauseTeam:true,masteryChoicePausesAndResumesTeam:true,masterySnapshotsAndGhostSizeSynced:true,hostLifestealAndPpRefundDeliveredToOwner:true,bossChestRewardSyncedAndDeduplicated:true,bossFuryAndGuestLeech:true,scoreCountersSynced:true,emptyPpOrbitStopsForAllObservers:true,specialItemStacksAndSashConsumptionSynced:true,
           firstEvolution: first,
           finalEvolution: final,
           allObserversRenderCorrectSpecies: true,

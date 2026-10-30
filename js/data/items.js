@@ -2,7 +2,6 @@
 G.Items = (() => {
   const LIST=[
     {id:'leftovers',name:'Restos',desc:'Recupera un poco de vida de forma continua.'},
-    {id:'choiceband',name:'Cinta Elección',desc:'Aumenta el daño. Mientras atacas, los demás movimientos no recuperan PP.',boss:true},
     {id:'quickclaw',name:'Garra Rápida',desc:'Acorta la recarga de los movimientos.'},
     {id:'focussash',name:'Banda Focus',desc:'Evita un golpe mortal. Se consume al activarse.'},
     {id:'shellbell',name:'Cascabel Concha',desc:'El daño causado recupera un poco de vida.'},
@@ -12,6 +11,7 @@ G.Items = (() => {
     {id:'choicescarf',name:'Pañuelo Elección',desc:'Aumenta la velocidad de movimiento.'},
     {id:'rockyhelmet',name:'Casco Dentado',desc:'Devuelve parte del daño al recibir contacto.'},
     {id:'assaultvest',name:'Chaleco Asalto',desc:'Reduce el daño recibido.'},
+    {id:'masterytm',name:'MT de Especialización',desc:'Permite especializar un movimiento que haya alcanzado su nivel máximo.',boss:true,icon:'book'},
     {id:'linker',name:'Enlazador',desc:'Concede una oportunidad de unir movimientos.',boss:true,icon:'bond'},
     {id:'luckymedal',name:'Medalla Fortuna',desc:'Añade una opción al subir de nivel.',boss:true,icon:'medal3'},
     {id:'candyjar',name:'Tarro de Caramelos',desc:'Permite guardar PP por encima del máximo; esa reserva se recupera más despacio.',boss:true,icon:'berry'},
@@ -20,12 +20,13 @@ G.Items = (() => {
     {id:'bugnet',name:'Red de Captura',desc:'Aumenta un poco la probabilidad de capturar Pokémon.',boss:true,icon:'ball'}
   ];
   const BY=Object.assign(Object.create(null),Object.fromEntries(LIST.map(i=>[i.id,i])));
-  const count=(p,id)=>Math.max(0,p?.specialItems?.[id]||0);
+  const count=(p,id)=>BY[id]?Math.max(0,p?.specialItems?.[id]||0):0;
   const icon=id=>BY[id]?.icon||id;
   function gain(p,id){
     if(!p||!BY[id])return false;
     p.specialItems ||= {};
-    if(id==='linker')p.bonds=(p.bonds||0)+1;
+    if(id==='masterytm')p.specTokens=(p.specTokens||0)+1;
+    else if(id==='linker')p.bonds=(p.bonds||0)+1;
     else p.specialItems[id]=count(p,id)+1;
     return true;
   }
@@ -35,14 +36,14 @@ G.Items = (() => {
     const out=[];
     for(let i=0;i<3;i++){
       const boss=rng()<(rift?.5:.2);
-      const available=LIST.filter(it=>!it.boss||rift||['choiceband','linker'].includes(it.id));
+      const available=LIST.filter(it=>!it.boss||rift||['linker','masterytm'].includes(it.id));
       let pool=available.filter(it=>!!it.boss===boss&&!out.includes(it.id));
       if(!pool.length)pool=available.filter(it=>!out.includes(it.id));
       out.push(pool[Math.min(pool.length-1,Math.floor(rng()*pool.length))].id);
     }
     return out;
   }
-  const damageBonus=p=>.08*count(p,'choiceband')+.06*count(p,'lifeorb');
+  const damageBonus=p=>.06*count(p,'lifeorb');
   const cooldownFactor=p=>Math.pow(.96,count(p,'quickclaw'));
   const ranged=m=>['projectile','beam','boomerang','chain','meteor','nova','cone','turret'].includes(m?.kind);
   function onCast(p,m){

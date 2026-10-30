@@ -33,11 +33,11 @@ test('Candy Jars add five over-cap points each and halve only the above-cap reco
   pp.current=14.75;G.MovePP.tick(p,1);close(pp.current,15.225);G.MovePP.tick(p,100);close(pp.current,25);
   G.MovePP.restore(p,[m]);close(pp.current,25);G.MovePP.increaseMax(p);assert.equal(pp.max,16);assert.equal(pp.limit,26);close(pp.current,26);
 });
-test('legacy effects use one fifth strength, stack without replacing one another, and Choice Band permits switching',()=>{
+test('legacy effects use one fifth strength, stack without replacing one another, and obsolete Choice Band has no effect',()=>{
   const s=setup(),{G}=s,p=s.player(6);s.learn(p,['ember','tackle']);p.active=0;
-  for(const id of ['leftovers','quickclaw','amuletcoin','luckyegg','choicescarf','assaultvest','choiceband','choiceband','lifeorb'])assert.ok(G.Items.gain(p,id));
-  close(p.regen,p.maxHp*.003);close(G.Items.cooldownFactor(p),.96);close(p.coinMul,1.1);close(p.effectiveXpMul,1.06);close(p.reduction,.04);close(G.Items.damageBonus(p),.22);
-  p.setActive(1);assert.equal(p.active,1);assert.equal(G.MoveControl.input(p,1),true);assert.equal(G.Items.count(p,'choiceband'),2);
+  for(const id of ['leftovers','quickclaw','amuletcoin','luckyegg','choicescarf','assaultvest','lifeorb'])assert.ok(G.Items.gain(p,id));
+  close(p.regen,p.maxHp*.003);close(G.Items.cooldownFactor(p),.96);close(p.coinMul,1.1);close(p.effectiveXpMul,1.06);close(p.reduction,.04);close(G.Items.damageBonus(p),.06);
+  p.setActive(1);assert.equal(p.active,1);assert.equal(G.MoveControl.input(p,1),true);assert.equal(G.Items.count(p,'choiceband'),0);
 });
 test('each Focus Sash is consumed by one fatal hit, with no hidden recharge or automatic replenishment',()=>{
   const s=setup(),{G}=s,p=s.player(6);p.moves=[];p.slots=[];G.Items.gain(p,'focussash');G.Items.gain(p,'focussash');
@@ -52,7 +52,7 @@ test('Boss items add level-up choices, bank a link immediately, restore the mele
   G.Items.gain(p,'bugnet');close(G.MonProgression.captureChance({lastAttacker:p}),.0022);
 });
 test('rift reward cards are distinct and may contain Boss items; normal drops exclude those items',()=>{
-  const {G}=setup();assert.deepEqual(Array.from(G.Items.rewardChoices(()=>0)),['choiceband','linker','luckymedal']);
+  const {G}=setup();assert.deepEqual(Array.from(G.Items.rewardChoices(()=>0)),['masterytm','linker','luckymedal']);
   for(let i=0;i<100;i++){const cards=G.Items.rewardChoices();assert.equal(cards.length,3);assert.equal(new Set(cards).size,3);assert.ok(!G.Items.BY[G.Items.roll()].boss);}
 });
 test('active Super Potion heals 30%, starts its thirty-second cooldown only when useful, and coexists with special items',()=>{
@@ -93,13 +93,11 @@ test('toggle selects a new slot enabled, including a previously paused slot, but
  G.MoveControl.input(p,1);assert.equal(G.MoveControl.wants(p,b),false);G.MoveControl.input(p,0);assert.ok(G.MoveControl.wants(p,a));G.MoveControl.input(p,1);assert.ok(G.MoveControl.wants(p,b));
 });
 
-test('Choice Band is Boss-only, blocks unused PP recovery immediately, and allows explicit PP restoration',()=>{
- const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);
- assert.equal(G.Items.BY.choiceband.boss,true);for(const m of p.moves)G.MovePP.state(p,m).current=0;G.Items.gain(p,'choiceband');G.Items.gain(p,'choiceband');
- G.MovePP.tick(p,1);close(G.MovePP.state(p,a).current,.7);assert.equal(G.MovePP.state(p,b).current,0);
- G.MoveControl.input(p,1);G.MovePP.tick(p,1);assert.equal(p.active,1);close(G.MovePP.state(p,a).current,.7);assert.ok(G.MovePP.state(p,b).current>0);
- G.MovePP.add(p,[a],1);close(G.MovePP.state(p,a).current,1.7);G.MovePP.restore(p,[a]);assert.equal(G.MovePP.state(p,a).current,G.MovePP.max(p,a));
- G.Settings.set('castMode','toggle');G.MovePP.tick(p,2);assert.ok(G.MovePP.state(p,b).current>2);
+test('removed Choice Band cannot be gained, does not alter damage or block unused PP',()=>{
+  const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);
+  assert.equal(G.Items.BY.choiceband,undefined);assert.equal(G.Items.gain(p,'choiceband'),false);
+  p.specialItems.choiceband=20;assert.equal(G.Items.damageBonus(p),0);assert.equal(G.Items.count(p,'choiceband'),0);
+  G.MovePP.state(p,b).current=0;G.MovePP.tick(p,1);close(G.MovePP.state(p,b).current,1.5);
 });
 
 test('a click-triggered orbit lasts one cooldown cycle and does not restart by itself',()=>{
@@ -114,8 +112,8 @@ test('special reward choices pause and grant only the picked item; ordinary drop
 test('P2P item snapshots validate the catalogue and stack counts; host applies the remote damage bonus once',()=>{
   const s=setup(),{G}=s,p=s.player(6);let receive;G.Net={uid:'host',on:f=>receive=f,onPeer:noop};G.startMoveOf=()=> 'ember';G.Sprites.preload=noop;s.load('js/net/coop.js');
   G.Coop.begin({host:'host',members:[{uid:'host',dex:6},{uid:'peer',dex:6}]},p,{});
-  const frame=[0,0,0,0,100,100,0,'ember',1,78,0,1,0,0,0,null,null,0,null,0,null,6,25,[4,5,6],[['choiceband',2],['focussash',1],['__proto__',1],['leftovers',-1],['lifeorb',2001]]];
+  const frame=[0,0,0,0,100,100,0,'ember',1,78,0,1,0,0,0,null,null,0,null,0,null,6,25,[4,5,6],[['lifeorb',2],['focussash',1],['__proto__',1],['leftovers',-1],['lifeorb',2001]]];
   receive('peer',{k:'f',p:frame,ev:[]});const peer=G.Coop.mate('peer').pl;
-  assert.equal(G.Items.count(peer,'choiceband'),2);assert.equal(G.Items.count(peer,'focussash'),1);assert.equal(Object.keys(peer.specialItems).length,2);
-  const e=s.enemy(),before=e.hp;e.hurt(100,'#fff',0,0,0,null,peer,{kind:'melee'});assert.equal(before-e.hp,116);G.Coop.end();
+  assert.equal(G.Items.count(peer,'lifeorb'),2);assert.equal(G.Items.count(peer,'focussash'),1);assert.equal(Object.keys(peer.specialItems).length,2);
+  const e=s.enemy(),before=e.hp;e.hurt(100,'#fff',0,0,0,null,peer,{kind:'melee'});assert.equal(before-e.hp,112);G.Coop.end();
 });

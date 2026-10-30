@@ -9,7 +9,7 @@ function context(){
   s.window=s;vm.createContext(s);s.load=f=>vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),s,{filename:f});
   for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/pokedex.js','js/data/sprites-meta.js','js/data/types.js','js/data/moves.js','js/data/items.js','js/systems/boss-rewards.js','js/systems/equipment.js','js/data/mega-forms.js','js/data/mega-types.js','js/data/abilities.js'])s.load(f);
   s.load('js/data/evolutions.js');s.load('js/systems/z-access.js');s.load('js/systems/progression-mon.js');
-  const G=s.G;G.FIREBASE_CONFIG=null;G.Coop={active:false,isHost:false,scaleHp:()=>1,broadcast:noop};
+  const G=s.G;G.BackpackUI={isOpen:()=>false,tick:noop};G.FIREBASE_CONFIG=null;G.Coop={active:false,isHost:false,scaleHp:()=>1,broadcast:noop};
   G.FX=new Proxy({},{get:()=>noop});G.Audio={sfx:noop};G.UI={toast:noop};G.Camera={kick:noop,sees:()=>false,outerRadius:()=>500};
   G.Sprites={PX:2,hasShiny:id=>typeof id==='number'||!!G.MEGA_SPRITE_META?.[id]?.sh,bodyRadius:()=>10,bodyHeight:()=>30,preload:noop,hovers:()=>false,dirFromAngle:()=>0,animMeta:()=>null,
     Animator:class{constructor(dex,scale,shiny){this.dex=dex;this.dir=0;this.shiny=!!shiny;}play(){}update(){}loop(){}busy(){return false;}}};

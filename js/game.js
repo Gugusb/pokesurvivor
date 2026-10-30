@@ -33,6 +33,7 @@ G.Game = (() => {
     resize();
     addEventListener('resize', resize);
     G.Touch.init(cv);
+    G.BackpackUI.init();
     // Switching apps pauses solo play; either screen orientation is supported.
     document.addEventListener('visibilitychange', () => { if (document.hidden) autoPause(); });
     G.RunUI.wirePause(() => { state = 'playing'; G.UI.hideAll(); }, quitRun);
@@ -72,12 +73,26 @@ G.Game = (() => {
     else if (state === 'paused') { state = 'playing'; G.UI.hideAll(); }
   }
 
+  function toggleBackpack(){
+    if(G.BackpackUI.isOpen()){G.UI.hide('scr-backpack');if(state==='inventory')state='playing';return;}
+    if(!pl||pl.dead||!['playing','held'].includes(state)||G.Judgment.cinematic||G.UI.isOpen('scr-pause')||G.ZMoves?.busy(pl))return;
+    if(!G.Coop.active)state='inventory';
+    G.BackpackUI.show(pl);
+  }
+  let openMastery=false;
+  function maybeSpecialization(){
+    if(state!=='playing'||!pl||pl.dead||openItem||G.Rift.inArena||everyone().some(p=>G.ZMoves?.busy(p)))return;
+    if(!(pl.specTokens>0)||!G.Specialization.eligible(pl).length)return;
+    openMastery=true;state='choice';if(G.Coop.active)G.Coop.holdStart();
+    G.SpecializationUI.show(pl,()=>{openMastery=false;state=holdBy.length?'held':'playing';if(G.Coop.active)G.Coop.holdEnd();afterLevelUp();});
+  }
+
   // ---------------- run ----------------
 
   /** @param coop  { seed, host, members } para una partida en grupo */
   let startingRun=false;
   async function startRun(coop = null) {
-    G.BossRewards.reset();
+    G.BossRewards.reset();openMastery=false;
     if(startingRun)return;
     holdBy = []; awayBy = null;
     const save = G.DB.save;
@@ -283,7 +298,7 @@ G.Game = (() => {
     },
     levelStart(level) {
       // (Si tenías abierta la elección de objeto, vuelve al terminar: afterLevelUp.)
-      if (state === 'choice' && openItem && G.Coop.active) G.Coop.holdEnd();
+      if (state === 'choice' && (openItem||openMastery) && G.Coop.active) G.Coop.holdEnd();
       state = 'levelup';
       G.UI.hide('scr-pause');
       G.Audio.sfx('levelup');
@@ -312,7 +327,7 @@ G.Game = (() => {
     /** Grupo: quién está eligiendo fusión. Mientras haya alguien, todo parado. */
     hold(names) {
       holdBy = names || [];
-      const mine = G.UI.isOpen('scr-bond')||G.UI.isOpen('scr-item');
+      const mine = G.UI.isOpen('scr-bond')||G.UI.isOpen('scr-item')||G.UI.isOpen('scr-specialization');
       if (holdBy.length) {
         if (state === 'playing') state = 'held';
         if (pl && pl.bonds > 0) offerBond(true);      // si tú también tienes vínculo, eliges a la vez
@@ -528,6 +543,7 @@ G.Game = (() => {
   const laterItems=[];
   function afterLevelUp(){
     if(state!=='playing'&&state!=='held')return;
+    if(openMastery){state='choice';if(G.Coop.active)G.Coop.holdStart();G.UI.show('scr-specialization');return;}
     if(openItem&&!G.UI.isOpen('scr-item')){state='choice';if(G.Coop.active)G.Coop.holdStart();G.RunUI.showSpecialChoice(openItem.options,openItem.take);return;}
     if(laterItems.length)offerSpecialChoice(laterItems.shift());
   }
@@ -603,6 +619,8 @@ G.Game = (() => {
   // ---------------- teclado ----------------
 
   function handleKeys() {
+    if(G.BackpackUI.isOpen()){if(G.Input.tap('keye')||G.Input.tap('escape'))toggleBackpack();return;}
+    if(G.UI.isOpen('scr-specialization')){for(let i=0;i<3;i++)if(G.Input.tap('digit'+(i+1))||G.Input.tap('numpad'+(i+1)))G.SpecializationUI.pick(i);if(G.Input.tap('keyr'))G.SpecializationUI.reroll();return;}
     if(state==='victory')return;
     if (G.SettingsUI.isOpen) { if (G.Input.tap('escape')) G.SettingsUI.close(); return; }
     // La Sentencia de Arceus: Espacio, Intro o Esc saltan la animación (si se puede).
@@ -635,6 +653,7 @@ G.Game = (() => {
           && document.getElementById('pull-fx').classList.contains('hidden')) G.MenuUI.open();
       return;
     }
+    if(G.Input.tap('keye')&&!document.activeElement?.closest('input,textarea,select,[contenteditable]')){toggleBackpack();return;}
     if (G.Input.tap('escape') || G.Input.tap('keyp')) { togglePause(); return; }
     if (state !== 'playing' || !pl) return;
     if (G.Input.tap('keyv') && !document.activeElement?.closest('input,textarea,select,[contenteditable]')) setSpeed(runSpeed === 1 ? 2 : 1);
@@ -646,7 +665,7 @@ G.Game = (() => {
       if (G.Input.tap('digit' + (i + 1)) || G.Input.tap('numpad' + (i + 1))) G.MoveControl?G.MoveControl.input(pl,i):pl.setActive(i);
     }
     if (G.Input.tap('keyq')) G.MoveControl?G.MoveControl.input(pl,(pl.active+pl.slots.length-1)%pl.slots.length):pl.cycle(-1);
-    if (G.Input.tap('keye') || G.Input.tap('tab')) G.MoveControl?G.MoveControl.input(pl,(pl.active+1)%pl.slots.length):pl.cycle(1);
+    if (G.Input.tap('tab')) G.MoveControl?G.MoveControl.input(pl,(pl.active+1)%pl.slots.length):pl.cycle(1);
   }
 
   // ---------------- bucle ----------------
@@ -702,6 +721,7 @@ G.Game = (() => {
 
     if (pl && state !== 'ui') render(); else Backdrop.render(ctx, w, h, dpr, dt);
     G.UI.tick(dt);
+    G.BackpackUI.tick(pl,!!pl&&['playing','inventory','held'].includes(state)&&!G.Judgment.cinematic);
 
     G.Input.endFrame();
   }
@@ -777,6 +797,7 @@ G.Game = (() => {
       if (!coop || G.Coop.isHost) maybeLevelUp();
       if (pl.bonds > 0) offerBond(true);
       if (state === 'playing' && laterItems.length) afterLevelUp();
+      maybeSpecialization();
     }
     if (G.Coop.isHost) checkAllDown(dt);
   }
@@ -976,7 +997,7 @@ G.Game = (() => {
     debugTime(t) { tampered = true; time = t; },
     /** Para grabar vídeos: cámara lenta (0,5 = mitad de velocidad). */
     debugSpeed(k) { if (k > 1) tampered = true; speedK = k; },
-    togglePause,
+    togglePause,toggleBackpack,
     /** Abandona la partida en curso (p. ej. al cerrar sesión desde Ajustes). */
     quit() { if (state !== 'ui' && state !== 'over') quitRun(); },
     /** Para grabar vídeos: abre las cartas de subir de nivel. */

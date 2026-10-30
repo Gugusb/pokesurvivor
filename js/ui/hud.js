@@ -432,7 +432,7 @@ G.HUD = (() => {
       ctx.textAlign = 'center';
       ctx.fillStyle = 'rgba(180,200,230,.55)';
       ctx.fillText(touch ? 'Arrastra el dedo para moverte  ·  toca un ataque para cambiarlo'
-                         : 'WASD moverse  ·  1-4 / Q / E o clic en un ataque para cambiarlo  ·  Esc pausa', w / 2, sy-48);
+                         : 'WASD moverse  ·  1-4 / Q / Tab o clic en un ataque para cambiarlo  ·  E mochila  ·  Esc pausa', w / 2, sy-48);
     }
 
     ctx.restore();

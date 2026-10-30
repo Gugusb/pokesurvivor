@@ -3752,3 +3752,66 @@ G.I18n.addChinese({
   "Envía regalos gratis a un máximo de diez amigos al día. Recoge monedas, cupones o gemas desde Amigos.": "每天可免费向最多 10 位好友赠礼，好友可在好友栏领取宝可梦币、抽奖券或特性宝石。",
   "Se puede jugar en vertical en móvil. Las invitaciones cooperativas están desactivadas temporalmente; las visitas, invitaciones de crianza y regalos siguen disponibles.": "手机竖屏也可游玩；暂时关闭邀请联机，保留好友拜访、孵蛋邀请和赠礼。"
 });
+
+// Battle bag and move mastery.
+G.I18n.addChinese({
+  "Mochila de combate": "战斗背包",
+  "Abrir mochila": "打开背包",
+  "El combate continúa": "战斗继续中",
+  "Partida en pausa": "战斗已暂停",
+  "Base · mejoras · bayas · movimientos · otros": "基础 · 局外强化 · 果子 · 技能 · 其他",
+  "Mejoras permanentes": "局外强化",
+  "Bayas": "果子",
+  "Movimientos": "技能",
+  "Otros efectos": "其他提升",
+  "Ataque físico": "物攻",
+  "Ataque especial": "特攻",
+  "Defensa física": "物防",
+  "Defensa especial": "特防",
+  "Vida actual": "当前生命",
+  "Multiplicador físico": "物攻倍率",
+  "Multiplicador especial": "特攻倍率",
+  "Daño de contacto": "接触承伤",
+  "Daño a distancia": "远程承伤",
+  "unidades/s": "单位/秒",
+  "Recarga": "冷却",
+  "Velocidad de recarga": "冷却速度",
+  "Recuperación base": "基础回复",
+  "Reducción adicional": "额外减伤",
+  "Recuperación al usar": "施放中回复",
+  "Sin usar": "未使用回复",
+  "PP de reserva": "临时PP",
+  "Alcance": "范围",
+  "Cantidad": "数量",
+  "Perforación": "穿透",
+  "Efecto de apoyo": "属性提升",
+  "Objeto equipado": "携带道具",
+  "Objetos especiales": "特殊道具",
+  "Sin objeto equipado": "未携带道具",
+  "Aún no llevas objetos especiales": "还没有特殊道具",
+  "Especializaciones pendientes": "待用专精机会",
+  "Especialización": "技能专精",
+  "Elige un movimiento": "选择技能",
+  "Especializa un movimiento al máximo. Cada uno admite cinco especializaciones.": "选择一个已满级的技能，每个技能最多获得五次专精。",
+  "Elige una especialización": "选择专精",
+  "MT de Especialización": "专精学习机",
+  "Permite especializar un movimiento que haya alcanzado su nivel máximo.": "让一个已满级的技能获得一次专精机会。",
+  "Cambiar opciones": "刷新选项",
+  "Tu Pokémon": "你的宝可梦",
+  "Mochila: E · Cambiar: Q / Tab": "背包：E · 切换：Q / Tab"
+});
+
+G.I18n.addChinese({"Listo": "就绪", "Multiplicador del movimiento": "技能倍率", "Efecto por acumulación": "每层效果", "Cerrar · E": "关闭 · E", "WASD moverse · 1-4 / Q / Tab o clic en un ataque para cambiarlo · E mochila · Esc pausa": "WASD 移动 · 1–4 / Q / Tab 切换技能 · E 背包 · Esc 暂停"});
+
+G.I18n.addChinese({
+  "Nuevas formas de dominar tus movimientos · v0.32.0": "精研招式 · v0.32.0",
+  "Master your moves · v0.32.0": "精研招式 · v0.32.0",
+  "Abre la mochila con E para consultar a tu compañero, sus movimientos y sus objetos. En grupo, el combate continúa.": "按 E 打开背包，查看伙伴的属性、招式和道具。组队时，战斗会继续进行。",
+  "Open the bag with E to check your partner, moves and items. In a group, battle continues.": "按 E 打开背包，查看伙伴的属性、招式和道具。组队时，战斗会继续进行。",
+  "La MT de Especialización permite mejorar un movimiento al máximo con talentos únicos. Los jefes pueden guardarla en sus cofres.": "专精学习机能让满级招式获得新的专精。击败首领，有机会在奖励箱中找到它。",
+  "Mastery TMs give max-level moves new talents. Find them in Boss chests.": "专精学习机能让满级招式获得新的专精。击败首领，有机会在奖励箱中找到它。",
+  "La agilidad sigue una nueva curva de recarga. Cinta Elección deja de aparecer y pierde su efecto.": "敏捷采用新的冷却成长曲线。讲究头带已移除。",
+  "Agility now follows a new cooldown curve. Choice Band has been removed.": "敏捷采用新的冷却成长曲线。讲究头带已移除。"
+});
+
+G.I18n.addChinese({"Obtener MT de Especialización": "获得专精学习机", "Maximizar movimientos activos": "当前技能满级"});

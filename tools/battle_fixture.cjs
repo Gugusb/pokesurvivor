@@ -12,7 +12,7 @@ function context(lang = 'zh', neutralStats = true) {
   vm.createContext(s);
   s.load = file => vm.runInContext(fs.readFileSync(path.join(ROOT, file), 'utf8'), s, { filename: file });
   for (const file of ['js/core/util.js', 'js/core/i18n.js', 'js/data/lang-en.js', 'js/data/lang-zh.js',
-    'js/data/pokedex.js', 'js/data/evolutions.js', 'js/data/sprites-meta.js', 'js/data/moves.js', 'js/data/items.js','js/systems/boss-rewards.js', 'js/systems/equipment.js', 'js/data/abilities.js', 'js/data/upgrades.js']) s.load(file);
+    'js/data/pokedex.js', 'js/data/evolutions.js', 'js/data/sprites-meta.js', 'js/data/moves.js', 'js/data/items.js','js/systems/boss-rewards.js','js/systems/specialization.js', 'js/systems/equipment.js', 'js/data/abilities.js', 'js/data/upgrades.js']) s.load(file);
   const G = s.G;
   G.FIREBASE_CONFIG = null;
   G.FX = new Proxy({}, { get: () => noop }); G.Audio = { sfx: noop }; G.Camera = { kick: noop, sees: () => false };

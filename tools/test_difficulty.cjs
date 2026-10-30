@@ -8,7 +8,7 @@ function context() {
     document: {documentElement:{},addEventListener:noop}, CanvasRenderingContext2D: function(){} };
   s.window=s;s.G={};vm.createContext(s);s.load=f=>vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),s,{filename:f});
   for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/pokedex.js','js/systems/difficulty.js'])s.load(f);
-  const G=s.G;G.FIREBASE_CONFIG=null;
+  const G=s.G;G.BackpackUI={isOpen:()=>false,tick:noop};G.FIREBASE_CONFIG=null;
   vm.runInContext(fs.readFileSync(path.join(ROOT,'js/core/db.js'),'utf8').replace('ready, register, login,','_test:{newSave,migrate,sanitize}, ready, register, login,'),s);G.DB.playAsGuest();
   G.Sprites={PX:2,animMeta:()=>null,bodyRadius:()=>10,bodyHeight:()=>20,hovers:()=>false,Animator:class {play(){}},preload:noop};
   G.Coop={active:false,isHost:false,end:noop};G.Spawner={CAP:64};G.FX=new Proxy({},{get:()=>noop});G.Audio={sfx:noop,music:noop};G.Camera={kick:noop};

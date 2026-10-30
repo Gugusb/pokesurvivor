@@ -16,6 +16,7 @@ G.Icons = (() => {
                  '..kmwmmmnk..', '.kmwmsmmmnk.', '.kmmsssmmnk.', '.kmmmsmmmnk.', '..kmmmmmnk..', '...kkkkkk...'];
 
   const UI = {
+    bag:{pal:{b:'#73b9ed',d:'#2d548b',w:'#ecf8ff',y:'#ffcf72'},rows:['....kkkk....','...kbbbbk...','...kbddbk...','..kkbbbbkk..','.kbbbbbbbbk.','.kbbwwwwbbk.','.kbbkddkbbk.','.kbbkyykbbk.','.kbbkddkbbk.','.kbbbbbbbbk.','..kddddddk..','...kkkkkk...']},
     megaStone: { pal: { p: '#e373ef', b: '#75daff', w: '#fff6ff', d: '#8a37ae' }, rows: [
       '....kkkk....', '..kkwwppkk..', '.kwpppppddk.', '.kwppbbpddk.', 'kwppbbbbdddk', 'kppbbbbpdddk',
       'kppbbppbdddk', 'kpppppbbdddk', '.kpppbbdddk.', '.kppbbbdddk.', '..kkddddkk..', '....kkkk....'] },

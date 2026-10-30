@@ -153,7 +153,7 @@
       if (!(hpDamage > 0)) return shieldDamage;
       this.hp -= hpDamage;
       if (attacker) this.lastAttacker = attacker;
-      if (attacker) {G.Abilities.onHit(attacker, this, attack);G.Items?.onHit(attacker,this,attack);}
+      if (attacker) {G.Abilities.onHit(attacker, this, attack);G.Items?.onHit(attacker,this,attack);G.Specialization?.onHit(attacker,this,attack,hpDamage);}
       G.Judgment.noteDmg(hpDamage, this);
       this.showHurt(hpDamage, color, dirX, dirY, eff);
       if (knock > 0 && !this.boss) {
@@ -244,6 +244,7 @@
      * se mueva o según la animación que tenga en el anfitrión.
      */
     netUpdate(dt) {
+      if(this.freezeT>0)this.freezeT=Math.max(0,this.freezeT-dt);
       this.anim.update(dt);
       if (this.flash > 0) this.flash -= dt;
       if (this.dead) { this.fade -= dt; return; }
@@ -262,7 +263,7 @@
       const n = this.net;
       if (!n) return;
       // Se adelanta hasta 0,3 s (por TURN llegan 4 posiciones por segundo).
-      const lead = Math.min(0.3, n.age);
+      const lead = this.freezeT>0?0:Math.min(0.3, n.age);
       n.age += dt;
       const tx = n.x + n.vx * lead, ty = n.y + n.vy * lead;
       const ox = this.x, oy = this.y;
@@ -331,6 +332,7 @@
       const dist = G.U.dist(this.x, this.y, pl.x, pl.y);
       this.contactHold=Math.max(0,(this.contactHold||0)-dt);
       if(!this.boss&&!this.keepsDistance()&&this.behavior!=='bomber'&&this.behavior!=='thief'&&dist<=this.r+pl.r&&this.contactHold<=0)this.contactHold=.65;
+      if(this.freezeT>0){this.freezeT=Math.max(0,this.freezeT-dt);this.kx=this.ky=0;this.anim.loop('Idle');return;}
       // Duende del tesoro: huye de ti (en zigzag) en cuanto te acercas.
       if (this.behavior === 'thief') {
         this.zig = (this.zig || 0) + dt;

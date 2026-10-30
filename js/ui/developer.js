@@ -117,7 +117,7 @@ G.Dev = (() => {
       '<p>' + G.Abilities.status(G.Game.player) + '</p>' +
       '<label>测试天气 <select id="dev-weather"><option value="sand">沙暴</option><option value="snow">雪天</option><option value="rain">下雨</option><option value="sun">晴天</option><option value="fog">雾天</option></select></label>' +
       '<div class="row wrap"><button class="btn small" data-dev="weather">召唤天气 20s</button><button class="btn small" data-dev="clear-weather">清除天气</button><button class="btn small" data-dev="damage">测试受伤 10%</button><button class="btn small" data-dev="same-type">测试同属性伤害</button><button class="btn small" data-dev="fire-damage">测试火属性伤害</button><button class="btn small" data-dev="lethal">测试致命伤害</button></div>' +
-      '<div class="row wrap"><button class="btn small" data-dev="god">无敌：' + (god ? '开' : '关') + '</button><button class="btn small" data-dev="heal">回满生命</button><button class="btn small" data-dev="level">升一级</button><button class="btn small" data-dev="slow">自身减速 3.5s</button><button class="btn small" data-dev="time">时间 +60s</button><button class="btn small" data-dev="rift">开启裂隙战斗</button><button class="btn small" data-dev="boss">击败裂隙 Boss</button><button class="btn small" data-dev="quit">结束本局</button></div>';
+      '<div class="row wrap"><button class="btn small" data-dev="mastery">' + G.T('Obtener MT de Especialización') + '</button><button class="btn small" data-dev="move-max">' + G.T('Maximizar movimientos activos') + '</button><button class="btn small" data-dev="god">无敌：' + (god ? '开' : '关') + '</button><button class="btn small" data-dev="heal">回满生命</button><button class="btn small" data-dev="level">升一级</button><button class="btn small" data-dev="slow">自身减速 3.5s</button><button class="btn small" data-dev="time">时间 +60s</button><button class="btn small" data-dev="rift">开启裂隙战斗</button><button class="btn small" data-dev="boss">击败裂隙 Boss</button><button class="btn small" data-dev="quit">结束本局</button></div>';
     panel.querySelector('#dev-close').onclick = () => panel.classList.add('hidden');
     panel.querySelector('#dev-view').oninput = e => {
       if (setView(Number(e.target.value))) panel.querySelector('#dev-view-value').textContent = viewMultiplier.toFixed(2) + '×';
@@ -210,6 +210,8 @@ G.Dev = (() => {
           case 'same-type': { const p = requireRun(); if (p) { p.invuln = p.dashGuardT = 0; p.hurt(p.maxHp * 0.2, p.mon.types[0], false, {kind:'attack'}); } break; }
           case 'fire-damage': { const p = requireRun(); if (p) { p.invuln = p.dashGuardT = 0; p.hurt(p.maxHp * 0.2, 'fire', false, {kind:'attack'}); } break; }
           case 'lethal': { const p = requireRun(); if (p) { p.invuln = p.dashGuardT = 0; p.hurt(p.maxHp * 10); } break; }
+          case 'mastery':{const p=requireRun();if(p)G.Items.gain(p,'masterytm');break;}
+          case 'move-max':{const p=requireRun();if(p)for(const m of p.activeGroup())while(G.Moves.levelUp(m)){}break;}
           case 'heal': { const p = requireRun(); if (p) p.heal(p.maxHp); break; }
           case 'level': if (requireRun()) G.Game.debugLevelUp(); break;
           case 'slow': { const p = requireRun(); if (p) p.slowT = 3.5; break; }

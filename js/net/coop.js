@@ -36,6 +36,7 @@ G.Coop = (() => {
   let outEv = [];                       // invitado: eventos para el anfitrión
   let flushT = 0;
   let hitFrom = null;                   // invitado cuyo golpe se está aplicando (no repetirle el número)
+  let specReceipt=0;
   let api = {};                         // callbacks del juego (game.js)
   let waiting = new Set();              // subida de nivel: quién falta por elegir
   let holds = new Set();                // quién está eligiendo una fusión (la partida se para para todos)
@@ -63,7 +64,7 @@ G.Coop = (() => {
    */
   function begin(cfg, pl, cb) {
     if (G.MegaPreview) G.MegaPreview.restore(pl);
-    active = true;
+    specReceipt=0;active = true;
     me = G.Net.uid; hostUid = cfg.host;
     host = me === hostUid;
     local = pl;
@@ -140,7 +141,7 @@ G.Coop = (() => {
             r2(local.reviveT || 0), api.choosing && api.choosing() ? 1 : 0, doneSeq, local.ability || null,
             G.Mega && G.Mega.active(local) ? local.megaState.id : null, r2(local.megaState && local.megaState.left || 0),
             G.Mega && G.Mega.hasStone(local) ? local.megaState.id : null, r2(local.damageBonus || 0),
-            G.ZMoves && G.ZMoves.hasStone(local) ? [local.zState.type,local.zState.phase,r2(local.zState.cooldown),local.zState.charges] : null,local.dex,local.level,local.evolutionPath,Object.entries(local.specialItems||{})];
+            G.ZMoves && G.ZMoves.hasStone(local) ? [local.zState.type,local.zState.phase,r2(local.zState.cooldown),local.zState.charges] : null,local.dex,local.level,local.evolutionPath,Object.entries(local.specialItems||{}),G.Specialization?.snapshot(local)||[]];
   }
 
   function readState(a) {
@@ -148,7 +149,7 @@ G.Coop = (() => {
     return { x: a[0], y: a[1], ang: Number.isFinite(a[2])?a[2]:0, walk: a[3], hp: a[4], maxHp: a[5], dead: a[6], mv: a[7], ml: def&&Number.isFinite(a[8])?G.U.clamp(Math.floor(a[8]),1,def.maxLvl):1,
              mag: Number.isFinite(a[9])?G.U.clamp(a[9],0,10000):78, aim: Number.isFinite(a[10])?a[10]:0, xpMul: a[11], rev: Number.isFinite(a[12])?G.U.clamp(a[12],0,30):0, ch: a[13], ld: a[14], ability: a[15] || null,
              mega: a[16] || null, megaLeft: a[17] || 0, stone: a[18] || null,
-             damageBonus: Number.isFinite(a[19]) ? G.U.clamp(a[19], 0, 10) : 0, z:a[20] || null,dex:a[21],level:a[22],path:a[23],items:a[24] };
+             damageBonus: Number.isFinite(a[19]) ? G.U.clamp(a[19], 0, 10) : 0, z:a[20] || null,dex:a[21],level:a[22],path:a[23],items:a[24],masteries:a[25] };
   }
   function syncSpecies(m) {
     const n=m.pl.net,p=m.pl;
@@ -188,8 +189,9 @@ G.Coop = (() => {
       if(!owns(n.stone))n.stone=null;
       if(m.equipment.z!==n.z?.[0])n.z=null;
     }
-    p.specialItems={};if(Array.isArray(n.items))for(const entry of n.items.slice(0,32)){if(!Array.isArray(entry))continue;const [id,count]=entry;if(G.Items?.BY[id]&&id!=='linker'&&Number.isInteger(count)&&count>0&&count<=1000)p.specialItems[id]=count;}
+    p.specialItems={};if(Array.isArray(n.items))for(const entry of n.items.slice(0,32)){if(!Array.isArray(entry))continue;const [id,count]=entry;if(G.Items?.BY[id]&&!['linker','masterytm'].includes(id)&&Number.isInteger(count)&&count>0&&count<=1000)p.specialItems[id]=count;}
     m.state[24]=Object.entries(p.specialItems);
+    if(G.Specialization)m.state[25]=G.Specialization.sync(p,n.masteries);
     p.damageBonus=n.damageBonus;
     if(G.Mega)G.Mega.sync(p,n.mega,n.megaLeft,n.stone);
     if(G.ZMoves)G.ZMoves.sync(p,n.z);
@@ -388,8 +390,8 @@ G.Coop = (() => {
         case 'c':
           if(!G.Moves.BY_ID[ev[1]]||!Number.isFinite(ev[2])||!Number.isFinite(ev[3]))break;
           ev[2]=G.U.clamp(Math.floor(ev[2]),1,G.Moves.BY_ID[ev[1]].maxLvl);
-          G.Combat.ghostCast(m.pl, ev[1], ev[2], ev[3], ev[4]);
-          emit(['c', from, ev[1], ev[2], ev[3], ev[4]], from);
+          G.Combat.ghostCast(m.pl, ev[1], ev[2], ev[3], ev[4],Number.isFinite(ev[5])?G.U.clamp(ev[5],0,120):0);
+          emit(['c', from, ev[1], ev[2], ev[3], ev[4],Number.isFinite(ev[5])?G.U.clamp(ev[5],0,120):0], from);
           break;
         case 'pb':
           if(!Number.isInteger(ev[1])||!Number.isInteger(ev[2])||Math.abs(ev[1])>1e6||Math.abs(ev[2])>1e6)break;
@@ -484,8 +486,10 @@ G.Coop = (() => {
         G.Projectiles.spawn({ x: ev[1], y: ev[2], vx: ev[3], vy: ev[4], dmg: ev[5], r: ev[6], life: ev[7],
                               friendly: false, color: '#ff7a9e', vis: G.VFX.forType(ev[8]), mtype: ev[8],sourceId:ev[9]||0 });
         break;
-      case 'c': { const m = mates.get(ev[1]); if (m) G.Combat.ghostCast(m.pl, ev[2], ev[3], ev[4], ev[5]); break; }
+      case 'c': { const m = mates.get(ev[1]); if (m) G.Combat.ghostCast(m.pl, ev[2], ev[3], ev[4], ev[5],ev[6]); break; }
       case 'zc': {const m=mates.get(ev[1]);if(m&&G.ZMoves){G.ZMoves.sync(m.pl,m.pl.net?.z);G.ZMoves.remoteCast(m.pl,ev[2],ev[3]);}break;}
+      case 'sr': if(G.Specialization)G.Specialization.reward(local,ev[1],ev[2],ev[3],ev[4]);break;
+      case 'sf': {const e=G.EnemyMgr.get(ev[1]);if(e&&!e.boss&&Number.isFinite(ev[2])&&ev[2]>0){e.freezeT=Math.max(e.freezeT||0,Math.min(.5,ev[2]));G.FX.ring(e.x,e.y,e.r,e.r*2,'#a4e8ff',.5,2);}break;}
       case 'bc': G.BossRewards?.receive(ev[1],ev[2]);break;
       case 'item': api.item(ev[1]); break;
       case 'pk': G.Pickups.addRemote(ev[1], ev[2], ev[3], ev[4], ev[5]); break;
@@ -518,10 +522,10 @@ G.Coop = (() => {
   // ---------------- ganchos que llaman los módulos del juego ----------------
 
   /** Tu ataque: los demás lo repiten como fantasma. */
-  function cast(pl, m) {
+  function cast(pl, m, orbitLife=0) {
     if (!active || pl !== local) return;
-    if (host) emit(['c', me, m.id, m.lvl, r2(pl.aim), m.evolved ? 1 : 0]);
-    else outEv.push(['c', m.id, m.lvl, r2(pl.aim), m.evolved ? 1 : 0]);
+    if (host) emit(['c', me, m.id, m.lvl, r2(pl.aim), m.evolved ? 1 : 0, orbitLife]);
+    else outEv.push(['c', m.id, m.lvl, r2(pl.aim), m.evolved ? 1 : 0, orbitLife]);
   }
   function zCast(pl,ms,angles){
     if(!active||pl!==local)return;
@@ -634,6 +638,7 @@ G.Coop = (() => {
 
   return {
     ANIMS, COLORS, begin, end, leave, tick, players, puppets, xpFactor, scaleRate, scaleHp,resync,
+    specReward(p,id,heal,pp){const m=mates.get(p.uid);if(host&&m&&m.connected)m.q.push(['sr',++specReceipt,id,Math.min(p.maxHp,heal),pp]);},
     cast, zCast, hit, status, bossLeech, hurtShown, abilityKill, megaKill, enemyAdded, enemyGone, enemyShot, pickupAdded, pickupGone, say,
     propBroken, collected, shinyCaught, levelStart, localPicked, over, holdStart, holdEnd,zAward,
     /** Anfitrión: evento para todos. Invitado: evento para el anfitrión. */
