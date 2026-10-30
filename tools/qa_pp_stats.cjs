@@ -11,7 +11,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
   app.db.prepare('INSERT INTO saves(uid,payload) VALUES(?,?)').run(uid,JSON.stringify(save));
   app.server.listen(0,'127.0.0.1');await once(app.server,'listening');const base='http://127.0.0.1:'+app.server.address().port;
   browser=await chromium.launch({channel:process.env.BROWSER_CHANNEL||'msedge',headless:true});
-  for(const built of (process.argv.includes('--source')?[false]:[false,true]))for(const lang of ['zh','en','es']){
+  for(const built of (process.argv.includes('--source')?[false]:process.argv.includes('--built')?[true]:[false,true]))for(const lang of ['zh','en','es']){
    const ctx=await browser.newContext({viewport:{width:1280,height:900},locale:lang==='zh'?'zh-CN':lang});
    await ctx.addInitScript(lang=>{localStorage.setItem('ps.lang',lang);window.qaText=[];const f=CanvasRenderingContext2D.prototype.fillText;CanvasRenderingContext2D.prototype.fillText=function(t,...args){window.qaText.push(String(t));if(window.qaText.length>10000)window.qaText.splice(0,5000);return f.call(this,t,...args);};},lang);
    const page=await ctx.newPage();page.on('pageerror',e=>errors.push(e.message));await page.goto(base+(built?'/':'/dev.html'));
@@ -33,6 +33,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
      const p=G.Game.player;p.ability=null;p.item=null;p.maxHp=p.hp=100000;p.invuln=1000;p.baseStamina=0;
      const a=G.Moves.instance('ember'),b=G.Moves.instance('tackle'),other=G.Moves.instance('water-gun');p.moves=[a,b,other];p.slots=[[a,b],[other]];p.active=0;
      const e=new G.Enemy({dex:143,hp:1e9,spd:0,dmg:0,xp:0,behavior:'ranged',range:10000,shotCd:10000},p.x+30,p.y,{hp:1,spd:1,dmg:1});e.update=()=>{};G.EnemyMgr.add(e);G.EnemyMgr.rebuildGrid();p.target=e;
+     p.baseStamina=200;for(const m of p.moves)G.MovePP.state(p,m).current=0;G.MovePP.tick(p,1);const recovery={active:G.MovePP.state(p,a).current,inactive:G.MovePP.state(p,other).current,interval:p.ppInterval};p.baseStamina=0;for(const m of p.moves)G.MovePP.state(p,m).current=0;G.MovePP.state(p,other).current=G.MovePP.max(p,other);
      G.MovePP.state(p,a).current=0;G.MovePP.state(p,b).current=0;G.Combat.tick(0,p,0);const blocked=G.Projectiles.all().length===0;
      p.tempPP=2;G.Combat.tick(0,p,0);const reserve=p.tempPP===0&&G.Projectiles.all().length>0;
      G.ZMoves.grant(G.DB.save,'fire');G.ZMoves.equip(G.DB.save,p.ivDex||p.dex,'fire');G.ZMoves.init(p,G.DB.save);
@@ -40,8 +41,9 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
      const refilled=[a,b].every(m=>G.MovePP.state(p,m).current===G.MovePP.max(p,m));
      const cards=G.LevelUp.STATS.filter(s=>['atk','stamina','temppp'].includes(s.id)).map(s=>({...s,type:'stat',tag:'Mejora',color:'#80caae'}));
      G.RunUI.showLevelUp(p.level,cards,c=>c.apply(p));
-     return {blocked,reserve,armed,refilled,gameState:G.Game.state,other:G.MovePP.state(p,other).current,ivs:G.DB.ivOf(6),agility:p.agility,interval:p.ppInterval};
+     return {recovery,blocked,reserve,armed,refilled,gameState:G.Game.state,other:G.MovePP.state(p,other).current,ivs:G.DB.ivOf(6),agility:p.agility,interval:p.ppInterval};
     });
+    assert.ok(Math.abs(mechanics.recovery.active-2.8)<1e-7);assert.ok(Math.abs(mechanics.recovery.inactive-6)<1e-7);assert.equal(mechanics.recovery.interval,.25);
     assert.ok(mechanics.blocked&&mechanics.reserve&&mechanics.armed&&mechanics.refilled,JSON.stringify(mechanics));assert.equal(mechanics.other,15);assert.equal(mechanics.ivs.length,8);
     const cardText=await page.locator('#cards').textContent();assert.ok(cardText.includes(({zh:'储能果',en:'Reserve Berry',es:'Baya Reserva'})[lang]));
     await page.screenshot({path:path.join(__dirname,`cache/pp-source-${lang}-berries.png`),animations:'disabled'});await page.locator('#cards .card').last().click();

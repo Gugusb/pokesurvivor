@@ -4,7 +4,7 @@ G.MovePP = (() => {
   const baseMax=m=>m.kind==='melee'?24:m.kind==='dash'?20:m.kind==='buff'?10:15;
   const max=(p,m)=>baseMax(m)+Math.max(0,p.maxPpBonus||0);
   const busy=(p,m)=>G.MoveControl?G.MoveControl.releasing(p,m):(p.activeGroup?.()||[]).includes(m);
-  const factor=(p,on)=>on?.5:1.5*(G.Abilities?.has(p,'innerfocus')?1.2:1);
+  const factor=(p,on)=>on?.7:1.5*(G.Abilities?.has(p,'innerfocus')?1.2:1);
   function state(p,m){
     let moves=players.get(p);if(!moves)players.set(p,moves=new WeakMap());
     let s=moves.get(m),cap=max(p,m),extra=5*(G.Items?.count(p,'candyjar')||0);

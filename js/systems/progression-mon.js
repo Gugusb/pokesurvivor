@@ -30,8 +30,9 @@ G.MonProgression = (() => {
     return .25+2.75/(1+(8/3)*x*x);
   }
   function ppInterval(value){
-    const x=Math.max(0,Number(value)||0)/160;
-    return .2+.8/(1+x);
+    const stamina=Math.max(0,Number(value)||0);
+    // 1 PP/s at zero, 4 at 200, smoothly approaching 7.
+    return 1/(7-1200/(stamina+200));
   }
   function normalizeIV(iv) {
     if (!Array.isArray(iv) || iv.length < 3) return Array(8).fill(1);

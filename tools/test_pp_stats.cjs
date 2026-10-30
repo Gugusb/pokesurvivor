@@ -19,8 +19,9 @@ test('agility follows original Speed and both curve limits are smooth, monotonic
   let last=3;for(let a=1;a<=20000;a++){const k=P.cooldownFactor(a);assert.ok(k>.25&&k<last);last=k;}
   const a=P.stats(384,Array(8).fill(16)),b=P.stats(383,Array(8).fill(16));
   assert.ok(a.agility>b.agility);assert.ok(P.cooldownFactor(a.agility)<P.cooldownFactor(b.agility));
+  close(P.ppInterval(200),.25);close(P.ppInterval(Infinity),1/7);close(P.ppInterval(-5),1);
   close(P.ppInterval(0),1);assert.ok(P.ppInterval(80)<1);let prev=1;
-  for(let e=1;e<20000;e++){const v=P.ppInterval(e);assert.ok(v>=.2&&v<prev);prev=v;}
+  for(let e=1;e<20000;e++){const v=P.ppInterval(e);assert.ok(v>=1/7&&v<prev);prev=v;}
 });
 test('ordinary casts include agility as a separate multiplier and short dash protection uses that actual cooldown',()=>{
   const s=setup(),{G}=s,p=s.player(384),[m]=s.learn(p,['quick-attack']);p.baseAgility=160;p.cdMul=.1;m.cd=1;
@@ -38,9 +39,9 @@ test('PP maxima follow the type hierarchy, spend only on an actual cast and inde
 test('inactive moves recover PP; fractional ordinary PP is preserved when reserve PP is used; dead players do not recover',()=>{
   const s=setup(),{G}=s,p=s.player(6),ms=s.learn(p,['ember','tackle']);p.baseStamina=0;
   for(const m of ms)G.MovePP.state(p,m).current=0;
-  G.MovePP.tick(p,1.5);close(G.MovePP.state(p,ms[0]).current,.75);close(G.MovePP.state(p,ms[1]).current,2.25);
-  assert.equal(G.MovePP.consume(p,ms[0]),false);p.tempPP=1;assert.equal(G.MovePP.consume(p,ms[0]),true);close(G.MovePP.state(p,ms[0]).current,.75);
-  G.MovePP.tick(p,.5);assert.equal(G.MovePP.consume(p,ms[0]),true);close(G.MovePP.state(p,ms[0]).current,0);
+  G.MovePP.tick(p,1);close(G.MovePP.state(p,ms[0]).current,.7);close(G.MovePP.state(p,ms[1]).current,1.5);
+  assert.equal(G.MovePP.consume(p,ms[0]),false);p.tempPP=1;assert.equal(G.MovePP.consume(p,ms[0]),true);close(G.MovePP.state(p,ms[0]).current,.7);
+  G.MovePP.tick(p,3/7);assert.equal(G.MovePP.consume(p,ms[0]),true);close(G.MovePP.state(p,ms[0]).current,0);
   p.dead=true;G.MovePP.tick(p,30);close(G.MovePP.state(p,ms[0]).current,0);
   p.dead=false;p.baseStamina=1000000000;G.MovePP.tick(p,1);assert.ok(G.MovePP.state(p,ms[0]).current>2.49);
 });

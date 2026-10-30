@@ -9,28 +9,28 @@ function setup(){
   s.loadGame=p=>{G.UI.isOpen=()=>false;G.Rift={inArena:false};const src=fs.readFileSync(path.join(__dirname,'../js/game.js'),'utf8').replace('init, startRun, everyone,',"_test:{setPlayer(p){pl=p;state='playing';},collect:onCollect}, init, startRun, everyone,");vm.runInContext(src,s);G.Game._test.setPlayer(p);};
   return s;
 }
-test('PP rates are 50%/150%, and both directions keep their previous rate for one simulated second',()=>{
+test('PP rates are 70%/150%, and both directions keep their previous rate for one simulated second',()=>{
   const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','water-gun']);for(const m of p.moves)G.MovePP.state(p,m).current=0;
-  G.MovePP.tick(p,1);close(G.MovePP.state(p,a).current,.5);close(G.MovePP.state(p,b).current,1.5);
-  p.setActive(1);G.MovePP.tick(p,.5);close(G.MovePP.state(p,a).current,.75);close(G.MovePP.state(p,b).current,2.25);
-  G.MovePP.tick(p,.5);close(G.MovePP.state(p,a).current,1);close(G.MovePP.state(p,b).current,3);
-  G.MovePP.tick(p,1);close(G.MovePP.state(p,a).current,2.5);close(G.MovePP.state(p,b).current,3.5);
+  G.MovePP.tick(p,1);close(G.MovePP.state(p,a).current,.7);close(G.MovePP.state(p,b).current,1.5);
+  p.setActive(1);G.MovePP.tick(p,.5);close(G.MovePP.state(p,a).current,1.05);close(G.MovePP.state(p,b).current,2.25);
+  G.MovePP.tick(p,.5);close(G.MovePP.state(p,a).current,1.4);close(G.MovePP.state(p,b).current,3);
+  G.MovePP.tick(p,1);close(G.MovePP.state(p,a).current,2.9);close(G.MovePP.state(p,b).current,3.7);
 });
 test('reversing a switch cancels its pending PP transition, and Inner Focus only boosts unused recovery',()=>{
   const s=setup(),{G}=s,p=s.player(149,'innerfocus'),[a,b]=s.learn(p,['tackle','ember']);for(const m of p.moves)G.MovePP.state(p,m).current=0;
   p.setActive(1);G.MovePP.tick(p,.3);p.setActive(0);G.MovePP.tick(p,.7);
-  close(G.MovePP.state(p,a).current,.5);close(G.MovePP.state(p,b).current,1.8);
+  close(G.MovePP.state(p,a).current,.7);close(G.MovePP.state(p,b).current,1.8);
   a.t=b.t=10;G.Combat.tick(1,p,0);close(a.t,9);close(b.t,10);
 });
 test('a single PP update crossing the inertia deadline matches many small frames',()=>{
   const run=step=>{const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','water-gun']);for(const m of p.moves)G.MovePP.state(p,m).current=0;p.setActive(1);for(let t=0;t<2-1e-8;t+=step)G.MovePP.tick(p,Math.min(step,2-t));return p.moves.map(m=>G.MovePP.state(p,m).current);};
-  const a=run(2),b=run(.01);a.forEach((n,i)=>close(n,b[i]));assert.deepEqual(a,[2,2]);
+  const a=run(2),b=run(.01);a.forEach((n,i)=>close(n,b[i]));assert.deepEqual(a,[2.2,2.2]);
 });
 test('Candy Jars add five over-cap points each and halve only the above-cap recovery, including threshold crossings',()=>{
   const s=setup(),{G}=s,p=s.player(6),[m]=s.learn(p,['ember']);G.Items.gain(p,'candyjar');let pp=G.MovePP.state(p,m);
-  G.MovePP.tick(p,4);close(pp.current,16);assert.equal(pp.max,15);assert.equal(pp.limit,20);
-  G.Items.gain(p,'candyjar');pp=G.MovePP.state(p,m);assert.equal(pp.limit,25);assert.equal(pp.current,16);
-  pp.current=14.75;G.MovePP.tick(p,1);close(pp.current,15.125);G.MovePP.tick(p,100);close(pp.current,25);
+  G.MovePP.tick(p,4);close(pp.current,16.4);assert.equal(pp.max,15);assert.equal(pp.limit,20);
+  G.Items.gain(p,'candyjar');pp=G.MovePP.state(p,m);assert.equal(pp.limit,25);assert.equal(pp.current,16.4);
+  pp.current=14.75;G.MovePP.tick(p,1);close(pp.current,15.225);G.MovePP.tick(p,100);close(pp.current,25);
   G.MovePP.restore(p,[m]);close(pp.current,25);G.MovePP.increaseMax(p);assert.equal(pp.max,16);assert.equal(pp.limit,26);close(pp.current,26);
 });
 test('legacy effects use one fifth strength, stack without replacing one another, and Choice Band permits switching',()=>{
@@ -96,9 +96,9 @@ test('toggle selects a new slot enabled, including a previously paused slot, but
 test('Choice Band is Boss-only, blocks unused PP recovery immediately, and allows explicit PP restoration',()=>{
  const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);
  assert.equal(G.Items.BY.choiceband.boss,true);for(const m of p.moves)G.MovePP.state(p,m).current=0;G.Items.gain(p,'choiceband');G.Items.gain(p,'choiceband');
- G.MovePP.tick(p,1);close(G.MovePP.state(p,a).current,.5);assert.equal(G.MovePP.state(p,b).current,0);
- G.MoveControl.input(p,1);G.MovePP.tick(p,1);assert.equal(p.active,1);close(G.MovePP.state(p,a).current,.5);assert.ok(G.MovePP.state(p,b).current>0);
- G.MovePP.add(p,[a],1);close(G.MovePP.state(p,a).current,1.5);G.MovePP.restore(p,[a]);assert.equal(G.MovePP.state(p,a).current,G.MovePP.max(p,a));
+ G.MovePP.tick(p,1);close(G.MovePP.state(p,a).current,.7);assert.equal(G.MovePP.state(p,b).current,0);
+ G.MoveControl.input(p,1);G.MovePP.tick(p,1);assert.equal(p.active,1);close(G.MovePP.state(p,a).current,.7);assert.ok(G.MovePP.state(p,b).current>0);
+ G.MovePP.add(p,[a],1);close(G.MovePP.state(p,a).current,1.7);G.MovePP.restore(p,[a]);assert.equal(G.MovePP.state(p,a).current,G.MovePP.max(p,a));
  G.Settings.set('castMode','toggle');G.MovePP.tick(p,2);assert.ok(G.MovePP.state(p,b).current>2);
 });
 
