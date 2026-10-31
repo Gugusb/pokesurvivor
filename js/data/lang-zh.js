@@ -1,6 +1,8 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Edición GG · v0.32.1": "GG版标识 · v0.32.1",
+  "El menú principal muestra la insignia «GG版» junto al título.": "主界面游戏标题旁新增“GG版”标识。",
   "Más energía para combatir · v0.31.0": "更多精力，畅快出招 · v0.31.0",
   "La resistencia recupera más PP, especialmente en valores medios. Usar un movimiento reduce menos su recuperación.": "耐力带来的 PP 回复更加明显，释放招式时的回复惩罚也减轻了。",
   "El tesoro de los jefes · v0.30.0": "首领留下的宝藏 · v0.30.0",

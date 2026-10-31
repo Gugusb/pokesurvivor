@@ -316,6 +316,12 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
   padding: 30px; min-width: 0;
 }
 .menu-left .logo .t1 { font-size: clamp(36px, 6vw, 64px); }
+.menu-left .logo { max-width: 100%; }
+.menu-title { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: .3em; }
+.menu-title > span:first-child { font-size: inherit; white-space: nowrap; }
+.edition-badge { flex: 0 0 auto; padding: .3em .5em; border: 2px solid var(--gold);
+  background: #273548; box-shadow: 3px 3px 0 var(--shadow); font-size: 16px;
+  line-height: 1.2; letter-spacing: 0; text-shadow: none; white-space: nowrap; }
 .partner-card { text-align: center; margin-top: 10px; }
 .partner-card .nm { font-size: 24px; font-weight: 700; text-shadow: 3px 3px 0 var(--shadow); }
 .partner-card .lv { color: var(--muted); font-size: 14px; text-shadow: 2px 2px 0 var(--shadow); }
@@ -501,9 +507,13 @@ kbd {
 
 @media (max-width: 760px) and (min-height: 521px) {
   #scr-menu { flex-direction: column; overflow-y: auto; }
+  .menu-left { padding-top: 120px; }
   .menu-right { width: 100%; background: rgba(5,10,25,.7); }
   .split { grid-template-columns: 1fr; }
   .logo .t1 { font-size: 34px; }
+}
+@media (max-width: 480px) {
+  .menu-title > span:first-child { font-size: 22px; }
 }
 
 /* ============ iconos pixel art ============ */
