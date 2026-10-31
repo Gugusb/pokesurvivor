@@ -148,7 +148,7 @@ G.Player = class Player {
     const healed = rate > 0 ? (missing+flat/rate)*-Math.expm1(-rate*dt) : flat*dt;
     if (healed > 0) this.hp = Math.min(this.maxHp,this.hp+healed);
   }
-  get effectiveXpMul() { return this.xpMul * G.Abilities.xpFactor(this) * (1+.06*(G.Items?.count(this,'luckyegg')||0)); }
+  get effectiveXpMul() { return this.xpMul * G.Abilities.xpFactor(this) * (1+.06*(G.Items?.count(this,'luckyegg')||0)) * (G.FailureProtection?.xpFactor(this)||1); }
 
   get coinMul(){return this.baseCoinMul*(1+.1*(G.Items?.count(this,'amuletcoin')||0));}
 
@@ -302,6 +302,7 @@ G.Player = class Player {
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1);
+    if (G.FailureProtection?.avoidLethal(this,d)) return false;
     const hpLost=Math.min(this.hp,d);
     this.hp -= d;
     if(G.BossCombat&&source.enemy)G.BossCombat.leech(source.enemy,hpLost,this.maxHp);

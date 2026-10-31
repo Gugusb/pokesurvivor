@@ -188,6 +188,7 @@ G.Server = (() => {
         p = value.progress;
       if (p.offline) remote.offline = p.offline;
       if (p.difficulty) remote.difficulty = p.difficulty;
+      if (p.failureProtection) remote.failureProtection = p.failureProtection;
       if (p.records) Object.assign(remote.difficultyRecords, p.records);
       value = { ...value, save: remote };
     }
@@ -202,6 +203,7 @@ G.Server = (() => {
         difficultyRecords: remote.difficultyRecords,
         difficulty: { ...remote.difficulty, selected: s.difficulty.selected },
         offline: remote.offline,
+        failureProtection: remote.failureProtection||{},
       });
     }
     remember();
@@ -359,6 +361,7 @@ G.Server = (() => {
       id: run?.id,
       t: G.Game?.st?.time || 0,
       alive: !!p && !p.dead,
+      failed: !!p?.dead,
       clean: clean && !!G.Game?.runClean?.(),
       speed: G.Game?.speed || 1,
       lv: p?.level || 1,
@@ -425,10 +428,11 @@ G.Server = (() => {
       return r.extra;
     });
   }
-  function finish(clean) {
+  function finish(clean,failed) {
     clearInterval(beatTimer);
     const b = snapshot(clean),
       pending = runPromise;
+    if(typeof failed==='boolean')b.failed=failed;
     return enqueue(async () => {
       const ending = await pending;
       if (!ending) return;

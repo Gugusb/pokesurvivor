@@ -26,6 +26,7 @@ for (const f of [
   "js/data/abilities.js",
   "js/systems/progression-mon.js",
   "js/systems/difficulty.js",
+  "js/systems/failure-protection.js",
   "js/systems/offline.js",
   "js/core/db.js",
 ]) {
@@ -127,6 +128,7 @@ function sanitize(input, old, name) {
     ),
   };
   s.offline = clone(old.offline);
+  s.failureProtection = clone(old.failureProtection||{});
   Object.assign(s,G.ZAccess.merge(s,old));
   for(const [d,type] of Object.entries(s.zEquipped))
     if(!G.DEX_BY[d] || type!==null && (!G.ZAccess.TYPES.includes(type)||!G.ZAccess.allowed(s,d)))delete s.zEquipped[d];

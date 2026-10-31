@@ -11,7 +11,8 @@ G.BossRewards=(()=>{
     opened.add(id);
     if(data.rift){G.DB.save.abilityGems=(G.DB.save.abilityGems||0)+1;G.DB.commit(true);G.UI.toast(G.T('+1 Gema de habilidad'));}
     if(data.rift&&data.stone)G.Mega.award(data.stone);
-    G.Game.offerSpecialChoice(data.options);
+    const bonus=G.FailureProtection?.lootBonus(G.Game.player)||0;
+    G.Game.offerSpecialChoice(bonus>0?G.Items.rewardChoices(Math.random,data.rift,bonus):data.options);
     return true;
   }
   function open(p){

@@ -32,10 +32,10 @@ G.Items = (() => {
   }
   function remove(p,id){if(!count(p,id))return false;if(--p.specialItems[id]===0)delete p.specialItems[id];return true;}
   function roll(){return G.U.pick(LIST.filter(i=>!i.boss)).id;}
-  function rewardChoices(rng=Math.random,rift=true){
+  function rewardChoices(rng=Math.random,rift=true,bonus=0){
     const out=[];
     for(let i=0;i<3;i++){
-      const boss=rng()<(rift?.5:.2);
+      const boss=rng()<Math.min(1,(rift?.5:.2)*(1+Math.max(0,Math.min(.8,Number(bonus)||0))));
       const available=LIST.filter(it=>!it.boss||rift||['linker','masterytm'].includes(it.id));
       let pool=available.filter(it=>!!it.boss===boss&&!out.includes(it.id));
       if(!pool.length)pool=available.filter(it=>!out.includes(it.id));

@@ -263,3 +263,14 @@ test('the real screen registry hides the victory overlay when showing the final 
   G.RunUI.showOver({difficulty:1,victory:true,time:1201,level:1,kills:0,bosses:0,coins:480,moves:[],breakdown:'×2'},noop);
   assert.equal(G.UI.isOpen('scr-victory'),false);assert.equal(G.UI.isOpen('scr-over'),true);
 });
+
+test('real run endings count short deaths, exclude debug failures and distinguish leaving alive',()=>{
+  const s=context(),{G}=s;s.load('js/systems/failure-protection.js');s.loadGame();
+  for(let i=0;i<3;i++){
+    const p=s.player(),run=s.run(1);p.dead=true;p.hp=0;G.FailureProtection.begin(p,G.DB.save,1,'local-'+i);G.Game._test.setRun(p,run,100);G.Game._test.endRun(true);
+    assert.equal(G.DB.save.failureProtection[1].losses,i+1);
+  }
+  assert.equal(G.DB.save.failureProtection[1].points,5);
+  let p=s.player();p.dead=true;p.hp=0;G.FailureProtection.begin(p,G.DB.save,1,'debug');G.Game._test.setRun(p,s.run(1),100,true);G.Game._test.endRun(true);assert.equal(G.DB.save.failureProtection[1].losses,3);
+  p=s.player();G.FailureProtection.begin(p,G.DB.save,1,'leave');G.Game._test.setRun(p,s.run(1),100);G.Game._test.endRun(false);assert.equal(G.DB.save.failureProtection[1].losses,0);assert.equal(G.DB.save.failureProtection[1].points,5);
+});

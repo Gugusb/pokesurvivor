@@ -353,7 +353,9 @@ function createApp(opts = {}) {
       const r = checkRun(u, b),
         s = current.save;
       const beforeRecords = JSON.stringify(s.difficultyRecords),
-        beforeDifficulty = JSON.stringify(s.difficulty);
+        beforeDifficulty = JSON.stringify(s.difficulty),
+        beforeProtection = JSON.stringify(s.failureProtection);
+      G.FailureProtection.record(s,r.stars,r.t,{failed:b.failed===true&&b.alive===false,ended:end,clean:!r.dirty,id:r.id},now());
       const oldRecords = clone(s.difficultyRecords);
       const won = record(
         s,
@@ -393,6 +395,7 @@ function createApp(opts = {}) {
       const value = save(u.uid, s);
       if (end) return { ...value, won };
       const progress = { offline: s.offline };
+      if(beforeProtection!==JSON.stringify(s.failureProtection))progress.failureProtection=s.failureProtection;
       if (beforeDifficulty !== JSON.stringify(s.difficulty))
         progress.difficulty = s.difficulty;
       if (beforeRecords !== JSON.stringify(s.difficultyRecords)) {

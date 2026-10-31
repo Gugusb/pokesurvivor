@@ -1,6 +1,8 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Un comienzo más amable · v0.34.0": "再出发的旅途 · v0.34.0",
+  "Ajustamos el crecimiento inicial y los premios de los jefes para que cada nuevo intento sea más llevadero.": "调整了冒险初期的成长与首领奖励，让再次出发的旅途更加顺畅。",
   "Refuerza ambos ataques a partir de sus valores naturales.": "激发天生力量，提升物攻和特攻。",
   "Refuerza la velocidad a partir de su valor natural; no cambia la agilidad.": "提升天生速度，移动更加轻快；不改变敏捷。",
   "Refuerza ambas defensas a partir de sus valores naturales.": "强化天生防御，提升物防和特防。",

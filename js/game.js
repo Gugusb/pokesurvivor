@@ -21,7 +21,7 @@ G.Game = (() => {
   let pl = null;
   let caught = [];          // shinies y capturas pendientes de esta run
   let biome = -1;
-  let challenge = null, victoryBusy=false;
+  let challenge = null, victoryBusy=false, protectionRunId='';
 
   const st = { get time() { return time; }, get difficulty() { return challenge?.stars || 4; } };
 
@@ -100,9 +100,10 @@ G.Game = (() => {
     // entry is an evolved form.  IVs are read from that form's collection
     // entry and then carried through the evolution stages.
     const startDex = G.MonProgression ? G.MonProgression.rootFor(save.partner) : save.partner;
+    protectionRunId=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,14);
     if(G.DB.mode==='server'&&G.DB.online){
       startingRun=true;
-      try{await G.Server.prepareRun(coop?'g':'s',startDex,coop?.difficulty??save.difficulty.selected);}
+      try{const prepared=await G.Server.prepareRun(coop?'g':'s',startDex,coop?.difficulty??save.difficulty.selected);protectionRunId=prepared.id;}
       catch(e){G.UI.toast(e.message,6000);G.MenuUI.open();return;}
       finally{startingRun=false;}
     }
@@ -138,6 +139,7 @@ G.Game = (() => {
       pl.evolutionPath = evolutionPath.slice();
       pl.monStage = G.MonProgression.stageFor(startDex, 1, pl.evolutionPath);
     }
+    G.FailureProtection?.begin(pl,save,challenge?.stars||1,protectionRunId);
     banked = { t1: 0, t10: 0 };
     caught = [];
     if (G.MonProgression) challenge.pendingCaptures = [];
@@ -393,6 +395,7 @@ G.Game = (() => {
     const confirmed = G.MonProgression ? G.MonProgression.commitCaptures(save, challenge || {}) : [];
     const {parts,score,base}=coinPayout();
     const ok = clean();
+    G.FailureProtection?.finish(pl,save,{time,failed:dead&&pl.dead,clean:ok&&!!challenge?.eligible,id:protectionRunId});
     // In solo, the clock stops on death. A late death cannot undo having
     // survived twenty minutes, even if the checkpoint was missed that frame.
     // In co-op, team time may continue while this player is already down.
@@ -425,7 +428,7 @@ G.Game = (() => {
     const mark = { t: Math.floor(time), lv: pl.level, kills: pl.kills };
     // Si la partida se ha tocado (ver clean()), no sube al ranking (sin avisar); lo demás, sí.
     const ranked = ok && (!challenge || challenge.eligible) && !coop;
-    if(G.DB.mode==='server')G.Server.finish(ok).catch(()=>{});
+    if(G.DB.mode==='server')G.Server.finish(ok,dead&&pl.dead).catch(()=>{});
     const sent = ranked && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.dex, shiny: pl.shiny }))
                : ranked && wasHost ? G.Ranking.submitGroup(Object.assign(mark, { members: team })) : null;
     if (sent) sent.then(b => { if (b && b.some(p => p !== 'a')) G.DB.commit(true); }).catch(() => {});
@@ -751,6 +754,9 @@ G.Game = (() => {
       return;
     }
     time += dt;
+    if(G.FailureProtection?.advance(pl,G.DB.save,time,!tampered&&!!challenge?.eligible)){
+      if(G.DB.mode==='server')G.Server.heartbeat().catch(()=>{});else G.DB.commit(true);
+    }
 
     const b = Math.floor(time / 240);
     if (b !== biome && !G.Rift.inArena && !G.Judgment.active) {

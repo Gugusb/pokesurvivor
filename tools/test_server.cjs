@@ -777,3 +777,34 @@ test('score ranking can place a shorter higher-tier run above a longer easy run;
   assert.equal(f.app.db.prepare('SELECT score FROM run_scores WHERE uid=?').get(a.user.uid),undefined);
   assert.equal(f.app.db.prepare('SELECT t FROM time_scores WHERE uid=?').get(a.user.uid).t,7200);
 });
+
+test('verified short deaths accumulate hidden assistance once; saves cannot forge it and sessions retain it',async t=>{
+  const f=await fixture(t),a=await f.account('AssistAccount');await f.seed(a);let result;
+  for(const [i,points]of [0,0,5,15,30,50,75,100].entries()){
+    const start=await f.request('/run/start',{dex:133,stars:1,mode:'s',clean:true},a.cookie);assert.equal(start.status,200);f.tick(10000);
+    const payload={id:start.data.id,t:10,alive:false,failed:true,clean:true,kills:0,lv:1};result=await f.request('/run/end',payload,a.cookie);assert.equal(result.status,200);assert.equal(result.data.save.failureProtection[1].points,points);assert.equal(result.data.save.failureProtection[1].losses,i+1);
+    const duplicate=await f.request('/run/end',payload,a.cookie);assert.equal(duplicate.status,200);assert.equal(duplicate.data.alreadyEnded,true);assert.equal(duplicate.data.save.failureProtection[1].losses,i+1);
+  }
+  const session=await f.request('/session',undefined,a.cookie);assert.equal(session.data.save.failureProtection[1].points,100);
+  session.data.save.failureProtection={1:{points:100,losses:999,rev:999,at:Date.now(),last:'forged'},8:{points:100,losses:8}};
+  const forged=await f.request('/save',{save:session.data.save,rev:session.data.rev},a.cookie);assert.equal(forged.status,200);assert.equal(forged.data.save.failureProtection[1].losses,8);assert.equal(forged.data.save.failureProtection[8],undefined);
+});
+
+test('a twelve-minute heartbeat clears assistance immediately and stale saves cannot restore it',async t=>{
+  const f=await fixture(t),a=await f.account('AssistReset');const seed=await f.seed(a);seed.save.failureProtection={1:{points:100,losses:8,rev:8,at:1,last:'seed'}};
+  f.app.db.prepare('UPDATE saves SET payload=? WHERE uid=?').run(JSON.stringify(seed.save),a.user.uid);
+  const run=await f.run(a,1,{duration:720,end:false});let session=await f.request('/session',undefined,a.cookie);assert.equal(session.data.save.failureProtection[1].points,100);
+  const stale=JSON.parse(JSON.stringify(session.data.save));f.tick(100);
+  const beat=await f.request('/run/beat',{id:run.id,t:720.1,alive:true,clean:true},a.cookie);assert.equal(beat.status,200);assert.equal(beat.data.progress.failureProtection[1].points,0);assert.equal(beat.data.progress.failureProtection[1].losses,0);
+  const end=await f.request('/run/end',{id:run.id,t:720.1,alive:false,failed:true,clean:true,kills:0},a.cookie);assert.equal(end.status,200);assert.equal(end.data.save.failureProtection[1].rev,9);
+  const saved=await f.request('/save',{save:stale,rev:end.data.rev},a.cookie);assert.equal(saved.status,200);assert.equal(saved.data.save.failureProtection[1].points,0);assert.equal(saved.data.save.failureProtection[1].rev,9);
+});
+
+test('quit, debugging and ordinary early heartbeats never manufacture failure points',async t=>{
+  const f=await fixture(t),a=await f.account('AssistSkip');await f.seed(a);
+  for(const clean of [true,false]){
+    const start=await f.request('/run/start',{dex:133,stars:1,mode:'s',clean},a.cookie);f.tick(10000);
+    let r=await f.request('/run/beat',{id:start.data.id,t:10,alive:false,failed:true,clean},a.cookie);assert.equal(r.status,200);assert.equal(r.data.progress.failureProtection,undefined);
+    r=await f.request('/run/end',{id:start.data.id,t:10,alive:clean,failed:!clean,clean,kills:0},a.cookie);assert.equal(r.status,200);assert.equal(r.data.save.failureProtection[1]?.losses||0,0);assert.equal(r.data.save.failureProtection[1]?.points||0,0);
+  }
+});
