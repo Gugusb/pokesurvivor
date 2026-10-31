@@ -132,15 +132,15 @@
       cd: 0.75, dmg: 20, radius: 110, width: 34, knock: 40 },
 
     { id: 'swords-dance', name: 'Danza Espada', type: 'normal', kind: 'buff',
-      desc: 'No hace daño: acumula AMBOS ATAQUES mientras esté activo.',
+      desc: 'Refuerza ambos ataques a partir de sus valores naturales.',
       cd: 0.85, stat: 'atk', amount: 0.13, dur: 7, stacks: 5 },
 
     { id: 'agility', name: 'Agilidad', type: 'normal', kind: 'buff',
-      desc: 'No hace daño: acumula VELOCIDAD mientras esté activo.',
+      desc: 'Refuerza la velocidad a partir de su valor natural; no cambia la agilidad.',
       cd: 0.85, stat: 'spd', amount: 0.10, dur: 7, stacks: 5 },
 
     { id: 'harden', name: 'Fortaleza', type: 'normal', kind: 'buff',
-      desc: 'No hace daño: acumula DEFENSA mientras esté activo.',
+      desc: 'Refuerza ambas defensas a partir de sus valores naturales.',
       cd: 0.85, stat: 'def', amount: 0.07, dur: 7, stacks: 5 },
 
     // ---------------- FUEGO ----------------
@@ -174,8 +174,8 @@
       cd: 1.50, dmg: 29, radius: 250, width: 30 },
 
     { id: 'aqua-ring', name: 'Acua Aro', type: 'water', kind: 'buff',
-      desc: 'No hace daño: acumula REGENERACIÓN de vida.',
-      cd: 0.90, stat: 'regen', amount: 1.6, dur: 8, stacks: 4 },
+      desc: 'Recupera parte de la vida perdida; cuanto más herido estés, más te cura.',
+      cd: 0.90, stat: 'regen', amount: 0.016, dur: 8, stacks: 4 },
 
     // ---------------- PLANTA ----------------
     { id: 'vine-whip', name: 'Látigo Cepa', type: 'grass', kind: 'melee',
@@ -317,7 +317,7 @@
       cd: 1.0, dmg: 24, radius: 230, width: 34 },
 
     { id: 'dragon-dance', name: 'Danza Dragón', type: 'dragon', kind: 'buff',
-      desc: 'No hace daño: acumula AMBOS ATAQUES más rápido que Danza Espada.',
+      desc: 'Refuerza ambos ataques naturales y acumula energía más rápido que Danza Espada.',
       cd: 0.7, stat: 'atk', amount: 0.11, dur: 7, stacks: 5 },
 
     // ---------------- HADA ----------------

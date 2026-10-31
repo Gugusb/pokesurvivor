@@ -4,6 +4,14 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  "Refuerza ambos ataques a partir de sus valores naturales.": "Raises both attacks based on their natural stats.",
+  "Refuerza la velocidad a partir de su valor natural; no cambia la agilidad.": "Raises Speed based on its natural stat; does not change Agility.",
+  "Refuerza ambas defensas a partir de sus valores naturales.": "Raises both defenses based on their natural stats.",
+  "Recupera parte de la vida perdida; cuanto más herido estés, más te cura.": "Restores a portion of lost HP; heals more when you are badly hurt.",
+  "Refuerza ambos ataques naturales y acumula energía más rápido que Danza Espada.": "Raises both natural attacks and builds stacks faster than Swords Dance.",
+  "Vida perdida recuperada por segundo": "Missing HP restored per second",
+  "Aumento del valor natural": "Base stat increase",
+  "Duración": "Duration",
   "Cofre de jefe": "Boss Reward Chest",
   "Cofre de grieta": "Rift Boss Reward Chest",
 

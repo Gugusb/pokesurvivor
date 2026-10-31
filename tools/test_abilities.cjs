@@ -17,12 +17,12 @@ test('Justified requires actual super-effective damage, refreshes five seconds a
   const s=context(),{G}=s,p=s.player(638,'justified');
   G.Types.mult=type=>type==='fire'?2:1;p.maxHp=1000;p.hp=1000;p.atkMul=1.3;
   p.buffs.atk={n:1,t:10,amount:.2};const base=p.baseAtk;
-  p.hurt(1,'normal',true,{kind:'ranged'});approx(p.atk,base*1.5);
-  p.invuln=0;p.hurt(1,'fire',true,{kind:'ranged'});approx(p.atk,base*1.9);
+  p.hurt(1,'normal',true,{kind:'ranged'});approx(p.atk,base*1.2*1.3);
+  p.invuln=0;p.hurt(1,'fire',true,{kind:'ranged'});approx(p.atk,base*1.2*1.7);
   G.Abilities.playerTick(p,4);p.invuln=0;p.hurt(1,'fire',true,{kind:'contact'});
-  approx(p.atk,base*1.9);G.Abilities.playerTick(p,4.99);approx(p.atk,base*1.9);
-  G.Abilities.playerTick(p,.01);approx(p.atk,base*1.5);
-  p.invuln=1;p.hurt(1,'fire');approx(p.atk,base*1.5);
+  approx(p.atk,base*1.2*1.7);G.Abilities.playerTick(p,4.99);approx(p.atk,base*1.2*1.7);
+  G.Abilities.playerTick(p,.01);approx(p.atk,base*1.2*1.3);
+  p.invuln=1;p.hurt(1,'fire');approx(p.atk,base*1.2*1.3);
 });
 
 test('Prankster only accelerates buff cooldowns and Sand Force follows effective sand weather',()=>{
@@ -121,7 +121,7 @@ test('attack and damage bonuses sum in separate buckets; Electric field affects 
   const s=context(),{G}=s,p=s.player(894,'transistor');
   s.load('js/data/items.js');s.load('js/systems/levelup.js');
   p.atkMul=1.4;G.LevelUp.STATS.find(x=>x.id==='atk').apply(p);p.buffs.atk={n:1,t:5,amount:.2};
-  approx(p.atk,p.baseAtk*1.1*1.6);p.equip('lifeorb');approx(p.atk,p.baseAtk*1.1*1.6);
+  approx(p.atk,p.baseAtk*1.3*1.4);p.equip('lifeorb');approx(p.atk,p.baseAtk*1.3*1.4);
   approx(G.Abilities.outgoingDamage(p,{kind:'projectile',type:'electric'}),1.16);
   let e=s.enemy();e.hurt(100,'#fff',0,0,0,null,p,{kind:'projectile',type:'electric'});assert.equal(e.hp,384);
   const ally=new G.Player(G.DEX_BY[894]);ally.ability='transistor';s.players.push(ally);

@@ -9,15 +9,15 @@ G.PlayerStats=(()=>{
       ['hp','Vida',p.baseHp,p.maxHp,0,G.T('Vida actual')+' '+fmt(p.hp)+' / '+fmt(p.maxHp)],
       ['atk','Ataque físico',raw(p.baseAtk,p.mon.atk,b.atk),null,stack('atk'),G.T('Multiplicador físico')+' ×'+fmt(p.atk)],
       ['spa','Ataque especial',raw(p.baseSpa,p.mon.spa??p.mon.atk,b.spa),null,stack('atk'),G.T('Multiplicador especial')+' ×'+fmt(p.spa)],
-      ['defense','Defensa física',raw(p.baseDefense,p.mon.defense,b.def),null,0,G.T('Daño de contacto')+' ÷'+fmt(p.defenseFor({kind:'contact'}))],
-      ['spdef','Defensa especial',raw(p.baseSpDef,p.mon.spdef,b.spd),null,0,G.T('Daño a distancia')+' ÷'+fmt(p.defenseFor({kind:'ranged'}))],
+      ['defense','Defensa física',raw(p.baseDefense,p.mon.defense,b.def),null,stack('def'),G.T('Daño de contacto')+' ÷'+fmt(p.defenseFor({kind:'contact'}))],
+      ['spdef','Defensa especial',raw(p.baseSpDef,p.mon.spdef,b.spd),null,stack('def'),G.T('Daño a distancia')+' ÷'+fmt(p.defenseFor({kind:'ranged'}))],
       ['spd','Velocidad',p.baseSpd,p.spd,stack('spd'),fmt(p.spd)+' '+G.T('unidades/s')],
       ['agility','Agilidad base',p.baseAgility,p.agility,0,G.T('Recarga')+' ×'+fmt(p.agilityCooldown)+' · '+G.T('Velocidad de recarga')+' ×'+fmt(1/p.agilityCooldown)],
       ['stamina','Resistencia base',p.baseStamina,p.stamina,0,G.T('Recuperación base')+' '+fmt(1/p.ppInterval)+' PP/s']
     ];
     return data.map(([key,name,base,total,skillFraction,battle])=>{
-      if(total==null)total=key==='atk'?base*p.atk/p.baseAtk:key==='spa'?base*p.spa/p.baseSpa:base*pre(key);
-      const permanent=base*(u[key]||0),fruit=base*((g[key]||0)-(u[key]||0)),skills=base*pre(key)*skillFraction,other=total-base-permanent-fruit-skills;
+      if(total==null)total=key==='atk'?base*p.atk/p.baseAtk:key==='spa'?base*p.spa/p.baseSpa:base*(pre(key)+skillFraction);
+      const permanent=base*(u[key]||0),fruit=base*((g[key]||0)-(u[key]||0)),skills=base*skillFraction,other=total-base-permanent-fruit-skills;
       return {key,name,base,permanent,fruit,skills,other,total,battle};
     });
   }

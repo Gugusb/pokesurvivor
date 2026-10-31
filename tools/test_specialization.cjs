@@ -54,7 +54,7 @@ test('phase projectiles and beams cross inner walls; projectiles are still remov
 });
 test('backpack stat rows reconcile all five sources and share actual attack, agility and stamina calculations',()=>{
  const s=setup(),{G}=s,p=new G.Player(G.DEX_BY[384],{statGrowth:{atk:.08,agility:.06,defense:.1}});p.growStat('atk',.1);p.buffs.atk={n:2,amount:.2,t:3};p.atkMul=1.1;p.baseStamina=200;const rows=G.PlayerStats.rows(p);assert.equal(rows.length,8);
- for(const r of rows)close(r.total,r.base+r.permanent+r.fruit+r.skills+r.other);const a=rows.find(r=>r.key==='atk');close(a.permanent/a.base,.08);close(a.fruit/a.base,.1);close(a.skills/a.base,1.18*.4);assert.ok(rows.find(r=>r.key==='stamina').battle.includes('4'));
+ for(const r of rows)close(r.total,r.base+r.permanent+r.fruit+r.skills+r.other);const a=rows.find(r=>r.key==='atk');close(a.permanent/a.base,.08);close(a.fruit/a.base,.1);close(a.skills/a.base,.4);assert.ok(rows.find(r=>r.key==='stamina').battle.includes('4'));
 });
 test('bounded peer mastery snapshots reject malformed IDs, duplicate uniques, overlevel moves and excess entries; rewards deduplicate',()=>{
  const s=setup(),{G}=s,{p,m}=s.make('ember',['t3','t4']);const peer={remote:true,moves:[G.Moves.instance('ember')]};G.Specialization.sync(peer,[...G.Specialization.snapshot(p),['__proto__',5,false,['t4']],['tackle',100,false,['n7']]]);assert.equal(G.Specialization.find(peer,'ember').specializations.length,2);assert.equal(Object.keys(peer.masteryMoves).length,1);

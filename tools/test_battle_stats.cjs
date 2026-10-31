@@ -28,11 +28,11 @@ test('old HP/Attack/Speed IVs expand deterministically and mixed-format merges p
  const six=JSON.parse(JSON.stringify(base));six.owned[6].iv=[1,2,3,4,5,6];
  assert.deepEqual(Array.from(sanitize(six,base,'legacy').owned[6].iv),[2,3,4,31,30,29,4,29]);
 });
-test('all existing attack buffs and attack debuffs affect the same additive multiplier for both attacks',()=>{
+test('base-stat move buffs stay separate from generic attack bonuses and debuffs for both attacks',()=>{
  const s=fixture(),{G}=s,p=s.player(150);p.baseAtk=2;p.baseSpa=5;p.atkMul=1.3;p.buffs.atk={n:2,t:5,amount:.1};
- close(p.atk,3);close(p.spa,7.5);p.ability='justified';G.Abilities.state(p).justiceT=5;close(p.atk,3.8);close(p.spa,9.5);
- p.ability=null;p.applyAttackDebuff(.25,3);close(p.atk,2.5);close(p.spa,6.25);
- p.ability='defiant';close(p.atk,3);close(p.spa,7.5);
+ close(p.atk,2*1.2*1.3);close(p.spa,5*1.2*1.3);p.ability='justified';G.Abilities.state(p).justiceT=5;close(p.atk,2*1.2*1.7);close(p.spa,5*1.2*1.7);
+ p.ability=null;p.applyAttackDebuff(.25,3);close(p.atk,2*1.2*1.05);close(p.spa,5*1.2*1.05);
+ p.ability='defiant';close(p.atk,2*1.2*1.3);close(p.spa,5*1.2*1.3);
 });
 test('contact and melee use physical defense; ranged uses special defense; reduction and pure/environment damage preserve their own rules',()=>{
  const s=fixture(),p=s.player(150);p.hp=p.maxHp=10000;p.baseDefense=2;p.baseSpDef=4;p.dmgReduce=.2;

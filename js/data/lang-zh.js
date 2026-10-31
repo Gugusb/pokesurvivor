@@ -1,6 +1,17 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Refuerza ambos ataques a partir de sus valores naturales.": "激发天生力量，提升物攻和特攻。",
+  "Refuerza la velocidad a partir de su valor natural; no cambia la agilidad.": "提升天生速度，移动更加轻快；不改变敏捷。",
+  "Refuerza ambas defensas a partir de sus valores naturales.": "强化天生防御，提升物防和特防。",
+  "Recupera parte de la vida perdida; cuanto más herido estés, más te cura.": "逐渐恢复已损失的生命，伤得越重，回复越多。",
+  "Refuerza ambos ataques naturales y acumula energía más rápido que Danza Espada.": "激发天生的双攻力量，比剑舞更快地积蓄增益。",
+  "Vida perdida recuperada por segundo": "每秒恢复已损失生命",
+  "Aumento del valor natural": "基础属性提升",
+  "Duración": "持续时间",
+  "La fuerza de tu compañero · v0.33.0": "伙伴的天生力量 · v0.33.0",
+  "Danza Espada, Danza Dragón y Agilidad refuerzan los stats naturales de tu compañero. Fortaleza aumenta ambas defensas.": "剑舞、龙之舞和高速移动现按伙伴的基础属性提供提升；变硬改为强化物防和特防。",
+  "Acua Aro restaura una parte de la vida perdida: cuanto más herido estés, más te ayuda. Consulta sus efectos en la mochila.": "水流环改为逐渐恢复已损失的生命，伤得越重，回复越多。可在背包中查看招式效果。",
   "Edición GG · v0.32.1": "GG版标识 · v0.32.1",
   "El menú principal muestra la insignia «GG版» junto al título.": "主界面游戏标题旁新增“GG版”标识。",
   "Más energía para combatir · v0.31.0": "更多精力，畅快出招 · v0.31.0",

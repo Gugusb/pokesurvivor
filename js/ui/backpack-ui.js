@@ -28,11 +28,11 @@ G.BackpackUI=(()=>{
       const info=G.PlayerStats.move(p,m),old=existing.get(m.id);if(old){old.querySelector('.bag-pp').textContent=fmt(info.pp.current)+' / '+info.pp.max+' PP';if(old.matches(':hover')||old.open)return;}const row=node('details','bag-move'),title=node('summary','');row.dataset.move=m.id;
       title.append(node('span','bag-slot',String(i+1)),node('strong','',T(m.name)),node('span','bag-pp',fmt(info.pp.current)+' / '+info.pp.max+' PP'));
       row.append(title);
-      const lines=[T(m.def.desc),T('Recarga')+': '+fmt(info.cd)+' s · '+T('Multiplicador del movimiento')+': ×'+fmt(info.power),T(m.damageClass==='special'?'Ataque especial':m.kind==='buff'?'Efecto de apoyo':'Ataque físico')];
-      if(info.view.amount)lines.push(T('Efecto por acumulación')+': '+fmt(info.view.amount)+(info.view.stacks?' ×'+info.view.stacks:''));
+      const lines=[T(m.def.desc),T('Recarga')+': '+fmt(info.cd)+' s'+(m.kind==='buff'?'':' · '+T('Multiplicador del movimiento')+': ×'+fmt(info.power)),T(m.damageClass==='special'?'Ataque especial':m.kind==='buff'?'Efecto de apoyo':'Ataque físico')];
+      if(info.view.amount)lines.push(T(m.stat==='regen'?'Vida perdida recuperada por segundo':'Aumento del valor natural')+': '+fmt(info.view.amount*100)+'%'+(info.view.stacks?' ×'+info.view.stacks:''));
       if(info.view.dur)lines.push(T('Duración')+': '+fmt(info.view.dur)+' s');
       if(info.view.radius)lines.push(T('Alcance')+': '+fmt(info.view.radius));
-      if(info.view.count)lines.push(T('Cantidad')+': '+info.view.count);
+      if(info.view.count&&m.kind!=='buff')lines.push(T('Cantidad')+': '+info.view.count);
       if(info.view.pierce)lines.push(T('Perforación')+': '+info.view.pierce);
       for(const id of G.Specialization.ids(m))lines.push(T(G.Specialization.BY[id].name)+' · '+T(G.Specialization.BY[id].desc));
       row.title=T(m.name)+'\n'+lines.join('\n');row.append(node('p','',lines.join('\n')));if(old)old.replaceWith(row);else moves.append(row);

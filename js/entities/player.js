@@ -109,10 +109,11 @@ G.Player = class Player {
 
   // ---------------- stats efectivos ----------------
   buffStacks(b) { return G.Mega ? G.Mega.buffStacks(this, b.n) : b.n; }
-  get attackMultiplier() { return Math.max(0, this.atkMul + this.buffStacks(this.buffs.atk) * this.buffs.atk.amount +
+  buffFraction(stat) { const b = this.buffs[stat]; return this.buffStacks(b) * b.amount; }
+  get attackMultiplier() { return Math.max(0, this.atkMul +
     G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
-  get atk() { return this.baseAtk * (1+this.statGrowth.atk) * this.attackMultiplier; }
-  get spa() { return this.baseSpa * (1+this.statGrowth.spa) * this.attackMultiplier; }
+  get atk() { return this.baseAtk * (1+this.statGrowth.atk+this.buffFraction('atk')) * this.attackMultiplier; }
+  get spa() { return this.baseSpa * (1+this.statGrowth.spa+this.buffFraction('atk')) * this.attackMultiplier; }
   get agility() { return this.baseAgility * (1+this.statGrowth.agility); }
   get stamina() { return this.baseStamina * (1+this.statGrowth.stamina); }
   get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
@@ -124,20 +125,29 @@ G.Player = class Player {
   attackFor(move) { return move?.damageClass === 'special' ? this.spa : this.atk; }
   defenseFor(source) {
     const kind=source?.kind;
-    if (kind==='contact' || kind==='melee') return Math.max(.1,this.baseDefense*(1+this.statGrowth.defense));
-    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,this.baseSpDef*(1+this.statGrowth.spdef));
+    if (kind==='contact' || kind==='melee') return Math.max(.1,this.baseDefense*(1+this.statGrowth.defense+this.buffFraction('def')));
+    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,this.baseSpDef*(1+this.statGrowth.spdef+this.buffFraction('def')));
     return 1;
   }
   get spd() {
-    const s = this.baseSpd * (1+this.statGrowth.spd) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
-      (1 + this.buffStacks(this.buffs.spd) * this.buffs.spd.amount + G.Abilities.speedBonus(this));
+    const s = this.baseSpd * (1+this.statGrowth.spd+this.buffFraction('spd')) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
+      (1 + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return s * (G.Abilities.slowImmune(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
       (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1);
   }
-  get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0) + this.buffStacks(this.buffs.def) * this.buffs.def.amount); }
-  get regen() { return this.regenFlat + this.baseHp*this.regenBase + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0) + this.buffStacks(this.buffs.regen) * this.buffs.regen.amount; }
+  get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0)); }
+  get flatRegen() { return this.regenFlat + this.baseHp*this.regenBase + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0); }
+  get missingHpRegen() { return this.buffFraction('regen'); }
+  get regen() { return this.flatRegen + Math.max(0,this.maxHp-this.hp)*this.missingHpRegen; }
+  regenerate(dt) {
+    if (this.dead || !(dt > 0) || this.hp >= this.maxHp) return;
+    const missing = this.maxHp-this.hp, rate = this.missingHpRegen, flat = this.flatRegen;
+    // Integrate missing-HP healing continuously so frame rate cannot change its yield.
+    const healed = rate > 0 ? (missing+flat/rate)*-Math.expm1(-rate*dt) : flat*dt;
+    if (healed > 0) this.hp = Math.min(this.maxHp,this.hp+healed);
+  }
   get effectiveXpMul() { return this.xpMul * G.Abilities.xpFactor(this) * (1+.06*(G.Items?.count(this,'luckyegg')||0)); }
 
   get coinMul(){return this.baseCoinMul*(1+.1*(G.Items?.count(this,'amuletcoin')||0));}
@@ -397,7 +407,7 @@ G.Player = class Player {
     if (this.slowT > 0) this.slowT -= dt;
     if (this.bellHeal > 0) { const h = Math.min(this.bellHeal, .8*G.Items.count(this,'shellbell')*dt); this.hp = Math.min(this.maxHp, this.hp + h); this.bellHeal -= h; }
     if (this.power && (this.power.t -= dt) <= 0) { this.power.def.off(this); this.power = null; }
-    if (this.regen > 0) this.hp = Math.min(this.maxHp, this.hp + this.regen * dt);
+    this.regenerate(dt);
 
     // --- movimiento con colisiones ---
     // (En cooperativo la pausa no para el juego: sólo te quedas quieto.)
