@@ -269,7 +269,7 @@ test('melee Z sweeps three times, charges one second, then spends the larger sha
   for(const h of hits)close(h.dmg,1200*p.atk*.2);assert.equal(p.zState.phase,'cast');
   assert.equal(p.setActive(1),false);advance(s,.99);assert.equal(hits.length,3);assert.ok(G.ZMoves.immune(p));
   advance(s,.01);assert.equal(hits.filter(h=>h.e===near).length,4);assert.equal(hits.filter(h=>h.e===far).length,1);
-  hits.slice(3).forEach(h=>close(h.dmg,1200*p.atk*.5));assert.equal(p.zState.phase,'cooldown');assert.equal(G.ZMoves.immune(p),false);
+  hits.slice(3).forEach(h=>close(h.dmg,1200*p.atk*.5));assert.equal(p.zState.phase,'cooldown');assert.equal(G.ZMoves.immune(p),true);close(p.zState.guard,1.8);
 });
 
 test('beam Z locks origin and angle and deals six ticks across fourfold width and 99-fold length',()=>{
@@ -296,18 +296,19 @@ test('orbit Z creates opposing layers with distinct damage and inner slow, and l
   advance(s,4.99);assert.ok(G.ZMoves.busy(p));advance(s,.01);assert.equal(p.zState.phase,'cooldown');
 });
 
-test('dash Z crosses blocked terrain, guarantees critical damage and has exactly two seconds of landing immunity',()=>{
+test('dash Z crosses blocked terrain, guarantees critical damage and has 1.8 seconds of recovery immunity',()=>{
   const s=setup('quick-attack'),{G,p,m}=s;const e=s.enemy(m.radius*5);e.hp=e.maxHp=10000000;G.EnemyMgr.rebuildGrid();
   G.World.isFree=(x,y)=>x>m.radius*10+15;release(s);assert.ok(G.ZMoves.immune(p));advance(s,.5);
   close(e.maxHp-e.hp,Math.round(1200*p.atk*1.1));assert.ok(p.x>m.radius*10+15);assert.ok(G.ZMoves.immune(p));
   const hp=p.hp;assert.equal(p.hurt(99999,null,true),false);assert.equal(p.hp,hp);
-  advance(s,1.99);assert.ok(G.ZMoves.immune(p));advance(s,.01);assert.equal(G.ZMoves.immune(p),false);
+  advance(s,1.79);assert.ok(G.ZMoves.immune(p));advance(s,.01);assert.equal(G.ZMoves.immune(p),false);
   assert.equal(p.hurt(1,null,true),true);
 });
 
 test('a short fused dash does not repeatedly teleport or refresh immunity while another Z is still casting',()=>{
   const s=setup('quick-attack',['tackle']),{G,p}=s; p.slots=[p.moves];release(s);advance(s,.5);
-  const x=p.x;p.x+=10;advance(s,.2);assert.equal(p.x,x+10);close(p.zState.guard,1.8);assert.ok(G.ZMoves.busy(p));
+  const x=p.x;p.x+=10;advance(s,.2);assert.equal(p.x,x+10);close(p.zState.guard,0);assert.ok(G.ZMoves.busy(p));
+  advance(s,1.5);assert.equal(G.ZMoves.busy(p),false);close(p.zState.guard,1.8);
 });
 
 test('meteor Z schedules thirty impacts over three seconds and keeps the lock until the final landing',()=>{
@@ -321,14 +322,35 @@ test('death or a cancelled selection cannot leave the whole party in bullet time
   G.ZMoves.arm(p);p.dead=true;G.Combat.tick(.01,p,0);assert.equal(G.ZMoves.timeFactor(),1);assert.equal(p.zState.phase,'cooldown');
 });
 
-test('Z selection and every casting family are invincible, while normal cooldown grants no immunity',()=>{
+test('every Z family retains 1.8 seconds of immunity after movement and skill switching unlock',()=>{
   for(const id of ['ember','tackle','ice-beam','fire-spin','thunderbolt','quick-attack','rock-slide','razor-leaf','heat-wave','giga-drain','spikes','will-o-wisp','toxic','flamethrower']){
     const s=setup(id),{G,p}=s;assert.ok(G.ZMoves.arm(p));const hp=p.hp;
     assert.equal(p.hurt(99999,'fire',true),false);assert.equal(p.hp,hp);assert.equal(G.Abilities.damageFactor(p,{kind:'environment'}),0);
     p.setActive(0);assert.equal(p.hurt(99999,null,true),false);
-    advance(s,p.zState.casts[0].duration);if(id==='quick-attack')advance(s,2);
-    assert.equal(G.ZMoves.immune(p),false);assert.equal(p.hurt(1,null,true),true);
+    const speed=p.baseSpd;advance(s,p.zState.casts[0].duration);
+    assert.equal(G.ZMoves.busy(p),false,id);close(p.spd,speed);close(p.zState.guard,1.8);close(p.zState.cooldown,5);
+    assert.equal(p.hurt(99999,null,true),false);assert.equal(p.hp,hp);assert.equal(p.invuln,0);
+    advance(s,1.799);assert.ok(G.ZMoves.immune(p),id);assert.equal(p.hurt(99999,null,true),false);
+    advance(s,.001);assert.equal(G.ZMoves.immune(p),false,id);assert.equal(p.hurt(1,null,true),true,id);
+    const guard=p.zState.guard;advance(s,.5);close(p.zState.guard,guard);
   }
+});
+
+test('cancelling selection or dying during a Z does not grant the completion guard',()=>{
+  for(const mode of ['toggle','cancel','death']){
+    const s=setup('ice-beam'),{G,p}=s;G.ZMoves.arm(p);
+    if(mode==='toggle')G.ZMoves.arm(p);
+    else if(mode==='cancel')G.ZMoves.cancel(p);
+    else{G.ZMoves.choose(p,0);p.dead=true;G.ZMoves.tick(p,3);p.dead=false;}
+    assert.equal(G.ZMoves.busy(p),false);close(p.zState.guard,0);assert.equal(G.ZMoves.immune(p),false);
+  }
+});
+
+test('the completed Z guard is independent of ordinary hit immunity and only game updates consume it',()=>{
+  const s=setup('ice-beam'),{G,p}=s;release(s);p.invuln=4;advance(s,3);
+  close(p.invuln,4);close(p.zState.guard,1.8);G.ZMoves.tick(p,0);close(p.zState.guard,1.8);
+  G.ZMoves.tick(p,.9);close(p.zState.guard,.9);close(p.invuln,4);
+  G.ZMoves.tick(p,.9);assert.equal(G.ZMoves.immune(p),false);close(p.invuln,4);
 });
 
 test('remote Z casts are visual only, validate types, and all living players share one bullet-time factor',()=>{

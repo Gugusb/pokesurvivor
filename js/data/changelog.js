@@ -1,5 +1,8 @@
 /* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
 G.CHANGELOG = [
+  {d:'2026-10-31',title:['Un respiro tras el poder Z · v0.34.1','A moment after Z-Power · v0.34.1'],chg:[
+    ['Tras completar un movimiento Z, tu compañero conserva brevemente su protección mientras vuelve a moverse.','After completing a Z-Move, your partner briefly retains protection while moving again.']
+  ]},
   {d:'2026-10-31',title:['Un comienzo más amable · v0.34.0','A gentler beginning · v0.34.0'],chg:[
     ['Ajustamos el crecimiento inicial y los premios de los jefes para que cada nuevo intento sea más llevadero.','Adjusted early progression and Boss rewards to make another attempt feel smoother.']
   ]},

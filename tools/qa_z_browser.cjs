@@ -19,6 +19,7 @@ const CASES=['ember','tackle','ice-beam','fire-spin','thunderbolt','quick-attack
     if(await p.locator('#tap-start').isVisible())await p.locator('#tap-start').click();
     await p.evaluate(()=>{G.DB.playAsGuest();G.DB.grant(6,'qa');G.DB.save.partner=6;G.Flow.afterLogin();});
     await p.locator('[data-go="play"]').click();await p.waitForFunction(()=>G.Game.state==='playing');
+    await p.evaluate(()=>{G.Spawner.update=()=>{};G.Events.update=()=>{};G.Weather.clear();});
     for(const id of process.argv.includes('--built-only')?[]:CASES){
       await p.keyboard.press('F2');await p.locator('#dev-z-move').selectOption(id);await p.locator('[data-dev="z-prepare"]').click();await p.locator('#dev-close').click();
       await p.evaluate(()=>{
@@ -32,11 +33,22 @@ const CASES=['ember','tackle','ice-beam','fire-spin','thunderbolt','quick-attack
       const state=await p.evaluate(()=>({kind:G.Game.player.zState.casts[0].m.kind,duration:G.Game.player.zState.casts[0].duration,charges:G.Game.player.zState.charges}));
       assert.equal(state.charges,0);
       if(state.duration>1)await p.waitForFunction(()=>G.Game.player.zState.elapsed>.25);
-      await p.screenshot({path:path.join(out,'z-v0.18.0-'+state.kind+'.png')});
+      await p.screenshot({path:path.join(out,'z-v0.34.1-'+state.kind+'.png')});
       await p.waitForFunction(()=>G.Game.player.zState.phase==='cooldown');
-      const end=await p.evaluate(()=>({damage:G.Game.player.dmgDealt-window.qaBefore,casts:G.Game.player.zState.casts.length,cooldown:G.Game.player.zState.cooldown}));
+      const end=await p.evaluate(()=>{
+        const p=G.Game.player;p.invuln=0;
+        const hp=p.hp,hit=p.hurt(1,null,true);
+        return {damage:p.dmgDealt-window.qaBefore,casts:p.zState.casts.length,cooldown:p.zState.cooldown,guard:p.zState.guard,busy:G.ZMoves.busy(p),hit,unchangedHp:p.hp===hp,speed:p.spd,baseSpeed:p.baseSpd};
+      });
       assert.ok(end.damage>0,id);assert.equal(end.casts,0);assert.ok(end.cooldown>0);
-      results.push({id,...state,damage:Math.round(end.damage)});
+      assert.ok(end.guard>1.5&&end.guard<=1.8,id);assert.equal(end.busy,false);assert.equal(end.hit,false);assert.equal(end.unchangedHp,true);assert.ok(end.speed>end.baseSpeed*.9,id);
+      await p.keyboard.press('e');await p.locator('#scr-backpack:not(.hidden)').waitFor();
+      const paused=await p.evaluate(()=>G.Game.player.zState.guard);await p.waitForTimeout(100);assert.equal(await p.evaluate(()=>G.Game.player.zState.guard),paused);
+      await p.keyboard.press('e');await p.locator('#scr-backpack').waitFor({state:'hidden'});
+      await p.waitForFunction(()=>G.Game.player.zState.guard===0);
+      const expired=await p.evaluate(()=>{const p=G.Game.player;p.invuln=0;const hp=p.hp,hit=p.hurt(1,null,true);return {hit,damaged:p.hp<hp,guard:p.zState.guard};});
+      assert.equal(expired.guard,0);assert.equal(expired.hit,true);assert.equal(expired.damaged,true);
+      results.push({id,...state,damage:Math.round(end.damage),recoveryGuard:true,movementUnlocked:true,pausePreservesGuard:true,damageAfterExpiry:true});
       process.stdout.write('Z browser: '+state.kind+' passed\n');
     }
     await context.close();
@@ -58,7 +70,7 @@ const CASES=['ember','tackle','ice-beam','fire-spin','thunderbolt','quick-attack
       await b.locator('#dev-z-move').selectOption(id);await b.locator('[data-dev="z-prepare"]').click();await b.locator('[data-dev="z-enemies"]').click();
       await b.locator('#dev-close').click();await b.evaluate(()=>{window.qaZTexts=[];});
       await b.keyboard.press('z');await b.keyboard.press('1');await b.waitForFunction(()=>window.qaZTexts.includes('Z…'));
-      await b.screenshot({path:path.join(out,'z-v0.18.0-built-'+id+'.png')});
+      await b.screenshot({path:path.join(out,'z-v0.34.1-built-'+id+'.png')});
       await b.waitForFunction(()=>window.qaZTexts.includes('5s'));process.stdout.write('Built Z browser: '+id+' passed\n');
     }
     assert.deepEqual(errors,[]);console.log(JSON.stringify({tested:results,builtMoves:builtCases,pageErrors:errors.length,isolatedMemoryDatabase:true},null,2));

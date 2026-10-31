@@ -1,6 +1,6 @@
 /* Z crystals share the special equipment slot with Mega Stones. */
 G.ZMoves = (() => {
-  const COOLDOWN = 5, MAX_CHARGES=3, BULLET_TIME = 0.1, TAU = Math.PI * 2;
+  const COOLDOWN = 5, MAX_CHARGES=3, BULLET_TIME = 0.1, RECOVERY_GUARD = 1.8, TAU = Math.PI * 2;
   const KINDS = ['projectile', 'melee', 'beam', 'orbit', 'chain', 'dash', 'meteor', 'boomerang', 'nova', 'aura', 'mine', 'turret', 'trail', 'cone'];
   // Dedicated Z power avoids inheriting incompatible per-hit damage scales
   // from pellets, rapid fields and single heavy attacks. Attack/type/critical
@@ -234,7 +234,7 @@ G.ZMoves = (() => {
       for(const target of enemies())if(!e.hits.has(target.id)&&onLine(px,py,e.angle,Math.hypot(x-px,y-py),(m.width||34)*5,target)){
         e.hits.add(target.id);hit(p,target,e,1.1/1.5,{zCrit:true});
       }
-      if(progress>=1){[p.x,p.y]=landing(x,y,p.r,[e.x,e.y]);state(p).guard=2;}
+      if(progress>=1)[p.x,p.y]=landing(x,y,p.r,[e.x,e.y]);
     }
   }
   function meteor(p,e) {
@@ -332,7 +332,7 @@ G.ZMoves = (() => {
   }
   function tick(p,dt) {
     if(!hasStone(p))return;
-    const s=state(p);s.guard=Math.max(0,s.guard-dt);
+    const s=state(p);s.guard=Math.max(0,s.guard-dt);if(s.guard<=1e-8)s.guard=0;
     if(p.dead){if(s.phase==='cast'||s.phase==='choose')cancel(p);return;}
     if(!p.remote&&s.phase==='cooldown'){s.cooldown=Math.max(0,Math.min(s.cooldown,cooldownFor(p))-dt);if(s.cooldown<=1e-8){s.cooldown=0;s.phase='ready';}}
     if(s.phase!=='cast'&&!s.casts.length)return;
@@ -359,7 +359,7 @@ G.ZMoves = (() => {
       for(const e of s.casts)if(e.learned)e.learned.t=Math.max(e.learned.t||0,e.learned.cd*p.cdMul);
       if(!p.remote&&G.MovePP)G.MovePP.restore(p,s.ppSlot);
       s.ppSlot=null;
-      s.casts=[];if(!p.remote){s.phase='cooldown';s.cooldown=cooldownFor(p);}
+      s.casts=[];if(!p.remote){s.phase='cooldown';s.cooldown=cooldownFor(p);s.guard=Math.max(s.guard,RECOVERY_GUARD);}
     }
   }
   function sync(p,packed) {
