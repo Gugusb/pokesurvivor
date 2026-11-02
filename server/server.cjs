@@ -859,6 +859,7 @@ function createApp(opts = {}) {
       if (!p) throw fail(404, "Player not found");
       const s = saved(id).save;
       const character=characterFor(db,id),record=q('SELECT t FROM time_scores WHERE uid=?',id),bestScore=q('SELECT score,stars,t FROM run_scores WHERE uid=?',id);
+      const curatedTime=character?Math.max(0,...Object.values(s.difficultyRecords||{}).map(rows=>rows[8]?.best||0)):0;
       const completed=Object.keys(s.difficultyRecords||{}).map(Number).filter(dex=>G.DEX_BY[dex]&&G.Difficulty.frame(s,dex)==='ruby');
       return json(res, 200, {
         name: displayName(p),
@@ -874,8 +875,8 @@ function createApp(opts = {}) {
           kills: s.stats.totalKills || 0,
           legends: Object.keys(s.legends || {}).length,
           medals: G.Difficulty.completedCount(s),
-          eightStar:record?.t||0,
-          score:bestScore?.score||0,scoreStars:bestScore?.stars||0,
+          eightStar:record?.t||curatedTime,
+          score:bestScore?.score||(character?s.stats.bestScore||0:0),scoreStars:bestScore?.stars||(character&&s.stats.bestScore?8:0),
           runs:s.stats.runs||0,
           bosses:s.stats.bossesTotal||0,
         },

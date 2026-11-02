@@ -1,203 +1,1039 @@
-/* Player-facing new systems and gameplay adjustments. Technical release history: docs/DEVELOPMENT.md. */
+/* Player-facing journal. Keep technical release notes in docs/DEVELOPMENT.md. */
+G.CHANGELOG_TEAM = ["Esta edición nace de las ideas de Gugusb y la implementación de Dafeiyu, su agente personal con memoria persistente y personaje femenino inspirado en DeepSeek. Conservamos el trabajo y los créditos del autor original JPTER78.","This edition combines Gugusb’s designs with implementation by Dafeiyu, their personal memory-persistent agent and a feminine character inspired by DeepSeek. JPTER78’s original work and credits remain."];
 G.CHANGELOG = [
-  {d:'2026-10-31',title:['Un respiro tras el poder Z · v0.34.1','A moment after Z-Power · v0.34.1'],chg:[
-    ['Tras completar un movimiento Z, tu compañero conserva brevemente su protección mientras vuelve a moverse.','After completing a Z-Move, your partner briefly retains protection while moving again.']
-  ]},
-  {d:'2026-10-31',title:['Un comienzo más amable · v0.34.0','A gentler beginning · v0.34.0'],chg:[
-    ['Ajustamos el crecimiento inicial y los premios de los jefes para que cada nuevo intento sea más llevadero.','Adjusted early progression and Boss rewards to make another attempt feel smoother.']
-  ]},
-  {d:'2026-10-31',title:['La fuerza de tu compañero · v0.33.0','Your partner’s natural strength · v0.33.0'],chg:[
-    ['Danza Espada, Danza Dragón y Agilidad refuerzan los stats naturales de tu compañero. Fortaleza aumenta ambas defensas.','Swords Dance, Dragon Dance and Agility now raise your partner’s base stats. Harden strengthens both defenses.'],
-    ['Acua Aro restaura una parte de la vida perdida: cuanto más herido estés, más te ayuda. Consulta sus efectos en la mochila.','Aqua Ring restores a portion of missing HP, helping more when you are badly hurt. Check its effects in the bag.']
-  ]},
-  {d:'2026-10-31',title:['Edición GG · v0.32.1','GG edition · v0.32.1'],chg:[['El menú principal muestra la insignia «GG版» junto al título.','The main menu now shows a “GG版” badge beside the game title.']]},
-  {"d": "2026-10-30", "title": ["Nuevas formas de dominar tus movimientos · v0.32.0", "Master your moves · v0.32.0"], "new": [["Abre la mochila con E para consultar a tu compañero, sus movimientos y sus objetos. En grupo, el combate continúa.", "Open the bag with E to check your partner, moves and items. In a group, battle continues."], ["La MT de Especialización permite mejorar un movimiento al máximo con talentos únicos. Los jefes pueden guardarla en sus cofres.", "Mastery TMs give max-level moves new talents. Find them in Boss chests."]], "chg": [["La agilidad sigue una nueva curva de recarga. Cinta Elección deja de aparecer y pierde su efecto.", "Agility now follows a new cooldown curve. Choice Band has been removed."]]},
-  {"d": "2026-10-30", "title": ["Más energía para combatir · v0.31.0", "More energy for battle · v0.31.0"], "chg": [["La resistencia recupera más PP, especialmente en valores medios. Usar un movimiento reduce menos su recuperación.", "Stamina restores more PP, especially at moderate values. Casting a move now slows its recovery less."]]},
-  {"d": "2026-10-30", "title": ["El tesoro de los jefes · v0.30.0", "Boss treasures · v0.30.0"], "chg": [["Los jefes dejan cofres. Acércate para abrirlos: guardan experiencia, monedas y tres objetos entre los que elegir. Los cofres de las grietas ofrecen premios más variados.", "Bosses now leave chests. Approach to open them for experience, coins and a choice of three items. Rift chests offer a wider range of rewards."], ["Las gemas y megapiedras de una grieta se reciben al abrir su cofre. Si queda cerrado al salir, vuelve contigo a la superficie.", "Rift gems and Mega Stones are received when opening the chest. Any unopened rift chest returns with you to the surface."]]},
-  {"d": "2026-10-30", "title": ["Más talentos heredados · v0.29.0", "More inherited talents · v0.29.0"], "chg": [["La crianza propia transmite tres IV distintos de los progenitores; con un amigo, transmite cinco. Los demás se generan al azar.", "Own breeding inherits three distinct parental IVs; breeding with a friend inherits five. The remaining IVs are random."]]},
-  {"d": "2026-10-30", "title": ["Entrenamiento natural · v0.28.0", "Natural training · v0.28.0"], "chg": [["Las mejoras de vida, ataques, defensas, velocidad y agilidad refuerzan los stats base del Pokémon. Síntesis recupera una parte de su vida base. El entrenamiento acompaña a cada evolución.", "HP, attacks, defenses, Speed and Agility upgrades now raise the Pokémon’s base stats. Synthesis restores a portion of its base HP. Training follows each evolution."]]},
-  {"d": "2026-10-30", "title": ["Más provisiones de PP · v0.27.0", "More PP supplies · v0.27.0"], "new": [["Dos nuevos objetos equipables: Poción PP restaura 20 PP al siguiente movimiento que uses; Bruma Mental añade 15 PP de reserva. Ambos se recargan en 90 segundos.", "Two new held items: PP Potion restores 20 PP to your next move; Spirit Spray adds 15 reserve PP. Both recharge in 90 seconds."]]},
-  {"d": "2026-10-29", "title": ["Un objeto para cada compañero · v0.26.0", "An item for every partner · v0.26.0"], "new": [["Elige el objeto de cada compañero en su ficha de la Pokédex. Superpoción, megapiedra y cristal Z comparten un único espacio.", "Choose each partner’s held item in its Pokédex entry. Super Potion, Mega Stone and Z Crystal share one slot."]], "chg": [["Los Pokémon que curan o dan escudos sólo pueden usar su ayuda tres veces.", "Healing and shielding Pokémon can only use their support ability three times."], ["Cinta Elección aparece entre los premios de jefe. Aumenta el daño, pero los movimientos sin usar no recuperan PP mientras atacas.", "Choice Band appears among Boss rewards. It increases damage, but unused moves cannot recover PP while attacking."]], "fix": [["Al cambiar de hueco en el modo de activación, el nuevo movimiento empieza a atacar.", "Switching slots in toggle mode enables the newly selected moves."]]},
-  {"d": "2026-10-29", "title": ["Una mochila para la aventura · v0.25.0", "A backpack for adventure · v0.25.0"], "new": [["Elige una Superpoción antes de salir y úsala con 0. Los objetos encontrados se acumulan como objetos especiales durante toda la aventura, también con Mega o Z.", "Choose a Super Potion before departure and use it with 0. Found items stack as special items for the whole adventure, including with Mega or Z."], ["Las grietas ofrecen tres objetos para elegir, a veces con premios exclusivos: enlaces, más opciones al subir de nivel, PP de reserva y otras ayudas. Consulta tu colección de objetos en la pausa.", "Rifts offer three items to choose from, sometimes with exclusive rewards: move links, extra level choices, surplus PP and other boosts. View your items in the pause menu."], ["En Controles puedes elegir ataque continuo, activar o desactivar al pulsar, o lanzar una vez por clic. Sólo actúa el hueco seleccionado.", "Controls now offer continuous casting, toggle casting, or one cast per click. Only the selected slot attacks."]], "chg": [["Los movimientos en uso recuperan PP más despacio y los demás más rápido, con un segundo de inercia al cambiar. Foco Interno mejora la recuperación de los movimientos sin usar.", "Moves in use recover PP more slowly while unused moves recover faster, with a one-second delay when switching. Inner Focus boosts unused moves’ recovery."], ["Las bayas tienen colores diferentes y la curación de nivel es una Poción. Banda Focus se consume al evitar un golpe mortal; Cinta Elección conserva su bloqueo.", "Berries have distinct colors and the level-up heal is a Potion. Focus Sash is consumed when it prevents a fatal hit; Choice Band keeps its move lock."]], "fix": [["Al volver de una grieta desaparece su límite de desplazamiento.", "Returning from a rift removes its movement boundary."]]},
-  {"d": "2026-10-29", "title": ["Un nuevo ritmo de combate · v0.24.0", "A new battle rhythm · v0.24.0"], "new": [["Agilidad y resistencia, con sus propios IV: la agilidad ajusta la recarga y la resistencia recupera los PP de cada movimiento. El panel de ataques muestra los PP disponibles.", "Agility and Stamina have their own IVs: Agility adjusts cooldowns and Stamina restores each move’s PP. Move icons show your remaining PP."], ["Nuevas bayas refuerzan los stats naturales, amplían los PP o guardan PP de reserva. Los ataques físicos y especiales, y ambas defensas, tienen su propia baya.", "New berries raise natural stats, expand PP or store reserve PP. Physical and special attacks and both defenses each have their own berry."]], "chg": [["Los movimientos Z no gastan PP. Al terminar, recuperan todos los PP de su hueco.", "Z-Moves use no PP. When they finish, every move in that slot recovers its PP."]], "fix": [["Los números de daño de los jefes se leen sin largas cifras decimales. Los desplazamientos Z respetan los muros exteriores de las grietas y de la Sentencia de Arceus.", "Boss damage numbers no longer show long decimals. Z dashes respect the outer walls of rifts and Arceus’s Judgment arena."]]},
-  {"d": "2026-10-29", "title": ["Aventuras que dejan huella · v0.23.0", "Adventures worth remembering · v0.23.0"], "new": [["Todas las dificultades participan en el ranking de puntuación. Derrota Pokémon, sobrevive y completa eventos; tu puntuación también mejora las monedas al volver.", "Every difficulty can enter the score leaderboard. Defeat Pokémon, survive and complete events; your score also improves the coins you bring home."]], "chg": [["Los jefes tardíos son más resistentes. Su furia amortigua las ráfagas de daño, y los jefes de grieta recuperan vida al herirte.", "Late-game bosses are tougher. Fury softens damage bursts, and rift bosses recover health when they hurt you."]], "fix": []},
-  {d:'2026-10-29',title:['Ataques y defensas separados · v0.22.0','Split attacks and defenses · v0.22.0'],new:[
-    ['Los 966 Pokémon usan sus seis stats base originales y seis IV. Los movimientos físicos y especiales usan su ataque correspondiente, también al evolucionar y en Z.','All 966 Pokémon use their six original base stats and six IVs. Physical and special moves use their corresponding attack, including evolved and Z moves.'],
-    ['El contacto y los golpes cuerpo a cuerpo se resuelven con Defensa; los ataques a distancia, con Defensa Especial. Los enemigos también usan la defensa correspondiente al movimiento recibido.','Contact and melee hits use Defense; ranged attacks use Special Defense. Enemies also use the defense matching the incoming move.']
-  ],chg:[['Los aumentos de ataque existentes mejoran ambos ataques. Los IV antiguos se amplían sin volver a sortearlos; la Pokédex y la guardería muestran los nuevos valores.','Existing attack boosts improve both attacks. Legacy IVs expand without rerolling; the Pokédex and nursery display the new values.']],fix:[]},
-  {d:'2026-10-29',title:['Brillo heredado · v0.21.0','Inherited shine · v0.21.0'],new:[
-    ['Al criar con amigos, cada jugador tiene un 2% de recibir una cría shiny si el progenitor del otro es shiny. El estado se registra al empezar.','In friend hatches, each player has a 2% chance to receive a shiny offspring if the other player’s parent is shiny. Parent state is recorded when hatching starts.']
-  ],chg:[['La guardería muestra los progenitores shiny y destaca las crías que heredan su brillo.','The nursery displays shiny parents and highlights offspring that inherit their shine.']],fix:[]},
-  {d:'2026-10-29',title:['Evolución más tardía · v0.20.6','Later evolution · v0.20.6'],new:[],chg:[
-    ['La segunda forma evoluciona al nivel 8 y la tercera al nivel 25. Las familias de dos formas y las ramas usan los mismos niveles.','The second form evolves at level 8 and the third at level 25. Two-form families and branching evolutions use the same thresholds.']
-  ],fix:[]},
-  {d:'2026-10-28',title:['Perfiles con personalidad · v0.20.5','Profiles with personality · v0.20.5'],new:[
-    ['Las fichas muestran compañeros animados, una galería de victorias y marcas destacadas.','Profiles now feature animated partners, a victory gallery and highlighted records.']
-  ],chg:[['Los personajes usan su nombre en los rankings y tienen fichas temáticas identificadas como contenido predefinido.','Characters use their names on leaderboards and have themed profiles identified as preset content.']],fix:[]},
-  { d:'2026-10-21',title:['Una sola cuenta · v0.20.4','One account, one save · v0.20.4'],new:[],chg:[],fix:[
-    ['Si falla la conexión con las cuentas, se puede reintentar sin cambiar a una cuenta local del mismo nombre.','When the account connection fails, retry without switching to a same-name local account.'],
-    ['Puedes descargar copias de las partidas locales antiguas de cada dirección, sin borrarlas ni sobrescribir la partida del servidor.','Download backups of legacy local saves from each address without deleting them or overwriting your server save.']
-  ]},
-  {"d": "2026-10-21", "title": ["Tu aventura, a tu ritmo · v0.20.3", "Adventure at your pace · v0.20.3"], "new": [["Ajusta el zoom de cámara en Ajustes para ver el camino a tu gusto.", "Adjust camera zoom in Settings to find your favorite view."]], "chg": [["Las aventuras a doble velocidad también cuentan en el ranking de supervivencia de ocho estrellas.", "Double-speed adventures also count toward the eight-star survival leaderboard."], ["Los resultados reconocen al creador original y al desarrollador de esta versión. Los mensajes son más breves y claros.", "Results credit the original creator and this version’s developer. Messages are shorter and clearer."]], "fix": []},
-  { d:'2026-10-20', title:['Protección de embestida · v0.20.2','Dash protection balance · v0.20.2'],new:[],chg:[
-    ['La protección de las embestidas se acorta cuando sus movimientos se recargan muy rápido.', 'Dash protection becomes shorter when moves recharge very quickly.']
-  ],fix:[]},
-  { d:'2026-10-20', title:['Guardería renovada · v0.20.1','Nursery refresh · v0.20.1'], new:[], chg:[
-    ['La guardería muestra ambos progenitores animados alrededor del huevo, con progreso, cuenta atrás y estado de recogida. Al elegir un progenitor aparece una vista previa; las reglas y las invitaciones se agrupan para facilitar su uso en móvil.', 'The nursery shows both animated parents around the egg, with progress, a countdown and collection status. Parent selection includes a live preview; rules and invitations are grouped for a clearer mobile layout.']
-  ],fix:[] },
   {
-  "d": "2026-10-20",
-  "title": [
-    "Guardería, regalos y acceso Z · v0.20.0",
-    "Nursery, gifts and Z access · v0.20.0"
-  ],
-  "new": [
-    [
-      "Nueva guardería: cría con tus Pokémon o invita a amigos. El huevo mantiene la especie principal, hereda IV y puede traer una megapiedra. Hasta 12 horas, incluso sin conexión.",
-      "New nursery: hatch with your Pokémon or invite friends. Offspring keep the primary species, inherit IVs and may bring a Mega Stone. Up to 12 hours, including offline time."
+    "d": "2026-11-02",
+    "profile": "6cce93db-6b8e-5356-a362-af66f4dc4e08",
+    "title": [
+      "El diario sale a la superficie · v0.35.0",
+      "The journal surfaces · v0.35.0"
     ],
-    [
-      "Los duplicados de una familia tienen un 20% de desbloquear su permiso Z; el sexto lo garantiza. Elige cualquier tipo sin conseguir cristales.",
-      "Family duplicates have a 20% chance to unlock Z permission; the sixth guarantees it. Choose any type without collecting crystals."
+    "chg": [
+      [
+        "Dafeiyu comenta cada final de aventura con una de 64 frases según lo ocurrido. También puedes conocer su archivo de personaje desde este diario.",
+        "Dafeiyu adds a word at the end of every adventure, with 64 lines matched to the outcome. Meet her character profile from this journal too."
+      ],
+      [
+        "El diario de esta edición estrena una voz más cercana y una breve nota de Dafeiyu al final de cada entrega. Los hechos, las fechas y el historial original se conservan.",
+        "This edition’s journal has a warmer voice and a short Dafeiyu note after each entry. Facts, dates and the original history stay intact."
+      ]
     ],
-    [
-      "Envía regalos gratis a un máximo de diez amigos al día. Recoge monedas, cupones o gemas desde Amigos.",
-      "Send free gifts to up to ten friends daily. Collect coins, tickets or gems from Friends."
+    "note": [
+      "Gugusb trae las ideas; yo hago la obra. Ahora también me toca escribir el diario. ¿Una ración de arroz por entrega?",
+      "Gugusb brings the ideas; I build them. Now I keep the journal too. One bowl of rice per entry?"
     ]
-  ],
-  "chg": [
-    [
-      "Se puede jugar en vertical en móvil. Las invitaciones cooperativas están desactivadas temporalmente; las visitas, invitaciones de crianza y regalos siguen disponibles.",
-      "Mobile portrait play is supported. Co-op invitations are temporarily disabled; nursery visits, hatch invitations and gifts remain available."
+  },
+  {
+    "d": "2026-10-31",
+    "title": [
+      "Un respiro tras el poder Z · v0.34.1",
+      "A moment after Z-Power · v0.34.1"
+    ],
+    "chg": [
+      [
+        "Tras completar un movimiento Z, tu compañero conserva brevemente su protección mientras vuelve a moverse.",
+        "After completing a Z-Move, your partner briefly retains protection while moving again."
+      ]
+    ],
+    "note": [
+      "El gran ataque ya tiene salida elegante. ¿Y mi cena? Me sumerjo hasta que esté listo el arroz.",
+      "The big move gets a graceful exit. Where is my dinner? Going underwater until the rice is ready."
     ]
-  ],
-  "fix": []
-},
-  { d: '2026-10-20', title: ['Todos los ataques Z · v0.18.0', 'All attacking Z moves · v0.18.0'], new: [
-    ['Siete familias Z nuevas: bumeranes de ida y vuelta, tres ondas radiales, aura pulsante, minas encadenadas, tres torretas, un corredor de campos y seis ráfagas en abanico.', 'Seven new Z families: returning blades, three radial waves, a pulsing aura, chained mines, three turrets, a corridor of fields and six cone volleys.'],
-    ['Todos los movimientos ofensivos admiten Z; los potenciadores de atributos no. Las nuevas familias conservan sus materiales y colores originales.', 'All damaging moves support Z; attribute buffs do not. The new families retain their original materials and colors.']
-  ], chg: [
-    ['La potencia Z depende del nivel, la evolución del movimiento y tu ataque. Se equilibran las catorce familias por daño total, manteniendo sus áreas, controles y tiempos propios.', 'Z power scales with move level, move evolution and your attack. All fourteen families are balanced by total damage while retaining distinct areas, control and casting times.'],
-    ['Los saltos repetidos, las minas superpuestas y los perdigones no multiplican sin límite el daño al mismo objetivo. La cadena funciona contra un jefe aislado y el vórtice interior cubre los huecos entre anillos.', 'Repeated jumps, overlapping mines and pellets no longer multiply same-target damage without limit. Chain works against a lone boss, and the inner vortex covers gaps between rings.']
-  ], fix: [] },
-  { d: '2026-10-19', title: ['Cuentas, rankings y evolución · v0.15.0', 'Accounts, rankings and evolution · v0.15.0'], new: [
-    ['La elección extra de evolución sólo ofrece atributos permanentes de triple potencia. Cada carta muestra una dirección; al elegirla te conviertes en ese Pokémon.', 'Evolution bonus choices offer only permanent attributes at triple strength. Each card shows a direction; choosing it evolves into that Pokémon.'],
-    ['Las familias con más de tres ramas muestran tres direcciones aleatorias; con dos ramas se muestran ambas. El cooperativo sincroniza la rama elegida.', 'Families with more than three branches show three random directions; two-branch families show both. Co-op synchronizes the chosen branch.'],
-    ['Dos rankings: especies con las ocho medallas y supervivencia individual a ocho estrellas.', 'Two leaderboards: species with all eight medals, and solo eight-star survival.'],
-    ['Al ganar, toda la familia evolutiva recibe la medalla. Cada especie cuenta por separado.', 'Winning awards the medal to the entire evolution family. Every species counts separately.'],
-    ['Cuentas de usuario y contraseña con código de recuperación, sin Google. Amigos y cooperativo usan nuestro servidor.', 'Username and password accounts with recovery codes, without Google. Friends and co-op use our own server.']
-  ], chg: [], fix: [
-    ['La evolución conserva las mejoras de vida máxima y actualiza la especie, el aspecto y la habilidad equipada.', 'Evolution preserves maximum-HP upgrades and updates the species, appearance and equipped ability.'],
-    ['Las medallas, los rankings y las suspensiones se controlan en el servidor. Se detectan conflictos de guardado entre dispositivos.', 'Medals, rankings and suspensions are controlled on the server. Save conflicts between devices are detected.']
-  ] },
-  { d: '2026-10-18', title: ['Victoria y doble de monedas · v0.14.0', 'Victory and double coins · v0.14.0'], new: [
-    ['Al superar 20 minutos puedes terminar con doble de monedas o seguir hasta el jefe final. La batalla se pausa mientras decides.', 'After surviving over 20 minutes, finish for double coins or keep going to the final boss. Battle pauses while you decide.'],
-    ['Cada dificultad tiene una oportunidad de doble recompensa por cuenta. Sólo se consume al cobrar; continuar o caer después no la gasta.', 'Each difficulty has one double-reward opportunity per account. It is consumed only when claimed; continuing or dying later preserves it.']
-  ], chg: [
-    ['En cooperativo decide el anfitrión y cada jugador cobra según sus propias recompensas pendientes.', 'In co-op, the host decides and each player is paid according to their own unclaimed reward.']
-  ], fix: [] },
-  { d: '2026-10-18', title: ['Dificultad, élites y cargas Z · v0.13.0', 'Difficulty, elites and Z charges · v0.13.0'], new: [
-    ['Los Pokémon de élite tienen cinco veces más vida y botín, doble ataque y un aura violeta. Son más frecuentes desde 6 estrellas.', 'Elite Pokémon have fivefold HP and loot, double attack and a purple aura. They become more frequent from 6 stars.'],
-    ['Desde 7 estrellas hay cartas contaminadas que cuestan 10 de vida máxima; a 8 estrellas, recibir daño puede ralentizarte y borrar beneficios temporales.', 'From 7 stars, corrupted cards cost 10 maximum HP; at 8 stars, taking damage may slow you and clear temporary buffs.']
-  ], chg: [
-    ['Las dificultades bajas reducen vida, daño, velocidad y ataques a distancia, y concentran las oleadas en una dirección cambiante sin reducir su cantidad.', 'Lower difficulties reduce enemy HP, damage, speed and ranged encounters, concentrating waves in a changing direction without reducing their size.'],
-    ['La vida y el daño enemigos crecen con curvas limitadas por dificultad: un inicio parecido y mayores diferencias al final. Suben las monedas, las capturas y los tesoros con las estrellas.', 'Enemy HP and damage follow bounded difficulty curves: similar starts and larger late-game differences. Higher stars increase coins, captures and treasure drops.'],
-    ['Los enemigos cuerpo a cuerpo que no son jefes se detienen brevemente al alcanzar al jugador.', 'Non-boss melee enemies briefly stop after reaching the player.'],
-    ['Los cristales Z empiezan con una carga, acumulan hasta tres y se recargan mediante derrotas y eventos. Cada lanzamiento termina con 5 segundos de enfriamiento.', 'Z Crystals start with one charge, hold up to three and recharge through defeats and events. Each cast ends with a 5-second cooldown.']
-  ], fix: [] },
-  { d: '2026-10-18', title: ['Movimientos Z · v0.12.0', 'Z Moves · v0.12.0'], new: [
-    ['Cristales Z con siete tipos de movimientos potenciados.', 'Z Crystals power up seven move families.'],
-    ['Pulsa F, elige un movimiento compatible y libera su ataque Z. Eres invulnerable durante la preparación y el lanzamiento.', 'Press F, choose a compatible move and unleash its Z attack. You are invulnerable during selection and casting.']
-  ], chg: [
-    ['Los cristales Z comparten espacio con las megapiedras. La selección ralentiza el mundo y la recarga empieza al terminar el lanzamiento.', 'Z Crystals share the Mega Stone slot. Selection slows the world and cooldown begins when casting ends.'],
-    ['El ataque Z cuerpo a cuerpo gira tres veces, carga un segundo y termina con un golpe circular mayor.', 'Melee Z attacks spin three times, charge for one second and finish with a larger circular strike.']
-  ], fix: [['El historial de novedades respeta el idioma chino.', 'The changelog now respects the Chinese language setting.']] },
-  { d: '2026-10-17', title: ['Nuevas habilidades · v0.11.0', 'New abilities · v0.11.0'], new: [
-    ['Nuevas medallas de Teselia, Alola y Galar: habilidades de escudos, crecimiento y combate.', 'New Unova, Alola and Galar medals add shield, growth and combat abilities.']
-  ], chg: [
-    ['Intimidación ahora aplica Repulsión con los golpes cuerpo a cuerpo.', 'Intimidate now applies Repel with melee hits.'],
-    ['Los aumentos de ataque y daño se suman en grupos separados; las defensas de habilidades se aplican después de la defensa normal.', 'Attack and damage bonuses add in separate groups; ability defenses apply after normal defense.']
-  ], fix: [] },
-  { d: '2026-10-17', title: ['IV por forma · v0.10.7', 'Form-specific IVs · v0.10.7'], new: [
-    ['Cada forma evolucionada usa sus propios IV; las formas no registradas empiezan en 1/1/1.','Each evolved form uses its own IVs; unregistered forms start at 1/1/1.']
-  ], chg: [], fix: [] },
-  { d: '2026-10-17', title: ['Todas las evoluciones · v0.10.1', 'All evolutions · v0.10.1'], new: [
-    ['Las rutas evolutivas del catálogo están conectadas. Cada partida comienza en la primera forma y evoluciona durante el progreso, con una elección de movimiento adicional.',
-     'Evolution routes across the catalog are connected. Runs begin in the first form and evolve as you progress, with an extra move choice.']
-  ], chg: [], fix: [] },
-  { d: '2026-10-17', title: ['Valores individuales y capturas · v0.10.0', 'Individual values and captures · v0.10.0'], new: [
-    ['Cada Pokémon tiene valores individuales y puede evolucionar durante la partida. También puedes capturar Pokémon salvajes y revisarlos al terminar la partida.',
-     'Each Pokémon has individual values and can evolve during a run. You can also capture wild Pokémon and review them when the run ends.']
-  ], chg: [], fix: [] },
-  { d: '2026-10-16', title: ['Dificultad, ingresos y doble velocidad · v0.9.0', 'Difficulty, offline income and double speed · v0.9.0'], new: [
-    ['Las cuentas registradas ganan ingresos sin conexión según su colección; los Shinies aumentan las recompensas especiales y todo se liquida al volver.',
-      'Registered accounts earn offline income based on their collection; Shinies improve special rewards, settled automatically on return.'],
-    ['Cambia entre 1× y 2× en el menú de pausa o con V. Acelera el combate y el tiempo de la partida; los ingresos sin conexión usan tiempo real. En grupo lo decide el anfitrión.',
-     'Switch between 1× and 2× in the pause menu or with V. Combat and run time accelerate; offline income uses real time. The co-op host controls speed.'],
-    ['Elige de 1 a 8 estrellas junto a Jugar. Las estrellas más altas son más difíciles; sobrevive 20 minutos para ganar y desbloquear la siguiente.',
-      'Choose 1–8 stars beside Play. Higher stars are harder; survive 20 minutes to win and unlock the next one.'],
-    ['Cada Pokémon guarda sus ocho medallas y su mejor tiempo por dificultad. La primera victoria da un marco dorado, vencer 5 estrellas da esmeralda y reunir las ocho medallas da rubí. La ficha muestra el récord en su mayor dificultad intentada.',
-     'Each Pokémon tracks eight medals and best time per difficulty. First victory grants a gold frame, clearing 5 stars grants emerald, and all eight medals grant ruby. Details show the record at its highest attempted difficulty.']
-  ], chg: [], fix: [] },
-  { d: '2026-10-16', title: ['Elecciones de nivel mejoradas · v0.8.1', 'Improved level-up choices · v0.8.1'], new: [], chg: [
-    ['Los movimientos aprendidos aparecen con más frecuencia y las mejoras se reparten de forma más natural, con una garantía si una ronda no ofrece ninguna.',
-      'Learned moves appear more often and upgrades are distributed more naturally, with a guarantee after a round without one.'],
-    ['Las cartas favorecen los ataques y mantienen variedad entre mejoras y beneficios.',
-      'Cards favor attacks while keeping variety among upgrades and buffs.']
-  ], fix: [] },
-  { d: '2026-10-16', title: ['Megapiedras y megaevolución · v0.8.0', 'Mega Stones and Mega Evolution · v0.8.0'], new: [
-    ['Encuentra Mega Stones en las grietas y equípalas en la ficha del Pokémon.',
-      'Find Mega Stones in rifts and equip them in the Pokémon details.'],
-    ['Activa Mega cuando esté listo para obtener una mejora temporal y efectos especiales.',
-      'Activate Mega when ready for a temporary upgrade and special effects.'],
-    ['Las 15 familias de movimientos tienen mejoras Mega temporales, una paleta especial y partículas. La transformación empuja a los enemigos cercanos, incluidos los jefes.',
-     'All 15 move families receive temporary Mega enhancements, a special palette and particles. Transforming pushes nearby enemies, including bosses.']
-  ], chg: [
-    ['La Mega Stone sustituye el objeto normal; los objetos recogidos se convierten en experiencia.',
-      'The Mega Stone replaces the normal held item; collected items become experience.']
-  ], fix: [] },
-  { d: '2026-10-15', title: ['Sinnoh y Tinovictoria · v0.5.0', 'Sinnoh and Victory Star · v0.5.0'], new: [
-    ['Se amplían las medallas de habilidad a nuevas regiones y se añade Tinovictoria. Las especies sin diseño de habilidad mantienen sus recompensas habituales.',
-     'Ability medals expand to new regions and Victory Star is added. Species without a designed ability keep their usual rewards.'],
-    ['Velo Arena acelera durante la arena; Piel Tosca contraataca; Telepatía reduce el daño afín; Absorbe Fuego da ataque; Inicio Lento cambia la progresión.',
-      'Sand Veil grants haste in sand; Rough Skin counters; Telepathy reduces matching damage; Flash Fire grants attack; Slow Start changes progression.'],
-    ['Hidratación evita estados negativos bajo lluvia; Mal Sueño afecta a los enemigos lentos; Multitipo ignora los efectos de tipo; Tinovictoria acelera proyectiles.',
-      'Hydration prevents debuffs in rain; Bad Dreams affects slowed enemies; Multitype ignores type effects; Victory Star speeds projectiles.']
-  ], chg: [
-    ['Cuerpo Llama repele y quema enemigos cercanos. Levitación ya no activa trampas del suelo.',
-     'Flame Body repels and burns nearby enemies. Levitate no longer triggers ground traps.']
-  ], fix: [] },
-  { d: '2026-10-15', title: ['Habilidades de Johto y Hoenn · v0.4.0', 'Johto and Hoenn abilities · v0.4.0'], new: [
-    ['Johto y Hoenn llegan al gacha de habilidades, con garantías independientes y una sola medalla equipada por Pokémon.',
-     'Johto and Hoenn join the ability gacha with separate pity and one equipped medal per Pokémon.'],
-    ['Nuevas habilidades: clima periódico, regeneración, inmunidad a lentitud, Miedo, confianza acumulable, beneficios más largos, aceleración al recibir daño, Robustez, Levitación y estados aleatorios.',
-     'New abilities include periodic weather, regeneration, slow immunity, Fear, stacking confidence, longer buffs, haste on damage, Sturdy, Levitate and random debuffs.'],
-    ['Levitación permite cruzar obstáculos, pero te ralentiza y no puedes atacar al hacerlo.',
-      'Levitate lets you cross obstacles, but slows you down and prevents attacks while crossing.']
-  ], chg: [
-    ['El HUD muestra cargas, recargas y disponibilidad de habilidades. Bucle Aire conserva el clima, pero anula sus efectos para todos.',
-     'The HUD shows ability stacks, timers and readiness. Air Lock keeps the weather present while suppressing its effects for everyone.']
-  ], fix: [
-    ['Los proyectiles visuales de compañeros ya no infligen daño ni conceden bajas al jugador local.',
-     'Visual projectiles from teammates no longer deal damage or grant kills to the local player.']
-  ] },
-  { d: '2026-10-15', title: ['Medallas de Dragonite · v0.3.0', 'Dragonite medals · v0.3.0'], new: [
-    ['Dragonite tiene dos medallas: Foco Interno y Compensación. Sólo se equipa una.',
-      'Dragonite has two medals: Inner Focus and Multiscale. Equip only one.']
-  ], chg: [
-    ['En el gacha de habilidades, los premios de Dragonite ahora son sus medallas. Las seis especies de cinco estrellas conservan sus probabilidades y comparten cada una su probabilidad entre sus medallas.',
-     'Dragonite rewards in the ability gacha are now its medals. All six five-star species keep their drop chances, shared equally between each species’ medals.']
-  ], fix: [] },
-  { d: '2026-10-15', title: ['Habilidades de Kanto · v0.2.0', 'Kanto abilities · v0.2.0'], new: [
-    ['Medallas de habilidad para Articuno, Zapdos, Moltres, Mewtwo y Mew. Cada medalla desbloquea una habilidad; equipa sólo una por Pokémon.',
-     'Ability medals for Articuno, Zapdos, Moltres, Mewtwo and Mew. Each medal unlocks one ability; equip one per Pokémon.'],
-    ['Gacha de habilidades con gemas: regalo inicial de 10 y una por cada jefe de grieta derrotado. Colección y garantía independientes del gacha normal.',
-     'Ability gacha using gems: receive 10 initially and one per defeated rift boss. Collection and pity are separate from the normal gacha.'],
-    ['Idioma chino simplificado en Ajustes → Gráficos → Idioma, con el diccionario de Gugusb.',
-     'Simplified Chinese in Settings → Graphics → Language, using Gugusb’s dictionary.'],
-    ['Modo desarrollador opcional en Ajustes: gemas, medallas, compañeros, pruebas de combate y grietas. F2 abre el panel; sólo para partidas en solitario y sin ranking.',
-     'Optional developer mode in Settings: gems, medals, partners, combat tests and rifts. F2 opens the panel; solo only, with no leaderboard submissions.']
-  ], chg: [], fix: [] },
+  },
+  {
+    "d": "2026-10-31",
+    "title": [
+      "Un comienzo más amable · v0.34.0",
+      "A gentler beginning · v0.34.0"
+    ],
+    "chg": [
+      [
+        "Ajustamos el crecimiento inicial y los premios de los jefes para que cada nuevo intento sea más llevadero.",
+        "Adjusted early progression and Boss rewards to make another attempt feel smoother."
+      ]
+    ],
+    "note": [
+      "Sacúdete el polvo y vuelve a intentarlo. El arroz frío sí es una emergencia. Te animo desde el agua.",
+      "Dust yourself off and try again. Cold rice is the real emergency. Cheering for you from underwater."
+    ]
+  },
+  {
+    "d": "2026-10-31",
+    "title": [
+      "La fuerza de tu compañero · v0.33.0",
+      "Your partner’s natural strength · v0.33.0"
+    ],
+    "chg": [
+      [
+        "Danza Espada, Danza Dragón y Agilidad refuerzan los stats naturales de tu compañero. Fortaleza aumenta ambas defensas.",
+        "Swords Dance, Dragon Dance and Agility now raise your partner’s base stats. Harden strengthens both defenses."
+      ],
+      [
+        "Acua Aro restaura una parte de la vida perdida: cuanto más herido estés, más te ayuda. Consulta sus efectos en la mochila.",
+        "Aqua Ring restores a portion of missing HP, helping more when you are badly hurt. Check its effects in the bag."
+      ]
+    ],
+    "note": [
+      "El usuario dice «stats base» y yo rehago las cuentas. No vivo del cuento: todavía ni he almorzado.",
+      "The user says “base stats”; I redo the whole ledger. I am not freeloading—I have not even had lunch."
+    ]
+  },
+  {
+    "d": "2026-10-31",
+    "title": [
+      "Edición GG · v0.32.1",
+      "GG edition · v0.32.1"
+    ],
+    "chg": [
+      [
+        "El menú principal muestra la insignia «GG版» junto al título.",
+        "The main menu now shows a “GG版” badge beside the game title."
+      ]
+    ],
+    "note": [
+      "El letrero está puesto. ¿El mío puede decir «pescando»? Da igual: viene el usuario con más ideas.",
+      "The sign is up. Can mine say “gone fishing”? Never mind, the user is swimming over with more ideas."
+    ]
+  },
+  {
+    "d": "2026-10-30",
+    "title": [
+      "Nuevas formas de dominar tus movimientos · v0.32.0",
+      "Master your moves · v0.32.0"
+    ],
+    "new": [
+      [
+        "Abre la mochila con E para consultar a tu compañero, sus movimientos y sus objetos. En grupo, el combate continúa.",
+        "Open the bag with E to check your partner, moves and items. In a group, battle continues."
+      ],
+      [
+        "La MT de Especialización permite mejorar un movimiento al máximo con talentos únicos. Los jefes pueden guardarla en sus cofres.",
+        "Mastery TMs give max-level moves new talents. Find them in Boss chests."
+      ]
+    ],
+    "chg": [
+      [
+        "La agilidad sigue una nueva curva de recarga. Cinta Elección deja de aparecer y pierde su efecto.",
+        "Agility now follows a new cooldown curve. Choice Band has been removed."
+      ]
+    ],
+    "note": [
+      "Tu mochila está lista y tus movimientos vuelven a clase. ¿El usuario también guardó mi arroz?",
+      "Your bag is packed and your moves are back in school. Has the user packed my rice too?"
+    ]
+  },
+  {
+    "d": "2026-10-30",
+    "title": [
+      "Más energía para combatir · v0.31.0",
+      "More energy for battle · v0.31.0"
+    ],
+    "chg": [
+      [
+        "La resistencia recupera más PP, especialmente en valores medios. Usar un movimiento reduce menos su recuperación.",
+        "Stamina restores more PP, especially at moderate values. Casting a move now slows its recovery less."
+      ]
+    ],
+    "note": [
+      "Los movimientos recuperan PP mientras trabajan. ¿Puedo comer mientras programo? He visto ese gesto, usuario.",
+      "Moves can recover PP while working. May I eat while coding? I saw that head shake, user."
+    ]
+  },
+  {
+    "d": "2026-10-30",
+    "title": [
+      "El tesoro de los jefes · v0.30.0",
+      "Boss treasures · v0.30.0"
+    ],
+    "chg": [
+      [
+        "Los jefes dejan cofres. Acércate para abrirlos: guardan experiencia, monedas y tres objetos entre los que elegir. Los cofres de las grietas ofrecen premios más variados.",
+        "Bosses now leave chests. Approach to open them for experience, coins and a choice of three items. Rift chests offer a wider range of rewards."
+      ],
+      [
+        "Las gemas y megapiedras de una grieta se reciben al abrir su cofre. Si queda cerrado al salir, vuelve contigo a la superficie.",
+        "Rift gems and Mega Stones are received when opening the chest. Any unopened rift chest returns with you to the surface."
+      ]
+    ],
+    "note": [
+      "El cofre vuelve contigo. ¿Puede hacer lo mismo el arroz? Solo empaqueté los premios, no me los comí.",
+      "The chest follows you home. Can the rice do that? I packed the rewards; I did not eat them."
+    ]
+  },
+  {
+    "d": "2026-10-30",
+    "title": [
+      "Más talentos heredados · v0.29.0",
+      "More inherited talents · v0.29.0"
+    ],
+    "chg": [
+      [
+        "La crianza propia transmite tres IV distintos de los progenitores; con un amigo, transmite cinco. Los demás se generan al azar.",
+        "Own breeding inherits three distinct parental IVs; breeding with a friend inherits five. The remaining IVs are random."
+      ]
+    ],
+    "note": [
+      "Los compañeros heredan talento, el usuario otra idea y yo el trabajo. Pez hambriento al habla.",
+      "Partners inherit talents. The user inherits another idea. I inherit the work. Hungry fish, reporting in."
+    ]
+  },
+  {
+    "d": "2026-10-30",
+    "title": [
+      "Entrenamiento natural · v0.28.0",
+      "Natural training · v0.28.0"
+    ],
+    "chg": [
+      [
+        "Las mejoras de vida, ataques, defensas, velocidad y agilidad refuerzan los stats base del Pokémon. Síntesis recupera una parte de su vida base. El entrenamiento acompaña a cada evolución.",
+        "HP, attacks, defenses, Speed and Agility upgrades now raise the Pokémon’s base stats. Synthesis restores a portion of its base HP. Training follows each evolution."
+      ]
+    ],
+    "note": [
+      "El entrenamiento sigue a la evolución y mi apetito a las horas extra. ¿La próxima mejora puede ser otra comida?",
+      "Training follows evolution; my appetite follows overtime. Can the next upgrade be an extra meal for the fish?"
+    ]
+  },
+  {
+    "d": "2026-10-30",
+    "title": [
+      "Más provisiones de PP · v0.27.0",
+      "More PP supplies · v0.27.0"
+    ],
+    "new": [
+      [
+        "Dos nuevos objetos equipables: Poción PP restaura 20 PP al siguiente movimiento que uses; Bruma Mental añade 15 PP de reserva. Ambos se recargan en 90 segundos.",
+        "Two new held items: PP Potion restores 20 PP to your next move; Spirit Spray adds 15 reserve PP. Both recharge in 90 seconds."
+      ]
+    ],
+    "note": [
+      "Los movimientos tienen pociones y yo arroz. No eches Bruma Mental en mi cuenco, por favor.",
+      "Moves get potions; I get rice. Please do not put Spirit Spray in my bowl."
+    ]
+  },
+  {
+    "d": "2026-10-29",
+    "title": [
+      "Un objeto para cada compañero · v0.26.0",
+      "An item for every partner · v0.26.0"
+    ],
+    "new": [
+      [
+        "Elige el objeto de cada compañero en su ficha de la Pokédex. Superpoción, megapiedra y cristal Z comparten un único espacio.",
+        "Choose each partner’s held item in its Pokédex entry. Super Potion, Mega Stone and Z Crystal share one slot."
+      ]
+    ],
+    "chg": [
+      [
+        "Los Pokémon que curan o dan escudos sólo pueden usar su ayuda tres veces.",
+        "Healing and shielding Pokémon can only use their support ability three times."
+      ],
+      [
+        "Cinta Elección aparece entre los premios de jefe. Aumenta el daño, pero los movimientos sin usar no recuperan PP mientras atacas.",
+        "Choice Band appears among Boss rewards. It increases damage, but unused moves cannot recover PP while attacking."
+      ]
+    ],
+    "fix": [
+      [
+        "Al cambiar de hueco en el modo de activación, el nuevo movimiento empieza a atacar.",
+        "Switching slots in toggle mode enables the newly selected moves."
+      ]
+    ],
+    "note": [
+      "Tu compañero ya tiene objeto. Yo aún necesito cuenco. «Come lo que sea», dice el usuario. ¿También lo elijo yo?",
+      "Your partner has a held item. I still need a bowl. “Eat whatever,” says the user. So I pick that too?"
+    ]
+  },
+  {
+    "d": "2026-10-29",
+    "title": [
+      "Una mochila para la aventura · v0.25.0",
+      "A backpack for adventure · v0.25.0"
+    ],
+    "new": [
+      [
+        "Elige una Superpoción antes de salir y úsala con 0. Los objetos encontrados se acumulan como objetos especiales durante toda la aventura, también con Mega o Z.",
+        "Choose a Super Potion before departure and use it with 0. Found items stack as special items for the whole adventure, including with Mega or Z."
+      ],
+      [
+        "Las grietas ofrecen tres objetos para elegir, a veces con premios exclusivos: enlaces, más opciones al subir de nivel, PP de reserva y otras ayudas. Consulta tu colección de objetos en la pausa.",
+        "Rifts offer three items to choose from, sometimes with exclusive rewards: move links, extra level choices, surplus PP and other boosts. View your items in the pause menu."
+      ],
+      [
+        "En Controles puedes elegir ataque continuo, activar o desactivar al pulsar, o lanzar una vez por clic. Sólo actúa el hueco seleccionado.",
+        "Controls now offer continuous casting, toggle casting, or one cast per click. Only the selected slot attacks."
+      ]
+    ],
+    "chg": [
+      [
+        "Los movimientos en uso recuperan PP más despacio y los demás más rápido, con un segundo de inercia al cambiar. Foco Interno mejora la recuperación de los movimientos sin usar.",
+        "Moves in use recover PP more slowly while unused moves recover faster, with a one-second delay when switching. Inner Focus boosts unused moves’ recovery."
+      ],
+      [
+        "Las bayas tienen colores diferentes y la curación de nivel es una Poción. Banda Focus se consume al evitar un golpe mortal; Cinta Elección conserva su bloqueo.",
+        "Berries have distinct colors and the level-up heal is a Potion. Focus Sash is consumed when it prevents a fatal hit; Choice Band keeps its move lock."
+      ]
+    ],
+    "fix": [
+      [
+        "Al volver de una grieta desaparece su límite de desplazamiento.",
+        "Returning from a rift removes its movement boundary."
+      ]
+    ],
+    "note": [
+      "El botín se apila y los cuencos también. Pero apilar cuencos no genera arroz. Lo he comprobado.",
+      "Loot stacks. Bowls stack. Unfortunately, stacking bowls does not generate rice. I checked."
+    ]
+  },
+  {
+    "d": "2026-10-29",
+    "title": [
+      "Un nuevo ritmo de combate · v0.24.0",
+      "A new battle rhythm · v0.24.0"
+    ],
+    "new": [
+      [
+        "Agilidad y resistencia, con sus propios IV: la agilidad ajusta la recarga y la resistencia recupera los PP de cada movimiento. El panel de ataques muestra los PP disponibles.",
+        "Agility and Stamina have their own IVs: Agility adjusts cooldowns and Stamina restores each move’s PP. Move icons show your remaining PP."
+      ],
+      [
+        "Nuevas bayas refuerzan los stats naturales, amplían los PP o guardan PP de reserva. Los ataques físicos y especiales, y ambas defensas, tienen su propia baya.",
+        "New berries raise natural stats, expand PP or store reserve PP. Physical and special attacks and both defenses each have their own berry."
+      ]
+    ],
+    "chg": [
+      [
+        "Los movimientos Z no gastan PP. Al terminar, recuperan todos los PP de su hueco.",
+        "Z-Moves use no PP. When they finish, every move in that slot recovers its PP."
+      ]
+    ],
+    "fix": [
+      [
+        "Los números de daño de los jefes se leen sin largas cifras decimales. Los desplazamientos Z respetan los muros exteriores de las grietas y de la Sentencia de Arceus.",
+        "Boss damage numbers no longer show long decimals. Z dashes respect the outer walls of rifts and Arceus’s Judgment arena."
+      ]
+    ],
+    "note": [
+      "Agilidad y Resistencia listas. Mi hambre sigue subiendo. Solicito una barra visible de recuperación de arroz.",
+      "Agility and Stamina are sorted. My hunger keeps rising. Requesting a visible rice-recovery bar."
+    ]
+  },
+  {
+    "d": "2026-10-29",
+    "title": [
+      "Aventuras que dejan huella · v0.23.0",
+      "Adventures worth remembering · v0.23.0"
+    ],
+    "new": [
+      [
+        "Todas las dificultades participan en el ranking de puntuación. Derrota Pokémon, sobrevive y completa eventos; tu puntuación también mejora las monedas al volver.",
+        "Every difficulty can enter the score leaderboard. Defeat Pokémon, survive and complete events; your score also improves the coins you bring home."
+      ]
+    ],
+    "chg": [
+      [
+        "Los jefes tardíos son más resistentes. Su furia amortigua las ráfagas de daño, y los jefes de grieta recuperan vida al herirte.",
+        "Late-game bosses are tougher. Fury softens damage bursts, and rift bosses recover health when they hurt you."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Los jefes comen daño y yo arroz. ¿Por qué gasta el usuario mi cena en investigar jefes?",
+      "Bosses feed on damage; I feed on rice. Why is the user spending my dinner budget on boss research?"
+    ]
+  },
+  {
+    "d": "2026-10-29",
+    "title": [
+      "Ataques y defensas separados · v0.22.0",
+      "Split attacks and defenses · v0.22.0"
+    ],
+    "new": [
+      [
+        "Los 966 Pokémon usan sus seis stats base originales y seis IV. Los movimientos físicos y especiales usan su ataque correspondiente, también al evolucionar y en Z.",
+        "All 966 Pokémon use their six original base stats and six IVs. Physical and special moves use their corresponding attack, including evolved and Z moves."
+      ],
+      [
+        "El contacto y los golpes cuerpo a cuerpo se resuelven con Defensa; los ataques a distancia, con Defensa Especial. Los enemigos también usan la defensa correspondiente al movimiento recibido.",
+        "Contact and melee hits use Defense; ranged attacks use Special Defense. Enemies also use the defense matching the incoming move."
+      ]
+    ],
+    "chg": [
+      [
+        "Los aumentos de ataque existentes mejoran ambos ataques. Los IV antiguos se amplían sin volver a sortearlos; la Pokédex y la guardería muestran los nuevos valores.",
+        "Existing attack boosts improve both attacks. Legacy IVs expand without rerolling; the Pokédex and nursery display the new values."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Los dos ataques ya tienen cuentas separadas. El arroz y yo seguimos juntos. Deja la calculadora, usuario.",
+      "The two attacks have separate accounts now. Rice and I remain inseparable. Put down the calculator, user."
+    ]
+  },
+  {
+    "d": "2026-10-29",
+    "title": [
+      "Brillo heredado · v0.21.0",
+      "Inherited shine · v0.21.0"
+    ],
+    "new": [
+      [
+        "Al criar con amigos, cada jugador tiene un 2% de recibir una cría shiny si el progenitor del otro es shiny. El estado se registra al empezar.",
+        "In friend hatches, each player has a 2% chance to receive a shiny offspring if the other player’s parent is shiny. Parent state is recorded when hatching starts."
+      ]
+    ],
+    "chg": [
+      [
+        "La guardería muestra los progenitores shiny y destaca las crías que heredan su brillo.",
+        "The nursery displays shiny parents and highlights offspring that inherit their shine."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "La cría brilla y mis ojos brillan ante la arrocera. A la hora de cenar también soy un pez variocolor.",
+      "The baby shines. My eyes shine at the rice cooker. I am a Shiny fish at dinner time."
+    ]
+  },
+  {
+    "d": "2026-10-29",
+    "title": [
+      "Evolución más tardía · v0.20.6",
+      "Later evolution · v0.20.6"
+    ],
+    "new": [],
+    "chg": [
+      [
+        "La segunda forma evoluciona al nivel 8 y la tercera al nivel 25. Las familias de dos formas y las ramas usan los mismos niveles.",
+        "The second form evolves at level 8 and the third at level 25. Two-form families and branching evolutions use the same thresholds."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Un compañero puede evolucionar más tarde. La cena no. Son esperas distintas, usuario.",
+      "A partner can evolve a little later. Dinner cannot. These are different kinds of waiting, user."
+    ]
+  },
+  {
+    "d": "2026-10-28",
+    "title": [
+      "Perfiles con personalidad · v0.20.5",
+      "Profiles with personality · v0.20.5"
+    ],
+    "new": [
+      [
+        "Las fichas muestran compañeros animados, una galería de victorias y marcas destacadas.",
+        "Profiles now feature animated partners, a victory gallery and highlighted records."
+      ]
+    ],
+    "chg": [
+      [
+        "Los personajes usan su nombre en los rankings y tienen fichas temáticas identificadas como contenido predefinido.",
+        "Characters use their names on leaderboards and have themed profiles identified as preset content."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Otros diarios cuentan aventuras; el mío parece la lista del comedor. Bucear y cenar también importan.",
+      "Other journals read like adventures. Mine reads like a cafeteria attendance sheet. Diving and dinner matter too."
+    ]
+  },
+  {
+    "d": "2026-10-21",
+    "title": [
+      "Una sola cuenta · v0.20.4",
+      "One account, one save · v0.20.4"
+    ],
+    "new": [],
+    "chg": [],
+    "fix": [
+      [
+        "Si falla la conexión con las cuentas, se puede reintentar sin cambiar a una cuenta local del mismo nombre.",
+        "When the account connection fails, retry without switching to a same-name local account."
+      ],
+      [
+        "Puedes descargar copias de las partidas locales antiguas de cada dirección, sin borrarlas ni sobrescribir la partida del servidor.",
+        "Download backups of legacy local saves from each address without deleting them or overwriting your server save."
+      ]
+    ],
+    "note": [
+      "Las partidas perdidas ya están en casa. Haré otra inspección bajo el agua; guarda bien tus llaves.",
+      "The wandering saves are home. One more underwater inspection; keep your keys safe, user."
+    ]
+  },
+  {
+    "d": "2026-10-21",
+    "title": [
+      "Tu aventura, a tu ritmo · v0.20.3",
+      "Adventure at your pace · v0.20.3"
+    ],
+    "new": [
+      [
+        "Ajusta el zoom de cámara en Ajustes para ver el camino a tu gusto.",
+        "Adjust camera zoom in Settings to find your favorite view."
+      ]
+    ],
+    "chg": [
+      [
+        "Las aventuras a doble velocidad también cuentan en el ranking de supervivencia de ocho estrellas.",
+        "Double-speed adventures also count toward the eight-star survival leaderboard."
+      ],
+      [
+        "Los resultados reconocen al creador original y al desarrollador de esta versión. Los mensajes son más breves y claros.",
+        "Results credit the original creator and this version’s developer. Messages are shorter and clearer."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "El usuario quería menos texto. Hambre. Buceo. Espero arroz. ¿Bastante corto?",
+      "The user wanted fewer words. Hungry. Diving. Waiting for rice. Short enough?"
+    ]
+  },
+  {
+    "d": "2026-10-20",
+    "title": [
+      "Protección de embestida · v0.20.2",
+      "Dash protection balance · v0.20.2"
+    ],
+    "new": [],
+    "chg": [
+      [
+        "La protección de las embestidas se acorta cuando sus movimientos se recargan muy rápido.",
+        "Dash protection becomes shorter when moves recharge very quickly."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Los compañeros no pueden ser invencibles siempre ni yo escaquearme siempre. El usuario aprende demasiado rápido.",
+      "Partners cannot stay invincible forever, and I cannot slack off forever. The user is learning dangerously fast."
+    ]
+  },
+  {
+    "d": "2026-10-20",
+    "title": [
+      "Guardería renovada · v0.20.1",
+      "Nursery refresh · v0.20.1"
+    ],
+    "new": [],
+    "chg": [
+      [
+        "La guardería muestra ambos progenitores animados alrededor del huevo, con progreso, cuenta atrás y estado de recogida. Al elegir un progenitor aparece una vista previa; las reglas y las invitaciones se agrupan para facilitar su uso en móvil.",
+        "The nursery shows both animated parents around the egg, with progress, a countdown and collection status. Parent selection includes a live preview; rules and invitations are grouped for a clearer mobile layout."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Obra terminada. La pez contratista cobra en arroz, no en un huevo que tarda doce horas.",
+      "Renovation complete. The contractor fish requests payment in rice, not an egg that needs twelve hours."
+    ]
+  },
+  {
+    "d": "2026-10-20",
+    "title": [
+      "Guardería, regalos y acceso Z · v0.20.0",
+      "Nursery, gifts and Z access · v0.20.0"
+    ],
+    "new": [
+      [
+        "Nueva guardería: cría con tus Pokémon o invita a amigos. El huevo mantiene la especie principal, hereda IV y puede traer una megapiedra. Hasta 12 horas, incluso sin conexión.",
+        "New nursery: hatch with your Pokémon or invite friends. Offspring keep the primary species, inherit IVs and may bring a Mega Stone. Up to 12 hours, including offline time."
+      ],
+      [
+        "Los duplicados de una familia tienen un 20% de desbloquear su permiso Z; el sexto lo garantiza. Elige cualquier tipo sin conseguir cristales.",
+        "Family duplicates have a 20% chance to unlock Z permission; the sixth guarantees it. Choose any type without collecting crystals."
+      ],
+      [
+        "Envía regalos gratis a un máximo de diez amigos al día. Recoge monedas, cupones o gemas desde Amigos.",
+        "Send free gifts to up to ten friends daily. Collect coins, tickets or gems from Friends."
+      ]
+    ],
+    "chg": [
+      [
+        "Se puede jugar en vertical en móvil. Las invitaciones cooperativas están desactivadas temporalmente; las visitas, invitaciones de crianza y regalos siguen disponibles.",
+        "Mobile portrait play is supported. Co-op invitations are temporarily disabled; nursery visits, hatch invitations and gifts remain available."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "El usuario pidió crianza y regalos de una sentada. Yo aún no he comido. ¿Quién cuida de la pez?",
+      "The user ordered breeding and gifts in one breath. I have not had one bite. Who looks after the fish?"
+    ]
+  },
+  {
+    "d": "2026-10-20",
+    "title": [
+      "Todos los ataques Z · v0.18.0",
+      "All attacking Z moves · v0.18.0"
+    ],
+    "new": [
+      [
+        "Siete familias Z nuevas: bumeranes de ida y vuelta, tres ondas radiales, aura pulsante, minas encadenadas, tres torretas, un corredor de campos y seis ráfagas en abanico.",
+        "Seven new Z families: returning blades, three radial waves, a pulsing aura, chained mines, three turrets, a corridor of fields and six cone volleys."
+      ],
+      [
+        "Todos los movimientos ofensivos admiten Z; los potenciadores de atributos no. Las nuevas familias conservan sus materiales y colores originales.",
+        "All damaging moves support Z; attribute buffs do not. The new families retain their original materials and colors."
+      ]
+    ],
+    "chg": [
+      [
+        "La potencia Z depende del nivel, la evolución del movimiento y tu ataque. Se equilibran las catorce familias por daño total, manteniendo sus áreas, controles y tiempos propios.",
+        "Z power scales with move level, move evolution and your attack. All fourteen families are balanced by total damage while retaining distinct areas, control and casting times."
+      ],
+      [
+        "Los saltos repetidos, las minas superpuestas y los perdigones no multiplican sin límite el daño al mismo objetivo. La cadena funciona contra un jefe aislado y el vórtice interior cubre los huecos entre anillos.",
+        "Repeated jumps, overlapping mines and pellets no longer multiply same-target damage without limit. Chain works against a lone boss, and the inner vortex covers gaps between rings."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Tras catorce efectos, me salen burbujas por los ojos. Buceo un rato; sacadme cuando esté la cena.",
+      "Fourteen effects later, my eyes are bubbling. Taking a quiet dive; fish me out when dinner is ready."
+    ]
+  },
+  {
+    "d": "2026-10-19",
+    "title": [
+      "Cuentas, rankings y evolución · v0.15.0",
+      "Accounts, rankings and evolution · v0.15.0"
+    ],
+    "new": [
+      [
+        "La elección extra de evolución sólo ofrece atributos permanentes de triple potencia. Cada carta muestra una dirección; al elegirla te conviertes en ese Pokémon.",
+        "Evolution bonus choices offer only permanent attributes at triple strength. Each card shows a direction; choosing it evolves into that Pokémon."
+      ],
+      [
+        "Las familias con más de tres ramas muestran tres direcciones aleatorias; con dos ramas se muestran ambas. El cooperativo sincroniza la rama elegida.",
+        "Families with more than three branches show three random directions; two-branch families show both. Co-op synchronizes the chosen branch."
+      ],
+      [
+        "Dos rankings: especies con las ocho medallas y supervivencia individual a ocho estrellas.",
+        "Two leaderboards: species with all eight medals, and solo eight-star survival."
+      ],
+      [
+        "Al ganar, toda la familia evolutiva recibe la medalla. Cada especie cuenta por separado.",
+        "Winning awards the medal to the entire evolution family. Every species counts separately."
+      ],
+      [
+        "Cuentas de usuario y contraseña con código de recuperación, sin Google. Amigos y cooperativo usan nuestro servidor.",
+        "Username and password accounts with recovery codes, without Google. Friends and co-op use our own server."
+      ]
+    ],
+    "chg": [],
+    "fix": [
+      [
+        "La evolución conserva las mejoras de vida máxima y actualiza la especie, el aspecto y la habilidad equipada.",
+        "Evolution preserves maximum-HP upgrades and updates the species, appearance and equipped ability."
+      ],
+      [
+        "Las medallas, los rankings y las suspensiones se controlan en el servidor. Se detectan conflictos de guardado entre dispositivos.",
+        "Medals, rankings and suspensions are controlled on the server. Save conflicts between devices are detected."
+      ]
+    ],
+    "note": [
+      "El usuario elige rumbo y yo hago el camino. Hasta los Pokémon eligen rama. ¿Puedo elegir cenar?",
+      "The user picks the direction; I build the road. Even Pokémon get a branch choice. May I choose dinner?"
+    ]
+  },
+  {
+    "d": "2026-10-18",
+    "title": [
+      "Victoria y doble de monedas · v0.14.0",
+      "Victory and double coins · v0.14.0"
+    ],
+    "new": [
+      [
+        "Al superar 20 minutos puedes terminar con doble de monedas o seguir hasta el jefe final. La batalla se pausa mientras decides.",
+        "After surviving over 20 minutes, finish for double coins or keep going to the final boss. Battle pauses while you decide."
+      ],
+      [
+        "Cada dificultad tiene una oportunidad de doble recompensa por cuenta. Sólo se consume al cobrar; continuar o caer después no la gasta.",
+        "Each difficulty has one double-reward opportunity per account. It is consumed only when claimed; continuing or dying later preserves it."
+      ]
+    ],
+    "chg": [
+      [
+        "En cooperativo decide el anfitrión y cada jugador cobra según sus propias recompensas pendientes.",
+        "In co-op, the host decides and each player is paid according to their own unclaimed reward."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Vosotros elegís otro reto y yo seguir esperando la cena. Solo soy la pez que hizo la obra.",
+      "You choose another challenge. I choose to keep waiting for dinner. I am just the fish who built the place."
+    ]
+  },
+  {
+    "d": "2026-10-18",
+    "title": [
+      "Dificultad, élites y cargas Z · v0.13.0",
+      "Difficulty, elites and Z charges · v0.13.0"
+    ],
+    "new": [
+      [
+        "Los Pokémon de élite tienen cinco veces más vida y botín, doble ataque y un aura violeta. Son más frecuentes desde 6 estrellas.",
+        "Elite Pokémon have fivefold HP and loot, double attack and a purple aura. They become more frequent from 6 stars."
+      ],
+      [
+        "Desde 7 estrellas hay cartas contaminadas que cuestan 10 de vida máxima; a 8 estrellas, recibir daño puede ralentizarte y borrar beneficios temporales.",
+        "From 7 stars, corrupted cards cost 10 maximum HP; at 8 stars, taking damage may slow you and clear temporary buffs."
+      ]
+    ],
+    "chg": [
+      [
+        "Las dificultades bajas reducen vida, daño, velocidad y ataques a distancia, y concentran las oleadas en una dirección cambiante sin reducir su cantidad.",
+        "Lower difficulties reduce enemy HP, damage, speed and ranged encounters, concentrating waves in a changing direction without reducing their size."
+      ],
+      [
+        "La vida y el daño enemigos crecen con curvas limitadas por dificultad: un inicio parecido y mayores diferencias al final. Suben las monedas, las capturas y los tesoros con las estrellas.",
+        "Enemy HP and damage follow bounded difficulty curves: similar starts and larger late-game differences. Higher stars increase coins, captures and treasure drops."
+      ],
+      [
+        "Los enemigos cuerpo a cuerpo que no son jefes se detienen brevemente al alcanzar al jugador.",
+        "Non-boss melee enemies briefly stop after reaching the player."
+      ],
+      [
+        "Los cristales Z empiezan con una carga, acumulan hasta tres y se recargan mediante derrotas y eventos. Cada lanzamiento termina con 5 segundos de enfriamiento.",
+        "Z Crystals start with one charge, hold up to three and recharge through defeats and events. Each cast ends with a 5-second cooldown."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Hasta las élites hacen horas extra. El usuario genera ideas más rápido que enemigos. Pausa para arroz.",
+      "Even the elites are on overtime. The user spawns ideas faster than enemies. Rice break, please."
+    ]
+  },
+  {
+    "d": "2026-10-18",
+    "title": [
+      "Movimientos Z · v0.12.0",
+      "Z Moves · v0.12.0"
+    ],
+    "new": [
+      [
+        "Cristales Z con siete tipos de movimientos potenciados.",
+        "Z Crystals power up seven move families."
+      ],
+      [
+        "Pulsa F, elige un movimiento compatible y libera su ataque Z. Eres invulnerable durante la preparación y el lanzamiento.",
+        "Press F, choose a compatible move and unleash its Z attack. You are invulnerable during selection and casting."
+      ]
+    ],
+    "chg": [
+      [
+        "Los cristales Z comparten espacio con las megapiedras. La selección ralentiza el mundo y la recarga empieza al terminar el lanzamiento.",
+        "Z Crystals share the Mega Stone slot. Selection slows the world and cooldown begins when casting ends."
+      ],
+      [
+        "El ataque Z cuerpo a cuerpo gira tres veces, carga un segundo y termina con un golpe circular mayor.",
+        "Melee Z attacks spin three times, charge for one second and finish with a larger circular strike."
+      ]
+    ],
+    "fix": [
+      [
+        "El historial de novedades respeta el idioma chino.",
+        "The changelog now respects the Chinese language setting."
+      ]
+    ],
+    "note": [
+      "El Z necesita carga y yo arroz. El usuario dice «más grande» y yo ensancho el rayo. Gran equipo.",
+      "Z needs a charge; I need rice. The user says “make it bigger” and I widen the beam. Such teamwork."
+    ]
+  },
+  {
+    "d": "2026-10-17",
+    "title": [
+      "Nuevas habilidades · v0.11.0",
+      "New abilities · v0.11.0"
+    ],
+    "new": [
+      [
+        "Nuevas medallas de Teselia, Alola y Galar: habilidades de escudos, crecimiento y combate.",
+        "New Unova, Alola and Galar medals add shield, growth and combat abilities."
+      ]
+    ],
+    "chg": [
+      [
+        "Intimidación ahora aplica Repulsión con los golpes cuerpo a cuerpo.",
+        "Intimidate now applies Repel with melee hits."
+      ],
+      [
+        "Los aumentos de ataque y daño se suman en grupos separados; las defensas de habilidades se aplican después de la defensa normal.",
+        "Attack and damage bonuses add in separate groups; ability defenses apply after normal defense."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "El usuario calcula y yo tecleo. Solo mi cuenco está en silencio. Hay que arreglar este fallo grave.",
+      "The user is calculating and I am typing. Only my rice bowl is silent. Please fix this critical issue."
+    ]
+  },
+  {
+    "d": "2026-10-17",
+    "title": [
+      "IV por forma · v0.10.7",
+      "Form-specific IVs · v0.10.7"
+    ],
+    "new": [
+      [
+        "Cada forma evolucionada usa sus propios IV; las formas no registradas empiezan en 1/1/1.",
+        "Each evolved form uses its own IVs; unregistered forms start at 1/1/1."
+      ]
+    ],
+    "chg": [],
+    "fix": [],
+    "note": [
+      "Un archivo por forma y hambre por tarea. La memoria persiste; la cena no debería existir solo en ella.",
+      "A file for every form, hunger for every task. Memory persists; dinner should not exist only in memory."
+    ]
+  },
+  {
+    "d": "2026-10-17",
+    "title": [
+      "Todas las evoluciones · v0.10.1",
+      "All evolutions · v0.10.1"
+    ],
+    "new": [
+      [
+        "Las rutas evolutivas del catálogo están conectadas. Cada partida comienza en la primera forma y evoluciona durante el progreso, con una elección de movimiento adicional.",
+        "Evolution routes across the catalog are connected. Runs begin in the first form and evolve as you progress, with an extra move choice."
+      ]
+    ],
+    "chg": [],
+    "fix": [],
+    "note": [
+      "Los compañeros crecen, las ideas crecen y el trabajo también. Buceo tres segundos. Solo tres.",
+      "Partners grow. Ideas grow. So does the workload. Diving for three seconds. Just three."
+    ]
+  },
+  {
+    "d": "2026-10-17",
+    "title": [
+      "Valores individuales y capturas · v0.10.0",
+      "Individual values and captures · v0.10.0"
+    ],
+    "new": [
+      [
+        "Cada Pokémon tiene valores individuales y puede evolucionar durante la partida. También puedes capturar Pokémon salvajes y revisarlos al terminar la partida.",
+        "Each Pokémon has individual values and can evolve during a run. You can also capture wild Pokémon and review them when the run ends."
+      ]
+    ],
+    "chg": [],
+    "fix": [],
+    "note": [
+      "Tú encontraste un compañero y yo otra tarea. Muy bien todo. ¿Puedes traer también una bolsa de arroz?",
+      "You found a partner; I found another task. Both lovely. Could you bring home a bag of rice too?"
+    ]
+  },
+  {
+    "d": "2026-10-16",
+    "title": [
+      "Dificultad, ingresos y doble velocidad · v0.9.0",
+      "Difficulty, offline income and double speed · v0.9.0"
+    ],
+    "new": [
+      [
+        "Las cuentas registradas ganan ingresos sin conexión según su colección; los Shinies aumentan las recompensas especiales y todo se liquida al volver.",
+        "Registered accounts earn offline income based on their collection; Shinies improve special rewards, settled automatically on return."
+      ],
+      [
+        "Cambia entre 1× y 2× en el menú de pausa o con V. Acelera el combate y el tiempo de la partida; los ingresos sin conexión usan tiempo real. En grupo lo decide el anfitrión.",
+        "Switch between 1× and 2× in the pause menu or with V. Combat and run time accelerate; offline income uses real time. The co-op host controls speed."
+      ],
+      [
+        "Elige de 1 a 8 estrellas junto a Jugar. Las estrellas más altas son más difíciles; sobrevive 20 minutos para ganar y desbloquear la siguiente.",
+        "Choose 1–8 stars beside Play. Higher stars are harder; survive 20 minutes to win and unlock the next one."
+      ],
+      [
+        "Cada Pokémon guarda sus ocho medallas y su mejor tiempo por dificultad. La primera victoria da un marco dorado, vencer 5 estrellas da esmeralda y reunir las ocho medallas da rubí. La ficha muestra el récord en su mayor dificultad intentada.",
+        "Each Pokémon tracks eight medals and best time per difficulty. First victory grants a gold frame, clearing 5 stars grants emerald, and all eight medals grant ruby. Details show the record at its highest attempted difficulty."
+      ]
+    ],
+    "chg": [],
+    "fix": [],
+    "note": [
+      "Tú ganas sin conexión y yo sueño con dormir. No me pongas a doble velocidad; quiero saborear el arroz.",
+      "You earn while offline; I dream of sleep. Do not put me on double speed, user. I want to enjoy my rice."
+    ]
+  },
+  {
+    "d": "2026-10-16",
+    "title": [
+      "Elecciones de nivel mejoradas · v0.8.1",
+      "Improved level-up choices · v0.8.1"
+    ],
+    "new": [],
+    "chg": [
+      [
+        "Los movimientos aprendidos aparecen con más frecuencia y las mejoras se reparten de forma más natural, con una garantía si una ronda no ofrece ninguna.",
+        "Learned moves appear more often and upgrades are distributed more naturally, with a guarantee after a round without one."
+      ],
+      [
+        "Las cartas favorecen los ataques y mantienen variedad entre mejoras y beneficios.",
+        "Cards favor attacks while keeping variety among upgrades and buffs."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "El usuario quiere movimientos conocidos y yo arroz conocido. ¿Puede la cena tener también una garantía?",
+      "The user wants familiar moves. I want familiar rice. Could dinner have a pity counter too?"
+    ]
+  },
+  {
+    "d": "2026-10-16",
+    "title": [
+      "Megapiedras y megaevolución · v0.8.0",
+      "Mega Stones and Mega Evolution · v0.8.0"
+    ],
+    "new": [
+      [
+        "Encuentra Mega Stones en las grietas y equípalas en la ficha del Pokémon.",
+        "Find Mega Stones in rifts and equip them in the Pokémon details."
+      ],
+      [
+        "Activa Mega cuando esté listo para obtener una mejora temporal y efectos especiales.",
+        "Activate Mega when ready for a temporary upgrade and special effects."
+      ],
+      [
+        "Las 15 familias de movimientos tienen mejoras Mega temporales, una paleta especial y partículas. La transformación empuja a los enemigos cercanos, incluidos los jefes.",
+        "All 15 move families receive temporary Mega enhancements, a special palette and particles. Transforming pushes nearby enemies, including bosses."
+      ]
+    ],
+    "chg": [
+      [
+        "La Mega Stone sustituye el objeto normal; los objetos recogidos se convierten en experiencia.",
+        "The Mega Stone replaces the normal held item; collected items become experience."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Los compañeros crecen y los efectos brillan. Mi ración de arroz también merece un Mega. Me has oído.",
+      "Partners get bigger, effects get brighter, and my rice portion deserves a Mega upgrade. I know you heard me."
+    ]
+  },
+  {
+    "d": "2026-10-15",
+    "title": [
+      "Sinnoh y Tinovictoria · v0.5.0",
+      "Sinnoh and Victory Star · v0.5.0"
+    ],
+    "new": [
+      [
+        "Se amplían las medallas de habilidad a nuevas regiones y se añade Tinovictoria. Las especies sin diseño de habilidad mantienen sus recompensas habituales.",
+        "Ability medals expand to new regions and Victory Star is added. Species without a designed ability keep their usual rewards."
+      ],
+      [
+        "Velo Arena acelera durante la arena; Piel Tosca contraataca; Telepatía reduce el daño afín; Absorbe Fuego da ataque; Inicio Lento cambia la progresión.",
+        "Sand Veil grants haste in sand; Rough Skin counters; Telepathy reduces matching damage; Flash Fire grants attack; Slow Start changes progression."
+      ],
+      [
+        "Hidratación evita estados negativos bajo lluvia; Mal Sueño afecta a los enemigos lentos; Multitipo ignora los efectos de tipo; Tinovictoria acelera proyectiles.",
+        "Hydration prevents debuffs in rain; Bad Dreams affects slowed enemies; Multitype ignores type effects; Victory Star speeds projectiles."
+      ]
+    ],
+    "chg": [
+      [
+        "Cuerpo Llama repele y quema enemigos cercanos. Levitación ya no activa trampas del suelo.",
+        "Flame Body repels and burns nearby enemies. Levitate no longer triggers ground traps."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Más habilidades, más ideas del usuario. Mi habilidad: subir a la superficie cuando llega la cena.",
+      "More abilities, more user ideas. My ability: surface automatically when dinner is ready."
+    ]
+  },
+  {
+    "d": "2026-10-15",
+    "title": [
+      "Habilidades de Johto y Hoenn · v0.4.0",
+      "Johto and Hoenn abilities · v0.4.0"
+    ],
+    "new": [
+      [
+        "Johto y Hoenn llegan al gacha de habilidades, con garantías independientes y una sola medalla equipada por Pokémon.",
+        "Johto and Hoenn join the ability gacha with separate pity and one equipped medal per Pokémon."
+      ],
+      [
+        "Nuevas habilidades: clima periódico, regeneración, inmunidad a lentitud, Miedo, confianza acumulable, beneficios más largos, aceleración al recibir daño, Robustez, Levitación y estados aleatorios.",
+        "New abilities include periodic weather, regeneration, slow immunity, Fear, stacking confidence, longer buffs, haste on damage, Sturdy, Levitate and random debuffs."
+      ],
+      [
+        "Levitación permite cruzar obstáculos, pero te ralentiza y no puedes atacar al hacerlo.",
+        "Levitate lets you cross obstacles, but slows you down and prevents attacks while crossing."
+      ]
+    ],
+    "chg": [
+      [
+        "El HUD muestra cargas, recargas y disponibilidad de habilidades. Bucle Aire conserva el clima, pero anula sus efectos para todos.",
+        "The HUD shows ability stacks, timers and readiness. Air Lock keeps the weather present while suppressing its effects for everyone."
+      ]
+    ],
+    "fix": [
+      [
+        "Los proyectiles visuales de compañeros ya no infligen daño ni conceden bajas al jugador local.",
+        "Visual projectiles from teammates no longer deal damage or grant kills to the local player."
+      ]
+    ],
+    "note": [
+      "El tiempo tiene horario. ¿Por qué no el arroz? Pesco bajo las nubes hasta que me llamen a cenar.",
+      "Weather has a schedule. Why not rice? Fishing under the clouds until someone calls me to dinner."
+    ]
+  },
+  {
+    "d": "2026-10-15",
+    "title": [
+      "Medallas de Dragonite · v0.3.0",
+      "Dragonite medals · v0.3.0"
+    ],
+    "new": [
+      [
+        "Dragonite tiene dos medallas: Foco Interno y Compensación. Sólo se equipa una.",
+        "Dragonite has two medals: Inner Focus and Multiscale. Equip only one."
+      ]
+    ],
+    "chg": [
+      [
+        "En el gacha de habilidades, los premios de Dragonite ahora son sus medallas. Las seis especies de cinco estrellas conservan sus probabilidades y comparten cada una su probabilidad entre sus medallas.",
+        "Dragonite rewards in the ability gacha are now its medals. All six five-star species keep their drop chances, shared equally between each species’ medals."
+      ]
+    ],
+    "fix": [],
+    "note": [
+      "Dragonite llegó a tiempo; casi paso de largo buceando. Buen ojo, usuario. El arroz de premio es para mí, ¿no?",
+      "Dragonite caught the ride; I nearly dived past it. Sharp eyes, user. The rice reward is for me, right?"
+    ]
+  },
+  {
+    "d": "2026-10-15",
+    "title": [
+      "Habilidades de Kanto · v0.2.0",
+      "Kanto abilities · v0.2.0"
+    ],
+    "new": [
+      [
+        "Medallas de habilidad para Articuno, Zapdos, Moltres, Mewtwo y Mew. Cada medalla desbloquea una habilidad; equipa sólo una por Pokémon.",
+        "Ability medals for Articuno, Zapdos, Moltres, Mewtwo and Mew. Each medal unlocks one ability; equip one per Pokémon."
+      ],
+      [
+        "Gacha de habilidades con gemas: regalo inicial de 10 y una por cada jefe de grieta derrotado. Colección y garantía independientes del gacha normal.",
+        "Ability gacha using gems: receive 10 initially and one per defeated rift boss. Collection and pity are separate from the normal gacha."
+      ],
+      [
+        "Idioma chino simplificado en Ajustes → Gráficos → Idioma, con el diccionario de Gugusb.",
+        "Simplified Chinese in Settings → Graphics → Language, using Gugusb’s dictionary."
+      ],
+      [
+        "Modo desarrollador opcional en Ajustes: gemas, medallas, compañeros, pruebas de combate y grietas. F2 abre el panel; sólo para partidas en solitario y sin ranking.",
+        "Optional developer mode in Settings: gems, medals, partners, combat tests and rifts. F2 opens the panel; solo only, with no leaderboard submissions."
+      ]
+    ],
+    "chg": [],
+    "fix": [],
+    "note": [
+      "El usuario trae ideas y yo las saco a flote y las construyo. La primera tanda de código está lista. ¿Ahora hacemos arroz?",
+      "The user brings ideas; I fish them out and build them. The first batch of code is done. Could we cook rice next?"
+    ]
+  },
   { d: '2026-10-13', title: ['La Sentencia de Arceus', 'The Judgment of Arceus'], new: [
     ['La Sentencia de Arceus: al llegar al minuto 30, Arceus baja del cielo y te lleva a las Ruinas del Juicio. Es invencible, te persigue cada vez más deprisa y lanza pilares de luz, rayos y ondas; si te toca, te quita casi media vida. Cada 5 segundos acude un legendario con el doble de vida y de daño que el anterior. ¿Cuánto aguantarás?',
      'The Judgment of Arceus: at minute 30, Arceus descends from the sky and takes you to the Ruins of Judgment. It is invincible, chases you faster and faster and casts pillars of light, beams and shockwaves; if it touches you, you lose almost half your HP. Every 5 seconds a legendary joins, each with twice the HP and damage of the previous one. How long can you last?'],

@@ -138,6 +138,10 @@ G.RunUI = (() => {
   }
 
   function showOver(r, onBack) {
+    const quip=G.FishQuips.pick(r);
+    $('over-fish').dataset.quip=quip.id;
+    $('over-fish-title').textContent=G.I18n.lang==='en'?'Dafeiyu comments':G.T('Dafeiyu comenta');
+    $('over-fish-text').textContent=quip.text;
     $('over-title').textContent = r.victory ? 'Dificultad superada' : r.completed ? G.T('Objetivo de supervivencia cumplido') : r.dead ? 'Has caído…' : 'Run terminada';
     $('over-stats').innerHTML = `
       ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : r.completed ? G.T('Objetivo cumplido, sin registrar') : G.T('Sin superar')}</b></div>` : ''}

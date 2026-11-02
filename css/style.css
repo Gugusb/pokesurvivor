@@ -488,6 +488,11 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
 .stats > div { background: rgba(0,0,0,.22); border-radius: 9px; padding: 8px 10px; }
 .stats > div > span:first-child { display: block; color: var(--muted); font-size: 12px; text-transform: uppercase; }
 .stats b { font-size: 22px; }
+.over-fish { display:flex; gap:12px; align-items:flex-start; margin:14px 0 16px; padding:15px; text-align:left; border:1px solid #83dae6; border-radius:14px; background:linear-gradient(125deg,rgba(36,115,148,.28),rgba(84,71,126,.16)); box-shadow:0 3px 18px #060e2533; }
+.over-fish > div { min-width:0; }
+.over-fish h3 { margin:0 0 7px; color:#b7f1f6; font-size:15px; letter-spacing:.03em; }
+.over-fish p { margin:0; color:#e4f3fb; font-size:14px; line-height:1.75; overflow-wrap:anywhere; }
+.over-fish-mark { flex:0 0 32px; height:32px; border:1px solid #8fd7ee88; border-radius:50% 50% 42% 50%; background:#286480; color:#d0f5ff; font-size:23px; text-align:center; line-height:30px; transform:rotate(-12deg); }
 
 kbd {
   display: inline-block; padding: 0 6px; border: 2px solid rgba(244,248,255,.4); border-bottom-width: 3px;
@@ -997,6 +1002,10 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 .news-tag.new { background: #5fe08a; } .news-tag.chg { background: #4fb4ff; } .news-tag.fix { background: #ffb347; }
 .news-day ul { margin: 0; padding-left: 20px; }
 .news-day li { margin: 4px 0; line-height: 1.35; font-size: 15px; }
+.news-team { margin: 4px 0 14px; color: var(--muted); line-height: 1.6; font-size: 14px; overflow-wrap: anywhere; }
+.news-note { margin: 10px 0 14px; padding: 9px 12px; border-left: 3px solid #7dd9ed; background: rgba(85,166,191,.08); line-height: 1.55; font-size: 14px; overflow-wrap: anywhere; }
+.news-note b { display: block; margin-bottom: 3px; color: #a2e6ef; font-size: 13px; }
+.news-note span { color: var(--muted); }
 @media (max-width: 760px) { .news-btn span { display: none; } }
 .sup-tab { width: 100%; border-collapse: collapse; margin: 6px 0 10px; font-size: 15px; }
 .sup-tab td { padding: 5px 4px; border-bottom: 1px solid rgba(255,255,255,.1); }

@@ -7,7 +7,7 @@ function context() {
     localStorage: {getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},
     document: {documentElement:{},addEventListener:noop}, CanvasRenderingContext2D: function(){} };
   s.window=s;s.G={};vm.createContext(s);s.load=f=>vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),s,{filename:f});
-  for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/pokedex.js','js/systems/difficulty.js'])s.load(f);
+  for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/fish-quips.js','js/data/pokedex.js','js/systems/difficulty.js'])s.load(f);
   const G=s.G;G.BackpackUI={isOpen:()=>false,tick:noop};G.FIREBASE_CONFIG=null;
   vm.runInContext(fs.readFileSync(path.join(ROOT,'js/core/db.js'),'utf8').replace('ready, register, login,','_test:{newSave,migrate,sanitize}, ready, register, login,'),s);G.DB.playAsGuest();
   G.Sprites={PX:2,animMeta:()=>null,bodyRadius:()=>10,bodyHeight:()=>20,hovers:()=>false,Animator:class {play(){}},preload:noop};
@@ -165,7 +165,7 @@ test('a validation failure is explained rather than conflated with failing the s
 
 test('the actual result UI distinguishes a recorded win from completed developer runs in Chinese',()=>{
   const s=context(),{G}=s;s.loadGame();s.load('js/ui/difficulty-ui.js');assert.equal(G.I18n.lang,'zh');const elements=new Map();
-  G.UI.$=id=>id==='over-ask'?null:(elements.get(id)||elements.set(id,{textContent:'',innerHTML:''}).get(id));
+  G.UI.$=id=>id==='over-ask'?null:(elements.get(id)||elements.set(id,{dataset:{},textContent:'',innerHTML:''}).get(id));
   G.UI.show=noop;G.Icons={html:()=>''};s.load('js/ui/run-ui.js');
   const result={difficulty:1,completed:true,dead:true,time:1801,level:20,kills:100,bosses:3,coins:100,moves:[],breakdown:''};
   G.RunUI.showOver({...result,victory:true},noop);assert.equal(elements.get('over-title').textContent,'Dificultad superada');
@@ -255,7 +255,7 @@ test('the real screen registry hides the victory overlay when showing the final 
   s.document.getElementById=id=>{
     if(id==='over-ask')return null;
     if(!nodes.has(id)){
-      const classes=new Set(['hidden']);nodes.set(id,{textContent:'',innerHTML:'',classList:{add:k=>classes.add(k),remove:k=>classes.delete(k),contains:k=>classes.has(k),toggle:(k,on)=>on?classes.add(k):classes.delete(k)}});
+      const classes=new Set(['hidden']);nodes.set(id,{dataset:{},textContent:'',innerHTML:'',classList:{add:k=>classes.add(k),remove:k=>classes.delete(k),contains:k=>classes.has(k),toggle:(k,on)=>on?classes.add(k):classes.delete(k)}});
     }return nodes.get(id);
   };
   s.load('js/ui/ui.js');G.Icons={html:()=>''};s.load('js/ui/run-ui.js');G.RunUI.showVictory(1,true,false,false,async()=>true,noop);
