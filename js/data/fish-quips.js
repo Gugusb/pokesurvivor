@@ -5,57 +5,57 @@ G.FishQuips = (() => {
     {
       "id": "early-1",
       "text": [
-        "El calentamiento terminó antes que el arroz. Otra aventura, sin prisa.",
-        "The warm-up finished before my rice. Another adventure, no rush."
+        "Mi despertador aún no ha sonado y ya estamos de vuelta. Un bostezo y lo intentamos otra vez.",
+        "My alarm has not even rung and we are back already. One yawn, then we try again."
       ]
     },
     {
       "id": "early-2",
       "text": [
-        "Tu compañero vuelve al Centro Pokémon; yo vuelvo a buscar la olla.",
-        "Your partner heads to the Pokémon Center; I go looking for the rice cooker."
+        "La capucha se me cayó sobre los ojos. Ajustamos la ruta y salimos juntos otra vez.",
+        "My hood slipped over my eyes. We will adjust our route and head out together again."
       ]
     },
     {
       "id": "early-3",
       "text": [
-        "La primera ola tenía más ganas de trabajar que yo.",
-        "That first wave was more eager to work than I was."
+        "Íbamos a pasear y nos recibieron con tanta energía. Mi cola todavía está desperezándose.",
+        "We came for a stroll and got quite a welcome. My tail is still stretching."
       ]
     },
     {
       "id": "early-4",
       "text": [
-        "Una aventura corta también deja pistas. La próxima salimos con un plan.",
-        "A short adventure still leaves clues. Next time we bring a plan."
+        "Tenemos un hueco en el cuaderno. Dibujaré una flecha más ancha para nuestra próxima ruta.",
+        "There is room in the journal. I will draw a wider arrow for our next route."
       ]
     },
     {
       "id": "early-5",
       "text": [
-        "Yo iba a asomarme desde el agua y ya habías vuelto. ¿Revancha?",
-        "I was just surfacing and you were already back. Rematch?"
+        "Un caramelo de limón para el ánimo. La próxima vez llevamos también una salida de emergencia.",
+        "A lemon sweet for morale. Next time we bring an escape route too."
       ]
     },
     {
       "id": "early-6",
       "text": [
-        "No pasa nada: hasta un buen entrenador necesita encontrar el ritmo.",
-        "Even a good Trainer needs a moment to find their rhythm."
+        "El primer tropiezo no decide el viaje. Nos sacudimos el polvo y cuidamos al compañero.",
+        "The first stumble does not decide the journey. We dust off and check on our partner."
       ]
     },
     {
       "id": "early-7",
       "text": [
-        "Gugusb propone aventuras; los Pokémon salvajes proponen otra cosa.",
-        "Gugusb proposes adventures; the wild Pokémon have other ideas."
+        "Quien cocina dijo que saliéramos a tomar el aire. Se olvidó de mencionar a todos estos Pokémon.",
+        "The one who cooks said we should get some fresh air. Forgot to mention all these Pokémon."
       ]
     },
     {
       "id": "early-8",
       "text": [
-        "Hoy el viaje fue breve. La merienda puede ser larga.",
-        "Today’s journey was short. The snack break can be long."
+        "Mi zapatilla quedó mirando al revés. Arreglamos eso antes de otra pequeña aventura.",
+        "My slipper ended up facing backwards. We will fix that before our next little adventure."
       ]
     }
   ],
@@ -63,57 +63,57 @@ G.FishQuips = (() => {
     {
       "id": "growing-1",
       "text": [
-        "Ya había ambiente de aventura. Nos faltó un poquito de espacio para respirar.",
-        "It was starting to feel like an adventure. We needed a little more breathing room."
+        "Nuestra combinación empieza a tomar forma. Le pondré una pegatina de estrella, aún sin colorear.",
+        "Our move combination is taking shape. I will give it a star sticker, still waiting for color."
       ]
     },
     {
       "id": "growing-2",
       "text": [
-        "Los movimientos están tomando forma. La próxima vez les damos más tiempo.",
-        "Those moves are coming together. Next time we give them longer."
+        "He marcado dónde se estrechó el camino. Mi cola necesita espacio, y nuestro compañero también.",
+        "I marked where the path narrowed. My tail needs room, and so does our partner."
       ]
     },
     {
       "id": "growing-3",
       "text": [
-        "Un pequeño rodeo a tiempo vale más que una despedida heroica.",
-        "A little detour in time beats a heroic farewell."
+        "La tetera sigue tibia. Un descanso corto nos vendrá bien antes de volver.",
+        "The kettle is still warm. A short rest will do us good before we return."
       ]
     },
     {
       "id": "growing-4",
       "text": [
-        "Tu compañero dio la cara. Yo admito que me escondí detrás del cuenco.",
-        "Your partner stood their ground. I admit I hid behind my bowl."
+        "No me dormí: estaba escuchando la batalla con los ojos cerrados. La próxima miro también.",
+        "I was not asleep: I was listening to the battle with my eyes closed. Next time I will look too."
       ]
     },
     {
       "id": "growing-5",
       "text": [
-        "Aún no tocaba cerrar el diario, pero ya tenemos algo que contar.",
-        "It was too soon to close the journal, but we have a story to tell."
+        "El cuaderno tiene una esquina doblada para este intento. Hay ideas que merece la pena guardar.",
+        "I folded a journal corner for this attempt. Some ideas are worth keeping."
       ]
     },
     {
       "id": "growing-6",
       "text": [
-        "La próxima guardamos una salida. Mis rutas de buceo siempre tienen una.",
-        "Next time we keep an escape route. My diving routes always have one."
+        "Nuestro compañero aguantó bien. Primero unas palmaditas; las cuentas pueden esperar.",
+        "Our partner held on well. A few pats first; the numbers can wait."
       ]
     },
     {
       "id": "growing-7",
       "text": [
-        "No fue una visita de cortesía: esos Pokémon se tomaron el combate en serio.",
-        "That was no courtesy visit: those Pokémon took the battle seriously."
+        "Conchas, pañuelo, mapa… llevamos de todo. La próxima guardamos también un poco de calma.",
+        "Shells, scarf, map… we brought everything. Next time we pack a little calm too."
       ]
     },
     {
       "id": "growing-8",
       "text": [
-        "Hagamos una pausa. Las buenas combinaciones también se cocinan despacio.",
-        "Take a breather. Good move combinations need time to cook too."
+        "Quien cocina ya está pensando en otra ruta. Voy a esconder nuestra manta antes de que la convierta en mapa.",
+        "The one who cooks is planning another route. I will hide our blanket before it becomes a map."
       ]
     }
   ],
@@ -121,57 +121,57 @@ G.FishQuips = (() => {
     {
       "id": "close-1",
       "text": [
-        "Llegaste lejos. Esta página acaba aquí, no todo el viaje.",
-        "You made it far. This page ends here, not the whole journey."
+        "Recorrimos un buen trecho. Voy a guardar esta página con la cinta azul, sin arrugarla.",
+        "We came a long way. I will keep this page with the blue ribbon, without creasing it."
       ]
     },
     {
       "id": "close-2",
       "text": [
-        "El final se nos escapó, pero tu compañero no se quedó sin mérito.",
-        "The ending slipped away, but your partner still earned some credit."
+        "Casi derribo la taza con la cola cuando se puso emocionante. Casi, nada más.",
+        "I nearly knocked over my cup with my tail when things got exciting. Nearly, that is all."
       ]
     },
     {
       "id": "close-3",
       "text": [
-        "Hubo momentos para presumir. Yo los anoté entre dos bocados de arroz.",
-        "There were moments worth bragging about. I noted them between bites of rice."
+        "Nos faltó un hueco para respirar. He dibujado uno enorme en el mapa de la próxima salida.",
+        "We needed a little breathing room. I drew an enormous gap on our next map."
       ]
     },
     {
       "id": "close-4",
       "text": [
-        "El camino se puso estrecho. La próxima buscamos sitio antes de atacar.",
-        "The path got tight. Next time we find room before attacking."
+        "Ese tramo merecía una foto. La he guardado junto a mi concha favorita.",
+        "That stretch deserved a photo. I kept it beside my favorite shell."
       ]
     },
     {
       "id": "close-5",
       "text": [
-        "Con tanto combate, hasta yo dejé de fingir que estaba trabajando.",
-        "With all that battling, even I stopped pretending to work."
+        "El compañero vuelve a casa con una historia. Nosotros volvemos con ganas de contársela a alguien.",
+        "Our partner comes home with a story. We come home wanting to tell it."
       ]
     },
     {
       "id": "close-6",
       "text": [
-        "No prometo ganar la siguiente. Sí prometo salir a mirar en vez de bucear.",
-        "I cannot promise the next win. I can promise to surface and watch."
+        "He deshecho el nudo de la capucha. Era yo agarrándola demasiado fuerte, no una nueva técnica.",
+        "I untied the knot in my hood. I was gripping it too hard; it was not a new technique."
       ]
     },
     {
       "id": "close-7",
       "text": [
-        "Un descanso para el entrenador y otro para el compañero. Yo pongo los platos.",
-        "A break for the Trainer and their partner. I will set the table."
+        "Quien cocina quiso saber cómo fue. Yo diré que tuvimos una aventura de las que dejan el pelo revuelto.",
+        "The one who cooks asked how it went. I will say we had the kind of adventure that tangles your hair."
       ]
     },
     {
       "id": "close-8",
       "text": [
-        "El viaje ya tenía buena pinta. Volvemos con lo aprendido y sin prisas.",
-        "That adventure was looking good. We return with what we learned, no rush."
+        "Nos toca volver, pero no borrar el camino. Mañana seguimos desde lo que aprendimos hoy.",
+        "Time to head back, not erase the journey. Tomorrow we build on what we learned today."
       ]
     }
   ],
@@ -179,57 +179,57 @@ G.FishQuips = (() => {
     {
       "id": "victory-1",
       "text": [
-        "¡Victoria! Ahora sí puedo sacar el cuenco sin perderme el final.",
-        "Victory! Now I can fetch my bowl without missing the ending."
+        "¡Lo conseguimos! La pegatina dorada estaba esperando justo esta página.",
+        "We did it! The gold sticker was waiting for exactly this page."
       ]
     },
     {
       "id": "victory-2",
       "text": [
-        "La medalla luce bien. ¿Habrá una pequeñita para quien escribió el código?",
-        "That medal looks good. Any tiny ones for the code writer?"
+        "La bandera está levantada. Mi cola también, aunque casi se lleva la lámpara.",
+        "Our flag is up. So is my tail, though it nearly took the lamp with it."
       ]
     },
     {
       "id": "victory-3",
       "text": [
-        "Tu compañero hizo el trabajo difícil. Yo hago los aplausos.",
-        "Your partner did the hard part. I will handle the applause."
+        "Primero felicitamos al compañero. Luego vemos si cabemos todos bajo la manta para descansar.",
+        "First we congratulate our partner. Then we see whether we all fit under the blanket."
       ]
     },
     {
       "id": "victory-4",
       "text": [
-        "Gugusb trae ideas, tú traes victorias. Yo sigo trayendo hambre.",
-        "Gugusb brings ideas, you bring victories. I keep bringing an appetite."
+        "Quien cocina tendrá que escuchar toda la aventura. Esta vez ni sus tareas nos interrumpen.",
+        "The one who cooks will hear the whole adventure. No chores interrupting our story this time."
       ]
     },
     {
       "id": "victory-5",
       "text": [
-        "Aventura cumplida. Hoy el diario termina con una sonrisa.",
-        "Adventure complete. Today the journal ends with a smile."
+        "Una victoria para nuestro cuaderno. Dibujaré las estrellas despierta, lo prometo.",
+        "A victory for our journal. I promise to stay awake while drawing the stars."
       ]
     },
     {
       "id": "victory-6",
       "text": [
-        "Buen trabajo. El siguiente desafío puede esperar hasta después de comer.",
-        "Well done. The next challenge can wait until after dinner."
+        "Guardé unos pastelitos para celebrar. Sí, aún quedan; sólo hice una pequeña inspección.",
+        "I saved some little cakes to celebrate. Yes, some remain; I only did a tiny inspection."
       ]
     },
     {
       "id": "victory-7",
       "text": [
-        "Yo iba a bucear, pero una victoria así merece quedarse en la orilla.",
-        "I was going diving, but a win like this deserves staying ashore."
+        "La brisa de vuelta se siente distinta cuando ganamos. Hasta mis zapatillas van contentas.",
+        "The breeze home feels different after a win. Even my slippers seem happy."
       ]
     },
     {
       "id": "victory-8",
       "text": [
-        "Hoy nos llevamos la victoria. El compañero se lleva la primera caricia.",
-        "Today we take the win. Your partner gets the first pat."
+        "Nuestro compañero merece el cojín más cómodo. Yo puedo usar el segundo… esta vez.",
+        "Our partner deserves the softest cushion. I can take the second-softest… this time."
       ]
     }
   ],
@@ -237,57 +237,57 @@ G.FishQuips = (() => {
     {
       "id": "endless-1",
       "text": [
-        "La victoria ya estaba en la mochila. Lo demás fue valor extra.",
-        "Victory was already in the bag. Everything after that took extra courage."
+        "Ya habíamos ganado y aun así fuimos más lejos. Esta página necesita otra cinta.",
+        "We had already won, and still went further. This page needs another ribbon."
       ]
     },
     {
       "id": "endless-2",
       "text": [
-        "Seguiste cuando ya podías descansar. Eso también merece aplausos.",
-        "You kept going when you could have rested. That deserves applause too."
+        "El compañero cruzó la meta y siguió con nosotros. Ahora sí le toca una buena siesta.",
+        "Our partner crossed the goal and kept going with us. Now they deserve a proper nap."
       ]
     },
     {
       "id": "endless-3",
       "text": [
-        "La aventura terminó, pero nadie se lleva tu victoria. Ni mi hambre.",
-        "The adventure ended, but nobody takes away your win. Not even my hunger."
+        "La última caída no se lleva nuestra victoria. La guardaré bien en el cajón de los recuerdos.",
+        "That last fall does not take away our win. I will keep it safe in the memory drawer."
       ]
     },
     {
       "id": "endless-4",
       "text": [
-        "Ese último tramo fue de propina. El cuenco de arroz sigue siendo obligatorio.",
-        "That last stretch was a bonus. The bowl of rice is still required."
+        "Dijimos un poquito más. Nuestro «poquito» ya está ocupando dos páginas del cuaderno.",
+        "We said a little longer. Our “little” is taking up two whole journal pages."
       ]
     },
     {
       "id": "endless-5",
       "text": [
-        "Tu compañero llegó más allá de la meta. Ahora le toca descansar de verdad.",
-        "Your partner went beyond the goal. Now they deserve a proper rest."
+        "He sujetado el sombrero con ambas manos todo el tramo extra. Por si la cola no bastaba.",
+        "I held my hat with both hands for that whole extra stretch. In case my tail was not enough."
       ]
     },
     {
       "id": "endless-6",
       "text": [
-        "Yo dije una aventura más, no una aventura sin fin. Pero estuvo emocionante.",
-        "I said one more adventure, not an endless one. It was exciting, though."
+        "Quien cocina dijo que volviéramos temprano. Mejor contamos primero que ya habíamos ganado.",
+        "The one who cooks said to be back early. We had better mention our win first."
       ]
     },
     {
       "id": "endless-7",
       "text": [
-        "Ganaste y todavía buscaste otro reto. Yo ganaría y buscaría la cocina.",
-        "You won and sought another challenge. I would seek the kitchen."
+        "Hasta la merienda se enfrió esperando. La victoria sigue calentita; eso sí lo guardamos.",
+        "Even our snack went cold waiting. Our victory is still warm, though; we kept that."
       ]
     },
     {
       "id": "endless-8",
       "text": [
-        "La última caída no borra el camino. Esta fue una aventura de las largas.",
-        "The final fall does not erase the journey. This was a long adventure."
+        "Nuestro camino llegó más allá del plan. Voy a dibujar el resto en el margen, con mucho cuidado.",
+        "Our journey went beyond the plan. I will draw the rest carefully in the margin."
       ]
     }
   ],
@@ -295,57 +295,57 @@ G.FishQuips = (() => {
     {
       "id": "arceus-1",
       "text": [
-        "Hasta Arceus entró en escena. Mi descanso tuvo que esperar.",
-        "Even Arceus took the stage. My break had to wait."
+        "Hasta Arceus vino a vernos. Me he sentado derecha sin que nadie me lo pida.",
+        "Even Arceus came to see us. I sat up straight without anyone asking."
       ]
     },
     {
       "id": "arceus-2",
       "text": [
-        "Presentarse ante Arceus ya da para una buena historia.",
-        "Standing before Arceus already makes quite a story."
+        "Este encuentro merece una concha entera como recuerdo. La bonita, no la que uso de pisapapeles.",
+        "This meeting deserves a whole shell as a keepsake. The pretty one, not my paperweight."
       ]
     },
     {
       "id": "arceus-3",
       "text": [
-        "El escenario se puso serio. Yo abracé el cuenco un poco más fuerte.",
-        "The stage got serious. I held my bowl a little tighter."
+        "Mi cola dejó de balancearse cuando apareció. Estaba prestando atención, no asustada.",
+        "My tail stopped swaying when it appeared. I was paying attention, not frightened."
       ]
     },
     {
       "id": "arceus-4",
       "text": [
-        "Un encuentro con el Pokémon Alfa no cabe en una nota pequeña.",
-        "A meeting with the Alpha Pokémon needs more than a tiny footnote."
+        "Presentarnos ante el Pokémon Alfa ya es una historia enorme. La contaremos despacio al volver.",
+        "Standing before the Alpha Pokémon is already an enormous story. We will tell it slowly back home."
       ]
     },
     {
       "id": "arceus-5",
       "text": [
-        "Tu compañero llegó hasta aquí contigo. Hoy se merece la mejor cena.",
-        "Your partner came all this way with you. They deserve the best dinner today."
+        "He dejado el cojín a un lado. Hay momentos que merecen verlos bien despiertos.",
+        "I put my cushion aside. Some moments deserve being fully awake for."
       ]
     },
     {
       "id": "arceus-6",
       "text": [
-        "Yo quería ver peces; terminamos viendo a Arceus. Cambió bastante el plan.",
-        "I wanted to see fish; we ended up seeing Arceus. Quite a change of plans."
+        "Quien cocina no creerá a quién encontramos. Menos mal que llevamos el cuaderno.",
+        "The one who cooks will not believe who we met. Good thing we brought the journal."
       ]
     },
     {
       "id": "arceus-7",
       "text": [
-        "A este capítulo le ponemos una página entera. Y una pausa para respirar.",
-        "This chapter gets a whole page. And a moment to breathe."
+        "Cuidamos al compañero primero. La gran historia puede esperar a que recupere el aliento.",
+        "We check on our partner first. The grand story can wait until they catch their breath."
       ]
     },
     {
       "id": "arceus-8",
       "text": [
-        "No todos los días llegamos a semejante encuentro. Guarda el recuerdo.",
-        "We do not reach an encounter like that every day. Keep the memory."
+        "Una estrella para el mapa y un sitio especial en el cajón. Hoy vimos algo que no se olvida fácil.",
+        "A star on the map and a special place in the drawer. Today we saw something hard to forget."
       ]
     }
   ],
@@ -353,57 +353,57 @@ G.FishQuips = (() => {
     {
       "id": "record-1",
       "text": [
-        "¡Una nueva mejor puntuación! El diario necesita una página limpia.",
-        "A new best score! The journal needs a fresh page."
+        "¡Nueva mejor puntuación! Le pondré dos estrellas para no confundirla con la de ayer.",
+        "A new best score! Two stars, so we do not confuse it with yesterday’s."
       ]
     },
     {
       "id": "record-2",
       "text": [
-        "Subiste el listón. Yo subo el cuenco para brindar.",
-        "You raised the bar. I raise my bowl for a toast."
+        "Nuestro cuaderno se queda pequeño. Buena noticia: aún guardo una libreta azul sin estrenar.",
+        "Our journal is getting small. Good news: I still have an unused blue notebook."
       ]
     },
     {
       "id": "record-3",
       "text": [
-        "Ese número sí merece salir a la superficie.",
-        "That number is worth surfacing for."
+        "Me han temblado las orejas de alegría. ¿Las manos? Esas estaban sujetando bien el lápiz.",
+        "My ears twitched with excitement. My hands? Those were holding the pencil very steadily."
       ]
     },
     {
       "id": "record-4",
       "text": [
-        "Otro recuerdo para presumir. Tu compañero se ha ganado la foto.",
-        "Another memory worth showing off. Your partner earned a photo."
+        "He preparado una pose con la cola para la foto. Nuestro compañero sale en el centro, claro.",
+        "I prepared a tail pose for the photo. Our partner gets the middle, of course."
       ]
     },
     {
       "id": "record-5",
       "text": [
-        "Yo llevaba las cuentas. Entre tanto, también conté cuántas veces tuve hambre.",
-        "I kept score. I also counted how many times I got hungry."
+        "Quien cocina va a tener que despejar la mesa. Nuestra colección de recuerdos necesita sitio.",
+        "The one who cooks will have to clear the table. Our memory collection needs room."
       ]
     },
     {
       "id": "record-6",
       "text": [
-        "La mejor marca tiene nuevo dueño: sigues siendo tú, pero un poco mejor.",
-        "The best mark has a new owner: still you, just a little better."
+        "El récord anterior también era nuestro. Lo guardo debajo, que esa aventura tampoco se tira.",
+        "The old record was ours too. I will keep it underneath; we do not throw that adventure away."
       ]
     },
     {
       "id": "record-7",
       "text": [
-        "El plan salió con un número bonito al final. Gugusb querrá otro plan.",
-        "The plan ended with a nice number. Gugusb will want another plan."
+        "Marqué el número y la fecha con mucho cuidado. Sólo la firma quedó un poquito somnolienta.",
+        "I wrote the number and date carefully. Only my signature came out a little sleepy."
       ]
     },
     {
       "id": "record-8",
       "text": [
-        "Nuevo récord anotado. Ahora sí, pausa oficial para comer.",
-        "New record noted. Now it is officially time to eat."
+        "Podemos presumir un ratito. Yo usaré ese rato para encontrar la pegatina más brillante.",
+        "We can show off for a little while. I will use that time to find the shiniest sticker."
       ]
     }
   ],
@@ -411,62 +411,62 @@ G.FishQuips = (() => {
     {
       "id": "departure-1",
       "text": [
-        "Volver a tiempo también es una decisión de entrenador.",
-        "Knowing when to head back is a Trainer’s decision too."
+        "Elegimos volver antes de cansarnos del todo. Dejar algo para mañana también está bien.",
+        "We chose to head back before getting too tired. Leaving something for tomorrow is fine too."
       ]
     },
     {
       "id": "departure-2",
       "text": [
-        "Aventura guardada en el recuerdo. ¿Nos vamos a comer?",
-        "Adventure kept in our memories. Shall we eat?"
+        "He doblado el mapa por las marcas, como prometí. El compañero ya puede acurrucarse.",
+        "I folded the map along the creases, as promised. Our partner can curl up now."
       ]
     },
     {
       "id": "departure-3",
       "text": [
-        "Hoy elegimos el camino de vuelta. El siguiente viaje seguirá esperándonos.",
-        "Today we chose the way back. The next journey will wait for us."
+        "La marea espera. Guardamos las zapatillas aquí y continuamos cuando nos apetezca.",
+        "The tide can wait. We will leave our slippers here and continue when we feel like it."
       ]
     },
     {
       "id": "departure-4",
       "text": [
-        "Tu compañero puede descansar. Yo llevaba un rato solicitándolo.",
-        "Your partner can rest. I had been requesting that for a while."
+        "Suena la campanita de la cocina. Quien cocina quizá haya aprendido a llamarnos a tiempo.",
+        "The kitchen bell is ringing. The one who cooks may have learned to call us on time."
       ]
     },
     {
       "id": "departure-5",
       "text": [
-        "No todas las aventuras necesitan un último combate.",
-        "Not every adventure needs one final battle."
+        "Un poco de cacao caliente y una manta grande. Nuestro plan de después también cuenta como plan.",
+        "Some hot cocoa and a big blanket. Our plan for afterwards still counts as a plan."
       ]
     },
     {
       "id": "departure-6",
       "text": [
-        "Retirada tranquila, diario cerrado. Yo me sumerjo hasta la próxima.",
-        "A calm return, journal closed. I will dive until next time."
+        "Dije que no tenía sueño. Sólo voy a apoyar la cabeza mientras guardamos las cosas.",
+        "I said I was not sleepy. I will just rest my head while we put things away."
       ]
     },
     {
       "id": "departure-7",
       "text": [
-        "Gugusb puede seguir pensando ideas. Nosotros podemos pensar en la cena.",
-        "Gugusb can keep thinking up ideas. We can think about dinner."
+        "Hoy la concha vuelve al bolsillo y la historia al cuaderno. Nos queda mucho mar por ver.",
+        "Today the shell goes back in the pocket and the story in the journal. We still have plenty of sea to see."
       ]
     },
     {
       "id": "departure-8",
       "text": [
-        "Fin de la excursión. No olvides saludar a tu compañero antes de irte.",
-        "End of the trip. Say goodbye to your partner before you go."
+        "Nos despedimos del compañero y dejamos una lucecita encendida. La próxima aventura sabrá volver.",
+        "We say goodnight to our partner and leave a little light on. The next adventure will find its way."
       ]
     }
   ]
 };
-  const recent = new Map();
+  const recent = new Map(), bags = new Map();
   function category(r) {
     if(r.judge) return 'arceus';
     if(r.victory || r.completed) return r.dead ? 'endless' : r.record ? 'record' : 'victory';
@@ -476,8 +476,15 @@ G.FishQuips = (() => {
     return r.record ? 'record' : 'close';
   }
   function pick(r) {
-    const group=category(r), rows=groups[group], available=rows.filter(q=>q.id!==recent.get(group));
-    const q=available[Math.floor(Math.random()*available.length)];
+    const group=category(r);
+    let bag=bags.get(group);
+    if(!bag?.length){
+      bag=groups[group].slice();
+      for(let i=bag.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[bag[i],bag[j]]=[bag[j],bag[i]];}
+      if(bag.at(-1).id===recent.get(group)){[bag[0],bag[bag.length-1]]=[bag[bag.length-1],bag[0]];}
+      bags.set(group,bag);
+    }
+    const q=bag.pop();
     recent.set(group,q.id);
     return {id:q.id,group,text:G.I18n.lang==='en'?q.text[1]:G.T(q.text[0])};
   }

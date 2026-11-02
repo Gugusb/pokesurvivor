@@ -33,7 +33,7 @@ G.NewsUI = (() => {
       PARTS.filter(([k]) => v[k] && v[k].length).map(([k, lbl]) =>
         `<div class="news-part"><span class="news-tag ${k}">${esc(localized(lbl))}</span><ul>${v[k].map(t => `<li>${esc(localized(t))}</li>`).join('')}</ul></div>`).join('') +
       (v.profile&&G.DB.mode==='server'&&G.DB.online?`<p><button class="btn small" data-news-profile="${esc(v.profile)}" translate="no">${esc(localized(['Conoce a Dafeiyu','Meet Dafeiyu']))}</button></p>`:'') +
-      (v.note?`<p class="news-note" translate="no"><b>${esc(localized(['Entre burbujas · Dafeiyu','Bubble notes · Dafeiyu']))}</b><span>${esc(localized(v.note))}</span></p>`:'') + '</div>').join('');
+      (v.note?`<p class="news-note" translate="no"><b>${esc(localized(['Las pequeñas charlas de Dafeiyu','Dafeiyu’s little musings']))}</b><span>${esc(localized(v.note))}</span></p>`:'') + '</div>').join('');
     $('news-body').querySelectorAll('[data-news-profile]').forEach(button=>button.onclick=()=>{close();G.ProfileUI.show(button.dataset.newsProfile);});
     $('news-body').scrollTop = 0;
     $('scr-news').classList.remove('hidden');

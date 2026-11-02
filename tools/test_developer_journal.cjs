@@ -9,7 +9,7 @@ test('each edition entry has its own localized closing note while upstream histo
  assert.ok(own.length>=40);assert.equal(upstream.length,7);assert.equal(new Set(own.map(v=>v.note[0])).size,own.length);
  for(const e of own){assert.equal(e.note.length,2);assert.ok(e.note.every(s=>s.length>20));assert.ok(/[\u4e00-\u9fff]/.test(G.T(e.note[0])));assert.ok(/[\u4e00-\u9fff]/.test(G.T(e.title[0])));for(const k of ['new','chg','fix'])for(const pair of e[k]||[])assert.ok(/[\u4e00-\u9fff]/.test(G.T(pair[0])),e.title[1]+': '+pair[0]);}
  assert.ok(upstream.every(v=>v.note===undefined));assert.equal(upstream.at(-1).d,'2026-10-07');
- assert.ok(G.T(G.CHANGELOG_TEAM[0]).includes('Gugusb'));assert.ok(G.T(G.CHANGELOG_TEAM[0]).includes('个人记忆持久化'));
+ assert.ok(G.T(G.CHANGELOG_TEAM[0]).includes('Gugusb'));assert.ok(G.T(G.CHANGELOG_TEAM[0]).includes('鲸鱼娘'));assert.doesNotMatch(G.T(G.CHANGELOG_TEAM[0]),/agent|记忆持久化|DeepSeek/i);
  assert.ok(!JSON.stringify(own).includes('failureProtection'));
 });
 
@@ -40,6 +40,6 @@ test('registered users can read the marked developer profile without a fabricate
  const app=createApp({dbFile:':memory:',stunUrls:'none'});t.after(()=>app.close());const character=await seedDeveloperCharacter(app.db);app.server.listen(0,'127.0.0.1');await once(app.server,'listening');const base='http://127.0.0.1:'+app.server.address().port;
  const registered=await fetch(base+'/api/register',{method:'POST',headers:{'Content-Type':'application/json','X-PS-Client':'1'},body:JSON.stringify({name:'JournalViewer',pass:'isolated-journal-viewer'})});assert.equal(registered.status,201);const cookie=registered.headers.get('set-cookie').split(';')[0];
  const read=async route=>{const r=await fetch(base+'/api'+route,{headers:{Cookie:cookie}});assert.equal(r.status,200);return r.json();};const p=await read('/profile?uid='+character.uid);
- assert.equal(p.name,'大肥鱼');assert.equal(p.character.key,'dafeiyu');assert.equal(p.character.preset,true);assert.equal(p.best.medals,18);assert.equal(p.best.score,251250);assert.equal(p.best.eightStar,1938);assert.equal(p.best.level,86);assert.equal(p.best.runs,64);assert.equal(p.completedDex.length,12);assert.deepEqual(p.favs.map(x=>x.dex),[321,350,143]);assert.ok(p.character.bio.zh.includes('Gugusb'));
+ assert.equal(p.name,'大肥鱼');assert.equal(p.character.key,'dafeiyu');assert.equal(p.character.preset,true);assert.equal(p.best.medals,18);assert.equal(p.best.score,251250);assert.equal(p.best.eightStar,1938);assert.equal(p.best.level,86);assert.equal(p.best.runs,64);assert.equal(p.completedDex.length,12);assert.deepEqual(p.favs.map(x=>x.dex),[321,350,143]);assert.ok(p.character.bio.zh.includes('鲸鱼娘'));assert.ok(p.character.bio.zh.includes('做饭的那家伙'));assert.ok(p.character.bio.zh.includes('咱们'));for(const bio of Object.values(p.character.bio))assert.doesNotMatch(bio,/agent|agente|persistent|persistente|DeepSeek|记忆持久化/i);
  for(const board of ['completion','survival'])assert.ok(!(await read('/ranking?board='+board)).rows.some(row=>row.uid===character.uid));
 });

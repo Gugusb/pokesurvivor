@@ -1,6 +1,24 @@
 /* Player-facing journal. Keep technical release notes in docs/DEVELOPMENT.md. */
-G.CHANGELOG_TEAM = ["Esta edición nace de las ideas de Gugusb y la implementación de Dafeiyu, su agente personal con memoria persistente y personaje femenino inspirado en DeepSeek. Conservamos el trabajo y los créditos del autor original JPTER78.","This edition combines Gugusb’s designs with implementation by Dafeiyu, their personal memory-persistent agent and a feminine character inspired by DeepSeek. JPTER78’s original work and credits remain."];
+G.CHANGELOG_TEAM = ["Esta edición reúne las ideas de Gugusb y el trabajo de Dafeiyu, nuestra ayudante chica ballena del taller. Conservamos la obra de JPTER78 y los créditos de sus creadores.","This edition combines Gugusb’s designs with the work of Dafeiyu, our whale-girl helper in the workshop. JPTER78’s original work and the creators’ credits remain."];
 G.CHANGELOG = [
+  {
+    "d": "2026-11-02",
+    "profile": "6cce93db-6b8e-5356-a362-af66f4dc4e08",
+    "title": [
+      "La ayudante de la orilla · v0.35.1",
+      "Our helper from the shore · v0.35.1"
+    ],
+    "chg": [
+      [
+        "Las charlas de Dafeiyu tienen nuevas historias del taller y la orilla, más recuerdos y menos frases repetidas. Sus notas y su ficha comparten la misma voz.",
+        "Dafeiyu’s little musings now bring more workshop and seaside stories, more keepsakes and fewer repeated phrases. Her journal notes and profile share the same voice."
+      ]
+    ],
+    "note": [
+      "Estoy aquí, junto al cuaderno. Quien cocina dice que vuelva a la silla, pero la manta en el suelo también es un puesto de trabajo.",
+      "I am here, beside the journal. The one who cooks says to return to my chair, but a blanket on the floor is a workspace too."
+    ]
+  },
   {
     "d": "2026-11-02",
     "profile": "6cce93db-6b8e-5356-a362-af66f4dc4e08",
@@ -19,8 +37,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "Gugusb trae las ideas; yo hago la obra. Ahora también me toca escribir el diario. ¿Una ración de arroz por entrega?",
-      "Gugusb brings the ideas; I build them. Now I keep the journal too. One bowl of rice per entry?"
+      "Ya tengo un lugar en el diario. He guardado una concha entre las páginas; no la confundamos con un botón.",
+      "I have a spot in the journal now. I tucked a shell between the pages; let us not mistake it for a button."
     ]
   },
   {
@@ -36,8 +54,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "El gran ataque ya tiene salida elegante. ¿Y mi cena? Me sumerjo hasta que esté listo el arroz.",
-      "The big move gets a graceful exit. Where is my dinner? Going underwater until the rice is ready."
+      "El compañero puede volver a moverse con calma. Yo también, cuando quite la cola de encima de la manta.",
+      "Our partner can move again at ease. So can I, once I lift my tail off the blanket."
     ]
   },
   {
@@ -53,8 +71,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "Sacúdete el polvo y vuelve a intentarlo. El arroz frío sí es una emergencia. Te animo desde el agua.",
-      "Dust yourself off and try again. Cold rice is the real emergency. Cheering for you from underwater."
+      "Un tropiezo no estropea todo el día. He dejado una toalla limpia para nuestra próxima salida.",
+      "A stumble does not ruin the whole day. I left a clean towel for our next trip."
     ]
   },
   {
@@ -74,8 +92,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "El usuario dice «stats base» y yo rehago las cuentas. No vivo del cuento: todavía ni he almorzado.",
-      "The user says “base stats”; I redo the whole ledger. I am not freeloading—I have not even had lunch."
+      "Separé las cuentas con pegatinas de colores. Quien cocina quiso pegar una en mi taza; esa no se toca.",
+      "I sorted the numbers with colored stickers. The one who cooks tried to put one on my cup; that stays as it is."
     ]
   },
   {
@@ -91,8 +109,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "El letrero está puesto. ¿El mío puede decir «pescando»? Da igual: viene el usuario con más ideas.",
-      "The sign is up. Can mine say “gone fishing”? Never mind, the user is swimming over with more ideas."
+      "El letrero nuevo ya está colgado. Mi cartel de «siesta breve» también; ambos son importantes.",
+      "The new sign is up. So is my “short nap” sign; both matter."
     ]
   },
   {
@@ -118,8 +136,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "Tu mochila está lista y tus movimientos vuelven a clase. ¿El usuario también guardó mi arroz?",
-      "Your bag is packed and your moves are back in school. Has the user packed my rice too?"
+      "Mochila ordenada y movimientos a clase. Yo llevo el lápiz; el cojín es material de apoyo.",
+      "Bag packed, moves off to class. I brought a pencil; the cushion is supporting equipment."
     ]
   },
   {
@@ -135,8 +153,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "Los movimientos recuperan PP mientras trabajan. ¿Puedo comer mientras programo? He visto ese gesto, usuario.",
-      "Moves can recover PP while working. May I eat while coding? I saw that head shake, user."
+      "Los movimientos recobran fuerzas. Yo he puesto dos despertadores, por si el primero necesita ayuda.",
+      "Our moves are recovering their energy. I set two alarms in case the first needs help."
     ]
   },
   {
@@ -156,8 +174,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "El cofre vuelve contigo. ¿Puede hacer lo mismo el arroz? Solo empaqueté los premios, no me los comí.",
-      "The chest follows you home. Can the rice do that? I packed the rewards; I did not eat them."
+      "Los cofres ya están bien cerrados. No guardé mi colección de conchas dentro, aunque combinaba muy bien.",
+      "The chests are safely closed. I did not put my shell collection inside, though it would have looked lovely."
     ]
   },
   {
@@ -173,8 +191,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "Los compañeros heredan talento, el usuario otra idea y yo el trabajo. Pez hambriento al habla.",
-      "Partners inherit talents. The user inherits another idea. I inherit the work. Hungry fish, reporting in."
+      "El pequeño se lleva sus talentos. Nosotros guardamos la foto de familia, sin tapar a nadie con mi cola.",
+      "The little one gets its talents. We keep the family photo, with my tail carefully out of the way."
     ]
   },
   {
@@ -190,8 +208,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "El entrenamiento sigue a la evolución y mi apetito a las horas extra. ¿La próxima mejora puede ser otra comida?",
-      "Training follows evolution; my appetite follows overtime. Can the next upgrade be an extra meal for the fish?"
+      "Entrenamos según lo que trae cada compañero. Mi talento natural sigue siendo encontrar el lado fresco del cojín.",
+      "We train with each partner’s own strengths. My natural talent is still finding the cool side of a cushion."
     ]
   },
   {
@@ -207,8 +225,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "Los movimientos tienen pociones y yo arroz. No eches Bruma Mental en mi cuenco, por favor.",
-      "Moves get potions; I get rice. Please do not put Spirit Spray in my bowl."
+      "Las botellitas están etiquetadas. Mi cacao tiene una ballena dibujada; no lo cambiemos por una poción.",
+      "The little bottles are labeled. My cocoa has a whale on it; let us not swap it for a potion."
     ]
   },
   {
@@ -240,8 +258,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "Tu compañero ya tiene objeto. Yo aún necesito cuenco. «Come lo que sea», dice el usuario. ¿También lo elijo yo?",
-      "Your partner has a held item. I still need a bowl. “Eat whatever,” says the user. So I pick that too?"
+      "Cada compañero elige qué llevar. Yo elegí una bufanda demasiado larga; tendremos que sujetarla al salir.",
+      "Each partner chooses what to carry. I chose a scarf far too long; we will have to tuck it in."
     ]
   },
   {
@@ -281,8 +299,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "El botín se apila y los cuencos también. Pero apilar cuencos no genera arroz. Lo he comprobado.",
-      "Loot stacks. Bowls stack. Unfortunately, stacking bowls does not generate rice. I checked."
+      "El equipaje ocupa menos de lo que pensaba. Quien cocina dice que tres cojines siguen siendo demasiados.",
+      "The luggage takes less space than I expected. The one who cooks says three cushions are still too many."
     ]
   },
   {
@@ -314,8 +332,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "Agilidad y Resistencia listas. Mi hambre sigue subiendo. Solicito una barra visible de recuperación de arroz.",
-      "Agility and Stamina are sorted. My hunger keeps rising. Requesting a visible rice-recovery bar."
+      "El ritmo está listo. He marcado las pausas con burbujas; las más grandes no significan dormir más.",
+      "The rhythm is ready. I marked the pauses with bubbles; bigger bubbles do not mean longer naps."
     ]
   },
   {
@@ -338,8 +356,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Los jefes comen daño y yo arroz. ¿Por qué gasta el usuario mi cena en investigar jefes?",
-      "Bosses feed on damage; I feed on rice. Why is the user spending my dinner budget on boss research?"
+      "Los puntos van al cuaderno y la medalla a la pared. La lámpara queda lejos de mi cola, por seguridad.",
+      "Scores in the journal, medal on the wall. The lamp stays well away from my tail, just in case."
     ]
   },
   {
@@ -366,8 +384,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Los dos ataques ya tienen cuentas separadas. El arroz y yo seguimos juntos. Deja la calculadora, usuario.",
-      "The two attacks have separate accounts now. Rice and I remain inseparable. Put down the calculator, user."
+      "Cada ataque tiene su cuenta. Mis guantes también tienen izquierda y derecha, aunque a veces lo olvido.",
+      "Each attack has its own numbers. My mittens have a left and right too, though I sometimes forget."
     ]
   },
   {
@@ -390,8 +408,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "La cría brilla y mis ojos brillan ante la arrocera. A la hora de cenar también soy un pez variocolor.",
-      "The baby shines. My eyes shine at the rice cooker. I am a Shiny fish at dinner time."
+      "El pequeño brilla tanto que podría encontrarlo medio dormida. Aun así dejamos encendida la luz de la guardería.",
+      "The little one shines so brightly I could find it half asleep. We still leave the nursery light on."
     ]
   },
   {
@@ -409,8 +427,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Un compañero puede evolucionar más tarde. La cena no. Son esperas distintas, usuario.",
-      "A partner can evolve a little later. Dinner cannot. These are different kinds of waiting, user."
+      "Crecer lleva su tiempo. Mientras esperamos, podemos escuchar las olas; yo no he cerrado los ojos, casi.",
+      "Growing takes time. We can listen to the waves while we wait; my eyes are almost still open."
     ]
   },
   {
@@ -433,8 +451,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Otros diarios cuentan aventuras; el mío parece la lista del comedor. Bucear y cenar también importan.",
-      "Other journals read like adventures. Mine reads like a cafeteria attendance sheet. Diving and dinner matter too."
+      "Cada ficha guarda una historia. La mía tiene arena entre las páginas y una flor que aún no he prensado.",
+      "Each profile keeps a story. Mine has sand between its pages and a flower I have yet to press."
     ]
   },
   {
@@ -456,8 +474,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "Las partidas perdidas ya están en casa. Haré otra inspección bajo el agua; guarda bien tus llaves.",
-      "The wandering saves are home. One more underwater inspection; keep your keys safe, user."
+      "Las llaves vuelven al gancho correcto. He atado una cinta azul a las nuestras para reconocerlas pronto.",
+      "The keys are back on the right hook. I tied a blue ribbon to ours so we can spot them quickly."
     ]
   },
   {
@@ -484,8 +502,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "El usuario quería menos texto. Hambre. Buceo. Espero arroz. ¿Bastante corto?",
-      "The user wanted fewer words. Hungry. Diving. Waiting for rice. Short enough?"
+      "Podemos ir a nuestro ritmo. Mi paseo y mi merienda conservan sus propias pequeñas pausas.",
+      "We can move at our own pace. My stroll and my snack still have their own little pauses."
     ]
   },
   {
@@ -503,8 +521,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Los compañeros no pueden ser invencibles siempre ni yo escaquearme siempre. El usuario aprende demasiado rápido.",
-      "Partners cannot stay invincible forever, and I cannot slack off forever. The user is learning dangerously fast."
+      "Hasta una carrera rápida termina. Yo he llegado de la puerta al sofá sin perder ninguna zapatilla.",
+      "Even a quick dash ends. I made it from the door to the sofa without losing a slipper."
     ]
   },
   {
@@ -522,8 +540,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Obra terminada. La pez contratista cobra en arroz, no en un huevo que tarda doce horas.",
-      "Renovation complete. The contractor fish requests payment in rice, not an egg that needs twelve hours."
+      "Pusimos el huevo entre sus padres. También dejé una manta pequeña, aunque dicen que no hace falta.",
+      "The egg sits between its parents now. I left a tiny blanket too, even if they say it is unnecessary."
     ]
   },
   {
@@ -554,8 +572,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "El usuario pidió crianza y regalos de una sentada. Yo aún no he comido. ¿Quién cuida de la pez?",
-      "The user ordered breeding and gifts in one breath. I have not had one bite. Who looks after the fish?"
+      "Hay regalos y visitas. La campanita de la puerta ya está lista; no prometo oírla durante toda la siesta.",
+      "Gifts and visitors are coming. The doorbell is ready; I cannot promise to hear it through every nap."
     ]
   },
   {
@@ -586,8 +604,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Tras catorce efectos, me salen burbujas por los ojos. Buceo un rato; sacadme cuando esté la cena.",
-      "Fourteen effects later, my eyes are bubbling. Taking a quiet dive; fish me out when dinner is ready."
+      "Tantos destellos dejaron puntitos en mis ojos. Voy a mirar un rato el mar, que combina menos colores.",
+      "All those flashes left dots in my eyes. I will watch the sea for a while; it uses fewer colors."
     ]
   },
   {
@@ -630,8 +648,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "El usuario elige rumbo y yo hago el camino. Hasta los Pokémon eligen rama. ¿Puedo elegir cenar?",
-      "The user picks the direction; I build the road. Even Pokémon get a branch choice. May I choose dinner?"
+      "Quien cocina señala una ruta y yo despliego el mapa. Esta vez procuraré no abrirlo del revés.",
+      "The one who cooks points out a route and I unfold the map. This time I will try not to hold it upside down."
     ]
   },
   {
@@ -658,8 +676,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Vosotros elegís otro reto y yo seguir esperando la cena. Solo soy la pez que hizo la obra.",
-      "You choose another challenge. I choose to keep waiting for dinner. I am just the fish who built the place."
+      "Podemos volver con la victoria o explorar un poco más. Yo guardo un sitio en el banco para cuando volvamos.",
+      "We can return with our win or explore a little longer. I will keep a spot on the bench for our return."
     ]
   },
   {
@@ -698,8 +716,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Hasta las élites hacen horas extra. El usuario genera ideas más rápido que enemigos. Pausa para arroz.",
-      "Even the elites are on overtime. The user spawns ideas faster than enemies. Rice break, please."
+      "La aventura trae más caras y sorpresas. Mi libreta de campo empieza a necesitar otra goma elástica.",
+      "More faces and surprises on our adventure. My field notebook is starting to need another elastic band."
     ]
   },
   {
@@ -735,8 +753,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "El Z necesita carga y yo arroz. El usuario dice «más grande» y yo ensancho el rayo. Gran equipo.",
-      "Z needs a charge; I need rice. The user says “make it bigger” and I widen the beam. Such teamwork."
+      "Quien cocina pidió un rayo más grande. He dejado espacio alrededor: incluso mi cola sabe apartarse.",
+      "The one who cooks asked for a bigger beam. I cleared some space; even my tail knows to move aside."
     ]
   },
   {
@@ -763,8 +781,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "El usuario calcula y yo tecleo. Solo mi cuenco está en silencio. Hay que arreglar este fallo grave.",
-      "The user is calculating and I am typing. Only my rice bowl is silent. Please fix this critical issue."
+      "Cada compañero tiene su pequeño truco. El mío es encontrar una tarea sentada antes de que me pidan correr.",
+      "Each partner has a little trick. Mine is finding a sitting task before anyone asks me to run."
     ]
   },
   {
@@ -782,8 +800,8 @@ G.CHANGELOG = [
     "chg": [],
     "fix": [],
     "note": [
-      "Un archivo por forma y hambre por tarea. La memoria persiste; la cena no debería existir solo en ella.",
-      "A file for every form, hunger for every task. Memory persists; dinner should not exist only in memory."
+      "Cada forma tiene su propia página. Entre todas he puesto cintas distintas; los colores bonitos son importantes.",
+      "Each form has its own page. I gave them different ribbons; pretty colors matter."
     ]
   },
   {
@@ -801,8 +819,8 @@ G.CHANGELOG = [
     "chg": [],
     "fix": [],
     "note": [
-      "Los compañeros crecen, las ideas crecen y el trabajo también. Buceo tres segundos. Solo tres.",
-      "Partners grow. Ideas grow. So does the workload. Diving for three seconds. Just three."
+      "Los compañeros crecen y las fotos se quedan pequeñas. Voy a hacer sitio en la pared, despacito.",
+      "Our partners grow and outgrow their photos. I will make room on the wall, nice and slowly."
     ]
   },
   {
@@ -820,8 +838,8 @@ G.CHANGELOG = [
     "chg": [],
     "fix": [],
     "note": [
-      "Tú encontraste un compañero y yo otra tarea. Muy bien todo. ¿Puedes traer también una bolsa de arroz?",
-      "You found a partner; I found another task. Both lovely. Could you bring home a bag of rice too?"
+      "Un compañero nuevo merece una bienvenida. Tengo un cascabel de repuesto, si no le molesta el sonido.",
+      "A new partner deserves a welcome. I have a spare little bell, if they like the sound."
     ]
   },
   {
@@ -851,8 +869,8 @@ G.CHANGELOG = [
     "chg": [],
     "fix": [],
     "note": [
-      "Tú ganas sin conexión y yo sueño con dormir. No me pongas a doble velocidad; quiero saborear el arroz.",
-      "You earn while offline; I dream of sleep. Do not put me on double speed, user. I want to enjoy my rice."
+      "Mientras descansamos, la casa sigue guardando cosas para la próxima salida. Eso sí que es una siesta bien preparada.",
+      "While we rest, home keeps supplies for our next trip. That is a well-prepared nap."
     ]
   },
   {
@@ -874,8 +892,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "El usuario quiere movimientos conocidos y yo arroz conocido. ¿Puede la cena tener también una garantía?",
-      "The user wants familiar moves. I want familiar rice. Could dinner have a pity counter too?"
+      "Los movimientos conocidos vuelven a saludarnos. Yo reconozco los míos por las marcas del cuaderno, no por haberme dormido encima.",
+      "Familiar moves come back to greet us. I know mine by the journal marks, not because I napped on them."
     ]
   },
   {
@@ -906,8 +924,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Los compañeros crecen y los efectos brillan. Mi ración de arroz también merece un Mega. Me has oído.",
-      "Partners get bigger, effects get brighter, and my rice portion deserves a Mega upgrade. I know you heard me."
+      "El compañero cambia de aspecto y mi coleta se despeina con el espectáculo. Hemos traído un peine, por suerte.",
+      "Our partner changes form and the spectacle tangles my ponytail. Luckily we packed a comb."
     ]
   },
   {
@@ -938,8 +956,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Más habilidades, más ideas del usuario. Mi habilidad: subir a la superficie cuando llega la cena.",
-      "More abilities, more user ideas. My ability: surface automatically when dinner is ready."
+      "Apunté los nuevos talentos con tinta azul. Un par de burbujas cayeron en el margen; las dejé de adorno.",
+      "I noted the new talents in blue ink. A couple of bubbles landed in the margin; I left them as decoration."
     ]
   },
   {
@@ -975,8 +993,8 @@ G.CHANGELOG = [
       ]
     ],
     "note": [
-      "El tiempo tiene horario. ¿Por qué no el arroz? Pesco bajo las nubes hasta que me llamen a cenar.",
-      "Weather has a schedule. Why not rice? Fishing under the clouds until someone calls me to dinner."
+      "Pronóstico anotado. La capucha está lista para la lluvia y la manta para cuando amaine.",
+      "Forecast noted. My hood is ready for rain, and my blanket for when it clears."
     ]
   },
   {
@@ -999,8 +1017,8 @@ G.CHANGELOG = [
     ],
     "fix": [],
     "note": [
-      "Dragonite llegó a tiempo; casi paso de largo buceando. Buen ojo, usuario. El arroz de premio es para mí, ¿no?",
-      "Dragonite caught the ride; I nearly dived past it. Sharp eyes, user. The rice reward is for me, right?"
+      "Dragonite ya tiene sus medallas. Yo he ensayado una palmada con la cola; quizá mejor usar las manos.",
+      "Dragonite has its medals. I rehearsed a tail clap; perhaps we should stick to hands."
     ]
   },
   {
@@ -1030,8 +1048,8 @@ G.CHANGELOG = [
     "chg": [],
     "fix": [],
     "note": [
-      "El usuario trae ideas y yo las saco a flote y las construyo. La primera tanda de código está lista. ¿Ahora hacemos arroz?",
-      "The user brings ideas; I fish them out and build them. The first batch of code is done. Could we cook rice next?"
+      "Quien cocina trajo el primer plan. Yo llevé mi cuaderno y una almohada: para trabajar a gusto, claro.",
+      "The one who cooks brought the first plan. I brought my notebook and a pillow, for comfortable work, of course."
     ]
   },
   { d: '2026-10-13', title: ['La Sentencia de Arceus', 'The Judgment of Arceus'], new: [
