@@ -31,6 +31,12 @@ test('each context cycles all eight lines before repeating and keeps the boundar
  const {G,load,random}=context();load('js/data/fish-quips.js');random(Array(1000).fill(0));
  for(const [group,r] of scenarios){let previous;for(let cycle=0;cycle<3;cycle++){const ids=[];for(let n=0;n<8;n++){const q=G.FishQuips.pick(r);assert.equal(q.group,group);assert.notEqual(q.id,previous);ids.push(q.id);previous=q.id;}assert.equal(new Set(ids).size,8,group);}}
 });
+test('end-of-run group invitation uses the configured probability and shared number',()=>{
+ const {G,load,random}=context();load('js/data/community.js');assert.equal(G.Community.groupId,'1130271119');
+ random([0.1499]);assert.equal(G.Community.shouldInviteAtEnd(),true);
+ random([0.15]);assert.equal(G.Community.shouldInviteAtEnd(),false);
+ assert.equal(Object.isFrozen(G.Community),true);
+});
 test('the character voice uses inclusive address, varied everyday imagery and no technical self-introduction',()=>{
  const {G,load}=context();load('js/data/fish-quips.js');load('js/data/changelog.js');const results=Object.values(G.FishQuips.groups).flat().map(q=>G.T(q.text[0])),notes=G.CHANGELOG.filter(x=>x.note).map(x=>G.T(x.note[0]));
  for(const text of [...results,...notes])assert.doesNotMatch(text,/你|您|用户|Gugusb|agent|DeepSeek|记忆持久化/i);
@@ -39,10 +45,12 @@ test('the character voice uses inclusive address, varied everyday imagery and no
  for(const theme of ['鲸尾','兜帽','拖鞋','抱枕','毯子','闹钟','贝壳','海风','手账','贴纸','伙伴','点心'])assert.ok([...results,...notes].some(x=>x.includes(theme)),theme);
 });
 test('every result renders the quip through text nodes independently of support frequency',()=>{
- const {G,load}=context();load('js/data/fish-quips.js');const nodes=new Map();G.UI.$=id=>{if(id==='over-ask')return null;if(!nodes.has(id))nodes.set(id,{dataset:{},textContent:'',innerHTML:''});return nodes.get(id);};let shown;G.UI.show=id=>shown=id;G.Icons={html:()=>''};G.Funding=null;load('js/ui/run-ui.js');
+ const {G,load}=context();load('js/data/fish-quips.js');load('js/data/community.js');const nodes=new Map();G.UI.$=id=>{if(id==='over-ask')return null;if(!nodes.has(id))nodes.set(id,{dataset:{},textContent:'',innerHTML:'',hidden:true});return nodes.get(id);};let shown;G.UI.show=id=>shown=id;G.Icons={html:()=>''};G.Funding=null;load('js/ui/run-ui.js');G.Community={groupId:G.Community.groupId,shouldInviteAtEnd:()=>true};
  const r={dead:true,time:45,level:1,kills:2,bosses:0,coins:0,moves:[],breakdown:''};let calls=0;G.RunUI.showOver(r,()=>calls++);
  assert.equal(shown,'scr-over');assert.equal(nodes.get('over-fish-title').textContent,'大肥鱼の碎碎念');assert.match(nodes.get('over-fish-text').textContent,/[\u4e00-\u9fff]/);const first=nodes.get('over-fish').dataset.quip;
+ assert.equal(nodes.get('over-fish-group').hidden,false);assert.equal(nodes.get('over-fish-group').textContent,'游戏交流群 · 1130271119');
  G.RunUI.showOver(r,()=>calls++);assert.notEqual(nodes.get('over-fish').dataset.quip,first);assert.ok(!nodes.get('over-stats').innerHTML.includes('support-ask'));nodes.get('btn-again').onclick();assert.equal(calls,1);
+ G.Community={groupId:G.Community.groupId,shouldInviteAtEnd:()=>false};G.RunUI.showOver(r,()=>{});assert.equal(nodes.get('over-fish-group').hidden,true);
  G.FishQuips.pick=()=>({id:'escaped',text:'<img src=x onerror=alert(1)>'});G.RunUI.showOver(r,()=>{});assert.equal(nodes.get('over-fish-text').textContent,'<img src=x onerror=alert(1)>');assert.equal(nodes.get('over-fish-text').innerHTML,'');
  const html=fs.readFileSync(path.join(__dirname,'../dev.html'),'utf8');assert.ok(html.indexOf('id="over-fish"')<html.indexOf('id="over-stats"'));assert.match(html,/<aside id="over-fish"[^>]*translate="no"/);
 });

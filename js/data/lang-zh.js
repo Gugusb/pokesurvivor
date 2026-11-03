@@ -1,6 +1,10 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Grupo de juego": "游戏交流群",
+  "Quien cocina dejó el número en la mesa, al lado de la tetera. Ya veréis dónde lo pongo cuando suene el timbre.": "做饭的那家伙把群号放在茶壶旁边了。等门铃一响，咱们就知道我把它摆到哪儿啦。",
+  "Un lugar para encontrarnos · v0.35.2": "有空来群里坐坐 · v0.35.2",
+  "El número del grupo del juego ahora aparece en la página de apoyo, el menú y, a veces, al terminar una partida.": "支持页和游戏主菜单现已显示交流群号；战斗结束时，也有机会随大肥鱼的碎碎念一同出现。",
   "Conoce a Dafeiyu": "去看看大肥鱼的档案",
   "Entre burbujas · Dafeiyu": "大肥鱼の碎碎念",
   "El compañero puede volver a moverse con calma. Yo también, cuando quite la cola de encima de la manta.": "伙伴收招后能从容迈步了。咱们也慢慢来，我先把压住毯子的尾巴挪开。",

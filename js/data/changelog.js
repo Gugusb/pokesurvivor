@@ -2,6 +2,23 @@
 G.CHANGELOG_TEAM = ["Esta edición reúne las ideas de Gugusb y el trabajo de Dafeiyu, nuestra ayudante chica ballena del taller. Conservamos la obra de JPTER78 y los créditos de sus creadores.","This edition combines Gugusb’s designs with the work of Dafeiyu, our whale-girl helper in the workshop. JPTER78’s original work and the creators’ credits remain."];
 G.CHANGELOG = [
   {
+    "d": "2026-11-03",
+    "title": [
+      "Un lugar para encontrarnos · v0.35.2",
+      "A place to find each other · v0.35.2"
+    ],
+    "chg": [
+      [
+        "El número del grupo del juego ahora aparece en la página de apoyo, el menú y, a veces, al terminar una partida.",
+        "The game group number now appears on the support page and main menu, and occasionally at the end of a run."
+      ]
+    ],
+    "note": [
+      "Quien cocina dejó el número en la mesa, al lado de la tetera. Ya veréis dónde lo pongo cuando suene el timbre.",
+      "The one who cooks left the number beside the kettle. We will see where I put it when the doorbell rings."
+    ]
+  },
+  {
     "d": "2026-11-02",
     "profile": "6cce93db-6b8e-5356-a362-af66f4dc4e08",
     "title": [

@@ -43,6 +43,7 @@ G.SupportUI = (() => {
         <a class="btn" href="https://github.com/Gugusb/pokesurvivor" target="_blank" rel="noopener noreferrer">${G.T('Ver el repositorio')}</a>
         <span class="support-repo" translate="no">Gugusb / pokesurvivor</span>
       </section>`;
+    $('sup-body').insertAdjacentHTML('beforeend', `<section class="support-community"><span class="support-section-label">${G.T('Grupo de juego')}</span><strong translate="no">${G.Community.groupId}</strong></section>`);
     $('scr-support').classList.remove('hidden');
   }
   function close() { $('scr-support').classList.add('hidden'); }
@@ -51,7 +52,8 @@ G.SupportUI = (() => {
     'Proyecto original': 'Original project',
     'Desarrollo de esta versión': 'Development of this version',
     'Código y novedades de esta versión ampliada en GitHub.': 'Source code and updates for this expanded version on GitHub.',
-    'Ver el repositorio': 'View repository'
+    'Ver el repositorio': 'View repository',
+    'Grupo de juego': 'Game community'
   });
   return { init, open, close };
 })();

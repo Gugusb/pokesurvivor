@@ -72,6 +72,7 @@ G.MenuUI = (() => {
 
     const owned = Object.keys(s.owned).filter(d => G.DEX_BY[d]).length;
     const shinies = Object.keys(s.shiny || {}).length;
+    $('menu-community-number').textContent = G.Community.groupId;
     $('menu-dex-count').textContent = `${owned} / ${G.DEX.length}` + (shinies ? ` · ${shinies} shiny` : '');
 
     const st = s.stats;

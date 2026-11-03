@@ -10,6 +10,7 @@ import json, os, re, datetime, html
 ROOT = os.path.join(os.path.dirname(__file__), '..')
 SITE = 'https://pokesurvivor.com/'
 TODAY = datetime.date.today().isoformat()
+COMMUNITY_GROUP_ID = '1130271119'
 D = json.load(open(os.path.join(ROOT, 'tools', 'cache', 'gamedata.json'), encoding='utf-8'))
 DEX = D['dex']; BY = {p['dex']: p for p in DEX}
 META = {}
@@ -536,6 +537,7 @@ puedes hacer una <b>donación voluntaria</b>. <b>Todo el dinero se usa para los 
 <section class="support-fork"><h2>Desarrollo de esta versión</h2><h3>Gugusb</h3>
 <p>Código y novedades de esta versión ampliada en GitHub.</p>
 <p><a href="https://github.com/Gugusb/pokesurvivor">Gugusb / pokesurvivor</a></p></section>
+<section class="support-community"><span>Grupo de juego</span><strong>{COMMUNITY_GROUP_ID}</strong></section>
 {cta(pid, lang, 'Volver al juego')}</article>"""
         title, desc = 'Apoyar PokéSurvivor: donaciones para los servidores', 'PokéSurvivor es gratis y sin anuncios. Las donaciones voluntarias se usan sólo para los servidores y el dominio.'
     else:
@@ -556,6 +558,7 @@ you can make a <b>voluntary donation</b>. <b>All the money goes to the servers a
 <section class="support-fork"><h2>Development of this version</h2><h3>Gugusb</h3>
 <p>Source code and updates for this expanded version on GitHub.</p>
 <p><a href="https://github.com/Gugusb/pokesurvivor">Gugusb / pokesurvivor</a></p></section>
+<section class="support-community"><span>Game community</span><strong>{COMMUNITY_GROUP_ID}</strong></section>
 {cta(pid, lang, 'Back to the game')}</article>"""
         title, desc = 'Support PokéSurvivor: donations for the servers', 'PokéSurvivor is free and ad-free. Voluntary donations only pay for the servers and the domain.'
     write(pid, lang, page(pid, lang, title, desc, body, {'@context': 'https://schema.org', '@graph': [crumbs(pid, lang, h1)]}))

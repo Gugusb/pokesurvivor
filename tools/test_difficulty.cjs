@@ -7,7 +7,7 @@ function context() {
     localStorage: {getItem:k=>store.get(k)||null,setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)},
     document: {documentElement:{},addEventListener:noop}, CanvasRenderingContext2D: function(){} };
   s.window=s;s.G={};vm.createContext(s);s.load=f=>vm.runInContext(fs.readFileSync(path.join(ROOT,f),'utf8'),s,{filename:f});
-  for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/fish-quips.js','js/data/pokedex.js','js/systems/difficulty.js'])s.load(f);
+  for(const f of ['js/core/util.js','js/core/i18n.js','js/data/lang-en.js','js/data/lang-zh.js','js/data/fish-quips.js','js/data/community.js','js/data/pokedex.js','js/systems/difficulty.js'])s.load(f);
   const G=s.G;G.BackpackUI={isOpen:()=>false,tick:noop};G.FIREBASE_CONFIG=null;
   vm.runInContext(fs.readFileSync(path.join(ROOT,'js/core/db.js'),'utf8').replace('ready, register, login,','_test:{newSave,migrate,sanitize}, ready, register, login,'),s);G.DB.playAsGuest();
   G.Sprites={PX:2,animMeta:()=>null,bodyRadius:()=>10,bodyHeight:()=>20,hovers:()=>false,Animator:class {play(){}},preload:noop};

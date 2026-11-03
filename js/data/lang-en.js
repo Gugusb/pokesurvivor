@@ -649,7 +649,7 @@ G.I18n.add({
   'Fan game gratuito de supervivencia con 966 Pokémon de las 9 regiones: elige tu compañero, sobrevive a las hordas, evoluciona tus ataques, enfréntate a legendarios y juega en cooperativo con hasta 4 amigos.': 'A free survival fan game with 966 Pokémon from all 9 regions: choose your partner, survive the hordes, evolve your moves, take on legendaries and play co-op with up to 4 friends.',
   'Guía del juego': 'Game guide',
   // donaciones
-  'Apoyar': 'Support', 'Apoyar el proyecto': 'Support the project', 'Donar en Ko-fi': 'Donate on Ko-fi', 'Más información': 'More info',
+  'Apoyar': 'Support', 'Apoyar el proyecto': 'Support the project', 'Donar en Ko-fi': 'Donate on Ko-fi', 'Más información': 'More info', 'Grupo de juego': 'Game community',
   'PokéSurvivor es y será': 'PokéSurvivor is and will stay', 'gratis': 'free',
   ', sin anuncios ni compras. Si quieres ayudar a que siga en línea, puedes hacer una': ', with no ads or purchases. If you\'d like to help keep it online, you can make a',
   'donación voluntaria': 'voluntary donation', ': todo el dinero se usa para los': ': all the money goes to the', 'servidores y el dominio': 'servers and the domain', ', nada más.': ', nothing else.',

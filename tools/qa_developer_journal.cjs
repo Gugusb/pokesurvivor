@@ -1,11 +1,12 @@
 /* Edition notes and developer profile in an isolated database, never player data. */
-const assert=require('node:assert/strict'),path=require('node:path'),{once}=require('node:events'),{randomBytes,randomUUID}=require('node:crypto');
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path'),{once}=require('node:events'),{randomBytes,randomUUID}=require('node:crypto');
 const {createApp,hashPassword}=require('../server/server.cjs'),{fresh}=require('../server/domain.cjs');
 const {seedDeveloperCharacter}=require('../server/seed-developer-character.cjs');
 const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cache/browser-qa/node_modules/playwright'));
 (async()=>{
  const app=createApp({dbFile:':memory:',stunUrls:'none'}),errors=[],results=[];let browser;
  try{
+  for(const page of ['../apoyar/index.html','../en/support/index.html'])assert.ok(fs.readFileSync(path.join(__dirname,page),'utf8').includes('1130271119'));
   const character=await seedDeveloperCharacter(app.db),uid=randomUUID(),name='JournalWebViewer',pass=randomBytes(24).toString('hex'),save=fresh(name);save.partner=6;save.owned[6]={at:1,iv:Array(8).fill(20)};
   app.db.prepare('INSERT INTO users(uid,name,lower,pass,recovery,created) VALUES(?,?,?,?,?,?)').run(uid,name,name.toLowerCase(),await hashPassword(pass),'unused',Date.now());app.db.prepare('INSERT INTO saves(uid,payload) VALUES(?,?)').run(uid,JSON.stringify(save));
   app.server.listen(0,'127.0.0.1');await once(app.server,'listening');const base='http://127.0.0.1:'+app.server.address().port;
@@ -14,16 +15,16 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
    const context=await browser.newContext({viewport:{width:1280,height:960},locale:lang==='zh'?'zh-CN':lang});await context.addInitScript(l=>localStorage.setItem('ps.lang',l),lang);
    const p=await context.newPage();p.on('pageerror',e=>errors.push(e.message));await p.goto(base+(built?'/':'/dev.html'));
    await p.waitForFunction(()=>!document.getElementById('tap-start').classList.contains('hidden')||!document.getElementById('scr-login').classList.contains('hidden'));if(await p.locator('#tap-start').isVisible())await p.locator('#tap-start').click();
-   await p.locator('#f-user').fill(name);await p.locator('#f-pass').fill(pass);await p.locator('#btn-auth').click();await p.locator('#scr-menu:not(.hidden)').waitFor();await p.locator('#btn-news').click();await p.locator('#scr-news:not(.hidden)').waitFor();
-   assert.equal(await p.locator('.news-day').count(),48);assert.equal(await p.locator('.news-note').count(),41);assert.equal(await p.locator('.news-day').filter({has:p.locator('.news-note')}).count(),41);
+   await p.locator('#f-user').fill(name);await p.locator('#f-pass').fill(pass);await p.locator('#btn-auth').click();await p.locator('#scr-menu:not(.hidden)').waitFor();assert.equal(await p.locator('#menu-community-number').textContent(),'1130271119');const groupRect=await p.locator('.menu-community').boundingBox();assert.ok(groupRect.x<320&&groupRect.y<960);await p.locator('#btn-support').click();await p.locator('#scr-support:not(.hidden)').waitFor();assert.ok((await p.locator('#scr-support').textContent()).includes('1130271119'));await p.locator('#sup-close').click();await p.locator('#btn-news').click();await p.locator('#scr-news:not(.hidden)').waitFor();
+   assert.equal(await p.locator('.news-day').count(),49);assert.equal(await p.locator('.news-note').count(),42);assert.equal(await p.locator('.news-day').filter({has:p.locator('.news-note')}).count(),42);
    const team=await p.locator('.news-team').textContent();assert.ok(team.includes('Gugusb'));assert.ok(team.includes('JPTER78'));assert.doesNotMatch(team,/agent|DeepSeek|persisten|记忆持久化/i);
-   const first=p.locator('.news-day').first(),last=p.locator('.news-day').last();assert.ok((await first.textContent()).includes('v0.35.1'));assert.equal(await last.locator('.news-note').count(),0);
+   const first=p.locator('.news-day').first(),last=p.locator('.news-day').last();assert.ok((await first.textContent()).includes('v0.35.2'));assert.equal(await last.locator('.news-note').count(),0);
    if(lang==='zh'){assert.ok(team.includes('鲸鱼娘'));assert.ok((await first.textContent()).includes('做饭的那家伙'));for(const text of await p.locator('.news-note span').allTextContents()){assert.ok(/[\u4e00-\u9fff]/.test(text));assert.doesNotMatch(text,/你|您|用户|Gugusb|agent/i);}for(const title of await p.locator('.news-note b').allTextContents())assert.equal(title,'大肥鱼の碎碎念');}
    else assert.ok(!(await first.locator('.news-note').textContent()).includes('白饭'));
    assert.equal(await first.evaluate(el=>el.lastElementChild.classList.contains('news-note')),true);
    await p.screenshot({path:path.join(__dirname,`cache/journal-${built?'built':'source'}-${lang}.png`),animations:'disabled'});
    await p.setViewportSize({width:320,height:740});assert.ok(await p.locator('.news-box').evaluate(el=>el.scrollWidth<=el.clientWidth+1));await p.screenshot({path:path.join(__dirname,`cache/journal-${built?'built':'source'}-${lang}-mobile.png`),animations:'disabled'});
-   await first.locator('[data-news-profile]').click();await p.waitForFunction(()=>document.querySelector('#prof-body h2')?.textContent==='大肥鱼');assert.ok(await p.locator('.prof-preset').isVisible());
+   await p.locator('.news-day [data-news-profile]').first().click();await p.waitForFunction(()=>document.querySelector('#prof-body h2')?.textContent==='大肥鱼');assert.ok(await p.locator('.prof-preset').isVisible());
    assert.equal(await p.locator('.prof-partner').count(),3);assert.equal(await p.locator('.prof-victory').count(),12);const marks=(await p.locator('.prof-marks').textContent()).replace(/[.,\s\u00a0\u202f]/g,'');assert.ok(marks.includes('251250'));assert.ok(marks.includes('183240'));const bio=await p.locator('.prof-bio').textContent();assert.ok(bio.includes(lang==='zh'?'鲸鱼娘':lang==='en'?'whale-girl':'chica ballena'));assert.doesNotMatch(bio,/agent|DeepSeek|persisten|记忆持久化/i);
    await p.waitForFunction(()=>[...document.querySelectorAll('.prof-partner canvas')].every(c=>c.getContext('2d').getImageData(0,0,c.width,c.height).data.some((v,i)=>i%4===3&&v>0)));
    assert.ok(await p.locator('.profile-box').evaluate(el=>el.scrollWidth<=el.clientWidth+1));await p.screenshot({path:path.join(__dirname,`cache/developer-profile-${built?'built':'source'}-${lang}-mobile.png`),animations:'disabled'});
@@ -31,7 +32,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
    const scores=await p.evaluate(async id=>{const out=[];for(const board of ['completion','survival']){const r=await fetch('/api/ranking?board='+board),v=await r.json();out.push(v.rows.some(x=>x.uid===id));}return out;},character.uid);assert.deepEqual(scores,[false,false]);
    await p.locator('#prof-close').click();await p.locator('[data-go="play"]').click();await p.locator('#scr-menu').waitFor({state:'hidden'});await p.waitForTimeout(700);await p.keyboard.press('Escape');await p.locator('#scr-pause:not(.hidden)').waitFor();await p.locator('#btn-quit').click();await p.locator('#scr-over:not(.hidden)').waitFor();
    assert.ok(await p.locator('#over-fish').isVisible());assert.match(await p.locator('#over-fish').getAttribute('data-quip'),/^departure-/);assert.equal(await p.locator('#over-fish-title').textContent(),lang==='zh'?'大肥鱼の碎碎念':lang==='en'?'Dafeiyu’s little musings':'Las pequeñas charlas de Dafeiyu');assert.ok((await p.locator('#over-fish-text').textContent()).length>15);
-   await p.locator('.toast').waitFor({state:'hidden'});await p.locator('#ach-pop').waitFor({state:'hidden'});await p.setViewportSize({width:320,height:740});assert.ok(await p.locator('#over-fish').evaluate(el=>el.scrollWidth<=el.clientWidth+1));assert.ok(await p.locator('#scr-over .box').evaluate(el=>el.scrollWidth<=el.clientWidth+1));await p.screenshot({path:path.join(__dirname,`cache/fish-result-${built?'built':'source'}-${lang}-mobile.png`),animations:'disabled'});
+   await p.locator('.toast').waitFor({state:'hidden'});await p.locator('#ach-pop').waitFor({state:'hidden'});const invite=p.locator('#over-fish-group');if(await invite.isVisible())assert.equal((await invite.textContent()).split(/\s+/).pop(),'1130271119');await p.setViewportSize({width:320,height:740});assert.ok(await p.locator('#over-fish').evaluate(el=>el.scrollWidth<=el.clientWidth+1));assert.ok(await p.locator('#scr-over .box').evaluate(el=>el.scrollWidth<=el.clientWidth+1));await p.screenshot({path:path.join(__dirname,`cache/fish-result-${built?'built':'source'}-${lang}-mobile.png`),animations:'disabled'});
    let contexts=1;
    if(!built){
     const checked=await p.evaluate(()=>{

@@ -32,6 +32,8 @@ main { padding: 24px 16px 40px; }
 .doc .support-fork h2 { margin-top: 0; font-size: 22px; color: #cce3ff; }
 .doc .support-fork h3 { margin-top: 8px; font-size: 28px; }
 .doc .support-fork a { overflow-wrap: anywhere; }
+.doc .support-community { display:grid; gap:4px; margin-top:16px; padding:12px 16px; border-left:4px solid #75cadb; border-radius:8px; background:#10304170; }
+.doc .support-community strong { color:#d7f6ff; font-size:22px; font-variant-numeric:tabular-nums; }
 .lead { font-size: 19px; color: #e6eeff; }
 .doc li { margin: 6px 0; }
 .doc ul.feat li::marker { color: var(--gold); }

@@ -312,7 +312,7 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
 /* ---------- menú principal ---------- */
 #scr-menu { justify-content: space-between; align-items: stretch; padding: 0; }
 .menu-left {
-  flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
+  position: relative; flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center;
   padding: 30px; min-width: 0;
 }
 .menu-left .logo .t1 { font-size: clamp(36px, 6vw, 64px); }
@@ -325,6 +325,9 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
 .partner-card { text-align: center; margin-top: 10px; }
 .partner-card .nm { font-size: 24px; font-weight: 700; text-shadow: 3px 3px 0 var(--shadow); }
 .partner-card .lv { color: var(--muted); font-size: 14px; text-shadow: 2px 2px 0 var(--shadow); }
+.menu-community { position: absolute; left: 16px; bottom: 12px; display: grid; gap: 3px; color: #b4ddec; text-align: left; }
+.menu-community span { font-size: 12px; }
+.menu-community b { color: #e6f8ff; font-size: 18px; font-variant-numeric: tabular-nums; }
 .menu-right {
   width: min(380px, 100%); display: flex; flex-direction: column;
   /* Arriba deja sitio a la barra superior; si no cabe todo, se desplaza
@@ -492,6 +495,7 @@ label { display: block; font-size: 14px; color: var(--muted); margin: 8px 0 4px;
 .over-fish > div { min-width:0; }
 .over-fish h3 { margin:0 0 7px; color:#b7f1f6; font-size:15px; letter-spacing:.03em; }
 .over-fish p { margin:0; color:#e4f3fb; font-size:14px; line-height:1.75; overflow-wrap:anywhere; }
+.over-fish .over-fish-group { margin-top:8px; padding-top:7px; border-top:1px solid #8fd7ee55; color:#ffe49c; font-size:13px; font-weight:700; }
 .over-fish-mark { flex:0 0 32px; height:32px; border:1px solid #8fd7ee88; border-radius:50% 50% 42% 50%; background:#286480; color:#d0f5ff; font-size:23px; text-align:center; line-height:30px; transform:rotate(-12deg); }
 
 kbd {
@@ -513,6 +517,7 @@ kbd {
 @media (max-width: 760px) and (min-height: 521px) {
   #scr-menu { flex-direction: column; overflow-y: auto; }
   .menu-left { padding-top: 120px; }
+  .menu-community { position: static; align-self: flex-start; margin: 12px 0 0; }
   .menu-right { width: 100%; background: rgba(5,10,25,.7); }
   .split { grid-template-columns: 1fr; }
   .logo .t1 { font-size: 34px; }
@@ -974,6 +979,8 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 .support-fork p { margin: 6px 0 12px; line-height: 1.6; color: #c8d8ef; font-size: 14px; }
 .support-fork .btn { display: inline-flex; text-decoration: none; }
 .support-repo { display: block; margin-top: 9px; color: #a1b8d8; font: 11px/1.5 monospace; overflow-wrap: anywhere; }
+.support-community { display:grid; gap:5px; margin-top:14px; padding:12px 14px; border-left:3px solid #8bd6e7; border-radius:7px; background:#102940; }
+.support-community strong { color:#e7f8ff; font-size:21px; font-variant-numeric:tabular-nums; }
 /* Mejoras: botones y veto */
 .upg-btns { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .upg-btns [data-max] { display: inline-flex; gap: 6px; align-items: center; justify-content: center; }

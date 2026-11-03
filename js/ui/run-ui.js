@@ -142,6 +142,9 @@ G.RunUI = (() => {
     $('over-fish').dataset.quip=quip.id;
     $('over-fish-title').textContent=G.I18n.lang==='en'?'Dafeiyu’s little musings':G.T('Las pequeñas charlas de Dafeiyu');
     $('over-fish-text').textContent=quip.text;
+    const groupInvite=$('over-fish-group');
+    groupInvite.textContent=G.T('Grupo de juego')+' · '+G.Community.groupId;
+    groupInvite.hidden=!G.Community.shouldInviteAtEnd();
     $('over-title').textContent = r.victory ? 'Dificultad superada' : r.completed ? G.T('Objetivo de supervivencia cumplido') : r.dead ? 'Has caído…' : 'Run terminada';
     $('over-stats').innerHTML = `
       ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : r.completed ? G.T('Objetivo cumplido, sin registrar') : G.T('Sin superar')}</b></div>` : ''}
