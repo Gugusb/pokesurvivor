@@ -1,6 +1,9 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Versión pública sin depuración · v0.35.3": "正式版移除开发者模式 · v0.35.3",
+  "La versión pública ya no incluye el modo de desarrollador ni su acceso en Ajustes.": "正式版本已移除开发者模式及其设置入口。",
+  "He guardado las herramientas en el taller. Podemos salir con los compañeros; quien cocina ya tiene el mapa.": "工具已经收回开发室啦。咱们带上伙伴出发，路线图在做饭的那家伙手里呢。",
   "Grupo de juego": "游戏交流群",
   "Quien cocina dejó el número en la mesa, al lado de la tetera. Ya veréis dónde lo pongo cuando suene el timbre.": "做饭的那家伙把群号放在茶壶旁边了。等门铃一响，咱们就知道我把它摆到哪儿啦。",
   "Un lugar para encontrarnos · v0.35.2": "有空来群里坐坐 · v0.35.2",

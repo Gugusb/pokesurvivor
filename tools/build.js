@@ -18,7 +18,8 @@ const dev = fs.readFileSync(DEV, 'utf8');
 const i = dev.indexOf(BEGIN), j = dev.indexOf(END);
 if (i < 0 || j < 0) throw new Error('dev.html no tiene las marcas ' + BEGIN + ' / ' + END);
 const block = dev.slice(i, j + END.length);
-const files = [...block.matchAll(/<script[^>]*src="(js\/[^"]+\.js)"/g)].map(m => m[1]);
+// Published builds never contain the developer module, including --expose QA builds.
+const files = [...block.matchAll(/<script[^>]*src="(js\/[^"]+\.js)"/g)].map(m => m[1]).filter(f => f !== 'js/ui/developer.js');
 
 // Une los archivos en orden; cada uno separado por ';' por si alguno no acaba en punto y coma.
 let joined = files.map(f => `/* ${f} */\n` + fs.readFileSync(path.join(ROOT, f), 'utf8')).join('\n;\n');
@@ -57,6 +58,7 @@ const hash = crypto.createHash('sha1').update(min).update(fs.readFileSync(path.j
 let html = dev.slice(0, i) + `<script defer src="js/app.min.js?v=${hash}"></script>` + dev.slice(j + END.length);
 html = html.replace(/href="css\/style\.css(?:\?[^"]*)?"/, `href="css/style.css?v=${hash}"`);
 html = html.replace(/<meta name="robots" content="noindex">\s*/, '');
+html = html.replace(/[ \t]*<button\b[^>]*data-t="dev"[^>]*>[\s\S]*?<\/button>\r?\n?/g, '');
 // --sin-seo: sin canonical/redes/datos estructurados ni enlaces a las páginas
 // (para publicar antes de tener el dominio pokesurvivor.com).
 const SIN_SEO = process.argv.includes('--sin-seo');

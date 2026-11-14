@@ -985,6 +985,10 @@ function createApp(opts = {}) {
       if (name.endsWith("/")) name += "index.html";
       const file = path.resolve(ROOT, "." + name),
         rel = path.relative(ROOT, file);
+      // Match the resolved path so encoded and redundant separators cannot bypass it.
+      if ((origin || process.env.NODE_ENV === 'production') &&
+          ['dev.html', 'js/ui/developer.js'].includes(rel.replace(/\\/g, '/').toLowerCase()))
+        throw fail(404, "Not found");
       if (
         rel.startsWith("..") ||
         path.isAbsolute(rel) ||

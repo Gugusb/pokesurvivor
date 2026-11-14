@@ -5,7 +5,7 @@
   const NEED = ['U', 'I18n', 'Settings', 'DB', 'Audio', 'Input', 'Touch', 'Sprites', 'Camera', 'Moves', 'Enemies', 'Upgrades', 'Items',
                 'World', 'FX', 'Projectiles', 'EnemyMgr', 'Pickups', 'Player', 'Combat', 'Spawner', 'LevelUp', 'Gacha',
                 'Rift', 'Weather', 'Progress', 'Hazards', 'Social', 'Net', 'Coop', 'Ranking', 'Icons', 'UI', 'HUD',
-                'MenuUI', 'RunUI', 'SettingsUI', 'Funding', 'SupportUI', 'Game', 'Flow', 'AbilityDefs', 'Abilities', 'AbilityGacha', 'Dev',
+                'MenuUI', 'RunUI', 'SettingsUI', 'Funding', 'SupportUI', 'Game', 'Flow', 'AbilityDefs', 'Abilities', 'AbilityGacha',
                 'Difficulty', 'DifficultyUI', 'FailureProtection', 'Offline', 'OfflineUI','ZAccess','NurseryRules','NurseryUI','FishQuips','Community'];
   function broken() {
     // (En la versión publicada G no está en window: va encerrado, ver tools/build.js.)

@@ -1,6 +1,7 @@
 /* Player-facing journal. Keep technical release notes in docs/DEVELOPMENT.md. */
 G.CHANGELOG_TEAM = ["Esta edición reúne las ideas de Gugusb y el trabajo de Dafeiyu, nuestra ayudante chica ballena del taller. Conservamos la obra de JPTER78 y los créditos de sus creadores.","This edition combines Gugusb’s designs with the work of Dafeiyu, our whale-girl helper in the workshop. JPTER78’s original work and the creators’ credits remain."];
 G.CHANGELOG = [
+  {d:'2026-11-14',title:['Versión pública sin depuración · v0.35.3','Public release without developer mode · v0.35.3'],chg:[['La versión pública ya no incluye el modo de desarrollador ni su acceso en Ajustes.','The public release no longer includes developer mode or its Settings entry.']],note:['He guardado las herramientas en el taller. Podemos salir con los compañeros; quien cocina ya tiene el mapa.','I have put the tools away in the workshop. We can head out with our partners; the one who cooks has the map.']},
   {
     "d": "2026-11-03",
     "title": [
