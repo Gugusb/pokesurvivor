@@ -821,3 +821,5 @@ G.I18n.add({
 G.I18n.add({"Listo": "Ready", "Multiplicador del movimiento": "Move power", "Efecto por acumulación": "Effect per stack", "Cerrar · E": "Close · E", "WASD moverse · 1-4 / Q / Tab o clic en un ataque para cambiarlo · E mochila · Esc pausa": "WASD move · 1–4 / Q / Tab or click to switch · E bag · Esc pause"});
 
 G.I18n.add({"Obtener MT de Especialización": "Get Mastery TM", "Maximizar movimientos activos": "Max active moves"});
+
+G.I18n.add({"Paquetes de cartas": "Card Packs", "Cartas para toda tu colección": "Cards for your whole collection"});

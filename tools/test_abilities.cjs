@@ -210,18 +210,8 @@ test('legacy upgrades merge across branching families and survive save and cloud
   assert.equal(legacy.pupg[280].hp, 4); assert.equal(legacy.pupg[280].atk, 3);
 });
 
-test('max upgrade spends the exact remaining cost once and rejects insufficient coins', () => {
-  const { G } = context(), save = G.DB.save;
-  const levels = G.DB.upgradesOf(4); levels.atk = 3;
-  const price = G.Upgrades.costToMax('atk', 3);
-  save.coins = price - 1;
-  assert.equal(G.Upgrades.buy(6, 'atk', true), false); assert.equal(levels.atk, 3); assert.equal(save.coins, price - 1);
-  save.coins = price + 17;
-  assert.ok(G.Upgrades.buy(5, 'atk', true)); assert.equal(levels.atk, 10); assert.equal(save.coins, 17);
-  assert.equal(G.Upgrades.buy(6, 'atk', true), false); assert.equal(save.coins, 17);
-  assert.equal(G.Upgrades.costToMax('atk', 10), 0);
-  save.coins = G.Upgrades.cost('hp', 0);
-  assert.ok(G.Upgrades.buy(6, 'hp')); assert.equal(G.DB.upgradesOf(4).hp, 1); assert.equal(save.coins, 0);
+test('legacy direct upgrade purchasing is disabled without spending currency',()=>{
+ const {G}=context(),before=G.DB.save.coins;assert.equal(G.Upgrades.buy(4,'hp'),false);assert.equal(G.Upgrades.buy(4,'atk',true),false);assert.equal(G.DB.save.coins,before);
 });
 
 test('Sinnoh stays complete and newly designed Unova medals replace only configured species without changing odds', () => {

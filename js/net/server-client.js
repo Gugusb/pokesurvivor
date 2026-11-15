@@ -355,6 +355,16 @@ G.Server = (() => {
       return r;
     });
   }
+  async function packAction(data){
+    await flush();return enqueue(async()=>{
+      if(dirty){const before=copy(G.DB.save),r=await api('/save',{rev,save:before});dirty=JSON.stringify(G.DB.save)!==JSON.stringify(before);accept(r);}
+      const before=copy(baseline),r=await api('/packs/action',{...data,rev}),s=G.DB.save;
+      s.coins+=r.save.coins-before.coins;s.abilityGems+=r.save.abilityGems-before.abilityGems;
+      for(const k of ['t1','t10'])s.tickets[k]+=r.save.tickets[k]-before.tickets[k];
+      s.cardPack=copy(r.save.cardPack);s.pupg={};s.upgrades={};accept(r);remember();return r;
+    });
+  }
+
   function snapshot(clean = true) {
     const p = G.Game?.player;
     return {
@@ -519,7 +529,7 @@ G.Server = (() => {
     restore,
     authenticate,
     commit,
-    flush,
+    flush,packAction,
     settleOffline,
     socialAction,
     claimBonus,
@@ -695,6 +705,7 @@ G.Social = (() => {
     profileData() {
       const s = G.DB.save;
       return {
+        cardTheme:G.CardPacks?.normalize(s).theme,
         name: G.DB.user,
         favs: s.profile?.favs || [],
         title: s.profile?.title || "",

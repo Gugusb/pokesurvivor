@@ -256,6 +256,7 @@
       const b = d.best || {};
       const body = $('prof-body');
       const character=d.character?.preset?d.character:null;
+      const theme=G.CardPacks?.themes.find(t=>t.id===d.cardTheme);body.classList.toggle('profile-themed',!!theme);body.style.setProperty('--card-accent',theme?.color||'#ffd23f');
       body.style.setProperty('--prof-accent',/^#[0-9a-f]{6}$/i.test(character?.color||'')?character.color:'#ffd23f');
       const number=v=>Math.max(0,Math.floor(Number(v)||0)).toLocaleString(G.I18n.lang==='zh'?'zh-CN':G.I18n.lang==='en'?'en':'es');
       const completed=(d.completedDex||[]).filter(dex=>G.DEX_BY[dex]);
@@ -277,6 +278,7 @@
         <h3 class="prof-section-title">${T('Galería de victorias','Hall of victories','通关伙伴墙')} <small>${number(b.medals)}</small></h3>
         <div class="prof-victories" id="prof-victories"></div>
         <h3 class="prof-ach-title hidden" id="prof-ach-title">${T('Logros','Achievements','成就收藏')}</h3><div class="prof-medals" id="prof-medals"></div>`;
+      if(theme){const badge=document.createElement('span');badge.className='pack-theme-badge';badge.textContent='✦ '+G.CardPacks.local(theme.name);body.querySelector('.prof-hero').append(badge);}
       const favs = $('prof-favs');
       for (const f of (d.favs || []).slice(0, 3)) {
         if (!G.DEX_BY[f.dex]) continue;

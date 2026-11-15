@@ -185,7 +185,7 @@
           <div class="difficulty-picker"><label for="menu-difficulty">Dificultad</label><select id="menu-difficulty"></select><small id="difficulty-note"></small></div>
         </div>
         <button class="menu-item" data-go="dex">Pokémon<small id="menu-dex-count">Tu colección</small></button>
-        <button class="menu-item" data-go="upgrades">Mejoras<small>Haz más fuerte cada run</small></button>
+        <button class="menu-item" data-go="upgrades">Paquetes de cartas<small>Cartas para toda tu colección</small></button>
         <button class="menu-item" data-go="gacha">Gacha<small>9 regiones · Pokémon y shinies</small></button>
         <button class="menu-item" data-go="ability-gacha">Gacha de habilidades<small>Medallas de las regiones disponibles</small></button>
         <button class="menu-item" data-go="goals">Misiones<small id="menu-goals-sub">Misiones, logros y perfil</small></button>
@@ -462,22 +462,7 @@
 </section>
 
 <!-- ====== Mejoras ====== -->
-<section id="scr-upgrades" class="scr dim hidden">
-  <div class="box wide">
-    <div class="row between"><h2>Mejoras</h2><button class="btn small ghost" data-back>Volver</button></div>
-    <div class="upg-head">
-      <canvas id="upg-stage" class="stage" width="120" height="96"></canvas>
-      <div class="grow">
-        <p class="sub" style="margin:0">Cada familia evolutiva comparte sus mejoras permanentes.</p>
-        <div class="row" style="margin-top:8px">
-          <label for="upg-mon" style="margin:0">Pokémon</label>
-          <select id="upg-mon" class="field" style="width:auto;min-width:220px"></select>
-        </div>
-      </div>
-    </div>
-    <div class="upg" id="upg-list"></div>
-  </div>
-</section>
+<section id="scr-upgrades" class="scr dim hidden"><div class="box wide pack-house"><div class="row between"><h2>Paquetes de cartas</h2><button class="btn small ghost" data-back>Volver</button></div><div id="pack-body"></div></div></section>
 
 <!-- ====== Gacha ====== -->
 <section id="scr-gacha" class="scr dim hidden">
@@ -646,6 +631,8 @@
 <script defer src="js/data/enemies.js"></script>
 <script defer src="js/data/upgrades.js"></script>
 <script defer src="js/data/items.js"></script>
+<script defer src="js/data/starter-items.js"></script>
+<script defer src="js/systems/card-packs.js"></script>
 <script defer src="js/systems/boss-rewards.js"></script>
 <script defer src="js/systems/specialization.js"></script>
 <script defer src="js/systems/equipment.js"></script>
@@ -701,6 +688,7 @@
 <script defer src="js/ui/login.js"></script>
 <script defer src="js/ui/test.js"></script>
 <script defer src="js/ui/menu.js"></script>
+<script defer src="js/ui/card-packs-ui.js"></script>
 <script defer src="js/ui/slots.js"></script>
 <script defer src="js/ui/gacha-ui.js"></script>
 <script defer src="js/ui/run-ui.js"></script>

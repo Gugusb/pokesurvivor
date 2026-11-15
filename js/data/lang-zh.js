@@ -3996,3 +3996,7 @@ G.I18n.addChinese({
   "Las pequeñas charlas de Dafeiyu": "大肥鱼の碎碎念",
   "Dafeiyu’s little musings": "大肥鱼の碎碎念"
 });
+
+G.I18n.addChinese({"Paquetes de cartas": "游戏卡包", "Cartas para toda tu colección": "全员成长、道具解锁与名片装扮"});
+
+G.I18n.addChinese({"Un paquete para empezar · v0.36.0": "从初心开始 · v0.36.0", "El Paquete Principiante contiene cartas limitadas de entrenamiento para toda la colección, nuevos objetos y diseños de perfil. Abre tres cartas y elige una; las demás regresan al paquete.": "初心者包登场！有限卡池中装着全员成长卡、全新道具解锁和名片装扮。每次翻开三张，选中的收入行囊，其余放回卡包。", "Activa los objetos desbloqueados para encontrarlos en tus aventuras. Personaliza tu tarjeta con diez diseños.": "解锁的道具可以自由开关，加入之后的冒险奖励池。还有十款名片主题，给旅途留下自己的颜色。", "El entrenamiento anterior se retira y devuelve sus monedas. Cada apertura cuesta 800 monedas.": "旧强化系统已移除，花费的金币返还。每次开启卡包需要800金币。", "He ordenado las cartas en la mesa y pegado una banderita al paquete. Quien cocina dice que elijamos con calma; yo ya tengo un rincón para la tarjeta de brisa marina.": "我把卡牌在餐桌上排好了，还给初心者包贴了一面小旗。做饭的那家伙说，咱们慢慢选就好——海风款名片的那一角，我已经偷偷留出来啦。"});

@@ -125,6 +125,7 @@ function createApp(opts = {}) {
     const r = q("SELECT payload,rev FROM saves WHERE uid=?", uid);
     if (!r) return null;
     const s=JSON.parse(r.payload);
+    if(!s.cardPack){G.CardPacks.normalize(s);exec("UPDATE saves SET payload=?,rev=rev+1 WHERE uid=?",JSON.stringify(s),uid);r.rev++;}
     for (const entry of Object.values(s.owned || {})) if(entry) entry.iv=G.MonProgression.normalizeIV(entry.iv);
     return { save:s, rev:r.rev };
   };
@@ -591,6 +592,11 @@ function createApp(opts = {}) {
       });
       return json(res, 200, value);
     }
+    if(route==='/packs/action'){
+      const result=atomic(()=>{const old=saved(u.uid);if(b.rev!==old.rev)throw fail(409,'Save changed on another device. Reload before continuing.');const s=old.save;
+        try{switch(b.action){case 'draw':G.CardPacks.draw(s);break;case 'choose':G.CardPacks.choose(s,b.seq,b.index);break;case 'toggle':G.CardPacks.toggle(s,b.id);break;case 'theme':G.CardPacks.equip(s,b.id);break;default:throw Error('Invalid pack action');}}catch(e){throw fail(400,e.message);}
+        if(s.tickets.t1>1e7||s.abilityGems>1e8)throw fail(400,'Wallet limit reached');return save(u.uid,s);});return json(res,200,result);
+    }
     if (route === "/offline") {
       const value = atomic(() => {
         const { save: s } = saved(u.uid);
@@ -867,6 +873,7 @@ function createApp(opts = {}) {
         partner:s.partner||null,
         completedDex:completed.slice(0,12),
         favs: character ? character.team.filter(dex=>G.DEX_BY[dex]).map(dex=>({dex,shiny:false})) : (s.profile?.favs || []).filter(f=>G.DEX_BY[f?.dex]).slice(0, 3),
+        cardTheme: G.CardPacks.normalize(s).theme,
         title: String(s.profile?.title || "").slice(0, 40),
         best: {
           solo: s.stats.bestTime || 0,

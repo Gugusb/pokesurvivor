@@ -301,7 +301,7 @@ G.Player = class Player {
     // Con un ataque cuerpo a cuerpo activo se recibe un 25 % menos: hay que
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
-    const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1);
+    const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1)*(['environment','weather'].includes(source.kind)?Math.pow(.9,G.Items.count(this,'safetygoggles')):1);
     if (G.FailureProtection?.avoidLethal(this,d)) return false;
     const hpLost=Math.min(this.hp,d);
     this.hp -= d;
@@ -382,7 +382,7 @@ G.Player = class Player {
     if (!b) return;
     b.amount = amount;
     b.n = Math.min(maxStacks, b.n + 1);
-    b.t = G.Abilities.buffDuration(this, dur);
+    b.t = G.Abilities.buffDuration(this, dur)*(1+.1*G.Items.count(this,'lightclay'));
   }
 
   // ---------------- ciclo ----------------

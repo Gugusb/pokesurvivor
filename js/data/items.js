@@ -24,6 +24,7 @@ G.Items = (() => {
   const icon=id=>BY[id]?.icon||id;
   function gain(p,id){
     if(!p||!BY[id])return false;
+    if(BY[id].unlock&&!p.remote&&G.CardPacks&&!G.CardPacks.enabled(G.DB.save,id))return false;
     p.specialItems ||= {};
     if(id==='masterytm')p.specTokens=(p.specTokens||0)+1;
     else if(id==='linker')p.bonds=(p.bonds||0)+1;
@@ -31,12 +32,13 @@ G.Items = (() => {
     return true;
   }
   function remove(p,id){if(!count(p,id))return false;if(--p.specialItems[id]===0)delete p.specialItems[id];return true;}
-  function roll(){return G.U.pick(LIST.filter(i=>!i.boss)).id;}
+  const permitted=i=>!i.unlock||!!G.DB?.save&&G.CardPacks?.enabled(G.DB.save,i.id);
+  function roll(){return G.U.pick(LIST.filter(i=>!i.boss&&permitted(i))).id;}
   function rewardChoices(rng=Math.random,rift=true,bonus=0){
     const out=[];
     for(let i=0;i<3;i++){
       const boss=rng()<Math.min(1,(rift?.5:.2)*(1+Math.max(0,Math.min(.8,Number(bonus)||0))));
-      const available=LIST.filter(it=>!it.boss||rift||['linker','masterytm'].includes(it.id));
+      const available=LIST.filter(it=>permitted(it)&&(!it.boss||rift||['linker','masterytm'].includes(it.id)));
       let pool=available.filter(it=>!!it.boss===boss&&!out.includes(it.id));
       if(!pool.length)pool=available.filter(it=>!out.includes(it.id));
       out.push(pool[Math.min(pool.length-1,Math.floor(rng()*pool.length))].id);
@@ -44,7 +46,7 @@ G.Items = (() => {
     return out;
   }
   const damageBonus=p=>.06*count(p,'lifeorb');
-  const cooldownFactor=p=>Math.pow(.96,count(p,'quickclaw'));
+  const cooldownFactor=p=>Math.pow(.96,count(p,'quickclaw'))*Math.pow(.98,count(p,'metronomeitem'));
   const ranged=m=>['projectile','beam','boomerang','chain','meteor','nova','cone','turret'].includes(m?.kind);
   function onCast(p,m){
     const n=count(p,'couragemedal');
@@ -69,5 +71,7 @@ G.Items = (() => {
     else if(item.id==='spiritspray')p.tempPP=(p.tempPP||0)+15;
     p.activeItemCd=item.cooldown;G.Audio.sfx('heal');return true;
   }
-  return {LIST,BY,ACTIVE,count,icon,gain,remove,roll,rewardChoices,damageBonus,cooldownFactor,ranged,onCast,onHit,useActive};
+  const typeBonus=(p,m)=>G.STARTER_ITEMS?.reduce((n,i)=>n+(i.type&&i.type===m.type?.toLowerCase()||i.effect&&i.effect===m.damageClass?.toLowerCase()?count(p,i.id)*(i.value||.05):0),0)||0;
+  const critBonus=p=>.03*count(p,'scopelens'),critDamage=p=>.1*count(p,'zoomlens');
+  return {typeBonus,critBonus,critDamage,LIST,BY,ACTIVE,count,icon,gain,remove,roll,rewardChoices,damageBonus,cooldownFactor,ranged,onCast,onHit,useActive};
 })();

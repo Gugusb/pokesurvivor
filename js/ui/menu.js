@@ -275,66 +275,11 @@ G.MenuUI = (() => {
   let upgDex = null;
 
   function openUpgrades() {
-    G.UI.show('scr-upgrades', true);
-    const s = G.DB.save;
-    if (!upgDex || !s.owned[upgDex]) upgDex = s.partner;
-    // Selector con tus Pokémon: el compañero primero, luego los que ya tienen mejoras.
-    const sel = $('upg-mon');
-    const lv = d => Object.values(G.DB.upgradesOf(d)).reduce((a, b) => a + b, 0);
-    const mons = Object.keys(s.owned).map(Number).filter(d => G.DEX_BY[d])
-      .sort((a, b) => (b === s.partner) - (a === s.partner) || lv(b) - lv(a) || a - b);
-    sel.innerHTML = mons.map(d => `<option value="${d}">${G.DEX_BY[d].name}${d === s.partner ? ' (compañero)' : ''}${lv(d) ? ' · ' + lv(d) + ' niveles' : ''}</option>`).join('');
-    sel.value = upgDex;
-    sel.onchange = () => { upgDex = +sel.value; G.Audio.sfx('select'); renderUpgrades(); };
-    renderUpgrades();
+    G.CardPacksUI.open();
   }
 
-  function renderUpgrades() {
-    const s = G.DB.save;
-    const levels = G.DB.upgradesOf(upgDex);
-    const mon = G.DEX_BY[upgDex];
-    const shiny = upgDex === s.partner && !!s.partnerShiny && G.DB.ownsShiny(upgDex);
-    G.UI.sprite($('upg-stage'), upgDex, { lively: true, scale: 2, hero: true, shiny });
-    $('upg-stage').style.setProperty('--stage-c', shiny ? '#9ae6ff' : G.U.TYPE_COLOR[mon.types[0]]);
-    const box = $('upg-list');
-    box.innerHTML = '';
-    for (const u of G.Upgrades.LIST) {
-      const lvl = levels[u.id] || 0;
-      const maxed = lvl >= u.max;
-      const cost = maxed ? 0 : G.Upgrades.cost(u.id, lvl);
-      const el = document.createElement('div');
-      el.className = 'panel upg-item';
-      el.innerHTML = `
-        <div class="ic">${G.Icons.html(u.icon, 32)}</div>
-        <div>
-          <b>${u.name}</b> <span style="color:var(--muted);font-size:13px">${u.unit}</span>
-          <div class="pips">${Array.from({ length: u.max }, (_, i) => `<i class="${i < lvl ? 'on' : ''}"></i>`).join('')}</div>
-        </div>
-        <div class="upg-btns">
-          ${u.id === 'ban' && lvl > 0 ? `<button class="btn small" data-ban>Elegir (${banList().length}/${lvl})</button>` : ''}
-          <button class="btn small ${maxed ? '' : 'gold'}" data-buy data-sfx="none" ${maxed || s.coins < cost ? 'disabled' : ''}>
-          ${maxed ? 'Máx.' : `<span class="coin"></span> ${cost}`}</button>
-          ${maxed ? '' : `<button class="btn small ${s.coins >= G.Upgrades.costToMax(u.id, lvl) ? 'gold' : ''}" data-max data-sfx="none" ${s.coins < G.Upgrades.costToMax(u.id, lvl) ? 'disabled' : ''}><span>${G.T('Mejorar al máximo')}</span><span class="coin"></span> ${G.Upgrades.costToMax(u.id, lvl)}</button>`}</div>`;
-      if (u.id === 'ban' && lvl > 0) el.querySelector('[data-ban]').onclick = () => { banOpen = !banOpen; renderUpgrades(); };
-      el.querySelector('[data-buy]').onclick = () => {
-        // Se vuelve a leer todo al pulsar (la partida puede haber cambiado desde que se dibujó).
-        if (!G.Upgrades.buy(upgDex, u.id)) { renderUpgrades(); return; }
-        G.Audio.sfx('buy');
-        G.UI.refreshCoins();
-        G.UI.toast(`${mon.name} · ${G.T(u.name)}`);
-        renderUpgrades();
-      };
-      const maxButton = el.querySelector('[data-max]');
-      if (maxButton) maxButton.onclick = () => {
-        if (!G.Upgrades.buy(upgDex, u.id, true)) { renderUpgrades(); return; }
-        G.Audio.sfx('buy'); G.UI.refreshCoins();
-        G.UI.toast(`${mon.name} · ${G.T(u.name)}: ${G.T('Máx.')}`); renderUpgrades();
-      };
-      box.appendChild(el);
-      if (u.id === 'ban' && lvl > 0 && banOpen) box.appendChild(banPicker(lvl));
-    }
-    box.appendChild(bindPanel());
-  }
+  function renderUpgrades(){G.CardPacksUI.open();}
+  function preferences(box,dex){upgDex=dex;box.appendChild(bindPanel());const max=G.DB.upgradesOf(dex).ban||0;if(max)box.appendChild(banPicker(max));}
 
   // ---------------- atajos: hueco fijo para cada movimiento ----------------
   // save.pbind[dex] = [movimiento del hueco 1, del 2, del 3, del 4] (o null).
@@ -402,5 +347,5 @@ G.MenuUI = (() => {
     return el;
   }
 
-  return { init, open, GEN_NAMES };
+  return { init, open, GEN_NAMES,preferences };
 })();

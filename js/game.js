@@ -551,6 +551,7 @@ G.Game = (() => {
     if(laterItems.length)offerSpecialChoice(laterItems.shift());
   }
   function offerItem(id){
+    if(G.Items.BY[id]?.unlock&&!G.CardPacks?.enabled(G.DB.save,id))id='leftovers';
     if(!pl||!G.Items.gain(pl,id))return;
     G.Progress.event('item',{id});
     G.UI.toast(G.T('Objeto especial obtenido')+' · '+G.T(G.Items.BY[id].name));

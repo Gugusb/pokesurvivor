@@ -138,6 +138,7 @@ G.DB = (() => {
    * servidor (firestore.rules, saves).
    */
   function sanitize(s) {
+    G.CardPacks?.normalize(s);
     if (G.ZAccess) G.ZAccess.normalize(s);
     if (G.ZMoves) G.ZMoves.normalize(s);
     if (G.Difficulty) G.Difficulty.normalize(s);
@@ -286,7 +287,7 @@ G.DB = (() => {
     if (r.partner == null || !r.owned[r.partner]) { r.partner = older.partner; r.partnerShiny = older.partnerShiny; }
     r.created = Math.min(a.created || Date.now(), b.created || Date.now());
     r.updated = Math.max(a.updated || 0, b.updated || 0);
-    normalizeUpgrades(r);
+    if(G.CardPacks){const pack=newer.cardPack||older.cardPack;if(pack)r.cardPack=JSON.parse(JSON.stringify(pack));G.CardPacks.normalize(r);}else normalizeUpgrades(r);
     G.Equipment?.normalize(r);
     return r;
   }
@@ -949,6 +950,7 @@ G.DB = (() => {
   /** Mejoras compradas para una familia: { id -> nivel }. */
   function upgradesOf(dex) {
     if (!save) return {};
+    if(G.CardPacks)return G.CardPacks.levels(save);
     normalizeUpgrades(save);
     return save.pupg[upgradeRoot(dex)] ||= {};
   }

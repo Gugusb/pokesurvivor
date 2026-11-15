@@ -12,7 +12,8 @@ G.BossRewards=(()=>{
     if(data.rift){G.DB.save.abilityGems=(G.DB.save.abilityGems||0)+1;G.DB.commit(true);G.UI.toast(G.T('+1 Gema de habilidad'));}
     if(data.rift&&data.stone)G.Mega.award(data.stone);
     const bonus=G.FailureProtection?.lootBonus(G.Game.player)||0;
-    G.Game.offerSpecialChoice(bonus>0?G.Items.rewardChoices(Math.random,data.rift,bonus):data.options);
+    const blocked=data.options.some(id=>G.Items.BY[id].unlock&&!G.CardPacks?.enabled(G.DB.save,id));
+    G.Game.offerSpecialChoice(bonus>0||blocked?G.Items.rewardChoices(Math.random,data.rift,bonus):data.options);
     return true;
   }
   function open(p){

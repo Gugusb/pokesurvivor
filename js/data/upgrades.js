@@ -33,15 +33,7 @@ G.Upgrades = (() => {
   }
 
   function buy(dex, id, toMax = false) {
-    const u = BY[id], s = G.DB.save;
-    if (!u || !s) return false;
-    const levels = G.DB.upgradesOf(dex), now = levels[id] || 0;
-    if (now >= u.max) return false;
-    const price = toMax ? costToMax(id, now) : cost(id, now);
-    if (s.coins < price) return false;
-    s.coins -= price; levels[id] = toMax ? u.max : now + 1;
-    G.DB.commit(true);
-    return true;
+    return false; // Progression is now earned exclusively from finite packs.
   }
 
   /** Niveles comprados -> modificadores para G.Player. */

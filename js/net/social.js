@@ -466,6 +466,7 @@ G.Social = (() => {
     const unlocked = G.AchDefs.LIST.filter(a => s.ach && s.ach[a.id]);
     const medals = unlocked.slice().sort((a, b) => (b.tier - a.tier) || (s.ach[b.id] - s.ach[a.id])).slice(0, 8).map(a => a.id);
     return {
+      cardTheme:G.CardPacks?.normalize(s).theme,
       name: me ? me.name : G.DB.user,
       favs: (prof.favs || []).slice(0, 3).map(f => ({ dex: f.dex | 0, shiny: !!f.shiny })),
       title: prof.title || '',

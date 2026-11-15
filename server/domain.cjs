@@ -28,6 +28,10 @@ for (const f of [
   "js/systems/difficulty.js",
   "js/systems/failure-protection.js",
   "js/systems/offline.js",
+  "js/data/upgrades.js",
+  "js/data/items.js",
+  "js/data/starter-items.js",
+  "js/systems/card-packs.js",
   "js/core/db.js",
 ]) {
   vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), ctx, {
@@ -38,6 +42,7 @@ const G = ctx.G,
   clone = (x) => JSON.parse(JSON.stringify(x));
 function fresh(name) {
   const s = clone(G.DB.fresh(name));
+  G.CardPacks.normalize(s);
   G.Offline.stamp(s);
   return s;
 }
@@ -127,6 +132,7 @@ function sanitize(input, old, name) {
       G.Difficulty.unlocked(old),
     ),
   };
+  const prior=clone(old);G.CardPacks.normalize(prior);s.cardPack=prior.cardPack;s.pupg={};s.upgrades={};
   s.offline = clone(old.offline);
   s.failureProtection = clone(old.failureProtection||{});
   Object.assign(s,G.ZAccess.merge(s,old));
