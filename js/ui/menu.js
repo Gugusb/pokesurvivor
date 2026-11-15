@@ -278,7 +278,7 @@ G.MenuUI = (() => {
     G.CardPacksUI.open();
   }
 
-  function renderUpgrades(){G.CardPacksUI.open();}
+  function renderUpgrades(){G.CardPacksUI.refresh();}
   function preferences(box,dex){upgDex=dex;box.appendChild(bindPanel());const max=G.DB.upgradesOf(dex).ban||0;if(max)box.appendChild(banPicker(max));}
 
   // ---------------- atajos: hueco fijo para cada movimiento ----------------

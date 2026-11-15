@@ -19,5 +19,5 @@ test('evolving recalculates permanent and berry HP/growth and regeneration from 
 });
 test('saved levels and family sharing keep their meaning, clamp to existing caps, and utility upgrades keep their existing effects',()=>{
  const {G}=setup();G.DB.save.pupg[4]={hp:2,def:3,cd:4};const before=JSON.stringify(G.DB.save.pupg);G.DB._test.sanitize(G.DB.save);assert.equal(JSON.stringify(G.DB.save.pupg),before);assert.equal(G.DB.upgradesOf(6),G.DB.upgradesOf(4));
- const p=G.Upgrades.perks({hp:100,def:100,cd:100,atk:-5,regen:5,xp:2,coins:2,crit:2,moves:1,reroll:2,ban:2});close(p.statGrowth.hp,.3);close(p.statGrowth.defense,.4);close(p.statGrowth.agility,.24);close(p.statGrowth.atk,0);close(p.xpMul,1.1);close(p.coinMul,1.16);close(p.crit,.06);assert.equal(p.startMoves,2);assert.equal(p.rerolls,2);assert.equal(p.bans,2);
+ const p=G.Upgrades.perks({hp:100,def:100,cd:100,atk:-5,regen:5,xp:2,coins:2,crit:2,moves:1,reroll:2,ban:2});close(p.statGrowth.hp,.3);close(p.statGrowth.defense,.4);close(p.statGrowth.agility,.24);close(p.statGrowth.atk,0);close(p.xpMul,1.1);close(p.coinMul,1.16);close(p.crit,.06);assert.equal(p.startLevels,1);assert.equal(p.rerolls,2);assert.equal(p.bans,2);
 });

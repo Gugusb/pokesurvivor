@@ -1,26 +1,55 @@
 G.CardPacksUI=(()=>{
- const T=(es,en,zh)=>({es,en,zh}[G.I18n.lang]||en),L=v=>typeof v==='object'?G.CardPacks.local(v):G.T(v||'');let tab='pack',busy=false;
+ const T=(es,en,zh)=>({es,en,zh}[G.I18n.lang]||en),L=v=>typeof v==='object'?G.CardPacks.local(v):G.T(v||'');
+ let page='pack',tab='stats',busy=false,phase='',selected=-1,lastReward=null,preferenceDex=null;
  const el=(tag,cls,text)=>{const n=document.createElement(tag);n.className=cls||'';if(text!=null)n.textContent=text;return n;};
- async function action(data){if(busy)return;busy=true;render();try{if(G.DB.mode==='server')await G.Server.packAction(data);else{const s=G.DB.save;switch(data.action){case 'draw':G.CardPacks.draw(s);break;case 'choose':G.CardPacks.choose(s,data.seq,data.index);break;case 'toggle':G.CardPacks.toggle(s,data.id);break;case 'theme':G.CardPacks.equip(s,data.id);break;}G.DB.commit(true);}G.UI.refreshCoins();}catch(e){const message={'Pack empty':T('Paquete completado','Pack complete','卡包已集齐'),'Not enough coins':T('Faltan monedas','Not enough coins','金币不足'),'Wallet limit reached':T('Gasta recursos antes de recoger','Spend resources before claiming','资源达到上限，请先使用后再领取'),'Invalid pack choice':T('Vuelve a abrir el paquete','Reopen the pack','请重新打开卡包继续选择')}[e.message]||e.message;G.UI.toast(message,5000);}finally{busy=false;render();}}
- function button(text,fn,disabled=false){const n=el('button','btn',text);n.disabled=disabled;n.onclick=fn;return n;}
- function card(c,tail){const n=el('div','pack-card');n.dataset.card=c.id;n.innerHTML=G.Icons.html(c.icon,32);n.append(el('strong','',L(c.name)),el('p','',L(c.desc)),el('small','',tail));return n;}
+ const motion=()=>!G.Settings?.get('calm')&&!matchMedia('(prefers-reduced-motion: reduce)').matches;
+ const pause=ms=>new Promise(resolve=>setTimeout(resolve,motion()?ms:50));
+ const type=c=>({stat:T('Entrenamiento','Training','属性成长'),item:T('Desbloqueo de objeto','Item unlock','道具解锁'),tickets:T('Recursos','Resources','资源补给'),gems:T('Recursos','Resources','资源补给'),theme:T('Diseño de tarjeta','Namecard style','名片装扮')})[c.kind];
+ function detail(c){return c.kind==='stat'?T('Para todos los Pokémon','For every Pokémon','对所有宝可梦生效'):c.kind==='item'?T('Desbloquea su aparición en aventuras','Unlocks this item for your loot pool','解锁使用权限，加入局内道具池'):c.kind==='theme'?T('Desbloquea un diseño de perfil','Unlocks a public namecard style','解锁名片主题，可在收藏管理中装扮'):T('Recompensa de un solo uso','One-time resource reward','一次性补给，收下后立即获得');}
+ async function action(data){
+  if(busy)return;busy=true;selected=data.index??-1;lastReward=null;
+  const chosen=data.action==='choose'?G.CardPacks.BY[G.DB.save.cardPack.pending?.options[data.index]]:null;
+  phase=data.action==='draw'?'opening':data.action==='choose'?'selecting':'';render();
+  try{
+   const request=(async()=>{if(G.DB.mode==='server')await G.Server.packAction(data);else{const s=G.DB.save;switch(data.action){case 'draw':G.CardPacks.draw(s);break;case 'choose':G.CardPacks.choose(s,data.seq,data.index);break;case 'toggle':G.CardPacks.toggle(s,data.id);break;case 'theme':G.CardPacks.equip(s,data.id);break;}G.DB.commit(true);}})();
+   await Promise.all([request,pause(data.action==='draw'?500:data.action==='choose'?600:0)]);
+   G.UI.refreshCoins();
+   if(data.action==='draw'){phase='revealing';render();await pause(1050);}
+   if(data.action==='choose'){lastReward=chosen;phase='claimed';G.Audio.sfx('confirm');}
+  }catch(e){phase='';const message={'Pack empty':T('Paquete completado','Pack complete','卡包已集齐'),'Not enough coins':T('Faltan monedas','Not enough coins','金币不足'),'Wallet limit reached':T('Gasta recursos antes de recoger','Spend resources before claiming','资源达到上限，请先使用后再领取'),'Invalid pack choice':T('Recarga para continuar','Reload to continue','请刷新页面继续选择')}[e.message]||e.message;G.UI.toast(message,5000);}
+  finally{busy=false;if(phase!=='claimed')phase='';render();}
+ }
+ function button(text,fn,disabled=false){const n=el('button','btn',text);n.disabled=disabled||busy;n.onclick=fn;return n;}
+ function card(c,tail){const n=el('div','pack-card pack-kind-'+c.kind);n.dataset.card=c.id;n.dataset.rewardType=c.kind;n.append(el('span','pack-type-badge',type(c)));const icon=el('div','pack-card-icon');icon.innerHTML=G.Icons.html(c.icon,32);n.append(icon,el('strong','',L(c.name)),el('small','pack-kind-hint',detail(c)),el('p','',L(c.desc)),el('small','pack-card-stock',tail));return n;}
  function render(){
-  const s=G.DB.save;if(!s)return;const p=G.CardPacks.normalize(s),box=document.getElementById('pack-body');box.replaceChildren();
-  const nav=el('div','row wrap pack-tabs');for(const [id,label]of [['pack',T('Paquete','Pack','抽取卡包')],['stats',T('Entrenamiento','Training','全员成长')],['items',T('Objetos','Items','道具池')],['themes',T('Tarjetas','Namecards','名片装扮')]]){const b=button(label,()=>{tab=id;render();});b.classList.toggle('gold',tab===id);nav.append(b);}box.append(nav);
-  if(tab==='pack'){
+  const s=G.DB.save;if(!s)return;const p=G.CardPacks.normalize(s),box=document.getElementById('pack-body');box.replaceChildren();box.className=phase?'pack-'+phase:'';box.classList.toggle('pack-no-motion',!motion());box.dataset.phase=phase||'idle';box.dataset.page=page;
+  document.querySelector('#scr-upgrades h2').textContent=page==='pack'?T('Paquetes de cartas','Card Packs','游戏卡包'):T('Mi colección','My Collection','收藏管理');
+  const nav=el('div','pack-subnav');nav.append(el('span','pack-breadcrumb',page==='pack'?T('Paquetes / Primeros pasos','Packs / Beginner Pack','卡包 / 初心者包'):T('Paquetes / Mi colección','Packs / My Collection','卡包 / 收藏管理')));
+  if(page==='pack'){const manage=button(T('Mi colección →','My Collection →','收藏管理 →'),()=>{page='collection';tab='stats';phase='';render();});manage.dataset.packCollection='';nav.append(manage);}else{const back=button(T('← Volver al paquete','← Back to pack','← 返回卡包'),()=>{page='pack';phase='';render();});back.dataset.packBack='';nav.append(back);}box.append(nav);
+  if(page==='collection'){
+   box.append(el('p','sub',T('Administra lo que has conseguido.','Manage what you have collected.','在这里查看成长，管理已解锁的道具和名片。')));
+   const tabs=el('div','row wrap pack-tabs');for(const [id,label]of [['stats',T('Entrenamiento','Training','全员成长')],['items',T('Objetos','Items','道具池')],['themes',T('Tarjetas','Namecards','名片装扮')]]){const b=button(label,()=>{tab=id;render();});b.dataset.collectionTab=id;b.classList.toggle('gold',tab===id);tabs.append(b);}box.append(tabs);
+  }
+  if(page==='pack'){
    const hero=el('div','pack-hero');hero.append(el('div','pack-seal','Ⅰ'),el('h3','',T('Primeros pasos','Beginner Pack','初心者包')),el('p','',T('Elige una carta y acompaña a todos tus Pokémon.','Choose a card to support every Pokémon.','从一张卡开始，陪伴每一位宝可梦成长。')),el('b','',G.CardPacks.remaining(s)+' / '+G.CardPacks.cards.reduce((a,c)=>a+c.max,0)+' '+T('cartas restantes','cards remaining','张剩余卡牌')));box.append(hero);
+   const status=el('p','pack-status',phase==='opening'?T('Abriendo el paquete…','Opening the pack…','正在打开卡包…'):phase==='revealing'?T('Tus tres cartas…','Your three cards…','看看这次翻到了什么…'):phase==='selecting'?T('Guardando tu carta…','Collecting your card…','正在收下这张卡…'):p.pending?T('Elige una recompensa','Choose one reward','选择一份奖励'):lastReward?T('¡Añadido a tu colección!','Added to your collection!','已收入收藏！'):'');status.setAttribute('role','status');status.setAttribute('aria-live','polite');box.append(status);
    box.append(el('p','sub',T('800 monedas por elección. Las cartas no elegidas vuelven al paquete.','800 coins per choice. Unchosen cards return to the pack.','每次800金币，三选一；未选中的卡退回卡包。')));
    if(p.refund)box.append(el('p','pack-refund',T('Reembolso del entrenamiento anterior: ','Previous training refunded: ','原强化金币已返还：')+p.refund.toLocaleString()));
-   if(p.pending){const list=el('div','pack-choices');p.pending.options.forEach((id,index)=>{const c=G.CardPacks.BY[id],n=card(c,T('Elegir','Choose','选择这张'));n.append(button(T('Recoger','Claim','收下'),()=>action({action:'choose',seq:p.pending.seq,index}),busy));list.append(n);});box.append(list);}else box.append(button(G.CardPacks.remaining(s)?T('Abrir · 800 monedas','Open · 800 coins','抽取 · 800金币'):T('Paquete completado','Pack complete','卡包已集齐'),()=>action({action:'draw'}),busy||s.coins<800||!G.CardPacks.remaining(s)));
+   if(p.pending){const list=el('div','pack-choices');p.pending.options.forEach((id,index)=>{const c=G.CardPacks.BY[id],n=card(c,T('Elegir','Choose','选择这张'));n.style.setProperty('--reveal-index',index);n.classList.toggle('pack-selected',index===selected);n.append(button(T('Recoger','Claim','收下'),()=>action({action:'choose',seq:p.pending.seq,index}),busy));list.append(n);});box.append(list);}
+   else{
+    if(lastReward){const receipt=el('div','pack-receipt');receipt.append(card(lastReward,T('Guardado','Collected','已收下')));box.append(receipt);}
+    const draw=button(G.CardPacks.remaining(s)?T('Abrir · 800 monedas','Open · 800 coins','抽取 · 800金币'):T('Paquete completado','Pack complete','卡包已集齐'),()=>action({action:'draw'}),busy||s.coins<800||!G.CardPacks.remaining(s));draw.classList.add('gold');draw.dataset.packDraw='';box.append(draw);
+   }
    const all=el('details','pack-catalog');all.append(el('summary','',T('Contenido del paquete','Pack contents','查看卡包内容')));const grid=el('div','pack-grid');for(const c of G.CardPacks.cards)grid.append(card(c,(c.max-p.taken[c.id])+' / '+c.max));all.append(grid);box.append(all);
   }
+  if(page!=='collection')return;
   if(tab==='stats'){
    box.append(el('p','sub',T('Las cartas de entrenamiento benefician a toda la colección.','Training cards benefit your entire collection.','成长卡对所有宝可梦生效，包括之后获得的伙伴。')));const grid=el('div','pack-grid');for(const u of G.Upgrades.LIST){const c=G.CardPacks.BY['stat:'+u.id];grid.append(card(c,'Lv. '+p.taken[c.id]+' / '+c.max));}box.append(grid);
-   const prefs=el('details','pack-catalog');prefs.append(el('summary','',T('Preferencias de movimientos','Move preferences','招式偏好')));const select=el('select','field');for(const d of Object.keys(s.owned))if(G.DEX_BY[d]){const o=el('option','',G.T(G.DEX_BY[d].name));o.value=d;select.append(o);}const body=el('div');const show=()=>{body.replaceChildren();if(select.value)G.MenuUI.preferences(body,+select.value);};select.onchange=show;prefs.append(select,body);show();box.append(prefs);
+   const prefs=el('details','pack-catalog');prefs.append(el('summary','',T('Preferencias de movimientos','Move preferences','招式偏好')));const select=el('select','field');for(const d of Object.keys(s.owned))if(G.DEX_BY[d]){const o=el('option','',G.T(G.DEX_BY[d].name));o.value=d;o.selected=String(preferenceDex)===d;select.append(o);}const body=el('div');const show=()=>{preferenceDex=+select.value;body.replaceChildren();if(select.value)G.MenuUI.preferences(body,+select.value);};select.onchange=show;prefs.append(select,body);show();box.append(prefs);
   }
   if(tab==='items'){box.append(el('p','sub',T('Activa los objetos desbloqueados para encontrarlos durante la aventura.','Enable unlocked items to find them during runs.','解锁后可自由开关；开启的道具会加入之后的局内掉落和奖励箱道具池。')));const grid=el('div','pack-grid');for(const i of G.STARTER_ITEMS){const c=G.CardPacks.BY['item:'+i.id],owned=!!p.taken[c.id],n=card(c,'');n.classList.toggle('pack-locked',!owned);n.append(button(!owned?T('Bloqueado','Locked','未解锁'):p.disabled[i.id]?T('Desactivado','Disabled','已关闭'):T('Activado','Enabled','已加入道具池'),()=>action({action:'toggle',id:i.id}),busy||!owned));grid.append(n);}box.append(grid);}
   if(tab==='themes'){const grid=el('div','pack-grid');box.append(button(T('Sin diseño','Default style','默认名片'),()=>action({action:'theme',id:''}),busy));for(const t of G.CardPacks.themes){const c=G.CardPacks.BY['theme:'+t.id],n=card(c,'');n.style.setProperty('--card-accent',t.color);n.classList.add('namecard-preview');n.append(el('span','pack-sticker','✦'),button(!p.taken[c.id]?T('Bloqueado','Locked','未解锁'):p.theme===t.id?T('Equipado','Equipped','已装扮'):T('Usar','Equip','装扮名片'),()=>action({action:'theme',id:t.id}),busy||!p.taken[c.id]));grid.append(n);}box.append(grid);}
  }
- function open(){G.UI.show('scr-upgrades',true);render();}
- return {open};
+ function open(){page='pack';if(!busy){phase='';selected=-1;lastReward=null;}G.UI.show('scr-upgrades',true);render();}
+ return {open,refresh:render};
 })();

@@ -823,3 +823,5 @@ G.I18n.add({"Listo": "Ready", "Multiplicador del movimiento": "Move power", "Efe
 G.I18n.add({"Obtener MT de Especialización": "Get Mastery TM", "Maximizar movimientos activos": "Max active moves"});
 
 G.I18n.add({"Paquetes de cartas": "Card Packs", "Cartas para toda tu colección": "Cards for your whole collection"});
+
+G.I18n.add({"Nivel inicial adicional": "Extra Starting Level", "+1 nivel al empezar": "+1 starting level and its level-up choice"});

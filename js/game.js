@@ -149,11 +149,9 @@ G.Game = (() => {
     pl.addMove(G.startMoveOf(startDex));
     // Mejora "Veto": movimientos que no quieres que te salgan.
     pl.banned = new Set((save.pban && save.pban[startDex] || []).slice(0, perks.bans));
-    // Mejora "Repertorio": un segundo movimiento de ataque al azar.
-    if (perks.startMoves >= 2) {
-      const pool = G.Moves.poolFor(mon).filter(id => !pl.hasMove(id) && !pl.banned.has(id) && G.Moves.BY_ID[id].kind !== 'buff');
-      if (pool.length) pl.addMove(G.U.pick(pool));
-      pl.setActive(0);
+    // Team level and level-up selections are owned by the host.
+    if(!coop||coop.host===G.Net.uid)for(let n=0;n<(perks.startLevels||0);n++){
+      pl.level++;pl.xpNext=G.Player.xpFor(pl.level);G.Abilities.onLevel(pl);pendingLevels++;
     }
 
     if (coop) {
