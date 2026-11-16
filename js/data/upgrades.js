@@ -40,8 +40,10 @@ G.Upgrades = (() => {
   function perks(levels = {}) {
     // Nunca por encima del máximo (una partida editada a mano no da más poder).
     const L = id => Math.max(0, Math.min(BY[id].max, Math.floor(+levels[id] || 0)));
+    const skill=id=>Math.max(0,Math.min(6,Math.floor(+levels[id]||0)));
     return {
-      statGrowth:{hp:L('hp')*.03,atk:L('atk')*.04,spa:L('atk')*.04,spd:L('spd')*.03,agility:L('cd')*.03,defense:L('def')*.05,spdef:L('def')*.05},
+      maxPpBonus:skill('maxpp'),ppRetention:skill('retention')*.03,
+      statGrowth:{hp:L('hp')*.03,atk:L('atk')*.04,spa:L('atk')*.04,spd:L('spd')*.03,agility:L('cd')*.03+skill('agility')*.05+Math.max(0,Math.min(.24,Number(levels.legacyAgility)||0)),stamina:skill('stamina')*.05,defense:L('def')*.05,spdef:L('def')*.05},
       regenBase:L('regen')*.002,
       magnetMul: 1 + L('magnet') * 0.12,
       xpMul: 1 + L('xp') * 0.05,

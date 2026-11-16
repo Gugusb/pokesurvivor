@@ -15,10 +15,12 @@ G.MovePP = (() => {
   function consume(p,m){
     const s=state(p,m),q=G.Specialization?.stats(m)||{free:0,phase:false,double:false};
     if(p.ppPotionReady&&!p.remote&&p.moves.includes(m)){s.current=Math.min(s.limit,s.current+p.ppPotionReady);p.ppPotionReady=0;}
-    const base=q.double?2:1,available=Math.floor(s.current+1e-8)+Math.floor(p.tempPP||0);
-    if(available<base)return false;
-    if(s.plan==null)s.plan=q.free&&Math.random()<q.free?0:base*(q.phase&&Math.random()<.3?2:1);
-    if(available<s.plan)return false;
+    if(G.BreakItems?.useFree(p,m)){s.plan=null;return true;}
+    const base=q.double?2:1,available=()=>Math.floor(s.current+1e-8)+Math.floor(p.tempPP||0);
+    if(available()<base){G.BreakItems?.onEmpty(p,m,base-Math.floor(s.current+1e-8));if(available()<base)return false;}
+    const free=Math.min(1,(q.free||0)+(p.ppRetention||0));
+    if(s.plan==null)s.plan=free&&Math.random()<free?0:base*(q.phase&&Math.random()<.3?2:1);
+    if(available()<s.plan){G.BreakItems?.onEmpty(p,m,s.plan-Math.floor(s.current+1e-8));if(available()<s.plan)return false;}
     const regular=Math.min(s.plan,Math.floor(s.current+1e-8));s.current=Math.max(0,s.current-regular);p.tempPP=Math.max(0,(p.tempPP||0)-(s.plan-regular));s.plan=null;return true;
   }
   function recover(s,amount){

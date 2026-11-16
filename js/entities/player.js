@@ -39,7 +39,7 @@ G.Player = class Player {
     this.baseHp = mon.hp * ivm[0];
     this.baseAgility = (G.MonProgression?.agilityBase(mon) || 80) * ivm[6];
     this.baseStamina = (G.MonProgression?.staminaBase(mon) || 80) * ivm[7];
-    this.maxPpBonus = 0; this.tempPP = 0; this.ppPotionReady=0;
+    this.maxPpBonus = perks.maxPpBonus || 0; this.ppRetention=perks.ppRetention||0; this.tempPP = 0; this.ppPotionReady=0;
     this.maxHp = this.baseHp * (1+this.statGrowth.hp) + (perks.hp || 0);
     this.hp = this.maxHp;
     this.baseSpd = mon.spd * ivm[2];
@@ -194,6 +194,7 @@ G.Player = class Player {
   setActive(i) {
     if (G.ZMoves && G.ZMoves.busy(this)) return G.ZMoves.choose(this, i);
     if (i < 0 || i >= this.slots.length || i === this.active) return;
+    G.BreakItems?.switched(this,this.activeGroup(),this.slots[i]);
     this.active = i;
     G.Projectiles.clearOrbs(this);
     G.Audio.sfx('select');
@@ -310,6 +311,7 @@ G.Player = class Player {
     G.Abilities.afterHurt(this, source, type);
     if(d>0&&G.Difficulty)G.Difficulty.onHurt(this);
     this.invuln = 0.45;
+    G.BreakItems?.afterHurt(this,source);
     this.flash = 0.14;
     G.Audio.sfx('hurt');
     G.Camera.kick(0.28);
@@ -334,6 +336,7 @@ G.Player = class Player {
 
   heal(amount) {
     const before = this.hp;
+    G.BreakItems?.healed(this,Math.max(0,this.hp+amount-this.maxHp));
     this.hp = Math.min(this.maxHp, this.hp + amount);
     const got = Math.round(this.hp - before);
     if (got >= 1) G.FX.dmgText(this.x, this.y - this.bodyH - 6, '+' + got, '#5fe08a');
@@ -392,6 +395,7 @@ G.Player = class Player {
     this.megaDashGuard = Math.max(0, (this.megaDashGuard || 0) - dt);
     this.anim.update(dt);
     if (this.dead) return;
+    G.BreakItems?.tick(this);
     this.activeItemCd=Math.max(0,this.activeItemCd-dt);
     G.Abilities.playerTick(this, dt);
     this.attackDebuffT = Math.max(0, this.attackDebuffT - dt);

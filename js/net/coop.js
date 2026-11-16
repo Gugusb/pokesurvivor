@@ -189,7 +189,7 @@ G.Coop = (() => {
       if(!owns(n.stone))n.stone=null;
       if(m.equipment.z!==n.z?.[0])n.z=null;
     }
-    p.specialItems={};if(Array.isArray(n.items))for(const entry of n.items.slice(0,32)){if(!Array.isArray(entry))continue;const [id,count]=entry;if(G.Items?.BY[id]&&!['linker','masterytm'].includes(id)&&Number.isInteger(count)&&count>0&&count<=1000)p.specialItems[id]=count;}
+    p.specialItems={};if(Array.isArray(n.items))for(const entry of n.items.slice(0,G.Items.LIST.length)){if(!Array.isArray(entry))continue;const [id,count]=entry;if(G.Items?.BY[id]&&!['linker','masterytm'].includes(id)&&Number.isInteger(count)&&count>0&&count<=1000)p.specialItems[id]=count;}
     m.state[24]=Object.entries(p.specialItems);
     if(G.Specialization)m.state[25]=G.Specialization.sync(p,n.masteries);
     p.damageBonus=n.damageBonus;

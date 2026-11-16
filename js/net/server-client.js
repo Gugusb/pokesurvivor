@@ -361,7 +361,7 @@ G.Server = (() => {
       const before=copy(baseline),r=await api('/packs/action',{...data,rev}),s=G.DB.save;
       s.coins+=r.save.coins-before.coins;s.abilityGems+=r.save.abilityGems-before.abilityGems;
       for(const k of ['t1','t10'])s.tickets[k]+=r.save.tickets[k]-before.tickets[k];
-      s.cardPack=copy(r.save.cardPack);s.pupg={};s.upgrades={};accept(r);remember();return r;
+      s.cardPack=copy(r.save.cardPack);Object.assign(s,G.ZAccess.merge(s,r.save));s.pupg={};s.upgrades={};accept(r);remember();return r;
     });
   }
 
