@@ -74,7 +74,7 @@ const { chromium } = require(
       await p.locator("#f-user").fill("P2PFixture" + i);
       await p.locator("#f-pass").fill(pass);
       await p.locator("#btn-auth").click();
-      await p.locator("#scr-menu:not(.hidden)").waitFor();
+      try{await p.locator("#scr-menu:not(.hidden)").waitFor();}catch(e){console.error("Login diagnostics",await p.evaluate(()=>({error:document.getElementById("login-err").textContent,mode:G.DB.mode,visible:[...document.querySelectorAll(".scr:not(.hidden)")].map(e=>e.id)})));throw e;}
       await p.evaluate(() => G.Social.start());
     }
     const host = pages[0],
@@ -139,6 +139,13 @@ const { chromium } = require(
         p.waitForFunction(() => G.Net.stats.sent > 20 && G.Net.stats.recv > 20),
       ),
     );
+    // Every peer must see several simultaneous orbits, including secondary slots.
+    await Promise.all(pages.map(p=>p.evaluate(()=>{const p=G.Game.player;for(const id of ['fire-spin','leaf-storm'])if(!p.hasMove(id))p.addMove(id);p.setActive(0);})));
+    await Promise.all(pages.map(p=>p.waitForFunction(()=>G.Coop.puppets().every(peer=>peer.remoteOrbits?.length>=2&&new Set(G.Projectiles.all().filter(s=>s.orb&&s.owner===peer).map(s=>s.mid)).size>=2))));
+    await pages[1].evaluate(()=>{const p=G.Game.player;G.Settings.set('castMode','toggle');G.MoveControl.input(p,1);G.MoveControl.input(p,1);});
+    await host.waitForFunction(uid=>G.Coop.mate(uid).pl.remoteOrbits?.length===1,ids[1]);
+    await pages[1].evaluate(()=>G.Settings.set('castMode','auto'));
+    await host.waitForFunction(uid=>G.Coop.mate(uid).pl.remoteOrbits?.length===2,ids[1]);
     const compact = await host.evaluate(async () => {
       G.DB.save.coins += 17;
       const before = G.DB.save.coins,
@@ -279,6 +286,8 @@ const { chromium } = require(
         {
           players: 4,
           actualWebRTC: true,
+          parallelOrbits:true,
+          secondaryToggleSynced:true,
           largeFrameReassembled: true,
           allLevelChoicesResume: true,
           reconnectResync: true,

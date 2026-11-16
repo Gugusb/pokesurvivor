@@ -8,9 +8,11 @@ G.SettingsUI = (() => {
   G.I18n.addChinese({'Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.':'拖动屏幕移动，点击技能切换攻击，右上角按钮暂停；支持竖屏与横屏游玩。'});
   G.I18n.add({'Apuntado manual':'Manual aiming','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.':'Aim with arrow keys or the right stick. Release to keep your last direction.','apuntar':'aim','Apuntar':'Aim','Izquierda: moverse · derecha: apuntar':'Left: move · right: aim','Arrastra para moverte · habilidades a la derecha':'Drag to move · skills on the right'});
   G.I18n.addChinese({'Apuntado manual':'手动索敌','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.':'用方向键或右侧轮盘控制攻击方向，松开后保持最后朝向。','apuntar':'控制攻击方向','Apuntar':'瞄准','Izquierda: moverse · derecha: apuntar':'左侧移动 · 右侧瞄准','Arrastra para moverte · habilidades a la derecha':'拖动移动 · 右侧切换技能'});
+  G.I18n.add({'Todos los huecos pueden actuar a la vez. El seleccionado es principal; los demás usan la mitad de agilidad y aguante.':'All slots can act together. The selected slot is primary; others use half agility and stamina.','Principal':'Primary','Secundario':'Secondary','Agilidad efectiva':'Effective agility','Aguante efectivo':'Effective stamina'});
+  G.I18n.addChinese({'Todos los huecos pueden actuar a la vez. El seleccionado es principal; los demás usan la mitad de agilidad y aguante.':'所有技能槽可同时释放。选中槽为主要技能，其余技能按一半敏捷与耐力结算。','Principal':'主','Secundario':'副','Agilidad efectiva':'结算敏捷','Aguante efectivo':'结算耐力'});
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '0.38.0 · 2026-11-16';
+  const VERSION = '0.39.0 · 2026-11-16';
   const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 
@@ -95,7 +97,7 @@ G.SettingsUI = (() => {
              <button class="btn small" id="set-full">${isFull() ? 'Salir' : 'Activar'}</button></div>`
            : iosTip() ? `<div class="set-row"><div class="grow"><b>Pantalla completa</b><small>${esc(IOS_TIP)}</small></div></div>` : '');
     } else if (tab === 'ctl') {
-      box.innerHTML = section('Uso de movimientos','Sólo actúa el hueco seleccionado. La selección Z no cambia.')
+      box.innerHTML = section('Uso de movimientos','Todos los huecos pueden actuar a la vez. El seleccionado es principal; los demás usan la mitad de agilidad y aguante.')
         + choice('castMode',[['auto','Siempre activo'],['toggle','Activar o desactivar'],['click','Un lanzamiento por clic']])
         + toggle('manualAim','Apuntado manual','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.')
         + section('En móvil o tablet')

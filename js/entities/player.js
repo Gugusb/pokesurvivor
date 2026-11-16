@@ -118,6 +118,11 @@ G.Player = class Player {
   get stamina() { return this.baseStamina * (1+this.statGrowth.stamina); }
   get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
   get ppInterval() { return G.MonProgression ? G.MonProgression.ppInterval(this.stamina) : 1; }
+  isPrimaryMove(m) { const group=this.slots.find(g=>g.some(x=>x===m||x.id===m?.id));return !group||group===this.activeGroup(); }
+  agilityFor(m) { return this.agility*(this.isPrimaryMove(m)?1:.5); }
+  staminaFor(m) { return this.stamina*(this.isPrimaryMove(m)?1:.5); }
+  agilityCooldownFor(m) { return G.MonProgression?G.MonProgression.cooldownFactor(this.agilityFor(m)):this.agilityCooldown; }
+  ppIntervalFor(m,primary=this.isPrimaryMove(m)) { return G.MonProgression?G.MonProgression.ppInterval(this.stamina*(primary?1:.5)):this.ppInterval; }
   growStat(key, fraction) {
     this.statGrowth[key]=(this.statGrowth[key]||0)+fraction;
     if(key==='hp')this.addMaxHp(this.baseHp*fraction);
@@ -196,9 +201,7 @@ G.Player = class Player {
     if (i < 0 || i >= this.slots.length || i === this.active) return;
     G.BreakItems?.switched(this,this.activeGroup(),this.slots[i]);
     this.active = i;
-    G.Projectiles.clearOrbs(this);
     G.Audio.sfx('select');
-    for (const m of this.slots[i]) m.t = Math.min(m.t, m.cd * 0.35);
     const m = this.slots[i][0];
     G.FX.ring(this.x, this.y - G.LIFT * 0.5, 6, this.r * 3.4, G.U.TYPE_COLOR[m.type], 0.3, 3);
   }
@@ -262,12 +265,12 @@ G.Player = class Player {
     const SND = { boomerang: 'projectile', chain: 'beam', mine: 'nova', meteor: 'nova', turret: 'buff', dash: 'melee', trail: 'aura', cone: 'projectile' };
     // El rastro no suena a cada charco (sería un zumbido constante).
     if (m.kind !== 'trail') G.Audio.sfx('shot', { kind: SND[m.kind] || m.kind, type: m.type });
-    if (m.kind === 'trail') return;
+    if (m.kind === 'trail'||!this.isPrimaryMove(m)) return;
     // No reinicies una animación que va por la mitad: se vería a tirones.
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
     const meta = G.Sprites.animMeta(this.spriteDex, anim);
     const len = meta ? meta.d.reduce((a, b) => a + b, 0) / 60 : 0.4;
-    const cd = Math.max(0.12, m.cd * this.cdMul * (G.Specialization?.stats(m).cooldown||1) * this.agilityCooldown * (G.Items?.cooldownFactor(this)||1) / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
+    const cd = Math.max(0.12, m.cd * this.cdMul * (G.Specialization?.stats(m).cooldown||1) * this.agilityCooldownFor(m) * (G.Items?.cooldownFactor(this)||1) / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
     this.anim.play(anim, { speed: Math.max(1, len / (cd * 0.9)) });
     this.attackFace = 0.35;
   }
@@ -511,12 +514,11 @@ G.Player = class Player {
     if (n.dead && !this.dead) { this.dead = true; this.anim.play('Faint', { hold: true }); G.Projectiles.clearOrbs(this); }
     else if (!n.dead && this.dead) this.revive(n.hp / (n.maxHp || 1));
     // Movimiento activo (para el halo, el HUD y los orbes).
-    if(!n.mv&&this.moves.length){this.moves=[];this.slots=[];this.active=0;G.Projectiles.clearOrbs(this);}
+    if(!n.mv&&this.moves.length){this.moves=[];this.slots=[];this.active=0;}
     if (n.mv && (!this.moves[0] || this.moves[0].id !== n.mv || this.moves[0].lvl !== n.ml) && G.Moves.BY_ID[n.mv]) {
       this.moves = [G.Moves.instance(n.mv, n.ml || 1)];
       this.slots = [this.moves.slice()];
       this.active = 0;
-      G.Projectiles.clearOrbs(this);
     }
     if (this.dead) return;
     this.walking = !!n.walk;

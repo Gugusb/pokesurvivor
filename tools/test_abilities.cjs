@@ -676,11 +676,11 @@ test('Dragonite five-star rewards become either medal; duplicates refund, normal
   const reward = G.Gacha.pull(save, 1)[0]; assert.equal(reward.dex, 149); assert.ok(save.owned[149]);
 });
 
-test('Inner Focus now boosts unused PP and never cools inactive moves',()=>{
-  const s=context(),{G}=s,p=s.player(149,'innerfocus');s.load('js/systems/move-pp.js');s.load('js/systems/combat.js');
-  const a=G.Moves.instance('swords-dance'),b=G.Moves.instance('harden');a.t=b.t=10;p.moves=[a,b];p.slots=[[a],[b]];p.active=0;p.baseStamina=0;
+test('Inner Focus boosts unused PP without modifying parallel cooldown rates',()=>{
+  const s=context(),{G}=s,p=s.player(149,'innerfocus');s.load('js/core/settings.js');s.load('js/systems/move-control.js');s.load('js/systems/move-pp.js');s.load('js/systems/combat.js');
+  const a=G.Moves.instance('swords-dance'),b=G.Moves.instance('harden');a.t=b.t=10;p.moves=[a,b];p.slots=[[a],[b]];p.active=0;p.baseStamina=0;G.Settings.set('castMode','click');G.MoveControl.input(p,0);
   G.MovePP.state(p,a).current=G.MovePP.state(p,b).current=0;
-  G.Combat.tick(1,p,0);approx(a.t,9);approx(b.t,10);approx(G.MovePP.state(p,a).current,.7);approx(G.MovePP.state(p,b).current,1.8);
+  G.Combat.tick(1,p,0);approx(a.t,9);approx(b.t,10-1/p.agilityCooldownFor(b));approx(G.MovePP.state(p,a).current,.7);approx(G.MovePP.state(p,b).current,1.8);
 });
 
 test('Multiscale halves final contact, ranged and pure attack damage only while full; healing reactivates it', () => {

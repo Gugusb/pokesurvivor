@@ -1,5 +1,5 @@
 /* ============ combat.js — ejecución de movimientos y colisiones ============
- * Sólo se ejecuta el movimiento ACTIVO del jugador. Cada `kind` tiene aquí su
+ * All learned slots run in parallel; the selected slot uses full derived stats. Cada `kind` tiene aquí su
  * implementación. Todos los ataques dañan también los objetos destructibles
  * del escenario (rocas, cofres, hierba alta).
  *
@@ -24,15 +24,15 @@ G.Combat = (() => {
     if (G.ZMoves) { const locked = G.ZMoves.busy(pl); G.ZMoves.tick(pl, dt); if (locked || G.ZMoves.busy(pl)) return; }
     if (pl.dead) return;
     if (!G.Abilities.canCast(pl)) {
-      for (const m of pl.activeGroup()) m.t = Math.max(0, m.t - dt * rateFor(pl,m));
+      for (const m of pl.moves) m.t = Math.max(0, m.t - dt * rateFor(pl,m));
       G.Projectiles.clearOrbs(pl); return;
     }
-    const active = pl.activeGroup();
-    // Vínculos: todos los movimientos del hueco activo, cada uno con su recarga.
-    for (const m of active) tickMove(dt, pl, m, now);
+    const primary=pl.activeGroup();
+    // Resolve the primary group first when sharing reserve PP or single-use effects.
+    for(const m of [...primary,...pl.moves.filter(m=>!primary.includes(m))])tickMove(dt,pl,m,now);
   }
 
-  const rateFor=(pl,m)=>G.Abilities.cooldownRate(pl,m)*(G.Mega?G.Mega.cooldownRate(pl,m):1)/(pl.agilityCooldown||1)/(G.Items?.cooldownFactor(pl)||1)/(G.Specialization?.stats(m).cooldown||1);
+  const rateFor=(pl,m)=>G.Abilities.cooldownRate(pl,m)*(G.Mega?G.Mega.cooldownRate(pl,m):1)/(pl.agilityCooldownFor?.(m)||pl.agilityCooldown||1)/(G.Items?.cooldownFactor(pl)||1)/(G.Specialization?.stats(m).cooldown||1);
   function tickMove(dt, pl, m, now) {
     const cooldownRate = rateFor(pl,m);
     m.t -= dt * cooldownRate;
@@ -523,7 +523,7 @@ G.Combat = (() => {
   function clearFields(owner) { fields = owner ? fields.filter(f => f.owner !== owner) : []; }
 
   function orbit(pl, m, dt, now, isGhost = false) {
-    const rehit=Math.max(.12,m.cd)*pl.cdMul/rateFor(pl,m);
+    const rehit=m.remoteRehit||Math.max(.12,m.cd)*pl.cdMul/rateFor(pl,m);
     if(G.Specialization)m=G.Specialization.move(pl,m);
     if (G.Mega) m = G.Mega.move(pl, m);
     m = G.Abilities.move(pl, m);
@@ -562,7 +562,7 @@ G.Combat = (() => {
 
     // Animación de concentración de vez en cuando, para que se note vivo.
     pl.orbCastT = (pl.orbCastT || 0) - dt;
-    if (pl.orbCastT <= 0) { pl.orbCastT = 1.6; pl.cast({ kind: 'orbit', cd: 1.6 }); }
+    if (pl.orbCastT <= 0) { pl.orbCastT = 1.6; pl.cast({ ...m, cd: 1.6 }); }
   }
 
   /** Repite el ataque de un compañero sólo para verlo (sin daño). */
@@ -584,9 +584,10 @@ G.Combat = (() => {
   /** Orbes de un compañero que tiene activo un movimiento de órbita (sólo visual). */
   function ghostOrbit(pl, dt, now) {
     if (G.ZMoves && G.ZMoves.busy(pl)) { G.Projectiles.clearOrbs(pl); return; }
-    const m = pl.activeMove();
-    if (m && m.kind === 'orbit' && !pl.dead) orbit(pl, {...m,specializations:G.Specialization?.ids(G.Specialization.find(pl,m.id))||[]}, dt, now, true);
-    else for(const p of G.Projectiles.all().filter(p=>p.orb&&p.owner===pl&&!String(p.mid).includes(':')))G.Projectiles.remove(p);
+    const list=pl.remoteOrbits??(pl.activeMove()?.kind==='orbit'?[pl.activeMove()]:[]),alive=pl.dead?[]:list;
+    const ids=new Set(alive.map(m=>m.id));
+    for(const shot of G.Projectiles.all().filter(p=>p.orb&&p.owner===pl&&!String(p.mid).includes(':')&&!ids.has(p.mid)))G.Projectiles.remove(shot);
+    for(const m of alive)orbit(pl,{...m,specializations:G.Specialization?.ids(G.Specialization.find(pl,m.id))||[]},dt,now,true);
   }
 
   // Golpe crítico (Mejoras → Golpe Crítico): x1,5 de daño, número naranja y grande.

@@ -10,21 +10,21 @@ function setup(){
   return s;
 }
 test('PP rates are 70%/150%, and both directions keep their previous rate for one simulated second',()=>{
-  const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','water-gun']);for(const m of p.moves)G.MovePP.state(p,m).current=0;
+  const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','water-gun']);G.Settings.set('castMode','toggle');G.MoveControl.input(p,1);G.MoveControl.input(p,1);G.MoveControl.input(p,0);for(const m of p.moves)G.MovePP.state(p,m).current=0;
   G.MovePP.tick(p,1);close(G.MovePP.state(p,a).current,.7);close(G.MovePP.state(p,b).current,1.5);
-  p.setActive(1);G.MovePP.tick(p,.5);close(G.MovePP.state(p,a).current,1.05);close(G.MovePP.state(p,b).current,2.25);
+  G.MoveControl.input(p,0);G.MoveControl.input(p,1);G.MovePP.tick(p,.5);close(G.MovePP.state(p,a).current,1.05);close(G.MovePP.state(p,b).current,2.25);
   G.MovePP.tick(p,.5);close(G.MovePP.state(p,a).current,1.4);close(G.MovePP.state(p,b).current,3);
   G.MovePP.tick(p,1);close(G.MovePP.state(p,a).current,2.9);close(G.MovePP.state(p,b).current,3.7);
 });
 test('reversing a switch cancels its pending PP transition, and Inner Focus only boosts unused recovery',()=>{
-  const s=setup(),{G}=s,p=s.player(149,'innerfocus'),[a,b]=s.learn(p,['tackle','ember']);for(const m of p.moves)G.MovePP.state(p,m).current=0;
-  p.setActive(1);G.MovePP.tick(p,.3);p.setActive(0);G.MovePP.tick(p,.7);
+  const s=setup(),{G}=s,p=s.player(149,'innerfocus'),[a,b]=s.learn(p,['tackle','ember']);G.Settings.set('castMode','toggle');G.MoveControl.input(p,1);G.MoveControl.input(p,1);G.MoveControl.input(p,0);for(const m of p.moves)G.MovePP.state(p,m).current=0;
+  G.MoveControl.input(p,0);G.MoveControl.input(p,1);G.MovePP.tick(p,.3);G.MoveControl.input(p,1);G.MoveControl.input(p,0);G.MovePP.tick(p,.7);
   close(G.MovePP.state(p,a).current,.7);close(G.MovePP.state(p,b).current,1.8);
-  a.t=b.t=10;G.Combat.tick(1,p,0);close(a.t,9);close(b.t,10);
+  a.t=b.t=10;G.Combat.tick(1,p,0);close(a.t,9);close(b.t,10-1/G.MonProgression.cooldownFactor(40));
 });
 test('a single PP update crossing the inertia deadline matches many small frames',()=>{
-  const run=step=>{const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','water-gun']);for(const m of p.moves)G.MovePP.state(p,m).current=0;p.setActive(1);for(let t=0;t<2-1e-8;t+=step)G.MovePP.tick(p,Math.min(step,2-t));return p.moves.map(m=>G.MovePP.state(p,m).current);};
-  const a=run(2),b=run(.01);a.forEach((n,i)=>close(n,b[i]));assert.deepEqual(a,[2.2,2.2]);
+  const run=step=>{const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','water-gun']);p.baseStamina=200;for(const m of p.moves)G.MovePP.state(p,m).current=0;p.setActive(1);for(let t=0;t<2-1e-8;t+=step)G.MovePP.tick(p,Math.min(step,2-t));return p.moves.map(m=>G.MovePP.state(p,m).current);};
+  const a=run(2),b=run(.01);a.forEach((n,i)=>close(n,b[i]));a.forEach(n=>close(n,4.9));
 });
 test('Candy Jars add five over-cap points each and halve only the above-cap recovery, including threshold crossings',()=>{
   const s=setup(),{G}=s,p=s.player(6),[m]=s.learn(p,['ember']);G.Items.gain(p,'candyjar');let pp=G.MovePP.state(p,m);
@@ -80,24 +80,20 @@ test('Spirit Spray adds fifteen shared reserve PP at full HP, stacks with existi
  G.Game.state='paused';assert.equal(G.Items.useActive(p),false);
 });
 
-test('auto, toggle and click modes affect only the selected slot; a linked click casts each move once',()=>{
-  const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);p.slots=[[a,b]];let casts=0;p.cast=()=>casts++;
-  G.Settings.set('castMode','toggle');G.Combat.tick(0,p,0);assert.equal(casts,0);G.MoveControl.input(p,0);G.Combat.tick(0,p,0);assert.equal(casts,2);
-  G.MoveControl.input(p,0);G.Combat.tick(100,p,0);assert.equal(casts,2);
-  G.Settings.set('castMode','click');G.Combat.tick(100,p,0);assert.equal(casts,2);G.MoveControl.input(p,0);G.Combat.tick(0,p,0);assert.equal(casts,4);G.Combat.tick(100,p,0);assert.equal(casts,4);
-  G.Settings.set('castMode','auto');G.Combat.tick(0,p,0);assert.equal(casts,6);
+test('parallel toggle and click modes retain per-group controls; linked clicks cast each move once',()=>{
+ const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);p.slots=[[a,b]];let casts=0;p.cast=()=>casts++;
+ G.Settings.set('castMode','toggle');G.Combat.tick(0,p,0);assert.equal(casts,2);G.MoveControl.input(p,0);G.Combat.tick(100,p,0);assert.equal(casts,2);G.MoveControl.input(p,0);G.Combat.tick(0,p,0);assert.equal(casts,4);
+ G.Settings.set('castMode','click');G.Combat.tick(100,p,0);assert.equal(casts,4);G.MoveControl.input(p,0);G.Combat.tick(0,p,0);assert.equal(casts,6);G.Combat.tick(100,p,0);assert.equal(casts,6);G.Settings.set('castMode','auto');G.Combat.tick(0,p,0);assert.equal(casts,8);
 });
-test('toggle selects a new slot enabled, including a previously paused slot, but clicking the current slot pauses it',()=>{
- const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);G.Settings.set('castMode','toggle');
- assert.equal(G.MoveControl.wants(p,a),false);G.MoveControl.input(p,1);assert.ok(G.MoveControl.wants(p,b));assert.equal(G.MoveControl.wants(p,a),false);
- G.MoveControl.input(p,1);assert.equal(G.MoveControl.wants(p,b),false);G.MoveControl.input(p,0);assert.ok(G.MoveControl.wants(p,a));G.MoveControl.input(p,1);assert.ok(G.MoveControl.wants(p,b));
+test('selecting a paused group enables it without disabling other groups; clicking the primary group pauses only it',()=>{
+ const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);G.Settings.set('castMode','toggle');assert.ok(G.MoveControl.wants(p,a)&&G.MoveControl.wants(p,b));G.MoveControl.input(p,0);assert.equal(G.MoveControl.wants(p,a),false);G.MoveControl.input(p,1);assert.ok(G.MoveControl.wants(p,b));assert.equal(G.MoveControl.wants(p,a),false);G.MoveControl.input(p,1);assert.equal(G.MoveControl.wants(p,b),false);G.MoveControl.input(p,0);assert.ok(G.MoveControl.wants(p,a));G.MoveControl.input(p,1);assert.ok(G.MoveControl.wants(p,b));assert.ok(G.MoveControl.wants(p,a));
 });
 
 test('removed Choice Band cannot be gained, does not alter damage or block unused PP',()=>{
   const s=setup(),{G}=s,p=s.player(6),[a,b]=s.learn(p,['ember','tackle']);
   assert.equal(G.Items.BY.choiceband,undefined);assert.equal(G.Items.gain(p,'choiceband'),false);
   p.specialItems.choiceband=20;assert.equal(G.Items.damageBonus(p),0);assert.equal(G.Items.count(p,'choiceband'),0);
-  G.MovePP.state(p,b).current=0;G.MovePP.tick(p,1);close(G.MovePP.state(p,b).current,1.5);
+  G.Settings.set('castMode','click');G.MovePP.state(p,b).current=0;G.MovePP.tick(p,1);close(G.MovePP.state(p,b).current,1.5);
 });
 
 test('a click-triggered orbit lasts one cooldown cycle and does not restart by itself',()=>{

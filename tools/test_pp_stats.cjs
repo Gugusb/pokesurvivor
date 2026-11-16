@@ -37,10 +37,10 @@ test('PP maxima follow the type hierarchy, spend only on an actual cast and inde
   G.Projectiles.clear();pp.current=0;m.t=0;G.Combat.tick(0,p,0);assert.equal(G.Projectiles.all().length,0);assert.equal(m.t,0);
   p.tempPP=20;G.Combat.tick(0,p,0);assert.equal(p.tempPP,19);assert.equal(pp.current,0);assert.equal(G.Projectiles.all().length,1);
 });
-test('inactive moves recover PP; fractional ordinary PP is preserved when reserve PP is used; dead players do not recover',()=>{
+test('parallel secondary moves recover PP; fractional ordinary PP is preserved when reserve PP is used; dead players do not recover',()=>{
   const s=setup(),{G}=s,p=s.player(6),ms=s.learn(p,['ember','tackle']);p.baseStamina=0;
   for(const m of ms)G.MovePP.state(p,m).current=0;
-  G.MovePP.tick(p,1);close(G.MovePP.state(p,ms[0]).current,.7);close(G.MovePP.state(p,ms[1]).current,1.5);
+  G.MovePP.tick(p,1);close(G.MovePP.state(p,ms[0]).current,.7);close(G.MovePP.state(p,ms[1]).current,.7);
   assert.equal(G.MovePP.consume(p,ms[0]),false);p.tempPP=1;assert.equal(G.MovePP.consume(p,ms[0]),true);close(G.MovePP.state(p,ms[0]).current,.7);
   G.MovePP.tick(p,3/7);assert.equal(G.MovePP.consume(p,ms[0]),true);close(G.MovePP.state(p,ms[0]).current,0);
   p.dead=true;G.MovePP.tick(p,30);close(G.MovePP.state(p,ms[0]).current,0);

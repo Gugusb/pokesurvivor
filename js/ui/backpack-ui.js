@@ -22,13 +22,13 @@ G.BackpackUI=(()=>{
       for(const [key,title]of [['permanent','Mejoras permanentes'],['fruit','Bayas'],['skills','Movimientos'],['other','Otros efectos']]){const el=node('span','bag-'+key,'('+(r[key]>=0?'+':'')+fmt(r[key])+')');el.title=T(title);equation.append(el);}
       row.append(equation,node('small','bag-battle',r.battle));stats.append(row);
     }
-    $('backpack-def-note').textContent=T('Reducción adicional')+' '+fmt(p.reduction*100)+'% · '+T('Recuperación al usar')+' '+fmt(.7/p.ppInterval)+' PP/s · '+T('Sin usar')+' '+fmt(1.5*(G.Abilities.has(p,'innerfocus')?1.2:1)/p.ppInterval)+' PP/s';
+    $('backpack-def-note').textContent=T('Reducción adicional')+' '+fmt(p.reduction*100)+'% · '+T('Principal')+' · '+T('Recuperación al usar')+' '+fmt(.7/p.ppInterval)+' PP/s · '+T('Sin usar')+' '+fmt(1.5*(G.Abilities.has(p,'innerfocus')?1.2:1)/p.ppInterval)+' PP/s';
     const moves=$('backpack-moves'),existing=new Map([...moves.children].map(el=>[el.dataset.move,el]));
     p.slots.forEach((group,i)=>group.forEach(m=>{
       const info=G.PlayerStats.move(p,m),old=existing.get(m.id);if(old){old.querySelector('.bag-pp').textContent=fmt(info.pp.current)+' / '+info.pp.max+' PP';if(old.matches(':hover')||old.open)return;}const row=node('details','bag-move'),title=node('summary','');row.dataset.move=m.id;
       title.append(node('span','bag-slot',String(i+1)),node('strong','',T(m.name)),node('span','bag-pp',fmt(info.pp.current)+' / '+info.pp.max+' PP'));
       row.append(title);
-      const lines=[T(m.def.desc),T('Recarga')+': '+fmt(info.cd)+' s'+(m.kind==='buff'?'':' · '+T('Multiplicador del movimiento')+': ×'+fmt(info.power)),T(m.damageClass==='special'?'Ataque especial':m.kind==='buff'?'Efecto de apoyo':'Ataque físico')];
+      const lines=[T(p.isPrimaryMove(m)?'Principal':'Secundario')+' · '+T('Agilidad efectiva')+': '+fmt(p.agilityFor(m))+' · '+T('Aguante efectivo')+': '+fmt(p.staminaFor(m)),T(m.def.desc),T('Recarga')+': '+fmt(info.cd)+' s'+(m.kind==='buff'?'':' · '+T('Multiplicador del movimiento')+': ×'+fmt(info.power)),T(m.damageClass==='special'?'Ataque especial':m.kind==='buff'?'Efecto de apoyo':'Ataque físico')];
       if(info.view.amount)lines.push(T(m.stat==='regen'?'Vida perdida recuperada por segundo':'Aumento del valor natural')+': '+fmt(info.view.amount*100)+'%'+(info.view.stacks?' ×'+info.view.stacks:''));
       if(info.view.dur)lines.push(T('Duración')+': '+fmt(info.view.dur)+' s');
       if(info.view.radius)lines.push(T('Alcance')+': '+fmt(info.view.radius));

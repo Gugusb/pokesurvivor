@@ -125,8 +125,8 @@ test('switching dash moves has no shared one-second restriction and preserves an
   const s=context(),{G}=s,p=s.player(),a=G.Moves.instance('quick-attack'),b=G.Moves.instance('aerial-ace'),e=s.enemy(80);
   a.cd=.2;b.cd=.1;p.cdMul=1;p.moves=[a,b];p.slots=[[a],[b]];p.target=e;
   G.Combat.tick(0,p,0);close(p.dashGuardT,.18);
-  p.update(.05);p.active=1;p.target=e;G.Combat.tick(0,p,.05);close(p.dashGuardT,.13);
-  p.update(.14);b.t=0;p.target=e;G.Combat.tick(0,p,.19);close(p.dashGuardT,.09);
+  p.update(.05);p.active=1;e.x=p.x+80;e.y=p.y;p.target=e;G.Combat.tick(0,p,.05);close(p.dashGuardT,.13);
+  p.update(.14);b.t=0;e.x=p.x+80;e.y=p.y;p.target=e;G.Combat.tick(0,p,.19);close(p.dashGuardT,.09);
   p.update(.091);assert.equal(p.hurt(1,null,true),true);
 });
 test('blocked, ghost and Sheer Force dash casts do not grant ordinary protection',()=>{

@@ -391,12 +391,14 @@ G.HUD = (() => {
         }
       }
 
-      if(on&&G.MoveControl&&G.MoveControl.mode()!=='auto'&&!g.some(gm=>G.MoveControl.releasing(pl,gm))){ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(x+3,y+3,S-6,S-6);ctx.font=F(800,10);ctx.fillStyle='#fff';ctx.textAlign='right';ctx.fillText('Ⅱ',x+S-5,y+12);}
+      if(G.MoveControl&&G.MoveControl.mode()!=='auto'&&!g.some(gm=>G.MoveControl.releasing(pl,gm))){ctx.fillStyle='rgba(0,0,0,.4)';ctx.fillRect(x+3,y+3,S-6,S-6);ctx.font=F(800,10);ctx.fillStyle='#fff';ctx.textAlign='right';ctx.fillText('Ⅱ',x+S-5,y+12);}
       // tecla
       ctx.font = F(800, 9);
       ctx.fillStyle = fused ? BOND : on ? col : 'rgba(180,200,230,.6)';
       ctx.textAlign = 'left';
       ctx.fillText(String(i + 1), x + 3, y + 10);
+
+      ctx.font=F(800,9);ctx.textAlign='right';ctx.fillStyle=on?'#ffe4a0':'#9bb2cf';ctx.fillText(touch?(G.I18n.lang==='zh'?(on?'主':'副'):(on?'P':'S')):G.T(on?'Principal':'Secundario'),x+S-4,y+11);
 
       // nombre encima del activo (con un vínculo: "Ascuas +2")
       if (on&&!touch) {
