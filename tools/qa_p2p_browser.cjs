@@ -259,6 +259,10 @@ const { chromium } = require(
         { route, b },
       );
     }
+    // Closing a tab now preserves an active room through a signaling outage.
+    // Explicitly leave the source fixture before starting the independent built fixture.
+    await post(built[0], "/room/leave", {});
+    await post(built[1], "/room/leave", {});
     await post(built[0], "/room/create", {});
     await built[0].locator('[data-go="friends"]').click();
     await built[0].locator("#fr-room").click();

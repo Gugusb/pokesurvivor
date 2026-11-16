@@ -12,7 +12,7 @@ const {
 const { promisify } = require("node:util"),
   { WebSocketServer, WebSocket } = require("ws");
 const { openStore } = require("./store.cjs"),
-  { ROOT, G, fresh, sanitize, clone, record } = require("./domain.cjs");
+  { ROOT, G, fresh, sanitize, clone, record, safeObject } = require("./domain.cjs");
 const {characterFor}=require('./character-profiles.cjs');
 const derive = promisify(scrypt),
   digest = (s) => createHash("sha256").update(s).digest("hex");
@@ -46,6 +46,7 @@ function createApp(opts = {}) {
   const origin = opts.origin || process.env.PUBLIC_ORIGIN || "",
     now = opts.now || Date.now,
     coopEnabled = opts.coopEnabled === true; // Internal regression fixtures only; public service stays solo.
+  const connections=new Map();
   const sockets = new Map(),
     rooms = new Map(),
     invites = new Map(),
@@ -193,16 +194,12 @@ function createApp(opts = {}) {
       throw fail(400, "Invalid JSON");
     }
   }
-  function emit(uid, msg) {
-    const ws = sockets.get(uid);
-    if (ws?.readyState === WebSocket.OPEN) {
-      if (ws.bufferedAmount > 2e6) {
-        ws.close(1013, "Connection too slow");
-        return;
-      }
-      ws.send(JSON.stringify(msg));
-    }
+  function sendSocket(ws,msg){if(ws?.readyState===WebSocket.OPEN){if(ws.bufferedAmount>2e6){ws.close(1013,'Connection too slow');return;}ws.send(JSON.stringify(msg));}}
+  function emit(uid,msg){
+    if(msg.k==='signal'||msg.k==='net')sendSocket(sockets.get(uid),msg);
+    else for(const ws of connections.get(uid)||[])sendSocket(ws,msg);
   }
+  function closeConnections(uid,code,reason){for(const ws of connections.get(uid)||[])ws.close(code,reason);}
   const roomOf = (uid) => [...rooms.values()].find((r) => r.members.has(uid));
   function roomData(r, uid) {
     return r
@@ -315,22 +312,22 @@ function createApp(opts = {}) {
   function checkRun(u, b) {
     const r = q("SELECT * FROM runs WHERE id=? AND uid=?", b.id, u.uid);
     if (!r || r.ended) throw fail(409, "Run has ended or expired");
-    if (now() - r.beat > 120e3) throw fail(409, "Run connection expired");
     const speed=b.speed??1,owner=saved(r.speed_owner||u.uid).save;
     if(![1,1.5,2,3].includes(speed)||!G.CardPacks.speedAllowed(owner,speed))throw fail(400,'Speed not unlocked');
-    const t = Number(b.t),
+    const reported=Number(b.t),stale=reported<r.t,t=Math.max(r.t,reported),
       budget = r.budget + ((now() - r.beat) / 1000) * r.speed;
-    if (!Number.isFinite(t) || t < r.t || t > 7200 || t > budget + 3)
+    // Progress is client-side. Network gaps, long pauses and speed changes are not cheating.
+    if (!Number.isFinite(reported) || reported < 0 || reported > 7*86400)
       throw fail(400, "Invalid run clock");
     const previous=G.Difficulty.scoreCounts(JSON.parse(r.score_counts)),previousKills=previous.normal+previous.elite+previous.boss+previous.rift;
     let counts;
     if(b.scoreCounts!==undefined){
       if(!b.scoreCounts||Array.isArray(b.scoreCounts)||typeof b.scoreCounts!=='object')throw fail(400,'Invalid score counters');
-      for(const key of G.Difficulty.SCORE_KEYS)if(!Number.isSafeInteger(b.scoreCounts[key])||b.scoreCounts[key]<previous[key]||b.scoreCounts[key]>2e6)throw fail(400,'Invalid score counters');
-      counts=G.Difficulty.scoreCounts(b.scoreCounts);
+      for(const key of G.Difficulty.SCORE_KEYS)if(!Number.isSafeInteger(b.scoreCounts[key])||b.scoreCounts[key]<0||!stale&&b.scoreCounts[key]<previous[key]||b.scoreCounts[key]>2e6)throw fail(400,'Invalid score counters');
+      counts=G.Difficulty.scoreCounts(Object.fromEntries(G.Difficulty.SCORE_KEYS.map(k=>[k,Math.max(previous[k],b.scoreCounts[k])])));
     }else counts={...previous,normal:previous.normal+Math.max(0,(b.kills||0)-previousKills)};
     const totalKills=counts.normal+counts.elite+counts.boss+counts.rift;
-    if((b.kills!==undefined&&(!Number.isSafeInteger(b.kills)||b.kills!==totalKills))||totalKills>256+t*160||counts.boss+counts.rift>20+Math.floor(t/30)||counts.events>2+Math.floor(t/60))throw fail(400,'Invalid score counters');
+    if((b.kills!==undefined&&(!Number.isSafeInteger(b.kills)||b.kills<0||!stale&&b.kills!==totalKills))||totalKills>256+t*160||counts.boss+counts.rift>20+Math.floor(t/30)||counts.events>2+Math.floor(t/60))throw fail(400,'Invalid score counters');
     exec('UPDATE runs SET score_counts=? WHERE id=?',JSON.stringify(counts),r.id);
     const dirty = r.dirty || b.clean !== true;
     exec(
@@ -348,11 +345,6 @@ function createApp(opts = {}) {
   function runUpdate(u, b, end = false) {
     return atomic(() => {
       const current = saved(u.uid);
-      if (!end && b.rev !== current.rev)
-        throw fail(
-          409,
-          "Save changed on another device. Reload before continuing.",
-        );
       const r = checkRun(u, b),
         s = current.save;
       const beforeRecords = JSON.stringify(s.difficultyRecords),
@@ -417,7 +409,7 @@ function createApp(opts = {}) {
           ),
         );
       }
-      return {rev:value.rev,won,progress,runId:r.id,runLoot:rewards.packs};
+      return {rev:value.rev,won,progress,runId:r.id,runLoot:rewards.packs,...(b.rev!==current.rev?{save:value.save}:{})};
     });
   }
   const services = require('./social-services.cjs')({q,all,exec,atomic,saved,save,isFriend,now,fail,notifySocial,rng:opts.rewardRandom});
@@ -519,7 +511,7 @@ function createApp(opts = {}) {
             u.uid,
           );
         });
-        sockets.get(u.uid)?.close(4001, "Session changed");
+        closeConnections(u.uid,4003,"Session changed");
         return json(res, 200, { ok: true, recovery });
       }
       if (typeof b.pass !== "string" || b.pass.length > 128)
@@ -543,7 +535,7 @@ function createApp(opts = {}) {
       return json(res, 200, { user: publicUser(u), ...saved(u.uid) });
     if (route === "/logout") {
       exec("DELETE FROM sessions WHERE token=?", digest(cookie(req)));
-      sockets.get(u.uid)?.close(4001, "Signed out");
+      for(const ws of connections.get(u.uid)||[])if(ws.session===digest(cookie(req)))ws.close(1000,'Signed out');
       res.setHeader(
         "Set-Cookie",
         "ps_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0",
@@ -562,6 +554,7 @@ function createApp(opts = {}) {
         );
         for (const table of [
           "sessions",
+          "save_operations",
           "saves",
           "time_scores",
           "run_scores",
@@ -581,24 +574,33 @@ function createApp(opts = {}) {
         exec("DELETE FROM reports WHERE target=? OR by_uid=?", u.uid, u.uid);
       });
       leaveRoom(u.uid);
-      sockets.get(u.uid)?.close(4001, "Account deleted");
+      closeConnections(u.uid,4003,"Account deleted");
       return json(res, 200, { ok: true });
     }
     if (route === "/save") {
       const value = atomic(() => {
         const old = saved(u.uid);
-        if (b.rev !== old.rev)
+        const operation=typeof b.operation==='string'&&/^[\w-]{8,100}$/.test(b.operation)?b.operation:null;
+        if(operation&&q('SELECT 1 FROM save_operations WHERE uid=? AND operation=?',u.uid,operation))return {...old,duplicate:true};
+        if (!operation && b.rev !== old.rev)
           throw fail(
             409,
             "Save changed on another device. Reload before continuing.",
           );
         let s;
         try {
-          s = sanitize(b.save, old.save, u.name);
+          if(operation){
+            if(!b.base||Array.isArray(b.base)||typeof b.base!=='object')throw Error('Invalid save base');
+            if(!b.save||Array.isArray(b.save)||typeof b.save!=='object')throw Error('Invalid save');
+            safeObject(b.base);safeObject(b.save);
+          }
+          s = sanitize(operation?G.SaveSync.rebase(old.save,b.base,b.save):b.save, old.save, u.name);
         } catch (e) {
           throw fail(400, e.message);
         }
-        return save(u.uid, s);
+        const result=save(u.uid,s);
+        if(operation)exec('INSERT INTO save_operations VALUES(?,?,?)',u.uid,operation,now());
+        return result;
       });
       return json(res, 200, value);
     }
@@ -619,8 +621,7 @@ function createApp(opts = {}) {
       const s = saved(u.uid).save;
       if (
         !G.DEX_BY[b.dex] ||
-        b.dex !== G.MonProgression.rootFor(s.partner) ||
-        !s.owned[s.partner] ||
+        !Object.keys(s.owned).some(d=>G.MonProgression.rootFor(+d)===b.dex) ||
         !Number.isInteger(b.stars) ||
         b.stars < 1 ||
         b.stars > G.Difficulty.unlocked(s)
@@ -634,16 +635,17 @@ function createApp(opts = {}) {
         throw fail(400, "No matching co-op room");
       const speedOwner=b.mode==='g'?r.host:u.uid,initialSpeed=b.speed??1;
       if(!G.CardPacks.speedAllowed(saved(speedOwner).save,initialSpeed))throw fail(400,'Speed not unlocked');
-      const id = randomUUID();
+      const id = typeof b.id==='string'&&/^[\w-]{8,100}$/.test(b.id)?b.id:randomUUID();
+      const existing=q('SELECT uid FROM runs WHERE id=?',id);
+      if(existing){if(existing.uid!==u.uid)throw fail(409,'Invalid run');return json(res,200,{id});}
       atomic(() => {
-        exec("UPDATE runs SET ended=1,dirty=1 WHERE uid=? AND ended=0", u.uid);
         exec(
           "INSERT INTO runs(id,uid,dex,stars,started,beat,dirty,mode,room) VALUES(?,?,?,?,?,?,?,?,?)",
           id,
           u.uid,
           b.dex,
           b.stars,
-          now(),
+          Number.isFinite(b.clientStarted)?Math.max(now()-7*864e5,Math.min(now(),b.clientStarted)):now(),
           now(),
           b.clean === true ? 0 : 1,
           b.mode === "g" ? "g" : "s",
@@ -666,14 +668,9 @@ function createApp(opts = {}) {
     if (route === "/presence") {
       const value = atomic(() => {
         const current = saved(u.uid);
-        if (b.rev !== current.rev)
-          throw fail(
-            409,
-            "Save changed on another device. Reload before continuing.",
-          );
         const s = current.save;
         G.Offline.stamp(s, now());
-        return { rev: save(u.uid, s).rev, progress: { offline: s.offline } };
+        const result=save(u.uid,s);return {rev:result.rev,progress:{offline:s.offline},...(b.rev!==current.rev?{save:result.save}:{})};
       });
       return json(res, 200, value);
     }
@@ -951,7 +948,7 @@ function createApp(opts = {}) {
           );
         });
         leaveRoom(b.uid);
-        sockets.get(b.uid)?.close(4003, "Account suspended");
+        closeConnections(b.uid,4003,"Account suspended");
         return json(res, 200, { ok: true });
       }
       if (route === "/admin/remove-score") {
@@ -1068,11 +1065,13 @@ function createApp(opts = {}) {
     }
   });
   wss.on("connection", (ws, req, u) => {
-    sockets.get(u.uid)?.close(4001, "Connected on another device");
-    sockets.set(u.uid, ws);
+    const group=connections.get(u.uid)||new Set();group.add(ws);connections.set(u.uid,group);
+    if(!sockets.has(u.uid))sockets.set(u.uid,ws);
     ws.alive = true;
-    emit(u.uid, {
+    ws.session=digest(cookie(req));
+    sendSocket(ws, {
       k: "hello",
+      signaling:sockets.get(u.uid)===ws,
       protocol: PROTOCOL,
       transport: "p2p",
       iceServers,
@@ -1187,7 +1186,10 @@ function createApp(opts = {}) {
       }
     });
     ws.on("close", () => {
-      if (sockets.get(u.uid) !== ws) return;
+      const group=connections.get(u.uid);group?.delete(ws);if(!group?.size)connections.delete(u.uid);
+      if(sockets.get(u.uid)!==ws)return;
+      const next=[...(group||[])].find(x=>x.readyState===WebSocket.OPEN);
+      if(next){sockets.set(u.uid,next);sendSocket(next,{k:'hello',protocol:PROTOCOL,transport:'p2p',iceServers,signaling:true});return;}
       sockets.delete(u.uid);
       const currentRoom = roomOf(u.uid);
       if (currentRoom) {
@@ -1198,8 +1200,8 @@ function createApp(opts = {}) {
       }
       notifyFriends(u.uid);
       const grace = setTimeout(() => {
-        if (!sockets.has(u.uid)) leaveRoom(u.uid);
-      }, 15000);
+        if (!sockets.has(u.uid)&&roomOf(u.uid)?.id===currentRoom?.id) leaveRoom(u.uid);
+      }, currentRoom&&!currentRoom.open?3600000:120000);
       grace.unref();
     });
     ws.on("error", () => {});
@@ -1208,8 +1210,8 @@ function createApp(opts = {}) {
     for (const [k, v] of limits) if (v.until < now()) limits.delete(k);
     for (const [k, v] of invites) if (v.at < now() - 180e3) invites.delete(k);
     exec("DELETE FROM sessions WHERE expires<?", now());
-    exec("DELETE FROM runs WHERE beat<?", now() - 7 * 864e5);
-    for (const ws of sockets.values()) {
+    exec("DELETE FROM runs WHERE ended=1 AND beat<?", now() - 180 * 864e5);
+    for (const group of connections.values()) for(const ws of group) {
       if (!ws.alive) {
         ws.terminate();
         continue;
@@ -1227,7 +1229,7 @@ function createApp(opts = {}) {
     sockets,
     async close() {
       clearInterval(housekeeping);
-      for (const ws of sockets.values()) ws.terminate();
+      for(const group of connections.values())for(const ws of group)ws.terminate();
       await new Promise((resolve) => wss.close(resolve));
       await new Promise((resolve) => server.close(resolve));
       db.close();

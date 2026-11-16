@@ -292,7 +292,7 @@ test("all eight medals propagate to the entire branched family and count each sp
   assert.equal(times.data.me.t, 1201);
   assert.equal(times.data.me.dex, 133);
 });
-test("clock checks retain their budget; clean eight-star runs count at normal and double speed", async (t) => {
+test("long gaps and client clocks do not expire runs; clean eight-star runs count at normal and double speed", async (t) => {
   const f = await fixture(t),
     a = await f.account("ClockTester");
   await f.seed(a);
@@ -308,9 +308,9 @@ test("clock checks retain their budget; clean eight-star runs count at normal an
       a.cookie,
     );
   assert.equal((await beat(3)).status, 200);
-  assert.equal((await beat(6)).status, 400);
+  assert.equal((await beat(6)).status, 200);
   f.tick(121000);
-  assert.equal((await beat(4)).status, 409);
+  assert.equal((await beat(130)).status, 200);
   for (let stars = 1; stars <= 7; stars++) await f.run(a, stars);
   assert.equal((await f.request('/ranking?board=survival',undefined,a.cookie)).data.me.stars,7);
   await f.run(a, 8, { double: true, duration: 1400 });
@@ -629,7 +629,7 @@ test("P2P handshakes have a byte quota, no TURN config, and routine presence/hea
   assert.ok(JSON.stringify(presence.data).length < 1000);
   assert.equal(
     (await f.request("/presence", { rev: beat.data.rev }, a.cookie)).status,
-    409,
+    200,
   );
   assert.equal(
     (
@@ -646,7 +646,7 @@ test("P2P handshakes have a byte quota, no TURN config, and routine presence/hea
         a.cookie,
       )
     ).status,
-    409,
+    200,
   );
   const r = {
     id: "quota-room",

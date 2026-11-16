@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Un viaje sin interrupciones · v0.41.0": "冒险不停，战果慢慢存好 · v0.41.0",
+  "El progreso se guarda primero en este navegador y se sincroniza al recuperar la conexión. Las actualizaciones de otra página se combinan sin pedirte recargar.": "进度先保存在本机，网络恢复后自动同步；其他页面更新了进度，也会自动合并，不再要求刷新。",
+  "Las aventuras largas y los cortes de conexión ya no caducan por perder un aviso. Puedes seguir jugando mientras los resultados pendientes esperan su turno.": "长时间冒险和暂时断网不再因漏掉心跳而让结算作废。待同步的战果会排队保存，咱们可以继续下一场冒险。",
+  "Abrir otra página de la misma cuenta ya no cierra su conexión social anterior. Los reintentos evitan cobrar o entregar dos veces una misma operación.": "同账号打开其他页面不再踢掉原来的社交连接；上传重试也会避免重复扣费、重复发奖。",
+  "He sujetado las páginas del cuaderno con una concha. Si el viento mueve la mesa, nuestras notas siguen aquí; quien cocina puede dejar de vigilar la ventana un momento.": "手账用贝壳压住啦。海风吹得桌子晃一晃，咱们记下的收获也还在；做饭的那家伙，终于能先别盯着窗户了。",
+  "Progreso guardado aquí; pendiente de sincronizar": "进度已保存在本机，等待同步",
+
   "minutos": "分钟",
   "Más cosas en la mochila · v0.40.0": "行囊又添新收获 · v0.40.0",
   "Algunas oleadas reúnen Pokémon del mismo tipo, sin aumentar su número.": "部分波次会集结同一属性的宝可梦，敌人总数保持不变。",

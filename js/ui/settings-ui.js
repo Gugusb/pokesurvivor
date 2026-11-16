@@ -14,7 +14,7 @@ G.SettingsUI = (() => {
   G.I18n.addChinese({'Todos los huecos pueden actuar a la vez. El seleccionado es principal; los demás usan la mitad de agilidad y aguante.':'所有技能槽可同时释放。选中槽为主要技能，其余技能按一半敏捷与耐力结算。','Principal':'主','Secundario':'副','Agilidad efectiva':'结算敏捷','Aguante efectivo':'结算耐力'});
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '0.40.0 · 2026-11-16';
+  const VERSION = '0.41.0 · 2026-11-16';
   const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 
@@ -147,7 +147,7 @@ G.SettingsUI = (() => {
 
   function renderAccount(box) {
     const st = G.DB.guest ? 'guest' : G.DB.syncState;
-    const SYNC = { ok: 'Guardado en la nube', syncing: 'Guardando…', pending: 'Pendiente de subir (se sube al salir del juego)',
+    const SYNC = { ok: 'Guardado en la nube', syncing: 'Guardando…', pending: 'Progreso guardado aquí; pendiente de sincronizar',
                    offline: 'Sin conexión: se subirá al volver', local: 'Guardado sólo en este navegador', guest: 'Invitado: no se guarda' };
     if (G.DB.guest) {
       box.innerHTML = section('Cuenta', 'Estás jugando como <b>invitado</b>: tu progreso no se guarda al salir.')

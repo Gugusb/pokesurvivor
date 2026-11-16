@@ -15,6 +15,10 @@ G.Server = (() => {
     runGeneration = 0,
     beatTimer = null,
     lastError = 0;
+  let pendingSave=null,retryTimer=null,retryDelay=2000,beating=null,displayRun=null;
+  const ident=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+"-"+Math.random().toString(36).slice(2);
+  const reconcile=(c,b,n)=>G.SaveSync?G.SaveSync.rebase(c,b,n):G.DB.merge(c,n);
+  const changed=(a,b)=>G.SaveSync?G.SaveSync.changed(a,b):JSON.stringify(a)!==JSON.stringify(b);
   const copy = (x) => JSON.parse(JSON.stringify(x));
   const text = (es, en, zh) =>
     G.I18n?.lang === "zh" ? zh : G.I18n?.lang === "en" ? en : es;
@@ -63,8 +67,8 @@ G.Server = (() => {
         "恢复码已使用，请使用最新恢复码。",
       ],
       "Save changed on another device. Reload before continuing.": [
-        "El guardado cambió en otro dispositivo. Recarga antes de continuar.",
-        "存档已被另一设备更新，请重新载入后继续。本机副本已保留。",
+        "El guardado se ha actualizado. Vuelve a intentar esta acción.",
+        "进度已更新，请重试这次操作。本机进度已保留。",
       ],
       "Too many requests; try again later": [
         "Demasiados intentos. Espera un poco.",
@@ -117,25 +121,19 @@ G.Server = (() => {
     const m = messages[message];
     return m ? text(m[0], message, m[1]) : message;
   }
-  function error(e) {
-    if (
-      e.status === 409 &&
-      /Save changed|存档已被|guardado cambió/.test(e.message)
-    )
-      conflict = true;
-    G.DB.serverSync(e.status === 409 ? "pending" : "offline");
-    if (Date.now() - lastError > 8000) {
-      lastError = Date.now();
-      G.UI?.toast(
-        text("No se pudo sincronizar: ", "Sync failed: ", "同步失败：") +
-          e.message,
-        6000,
-      );
-    }
+  function scheduleRetry(){
+    if(!user||retryTimer)return;
+    retryTimer=setTimeout(()=>{retryTimer=null;flush().then(()=>retryRuns()).catch(error);},retryDelay);
+    retryDelay=Math.min(60000,retryDelay*2);
   }
-  async function api(route, data) {
+  function error(e) {
+    conflict=false;remember();G.DB.serverSync('pending');scheduleRetry();
+    const at=Date.now();
+    if(!lastError){lastError=at;const message=e.status===401?text('Tu progreso está guardado aquí. Inicia sesión para sincronizar.','Your progress is saved here. Sign in to sync.','进度已保存在本机，重新登录后可继续同步。'):e.status&&e.status<500?text('Progreso conservado aquí. Acción pendiente: ','Progress kept here. Action pending: ','进度已在本机保留，此次操作尚未同步：')+e.message:text('Progreso guardado aquí; se sincronizará al volver la conexión.','Progress saved here; it will sync when the connection returns.','进度已保存在本机，网络恢复后会自动同步。');G.UI?.toast(message,4500);}
+  }
+  async function api(route, data, timeout=15000) {
     const controller = new AbortController(),
-      timer = setTimeout(() => controller.abort(), 15000);
+      timer = setTimeout(() => controller.abort(), timeout);
     try {
       const r = await fetch("/api" + route, {
         method: data === undefined ? "GET" : "POST",
@@ -156,7 +154,7 @@ G.Server = (() => {
       if (!r.ok)
         throw Object.assign(
           new Error(translatedError(value.error || "Request failed")),
-          { status: r.status },
+          { status: r.status, code:value.error },
         );
       return value;
     } catch (e) {
@@ -177,13 +175,14 @@ G.Server = (() => {
     try {
       localStorage.setItem(
         "ps.selfhost." + user.uid,
-        JSON.stringify({ rev, dirty, save: G.DB.save }),
+        JSON.stringify({rev,dirty,save:G.DB.save,baseline,pending:pendingSave}),
       );
     } catch {}
   }
-  function accept(value, full = false) {
+  function accept(value, full = false, sent = null) {
+    const prior=baseline&&copy(baseline);
     if (value.rev) rev = value.rev;
-    if (value.progress && G.DB.save) {
+    if (value.progress && !value.save && G.DB.save) {
       const remote = copy(baseline || G.DB.save),
         p = value.progress;
       if (p.offline) remote.offline = p.offline;
@@ -195,7 +194,7 @@ G.Server = (() => {
     }
     if (!value.save || !G.DB.save) return;
     baseline = copy(value.save);
-    if (full) G.DB.serverApply(value.save);
+    if(full)G.DB.serverApply(reconcile(value.save,sent||prior||value.save,G.DB.save));
     else {
       const s = G.DB.save,
         remote = value.save;
@@ -208,7 +207,7 @@ G.Server = (() => {
         ...((value.progress?.packTokens||value.runLoot)?{cardPack:{...copy(s.cardPack),tokens:copy(remote.cardPack?.tokens||{})}}:{}),
       });
     }
-    if(value.runId&&value.runId===run?.id&&value.runLoot)G.Game?.recordServerLoot?.(value.runLoot,value.hatchAcceleration);
+    if(value.runId&&value.runId===displayRun&&value.runLoot)G.Game?.recordServerLoot?.(value.runLoot,value.hatchAcceleration);
     remember();
     G.UI?.refreshCoins?.();
   }
@@ -225,20 +224,13 @@ G.Server = (() => {
         localStorage.getItem("ps.selfhost." + user.uid) || "null",
       );
     } catch {}
-    if (cached?.dirty && cached.rev === rev) {
-      G.DB.serverApply(cached.save);
-      accept(value);
-      dirty = true;
-      commit();
-    } else if (cached?.dirty && cached.rev !== rev)
-      G.UI?.toast(
-        text(
-          "Copia pendiente conservada; se cargó el servidor.",
-          "Pending local copy retained; server save loaded.",
-          "已加载服务器存档；未同步的本机副本已保留。",
-        ),
-        6000,
-      );
+    pendingSave=cached?.pending||null;
+    if(cached?.dirty||pendingSave){
+      if(pendingSave){baseline=copy(cached.baseline||pendingSave.base);G.DB.serverApply(cached.save);}
+      else G.DB.serverApply(cached.baseline?reconcile(value.save,cached.baseline,cached.save):G.DB.merge(value.save,cached.save));
+      dirty=true;commit(true);
+    }
+    if(dirty||pendingSave||receipts().length)flush().then(()=>retryRuns()).catch(error);
     return true;
   }
   async function probe() {
@@ -278,46 +270,28 @@ G.Server = (() => {
     dirty = true;
     remember();
     G.DB.serverSync("pending");
-    if (!conflict) {
+    if (user) {
+      if(run&&pushTimer)return true;
       clearTimeout(pushTimer);
-      pushTimer = setTimeout(() => flush().catch(error), urgent ? 600 : 5000);
+      pushTimer = setTimeout(() => {pushTimer=null;flush().catch(error);}, run ? 60000 : urgent ? 600 : 5000);
     }
     return true;
   }
-  function flush() {
-    return enqueue(async () => {
-      if (!user || G.DB.guest || !dirty) return;
-      if (conflict)
-        throw Object.assign(
-          new Error(
-            text(
-              "Recarga para resolver el conflicto.",
-              "Reload to resolve the save conflict.",
-              "请重新载入以解决多设备存档冲突。",
-            ),
-          ),
-          { status: 409 },
-        );
-      const target = user.uid,
-        snapshot = copy(G.DB.save);
-      G.DB.serverSync("syncing");
-      try {
-        const r = await api("/save", { rev, save: snapshot });
-        if (user?.uid !== target) return;
-        dirty = JSON.stringify(G.DB.save) !== JSON.stringify(snapshot);
-        accept(r);
-        G.DB.serverSync(dirty ? "pending" : "ok");
-        if (dirty) commit();
-      } catch (e) {
-        if (e.status === 409) conflict = true;
-        remember();
-        error(e);
-        throw e;
-      }
-    });
+  async function upload() {
+      if(!user||G.DB.guest||!dirty&&!pendingSave)return;
+      const target=user.uid;
+      pendingSave ||= {operation:ident(),base:copy(baseline||G.DB.save),save:copy(G.DB.save)};
+      const sent=pendingSave;remember();G.DB.serverSync('syncing');
+      try{
+        const r=await api('/save',{rev,...sent});if(user?.uid!==target)return;
+        accept(r,true,sent.save);pendingSave=null;dirty=changed(G.DB.save,baseline);conflict=false;retryDelay=2000;lastError=0;remember();
+        G.DB.serverSync(dirty?'pending':'ok');if(dirty)commit();
+      }catch(e){dirty=true;remember();error(e);throw e;}
   }
+  function flush(){return enqueue(upload);}
   async function settleOffline() {
     return enqueue(async () => {
+      if(dirty||pendingSave)await upload();
       const before = baseline && copy(baseline),
         r = await api("/offline", {}),
         s = G.DB.save;
@@ -337,11 +311,8 @@ G.Server = (() => {
     await flush();
     return enqueue(async()=>{
       // Flush any edits made while waiting for another queued request.
-      if(dirty){
-        const snapshot=copy(G.DB.save),r=await api('/save',{rev,save:snapshot});
-        dirty=JSON.stringify(G.DB.save)!==JSON.stringify(snapshot);accept(r);
-      }
-      const before=copy(baseline),r=await api(route,{...data,...(reward?{rev}:{})});
+      if(dirty||pendingSave)await upload();
+      const {before,r}=reward?await sharedAction(route,data):{before:copy(baseline),r:await api(route,data)};
       if(reward&&r.save){
         const s=G.DB.save,remote=r.save;
         for(const k of ['coins','abilityGems'])s[k]+=remote[k]-before[k];
@@ -360,12 +331,20 @@ G.Server = (() => {
   }
   async function packAction(data){
     await flush();return enqueue(async()=>{
-      if(dirty){const before=copy(G.DB.save),r=await api('/save',{rev,save:before});dirty=JSON.stringify(G.DB.save)!==JSON.stringify(before);accept(r);}
-      const before=copy(baseline),r=await api('/packs/action',{...data,rev}),s=G.DB.save;
+      if(dirty||pendingSave)await upload();
+      const {before,r}=await sharedAction('/packs/action',data),s=G.DB.save;
       s.coins+=r.save.coins-before.coins;s.abilityGems+=r.save.abilityGems-before.abilityGems;
       for(const k of ['t1','t10'])s.tickets[k]+=r.save.tickets[k]-before.tickets[k];
       s.cardPack=copy(r.save.cardPack);Object.assign(s,G.ZAccess.merge(s,r.save));s.pupg={};s.upgrades={};accept(r);remember();return r;
     });
+  }
+  async function sharedAction(route,data){
+    for(let attempt=0;attempt<3;attempt++){
+      const before=copy(baseline);
+      try{return {before,r:await api(route,{...data,rev})};}
+      catch(e){if(attempt===2||e.status!==409||e.code!=='Save changed on another device. Reload before continuing.')throw e;
+        accept(await api('/session'),true);dirty=changed(G.DB.save,baseline);if(dirty||pendingSave)await upload();}
+    }
   }
 
   function snapshot(clean = true) {
@@ -382,46 +361,28 @@ G.Server = (() => {
       scoreCounts:G.Game?.scoreCounts?.(),
     };
   }
-  async function prepareRun(mode, dex, stars, controlsSpeed=true) {
-    await flush();
-    const r = await api("/run/start", {
-      dex,
-      stars,
-      mode,
-      clean: !G.Dev?.enabled,
-      speed:controlsSpeed&&G.CardPacks?.speedAllowed(G.DB.save,G.Settings.get('runSpeed'))?G.Settings.get('runSpeed'):1,
-    });
-    clearInterval(beatTimer);
-    ++runGeneration;
-    run = r;
-    runPromise = Promise.resolve(r);
-    return r;
+  function receipts(){
+    if(!user)return [];
+    try{const key='ps.pending-runs.'+user.uid,all=JSON.parse(localStorage.getItem(key)||'[]'),old=JSON.parse(localStorage.getItem('ps.pending-run.'+user.uid)||'null');if(old){if(!all.some(x=>x.id===old.id))all.push(old);localStorage.setItem(key,JSON.stringify(all));localStorage.removeItem('ps.pending-run.'+user.uid);}return all;}catch{return [];}
   }
-  function startRun(mode) {
-    if (!G.DB.online || G.DB.mode !== "server") return;
-    if (run) {
-      clearInterval(beatTimer);
-      beatTimer = setInterval(() => heartbeat().catch(error), 10000);
-      return;
-    }
+  function storeReceipt(b){const all=receipts(),i=all.findIndex(x=>x.id===b.id);if(i<0)all.push(b);else all[i]=b;localStorage.setItem('ps.pending-runs.'+user.uid,JSON.stringify(all));}
+  function removeReceipt(id){localStorage.setItem('ps.pending-runs.'+user.uid,JSON.stringify(receipts().filter(x=>x.id!==id)));}
+  async function ensureStarted(target){if(!target.started){await api('/run/start',target.start||target,5000);target.started=true;}return target;}
+  async function prepareRun(mode,dex,stars,controlsSpeed=true){
+    clearInterval(beatTimer);++runGeneration;
+    const start={id:ident(),clientStarted:Date.now(),dex,stars,mode,clean:!G.Dev?.enabled,speed:controlsSpeed&&G.CardPacks?.speedAllowed(G.DB.save,G.Settings.get('runSpeed'))?G.Settings.get('runSpeed'):1};
+    const current={id:start.id,start,started:false};run=current;displayRun=current.id;runPromise=Promise.resolve(current);
+    if(mode==='g'){await flush();await ensureStarted(current);}
+    else flush().then(()=>retryRuns().catch(error)).then(()=>enqueue(()=>ensureStarted(current))).catch(error);
+    return current;
   }
-  async function heartbeat() {
-    await runPromise;
-    if (!run) return;
-    const b = snapshot();
-    return enqueue(async () => {
-      const r = await api("/run/beat", { ...b, rev });
-      accept(r);
-      return r;
-    });
+  function startRun(){if(!G.DB.online||G.DB.mode!=='server'||!run)return;clearInterval(beatTimer);beatTimer=setInterval(()=>heartbeat().catch(error),60000);}
+  async function heartbeat(){
+    if(!run)return;if(beating)return beating;const target=run;
+    beating=enqueue(async()=>{if(run!==target)return;if(dirty||pendingSave)await upload();await ensureStarted(target);const r=await api('/run/beat',{...snapshot(),id:target.id,rev});accept(r,!!r.save);lastError=0;return r;});
+    try{return await beating;}finally{beating=null;}
   }
-  function presence() {
-    if (!G.DB.online || G.DB.mode !== "server" || run) return Promise.resolve();
-    return enqueue(async () => {
-      const r = await api("/presence", { rev });
-      accept(r);
-    }).catch(error);
-  }
+  function presence(){if(!G.DB.online||G.DB.mode!=='server'||run)return Promise.resolve();return enqueue(async()=>{if(dirty||pendingSave)await upload();const r=await api('/presence',{rev});accept(r,!!r.save);}).catch(error);}
   async function claimBonus(challenge, coins) {
     await runPromise;
     if (!run)
@@ -435,6 +396,8 @@ G.Server = (() => {
     await flush();
     const b = { ...snapshot(), coins };
     return enqueue(async () => {
+      if(dirty||pendingSave)await upload();
+      await ensureStarted(run);
       const r = await api("/run/bonus", b);
       accept(r, true);
       dirty = false;
@@ -442,57 +405,20 @@ G.Server = (() => {
       return r.extra;
     });
   }
-  function finish(clean,failed) {
-    clearInterval(beatTimer);
-    const b = snapshot(clean),
-      pending = runPromise;
-    if(typeof failed==='boolean')b.failed=failed;
-    return enqueue(async () => {
-      const ending = await pending;
-      if (!ending) return;
-      const id = ending.id,
-        payload = { ...b, id };
-      try {
-        localStorage.setItem(
-          "ps.pending-run." + user.uid,
-          JSON.stringify(payload),
-        );
-      } catch {}
-      try {
-        const r = await api("/run/end", payload);
-        accept(r);
-        localStorage.removeItem("ps.pending-run." + user.uid);
-        G.DB.serverSync("ok");return r;
-      } catch (e) {
-        error(e);
-        throw e;
-      } finally {
-        if (run?.id === id) run = null;
-      }
-    });
+  function finish(clean,failed){
+    clearInterval(beatTimer);clearTimeout(pushTimer);pushTimer=null;const target=run;if(!target)return Promise.resolve();
+    const b={...snapshot(clean),start:target.start};if(typeof failed==='boolean')b.failed=failed;
+    storeReceipt(b);run=null;runPromise=null;remember();
+    return enqueue(async()=>{try{if(dirty||pendingSave)await upload();await ensureStarted(target);const r=await api('/run/end',b);accept(r,!!r.save);removeReceipt(b.id);dirty=changed(G.DB.save,baseline);remember();G.DB.serverSync(dirty?'pending':'ok');if(dirty)commit(true);return r;}catch(e){error(e);throw e;}});
   }
-  async function retryRuns() {
-    if (!user) return;
-    return enqueue(async () => {
-      let payload;
-      try {
-        payload = JSON.parse(
-          localStorage.getItem("ps.pending-run." + user.uid) || "null",
-        );
-      } catch {}
-      if (!payload) return;
-      try {
-        const r = await api("/run/end", payload);
-        accept(r);
-        localStorage.removeItem("ps.pending-run." + user.uid);
-        G.UI?.toast(text("Marca sincronizada", "Record synced", "成绩已同步"));
-      } catch (e) {
-        error(e);
-      }
-    });
+  async function retryRuns(){
+    if(!user)return;
+    return enqueue(async()=>{if(dirty||pendingSave)await upload();let failure;for(const b of receipts()){
+      try{if(b.start)await ensureStarted({start:b.start,started:false});const r=await api('/run/end',b);accept(r,!!r.save);removeReceipt(b.id);}catch(e){error(e);failure=e;}
+    }if(failure)throw failure;});
   }
   async function logout() {
-    clearTimeout(pushTimer);
+    clearTimeout(pushTimer);clearTimeout(retryTimer);retryTimer=null;
     clearInterval(beatTimer);
     runGeneration++;
     try {
@@ -501,7 +427,7 @@ G.Server = (() => {
     await api("/logout", {}).catch(() => {});
     user = null;
     run = null;
-    dirty = false;
+    dirty = false;pendingSave=null;baseline=null;
     G.SelfNet?.disconnect();
   }
   async function deleteAccount(pass) {
@@ -521,10 +447,10 @@ G.Server = (() => {
   }
   const leaveHooks = [];
   addEventListener("online", () => {
-    if (user && !conflict) flush().catch(error);
+    if(user)flush().then(()=>retryRuns()).then(()=>heartbeat()).catch(error);
   });
   document.addEventListener("visibilitychange", () => {
-    if (document.hidden && user) flush().catch(error);
+    if(user){remember();if(document.hidden)flush().catch(error);else flush().then(()=>retryRuns()).catch(error);}
   });
   return {
     api,

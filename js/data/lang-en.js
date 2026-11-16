@@ -4,6 +4,8 @@
  * son los oficiales en inglés.
  */
 G.I18n.add({
+  "Progreso guardado aquí; pendiente de sincronizar": "Progress saved here; waiting to sync",
+
   "minutos": "minutes",
   "Refuerza ambos ataques a partir de sus valores naturales.": "Raises both attacks based on their natural stats.",
   "Refuerza la velocidad a partir de su valor natural; no cambia la agilidad.": "Raises Speed based on its natural stat; does not change Agility.",

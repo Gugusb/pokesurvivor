@@ -448,7 +448,7 @@ G.SelfNet = (() => {
         iceServers = (m.iceServers || [])
           .filter((s) => typeof s.urls === "string" && /^stuns?:/.test(s.urls))
           .slice(0, 4);
-        configured = true;
+        configured=m.signaling!==false;
         for (const p of peers.values())
           if (p.mode === "direct") p.readySent = signal(p, { ready: true });
         sync();
@@ -490,7 +490,7 @@ G.SelfNet = (() => {
       }
       retry = setTimeout(() => {
         if (Date.now() - lostAt > 15000)
-          for (const p of [...peers.values()]) dispose(p, true);
+          for (const p of [...peers.values()]) if(p.dc?.readyState!=="open")dispose(p,true);
         connect();
       }, 2000);
     };

@@ -33,6 +33,7 @@ for (const f of [
   "js/data/starter-items.js",
   "js/data/breakthrough-items.js",
   "js/systems/card-packs.js",
+  "js/systems/save-sync.js",
   "js/core/db.js",
 ]) {
   vm.runInContext(fs.readFileSync(path.join(ROOT, f), "utf8"), ctx, {
@@ -148,4 +149,4 @@ function record(s, run, t, alive, clean) {
   const r = { stars: run.stars, dex: run.dex, eligible: clean, victory: false };
   return G.Difficulty.record(s, r, t, alive, clean);
 }
-module.exports = { ROOT, G, fresh, sanitize, clone, record };
+module.exports = { ROOT, G, fresh, sanitize, clone, record, safeObject };
