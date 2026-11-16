@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Diez pequeños descubrimientos · v0.42.0": "十张小旗，慢慢挑 · v0.42.0",
+  "Los paquetes permiten diez elecciones seguidas. Recoge una carta y pasa a la siguiente; si sales, tu elección pendiente te espera.": "卡包现可十连抽：连续完成十次三选一，每次选择后自动进入下一轮；中途离开，还能接着选。",
+  "Abrir y elegir cartas es más fluido incluso cuando la conexión tarda. Tu colección se guarda aquí y se sincroniza en segundo plano.": "开包与选卡即时完成，网络慢时也不用等。收获先保存在本机，再由后台合并同步。",
+  "Una sola opción de cien tiradas usa primero los vales de diez y completa el resto con vales individuales. La búsqueda de medallas sigue usando gemas de habilidad.": "百连抽合并为一个按钮，优先使用十连券，剩余次数由单抽券补足；特性抽卡使用特性宝石。",
+  "Puse diez banderitas sobre la mesa; damos la vuelta a una con cada elección. Quien cocina dice que ya no hay que mirar la ventana esperando, así que aparté la bebida caliente para no mojar las cartas.": "桌上排好了十张小旗，咱们挑一张就翻过一面。做饭的那家伙说不用盯着窗口等啦；我把热饮挪远点，免得碰湿卡牌。",
+
   "Un viaje sin interrupciones · v0.41.0": "冒险不停，战果慢慢存好 · v0.41.0",
   "El progreso se guarda primero en este navegador y se sincroniza al recuperar la conexión. Las actualizaciones de otra página se combinan sin pedirte recargar.": "进度先保存在本机，网络恢复后自动同步；其他页面更新了进度，也会自动合并，不再要求刷新。",
   "Las aventuras largas y los cortes de conexión ya no caducan por perder un aviso. Puedes seguir jugando mientras los resultados pendientes esperan su turno.": "长时间冒险和暂时断网不再因漏掉心跳而让结算作废。待同步的战果会排队保存，咱们可以继续下一场冒险。",

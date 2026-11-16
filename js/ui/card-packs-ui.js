@@ -12,12 +12,12 @@ G.CardPacksUI=(()=>{
   const chosen=data.action==='choose'?G.CardPacks.BY[G.DB.save.cardPack.pending?.options[data.index]]:null;
   phase=data.action==='draw'?'opening':data.action==='choose'?'selecting':'';render();
   try{
-   const request=(async()=>{if(G.DB.mode==='server')await G.Server.packAction(data);else{const s=G.DB.save;switch(data.action){case 'draw':G.CardPacks.draw(s,Math.random,data.pack||packId,data.token===true);break;case 'choose':G.CardPacks.choose(s,data.seq,data.index);break;case 'toggle':G.CardPacks.toggle(s,data.id);break;case 'theme':G.CardPacks.equip(s,data.id);break;}G.DB.commit(true);}})();
+   const request=(async()=>{if(G.DB.mode==='server')G.Server.packLocal(data);else{G.CardPacks.apply(G.DB.save,data);G.DB.commit(true);}})();
    await Promise.all([request,pause(data.action==='draw'?500:data.action==='choose'?600:0)]);
    G.UI.refreshCoins();
    if(data.action==='draw'){phase='revealing';render();await pause(1050);}
-   if(data.action==='choose'){lastReward=chosen;phase='claimed';G.Audio.sfx('confirm');}
-  }catch(e){phase='';const message={'No pack owned':T('No tienes este paquete','No owned pack available','没有可打开的库存卡包'),'Pack empty':T('Paquete completado','Pack complete','卡包已集齐'),'Not enough coins':T('Faltan monedas','Not enough coins','金币不足'),'Wallet limit reached':T('Gasta recursos antes de recoger','Spend resources before claiming','资源达到上限，请先使用后再领取'),'Invalid pack choice':T('Recarga para continuar','Reload to continue','请刷新页面继续选择')}[e.message]||e.message;G.UI.toast(message,5000);}
+   if(data.action==='choose'){lastReward=chosen;G.Audio.sfx('confirm');if(G.DB.save.cardPack.pending){phase='revealing';render();await pause(1050);}else phase='claimed';}
+  }catch(e){phase='';const message={'No pack owned':T('No tienes este paquete','No owned pack available','没有可打开的库存卡包'),'Pack empty':T('Paquete completado','Pack complete','卡包已集齐'),'Not enough coins':T('Faltan monedas','Not enough coins','金币不足'),'Wallet limit reached':T('Gasta recursos antes de recoger','Spend resources before claiming','资源达到上限，请先使用后再领取'),'Invalid pack choice':T('Las cartas han cambiado; elige de nuevo.','Cards updated; choose again.','卡牌已更新，请重新选择。')}[e.message]||e.message;G.UI.toast(message,5000);}
   finally{busy=false;if(phase!=='claimed')phase='';render();}
  }
  function button(text,fn,disabled=false){const n=el('button','btn',text);n.disabled=disabled||busy;n.onclick=fn;return n;}
@@ -50,7 +50,7 @@ G.CardPacksUI=(()=>{
   search.oninput=()=>{offset=0;paint();};parent.append(search,grid,nav);paint();
  }
  function render(){
-  const s=G.DB.save;if(!s)return;const p=G.CardPacks.normalize(s);if(p.pending)packId=p.pending.pack;const pack=G.CardPacks.packBy[packId],box=document.getElementById('pack-body');box.replaceChildren();box.className=phase?'pack-'+phase:'';box.classList.toggle('pack-no-motion',!motion());box.dataset.phase=phase||'idle';box.dataset.page=page;
+  const s=G.DB.save;if(!s)return;const p=G.CardPacks.resume(s);if(p.pending)packId=p.pending.pack;const pack=G.CardPacks.packBy[packId],box=document.getElementById('pack-body');box.replaceChildren();box.className=phase?'pack-'+phase:'';box.classList.toggle('pack-no-motion',!motion());box.dataset.phase=phase||'idle';box.dataset.page=page;
   document.querySelector('#scr-upgrades h2').textContent=page==='pack'?T('Paquetes de cartas','Card Packs','游戏卡包'):T('Mi colección','My Collection','收藏管理');
   const nav=el('div','pack-subnav');nav.append(el('span','pack-breadcrumb',page==='pack'?T('Paquetes / ','Packs / ','卡包 / ')+L(pack.name):T('Paquetes / Mi colección','Packs / My Collection','卡包 / 收藏管理')));
   if(page==='pack'){const manage=button(T('Mi colección →','My Collection →','收藏管理 →'),()=>{page='collection';tab='stats';phase='';render();});manage.dataset.packCollection='';nav.append(manage);}else{const back=button(T('← Volver al paquete','← Back to pack','← 返回卡包'),()=>{page='pack';phase='';render();});back.dataset.packBack='';nav.append(back);}box.append(nav);
@@ -62,13 +62,16 @@ G.CardPacksUI=(()=>{
    const selectors=el('div','row wrap pack-selectors');for(const item of G.CardPacks.packs){const b=button(L(item.name),()=>{packId=item.id;phase='';lastReward=null;render();},!!p.pending);b.dataset.packSelect=item.id;b.classList.toggle('gold',packId===item.id);selectors.append(b);}box.append(selectors);
    const hero=el('div','pack-hero');hero.append(el('div','pack-seal',packId==='beginner'?'Ⅰ':'Ⅱ'),el('h3','',L(pack.name)),el('p','',T('Elige una carta y acompaña a todos tus Pokémon.','Choose a card to support every Pokémon.','从一张卡开始，陪伴每一位宝可梦成长。')),el('b','',G.CardPacks.remaining(s,packId)+' / '+pack.cards.reduce((a,c)=>a+c.max,0)+' '+T('cartas restantes','cards remaining','张剩余卡牌')));box.append(hero);
    const status=el('p','pack-status',phase==='opening'?T('Abriendo el paquete…','Opening the pack…','正在打开卡包…'):phase==='revealing'?T('Tus tres cartas…','Your three cards…','看看这次翻到了什么…'):phase==='selecting'?T('Guardando tu carta…','Collecting your card…','正在收下这张卡…'):p.pending?T('Elige una recompensa','Choose one reward','选择一份奖励'):lastReward?T('¡Añadido a tu colección!','Added to your collection!','已收入收藏！'):'');status.setAttribute('role','status');status.setAttribute('aria-live','polite');box.append(status);
+   if(p.pending?.batch){const b=p.pending.batch,progress=el('p','pack-batch-progress',T('Elección','Choice','连续选卡')+' '+(b.total-b.left+1)+' / '+b.total);progress.dataset.packProgress='';box.append(progress);}
    box.append(el('p','sub',T(`${pack.price} monedas por elección. Las cartas no elegidas vuelven al paquete.`,`${pack.price} coins per choice. Unchosen cards return to the pack.`,`每次${pack.price}金币，三选一；未选中的卡退回卡包。`)));
    if(p.refund)box.append(el('p','pack-refund',T('Reembolso del entrenamiento anterior: ','Previous training refunded: ','原强化金币已返还：')+p.refund.toLocaleString()));
-   if(p.pending){const list=el('div','pack-choices');p.pending.options.forEach((id,index)=>{const c=G.CardPacks.BY[id],n=card(c,T('Elegir','Choose','选择这张'));n.style.setProperty('--reveal-index',index);n.classList.toggle('pack-selected',index===selected);n.append(button(T('Recoger','Claim','收下'),()=>action({action:'choose',seq:p.pending.seq,index}),busy));list.append(n);});box.append(list);}
+   if(p.pending){const list=el('div','pack-choices');p.pending.options.forEach((id,index)=>{const c=G.CardPacks.BY[id],n=card(c,T('Elegir','Choose','选择这张'));n.style.setProperty('--reveal-index',index);n.classList.toggle('pack-selected',index===selected);n.append(button(T('Recoger','Claim','收下'),()=>action({action:'choose',seq:p.pending.seq,index,offerId:p.pending.id}),busy));list.append(n);});box.append(list);}
    else{
     if(lastReward){const receipt=el('div','pack-receipt');receipt.append(card(lastReward,T('Guardado','Collected','已收下')));box.append(receipt);}
     const owned=button(T('Abrir guardado','Open owned pack','打开已获得卡包')+' · '+p.tokens[packId],()=>action({action:'draw',pack:packId,token:true}),!p.tokens[packId]||!G.CardPacks.remaining(s,packId));owned.dataset.packOwned='';box.append(owned);
     const draw=button(G.CardPacks.remaining(s,packId)?T(`Abrir · ${pack.price} monedas`,`Open · ${pack.price} coins`,`抽取 · ${pack.price}金币`):T('Paquete completado','Pack complete','卡包已集齐'),()=>action({action:'draw',pack:packId}),busy||s.coins<pack.price||!G.CardPacks.remaining(s,packId));draw.classList.add('gold');draw.dataset.packDraw='';box.append(draw);
+    const rounds=Math.min(10,G.CardPacks.remaining(s,packId)),ten=button(T(`Abrir ×${rounds||10} · ${pack.price*rounds} monedas`,`Open ×${rounds||10} · ${pack.price*rounds} coins`,`${rounds===10?'十连抽':'连抽'+(rounds||10)+'次'} · ${pack.price*rounds}金币`),()=>action({action:'draw',pack:packId,count:10}),!rounds||s.coins<pack.price*rounds);ten.dataset.packTen='';ten.classList.add('gold');
+    const ownedTen=button(T('Abrir guardados ×10','Open owned ×10','库存连开 ×10')+' · '+p.tokens[packId],()=>action({action:'draw',pack:packId,count:10,token:true}),!rounds||p.tokens[packId]<rounds);ownedTen.dataset.packOwnedTen='';const row=el('div','row wrap pack-multi-actions');row.append(ten,ownedTen);box.append(row);
    }
    const all=el('details','pack-catalog');all.append(el('summary','',T('Contenido del paquete','Pack contents','查看卡包内容')));all.addEventListener('toggle',()=>{if(all.open&&!all.dataset.loaded){all.dataset.loaded='1';catalog(all,pack.cards,p,s);}});box.append(all);
   }

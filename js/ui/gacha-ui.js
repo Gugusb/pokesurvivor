@@ -10,7 +10,7 @@ G.GachaUI = (() => {
   function init() {
     $('pull-1').onclick = () => pull(1);
     $('pull-10').onclick = () => pull(10, 't1');
-    $('pull-100').onclick=()=>pull(100,'t1');$('pull-100b').onclick=()=>pull(100,'t10');
+    $('pull-100').onclick=()=>pull(100,'auto');
     $('pull-10b').onclick = () => pull(10, 't10');
     $('pull-close').onclick = close;
     $('gacha-pokemon-mode').onclick = () => open('pokemon');
@@ -41,7 +41,7 @@ G.GachaUI = (() => {
     $('gacha-pokemon-mode').classList.toggle('on', !ability);
     $('gacha-ability-mode').classList.toggle('on', ability);
     $('ability-medals').classList.toggle('hidden', !ability);
-    $('pull-10b').classList.toggle('hidden', ability);$('pull-100b').classList.toggle('hidden',ability);
+    $('pull-10b').classList.toggle('hidden', ability);
     document.querySelectorAll('#gacha-gens .gen-tab').forEach(t => t.classList.toggle('hidden', ability && !G.AbilityGacha.GENS.includes(+t.dataset.gen)));
     if (ability) { refreshAbilities(); return; }
     const s = G.DB.save;
@@ -83,7 +83,7 @@ G.GachaUI = (() => {
     $('gacha-tickets').innerHTML = `Tienes ${G.Icons.html('ticket', 18)} <b>${t.t1}</b> tickets y ${G.Icons.html('ticket10', 18)} <b>${t.t10}</b> tickets ×10`;
     $('pull-1').disabled = !G.Gacha.costOf(s, 1);
     $('pull-10').disabled = !G.Gacha.costOf(s, 10, 't1');
-    $('pull-10b').disabled = !G.Gacha.costOf(s, 10, 't10');$('pull-100').disabled=!G.Gacha.costOf(s,100);$('pull-100b').disabled=!G.Gacha.costOf(s,100,'t10');$('cost-100').textContent='100';$('cost-100b').textContent='10 ×10';
+    $('pull-10b').disabled = !G.Gacha.costOf(s, 10, 't10');$('pull-100').disabled=!G.Gacha.costOf(s,100);const tens=Math.min(10,t.t10),singles=100-tens*10;$('cost-100').innerHTML=[tens?G.Icons.html('ticket10',18)+' '+tens:'',singles?G.Icons.html('ticket',18)+' '+singles:''].filter(Boolean).join(' + ');
     G.UI.refreshCoins();
   }
 

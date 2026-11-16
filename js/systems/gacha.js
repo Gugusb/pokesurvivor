@@ -16,9 +16,10 @@
 G.Gacha = (() => {
   /** ¿Qué gasta una tirada de n? → { t1, t10 } o null si no te llega. */
   /** @param use  't1' (tickets normales) o 't10' (un ticket ×10, sólo para la ×10) */
-  function costOf(save, n, use = 't1') {
-    if(![1,10,100].includes(n)||!['t1','t10'].includes(use))return null;
+  function costOf(save, n, use = 'auto') {
+    if(![1,10,100].includes(n)||!['auto','t1','t10'].includes(use))return null;
     const t = save.tickets || { t1: 0, t10: 0 };
+    if(n===100&&use==='auto'){const t10=Math.min(10,t.t10),t1=100-t10*10;return t.t1>=t1?{t1,t10}:null;}
     if(use==='t10')return n>=10&&t.t10>=n/10?{t1:0,t10:n/10}:null;
     return t.t1 >= n ? { t1: n, t10: 0 } : null;
   }
@@ -78,7 +79,7 @@ G.Gacha = (() => {
    * Devuelve null si no hay monedas, o la lista de resultados:
    *   { dex, rarity, shiny, isNew, refund }
    */
-  function pull(save, n, gen = 1, use = 't1') {
+  function pull(save, n, gen = 1, use = 'auto') {
     const cost = costOf(save, n, use);
     if (!cost) return null;
     save.tickets.t1 -= cost.t1;

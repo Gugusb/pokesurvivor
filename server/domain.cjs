@@ -59,7 +59,7 @@ function safeObject(x, depth = 0) {
       safeObject(v, depth + 1);
     }
 }
-function sanitize(input, old, name) {
+function sanitize(input, old, name, options={}) {
   if (!input || Array.isArray(input) || typeof input !== "object")
     throw new Error("Invalid save");
   safeObject(input);
@@ -134,7 +134,7 @@ function sanitize(input, old, name) {
       G.Difficulty.unlocked(old),
     ),
   };
-  const prior=clone(old);G.CardPacks.normalize(prior);s.cardPack=prior.cardPack;s.pupg={};s.upgrades={};
+  const prior=clone(old);G.CardPacks.normalize(prior);if(options.localPacks){s.cardPack.refund=prior.cardPack.refund;s.cardPack.refundDue=prior.cardPack.refundDue;s.cardPack.legacyAgility=Math.min(.24,prior.cardPack.legacyAgility+.03*Math.max(0,(s.cardPack.taken?.["stat:cd"]||0)-(prior.cardPack.taken["stat:cd"]||0)));G.CardPacks.normalize(s);}else s.cardPack=prior.cardPack;s.pupg={};s.upgrades={};
   s.offline = clone(old.offline);
   s.failureProtection = clone(old.failureProtection||{});
   Object.assign(s,G.ZAccess.merge(s,old));

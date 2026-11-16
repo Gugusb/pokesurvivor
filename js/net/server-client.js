@@ -16,6 +16,7 @@ G.Server = (() => {
     beatTimer = null,
     lastError = 0;
   let pendingSave=null,retryTimer=null,retryDelay=2000,beating=null,displayRun=null;
+  let packTimer=null,packSince=0,packDirty=false,localPacksSupported=false;
   const ident=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+"-"+Math.random().toString(36).slice(2);
   const reconcile=(c,b,n)=>G.SaveSync?G.SaveSync.rebase(c,b,n):G.DB.merge(c,n);
   const changed=(a,b)=>G.SaveSync?G.SaveSync.changed(a,b):JSON.stringify(a)!==JSON.stringify(b);
@@ -175,7 +176,7 @@ G.Server = (() => {
     try {
       localStorage.setItem(
         "ps.selfhost." + user.uid,
-        JSON.stringify({rev,dirty,save:G.DB.save,baseline,pending:pendingSave}),
+        JSON.stringify({rev,dirty,save:G.DB.save,baseline,pending:pendingSave,packDirty}),
       );
     } catch {}
   }
@@ -186,7 +187,7 @@ G.Server = (() => {
       const remote = copy(baseline || G.DB.save),
         p = value.progress;
       if (p.offline) remote.offline = p.offline;
-      if(p.packTokens){remote.cardPack=copy(G.DB.save.cardPack);remote.cardPack.tokens=copy(p.packTokens);}
+      if(p.packTokens){remote.cardPack=copy(baseline?.cardPack||G.DB.save.cardPack);remote.cardPack.tokens=copy(p.packTokens);}
       if (p.difficulty) remote.difficulty = p.difficulty;
       if (p.failureProtection) remote.failureProtection = p.failureProtection;
       if (p.records) Object.assign(remote.difficultyRecords, p.records);
@@ -204,7 +205,7 @@ G.Server = (() => {
         difficulty: { ...remote.difficulty, selected: s.difficulty.selected },
         offline: remote.offline,
         failureProtection: remote.failureProtection||{},
-        ...((value.progress?.packTokens||value.runLoot)?{cardPack:{...copy(s.cardPack),tokens:copy(remote.cardPack?.tokens||{})}}:{}),
+        ...(remote.cardPack&&G.CardPacks?.reconcile?{cardPack:G.CardPacks.reconcile(remote.cardPack,prior?.cardPack,s.cardPack)}:{}),
       });
     }
     if(value.runId&&value.runId===displayRun&&value.runLoot)G.Game?.recordServerLoot?.(value.runLoot,value.hatchAcceleration);
@@ -225,6 +226,7 @@ G.Server = (() => {
       );
     } catch {}
     pendingSave=cached?.pending||null;
+    packDirty=!!cached?.packDirty||!!pendingSave?.localPacks;
     if(cached?.dirty||pendingSave){
       if(pendingSave){baseline=copy(cached.baseline||pendingSave.base);G.DB.serverApply(cached.save);}
       else G.DB.serverApply(cached.baseline?reconcile(value.save,cached.baseline,cached.save):G.DB.merge(value.save,cached.save));
@@ -237,6 +239,7 @@ G.Server = (() => {
     try {
       const h = await api("/health");
       coopEnabled=h.coopEnabled===true;
+      localPacksSupported=h.localPacks===true;
       available = h?.ok === true && h.protocol === 2 && h.transport === "p2p";
       probeStatus = available ? 200 : 503;
       return available;
@@ -280,15 +283,23 @@ G.Server = (() => {
   async function upload() {
       if(!user||G.DB.guest||!dirty&&!pendingSave)return;
       const target=user.uid;
-      pendingSave ||= {operation:ident(),base:copy(baseline||G.DB.save),save:copy(G.DB.save)};
+      clearTimeout(packTimer);packTimer=null;packSince=0;
+      pendingSave ||= {operation:ident(),localPacks:packDirty,base:copy(baseline||G.DB.save),save:copy(G.DB.save)};
       const sent=pendingSave;remember();G.DB.serverSync('syncing');
       try{
+        if(sent.localPacks&&!localPacksSupported){const h=await api('/health');localPacksSupported=h.localPacks===true;if(!localPacksSupported)throw Object.assign(new Error(text('Paquete guardado aquí; se sincronizará más tarde.','Pack progress is saved here and will sync later.','卡包进度已保存在本机，稍后自动同步。')),{status:503});}
         const r=await api('/save',{rev,...sent});if(user?.uid!==target)return;
-        accept(r,true,sent.save);pendingSave=null;dirty=changed(G.DB.save,baseline);conflict=false;retryDelay=2000;lastError=0;remember();
+        accept(r,true,sent.save);pendingSave=null;packDirty=packDirty&&JSON.stringify(G.DB.save.cardPack)!==JSON.stringify(baseline.cardPack);dirty=changed(G.DB.save,baseline);conflict=false;retryDelay=2000;lastError=0;remember();
         G.DB.serverSync(dirty?'pending':'ok');if(dirty)commit();
       }catch(e){dirty=true;remember();error(e);throw e;}
   }
   function flush(){return enqueue(upload);}
+  function packLocal(data){
+    const result=G.CardPacks.apply(G.DB.save,data);G.DB.save.updated=Date.now();dirty=true;packDirty=true;remember();G.DB.serverSync('pending');
+    const at=Date.now();if(!packSince)packSince=at;clearTimeout(packTimer);
+    packTimer=setTimeout(()=>{packTimer=null;flush().catch(error);},Math.max(0,Math.min(5000,30000-(at-packSince))));
+    return result;
+  }
   async function settleOffline() {
     return enqueue(async () => {
       if(dirty||pendingSave)await upload();
@@ -418,6 +429,7 @@ G.Server = (() => {
     }if(failure)throw failure;});
   }
   async function logout() {
+    clearTimeout(packTimer);packTimer=null;packSince=0;
     clearTimeout(pushTimer);clearTimeout(retryTimer);retryTimer=null;
     clearInterval(beatTimer);
     runGeneration++;
@@ -427,7 +439,7 @@ G.Server = (() => {
     await api("/logout", {}).catch(() => {});
     user = null;
     run = null;
-    dirty = false;pendingSave=null;baseline=null;
+    dirty = false;pendingSave=null;baseline=null;packDirty=false;
     G.SelfNet?.disconnect();
   }
   async function deleteAccount(pass) {
@@ -459,7 +471,7 @@ G.Server = (() => {
     restore,
     authenticate,
     commit,
-    flush,packAction,
+    flush,packAction,packLocal,
     settleOffline,
     socialAction,
     claimBonus,

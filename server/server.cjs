@@ -425,6 +425,7 @@ function createApp(opts = {}) {
         transport: "p2p",
         relay: false,
         coopEnabled,
+        localPacks:true,
       });
     rate("api:" + clientIp(req), 6000, 60e3);
     const reads = [
@@ -594,7 +595,8 @@ function createApp(opts = {}) {
             if(!b.save||Array.isArray(b.save)||typeof b.save!=='object')throw Error('Invalid save');
             safeObject(b.base);safeObject(b.save);
           }
-          s = sanitize(operation?G.SaveSync.rebase(old.save,b.base,b.save):b.save, old.save, u.name);
+          const options={localPacks:!!operation&&b.localPacks===true};
+          s = sanitize(operation?G.SaveSync.rebase(old.save,b.base,b.save,options):b.save, old.save, u.name,options);
         } catch (e) {
           throw fail(400, e.message);
         }

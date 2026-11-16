@@ -21,6 +21,8 @@ G.CardPacks=(()=>{
  const cards=packs.flatMap(p=>p.cards),BY=Object.assign(Object.create(null),Object.fromEntries([...cards,legacy].map(c=>[c.id,c])));
  const packBy=Object.assign(Object.create(null),Object.fromEntries(packs.map(p=>[p.id,p])));
  const available=(s,p,c)=>Math.max(0,c.max-(p.taken[c.id]||0))*(c.kind==='z'&&G.ZAccess?.allowed(s,c.key)?0:1);
+ const clone=x=>JSON.parse(JSON.stringify(x));
+ const offerId=o=>o&&(o.id||('legacy-'+o.pack+'-'+o.seq+'-'+o.options?.join('_')));
  function normalize(s){
    if(!s.cardPack||s.cardPack.v!==1){
      let refund=0;const records=Object.values(s.pupg||{});if(!records.length)records.push(s.upgrades||{});
@@ -36,16 +38,20 @@ G.CardPacks=(()=>{
    p.disabled=Object.fromEntries(items.filter(i=>p.disabled?.[i.id]===true).map(i=>[i.id,true]));
    if(!themes.some(t=>t.id===p.theme&&taken['theme:'+t.id]))p.theme='';
    p.seq=Math.max(0,Math.min(1e9,Math.floor(+p.seq||0)));
+   p.closed=Object.fromEntries(Object.entries(p.closed||{}).filter(([id,v])=>id.length<250&&(v===true||v&&BY[v.card]&&packBy[v.pack])).slice(-10000).map(([id,v])=>[id,v===true?true:{card:v.card,pack:v.pack,token:!!v.token,...(v.refunded?{refunded:true}:{})}]));
+   p.waiting=Array.isArray(p.waiting)?p.waiting.filter(o=>o&&packBy[o.pack]&&Number.isSafeInteger(o.seq)&&Array.isArray(o.options)&&o.options.length>0&&o.options.length<=3&&!p.closed[offerId(o)]).slice(0,1000):[];
    const offer=p.pending;
    if(offer){
-    offer.pack ||= 'beginner';const pack=packBy[offer.pack];
-    if(!pack||!Number.isSafeInteger(offer.seq)||offer.seq!==p.seq||!Array.isArray(offer.options)||!offer.options.length||offer.options.length>3||offer.options.some(id=>!BY[id]||!(pack.cards.includes(BY[id])||offer.pack==='beginner'&&id===legacy.id)||taken[id]>=BY[id].max))p.pending=null;
-    else if(offer.options.some(id=>BY[id].kind==='z'&&!available(s,p,BY[id]))){
+    offer.pack ||= 'beginner';offer.id ||= offerId(offer);const pack=packBy[offer.pack];
+    if(!pack||!Number.isSafeInteger(offer.seq)||offer.seq<1||offer.seq>p.seq||!Array.isArray(offer.options)||!offer.options.length||offer.options.length>3||offer.options.some(id=>!BY[id]||!(pack.cards.includes(BY[id])||offer.pack==='beginner'&&id===legacy.id)))p.pending=null;
+    else if(p.closed[offerId(offer)])p.pending=null;
+    else if(offer.options.some(id=>!available(s,p,BY[id]))){
      // A duplicate acquisition may unlock a paid offer between drawing and claiming.
      const replacement=pack.cards.filter(c=>available(s,p,c)&&!offer.options.includes(c.id));
-     offer.options=offer.options.flatMap(id=>BY[id].kind==='z'&&!available(s,p,BY[id])?(replacement.length?[replacement.shift().id]:[]):[id]);
-     if(!offer.options.length){if(offer.token)p.tokens[pack.id]++;else p.refundDue+=pack.price;p.pending=null;}
+     offer.options=offer.options.flatMap(id=>!available(s,p,BY[id])?(replacement.length?[replacement.shift().id]:[]):[id]);
+     if(!offer.options.length){p.closed[offerId(offer)]=true;if(offer.token)p.tokens[pack.id]++;else p.refundDue+=pack.price;p.pending=null;}
     }
+    if(p.pending?.batch){const b=p.pending.batch;if(!Number.isInteger(b.total)||b.total<1||b.total>10||!Number.isInteger(b.left)||b.left<1||b.left>b.total)delete p.pending.batch;}
    }
    return p;
  }
@@ -53,9 +59,39 @@ G.CardPacks=(()=>{
  const remaining=(s,id='beginner')=>{const p=normalize(s);return (packBy[id]?.cards||[]).reduce((n,c)=>n+available(s,p,c),0);};
  function draw(s,rng=Math.random,id='beginner',token=false){const p=normalize(s);if(p.pending)return p.pending;const pack=packBy[id];if(!pack)throw Error('Invalid pack');if(!remaining(s,id))throw Error('Pack empty');if(token?!p.tokens[id]:s.coins<pack.price)throw Error(token?'No pack owned':'Not enough coins');
    const bag=[];for(const c of pack.cards)for(let n=0;n<available(s,p,c);n++)bag.push(c.id);const options=[];for(let i=0;i<3&&bag.length;i++){const k=Math.max(0,Math.min(bag.length-1,Math.floor(rng()*bag.length)));options.push(bag.splice(k,1)[0]);}
-   if(token)p.tokens[id]--;else s.coins-=pack.price;p.pending={seq:++p.seq,pack:id,options,...(token?{token:true}:{})};return p.pending;
+   if(token)p.tokens[id]--;else s.coins-=pack.price;p.pending={id:globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),seq:++p.seq,pack:id,options,...(token?{token:true}:{})};return p.pending;
  }
- function choose(s,seq,index){const p=normalize(s),offer=p.pending;if(!offer||seq!==offer.seq||!Number.isInteger(index)||index<0||index>=offer.options.length)throw Error('Invalid pack choice');const c=BY[offer.options[index]];if(c.kind==='tickets'&&s.tickets.t1+100>1e7||c.kind==='gems'&&s.abilityGems+20>1e8)throw Error('Wallet limit reached');p.taken[c.id]++;p.pending=null;if(c.id==='stat:cd')p.legacyAgility+=.03;if(c.kind==='tickets')s.tickets.t1+=100;if(c.kind==='gems')s.abilityGems+=20;if(c.kind==='z')G.ZAccess.unlock(s,c.key,'cardpack');return c.id;}
+ function drawMany(s,rng=Math.random,id='beginner',token=false,count=10){const p=normalize(s);if(p.pending)return p.pending;const total=Math.min(10,Math.max(1,count|0),remaining(s,id)),pack=packBy[id];if(!pack)throw Error('Invalid pack');if(!total)throw Error('Pack empty');if(token?p.tokens[id]<total:s.coins<pack.price*total)throw Error(token?'No pack owned':'Not enough coins');const offer=draw(s,rng,id,token);offer.batch={total,left:total};return offer;}
+ function choose(s,seq,index,rng=Math.random){const p=normalize(s),offer=p.pending;if(!offer||seq!==offer.seq||!Number.isInteger(index)||index<0||index>=offer.options.length)throw Error('Invalid pack choice');const c=BY[offer.options[index]];if(c.kind==='tickets'&&s.tickets.t1+100>1e7||c.kind==='gems'&&s.abilityGems+20>1e8)throw Error('Wallet limit reached');p.taken[c.id]++;p.closed[offerId(offer)]={card:c.id,pack:offer.pack,token:!!offer.token};p.pending=null;if(c.id==='stat:cd')p.legacyAgility+=.03;if(c.kind==='tickets')s.tickets.t1+=100;if(c.kind==='gems')s.abilityGems+=20;if(c.kind==='z')G.ZAccess.unlock(s,c.key,'cardpack');
+   if(offer.batch?.left>1&&remaining(s,offer.pack)){try{const next=draw(s,rng,offer.pack,!!offer.token);next.batch={total:offer.batch.total,left:offer.batch.left-1};}catch(e){if(!['Not enough coins','No pack owned','Pack empty'].includes(e.message))throw e;}}
+   if(!p.pending&&p.waiting.length)p.pending=p.waiting.shift();return c.id;}
+ function apply(s,data){switch(data.action){case 'draw':return data.count===10?drawMany(s,Math.random,data.pack||'beginner',data.token===true):draw(s,Math.random,data.pack||'beginner',data.token===true);case 'choose':if(data.offerId&&data.offerId!==s.cardPack?.pending?.id)throw Error('Invalid pack choice');return choose(s,data.seq,data.index);case 'toggle':return toggle(s,data.id);case 'theme':return equip(s,data.id);default:throw Error('Invalid pack action');}}
+ function settlement(current={},base={},next={}){
+   const offers=p=>new Map([...(Object.entries(p.closed||{}).filter(([,m])=>m&&m.pack)),...[p.pending,...p.waiting||[]].filter(Boolean).map(o=>[offerId(o),o])]);
+   const known=offers(current),prior=offers(base),correction={coins:0,gems:0,tickets:0,tokens:{}},duplicates={},overflow=new Set(),room=Object.fromEntries([...cards,legacy].map(c=>[c.id,Math.max(0,c.max-(current.taken?.[c.id]||0))]));
+   const refund=m=>{if(m.token)correction.tokens[m.pack]=(correction.tokens[m.pack]||0)+1;else correction.coins+=packBy[m.pack]?.price||0;};
+   const unaward=m=>{if(BY[m.card]?.kind==='tickets')correction.tickets-=100;if(BY[m.card]?.kind==='gems')correction.gems-=20;};
+   for(const [id,m]of offers(next))if(!prior.has(id)&&known.has(id))refund(m);
+   for(const [id,m]of Object.entries(next.closed||{}))if(m?.card&&!base.closed?.[id]){
+    if(current.closed?.[id]){duplicates[m.card]=(duplicates[m.card]||0)+1;unaward(m);}
+    else if(room[m.card]>0)room[m.card]--;else{overflow.add(id);refund(m);unaward(m);}
+   }
+   return {correction,duplicates,overflow};
+ }
+ function reconcile(current={},base={},next={}){
+   const out=clone(current),equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b),{correction,duplicates,overflow}=settlement(current,base,next);out.taken||={};out.tokens||={};out.disabled||={};
+   for(const c of [...cards,legacy])out.taken[c.id]=Math.max(0,Math.min(c.max,(current.taken?.[c.id]||0)+Math.max(0,(next.taken?.[c.id]||0)-(base.taken?.[c.id]||0)-(duplicates[c.id]||0))));
+   out.legacyAgility=Math.min(.24,(current.legacyAgility||0)+.03*Math.max(0,out.taken[legacy.id]-(current.taken?.[legacy.id]||0)));
+   for(const pack of packs)out.tokens[pack.id]=Math.max(0,Math.min(1e6,(current.tokens?.[pack.id]||0)+(next.tokens?.[pack.id]||0)-(base.tokens?.[pack.id]||0)+(correction.tokens[pack.id]||0)));
+   for(const item of items)if(next.disabled?.[item.id]!==base.disabled?.[item.id])out.disabled[item.id]=!!next.disabled?.[item.id];
+   if(next.theme!==base.theme)out.theme=next.theme;
+   out.closed={...(next.closed||{}),...(current.closed||{})};for(const id of overflow)out.closed[id]={...out.closed[id],refunded:true};out.seq=Math.max(current.seq||0,next.seq||0);
+   const prefer=!equal(base.pending,next.pending)?next.pending:current.pending,offers=new Map();
+   for(const o of [prefer,current.pending,...current.waiting||[],next.pending,...next.waiting||[]])if(o&&!out.closed[offerId(o)]&&!offers.has(offerId(o)))offers.set(offerId(o),clone(o));
+   const list=[...offers.values()];out.pending=list.shift()||null;out.waiting=list;
+   return out;
+ }
+ function resume(s){const p=normalize(s);while(!p.pending&&p.waiting.length){p.pending=p.waiting.shift();normalize(s);}return normalize(s);}
  function toggle(s,id){const p=normalize(s);if(!items.some(i=>i.id===id)||!p.taken['item:'+id])throw Error('Item locked');p.disabled[id]=!p.disabled[id];}
  function equip(s,id){const p=normalize(s);if(id&&!themes.some(t=>t.id===id&&p.taken['theme:'+id]))throw Error('Theme locked');p.theme=id;}
  const enabled=(s,id)=>{const p=normalize(s);return !!p.taken['item:'+id]&&!p.disabled[id];};
@@ -63,5 +99,5 @@ G.CardPacks=(()=>{
  const allowedSpeeds=s=>[1,...speedCards.filter(c=>normalize(s).taken[c.id]>0).map(c=>c.key)];
  function grantToken(s,id,n=1){const p=normalize(s);if(!packBy[id]||!Number.isSafeInteger(n)||n<1)return false;p.tokens[id]=Math.min(1e6,p.tokens[id]+n);return true;}
  function rollBoss(rift=false,rng=Math.random){return rng()<(rift?.2:.1)?(rng()<.75?'beginner':'breakthrough'):null;}
- return {speedAllowed,allowedSpeeds,grantToken,rollBoss,PRICE,packs,packBy,skills,items,cards,BY,themes,local,normalize,levels,remaining,draw,choose,toggle,equip,enabled};
+ return {settlement,resume,apply,reconcile,drawMany,speedAllowed,allowedSpeeds,grantToken,rollBoss,PRICE,packs,packBy,skills,items,cards,BY,themes,local,normalize,levels,remaining,draw,choose,toggle,equip,enabled};
 })();
