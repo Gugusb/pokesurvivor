@@ -1087,3 +1087,10 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 @media(max-width:500px){.pack-subnav{align-items:flex-start}.pack-subnav .btn{font-size:12px}.pack-breadcrumb{max-width:45%;font-size:11px}.pack-choices .pack-card{min-height:0}}
 
 .pack-no-motion .pack-seal,.pack-no-motion .pack-hero,.pack-no-motion .pack-choices .pack-card,.pack-no-motion .pack-receipt{animation:none!important;transition:none!important}
+
+/* Family portraits on Z permission cards, including alternate evolution branches. */
+.pack-kind-z .pack-type-badge{background:#423c66;border-color:#b8a2ec;color:#ece1ff}
+.pack-family{display:grid;grid-template-columns:repeat(auto-fit,minmax(54px,1fr));gap:8px;padding:10px 0;border-block:1px solid #b8a2ec35}
+.pack-family-mon{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:0;margin:0;padding:3px 1px 6px;border:1px solid #a9baf52c;border-radius:9px;background:radial-gradient(ellipse at center,#b5a3ed25,transparent 75%)}
+.pack-family-mon canvas{display:block;width:64px;max-width:100%;height:auto;image-rendering:pixelated}
+.pack-family-mon figcaption{max-width:100%;font-size:10px;line-height:1.4;text-align:center;color:#e4e9ff;overflow-wrap:anywhere}

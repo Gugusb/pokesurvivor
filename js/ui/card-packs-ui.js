@@ -21,11 +21,32 @@ G.CardPacksUI=(()=>{
   finally{busy=false;if(phase!=='claimed')phase='';render();}
  }
  function button(text,fn,disabled=false){const n=el('button','btn',text);n.disabled=disabled||busy;n.onclick=fn;return n;}
- function card(c,tail){const n=el('div','pack-card pack-kind-'+c.kind);n.dataset.card=c.id;n.dataset.rewardType=c.kind;n.append(el('span','pack-type-badge',c.boss?T('Desbloqueo BOSS','Boss item unlock','BOSS道具解锁'):type(c)));const icon=el('div','pack-card-icon');icon.innerHTML=G.Icons.html(c.icon,32);n.append(icon,el('strong','',L(c.name)),el('small','pack-kind-hint',detail(c)),el('p','',L(c.desc)),el('small','pack-card-stock',tail));return n;}
+ const families=new Map();
+ function family(root){
+  if(!families.has(root))families.set(root,G.DEX.filter(m=>G.ZAccess.root(m.dex)===root).sort((a,b)=>((G.EVOLUTION_PATHS?.[a.dex]||[a.dex]).indexOf(a.dex)-(G.EVOLUTION_PATHS?.[b.dex]||[b.dex]).indexOf(b.dex))||a.dex-b.dex));
+  return families.get(root);
+ }
+ function portraits(c){
+  const group=el('div','pack-family');group.setAttribute('role','list');group.setAttribute('aria-label',T('Pokémon compatibles','Compatible Pokémon','可使用的宝可梦'));
+  for(const mon of family(c.key)){
+   const name=G.T(mon.name),figure=el('figure','pack-family-mon');figure.dataset.familyDex=mon.dex;figure.title=name;figure.setAttribute('role','listitem');
+   const cv=G.UI.spriteCanvas(mon.dex,96,80,{scale:2,hero:true,shadow:false});cv.setAttribute('aria-hidden','true');
+   figure.append(cv,el('figcaption','',name));group.append(figure);
+  }
+  return group;
+ }
+ function card(c,tail){
+  const n=el('div','pack-card pack-kind-'+c.kind);n.dataset.card=c.id;n.dataset.rewardType=c.kind;
+  n.append(el('span','pack-type-badge',c.boss?T('Desbloqueo BOSS','Boss item unlock','BOSS道具解锁'):type(c)));
+  const icon=el('div','pack-card-icon');icon.innerHTML=G.Icons.html(c.icon,32);n.append(icon,el('strong','',L(c.name)),el('small','pack-kind-hint',detail(c)));
+  if(c.kind==='z')n.append(portraits(c));
+  n.append(el('p','',L(c.desc)),el('small','pack-card-stock',tail));return n;
+ }
+
  function catalog(parent,cards,p,s){
   const search=el('input','field');search.type='search';search.placeholder=T('Buscar una carta…','Search cards…','搜索卡牌或宝可梦…');search.setAttribute('aria-label',search.placeholder);
   const grid=el('div','pack-grid'),nav=el('div','row wrap');let offset=0;
-  const paint=()=>{const query=search.value.trim().toLowerCase(),list=cards.filter(c=>L(c.name).toLowerCase().includes(query)||L(c.desc).toLowerCase().includes(query));grid.replaceChildren();nav.replaceChildren();for(const c of list.slice(offset,offset+30))grid.append(card(c,(c.kind==='z'&&G.ZAccess.allowed(s,c.key)?0:c.max-p.taken[c.id])+' / '+c.max));nav.append(button(T('Anterior','Previous','上一页'),()=>{offset=Math.max(0,offset-30);paint();},offset===0),el('small','',`${Math.min(offset+1,list.length)}–${Math.min(offset+30,list.length)} / ${list.length}`),button(T('Siguiente','Next','下一页'),()=>{offset+=30;paint();},offset+30>=list.length));};
+  const paint=()=>{const query=search.value.trim().toLowerCase(),list=cards.filter(c=>L(c.name).toLowerCase().includes(query)||L(c.desc).toLowerCase().includes(query)||c.kind==='z'&&family(c.key).some(m=>G.T(m.name).toLowerCase().includes(query)));grid.replaceChildren();nav.replaceChildren();for(const c of list.slice(offset,offset+30))grid.append(card(c,(c.kind==='z'&&G.ZAccess.allowed(s,c.key)?0:c.max-p.taken[c.id])+' / '+c.max));nav.append(button(T('Anterior','Previous','上一页'),()=>{offset=Math.max(0,offset-30);paint();},offset===0),el('small','',`${Math.min(offset+1,list.length)}–${Math.min(offset+30,list.length)} / ${list.length}`),button(T('Siguiente','Next','下一页'),()=>{offset+=30;paint();},offset+30>=list.length));};
   search.oninput=()=>{offset=0;paint();};parent.append(search,grid,nav);paint();
  }
  function render(){
