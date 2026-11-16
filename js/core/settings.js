@@ -13,11 +13,12 @@
  */
 G.Settings = (() => {
   const KEY = 'ps.settings';
-  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, zoom: 1, castMode: 'auto', activeItem: 'superpotion' };
+  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, zoom: 1, castMode: 'auto', manualAim: false, activeItem: 'superpotion' };
   let s = Object.assign({}, DEF);
   try { Object.assign(s, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* nada */ }
   const zoomValue = v => typeof v === 'number' && Number.isFinite(v) ? Math.round(Math.max(0.5, Math.min(1.5, v)) * 20) / 20 : 1;
   s.zoom = zoomValue(s.zoom);
+  s.manualAim=s.manualAim===true;
   if(!['auto','toggle','click'].includes(s.castMode))s.castMode='auto';
   if(!['superpotion','none'].includes(s.activeItem))s.activeItem='superpotion';
   const fns = new Set();
@@ -29,7 +30,7 @@ G.Settings = (() => {
 
   function save() { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { /* nada */ } }
   function get(k) { return s[k]; }
-  function set(k, v) { if(k==='castMode'&&!['auto','toggle','click'].includes(v))return;if(k==='activeItem'&&!['superpotion','none'].includes(v))return;if (k === 'zoom') v = zoomValue(v); s[k] = v; save(); fns.forEach(fn => { try { fn(k, v); } catch (e) { /* nada */ } }); }
+  function set(k, v) { if(k==='manualAim'&&typeof v!=='boolean')return; if(k==='castMode'&&!['auto','toggle','click'].includes(v))return;if(k==='activeItem'&&!['superpotion','none'].includes(v))return;if (k === 'zoom') v = zoomValue(v); s[k] = v; save(); fns.forEach(fn => { try { fn(k, v); } catch (e) { /* nada */ } }); }
 
   /** Lo llama el bucle del juego en cada fotograma (sólo durante la partida). */
   function sample(dt) {

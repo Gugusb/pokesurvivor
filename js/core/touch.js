@@ -1,93 +1,50 @@
-/* ============ touch.js — controles táctiles ============
- * Joystick flotante: pones el dedo en cualquier sitio de la pantalla de juego
- * y ahí aparece; arrastras para moverte y al soltar desaparece. Si el dedo se
- * aleja más que el radio, la base le sigue (nunca se queda "atascado").
- *
- * Botones del HUD (iconos de ataque, pausa): el HUD los registra en cada
- * fotograma con addButton(); un toque (o un clic con el ratón) sobre uno lo
- * pulsa en vez de abrir el joystick. Varios dedos a la vez funcionan.
- */
-G.Touch = (() => {
-  let cv = null, stick = null;
-  let active = G.Settings.touch;      // ¿se está usando táctil?
-  let buttons = [];
-
-  const R = () => 56 * (G.Settings.get('stick') || 1);
-
-  function init(canvas) {
-    cv = canvas;
-    if (active) document.body.classList.add('touch');
-    cv.addEventListener('pointerdown', down);
-    cv.addEventListener('pointermove', move);
-    cv.addEventListener('pointerup', up);
-    cv.addEventListener('pointercancel', up);
-    cv.addEventListener('contextmenu', e => e.preventDefault());
-    // iPhone: la pulsación larga sobre el juego abría la lupa y el menú de
-    // "Copiar / Seleccionar todo". Cortar el toque aquí lo evita (los eventos
-    // pointer, que son los que usa el joystick, siguen llegando).
-    // Además, los botones (movimientos, pausa) se pulsan también desde aquí: en
-    // iPhone (Safari y Chrome usan WebKit) a veces no llegaba el pointerdown de
-    // un segundo dedo con el otro en el joystick y no se podía cambiar de movimiento.
-    cv.addEventListener('touchstart', e => {
-      if (e.cancelable) e.preventDefault();
-      if (!active) { active = true; document.body.classList.add('touch'); }
-      for (const t of e.changedTouches) { const b = hit(t.clientX, t.clientY); if (b) press(b); }
-    }, { passive: false });
-    document.addEventListener('selectstart', e => {
-      if (!e.target.closest || !e.target.closest('input, textarea, [contenteditable]')) e.preventDefault();
-    });
-    addEventListener('blur', reset);
-    document.addEventListener('visibilitychange', reset);
-  }
-
-  function hit(x, y) {
-    for (let i = buttons.length - 1; i >= 0; i--) {
-      const b = buttons[i];
-      if (x >= b.x - b.pad && x <= b.x + b.w + b.pad && y >= b.y - b.pad && y <= b.y + b.h + b.pad) return b;
-    }
-    return null;
-  }
-
-  // Un mismo toque llega por touchstart y por pointerdown: se pulsa una sola vez.
-  let lastKey = '', lastAt = 0;
-  function press(b) {
-    const k = Math.round(b.x) + ',' + Math.round(b.y), now = performance.now();
-    if (k === lastKey && now - lastAt < 350) return;
-    lastKey = k; lastAt = now;
-    b.fn();
-  }
-
-  function down(e) {
-    const touchy = e.pointerType !== 'mouse';
-    if (touchy && !active) { active = true; document.body.classList.add('touch'); }
-    const b = hit(e.clientX, e.clientY);
-    if (b) { e.preventDefault(); press(b); return; }
-    if (!touchy || stick || !G.Game || G.Game.state !== 'playing') return;
-    e.preventDefault();
-    stick = { id: e.pointerId, ox: e.clientX, oy: e.clientY, x: e.clientX, y: e.clientY };
-    try { cv.setPointerCapture(e.pointerId); } catch (err) { /* nada */ }
-  }
-
-  function move(e) {
-    if (!stick || e.pointerId !== stick.id) return;
-    stick.x = e.clientX; stick.y = e.clientY;
-    const dx = stick.x - stick.ox, dy = stick.y - stick.oy, d = Math.hypot(dx, dy), r = R();
-    if (d > r) { stick.ox = stick.x - dx / d * r; stick.oy = stick.y - dy / d * r; }
-  }
-
-  function up(e) { if (stick && e.pointerId === stick.id) stick = null; }
-  function reset() { stick = null; }
-
-  /** Dirección del joystick (con fuerza 0..1), o null si no se usa. */
-  function vector() {
-    if (!stick) return null;
-    const dx = stick.x - stick.ox, dy = stick.y - stick.oy, d = Math.hypot(dx, dy);
-    if (d < 7) return [0, 0];
-    // A partir de medio radio ya va a toda velocidad.
-    const k = Math.min(1, (d - 7) / (R() * 0.5 - 7));
-    return [dx / d * k, dy / d * k];
-  }
-
+/* Independent movement and aim sticks; HUD buttons use the same screen layout. */
+G.Touch=(()=>{
+ let cv=null,stick=null,aimStick=null,active=G.Settings.touch,buttons=[];
+ const manual=()=>!!G.Settings.get('manualAim'),playing=()=>G.Game?.state==='playing';
+ function controls(w=innerWidth,h=innerHeight){
+  const safe=safeArea(),r=Math.min(56*(G.Settings.get('stick')||1),Math.max(30,w*.12),h*.15),size=w<360?40:44,gap=12;
+  const aim={x:w-safe.right-r-16,y:h-safe.bottom-r-24,r},left=aim.x-r-18-size*2-gap;
+  const moves=Array.from({length:4},(_,i)=>({x:left+(i%2)*(size+gap),y:aim.y-size-20+Math.floor(i/2)*(size+28),w:size,h:size}));
+  return {aim,moves,item:{x:aim.x-size/2,y:aim.y-r-size-24,w:size,h:size},size};
+ }
+ function hit(x,y){for(let i=buttons.length-1;i>=0;i--){const b=buttons[i];if(x>=b.x-b.pad&&x<=b.x+b.w+b.pad&&y>=b.y-b.pad&&y<=b.y+b.h+b.pad)return b;}return null;}
+ let lastKey='',lastAt=0;
+ function press(b){const key=Math.round(b.x)+','+Math.round(b.y),now=performance.now();if(key===lastKey&&now-lastAt<350)return;lastKey=key;lastAt=now;b.fn();}
+ function start(id,x,y,touchId=null){
+  if(!playing())return;const l=controls(),near=Math.hypot(x-l.aim.x,y-l.aim.y)<=l.aim.r+12;
+  if(near){if(manual()&&!aimStick)aimStick={id,touchId,ox:l.aim.x,oy:l.aim.y,x,y,aim:true};return;}
+  if(stick||manual()&&x>innerWidth/2)return;
+  stick={id,touchId,ox:x,oy:y,x,y,aim:false};
+ }
+ function change(s,x,y){s.x=x;s.y=y;const dx=x-s.ox,dy=y-s.oy,d=Math.hypot(dx,dy),r=controls().aim.r;if(!s.aim&&d>r){s.ox=x-dx/d*r;s.oy=y-dy/d*r;}}
+ function down(e){
+  const touchy=e.pointerType!=='mouse';if(touchy&&!active){active=true;document.body.classList.add('touch');}
+  const b=hit(e.clientX,e.clientY);if(b){e.preventDefault();press(b);return;}if(!touchy)return;
+  e.preventDefault();start(e.pointerId,e.clientX,e.clientY);try{cv.setPointerCapture(e.pointerId);}catch{}
+ }
+ function move(e){for(const s of [stick,aimStick])if(s&&s.id===e.pointerId)change(s,e.clientX,e.clientY);}
+ function up(e){if(stick?.id===e.pointerId)stick=null;if(aimStick?.id===e.pointerId)aimStick=null;}
+ function reset(){stick=aimStick=null;}
+ function init(canvas){
+  cv=canvas;if(active)document.body.classList.add('touch');
+  cv.addEventListener('pointerdown',down);cv.addEventListener('pointermove',move);for(const ev of ['pointerup','pointercancel','lostpointercapture'])cv.addEventListener(ev,up);
+  cv.addEventListener('contextmenu',e=>e.preventDefault());
+  cv.addEventListener('touchstart',e=>{
+   if(e.cancelable)e.preventDefault();if(!active){active=true;document.body.classList.add('touch');}
+   for(const t of e.changedTouches){const b=hit(t.clientX,t.clientY);if(b){press(b);continue;}
+    const prior=[stick,aimStick].find(s=>s&&Math.hypot(s.x-t.clientX,s.y-t.clientY)<8&&s.touchId==null);
+    if(prior)prior.touchId=t.identifier;else start('touch:'+t.identifier,t.clientX,t.clientY,t.identifier);
+   }
+  },{passive:false});
+  cv.addEventListener('touchmove',e=>{if(e.cancelable)e.preventDefault();for(const t of e.changedTouches)for(const s of [stick,aimStick])if(s&&s.touchId===t.identifier)change(s,t.clientX,t.clientY);},{passive:false});
+  for(const ev of ['touchend','touchcancel'])cv.addEventListener(ev,e=>{for(const t of e.changedTouches){if(stick?.touchId===t.identifier)stick=null;if(aimStick?.touchId===t.identifier)aimStick=null;}});
+  document.addEventListener('selectstart',e=>{if(!e.target.closest?.('input,textarea,[contenteditable]'))e.preventDefault();});
+  addEventListener('blur',reset);addEventListener('resize',reset);document.addEventListener('visibilitychange',reset);
+  G.Settings.on(key=>{if(['manualAim','stick'].includes(key))reset();});
+ }
+ function vectorOf(s){if(!s||!playing())return null;const dx=s.x-s.ox,dy=s.y-s.oy,d=Math.hypot(dx,dy),r=controls().aim.r;if(d<7)return [0,0];const k=Math.min(1,(d-7)/(r*.5-7));return [dx/d*k,dy/d*k];}
+ const vector=()=>vectorOf(stick),aimVector=()=>manual()?vectorOf(aimStick):null;
   /** Márgenes del iPhone (barra de inicio abajo, muesca a los lados), en px. */
   let safe = null;
   function safeArea() {
@@ -105,29 +62,16 @@ G.Touch = (() => {
   addEventListener('resize', () => { safe = null; });
   addEventListener('orientationchange', () => { safe = null; });
 
-  /** El HUD vacía y vuelve a registrar sus botones cada fotograma. */
-  function clearButtons() { buttons = []; }
-  function addButton(x, y, w, h, fn, pad = 6) { buttons.push({ x, y, w, h, fn, pad }); }
 
-  /** Dibuja el joystick (coordenadas de pantalla, CSS px). */
-  function draw(ctx) {
-    if (!stick) return;
-    const r = R();
-    const dx = stick.x - stick.ox, dy = stick.y - stick.oy, d = Math.hypot(dx, dy);
-    const kx = stick.ox + (d > r ? dx / d * r : dx), ky = stick.oy + (d > r ? dy / d * r : dy);
-    ctx.save();
-    ctx.globalAlpha = 0.5;
-    ctx.fillStyle = 'rgba(10,20,48,.55)';
-    ctx.beginPath(); ctx.arc(stick.ox, stick.oy, r, 0, 6.2832); ctx.fill();
-    ctx.lineWidth = 3; ctx.strokeStyle = '#f4f8ff';
-    ctx.stroke();
-    ctx.globalAlpha = 0.85;
-    ctx.fillStyle = '#ffd23f';
-    ctx.beginPath(); ctx.arc(kx, ky, r * 0.42, 0, 6.2832); ctx.fill();
-    ctx.lineWidth = 3; ctx.strokeStyle = '#a55f00'; ctx.stroke();
-    ctx.restore();
-  }
-
-  return { init, vector, draw, clearButtons, addButton, reset, safeArea,
-           get active() { return active; }, get stick() { return stick; } };
+ function clearButtons(){buttons=[];}
+ function addButton(x,y,w,h,fn,pad=6){buttons.push({x,y,w,h,fn,pad});}
+ function wheel(ctx,s,r,color){const dx=s.x-s.ox,dy=s.y-s.oy,d=Math.hypot(dx,dy),k=d>r?r/d:1;ctx.fillStyle='rgba(10,20,48,.48)';ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(s.ox,s.oy,r,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.85;ctx.fillStyle=color;ctx.beginPath();ctx.arc(s.ox+dx*k,s.oy+dy*k,r*.34,0,Math.PI*2);ctx.fill();}
+ function draw(ctx){
+  if(!playing()||G.Judgment?.cinematic){reset();return;}if(!active)return;const l=controls();ctx.save();ctx.globalAlpha=.6;
+  if(stick)wheel(ctx,stick,l.aim.r,'#ffd23f');
+  const a=aimStick||{ox:l.aim.x,oy:l.aim.y,x:l.aim.x,y:l.aim.y};wheel(ctx,a,l.aim.r,manual()?'#8be8ff':'#a8b8ce');
+  if(!aimStick){ctx.fillStyle='#14283d';ctx.textAlign='center';ctx.font='700 11px Pixelify,"Segoe UI",sans-serif';ctx.fillText(G.T(manual()?'Apuntar':'Auto'),l.aim.x,l.aim.y+4);}
+  ctx.restore();
+ }
+ return {init,vector,aimVector,draw,controls,clearButtons,addButton,reset,safeArea,get active(){return active;},get stick(){return stick;}};
 })();

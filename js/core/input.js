@@ -30,11 +30,17 @@ G.Input = (() => {
       const t = G.Touch && G.Touch.vector();
       if (t && (t[0] || t[1])) return t;
       let x = 0, y = 0;
-      if (MOVE_KEYS.left.some(k => down.has(k))) x -= 1;
-      if (MOVE_KEYS.right.some(k => down.has(k))) x += 1;
-      if (MOVE_KEYS.up.some(k => down.has(k))) y -= 1;
-      if (MOVE_KEYS.down.some(k => down.has(k))) y += 1;
+      if (MOVE_KEYS.left.some(k => down.has(k)&&(!G.Settings?.get('manualAim')||!k.startsWith('arrow')))) x -= 1;
+      if (MOVE_KEYS.right.some(k => down.has(k)&&(!G.Settings?.get('manualAim')||!k.startsWith('arrow')))) x += 1;
+      if (MOVE_KEYS.up.some(k => down.has(k)&&(!G.Settings?.get('manualAim')||!k.startsWith('arrow')))) y -= 1;
+      if (MOVE_KEYS.down.some(k => down.has(k)&&(!G.Settings?.get('manualAim')||!k.startsWith('arrow')))) y += 1;
       return G.U.norm(x, y);
+    },
+    aim() {
+      if(!G.Settings?.get('manualAim')||document.activeElement?.closest?.('input,textarea,select,[contenteditable]'))return null;
+      const t=G.Touch?.aimVector();if(t&&(t[0]||t[1]))return t;
+      const x=Number(down.has('arrowright'))-Number(down.has('arrowleft')),y=Number(down.has('arrowdown'))-Number(down.has('arrowup'));
+      return x||y?G.U.norm(x,y):null;
     },
     held(c) { return down.has(c); },
     /** true sólo en el frame en que se pulsó. */

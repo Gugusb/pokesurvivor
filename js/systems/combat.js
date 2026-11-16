@@ -53,7 +53,8 @@ G.Combat = (() => {
     }
     if (m.t > 0||!wanted) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
-    if (needsTarget(m) && !(pl.target && G.U.dist(pl.x, pl.y, pl.target.x, pl.target.y) <= reach(G.Specialization?.move(pl,m)||m))) {
+    const manual=G.Targeting?.manual(pl),castReach=reach(G.Specialization?.move(pl,m)||m),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
+    if (needsTarget(m) && !(manual&&m.kind!=='chain') && !(target && G.U.dist(pl.x, pl.y, target.x, target.y) <= castReach)) {
       m.t = 0.05;
       return;
     }
@@ -272,7 +273,7 @@ G.Combat = (() => {
   /** Cadena: golpea a un enemigo y salta a los siguientes más cercanos (cada salto, algo menos). */
   function chain(pl, m) {
     const col = G.U.TYPE_COLOR[m.type], vis = G.VFX.forMove(m);
-    let cur = pl.target && !pl.target.dead && pl.target.hurt ? pl.target : G.Projectiles.nearest(G.EnemyMgr.all(), pl.x, pl.y, reach(m));
+    let cur = G.Targeting&&(ghost||G.Targeting.manual(pl))?G.Targeting.forward(pl,reach(m)):pl.target && !pl.target.dead && pl.target.hurt ? pl.target : G.Projectiles.nearest(G.EnemyMgr.all(), pl.x, pl.y, reach(m));
     if (!cur) return;
     let fx = pl.x, fy = pl.y - G.LIFT, k = 1;
     const done = new Set();
@@ -317,12 +318,13 @@ G.Combat = (() => {
   function meteors(pl, m) {
     const col = G.U.TYPE_COLOR[m.type], vis = G.VFX.forMove(m);
     const n = Math.max(1, m.count | 0);
-    const near = G.EnemyMgr.queryCircle(pl.x, pl.y, reach(m)).filter(e => !e.dead);
+    const manual=G.Targeting?.manual(pl),front=e=>Math.cos(Math.atan2(e.y-pl.y,e.x-pl.x)-pl.aim)>=.5;
+    const near = G.EnemyMgr.queryCircle(pl.x, pl.y, reach(m)).filter(e => !e.dead&&(!manual||front(e)));
     G.U.shuffle ? G.U.shuffle(near) : near.sort(() => Math.random() - 0.5);
     for (let i = 0; i < n; i++) {
       const e = near[i];
-      const x = e ? e.x + G.U.rand(-8, 8) : pl.x + G.U.rand(-140, 140);
-      const y = e ? e.y + G.U.rand(-6, 6) : pl.y + G.U.rand(-110, 110);
+      const x = e ? e.x + G.U.rand(-8, 8) : pl.x + (manual?Math.cos(pl.aim)*180:0)+G.U.rand(manual?-45:-140,manual?45:140);
+      const y = e ? e.y + G.U.rand(-6, 6) : pl.y + (manual?Math.sin(pl.aim)*180:0)+G.U.rand(manual?-45:-110,manual?45:110);
       fields.push({ kind: 'meteor', owner: pl, ghost, m, col, vis, x, y, t: -i * 0.09, fall: 0.5, r: m.radius, dmg: m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk) });
     }
   }

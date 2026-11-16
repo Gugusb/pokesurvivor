@@ -254,17 +254,22 @@ G.HUD = (() => {
       ctx.restore();
     }
 
+    if(G.Targeting?.manual(pl)){
+      const x=(pl.x-cam.left())*cam.scale,y=(pl.y-cam.top())*cam.scale,r=Math.max(18,pl.r*cam.scale+8),a=pl.aim;
+      ctx.save();ctx.strokeStyle='#8be8ff';ctx.fillStyle='#8be8ff';ctx.lineWidth=2;ctx.globalAlpha=.85;ctx.beginPath();ctx.moveTo(x+Math.cos(a)*r,y+Math.sin(a)*r);ctx.lineTo(x+Math.cos(a)*(r+26),y+Math.sin(a)*(r+26));ctx.stroke();ctx.beginPath();ctx.arc(x+Math.cos(a)*(r+30),y+Math.sin(a)*(r+30),3,0,Math.PI*2);ctx.fill();ctx.restore();
+    }
     // ---------- ranura de movimientos ----------
-    const S = 54, GAP = 9;
-    const n = Math.max(1, pl.slots.length);
+    const mobile=touch?G.Touch.controls(w,h):null;
+    const S = mobile?mobile.size:54, GAP = 9;
+    const n = touch?4:Math.max(1, pl.slots.length);
     const hasZ = !!(G.ZMoves && G.ZMoves.hasStone(pl));
     const hasMega = hasZ || !!(pl.megaState && pl.megaState.id);
     const activeItem=!hasMega&&G.Items?.ACTIVE[pl.activeItem];
     const hasEquipment=hasMega||!!activeItem;
     const totalW = (n + Number(hasEquipment)) * S + (n - 1 + Number(hasEquipment)) * GAP;
-    let sx = (w - totalW) / 2;
+    let sx = mobile?mobile.item.x:(w - totalW) / 2;
     // Por encima de la barra de inicio del iPhone (allí los toques a veces no llegan).
-    const sy = h - S - 18 - (touch ? Math.min(28, G.Touch.safeArea().bottom) : 0);
+    const sy = mobile?mobile.item.y:h-S-18;
     if (hasZ) {
       const zs=G.ZMoves.state(pl),ready=zs.phase==='ready'&&zs.charges>0,choosing=zs.phase==='choose',casting=zs.phase==='cast';
       roundRect(ctx,sx,sy,S,S,12);ctx.fillStyle='rgba(40,30,10,.95)';ctx.fill();
@@ -290,7 +295,7 @@ G.HUD = (() => {
     if(activeItem){
       const ix=sx,iy=sy;
       roundRect(ctx,ix,iy,S,S,12);ctx.fillStyle='rgba(20,35,45,.9)';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=pl.activeItemCd<=0?'#9ef5c1':'#63708b';ctx.stroke();
-      ctx.font=F(700,9);ctx.textAlign='center';ctx.fillStyle='#c6efda';ctx.fillText(G.T(activeItem.name),ix+S/2,iy-6);
+      ctx.font=F(700,9);ctx.textAlign='center';ctx.fillStyle='#c6efda';if(!touch)ctx.fillText(G.T(activeItem.name),ix+S/2,iy-6);
       G.Icons.draw(ctx,activeItem.icon,ix+11,iy+5,32);ctx.font=F(800,9);ctx.textAlign='center';ctx.fillStyle='#d8f4ff';
       ctx.fillText(pl.activeItemCd>0?Math.ceil(pl.activeItemCd)+'s':G.T(pl.ppPotionReady?'PP preparados':'Lista'),ix+S/2,iy+S-7);
       bar(ctx,ix+5,iy+S-4,S-10,3,1-pl.activeItemCd/activeItem.cooldown,'#82e8b0');
@@ -312,10 +317,10 @@ G.HUD = (() => {
       const m = g[0];
       const fused = g.length > 1;
       const on = i === pl.active;
-      const x = sx + i * (S + GAP);
-      const y = on ? sy - 6 : sy;
+      const x = mobile?mobile.moves[i].x:sx+i*(S+GAP);
+      const y = mobile?mobile.moves[i].y:on?sy-6:sy;
       // Tocar (o hacer clic en) un icono activa ese movimiento.
-      if(m)G.Touch.addButton(x,y,S,S,()=>{if(G.Game.state==='playing'){G.MoveControl?G.MoveControl.input(pl,i):pl.setActive(i);G.Audio.sfx('click');}},GAP/2+3);
+      G.Touch.addButton(x,y,S,S,()=>{if(m&&G.Game.state==='playing'){G.MoveControl?G.MoveControl.input(pl,i):pl.setActive(i);G.Audio.sfx('click');}},touch?3:GAP/2+3);
       const col = m ? G.U.TYPE_COLOR[m.type] : '#4a5468';
 
       // fondo
@@ -334,11 +339,11 @@ G.HUD = (() => {
         }else{ctx.fillStyle='rgba(0,0,0,.65)';ctx.fill();}
       }
 
-      if (!m) continue;
+      if (!m) {if(touch){ctx.font=F(800,12);ctx.fillStyle='#8190a8';ctx.textAlign='center';ctx.fillText(String(i+1),x+S/2,y+S/2+4);}continue;}
 
       if (fused) {
         // Vínculo: los movimientos en una cuadrícula de 2×2, cada uno con su recarga.
-        const C = 22, P = (S - C * 2) / 3;
+        const C = touch?18:22, P = (S - C * 2) / 3;
         g.forEach((gm, k) => {
           const cx = x + P + (k % 2) * (C + P), cy = y + P + Math.floor(k / 2) * (C + P);
           G.Icons.draw(ctx, 'move:' + gm.id, cx, cy, C);
@@ -394,7 +399,7 @@ G.HUD = (() => {
       ctx.fillText(String(i + 1), x + 3, y + 10);
 
       // nombre encima del activo (con un vínculo: "Ascuas +2")
-      if (on) {
+      if (on&&!touch) {
         ctx.font = F(700, 10);
         ctx.textAlign = 'center';
         ctx.fillStyle = fused ? BOND : col;
@@ -404,7 +409,7 @@ G.HUD = (() => {
 
     // ---------- vínculo guardado (aún no hay dos movimientos sueltos) ----------
     if (pl.bonds > 0) {
-      const bx = (w + totalW) / 2 + 12, by = sy + S / 2 - 12;
+      const bx = mobile?mobile.moves[0].x: (w+totalW)/2+12, by=mobile?mobile.moves[0].y-38:sy+S/2-12;
       G.Icons.draw(ctx, 'bond', bx, by, 24);
       if (pl.bonds > 1) {
         ctx.font = F(800, 10);
@@ -431,8 +436,8 @@ G.HUD = (() => {
       ctx.font = F(600, 10);
       ctx.textAlign = 'center';
       ctx.fillStyle = 'rgba(180,200,230,.55)';
-      ctx.fillText(touch ? 'Arrastra el dedo para moverte  ·  toca un ataque para cambiarlo'
-                         : 'WASD moverse  ·  1-4 / Q / Tab o clic en un ataque para cambiarlo  ·  E mochila  ·  Esc pausa', w / 2, sy-48);
+      ctx.fillText(touch ? G.T(G.Settings.get('manualAim')?'Izquierda: moverse · derecha: apuntar':'Arrastra para moverte · habilidades a la derecha')
+                         : 'WASD moverse  ·  1-4 / Q / Tab o clic en un ataque para cambiarlo  ·  E mochila  ·  Esc pausa', w/2,touch?Math.max(140,h*.55):sy-48);
     }
 
     ctx.restore();

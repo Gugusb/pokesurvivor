@@ -452,20 +452,23 @@ G.Player = class Player {
     // Con una horda encima casi siempre te toca algo; si eso ganara siempre,
     // los ataques a distancia no le darían nunca al jefe.
     // Sin enemigos, apunta a la roca o cofre más cercano.
-    const all = G.EnemyMgr.all();
-    const m = this.activeMove();
-    const ranged = !!m && (m.kind === 'projectile' || m.kind === 'beam');
-    const threat = G.Projectiles.nearest(all, this.x, this.y, this.r + 24);
-    const boss = all.find(e => e.boss && !e.dead && G.U.dist(this.x, this.y, e.x, e.y) < 330);
-    const tg = (ranged ? boss || threat : threat || boss)
-            || G.Projectiles.nearest(all, this.x, this.y, 520)
-            || G.World.nearestBreakable(this.x, this.y, 200);
-    this.target = tg;
-    if (tg) this.aim = Math.atan2(tg.y - this.y, tg.x - this.x);
-    else if (this.walking) this.aim = this.moveAngle;
+    if(!G.Targeting?.update(this)) {
+      const all = G.EnemyMgr.all();
+      const m = this.activeMove();
+      const ranged = !!m && (m.kind === 'projectile' || m.kind === 'beam');
+      const threat = G.Projectiles.nearest(all, this.x, this.y, this.r + 24);
+      const boss = all.find(e => e.boss && !e.dead && G.U.dist(this.x, this.y, e.x, e.y) < 330);
+      const tg = (ranged ? boss || threat : threat || boss)
+              || G.Projectiles.nearest(all, this.x, this.y, 520)
+              || G.World.nearestBreakable(this.x, this.y, 200);
+      this.target = tg;
+      if (tg) this.aim = Math.atan2(tg.y - this.y, tg.x - this.x);
+      else if (this.walking) this.aim = this.moveAngle;
+
+    }
 
     // --- animación: mira al objetivo al atacar, si no a donde camina ---
-    const face = this.attackFace > 0 || !this.walking ? this.aim : this.moveAngle;
+    const face = this.manualAim || this.attackFace > 0 || !this.walking ? this.aim : this.moveAngle;
     this.anim.dir = G.Sprites.dirFromAngle(face);
     this.anim.loop(G.ZMoves && G.ZMoves.busy(this) ? 'Charge' : this.walking ? 'Walk' : 'Idle', this.walking ? s / 110 : 1);
   }

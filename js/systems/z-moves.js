@@ -63,6 +63,7 @@ G.ZMoves = (() => {
   }
   // The half-plane aim uses a circular sliding window; line attacks score their actual corridors.
   function aim(p, m) {
+    if(G.Targeting?.manual(p))return p.aim;
     const es = enemies(), bosses = es.filter(e => e.boss).sort((a,b) => G.U.dist2(p.x,p.y,a.x,a.y)-G.U.dist2(p.x,p.y,b.x,b.y));
     if (bosses.length) return Math.atan2(bosses[0].y-p.y,bosses[0].x-p.x);
     if (!es.length) return p.aim || 0;
@@ -172,7 +173,7 @@ G.ZMoves = (() => {
     for(const target of enemies())if(onLine(e.x,e.y,e.angle,e.m.radius*99,e.m.width*4,target))hit(p,target,e,1.1/6);
   }
   function chain(p,e) {
-    let cur=priority(p.x,p.y,800),x=p.x,y=p.y-G.LIFT;
+    let cur=G.Targeting&&(e.ghost||G.Targeting.manual(p))?G.Targeting.forward(p,800,e.angle):priority(p.x,p.y,800),x=p.x,y=p.y-G.LIFT;
     for(let n=0;n<(e.m.count||1)+20 && cur;n++){
       const nextX=cur.x,nextY=cur.y;
       const ty=nextY-cur.bodyH*.5;

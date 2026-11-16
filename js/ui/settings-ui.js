@@ -6,9 +6,11 @@
 G.SettingsUI = (() => {
   G.I18n.add({'Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.':'Drag to move, tap an attack to switch, and use the top-right button to pause. Portrait and landscape are supported.'});
   G.I18n.addChinese({'Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.':'拖动屏幕移动，点击技能切换攻击，右上角按钮暂停；支持竖屏与横屏游玩。'});
+  G.I18n.add({'Apuntado manual':'Manual aiming','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.':'Aim with arrow keys or the right stick. Release to keep your last direction.','apuntar':'aim','Apuntar':'Aim','Izquierda: moverse · derecha: apuntar':'Left: move · right: aim','Arrastra para moverte · habilidades a la derecha':'Drag to move · skills on the right'});
+  G.I18n.addChinese({'Apuntado manual':'手动索敌','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.':'用方向键或右侧轮盘控制攻击方向，松开后保持最后朝向。','apuntar':'控制攻击方向','Apuntar':'瞄准','Izquierda: moverse · derecha: apuntar':'左侧移动 · 右侧瞄准','Arrastra para moverte · habilidades a la derecha':'拖动移动 · 右侧切换技能'});
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '0.36.1 · 2026-11-15';
+  const VERSION = '0.38.0 · 2026-11-16';
   const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 
@@ -32,7 +34,7 @@ G.SettingsUI = (() => {
     $('scr-settings').classList.remove('hidden');
     render();
   }
-  function close() { $('scr-settings').classList.add('hidden'); }
+  function close() { if($('scr-settings').contains(document.activeElement))document.activeElement.blur();$('scr-settings').classList.add('hidden'); }
   const isOpen = () => !$('scr-settings').classList.contains('hidden');
 
   // ---------------- pantalla completa ----------------
@@ -95,13 +97,15 @@ G.SettingsUI = (() => {
     } else if (tab === 'ctl') {
       box.innerHTML = section('Uso de movimientos','Sólo actúa el hueco seleccionado. La selección Z no cambia.')
         + choice('castMode',[['auto','Siempre activo'],['toggle','Activar o desactivar'],['click','Un lanzamiento por clic']])
+        + toggle('manualAim','Apuntado manual','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.')
         + section('En móvil o tablet')
         + `<p class="sub">Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.</p>`
         + `<div class="set-row"><div class="grow"><b>Tamaño del joystick</b><small>Cuánto hay que arrastrar el dedo.</small></div></div>`
         + choice('stick', [[0.8, 'Pequeño'], [1, 'Normal'], [1.25, 'Grande']])
         + section('En PC')
         + `<div class="keys">
-             <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> o flechas</div><span>moverse</span>
+             <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>${G.Settings.get('manualAim')?'':' o flechas'}</div><span>moverse</span>
+             ${G.Settings.get('manualAim')?'<div>↑ ↓ ← →</div><span>'+G.T('apuntar')+'</span>':''}
              <div><kbd>1</kbd>–<kbd>4</kbd> o clic en el icono</div><span>elegir ataque</span>
              <div><kbd>0</kbd></div><span>usar objeto activo</span>
              <div><kbd>Q</kbd> / <kbd>Tab</kbd></div><span>ataque anterior / siguiente</span><div><kbd>E</kbd></div><span>Mochila de combate</span>
