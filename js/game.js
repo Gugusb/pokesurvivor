@@ -103,7 +103,7 @@ G.Game = (() => {
     protectionRunId=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,14);
     if(G.DB.mode==='server'&&G.DB.online){
       startingRun=true;
-      try{const prepared=await G.Server.prepareRun(coop?'g':'s',startDex,coop?.difficulty??save.difficulty.selected);protectionRunId=prepared.id;}
+      try{const prepared=await G.Server.prepareRun(coop?'g':'s',startDex,coop?.difficulty??save.difficulty.selected,!coop||coop.host===G.Net?.uid);protectionRunId=prepared.id;}
       catch(e){G.UI.toast(e.message,6000);G.MenuUI.open();return;}
       finally{startingRun=false;}
     }
@@ -130,8 +130,8 @@ G.Game = (() => {
     G.World.setBiome(0, true);
     biome = 0;
     time = 0; pendingLevels = 0;openItem=null;laterItems.length=0;
-    victoryBusy=false;
-    runSpeed = 1; speedBonus = 0; speedK = 1; scoreCounters={normal:0,elite:0,boss:0,rift:0,events:0};
+    victoryBusy=false;hitStopUntil=0;
+    runSpeed = (!coop||coop.host===G.Net?.uid)&&G.CardPacks?.speedAllowed(save,G.Settings.get('runSpeed'))?G.Settings.get('runSpeed'):1; speedBonus = 0; speedK = 1; scoreCounters={normal:0,elite:0,boss:0,rift:0,events:0};runLoot={gems:0,stones:{},duplicateStones:{},packs:{},hatchAcceleration:[]};
     runReal = performance.now(); tampered = !!(G.Dev && G.Dev.enabled);
 
     pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(save.partner), save.partner);
@@ -208,7 +208,12 @@ G.Game = (() => {
     c.normal+=Math.max(0,(pl?.kills||0)-counted);return c;
   }
   function runScore(){return G.Difficulty.score(scoreCounts(),time,challenge?.stars);}
-  function scoreKill(e){scoreCounters[e.legend?'rift':e.boss?'boss':e.elite?'elite':'normal']++;}
+  let runLoot={gems:0,stones:{},duplicateStones:{},packs:{},hatchAcceleration:[]};
+  function recordLoot(kind,id,n=1){if(!pl||!Number.isFinite(n)||n<=0)return;if(kind==='gems')runLoot.gems+=n;else if(runLoot[kind]&&typeof runLoot[kind]==='object')runLoot[kind][id]=(runLoot[kind][id]||0)+n;}
+  function recordServerLoot(packs,hatches){if(state==='playing')for(const [id,n]of Object.entries(packs))if(n>(runLoot.packs[id]||0))G.UI.toast(G.CardPacks.local(G.CardPacks.packBy[id]?.name||id)+' +'+(n-(runLoot.packs[id]||0)));runLoot.packs={...packs};if(hatches)runLoot.hatchAcceleration=hatches;if(state==='over')G.RunUI?.updateLoot?.(runLoot);}
+  function scoreKill(e){scoreCounters[e.legend?'rift':e.boss?'boss':e.elite?'elite':'normal']++;
+    if(e.boss&&G.DB.mode!=='server'){const pack=G.CardPacks?.rollBoss(!!e.legend);if(pack){G.CardPacks.grantToken(G.DB.save,pack);recordLoot('packs',pack);G.DB.commit(true);}}
+  }
   function scoreEvent(){scoreCounters.events++;}
   function coinPayout(){
     const score=runScore(),parts={puntuación:G.Difficulty.rewardCoins(score.total),recogidas:pl.coins};
@@ -231,13 +236,17 @@ G.Game = (() => {
   }
 
   function setSpeed(value, fromHost = false) {
-    if (value !== 1 && value !== 2 || !pl || !['playing','paused','held','levelup'].includes(state)) return false;
+    if (![1,1.5,2,3].includes(value) || !pl || !['playing','paused','held','levelup'].includes(state)) return false;
     if (G.Coop.active && !G.Coop.isHost && !fromHost) return false;
+    if(!fromHost&&!G.CardPacks?.speedAllowed(G.DB.save,value))return false;
+    if(!fromHost)G.Settings.set('runSpeed',value);
     const changed=runSpeed!==value;
     runSpeed = value;
     if(changed&&G.DB.mode==='server')G.Server.heartbeat().catch(()=>{});
     return true;
   }
+
+  function cycleSpeed(){const all=G.CardPacks?.allowedSpeeds(G.DB.save)||[1];return setSpeed(all[(all.indexOf(runSpeed)+1)%all.length]);}
 
   /** Todos los jugadores de la partida (tú primero). */
   function everyone() { return G.Coop.active ? G.Coop.players() : [pl]; }
@@ -433,7 +442,7 @@ G.Game = (() => {
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge,
-      moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
+      loot:runLoot,moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (pl.coinMul > 1 ? ` · ×${pl.coinMul.toFixed(2)} Fortuna` : '')+
                  (victoryBonus>0?` · ×2 ${G.T('Bonificación de victoria')}`:'')
@@ -658,7 +667,7 @@ G.Game = (() => {
     if(G.Input.tap('keye')&&!document.activeElement?.closest('input,textarea,select,[contenteditable]')){toggleBackpack();return;}
     if (G.Input.tap('escape') || G.Input.tap('keyp')) { togglePause(); return; }
     if (state !== 'playing' || !pl) return;
-    if (G.Input.tap('keyv') && !document.activeElement?.closest('input,textarea,select,[contenteditable]')) setSpeed(runSpeed === 1 ? 2 : 1);
+    if (G.Input.tap('keyv') && !document.activeElement?.closest('input,textarea,select,[contenteditable]')) cycleSpeed();
     if ((G.Input.tap('keyz') || G.Input.tap('keyf')) && !document.activeElement?.closest('input, textarea, select, [contenteditable]')) {
       if (G.ZMoves && G.ZMoves.hasStone(pl)) G.ZMoves.arm(pl); else if (G.Input.tap('keyf') && G.Mega) G.Mega.activate(pl);
     }
@@ -674,7 +683,19 @@ G.Game = (() => {
 
   let deathT = 0;
 
-  let frameDt = 0, speedK = 1, runSpeed = 1, speedBonus = 0;
+  let frameDt = 0, speedK = 1, runSpeed = 1, speedBonus = 0, hitStopUntil = 0;
+  function hitStop(){if(state==='playing'&&!G.Settings.get('calm'))hitStopUntil=performance.now()+35;}
+  function hurtEdge(){
+    if(state!=='playing'||!pl||pl.dead||!(pl.maxHp>0)||pl.hp>=pl.maxHp*.5)return;
+    const severity=Math.max(0,Math.min(1,1-pl.hp/(pl.maxHp*.5))),calm=G.Settings.get('calm');
+    const pulse=calm?0:.5+.5*Math.sin(performance.now()/1000*Math.PI*2);
+    const alpha=(.08+.25*severity)* (calm?.35:.65+.35*pulse);
+    // Elipse de pantalla: el aviso llega a los cuatro bordes también en vertical.
+    ctx.save();ctx.translate(w/2,h/2);ctx.scale(w/2,h/2);
+    const g=ctx.createRadialGradient(0,0,.2,0,0,1);
+    g.addColorStop(0,'rgba(180,0,24,0)');g.addColorStop(.72,'rgba(180,0,24,0)');g.addColorStop(1,`rgba(220,0,35,${alpha})`);
+    ctx.fillStyle=g;ctx.fillRect(-1,-1,2,2);ctx.restore();
+  }
   let fpsShown = 60, fpsAcc = 0, fpsN = 0;
   // El siguiente fotograma se pide ANTES de nada: si algo falla a mitad, el
   // juego sigue (antes se quedaba congelado para siempre y había que recargar;
@@ -712,17 +733,22 @@ G.Game = (() => {
     const dt = step * runSpeed;
     frameDt = state === 'playing' ? dt : 0;
 
-    if (state === 'playing') {
+    const stopped=state==='playing'&&performance.now()<hitStopUntil;
+    if (state === 'playing'&&(!stopped||G.Coop.active)) {
       speedBonus += Math.max(0, real) * (runSpeed - 1);
-      const steps = runSpeed;
-      for (let i = 0; i < steps && state === 'playing'; i++) update(step);
+      const steps=Math.ceil(runSpeed);
+      for(let i=0;i<steps&&state==='playing';i++){
+        update(dt/steps);
+        if(!G.Coop.active&&performance.now()<hitStopUntil)break;
+      }
     }
-    else if (pl && state !== 'ui') { G.FX.update(dt * 0.25); pl.anim.update(dt * 0.25); }
+    else if (pl && state !== 'ui' && state !== 'playing') { G.FX.update(Math.min(1/30,real)*.25);pl.anim.update(Math.min(1/30,real)*.25); }
     // La red se atiende siempre (también con las cartas de nivel abiertas).
     if (G.Coop.active && pl && state !== 'ui' && state !== 'over') G.Coop.tick(networkDt);
 
-    if (pl && state !== 'ui') render(); else Backdrop.render(ctx, w, h, dpr, dt);
-    G.UI.tick(dt);
+    // En cooperativo la pausa del golpe sólo retiene la imagen, nunca la simulación ni la red.
+    if (pl && state !== 'ui') {if(!stopped||!G.Coop.active)render();} else Backdrop.render(ctx,w,h,dpr,Math.min(1/30,real));
+    G.UI.tick(Math.min(1/30,real));
     G.BackpackUI.tick(pl,!!pl&&['playing','inventory','held'].includes(state)&&!G.Judgment.cinematic);
 
     G.Input.endFrame();
@@ -881,6 +907,7 @@ G.Game = (() => {
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, w, h);
     }
+    hurtEdge();
     if (!G.Judgment.cinematic) G.HUD.draw(ctx, w, h, pl, st);
     G.Judgment.drawOverlay(ctx, w, h);
     G.Touch.draw(ctx);
@@ -996,7 +1023,7 @@ G.Game = (() => {
   })();
 
   return {
-    init, startRun, everyone, scoreKill,scoreEvent,scoreCounts,runScore, levelXp, flash, offerBond, offerSpecialChoice, setSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
+    init, startRun, everyone, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
     debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },

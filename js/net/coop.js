@@ -444,7 +444,7 @@ G.Coop = (() => {
     if (stalled) { stalled = false; updateAway(); }
     // Sync the clock and the victory overlay before processing hold events,
     // so a bond/level overlay cannot replace the shared victory decision.
-    if (G.Game.setSpeed) G.Game.setSpeed(msg.speed === 2 ? 2 : 1, true);
+    if (G.Game.setSpeed) G.Game.setSpeed([1,1.5,2,3].includes(msg.speed)?msg.speed:1,true);
     api.syncTeam({ time: msg.t, level: msg.lv, xp: msg.xp, xpNext: msg.xn, kills: msg.ki, bosses: msg.bo, coins: msg.co,
                    t1: (msg.tk || [])[0], t10: (msg.tk || [])[1],scoreCounts:msg.scoreCounts });
     if(api.victory)api.victory(!!msg.victory);

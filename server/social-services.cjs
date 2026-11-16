@@ -333,5 +333,15 @@ module.exports = function socialServices({
     }
     throw fail(404, "Unknown social action");
   }
-  return { summary, route };
+  function accelerate(uid,seconds,started){
+    if(!(seconds>180))return [];
+    const at=now(),duration=Math.max(1,at-started),out=[];
+    for(const h of all('SELECT id,owner,guest,started,ends FROM nursery_hatches WHERE ends>? AND ((owner=? AND owner_claim IS NULL) OR (guest=? AND guest_claim IS NULL))',at,uid,uid)){
+      const overlap=Math.max(0,Math.min(1,(at-Math.max(started,h.started))/duration));
+      const ms=Math.min(h.ends-at,Math.floor(seconds*6000*overlap));if(ms<=0)continue;
+      exec('UPDATE nursery_hatches SET ends=ends-? WHERE id=?',ms,h.id);out.push({id:h.id,seconds:ms/1000});notifySocial(h.owner);if(h.guest)notifySocial(h.guest);
+    }
+    return out;
+  }
+  return {summary,route,accelerate};
 };

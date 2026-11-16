@@ -137,7 +137,20 @@ G.RunUI = (() => {
     G.UI.show('scr-victory');
   }
 
+  let lootResult=null;
+  function updateLoot(loot){
+    if(!lootResult)return;lootResult.loot=loot||{};const box=$('over-loot');if(!box?.replaceChildren)return;box.replaceChildren();
+    const title=document.createElement('h3');title.textContent=G.T('Botín de la aventura');box.append(title);
+    const entries=[];if(lootResult.t1)entries.push(['ticket',G.T('Tickets')+' ×'+lootResult.t1]);if(lootResult.t10)entries.push(['ticket10',G.T('Ticket ×10')+' ×'+lootResult.t10]);
+    if(loot.gems)entries.push(['gem',G.T('Gemas de habilidad')+' ×'+loot.gems]);
+    for(const key of ['stones','duplicateStones'])for(const [id,n]of Object.entries(loot[key]||{}))entries.push(['megaStone',G.Mega.label(id)+' ×'+n+(key==='duplicateStones'?' · '+G.T('Ya obtenido'):'')]);
+    for(const [id,n]of Object.entries(loot.packs||{}))if(G.CardPacks.packBy[id])entries.push(['cards',G.CardPacks.local(G.CardPacks.packBy[id].name)+' ×'+n]);
+    for(const [icon,text]of entries){const row=document.createElement('div');row.className='run-loot-entry';row.innerHTML=G.Icons.html(icon,24);const label=document.createElement('span');label.textContent=text;row.append(label);box.append(row);}
+    if(!entries.length){const empty=document.createElement('p');empty.className='note';empty.textContent=G.T('Sin botín adicional');box.append(empty);}
+    const seconds=(loot.hatchAcceleration||[]).reduce((sum,h)=>sum+h.seconds,0);if(seconds){const p=document.createElement('p');p.className='note';p.textContent=G.T('Incubación acelerada')+' · '+Math.ceil(seconds/60)+' '+G.T('minutos');box.append(p);}
+  }
   function showOver(r, onBack) {
+    lootResult=r;updateLoot(r.loot||{});
     const quip=G.FishQuips.pick(r);
     $('over-fish').dataset.quip=quip.id;
     $('over-fish-title').textContent=G.I18n.lang==='en'?'Dafeiyu’s little musings':G.T('Las pequeñas charlas de Dafeiyu');
@@ -272,7 +285,7 @@ G.RunUI = (() => {
     const refresh = () => { speed.textContent = G.T('Velocidad de juego') + ': ' + (G.Game.speed || 1) + '× · V'; };
     refresh(); speed.disabled = coop && !G.Coop.isHost;
     speed.title = G.T('En grupo, sólo el anfitrión cambia la velocidad.');
-    speed.onclick = () => { G.Game.setSpeed(G.Game.speed === 2 ? 1 : 2); refresh(); };
+    speed.onclick = () => { G.Game.cycleSpeed(); refresh(); };
     G.UI.show('scr-pause');
   }
 
@@ -281,5 +294,5 @@ G.RunUI = (() => {
     $('btn-quit').onclick = onQuit;
   }
 
-  return { showLevelUp, reroll, showSpecialChoice, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showVictory, showOver, wirePause, showPause };
+  return { showLevelUp, reroll, showSpecialChoice, showItemChoice, showBond, pickBond, bondBack, pick, setWaiting, closeLevelUp, showVictory, showOver,updateLoot, wirePause, showPause };
 })();

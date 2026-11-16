@@ -379,7 +379,7 @@
     <div id="lobby-members" class="lobby-members"></div>
     <h3 id="lobby-inv-title" style="margin:14px 0 6px">Invitar amigos</h3>
     <div id="lobby-invite" class="fr-list"></div>
-    <div class="row" style="margin-top:14px">
+    <div class="row wrap" style="margin-top:14px">
       <button id="lobby-start" class="btn gold grow">Empezar partida</button>
       <button id="lobby-retry" class="btn ghost hidden">Reintentar conexión directa</button>
     </div>
@@ -478,9 +478,11 @@
           <p class="sub" id="gacha-owned" style="margin:0"></p>
           <div class="feat" id="gacha-feat"></div>
         </div>
-        <div class="row" style="margin-top:14px">
+        <div class="row wrap" style="margin-top:14px">
           <button id="pull-1" class="btn grow" data-sfx="none">Tirar ×1 · <span id="cost-1"></span></button>
           <button id="pull-10" class="btn gold grow" data-sfx="none">Tirar ×10 · <span id="cost-10"></span></button>
+          <button id="pull-100" class="btn gold grow" data-sfx="none">Tirar ×100 · <span id="cost-100"></span></button>
+          <button id="pull-100b" class="btn gold grow" data-sfx="none">Tirar ×100 · <span id="cost-100b"></span></button>
           <button id="pull-10b" class="btn gold grow" data-sfx="none">Tirar ×10 · <span id="cost-10b"></span></button>
         </div>
         <p class="note tickets-line" id="gacha-tickets"></p>
@@ -588,6 +590,7 @@
       <span class="over-fish-mark" aria-hidden="true">◕</span>
       <div><h3 id="over-fish-title"></h3><p id="over-fish-text"></p><p id="over-fish-group" class="over-fish-group" hidden></p></div>
     </aside>
+    <div id="over-loot" class="run-loot"></div>
     <div id="over-stats" class="stats"></div>
     <button id="btn-again" class="btn gold">Volver al menú</button>
   </div>

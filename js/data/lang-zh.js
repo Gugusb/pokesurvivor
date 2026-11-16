@@ -1,6 +1,17 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "minutos": "分钟",
+  "Más cosas en la mochila · v0.40.0": "行囊又添新收获 · v0.40.0",
+  "Algunas oleadas reúnen Pokémon del mismo tipo, sin aumentar su número.": "部分波次会集结同一属性的宝可梦，敌人总数保持不变。",
+  "La búsqueda de compañeros y de medallas permite cien tiradas de una vez, conservando las garantías de cada diez.": "宝可梦抽卡与特性抽卡现可百连抽，每十抽的保底照常生效。",
+  "Las aventuras de más de tres minutos aceleran los huevos que estés criando. Cada minuto de aventura aporta seis de incubación.": "超过三分钟的冒险会加速正在孵化的蛋，每冒险一分钟可加速六分钟。",
+  "Los jefes pueden entregar paquetes de cartas. Ábrelos desde su página sin gastar monedas y consulta el botín al terminar la aventura.": "击败BOSS有机会获得卡包，可到卡包页面免费打开；结算时也能查看本局战利品。",
+  "Los paquetes Principiante y de Superación incluyen permisos de velocidad. Elige tu ritmo en Controles; se recuerda para la siguiente aventura y los menús conservan su ritmo habitual.": "初心者包加入1.5倍速与2倍速权限，招式突破包加入3倍速权限。在操作设置选择后会记住偏好，局外菜单保持正常动画速度。",
+  "Puedes unificar en rojo los proyectiles y avisos enemigos desde Gráficos.": "可在画面设置中开启统一敌方弹幕与预警颜色，开启后以红色显示。",
+  "Los golpes recibidos se sienten con una breve pausa y una sacudida suave. Con poca vida, el borde rojo avisa del peligro; Menos sacudidas y destellos suaviza estas señales.": "受击时会有短暂停顿与轻微震屏，生命低于一半时红色边缘会提醒危险；开启减少晃动与闪光可减弱反馈。",
+  "He dejado un bolsillo para los paquetes y puesto una campanita junto al huevo. Quien cocina dice que podemos ir más deprisa; yo sigo queriendo mirar el mar al volver.": "卡包有自己的口袋，蛋旁边也挂好小铃铛啦。做饭的那家伙说咱们能走快一点，回家的时候，我还是想停下来看看海。",
+
   "Versión pública sin depuración · v0.35.3": "正式版移除开发者模式 · v0.35.3",
   "La versión pública ya no incluye el modo de desarrollador ni su acceso en Ajustes.": "正式版本已移除开发者模式及其设置入口。",
   "He guardado las herramientas en el taller. Podemos salir con los compañeros; quien cocina ya tiene el mapa.": "工具已经收回开发室啦。咱们带上伙伴出发，路线图在做饭的那家伙手里呢。",

@@ -9,7 +9,7 @@ G.BossRewards=(()=>{
     if(!Number.isSafeInteger(id)||id<1||opened.has(id)||!data||typeof data.rift!=='boolean'||!Array.isArray(data.options)||data.options.length!==3||new Set(data.options).size!==3||data.options.some(i=>!G.Items.BY[i]))return false;
     if(data.stone&&!G.Mega?.BY[data.stone])return false;
     opened.add(id);
-    if(data.rift){G.DB.save.abilityGems=(G.DB.save.abilityGems||0)+1;G.DB.commit(true);G.UI.toast(G.T('+1 Gema de habilidad'));}
+    if(data.rift){G.Game.recordLoot?.('gems',null,1);G.DB.save.abilityGems=(G.DB.save.abilityGems||0)+1;G.DB.commit(true);G.UI.toast(G.T('+1 Gema de habilidad'));}
     if(data.rift&&data.stone)G.Mega.award(data.stone);
     const bonus=G.FailureProtection?.lootBonus(G.Game.player)||0;
     const blocked=data.options.some(id=>G.Items.BY[id].unlock&&!G.CardPacks?.enabled(G.DB.save,id));

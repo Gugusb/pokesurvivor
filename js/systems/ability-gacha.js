@@ -2,7 +2,7 @@
 G.AbilityGacha = (() => {
   let forced = null;
   function costOf(save, n) {
-    return (n === 1 || n === 10) && Number.isFinite(save.abilityGems) && save.abilityGems >= n ? n : null;
+    return [1,10,100].includes(n) && Number.isFinite(save.abilityGems) && save.abilityGems >= n ? n : null;
   }
   const GENS = [...new Set(G.AbilityDefs.SPECIES.map(dex => G.DEX_BY[dex].gen))].sort((a, b) => a - b);
   function pool(rarity, gen = 1) { return GENS.includes(gen) ? G.Gacha.pool(rarity, gen) : []; }
@@ -27,7 +27,7 @@ G.AbilityGacha = (() => {
       const candidate = i === 0 && forced && G.Dev && G.Dev.canUse() ? G.AbilityDefs.BY_ID[forced] : null;
       const forcedDef = candidate && G.DEX_BY[candidate.dex].gen === gen ? candidate : null;
       const rarity = forcedDef || save.abilityPity[gen] >= G.Gacha.PITY_5 ? 5
-        : n === 10 && i === 9 && !out.some(r => r.rarity >= 4) ? roll(4) : roll();
+        : n>=10 && (i+1)%10===0 && !out.slice(i-9,i).some(r=>r.rarity>=4) ? roll(4) : roll();
       if (rarity === 5) save.abilityPity[gen] = 0;
       let mon = forcedDef ? G.DEX_BY[forcedDef.dex] : G.U.pick(pool(rarity, gen));
       const medals = G.AbilityDefs.medalsFor(mon.dex);

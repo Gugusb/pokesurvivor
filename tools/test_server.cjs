@@ -137,6 +137,7 @@ async function fixture(t) {
     assert.equal(start.status, 200, JSON.stringify(start.data));
     let seconds = 0,
       result;
+    if(double){const row=app.db.prepare('SELECT payload FROM saves WHERE uid=?').get(a.user.uid),saved=JSON.parse(row.payload);G.CardPacks.normalize(saved).taken['speed:2']=1;app.db.prepare('UPDATE saves SET payload=? WHERE uid=?').run(JSON.stringify(saved),a.user.uid);}
     if (double) {
       const speed = await request('/run/beat', {id:start.data.id,t:0,speed:2,alive:true,clean:!dirty}, a.cookie);
       assert.equal(speed.status,200);

@@ -122,7 +122,7 @@ G.Mega = (() => {
   const defense = p => (active(p) ? 1 / 1.3 : 1) * (p && p.megaDashGuard > 0 ? 0.3 : 1);
   function award(id) {
     if (!BY[id]) return;
-    const fresh = grant(G.DB.save, id); G.DB.commit(true);
+    const fresh = grant(G.DB.save, id);G.Game?.recordLoot?.(fresh?'stones':'duplicateStones',id,1); G.DB.commit(true);
     G.UI.toast(G.T(fresh ? 'Megapiedra obtenida' : 'Megapiedra ya obtenida') + ': ' + label(id));
     const p = G.Game.player;
     if (p) { G.FX.dmgText(p.x, p.y - p.bodyH - 12, G.T('Megapiedra'), '#d9a6ff', true); G.FX.ring(p.x, p.y, 8, 90, '#d9a6ff', 0.8, 5); }

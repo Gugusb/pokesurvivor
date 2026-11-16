@@ -35,6 +35,8 @@ G.Slots = (() => {
 
   /** Anima las tiradas. → Promise que se resuelve al terminar. */
   async function play(canvas, results) {
+    const hundred=results.length>10;
+    if(results.length>10)results=[...results].sort((a,b)=>b.rarity-a.rarity||Number(b.shiny)-Number(a.shiny)).slice(0,10);
     cv = canvas; ctx = cv.getContext('2d');
     fast = false;
     cv.onclick = () => { fast = true; };
@@ -49,7 +51,7 @@ G.Slots = (() => {
     const ten = results.length === 10;
     for (let i = 0; i < results.length; i++) {
       const r = results[i];
-      if (ten) st.led = 'TIRADA ' + (i + 1) + '/10';
+      if (ten) st.led = hundred?'×100 · TOP '+(i+1)+'/10':'TIRADA ' + (i + 1) + '/10';
       // Palanca.
       G.Audio.sfx('ball');
       await tween(v => { st.lever = v; }, 0, 1, ten ? 0.12 : 0.22);

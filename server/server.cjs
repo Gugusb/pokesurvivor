@@ -316,6 +316,8 @@ function createApp(opts = {}) {
     const r = q("SELECT * FROM runs WHERE id=? AND uid=?", b.id, u.uid);
     if (!r || r.ended) throw fail(409, "Run has ended or expired");
     if (now() - r.beat > 120e3) throw fail(409, "Run connection expired");
+    const speed=b.speed??1,owner=saved(r.speed_owner||u.uid).save;
+    if(![1,1.5,2,3].includes(speed)||!G.CardPacks.speedAllowed(owner,speed))throw fail(400,'Speed not unlocked');
     const t = Number(b.t),
       budget = r.budget + ((now() - r.beat) / 1000) * r.speed;
     if (!Number.isFinite(t) || t < r.t || t > 7200 || t > budget + 3)
@@ -337,11 +339,11 @@ function createApp(opts = {}) {
       budget,
       now(),
       dirty ? 1 : 0,
-      b.speed === 2 ? 2 : 1,
-      r.doubled || b.speed === 2 ? 1 : 0,
+      speed,
+      r.doubled || speed>1 ? 1 : 0,
       r.id,
     );
-    return { ...r, t, dirty, counts, doubled: r.doubled || b.speed === 2 };
+    return { ...r, t, dirty, counts, doubled: r.doubled || speed>1 };
   }
   function runUpdate(u, b, end = false) {
     return atomic(() => {
@@ -365,7 +367,14 @@ function createApp(opts = {}) {
         b.alive === true || (end && r.mode === "s" && r.t > G.Difficulty.WIN),
         !r.dirty,
       );
+      const rewards=JSON.parse(r.run_rewards||'{}');rewards.packs ||= {};rewards.seen ||= {boss:0,rift:0};
+      if(!r.dirty)for(const kind of ['boss','rift'])for(let i=rewards.seen[kind];i<r.counts[kind];i++){
+        const pack=G.CardPacks.rollBoss(kind==='rift',opts.lootRng||(()=>randomBytes(4).readUInt32LE()/0x100000000));
+        if(pack){G.CardPacks.grantToken(s,pack);rewards.packs[pack]=(rewards.packs[pack]||0)+1;}
+      }
+      rewards.seen={boss:r.counts.boss,rift:r.counts.rift};
       if (end) {
+        if(!r.dirty)rewards.hatches=services.accelerate(u.uid,r.t,r.started);
         exec("UPDATE runs SET ended=1 WHERE id=?", r.id);
         if(!r.dirty&&r.mode==='s'&&r.t>=1){
           const result=G.Difficulty.score(r.counts,r.t,r.stars);
@@ -391,11 +400,12 @@ function createApp(opts = {}) {
           );
         }
       }
+      exec('UPDATE runs SET run_rewards=? WHERE id=?',JSON.stringify(rewards),r.id);
       score(u.uid, s);
       G.Offline.stamp(s, now());
       const value = save(u.uid, s);
-      if (end) return { ...value, won };
-      const progress = { offline: s.offline };
+      if (end) return {...value,won,runId:r.id,runLoot:rewards.packs,hatchAcceleration:rewards.hatches||[]};
+      const progress = {offline:s.offline,packTokens:G.CardPacks.normalize(s).tokens};
       if(beforeProtection!==JSON.stringify(s.failureProtection))progress.failureProtection=s.failureProtection;
       if (beforeDifficulty !== JSON.stringify(s.difficulty))
         progress.difficulty = s.difficulty;
@@ -407,7 +417,7 @@ function createApp(opts = {}) {
           ),
         );
       }
-      return { rev: value.rev, won, progress };
+      return {rev:value.rev,won,progress,runId:r.id,runLoot:rewards.packs};
     });
   }
   const services = require('./social-services.cjs')({q,all,exec,atomic,saved,save,isFriend,now,fail,notifySocial,rng:opts.rewardRandom});
@@ -594,7 +604,7 @@ function createApp(opts = {}) {
     }
     if(route==='/packs/action'){
       const result=atomic(()=>{const old=saved(u.uid);if(b.rev!==old.rev)throw fail(409,'Save changed on another device. Reload before continuing.');const s=old.save;
-        try{switch(b.action){case 'draw':G.CardPacks.draw(s,Math.random,b.pack||'beginner');break;case 'choose':G.CardPacks.choose(s,b.seq,b.index);break;case 'toggle':G.CardPacks.toggle(s,b.id);break;case 'theme':G.CardPacks.equip(s,b.id);break;default:throw Error('Invalid pack action');}}catch(e){throw fail(400,e.message);}
+        try{switch(b.action){case 'draw':G.CardPacks.draw(s,Math.random,b.pack||'beginner',b.token===true);break;case 'choose':G.CardPacks.choose(s,b.seq,b.index);break;case 'toggle':G.CardPacks.toggle(s,b.id);break;case 'theme':G.CardPacks.equip(s,b.id);break;default:throw Error('Invalid pack action');}}catch(e){throw fail(400,e.message);}
         if(s.tickets.t1>1e7||s.abilityGems>1e8)throw fail(400,'Wallet limit reached');return save(u.uid,s);});return json(res,200,result);
     }
     if (route === "/offline") {
@@ -622,6 +632,8 @@ function createApp(opts = {}) {
         (!r || r.open || !r.members.has(u.uid) || b.stars !== r.cfg?.difficulty)
       )
         throw fail(400, "No matching co-op room");
+      const speedOwner=b.mode==='g'?r.host:u.uid,initialSpeed=b.speed??1;
+      if(!G.CardPacks.speedAllowed(saved(speedOwner).save,initialSpeed))throw fail(400,'Speed not unlocked');
       const id = randomUUID();
       atomic(() => {
         exec("UPDATE runs SET ended=1,dirty=1 WHERE uid=? AND ended=0", u.uid);
@@ -637,17 +649,18 @@ function createApp(opts = {}) {
           b.mode === "g" ? "g" : "s",
           r?.id || null,
         );
+        exec('UPDATE runs SET speed=?,speed_owner=? WHERE id=?',initialSpeed,speedOwner,id);
       });
       return json(res, 200, { id });
     }
     if (route === "/run/beat" || route === "/run/end") {
       const old = q(
-        "SELECT ended FROM runs WHERE id=? AND uid=?",
+        "SELECT ended,run_rewards FROM runs WHERE id=? AND uid=?",
         String(b.id),
         u.uid,
       );
       if (route === "/run/end" && old?.ended)
-        return json(res, 200, { ...saved(u.uid), alreadyEnded: true });
+        {const rewards=JSON.parse(old.run_rewards||'{}');return json(res,200,{...saved(u.uid),alreadyEnded:true,runId:b.id,runLoot:rewards.packs||{},hatchAcceleration:rewards.hatches||[]});}
       return json(res, 200, runUpdate(u, b, route === "/run/end"));
     }
     if (route === "/presence") {

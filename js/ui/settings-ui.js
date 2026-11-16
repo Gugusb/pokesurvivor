@@ -4,6 +4,8 @@
  * Los ajustes son de este dispositivo (G.Settings / G.Audio en el navegador).
  */
 G.SettingsUI = (() => {
+  G.I18n.add({'Velocidad preferida':'Preferred speed','Desbloquea velocidades en los paquetes.':'Unlock game speeds in card packs.','Unificar ataques enemigos':'Unify enemy attack colors','Muestra los proyectiles y avisos enemigos en rojo.':'Show enemy projectiles and warnings in red.','Botín de la aventura':'Adventure loot','Sin botín adicional':'No additional loot','Incubación acelerada':'Egg hatching accelerated','Tirar ×100 ·':'Pull ×100 ·','Speed not unlocked':'Speed not unlocked'});
+  G.I18n.addChinese({'Velocidad preferida':'偏好游戏速度','Desbloquea velocidades en los paquetes.':'从卡包解锁更多游戏速度。','Unificar ataques enemigos':'统一敌方攻击颜色','Muestra los proyectiles y avisos enemigos en rojo.':'将敌方弹幕和攻击预警统一显示为红色。','Botín de la aventura':'本局战利品','Sin botín adicional':'本局没有额外战利品','Incubación acelerada':'孵蛋加速','Tirar ×100 ·':'抽取 ×100 ·','Speed not unlocked':'尚未解锁此游戏速度'});
   G.I18n.add({'Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.':'Drag to move, tap an attack to switch, and use the top-right button to pause. Portrait and landscape are supported.'});
   G.I18n.addChinese({'Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.':'拖动屏幕移动，点击技能切换攻击，右上角按钮暂停；支持竖屏与横屏游玩。'});
   G.I18n.add({'Apuntado manual':'Manual aiming','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.':'Aim with arrow keys or the right stick. Release to keep your last direction.','apuntar':'aim','Apuntar':'Aim','Izquierda: moverse · derecha: apuntar':'Left: move · right: aim','Arrastra para moverte · habilidades a la derecha':'Drag to move · skills on the right'});
@@ -12,7 +14,7 @@ G.SettingsUI = (() => {
   G.I18n.addChinese({'Todos los huecos pueden actuar a la vez. El seleccionado es principal; los demás usan la mitad de agilidad y aguante.':'所有技能槽可同时释放。选中槽为主要技能，其余技能按一半敏捷与耐力结算。','Principal':'主','Secundario':'副','Agilidad efectiva':'结算敏捷','Aguante efectivo':'结算耐力'});
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '0.39.0 · 2026-11-16';
+  const VERSION = '0.40.0 · 2026-11-16';
   const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 
@@ -90,6 +92,7 @@ G.SettingsUI = (() => {
         + `<div class="set-row"><div class="grow"><label for="set-zoom"><b>${G.T('Zoom de cámara')}</b></label><small>${G.T('Aléjate para ver más del camino o acércate a tu Pokémon.')}</small></div><output id="set-zoom-value" for="set-zoom" translate="no">${Math.round(G.Settings.get('zoom') * 100)}%</output></div>
            <input id="set-zoom" type="range" min="0.5" max="1.5" step="0.05" value="${G.Settings.get('zoom')}" aria-label="${G.T('Zoom de cámara')}">
            <div class="row between"><span class="note">50%</span><button id="set-zoom-reset" class="btn small ghost">${G.T('Restablecer zoom')}</button><span class="note">150%</span></div>`
+        + toggle('hostileRed','Unificar ataques enemigos','Muestra los proyectiles y avisos enemigos en rojo.')
         + toggle('dmgNumbers', 'Números de daño', 'Los números que salen al golpear y al recibir daño.')
         + toggle('calm', 'Menos sacudidas y destellos', 'La cámara tiembla menos y los fogonazos son suaves.')
         + toggle('fps', 'Mostrar FPS', 'Fotogramas por segundo, en la esquina de abajo.')
@@ -99,6 +102,8 @@ G.SettingsUI = (() => {
     } else if (tab === 'ctl') {
       box.innerHTML = section('Uso de movimientos','Todos los huecos pueden actuar a la vez. El seleccionado es principal; los demás usan la mitad de agilidad y aguante.')
         + choice('castMode',[['auto','Siempre activo'],['toggle','Activar o desactivar'],['click','Un lanzamiento por clic']])
+        + section('Velocidad preferida','Desbloquea velocidades en los paquetes.')
+        + choice('runSpeed',[[1,'1×'],[1.5,'1.5×'],[2,'2×'],[3,'3×']])
         + toggle('manualAim','Apuntado manual','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.')
         + section('En móvil o tablet')
         + `<p class="sub">Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.</p>`
@@ -164,7 +169,8 @@ G.SettingsUI = (() => {
   function wire(box) {
     box.querySelectorAll('.switch[data-k]').forEach(b => { b.onclick = () => { G.Settings.set(b.dataset.k, !G.Settings.get(b.dataset.k)); render(); }; });
     box.querySelectorAll('.chip[data-k]').forEach(b => {
-      b.onclick = () => { const v = b.dataset.v; G.Settings.set(b.dataset.k, isNaN(+v) ? v : +v); render(); };
+      if(b.dataset.k==='runSpeed'&&!G.CardPacks.speedAllowed(G.DB.save,+b.dataset.v)){b.disabled=true;b.textContent+=' · '+G.T('Bloqueado');}
+      b.onclick = () => { const v = b.dataset.v; G.Settings.set(b.dataset.k, isNaN(+v) ? v : +v);if(b.dataset.k==='runSpeed')G.Game.setSpeed(+v);render(); };
     });
     const zoom = $('set-zoom');
     if (zoom) {

@@ -36,6 +36,8 @@ function openStore(file) {
   }
   if(!db.prepare('PRAGMA table_info(runs)').all().some(c=>c.name==='score_counts'))
     db.exec("ALTER TABLE runs ADD COLUMN score_counts TEXT NOT NULL DEFAULT '{}'");
+  const runColumns=db.prepare('PRAGMA table_info(runs)').all();
+  for(const [name,type,initial]of [['run_rewards','TEXT',"'{}'"],['speed_owner','TEXT','NULL']])if(!runColumns.some(c=>c.name===name))db.exec(`ALTER TABLE runs ADD COLUMN ${name} ${type} DEFAULT ${initial}`);
   return db;
 }
 module.exports = { openStore };

@@ -187,6 +187,7 @@ G.Server = (() => {
       const remote = copy(baseline || G.DB.save),
         p = value.progress;
       if (p.offline) remote.offline = p.offline;
+      if(p.packTokens){remote.cardPack=copy(G.DB.save.cardPack);remote.cardPack.tokens=copy(p.packTokens);}
       if (p.difficulty) remote.difficulty = p.difficulty;
       if (p.failureProtection) remote.failureProtection = p.failureProtection;
       if (p.records) Object.assign(remote.difficultyRecords, p.records);
@@ -204,8 +205,10 @@ G.Server = (() => {
         difficulty: { ...remote.difficulty, selected: s.difficulty.selected },
         offline: remote.offline,
         failureProtection: remote.failureProtection||{},
+        ...((value.progress?.packTokens||value.runLoot)?{cardPack:{...copy(s.cardPack),tokens:copy(remote.cardPack?.tokens||{})}}:{}),
       });
     }
+    if(value.runId&&value.runId===run?.id&&value.runLoot)G.Game?.recordServerLoot?.(value.runLoot,value.hatchAcceleration);
     remember();
     G.UI?.refreshCoins?.();
   }
@@ -379,13 +382,14 @@ G.Server = (() => {
       scoreCounts:G.Game?.scoreCounts?.(),
     };
   }
-  async function prepareRun(mode, dex, stars) {
+  async function prepareRun(mode, dex, stars, controlsSpeed=true) {
     await flush();
     const r = await api("/run/start", {
       dex,
       stars,
       mode,
       clean: !G.Dev?.enabled,
+      speed:controlsSpeed&&G.CardPacks?.speedAllowed(G.DB.save,G.Settings.get('runSpeed'))?G.Settings.get('runSpeed'):1,
     });
     clearInterval(beatTimer);
     ++runGeneration;
@@ -458,7 +462,7 @@ G.Server = (() => {
         const r = await api("/run/end", payload);
         accept(r);
         localStorage.removeItem("ps.pending-run." + user.uid);
-        G.DB.serverSync("ok");
+        G.DB.serverSync("ok");return r;
       } catch (e) {
         error(e);
         throw e;

@@ -13,6 +13,7 @@ G.VFX = (() => {
 
   // Paletas por tipo: contorno, oscuro, medio, claro, brillo.
   const PAL = {
+    hostileRed:['#510015','#a30023','#ff2549','#ff8799','#fff0f3'],
     mega:     ['#341449', '#8a37ae', '#e373ef', '#95eaff', '#fff6ff'],
     fire:     ['#6b1200', '#b8300a', '#ff6a1f', '#ffb22e', '#fff2a0'],
     water:    ['#0f2f78', '#1f56c4', '#3d8bff', '#8ccaff', '#eaf7ff'],

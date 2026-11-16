@@ -54,20 +54,21 @@ G.Hazards = (() => {
     }
   }
 
+  function visual(type){const v=G.VFX.forType(type);return G.Settings?.get('hostileRed')===true?{...v,pal:'hostileRed'}:v;}
   function detonate(h) {
     const near = G.Camera.sees(h.x, h.y, 120);
     if (h.vis === 'pillar') {
       // Pilar de luz que cae del cielo.
-      G.FX.beam(h.x, h.y, -Math.PI / 2, 420, h.r * 1.1, h.color, G.VFX.forType('electric'));
-      G.FX.ring(h.x, h.y, 4, h.r * 1.3, '#fff3c8', 0.4, 5);
-      G.FX.burst(h.x, h.y - 6, h.color, 10, 180);
+      G.FX.beam(h.x, h.y, -Math.PI / 2, 420, h.r * 1.1, (G.Settings?.get('hostileRed')===true?'#ff3048':h.color), visual('electric'));
+      G.FX.ring(h.x, h.y, 4, h.r * 1.3,G.Settings?.get('hostileRed')===true?'#ff8799':'#fff3c8', 0.4, 5);
+      G.FX.burst(h.x, h.y - 6, (G.Settings?.get('hostileRed')===true?'#ff3048':h.color), 10, 180);
       if (near) { G.Audio.sfx('judge'); G.Camera.kick(0.2); }
     } else if (h.kind === 'zone') {
-      G.FX.ring(h.x, h.y, 4, h.r, h.color, 0.35, 5);
-      G.FX.burst(h.x, h.y - 6, h.color, Math.round(h.r / 3), 160);
+      G.FX.ring(h.x, h.y, 4, h.r, (G.Settings?.get('hostileRed')===true?'#ff3048':h.color), 0.35, 5);
+      G.FX.burst(h.x, h.y - 6, (G.Settings?.get('hostileRed')===true?'#ff3048':h.color), Math.round(h.r / 3), 160);
       if (near) { G.Audio.sfx('break'); if (h.r > 60) G.Camera.kick(0.35); }
     } else {
-      G.FX.beam(h.x, h.y - G.LIFT, h.angle, h.len, h.w, h.color, G.VFX.forType(h.type || (h.pure ? 'electric' : 'normal')));
+      G.FX.beam(h.x, h.y - G.LIFT, h.angle, h.len, h.w, (G.Settings?.get('hostileRed')===true?'#ff3048':h.color), visual(h.type || (h.pure ? 'electric' : 'normal')));
       if (near) G.Audio.sfx('shot', { kind: 'beam', type: h.type });
     }
   }
@@ -81,24 +82,24 @@ G.Hazards = (() => {
       ctx.save();
       if (h.kind === 'zone') {
         ctx.globalAlpha = 0.16;
-        ctx.fillStyle = h.color;
+        ctx.fillStyle = (G.Settings?.get('hostileRed')===true?'#ff3048':h.color);
         ctx.beginPath(); ctx.ellipse(h.x, h.y, h.r, h.r * 0.75, 0, 0, 6.2832); ctx.fill();
         ctx.globalAlpha = 0.32;
         ctx.beginPath(); ctx.ellipse(h.x, h.y, h.r * k, h.r * 0.75 * k, 0, 0, 6.2832); ctx.fill();
         ctx.globalAlpha = k > 0.75 && blink ? 0.95 : 0.6;
-        ctx.strokeStyle = h.color; ctx.lineWidth = 2;
+        ctx.strokeStyle = (G.Settings?.get('hostileRed')===true?'#ff3048':h.color); ctx.lineWidth = 2;
         ctx.setLineDash([4, 4]);
         ctx.beginPath(); ctx.ellipse(h.x, h.y, h.r, h.r * 0.75, 0, 0, 6.2832); ctx.stroke();
       } else {
         ctx.translate(h.x, h.y);
         ctx.rotate(h.angle);
         ctx.globalAlpha = 0.14;
-        ctx.fillStyle = h.color;
+        ctx.fillStyle = (G.Settings?.get('hostileRed')===true?'#ff3048':h.color);
         ctx.fillRect(0, -h.w / 2, h.len, h.w);
         ctx.globalAlpha = 0.34;
         ctx.fillRect(0, -h.w / 2 * k, h.len, h.w * k);
         ctx.globalAlpha = k > 0.75 && blink ? 0.95 : 0.55;
-        ctx.strokeStyle = h.color; ctx.lineWidth = 2;
+        ctx.strokeStyle = (G.Settings?.get('hostileRed')===true?'#ff3048':h.color); ctx.lineWidth = 2;
         ctx.setLineDash([6, 4]);
         ctx.strokeRect(0, -h.w / 2, h.len, h.w);
       }

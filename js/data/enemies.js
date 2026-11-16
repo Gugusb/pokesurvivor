@@ -219,6 +219,14 @@ G.Enemies = (() => {
     return bag.flatMap(e=>Array(['ranged','fan','beamer','zoner'].includes(e.behavior)?1:8).fill(e));
   }
 
+  function typeWave(type,t){
+    const ti=tierAt(t),all=candidates(TIERS[ti]).filter(p=>ti>0||PLAIN.includes(behaviorOf(p))||SUPPORT.includes(behaviorOf(p)));
+    const same=G.U.pickN(all.filter(p=>p.types.includes(type)),4).map(p=>defFor(p,TIERS[ti],ti));
+    let other=bagAt(t).filter(d=>!G.DEX_BY[d.dex].types.includes(type));
+    if(!other.length)other=G.U.pickN(all.filter(p=>!p.types.includes(type)),4).map(p=>defFor(p,TIERS[ti],ti));
+    return {same:weightedBag(same),other:weightedBag(other)};
+  }
+  const waveTypes=t=>Object.keys(G.U.TYPE_COLOR).filter(type=>candidates(TIERS[tierAt(t)]).some(p=>p.types.includes(type)&&(tierAt(t)>0||PLAIN.includes(behaviorOf(p))||SUPPORT.includes(behaviorOf(p)))));
   /** dex del elenco que aparecerán pronto (para precargar sprites). */
   function upcomingDex(t, ahead = 60) {
     if (!cast) rollRun();
@@ -230,6 +238,7 @@ G.Enemies = (() => {
 
   return {
     TIERS, BOSS_SLOTS, rollRun, scale, bossScale, bagAt, upcomingDex, candidates, hordeTypes, hordeDefs,
+    typeWave,waveTypes,
     get BOSSES() { if (!bosses) rollRun(); return bosses; },
     get cast() { if (!cast) rollRun(); return cast; }
   };

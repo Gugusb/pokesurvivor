@@ -18,9 +18,9 @@ function context() {
   s.loadGame=(simulate=false)=>{
     G.UI={toast:(...v)=>(s.toasts||=[]).push(v),chrome:noop,isOpen:()=>false};G.Social={refreshMember:noop,me:null};
     G.Progress={event:noop,checkAch:noop};G.Judgment={summary:()=>null,reset:noop};G.Ranking={submitSolo:noop,submitGroup:noop};
-    G.RunUI={showOver:r=>s.over=r,showVictory:(...a)=>{(s.victoryChoices||=[]).push(a);s.takeVictory=a[4];s.keepPlaying=a[5];}};G.Flow={afterRun:noop};G.Settings={sample:noop};G.Input={tap:()=>false,endFrame:noop};G.UI.tick=noop;G.UI.hide=noop;G.Dev={isOpen:false};G.SettingsUI={isOpen:false};
+    G.RunUI={showOver:r=>s.over=r,showVictory:(...a)=>{(s.victoryChoices||=[]).push(a);s.takeVictory=a[4];s.keepPlaying=a[5];}};G.Flow={afterRun:noop};G.Settings={sample:noop,get:()=>1,set:noop};G.CardPacks=require('../server/domain.cjs').G.CardPacks;G.CardPacks.normalize(G.DB.save).taken['speed:2']=1;G.Input={tap:()=>false,endFrame:noop};G.UI.tick=noop;G.UI.hide=noop;G.Dev={isOpen:false};G.SettingsUI={isOpen:false};
     let source=fs.readFileSync(path.join(ROOT,'js/game.js'),'utf8').replace('init, startRun, everyone,',
-      "_test:{setRun(p,r,t,dirty=false){pl=p;challenge=r;time=t;tampered=dirty;runReal=1000;last=1000;state='playing';},checkChallenge,maybeVictoryChoice,cashoutVictory,coinPayout,coopApi,endRun,frame,clean,setState(v){state=v;}}, init, startRun, everyone,");
+      "_test:{setRun(p,r,t,dirty=false){pl=p;challenge=r;time=t;tampered=dirty;runReal=1000;last=1000;state='playing';},setCanvas(c){ctx=c;w=100;h=100;},hurtEdge,checkChallenge,maybeVictoryChoice,cashoutVictory,coinPayout,coopApi,endRun,frame,clean,setState(v){state=v;}}, init, startRun, everyone,");
     if(simulate){s.testSteps=[];s.stopOnStep=false;source=source.replace('function update(dt) {',"function update(dt) { time+=dt;testSteps.push(dt);if(stopOnStep)state='levelup';return;").replace('function render() {','function render() {return;');}
     vm.runInContext(source,s);
     s.player=()=>({dex:6,mon:G.DEX_BY[6],dead:false,hp:100,maxHp:100,atkMul:1,spdMul:1,cdMul:1,level:2,coinMul:1,kills:0,bosses:0,coins:0,t1:0,t10:0,moves:[]});
@@ -273,4 +273,18 @@ test('real run endings count short deaths, exclude debug failures and distinguis
   assert.equal(G.DB.save.failureProtection[1].points,5);
   let p=s.player();p.dead=true;p.hp=0;G.FailureProtection.begin(p,G.DB.save,1,'debug');G.Game._test.setRun(p,s.run(1),100,true);G.Game._test.endRun(true);assert.equal(G.DB.save.failureProtection[1].losses,3);
   p=s.player();G.FailureProtection.begin(p,G.DB.save,1,'leave');G.Game._test.setRun(p,s.run(1),100);G.Game._test.endRun(false);assert.equal(G.DB.save.failureProtection[1].losses,0);assert.equal(G.DB.save.failureProtection[1].points,5);
+});
+
+test('fractional speeds advance precisely while interface animation keeps real time',()=>{
+ for(const speed of [1.5,3]){const s=context(),g=s.G;s.loadGame(true);g.CardPacks.normalize(g.DB.save).taken['speed:'+speed]=1;const player=s.player();player.anim={update:noop};g.Game._test.setRun(player,s.run(),0);g.Game.setSpeed(speed);let ui=0;g.UI.tick=dt=>ui+=dt;
+ for(let n=1;n<=60;n++){s.now=1000+n*1000/60;g.Game._test.frame(s.now);}close(g.Game.st.time,speed);close(ui,1);assert.ok(s.testSteps.every(dt=>dt<=1/30));
+ g.Game._test.setState('over');const before=g.Game.st.time;g.Game._test.frame(s.now+1000/60);close(g.Game.st.time,before);close(ui,1+1/60);
+ }
+});
+test('hitstop is brief, respects calm mode and never stalls co-op simulation; red edges start below half HP',()=>{
+ const s=context(),g=s.G;s.loadGame(true);const p=s.player();p.anim={update:noop};g.Game._test.setRun(p,s.run(),0);let calm=false;g.Settings.get=k=>k==='calm'?calm:1;
+ s.now=1000;g.Game.hitStop();s.now=1016;g.Game._test.frame(s.now);assert.equal(s.testSteps.length,0);s.now=1050;g.Game._test.frame(s.now);assert.equal(s.testSteps.length,1);
+ calm=true;g.Game.hitStop();s.now=1066;g.Game._test.frame(s.now);assert.equal(s.testSteps.length,2);calm=false;g.Coop.active=true;g.Coop.tick=noop;g.Game.hitStop();s.now=1082;g.Game._test.frame(s.now);assert.equal(s.testSteps.length,3);
+ const colors=[];let fills=0;g.Game._test.setCanvas({createRadialGradient:()=>({addColorStop:(k,c)=>colors.push(c)}),save:noop,restore:noop,translate:noop,scale:noop,fillRect:()=>fills++});
+ p.hp=50;g.Game._test.hurtEdge();assert.equal(fills,0);p.hp=49;g.Game._test.hurtEdge();assert.equal(fills,1);assert.ok(colors.some(c=>c.startsWith('rgba(220,0,35,')));p.dead=true;g.Game._test.hurtEdge();assert.equal(fills,1);
 });

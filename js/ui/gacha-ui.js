@@ -10,6 +10,7 @@ G.GachaUI = (() => {
   function init() {
     $('pull-1').onclick = () => pull(1);
     $('pull-10').onclick = () => pull(10, 't1');
+    $('pull-100').onclick=()=>pull(100,'t1');$('pull-100b').onclick=()=>pull(100,'t10');
     $('pull-10b').onclick = () => pull(10, 't10');
     $('pull-close').onclick = close;
     $('gacha-pokemon-mode').onclick = () => open('pokemon');
@@ -40,7 +41,7 @@ G.GachaUI = (() => {
     $('gacha-pokemon-mode').classList.toggle('on', !ability);
     $('gacha-ability-mode').classList.toggle('on', ability);
     $('ability-medals').classList.toggle('hidden', !ability);
-    $('pull-10b').classList.toggle('hidden', ability);
+    $('pull-10b').classList.toggle('hidden', ability);$('pull-100b').classList.toggle('hidden',ability);
     document.querySelectorAll('#gacha-gens .gen-tab').forEach(t => t.classList.toggle('hidden', ability && !G.AbilityGacha.GENS.includes(+t.dataset.gen)));
     if (ability) { refreshAbilities(); return; }
     const s = G.DB.save;
@@ -82,7 +83,7 @@ G.GachaUI = (() => {
     $('gacha-tickets').innerHTML = `Tienes ${G.Icons.html('ticket', 18)} <b>${t.t1}</b> tickets y ${G.Icons.html('ticket10', 18)} <b>${t.t10}</b> tickets ×10`;
     $('pull-1').disabled = !G.Gacha.costOf(s, 1);
     $('pull-10').disabled = !G.Gacha.costOf(s, 10, 't1');
-    $('pull-10b').disabled = !G.Gacha.costOf(s, 10, 't10');
+    $('pull-10b').disabled = !G.Gacha.costOf(s, 10, 't10');$('pull-100').disabled=!G.Gacha.costOf(s,100);$('pull-100b').disabled=!G.Gacha.costOf(s,100,'t10');$('cost-100').textContent='100';$('cost-100b').textContent='10 ×10';
     G.UI.refreshCoins();
   }
 
@@ -160,7 +161,7 @@ G.GachaUI = (() => {
     $('cost-10').innerHTML = G.Icons.html('gem', 18) + ' 10';
     $('gacha-tickets').innerHTML = G.Icons.html('gem', 18) + ' <b>' + s.abilityGems + '</b> Gemas de habilidad';
     $('pull-1').disabled = !G.AbilityGacha.costOf(s, 1);
-    $('pull-10').disabled = !G.AbilityGacha.costOf(s, 10);
+    $('pull-10').disabled = !G.AbilityGacha.costOf(s, 10);$('pull-100').disabled=!G.AbilityGacha.costOf(s,100);$('cost-100').textContent='100 '+G.T('Gemas de habilidad');
     const inventory = $('ability-medals'); inventory.innerHTML = '';
     for (const dex of species) renderEquipment(inventory, dex);
     G.UI.refreshCoins();

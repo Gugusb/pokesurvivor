@@ -317,7 +317,10 @@ G.Player = class Player {
     G.BreakItems?.afterHurt(this,source);
     this.flash = 0.14;
     G.Audio.sfx('hurt');
-    G.Camera.kick(0.28);
+    if(this===G.Game?.player){
+      G.Camera.kick(0.38);
+      if(!['environment','weather'].includes(source.kind))G.Game.hitStop?.();
+    }
     G.FX.dmgText(this.x, this.y - this.bodyH - 4, '-' + Math.round(d), eff === 'super' ? '#ff3048' : eff === 'weak' ? '#c9a0a8' : '#ff6b7a', eff === 'super');
     G.FX.burst(this.x, this.y - this.bodyH * 0.5, '#ff5f6d', 6, 90);
     if (this.hp <= 0) G.Abilities.saveLethal(this);

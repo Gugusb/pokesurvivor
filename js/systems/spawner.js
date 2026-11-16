@@ -23,12 +23,13 @@ G.Spawner = (() => {
   const SHINY_RATE = 1 / 4096;
   let acc = 0, bossIdx = 0, surgeT = 32, announce = null, announceT = 0, preloadT = 0;
   let forceShiny = 0;           // para pruebas: los N próximos salen shiny
-  let sector=0,sectorT=0;
+  let sector=0,sectorT=0,wave=null;
+  function formation(t){if(!G.Enemies.waveTypes||Math.random()>=.5)return null;const type=G.U.pick(G.Enemies.waveTypes(t));return type?{type,...G.Enemies.typeWave(type,t)}:null;}
 
   function reset() {
     acc = 0; bossIdx = 0; surgeT = 32; announce = null; announceT = 0; preloadT = 0;
     sector=Math.random()*Math.PI*2;sectorT=G.U.rand(30,50);
-    G.Enemies.rollRun();
+    G.Enemies.rollRun();wave=formation(0);
     G.Sprites.preload(G.Enemies.upcomingDex(0, 80));
   }
 
@@ -77,8 +78,9 @@ G.Spawner = (() => {
     return Math.random() < SHINY_RATE;
   }
 
-  function spawnOne(pl, t, angle) {
-    const def = G.U.pick(G.Enemies.bagAt(t));
+  function spawnOne(pl, t, angle,formed=wave) {
+    const special=G.Events?.bag(),pool=!special&&formed?(Math.random()<.85?formed.same:formed.other):null;
+    const def = G.U.pick(pool?.length?pool:G.Enemies.bagAt(t));
     const a=angle==null?spawnAngle():angle;
     const pt = freePoint(pl, a, isFlyer(def)) || freePoint(pl,Math.random()*Math.PI*2,isFlyer(def));
     if (!pt) return null;
@@ -143,7 +145,8 @@ G.Spawner = (() => {
     // --- marea ---
     if (!bossFight) surgeT -= dt;
     if (surgeT <= 0) {
-      surgeT = G.U.rand(38, 56);
+      surgeT = G.U.rand(38, 56);wave=formation(t);
+      if(wave)G.Sprites.preload([...new Set([...wave.same,...wave.other].map(d=>d.dex))]);
       const base = G.Difficulty&&G.Difficulty.current<=4?spawnAngle():Math.random()*6.2832;
       const target = anchor();
       const n = Math.min(CAP - G.EnemyMgr.count, Math.round((14 + Math.floor(t / 22)) * G.Coop.scaleRate(players.length) * 0.4));
@@ -155,8 +158,8 @@ G.Spawner = (() => {
 
   /** Unos cuantos de golpe desde un lado (al empezar una horda). */
   function burst(n) {
-    const base = spawnAngle(), target = anchor() || G.Game.player, t = G.Game.st.time;
-    for (let i = 0; i < n && G.EnemyMgr.count < CAP + 10; i++) spawnOne(target, t, base + G.U.rand(-0.6, 0.6));
+    const base = spawnAngle(), target = anchor() || G.Game.player, t = G.Game.st.time,formed=formation(t);
+    for (let i = 0; i < n && G.EnemyMgr.count < CAP + 10; i++) spawnOne(target, t, base + G.U.rand(-0.6, 0.6),formed);
   }
 
   /**
