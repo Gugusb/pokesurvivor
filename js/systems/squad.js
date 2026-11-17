@@ -15,6 +15,7 @@ G.Squad = (() => {
   function buffTargets(p){const team=actors(),i=team.indexOf(p);return i<0?[p]:team.slice(Math.max(0,i-1),i+2).filter(q=>!q.dead);}
   function growth(p,key){return captain&&actors().includes(p)?bonus[key]||0:0;}
   function refresh(){
+    G.SquadBonds?.refresh();
     bonus={};for(const p of deployed()){const [key,value]=support[p.mon.types[0]]||support.normal;bonus[key]=(bonus[key]||0)+value*p.rank;}
     for(const p of [captain,...roster].filter(Boolean)){
       const value=actors().includes(p)?(bonus.hp||0)*p.baseHp:0,delta=value-(p.squadHpBonus||0);
@@ -30,7 +31,9 @@ G.Squad = (() => {
       this.moveId=this.moves[0].id;rankMove(this);this.invuln=1;
     }
     isPrimaryMove(){return false;}
-    ppIntervalFor(){return G.MonProgression.ppInterval(this.stamina*.5);}
+    agilityFor(m){return super.agilityFor(m)*(G.SquadBonds?.agility(this,m)||1);}
+    staminaFor(m){return super.staminaFor(m)*(G.SquadBonds?.stamina(this,m)||1);}
+    ppIntervalFor(m){return G.MonProgression.ppInterval(this.staminaFor(m));}
     update(dt){
       this.anim.update(dt);if(this.dead)return;
       this.level=captain.level;this.invuln=Math.max(0,this.invuln-dt);this.dashGuardT=Math.max(0,this.dashGuardT-dt);this.flash=Math.max(0,this.flash-dt);this.attackFace=Math.max(0,this.attackFace-dt);
@@ -50,8 +53,8 @@ G.Squad = (() => {
     }
   }
   function resetFollow(){still=0;gathering=false;leaderPos=captain?{x:captain.x,y:captain.y}:null;for(const p of roster)p.idleTarget=null;}
-  function begin(p){captain=p;roster=[];trail=[{x:p.x,y:p.y}];level=1;formation=Array(G.ExpeditionRules.capacity(level)-1).fill(null);bonus={};nextId=1;p.squadCaptain=true;resetFollow();}
-  function reset(){captain=null;roster=[];trail=[];formation=[];bonus={};resetFollow();}
+  function begin(p){captain=p;roster=[];trail=[{x:p.x,y:p.y}];level=1;formation=Array(G.ExpeditionRules.capacity(level)-1).fill(null);bonus={};nextId=1;p.squadCaptain=true;resetFollow();G.SquadBonds?.reset();refresh();}
+  function reset(){captain=null;roster=[];trail=[];formation=[];bonus={};resetFollow();G.SquadBonds?.reset();}
   function rankMove(p){
     G.Projectiles.clearOrbs(p);
     const m=p.moves[0],target=p.rank===1?2:p.rank===2?5:m.def.maxLvl;

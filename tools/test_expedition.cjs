@@ -7,7 +7,7 @@ function controller(s){
  g.World.setBiome=noop;g.World.isFree=()=>true;g.EnemyMgr.clear=()=>{s.enemies.length=0;};g.EnemyMgr.update=noop;g.Projectiles.clear=noop;g.Combat={clearFields:noop};g.Pickups={clear:noop,drop:noop};g.Hazards={clear:noop};g.Path.clear=noop;g.Touch={reset:noop};
  s.load('js/data/expedition-lang.js');s.load('js/systems/expedition.js');g.Expedition.begin(s.player(4));return g.Expedition;
 }
-function setup(){const s=context('zh',false),g=s.G;for(const f of ['js/core/settings.js','js/data/egg-groups.js','js/entities/projectile.js','js/systems/expedition-rules.js','js/systems/squad.js','js/systems/move-control.js','js/systems/move-pp.js'])s.load(f);g.Sprites.preload=noop;g.Sprites.Animator.prototype._start=noop;return s;}
+function setup(){const s=context('zh',false),g=s.G;for(const f of ['js/core/settings.js','js/data/egg-groups.js','js/entities/projectile.js','js/systems/expedition-rules.js','js/systems/squad.js','js/systems/squad-bonds.js','js/systems/move-control.js','js/systems/move-pp.js'])s.load(f);g.Sprites.preload=noop;g.Sprites.Animator.prototype._start=noop;return s;}
 
 test('run-only recruitment, rank evolution and release never register an unowned species or overwrite collection IVs',()=>{
  const s=setup(),g=s.G,leader=s.player(25);g.Squad.begin(leader);const before=JSON.stringify(g.DB.save.owned);for(let i=0;i<4;i++)g.Squad.recruit(4,'ember');const p=g.Squad.roster[0];assert.equal(p.dex,6);assert.equal(p.rank,3);assert.equal(g.DB.owns(4),false);assert.equal(g.DB.owns(6),false);g.Squad.release(p);assert.equal(JSON.stringify(g.DB.save.owned),before);

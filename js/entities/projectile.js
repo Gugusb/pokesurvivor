@@ -31,6 +31,7 @@ G.Projectiles = (() => {
       if (p.boom) p.boom /= k;
     }
     if (p.friendly && !p.orb && !p.phits) p.phits = new Set();
+    if(p.friendly&&!p.orb&&p.moveKind==='projectile'&&p.bondUnstable&&!p.zMove){p.bondBudget=1+Math.max(0,Math.floor(p.pierce));p.bondProcs=0;p.bondBaseR=p.r;p.bondBaseScale=p.visualScale||(p.r>=8?1.5:1);}
     list.push(p);
     return p;
   }

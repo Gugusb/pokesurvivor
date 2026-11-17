@@ -2,7 +2,7 @@
 G.SquadUI=(()=>{
   const $=id=>document.getElementById(id),T=s=>G.T(s),L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
   const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;};
-  let selected=null,editable=false,done=null,last=0,stats=[],moves=[],health=null,drag=null,bondMode='types';
+  let selected=null,editable=false,done=null,last=0,stats=[],moves=[],health=null,drag=null,bondMode='types',bondRevision=-1;
   const isOpen=()=>G.UI.isOpen('scr-squad');
   const leader=()=>G.Expedition.run?.captain;
   const all=()=>[leader(),...G.Squad.roster].filter(Boolean);
@@ -72,10 +72,17 @@ G.SquadUI=(()=>{
     const finish=node('div','squad-finish');finish.append(button(canEdit()?L('Formación lista','Formation ready','完成编队'):L('Volver al combate','Return to battle','返回战斗'),close,'btn gold'));list.append(finish);
   }
   function renderBonds(){
+    G.SquadBonds?.refresh();bondRevision=G.SquadBonds?.revision??-1;
     const box=$('squad-bonds');box.replaceChildren();box.append(node('h3','',L('Etiquetas del equipo','Squad tags','小队标签')));
     const tabs=node('div','squad-bond-tabs');for(const [key,name]of [['types',L('Tipo','Type','属性')],['eggs',L('Especie','Species','蛋组')],['skill',L('Oficio','Class','职业')]]){const b=button(name,()=>{bondMode=key;renderBonds();},'squad-bond-tab'+(bondMode===key?' on':''));tabs.append(b);}box.append(tabs);
-    const counts=new Map();for(const p of G.Squad.actors()){const tags=G.Squad.tags(p),values=bondMode==='types'?tags.types.map(t=>T(G.U.TYPE_NAME[t])):bondMode==='eggs'?tags.eggs.map(n=>G.ExpeditionTerms.egg(n)):[...new Set(p.moves.map(m=>G.Expedition.skillLabel(m.kind)))];for(const name of values)counts.set(name,(counts.get(name)||0)+1);}
-    const rows=node('div','squad-bond-rows');for(const [name,count]of [...counts].sort((a,b)=>b[1]-a[1])){const row=node('div','squad-bond-row');row.append(node('b','',name),node('span','',String(count)));rows.append(row);}box.append(rows);
+    G.SquadBonds?.refresh();const labels=new Map();
+    for(const p of G.Squad.actors()){const t=G.Squad.tags(p),values=bondMode==='types'?t.types.map(id=>[id,T(G.U.TYPE_NAME[id])]):bondMode==='eggs'?t.eggs.map(id=>[id,G.ExpeditionTerms.egg(id)]):p.moves.map(m=>[m.kind,G.Expedition.skillLabel(m.kind)]);for(const [id,name]of values)labels.set(id,name);}
+    if(bondMode==='skill')for(const id of G.SquadBonds?.KINDS||[])labels.set(id,G.Expedition.skillLabel(id));
+    const rows=node('div','squad-bond-rows');for(const [id,name]of [...labels].sort((a,b)=>(G.SquadBonds?.count(bondMode,b[0])||0)-(G.SquadBonds?.count(bondMode,a[0])||0))){
+      const count=G.SquadBonds?.count(bondMode,id)||0,designed=bondMode==='skill'&&G.SquadBonds?.KINDS.includes(id),s=designed?G.SquadBonds.state(id):null,row=node('div','squad-bond-row'+(s?.tier?' active':''));row.dataset.bond=id;
+      row.append(node('b','',name),node('span','',count+(designed?' / '+(count<3?3:6):'')),node('small','squad-bond-stack',L('Capas','Stacks','羁绊层数')+' '+(G.SquadBonds?.layer(bondMode,id)??1)));
+      if(designed)row.append(node('p','squad-bond-effect',G.SquadBonds.description(id)));rows.append(row);
+    }box.append(rows,node('p','note',L('Cada especie cuenta una vez por etiqueta.','Each species counts once per tag.','同名伙伴对同一羁绊只计一次生效数。')));
     box.append(node('h4','',L('Apoyo activo','Active support','当前支援')));let found=false;for(const [key,label]of [['atk',L('Ataques','Attacks','基础双攻')],['hp',L('Vida','HP','基础生命')],['agility',L('Agilidad','Agility','基础敏捷')],['stamina',L('Aguante','Stamina','基础耐力')],['regen',L('Vida/s','HP/s','基础生命/秒')]]){const value=G.Squad.growth(leader(),key);if(value){found=true;box.append(node('p','squad-support-line',label+' +'+Number((value*100).toFixed(1))+'%'));}}if(!found)box.append(node('p','note',L('Sin apoyo todavía','No support yet','暂无队员支援')));
   }
   function statRows(p){
@@ -112,7 +119,7 @@ G.SquadUI=(()=>{
   }
   function tick(){
     const launcher=$('squad-open');if(launcher)launcher.classList.toggle('hidden',!G.Expedition?.active||G.Game.state!=='playing');
-    if(isOpen()&&detailsOpen()&&performance.now()-last>300){last=performance.now();refreshDetails();}
+    if(isOpen()&&performance.now()-last>300){last=performance.now();if(G.SquadBonds&&bondRevision!==G.SquadBonds.revision)renderBonds();if(detailsOpen())refreshDetails();}
   }
   return {init,show,close,back,detailsOpen,closeDetails,isOpen,tick,statRows,get editable(){return canEdit();}};
 })();

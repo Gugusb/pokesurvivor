@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Hilos entre compañeros · v0.43.0-alpha.6": "伙伴间的彩线 · v0.43.0-alpha.6",
+  "Tres o seis especies distintas con la misma etiqueta activan vínculos de proyectil, cuerpo a cuerpo, rayo, órbita o cadena. Cada vínculo muestra su número activo y sus capas por separado.": "同标签的不同名伙伴达到三位、六位，可激活投射物、近战、能量柱、环绕和连锁羁绊。生效数与羁绊层数会分开显示。",
+  "Los proyectiles inestables traen sorpresas, las multitudes refuerzan los golpes cercanos y los rayos pueden mantenerse gastando PP. Las órbitas duran más, mientras las cadenas saltan con un breve retraso.": "不稳定投射物带来随机变化，近战迎敌越多越强，光柱可消耗PP维持；环绕更持久，连锁会延迟跳跃、短暂阻碍目标。",
+  "He unido las fichas con hilos de colores. Quien cocina cuenta compañeros distintos; yo marqué las capas en otra página para no confundirlas con las plazas. Nuestras pequeñas conexiones ya empiezan a notarse.": "我把伙伴卡片用彩线连好啦。做饭的那家伙数不同的伙伴，我在另一页记层数，可不能把它和编队空位混在一起。咱们的小默契，总算派上用场了。",
+
   "Una despedida en la formación · v0.43.0-alpha.5": "编队中的小小告别 · v0.43.0-alpha.5",
   "Arrastra un compañero hasta Liberar, junto a la reserva, para dejarlo marchar de esta expedición.": "把伙伴拖到候补仓库旁的「放生」槽，就会离开本次远征。",
   "Invitar y liberar compañeros de la expedición mantiene intacta tu colección permanente.": "远征伙伴的招募与放生只影响本局小队，不会改动局外收藏。",

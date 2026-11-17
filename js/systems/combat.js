@@ -36,6 +36,7 @@ G.Combat = (() => {
   function tickMove(dt, pl, m, now) {
     const cooldownRate = rateFor(pl,m);
     m.t -= dt * cooldownRate;
+    if(m.kind==='beam'&&fields.some(f=>f.kind==='bondbeam'&&f.owner===pl&&f.source===m&&!f.gone))return;
     const wanted=!G.MoveControl||G.MoveControl.wants(pl,m);
     if(m.kind==='orbit'){
       if(!wanted&&!G.MoveControl.sustaining(pl,m)){for(const shot of G.Projectiles.all().filter(s=>s.orb&&s.owner===pl&&s.mid===m.id))G.Projectiles.remove(shot);m.t=Math.max(0,m.t);return;}
@@ -45,7 +46,7 @@ G.Combat = (() => {
           for(const shot of G.Projectiles.all().filter(s=>s.orb&&s.owner===pl&&s.mid===m.id))G.Projectiles.remove(shot);
           m.t=0;return;
         }
-        m.t=Math.max(.05,m.cd*pl.cdMul)*G.Abilities.onCast(pl,m);
+        m.t=Math.max(.05,m.cd*pl.cdMul)*G.Abilities.onCast(pl,m)*(G.SquadBonds?.sustain(pl,m)||1);
         G.MoveControl?.cast(pl,m);G.Items?.onCast(pl,m);
         extras(pl,m,m.t/cooldownRate);
       }
@@ -53,7 +54,7 @@ G.Combat = (() => {
     }
     if (m.t > 0||!wanted) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
-    const manual=G.Targeting?.manual(pl),castReach=reach(G.Specialization?.move(pl,m)||m),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
+    const manual=G.Targeting?.manual(pl),castReach=reach(G.SquadBonds?.move(pl,G.Specialization?.move(pl,m)||m)||m),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
     if (needsTarget(m) && !(manual&&m.kind!=='chain') && !(target && G.U.dist(pl.x, pl.y, target.x, target.y) <= castReach)) {
       m.t = 0.05;
       return;
@@ -83,6 +84,7 @@ G.Combat = (() => {
     if(G.Specialization)m=G.Specialization.move(pl,m);
     if (G.Mega) G.Mega.particles(pl);
     if (G.Mega) m = G.Mega.move(pl, m);
+    if(G.SquadBonds)m=G.SquadBonds.move(pl,m);
     m = G.Abilities.move(pl, m);
     switch (m.kind) {
       case 'projectile': fireProjectiles(pl, m); break;
@@ -116,7 +118,7 @@ G.Combat = (() => {
   }
 
   function payload(m) {
-    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, moveKind: m.kind, moveId: m.id, damageClass:m.damageClass, evolved:!!m.evolved, phaseWalls:!!m.phaseWalls, specMove:m };
+    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, moveKind: m.kind, moveId: m.id, damageClass:m.damageClass, evolved:!!m.evolved, phaseWalls:!!m.phaseWalls, specMove:m,bondUnstable:!!m.bondUnstable,bondScale:m.bondScale||1 };
   }
 
   /** Tabla de tipos × clima para un ataque de tipo `type` contra `e`. */
@@ -178,16 +180,23 @@ G.Combat = (() => {
     G.FX.slash(pl.x, pl.y - G.LIFT * 0.5, pl.aim, m.radius, m.arc, col, G.VFX.forMove(m));
     if (ghost) return;
 
-    for (const e of G.EnemyMgr.queryCircle(pl.x, pl.y, m.radius)) {
+    const near=G.EnemyMgr.queryCircle(pl.x,pl.y,m.radius).filter(e=>!e.dead),crowd=G.SquadBonds?.meleeDamage(pl,m,near.length)||1;
+    for (const e of near) {
       if (!inArc(pl.x, pl.y, e.x, e.y, pl.aim, half)) continue;
-      hit(pl, e, m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk), col, e.x - pl.x, e.y - pl.y, m.knock || 0, m);
+      hit(pl, e, m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk)*crowd, col, e.x - pl.x, e.y - pl.y, m.knock || 0, m);
     }
     for (const p of G.World.propsInCircle(pl.x, pl.y, m.radius)) {
       if (inArc(pl.x, pl.y, p.x, p.y, pl.aim, half)) G.World.damageProp(p, m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk), col);
     }
   }
 
-  function beam(pl, m) {
+  function beam(pl, m,visualOnly=false) {
+    if(m.bondSustain&&!m.bondPulse&&!ghost&&!visualOnly){
+      const source=pl.moves.find(s=>s.id===m.id),target=pl.target;
+      if(!source||!target||target.dead)return;
+      fields.push({kind:'bondbeam',owner:pl,source,target,m:{...m},wait:.5});
+      beam(pl,{...m,bondPulse:true,dmg:m.dmg*.5*m.bondScale});return;
+    }
     const col = G.U.TYPE_COLOR[m.type];
     const w = m.width;
     const ca = Math.cos(pl.aim), sa = Math.sin(pl.aim);
@@ -198,7 +207,7 @@ G.Combat = (() => {
       if ((G.World.arenaContains&&!G.World.arenaContains(pl.x+ca*d,pl.y+sa*d,0))||(!m.phaseWalls&&G.World.isWall(pl.x + ca * d, pl.y + sa * d))) { len = d; break; }
     }
     G.FX.beam(pl.x, pl.y - G.LIFT, pl.aim, len, w, col, G.VFX.forMove(m));
-    if (ghost) return;
+    if (ghost||visualOnly) return;
     G.Camera.kick(0.08);
 
     const mx = pl.x + ca * len / 2, my = pl.y + sa * len / 2;
@@ -277,6 +286,10 @@ G.Combat = (() => {
     const col = G.U.TYPE_COLOR[m.type], vis = G.VFX.forMove(m);
     let cur = G.Targeting&&(ghost||G.Targeting.manual(pl))?G.Targeting.forward(pl,reach(m)):pl.target && !pl.target.dead && pl.target.hurt ? pl.target : G.Projectiles.nearest(G.EnemyMgr.all(), pl.x, pl.y, reach(m));
     if (!cur) return;
+    if(m.bondChain&&!ghost){
+      const f={kind:'bondchain',owner:pl,m:{...m},target:cur,x:pl.x,y:pl.y-G.LIFT,k:1,done:new Set(),left:Math.max(1,m.count|0),wait:0};
+      chainStep(f);if(f.left>0&&f.target){f.wait=.12;fields.push(f);}return;
+    }
     let fx = pl.x, fy = pl.y - G.LIFT, k = 1;
     const done = new Set();
     const n = Math.max(1, m.count | 0);
@@ -300,6 +313,17 @@ G.Combat = (() => {
       cur = best;
     }
     if (!ghost) G.Camera.kick(0.05);
+  }
+  function chainStep(f){
+    const {owner:pl,m}=f;let cur=f.target;
+    if(cur&&(cur.dead||f.done.has(cur.id)))cur=G.EnemyMgr.queryCircle(cur.x,cur.y,m.radius).filter(e=>!e.dead&&!f.done.has(e.id)).sort((a,b)=>G.U.dist2(cur.x,cur.y,a.x,a.y)-G.U.dist2(cur.x,cur.y,b.x,b.y))[0];
+    if(!cur){f.left=0;return;}
+    const x=cur.x,y=cur.y-cur.bodyH*.5,col=G.U.TYPE_COLOR[m.type];f.done.add(cur.id);
+    G.FX.beam(f.x,f.y,Math.atan2(y-f.y,x-f.x),Math.hypot(x-f.x,y-f.y),10,col,G.VFX.forMove(m));
+    const hex=m.hex&&(cur.burn>0||cur.poison>0||cur.slow>0)?m.hex:1;
+    hit(pl,cur,m.dmg*(pl.attackFor?pl.attackFor(m):pl.atk)*f.k*hex,col,x-f.x,y-f.y,0,m);
+    if(!G.Abilities.suppressEffects(pl)){if(cur.boss)cur.applySlow(.5,Math.min(.25,.1*m.bondScale));else cur.freezeT=Math.max(cur.freezeT||0,Math.min(.25,.1*m.bondScale));}
+    f.x=x;f.y=y;f.k*=.85;f.left--;f.target=G.EnemyMgr.queryCircle(cur.x,cur.y,m.radius).filter(e=>!e.dead&&!f.done.has(e.id)).sort((a,b)=>G.U.dist2(cur.x,cur.y,a.x,a.y)-G.U.dist2(cur.x,cur.y,b.x,b.y))[0]||null;
   }
 
   /** Minas: se quedan en el suelo y estallan cuando un enemigo las pisa. */
@@ -417,6 +441,26 @@ G.Combat = (() => {
   function updateFields(dt) {
     for (let i = fields.length - 1; i >= 0; i--) {
       const f = fields[i];
+      if(f.kind==='bondbeam'){
+        const {owner:pl,source,target,m}=f;
+        if(f.gone||pl.dead||!G.Squad?.deployed().includes(pl)||!pl.moves.includes(source)||G.SquadBonds?.stats(pl,source).tier!==6||!G.Abilities.canCast(pl)||G.ZMoves?.busy(pl)||target.dead||G.U.dist2(pl.x,pl.y,target.x,target.y)>(m.radius+target.r)**2){fields.splice(i,1);continue;}
+        const aim=pl.aim;pl.aim=Math.atan2(target.y-pl.y,target.x-pl.x);
+        let blocked=false;for(let d=8;d<Math.hypot(target.x-pl.x,target.y-pl.y);d+=8)if((G.World.arenaContains&&!G.World.arenaContains(pl.x+Math.cos(pl.aim)*d,pl.y+Math.sin(pl.aim)*d,0))||(!m.phaseWalls&&G.World.isWall(pl.x+Math.cos(pl.aim)*d,pl.y+Math.sin(pl.aim)*d))){blocked=true;break;}
+        if(blocked){pl.aim=aim;fields.splice(i,1);continue;}
+        f.visual=(f.visual||0)-dt;if(f.visual<=0){beam(pl,{...m,bondPulse:true},true);f.visual=.1;}
+        f.wait-=dt;
+        while(f.wait<=0){
+          if(!G.MovePP.spend(pl,source)){f.gone=true;break;}
+          f.wait+=.5;beam(pl,{...m,bondPulse:true,dmg:m.dmg*.5*m.bondScale});
+          if(target.dead){f.gone=true;break;}
+        }
+        pl.aim=aim;if(f.gone)fields.splice(i,1);continue;
+      }
+      if(f.kind==='bondchain'){
+        if(f.owner.dead||!G.Squad?.deployed().includes(f.owner)){fields.splice(i,1);continue;}
+        f.wait-=dt;while(f.wait<=0&&f.left>0&&f.target){chainStep(f);f.wait+=.12;}
+        if(f.left<=0||!f.target)fields.splice(i,1);continue;
+      }
       if(f.kind==='repeat'){
         if(f.owner.dead){fields.splice(i,1);continue;}
         if(G.ZMoves?.busy(f.owner))continue;
@@ -477,7 +521,7 @@ G.Combat = (() => {
   function drawGroundFields(ctx) {
     const now = performance.now() / 1000;
     for (const f of fields) {
-      if(['repeat','orbitcopy'].includes(f.kind))continue;
+      if(['repeat','orbitcopy','bondbeam','bondchain'].includes(f.kind))continue;
       if (!G.Camera.sees(f.x, f.y, 60)) continue;
       ctx.save();
       if (f.kind === 'patch') {
@@ -510,7 +554,7 @@ G.Combat = (() => {
   function drawAirFields(ctx) {
     const now = performance.now() / 1000;
     for (const f of fields) {
-      if(['repeat','orbitcopy'].includes(f.kind))continue;
+      if(['repeat','orbitcopy','bondbeam','bondchain'].includes(f.kind))continue;
       if (!G.Camera.sees(f.x, f.y, 200)) continue;
       if (f.kind === 'meteor' && f.t > 0) {
         G.FX.drawMeteor(ctx,f);
@@ -528,6 +572,7 @@ G.Combat = (() => {
     const rehit=m.remoteRehit||Math.max(.12,m.cd)*pl.cdMul/rateFor(pl,m);
     if(G.Specialization)m=G.Specialization.move(pl,m);
     if (G.Mega) m = G.Mega.move(pl, m);
+    if(G.SquadBonds)m=G.SquadBonds.move(pl,m);
     m = G.Abilities.move(pl, m);
     const col = G.U.TYPE_COLOR[m.type];
     const want = Math.max(1, m.count | 0);
@@ -595,6 +640,22 @@ G.Combat = (() => {
   // Golpe crítico (Mejoras → Golpe Crítico): x1,5 de daño, número naranja y grande.
   const isCrit = (pl,m) => {const chance=Math.min(1,(pl.critChance||0)+(G.Items?.critBonus(pl)||0)+(G.Specialization?.stats(m).crit||0));return !ghost&&chance>0&&Math.random()<chance;};
   const critMul=(pl,m)=>G.Abilities.critMultiplier(pl)+(G.Items?.critDamage(pl)||0)+(G.Specialization?.stats(m).critDamage||0);
+  function unstableRoll(pl,p){
+    if(!p.bondUnstable||p.zMove||!p.bondBudget||p.bondProcs>=p.bondBudget||G.Abilities.suppressEffects(pl))return -1;
+    p.bondProcs++;return Math.min(4,Math.floor(Math.random()*5));
+  }
+  function unstableAfter(pl,p,e,mode){
+    if(mode<0)return false;const scale=p.bondScale||1,col=p.color;
+    G.FX.ring(e.x,e.y,e.r,e.r+18,'#e6aaff',.22,2);
+    if(mode===0)p.pierce+=Math.max(1,Math.floor(scale));
+    if(mode===1){
+      const next=G.EnemyMgr.queryCircle(e.x,e.y,240*Math.sqrt(scale)).filter(t=>!t.dead&&!p.hits.has(t.id)).sort((a,b)=>G.U.dist2(e.x,e.y,a.x,a.y)-G.U.dist2(e.x,e.y,b.x,b.y))[0];
+      if(next){const a=Math.atan2(next.y-e.y,next.x-e.x),speed=Math.max(80,Math.hypot(p.vx,p.vy));p.x=p.px=e.x;p.y=p.py=e.y;p.vx=Math.cos(a)*speed;p.vy=Math.sin(a)*speed;p.pierce++;p.life=Math.max(p.life,p.t+.35);return true;}
+    }
+    if(mode===2){const r=60*Math.sqrt(scale),m=p.specMove||{id:p.moveId,type:p.mtype,kind:p.moveKind,damageClass:p.damageClass};G.FX.ring(e.x,e.y,4,r,col,.3,3);for(const t of G.EnemyMgr.queryCircle(e.x,e.y,r))if(!t.dead)hit(pl,t,p.dmg*.35*scale,col,t.x-e.x,t.y-e.y,0,m);}
+    if(mode===4){p.r=Math.min(p.bondBaseR*(1+scale),p.r*(1+.35*scale));p.visualScale=p.bondBaseScale*p.r/p.bondBaseR;}
+    return false;
+  }
 
   function hit(pl, e, dmg, col, dx, dy, knock, m) {
     const k = typeK(m.type, e, pl);
@@ -710,8 +771,8 @@ G.Combat = (() => {
         const owner=p.owner||pl;
         const raw = G.ZMoves ? G.ZMoves.projectileDamage(p,e) : p.dmg;
         if(raw<=0)continue;
-        const crit = isCrit(owner,p.specMove);
-        const k = (p.mtype ? typeK(p.mtype, e, owner) : 1) * (crit ? critMul(owner,p.specMove) : 1);
+        const unstable=unstableRoll(owner,p),crit=unstable===3||isCrit(owner,p.specMove);
+        const k = (p.mtype ? typeK(p.mtype, e, owner) : 1) * (crit ? critMul(owner,p.specMove)*(unstable===3?1+(p.bondScale||1):1) : 1);
         const dealt = e.hurt(raw * k, p.color, p.vx || (e.x - owner.x), p.vy || (e.y - owner.y), p.knock,
                crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, { id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved }) || 0;
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
@@ -720,9 +781,10 @@ G.Combat = (() => {
         if (p.burn) e.applyBurn(p.burn, owner);
         if (p.poison) e.applyPoison(p.poison, owner);
         if (p.slow) e.applySlow(p.slow);
+        const bounced=unstableAfter(owner,p,e,unstable);
 
         if (!p.orb) {
-          if (p.pierce > 0) { p.pierce--; }
+          if (p.pierce > 0) { p.pierce--;if(bounced)break; }
           else {
             G.FX.burst(p.x, p.y - G.LIFT, p.color, 5, 80);
             projectiles.splice(i, 1);

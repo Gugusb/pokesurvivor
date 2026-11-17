@@ -27,6 +27,12 @@ G.MovePP = (() => {
     if(s.current<s.max){const normal=Math.min(amount,s.max-s.current);s.current+=normal;amount-=normal;}
     if(amount>0)s.current=Math.min(s.limit,s.current+amount*.5);
   }
+  // Maintenance costs are not fresh casts: no potion, free-cast roll or cast event.
+  function spend(p,m,n=1){
+    if(!Number.isSafeInteger(n)||n<1)return false;const s=state(p,m),regular=Math.min(n,Math.floor(s.current+1e-8));
+    if(regular+Math.floor(p.tempPP||0)<n)return false;
+    s.current=Math.max(0,s.current-regular);p.tempPP=Math.max(0,(p.tempPP||0)-(n-regular));return true;
+  }
   function tick(p,dt){
     if(p.dead||p.remote)return;
     for(const m of p.moves){
@@ -40,5 +46,5 @@ G.MovePP = (() => {
   function restore(p,moves){for(const m of moves||[]){const s=state(p,m);s.current=Math.max(s.current,s.max);}}
   function add(p,moves,n){for(const m of moves||[]){const s=state(p,m);s.current=Math.min(s.limit,s.current+n);}}
   function increaseMax(p,n=1){for(const m of p.moves)state(p,m);p.maxPpBonus=(p.maxPpBonus||0)+n;for(const m of p.moves)state(p,m);}
-  return {baseMax,max,state,consume,tick,restore,add,increaseMax};
+  return {baseMax,max,state,consume,spend,tick,restore,add,increaseMax};
 })();
