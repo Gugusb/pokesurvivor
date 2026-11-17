@@ -1,6 +1,15 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Un descanso tras la batalla · v0.43.0-alpha.4": "战后歇歇脚 · v0.43.0-alpha.4",
+  "Al terminar un combate, recoge el botín y recibe como máximo un compañero. Las mejoras de nivel esperan hasta después del combate.": "战斗结束后先收好本回合战利品，每场最多领取一位新伙伴；升级选择也留到战后慢慢挑。",
+  "La reserva tiene cuatro plazas. Si se llena, puedes liberar un compañero y volver a recoger tu recompensa.": "候补仓库可容纳四位伙伴。仓库满了，可以先在小队中放生，再回来领取奖励。",
+  "Los rangos del compañero refuerzan su movimiento: nivel 2, nivel 5 y definitivo. Su nombre y sus etiquetas se ven en la formación.": "队员招式随一、二、三阶提升为2级、5级与超武，编队卡片直接显示技能名和标签。",
+  "Las tiendas muestran el movimiento antes de invitar. Al mejorar la tienda, aparecen más compañeros de rango dos y tres.": "商店会提前展示伙伴的招式；商店等级越高，二阶、三阶伙伴越容易出现。",
+  "Los movimientos de apoyo benefician al usuario y a sus vecinos de formación con una parte de su efecto habitual.": "属性招式会支援自身及编队中前、后各一位队友，单个目标的增益有所减弱。",
+  "Cuando el capitán se detiene, los compañeros se reúnen a su alrededor y siguen paseando.": "队长停下时，伙伴会靠拢过来，在身边小步走动。",
+  "He preparado una bandeja para el botín y cuatro etiquetas para la reserva. Quien cocina cuenta los huecos; yo vigilo que nadie se lleve la merienda antes de escoger compañero. Podemos ordenar el equipo con calma.": "战利品摆好盘，候补的小贴纸也数好四张啦。做饭的那家伙在清点空位，我看着点心，免得咱们选伙伴前就吃光了。收拾队伍嘛，慢慢来。",
+
   "El equipo cobra vida · v0.43.0-alpha.3": "伙伴们，动起来啦 · v0.43.0-alpha.3",
   "Los compañeros vuelven a mostrar sus pasos y sus ataques con animaciones continuas.": "队员的行走与施法动画恢复了，跟随队长时也能连贯地迈开脚步。",
   "El equipo tiene su propia página con formación y reserva. Arrastra a los compañeros para cambiar posiciones; toca un Pokémon para abrir su ficha.": "小队编队移至独立页面，出战队伍与候补仓库一目了然。拖拽伙伴即可调整位置，点击宝可梦后才会弹出属性、招式、特性与标签详情。",

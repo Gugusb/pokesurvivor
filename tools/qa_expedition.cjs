@@ -29,7 +29,12 @@ try{
    await p.evaluate(()=>{const p=G.Squad.deployed()[0];p.invuln=0;p.hurt(1e9,null,true,{kind:'environment'});if(!p.dead)throw new Error('member should faint');if(!G.Squad.talent(p).value)throw new Error('trait disappeared');G.Expedition.run.elapsed=G.Expedition.run.wave.duration;});
    async function settle(target='journey'){
     for(let n=0;n<300;n++){
-     const state=await p.evaluate(()=>G.Game.state);if(state===target)return;
+     const info=await p.evaluate(()=>({state:G.Game.state,phase:G.Expedition.phase})),state=info.state;
+     if(info.phase==='loot'){
+      if(await p.locator('#journey-claim').isVisible())await p.locator('#journey-claim').click();
+      await p.locator('#journey-loot-next').click();continue;
+     }
+     if(state===target)return;
      if(await p.locator('#scr-levelup').isVisible())await p.locator('#cards .card').first().click();
      else if(await p.locator('#scr-item').isVisible())await p.locator('#item-cards .card').first().click();
      else if(await p.locator('#scr-bond').isVisible())await p.locator('#bond-cards .card').first().click();

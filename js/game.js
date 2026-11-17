@@ -84,13 +84,14 @@ G.Game = (() => {
     if(G.SquadUI?.isOpen()){G.SquadUI.close();return;}
     if(!pl||pl.dead||!G.Expedition?.active||!['playing','journey','paused'].includes(state)||G.ZMoves?.busy(pl)||G.SettingsUI?.isOpen)return;
     const previous=state;state='squad';G.Touch.reset();
-    G.SquadUI.show({editable:['route','shop'].includes(G.Expedition.phase),onClose:()=>{
+    G.SquadUI.show({editable:['route','shop','loot'].includes(G.Expedition.phase),onClose:()=>{
       state=previous;G.Touch.reset();
       if(previous==='journey')G.Expedition.refreshScreen();else if(previous==='paused')G.UI.show('scr-pause');
     }});
   }
   let openMastery=false;
   function maybeSpecialization(){
+    if(G.Expedition?.inCombat)return;
     if(state!=='playing'||!pl||pl.dead||openItem||G.Rift.inArena||everyone().some(p=>G.ZMoves?.busy(p)))return;
     if(!(pl.specTokens>0)||!G.Specialization.eligible(pl).length)return;
     openMastery=true;state='choice';if(G.Coop.active)G.Coop.holdStart();
@@ -516,6 +517,7 @@ G.Game = (() => {
   }
 
   function maybeLevelUp() {
+    if(G.Expedition?.inCombat)return;
     if (pendingLevels <= 0 || state !== 'playing') return;
     if (G.Coop.active) {
       // En grupo, las cartas salen a la vez para todos y se espera a que elijan.
@@ -542,6 +544,7 @@ G.Game = (() => {
    * @param quiet  no avisar si todavía no se puede
    */
   function offerBond(quiet = false) {
+    if(G.Expedition?.inCombat)return;
     if (!pl || pl.bonds <= 0 || pl.dead || (state !== 'playing' && state !== 'held') || G.Rift.inArena) return;
     if (['scr-bond', 'scr-pause', 'scr-item', 'scr-levelup'].some(G.UI.isOpen)) return;
     const opt = pl.bondOptions();
@@ -592,7 +595,7 @@ G.Game = (() => {
   function offerSpecialChoice(options){
     if(!pl)return;
     options=(options||G.Items.rewardChoices()).filter(id=>G.Items.BY[id]);if(!options.length)return;
-    if(pl.dead||!['playing','held'].includes(state)||G.Rift.inArena||openItem||G.ZMoves&&everyone().some(G.ZMoves.busy)) {laterItems.push(options);return;}
+    if(pl.dead||!['playing','held'].includes(state)||G.Expedition?.inCombat||G.Expedition?.phase==='rewards'||G.Rift.inArena||openItem||G.ZMoves&&everyone().some(G.ZMoves.busy)) {laterItems.push(options);return;}
     state='choice';if(G.Coop.active)G.Coop.holdStart();
     const take=id=>{
       if(!openItem||!openItem.options.includes(id))return;
@@ -610,6 +613,7 @@ G.Game = (() => {
       return;
     }
     if (G.Coop.active) G.Coop.collected(p, who);
+    G.Expedition?.recordPickup(p);
     if (mine || p.kind === 'bomb') G.Audio.sfx(PICK_SFX[p.kind]);
     if(p.kind==='bossChest'){G.BossRewards.open(p);return;}
     if (p.kind === 'xp' || p.kind === 'xpBig') {
@@ -788,6 +792,10 @@ G.Game = (() => {
     if(G.Expedition?.active&&!G.Expedition.inCombat){
       if(G.Expedition.phase==='rewards'){
         for(const o of [...G.Pickups.all()]){G.Pickups.removeId(o.id);onCollect(o,pl);}
+        // Opening a chest can create more pickups. Drain them before presenting the summary.
+        if(G.Pickups.all().length)return;
+        G.Expedition.showLoot(pendingLevels);
+      }else if(G.Expedition.phase==='upgrades'){
         if(state!=='playing')return;
         maybeLevelUp();if(state!=='playing')return;
         if(laterItems.length)afterLevelUp();if(state!=='playing')return;
@@ -1076,7 +1084,7 @@ G.Game = (() => {
     debugTime(t) { tampered = true; time = t; },
     /** Para grabar vídeos: cámara lenta (0,5 = mitad de velocidad). */
     debugSpeed(k) { if (k > 1) tampered = true; speedK = k; },
-    togglePause,toggleBackpack,toggleSquad,
+    togglePause,toggleBackpack,toggleSquad,get loot(){return runLoot;},
     /** Abandona la partida en curso (p. ej. al cerrar sesión desde Ajustes). */
     quit() { if (state !== 'ui' && state !== 'over') quitRun(); },
     /** Para grabar vídeos: abre las cartas de subir de nivel. */

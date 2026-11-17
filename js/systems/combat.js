@@ -243,13 +243,15 @@ G.Combat = (() => {
   }
 
   function buff(pl, m) {
-    pl.addBuff(m.stat, m.amount, m.dur, m.stacks | 0);
+    const squad=G.Squad?.active&&G.Squad.actors().includes(pl),targets=squad?G.Squad.buffTargets(pl):[pl];
     const col = G.U.TYPE_COLOR[m.type];
-    G.FX.ring(pl.x, pl.y, pl.r * 2.4, pl.r * 1.1, col, 0.35, 2.5);
     const vis = G.VFX.forMove(m);
-    for (let i = 0; i < 3; i++) {
-      G.FX.sp(vis.buff || 'arrow', vis.pal, pl.x + G.U.rand(-pl.r * 1.4, pl.r * 1.4),
-              pl.y - G.U.rand(0, pl.bodyH * 0.8), { vy: -70, life: 0.6 });
+    for(const target of targets){
+      target.addBuff(m.stat,m.amount*(squad?.3:1),m.dur,m.stacks|0);
+      G.FX.ring(target.x,target.y,target.r*2.4,target.r*1.1,col,.35,2.5);
+      for (let i = 0; i < 3; i++) {
+        G.FX.sp(vis.buff || 'arrow',vis.pal,target.x+G.U.rand(-target.r*1.4,target.r*1.4),target.y-G.U.rand(0,target.bodyH*.8),{vy:-70,life:.6});
+      }
     }
   }
 

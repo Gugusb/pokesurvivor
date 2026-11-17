@@ -37,9 +37,11 @@ G.ExpeditionRules = (() => {
     return weighted[Math.min(weighted.length-1,Math.floor(rng()*weighted.length))];
   }
   const monCost=p=>18+p.rarity*12;
+  const rankRates=[[1,0,0],[.85,.15,0],[.65,.30,.05],[.45,.42,.13],[.25,.50,.25],[.10,.50,.40]];
+  function shopRank(level,rng=Math.random){const rates=rankRates[Math.max(0,Math.min(MAX_SHOP-1,Math.floor(level)-1))];let n=rng();for(let i=0;i<3;i++){n-=rates[i];if(n<0)return i+1;}return 3;}
   function progress(input,old={}){
     const day=Math.max(0,Math.min(10000,Math.floor(Number(input?.day)||0))),arceus=!!(old.arceus||day>=60&&input?.arceus===true);
     return {day:Math.max(day,old.day||0),arceus,cashout:arceus&&day===60&&input?.cashout===true&&!(old.arceus&&old.cashout===false)};
   }
-  return {DAYS,COLS,MAX_SHOP,weights,matrix,reachable,cycleOf,capacity,upgradeCost,wave,generations,pool,next,border,shopMon,monCost,progress};
+  return {DAYS,COLS,MAX_SHOP,weights,matrix,reachable,cycleOf,capacity,upgradeCost,wave,generations,pool,next,border,shopMon,shopRank,rankRates,monCost,progress};
 })();

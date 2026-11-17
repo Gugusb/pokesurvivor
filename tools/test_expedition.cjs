@@ -1,6 +1,69 @@
 const test=require('node:test'),assert=require('node:assert/strict'),{context}=require('./battle_fixture.cjs'),{once}=require('node:events');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`),noop=()=>{};
+function controller(s){
+ const g=s.G,el=()=>({children:[],style:{},classList:{add:noop},append(...a){this.children.push(...a);},replaceChildren(){this.children=[];},setAttribute:noop,scrollIntoView:noop,querySelector:()=>null,dataset:{}}),nodes=new Map();
+ s.document.getElementById=id=>{if(!nodes.has(id))nodes.set(id,el());return nodes.get(id);};s.document.createElement=el;s.requestAnimationFrame=noop;
+ g.UI.spriteCanvas=el;g.UI.show=noop;g.UI.hideAll=noop;g.Icons={html:()=>''};g.Game.expeditionPause=noop;g.Game.expeditionResume=noop;g.Game.loot={gems:0,packs:{},stones:{}};g.Game.scoreEvent=noop;
+ g.World.setBiome=noop;g.World.isFree=()=>true;g.EnemyMgr.clear=()=>{s.enemies.length=0;};g.EnemyMgr.update=noop;g.Projectiles.clear=noop;g.Combat={clearFields:noop};g.Pickups={clear:noop,drop:noop};g.Hazards={clear:noop};g.Path.clear=noop;g.Touch={reset:noop};
+ s.load('js/data/expedition-lang.js');s.load('js/systems/expedition.js');g.Expedition.begin(s.player(4));return g.Expedition;
+}
 function setup(){const s=context('zh',false),g=s.G;for(const f of ['js/core/settings.js','js/data/egg-groups.js','js/entities/projectile.js','js/systems/expedition-rules.js','js/systems/squad.js','js/systems/move-control.js','js/systems/move-pp.js'])s.load(f);g.Sprites.preload=noop;g.Sprites.Animator.prototype._start=noop;return s;}
+
+test('reserve warehouse has four slots, rejects overflow without changes, allows merging when full and release frees a slot',()=>{
+ const s=setup(),g=s.G;g.Squad.begin(s.player(4));const team=[6,9,3,26,65,68,94].map(d=>g.Squad.recruit(d));assert.ok(team.every(Boolean));assert.equal(g.Squad.reserves().length,4);assert.equal(g.Squad.roster.length,7);
+ assert.equal(g.Squad.recruit(143),null);assert.equal(g.Squad.roster.length,7);assert.equal(g.Squad.bench(team[0]),false);assert.equal(g.Squad.release(g.Squad.actors()[0]),false);
+ assert.ok(g.Squad.recruit(94));assert.equal(g.Squad.roster.length,7);assert.equal(g.Squad.roster.find(p=>p.dex===94).rank,2);assert.ok(g.Squad.release(team[3]));assert.equal(g.Squad.reserves().length,3);assert.ok(g.Squad.recruit(143));assert.equal(g.Squad.reserves().length,4);
+});
+
+test('rank-one, rank-two and rank-three companion attacks use level 2, level 5 and the actual evolved move',()=>{
+ const s=setup(),g=s.G;g.Squad.begin(s.player(25));const a=g.Squad.recruit(4,'ember');assert.equal(a.moves[0].lvl,2);g.Squad.recruit(4,'tackle');assert.equal(a.moves[0].lvl,5);assert.equal(a.moves[0].evolved,undefined);g.Squad.recruit(4);g.Squad.recruit(4);assert.equal(a.rank,3);assert.equal(a.moves[0].evolved,true);assert.equal(a.moves[0].name,g.Moves.EVO.ember[0]);assert.ok(a.moves[0].dmg>g.Moves.instance('ember',5).dmg);
+ const b=new g.Squad.Member(4,3,'swords-dance');assert.equal(b.moves[0].evolved,true);assert.equal(b.moves[0].stacks,g.Moves.instance('swords-dance',5).stacks*2);
+});
+
+test('releasing a companion removes all its consecutive projectiles without deleting another companion shots',()=>{
+ const s=setup(),g=s.G;g.Squad.begin(s.player(4));const a=g.Squad.recruit(7),b=g.Squad.recruit(25);for(let i=0;i<4;i++)g.Projectiles.spawn({owner:a,x:0,y:0});g.Projectiles.spawn({owner:b,x:0,y:0});g.Squad.release(a);assert.equal(g.Projectiles.all().length,1);assert.equal(g.Projectiles.all()[0].owner,b);
+});
+
+test('stopped captain attracts the tail, companions keep wandering and real Walk frames advance; reserves and fainted partners stay still',()=>{
+ const s=setup(),g=s.G;s.load('js/core/sprites.js');g.Sprites.preload=noop;g.Squad.begin(s.player(4));const front=[7,25,133,1].map(d=>g.Squad.recruit(d));front[0].x=-400;const bench=front[3];bench.x=-600;const frames=new Set(),positions=new Set();
+ for(let i=0;i<720;i++){g.Squad.tick(1/60);if(i>500){frames.add(front[0].anim.frame);positions.add(Math.round(front[0].x)+','+Math.round(front[0].y));}}
+ assert.ok(Math.hypot(front[0].x,front[0].y)<120);assert.ok(front.slice(0,3).every(p=>p.walking));assert.ok(frames.size>=2);assert.ok(positions.size>10);assert.equal(bench.x,-600);
+ const p=front[0];p.dead=true;p.anim.play('Faint',{hold:true});const pos=[p.x,p.y];for(let i=0;i<90;i++)g.Squad.tick(1/60);assert.deepEqual([p.x,p.y],pos);assert.equal(p.walking,false);assert.equal(p.anim.cur,'Faint');
+ const leader=g.Squad.actors()[0];for(let i=0;i<180;i++){leader.x+=2;g.Squad.tick(1/60);}assert.ok(front[1].x>150);assert.ok(front[1].x<leader.x);assert.equal(bench.x,-600);
+});
+
+test('idle wandering respects blocked terrain and sealed arena boundaries',()=>{
+ const s=setup(),g=s.G,p=s.player(4);p.x=60;g.Squad.begin(p);const a=g.Squad.recruit(7);g.World.isFree=(x,y,r)=>x-r>=0;g.World.arenaContains=(x,y,r)=>Math.hypot(x,y)+r<=170;
+ for(let i=0;i<1800;i++){g.Squad.tick(1/60);assert.ok(a.x-a.r>=0);assert.ok(Math.hypot(a.x,a.y)+a.r<=170);}assert.equal(a.walking,true);
+});
+
+test('distant idle followers consume the existing pathfinder direction tuple without invalid coordinates',()=>{
+ const s=setup(),g=s.G;g.Squad.begin(s.player(4));const a=g.Squad.recruit(7);a.x=-300;let paths=0;g.Path.dirFor=()=>{paths++;return [0,1];};g.Squad.tick(.3);assert.ok(paths>0);assert.equal(a.x,-300);assert.ok(a.y>0&&Number.isFinite(a.y));
+});
+
+test('buff moves support only self and immediate formation neighbors at thirty percent, following drag order',()=>{
+ const s=setup(),g=s.G;s.load('js/systems/combat.js');g.VFX={forMove:()=>({})};const leader=s.player(4);g.Squad.begin(leader);const [a,b,c,bench]=[7,25,133,1].map(d=>g.Squad.recruit(d));const m=g.Moves.instance('swords-dance',2),cast=p=>{m.t=0;p.moves=[m];p.slots=[[m]];p.active=0;g.Combat.tick(.01,p,0);};cast(a);
+ for(const p of [leader,a,b]){assert.equal(p.buffs.atk.n,1);close(p.buffFraction('atk'),m.amount*.3);}assert.equal(c.buffs.atk.n,0);assert.equal(bench.buffs.atk.n,0);
+ g.Squad.place(c,0);for(const p of g.Squad.actors())p.buffs.atk.n=0;cast(a);assert.equal(leader.buffs.atk.n,0);for(const p of [a,b])assert.equal(p.buffs.atk.n,1);assert.equal(c.buffs.atk.n,0);
+ g.Squad.reset();leader.buffs.atk.n=0;cast(leader);close(leader.buffFraction('atk'),m.amount);
+});
+
+test('battle recruitment is deferred, at most one companion; pending loot can wait for release and cannot be claimed twice',()=>{
+ const s=setup(),g=s.G,E=controller(s);E.run.map[1][3].kind='battle';assert.ok(E.choose(1,3));s.random([0,0,0]);E.killed({expedition:true,dex:7});E.killed({expedition:true,dex:25});assert.equal(g.Squad.roster.length,0);assert.equal(E.run.companion,7);assert.equal(E.claimCompanion(),false);
+ E.run.phase='rewards';E.recordPickup({kind:'xp',value:25});E.recordPickup({kind:'ticket',value:1});E.recordPickup({kind:'coin',value:12});E.showLoot(2);assert.equal(E.phase,'loot');assert.equal(E.run.levels,2);assert.equal(E.run.loot.xp,25);assert.equal(E.run.loot.coin,12);
+ for(const d of [6,9,3,26,65,68,94])g.Squad.recruit(d);assert.equal(E.claimCompanion(),false);assert.equal(E.run.companionResolved,false);g.Squad.release(g.Squad.reserves()[0]);assert.equal(E.claimCompanion(),true);assert.equal(E.claimCompanion(),false);assert.equal(g.Squad.reserves().length,4);
+});
+
+test('shop moves are rolled before purchase, survive page refresh, and insufficient capacity never spends gold or stock',()=>{
+ const s=setup(),g=s.G,E=controller(s);E.run.map[1][3].kind='shop';assert.ok(E.choose(1,3));const o=E.offers[0];assert.ok(g.Moves.poolFor(g.DEX_BY[o.dex]).includes(o.moveId));const move=o.moveId;E.refreshScreen();assert.equal(E.offers[0].moveId,move);assert.ok(E.buy(0));assert.equal(g.Squad.roster[0].moves[0].id,move);
+ for(const p of [...g.Squad.roster])g.Squad.release(p);for(const d of [6,9,3,26,65,68,94])g.Squad.recruit(d);E.run.gold=500;E.offers.push({kind:'mon',dex:143,moveId:'tackle',cost:20});const i=E.offers.length-1;assert.equal(E.buy(i),false);assert.equal(E.run.gold,500);assert.equal(E.offers[i].sold,undefined);g.Squad.release(g.Squad.reserves()[0]);assert.equal(E.buy(i),true);assert.equal(E.run.gold,480);
+});
+
+test('higher shop levels progressively favor rank two and three; direct purchases retain the advertised rank and move',()=>{
+ const s=setup(),g=s.G,R=g.ExpeditionRules;let previous=0;
+ for(let lv=1;lv<=6;lv++){const counts=[0,0,0];for(let n=0;n<10000;n++)counts[R.shopRank(lv,()=>n/10000)-1]++;assert.ok(counts[1]+counts[2]>=previous);previous=counts[1]+counts[2];for(let i=0;i<3;i++)assert.ok(Math.abs(counts[i]/10000-R.rankRates[lv-1][i])<.001);}
+ const E=controller(s);E.run.map[1][3].kind='shop';E.choose(1,3);E.run.gold=1000;E.offers.push({kind:'mon',dex:6,rank:3,moveId:'ember',cost:100});assert.ok(E.buy(E.offers.length-1));const a=g.Squad.roster[0];assert.equal(a.rank,3);assert.equal(a.moves[0].id,'ember');assert.equal(a.moves[0].evolved,true);
+});
 test('schedule is 21 by 7: start at column four, only three adjacent next-day cells, every cycle ends in seven Bosses',()=>{
  const g=setup().G,R=g.ExpeditionRules;
  for(let cycle=1;cycle<=4;cycle++){const grid=R.matrix(cycle);assert.equal(grid.length,21);assert.ok(grid.every(r=>r.length===7));assert.ok(grid[20].every(c=>c.kind==='boss'&&c.day===cycle*20));assert.equal(grid[0][3].day,(cycle-1)*20);for(const row of grid)for(const c of row)assert.equal(R.reachable(0,3,c.row,c.col),c.row===1&&[2,3,4].includes(c.col));}
@@ -17,12 +80,12 @@ test('cycle transition is a discrete large increase; finite waves have bounded s
  close(R.wave(21).hp/R.wave(1).hp,3);close(R.wave(41).dmg/R.wave(21).dmg,1.8);for(const day of [20,40,60,80]){assert.ok(R.wave(day+1).hp>R.wave(day).hp);assert.ok(R.wave(day+1).dmg>R.wave(day).dmg);assert.ok(R.wave(day+1).speed>=R.wave(day).speed);}
  assert.equal(R.capacity(1),4);assert.equal(R.capacity(6),9);assert.ok(R.upgradeCost(5)>R.upgradeCost(1));
 });
-test('recruitment immediately deploys one random legal move at level one, with half agility and half stamina, independent of click controls',()=>{
- const s=setup(),g=s.G,leader=s.player(4);g.Squad.begin(leader);leader.level=17;const p=g.Squad.recruit(6);assert.equal(p.level,17);assert.equal(p.moves.length,1);assert.equal(p.moves[0].lvl,1);assert.ok(g.Moves.poolFor(p.mon).includes(p.moves[0].id));close(p.agilityFor(p.moves[0]),p.agility*.5);close(p.staminaFor(p.moves[0]),p.stamina*.5);close(p.ppIntervalFor(),g.MonProgression.ppInterval(p.stamina*.5));g.Settings.set('castMode','click');assert.equal(g.MoveControl.wants(p,p.moves[0]),true);p.gainXp(100000);assert.equal(p.level,17);assert.equal(p.moves[0].lvl,1);assert.ok(g.Squad.actors().includes(p));
+test('recruitment immediately deploys one random legal move at level two, with half agility and half stamina, independent of click controls',()=>{
+ const s=setup(),g=s.G,leader=s.player(4);g.Squad.begin(leader);leader.level=17;const p=g.Squad.recruit(6);assert.equal(p.level,17);assert.equal(p.moves.length,1);assert.equal(p.moves[0].lvl,2);assert.ok(g.Moves.poolFor(p.mon).includes(p.moves[0].id));close(p.agilityFor(p.moves[0]),p.agility*.5);close(p.staminaFor(p.moves[0]),p.stamina*.5);close(p.ppIntervalFor(),g.MonProgression.ppInterval(p.stamina*.5));g.Settings.set('castMode','click');assert.equal(g.MoveControl.wants(p,p.moves[0]),true);p.gainXp(100000);assert.equal(p.level,17);assert.equal(p.moves[0].lvl,2);assert.ok(g.Squad.actors().includes(p));
 });
 test('two equal species and equal ranks combine, evolve one stage and never exceed rank three',()=>{
- const s=setup(),g=s.G;g.Squad.begin(s.player(25));for(let i=0;i<2;i++)g.Squad.recruit(4);assert.equal(g.Squad.roster.length,1);assert.equal(g.Squad.roster[0].dex,5);assert.equal(g.Squad.roster[0].rank,2);const move=g.Squad.roster[0].moves[0].id;
- for(let i=0;i<2;i++)g.Squad.recruit(4);assert.equal(g.Squad.roster.length,1);assert.equal(g.Squad.roster[0].dex,6);assert.equal(g.Squad.roster[0].rank,3);assert.equal(g.Squad.roster[0].moves[0].id,move);assert.equal(g.Squad.roster[0].moves[0].lvl,1);
+ const s=setup(),g=s.G;g.Squad.begin(s.player(25));for(let i=0;i<2;i++)g.Squad.recruit(4);assert.equal(g.Squad.roster.length,1);assert.equal(g.Squad.roster[0].dex,5);assert.equal(g.Squad.roster[0].rank,2);assert.equal(g.Squad.roster[0].moves[0].lvl,5);const move=g.Squad.roster[0].moves[0].id;
+ for(let i=0;i<2;i++)g.Squad.recruit(4);assert.equal(g.Squad.roster.length,1);assert.equal(g.Squad.roster[0].dex,6);assert.equal(g.Squad.roster[0].rank,3);assert.equal(g.Squad.roster[0].moves[0].id,move);assert.equal(g.Squad.roster[0].moves[0].lvl,5);assert.equal(g.Squad.roster[0].moves[0].evolved,true);
  for(let i=0;i<4;i++)g.Squad.recruit(4);assert.equal(g.Squad.roster.length,2);assert.ok(g.Squad.roster.every(p=>p.dex===6&&p.rank===3));
 });
 test('tags include both types, both egg groups, and the actual random skill class',()=>{
