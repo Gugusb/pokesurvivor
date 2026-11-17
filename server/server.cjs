@@ -326,9 +326,12 @@ function createApp(opts = {}) {
       for(const key of G.Difficulty.SCORE_KEYS)if(!Number.isSafeInteger(b.scoreCounts[key])||b.scoreCounts[key]<0||!stale&&b.scoreCounts[key]<previous[key]||b.scoreCounts[key]>2e6)throw fail(400,'Invalid score counters');
       counts=G.Difficulty.scoreCounts(Object.fromEntries(G.Difficulty.SCORE_KEYS.map(k=>[k,Math.max(previous[k],b.scoreCounts[k])])));
     }else counts={...previous,normal:previous.normal+Math.max(0,(b.kills||0)-previousKills)};
+    const expedition=r.mode==='q'?G.ExpeditionRules.progress(b.expedition,JSON.parse(r.expedition||'{}')):null;
+    if(expedition?.arceus&&counts.boss<3)throw fail(400,'Invalid expedition victory');
+    if(r.mode==='q'&&(!b.expedition||!Number.isSafeInteger(b.expedition.day)||b.expedition.day<0||b.expedition.day>10000))throw fail(400,'Invalid expedition progress');
     const totalKills=counts.normal+counts.elite+counts.boss+counts.rift;
-    if((b.kills!==undefined&&(!Number.isSafeInteger(b.kills)||b.kills<0||!stale&&b.kills!==totalKills))||totalKills>256+t*160||counts.boss+counts.rift>20+Math.floor(t/30)||counts.events>2+Math.floor(t/60))throw fail(400,'Invalid score counters');
-    exec('UPDATE runs SET score_counts=? WHERE id=?',JSON.stringify(counts),r.id);
+    if((b.kills!==undefined&&(!Number.isSafeInteger(b.kills)||b.kills<0||!stale&&b.kills!==totalKills))||totalKills>256+t*160||counts.boss+counts.rift>20+Math.floor(t/30)||counts.events>(r.mode==='q'?2+expedition.day:2+Math.floor(t/60)))throw fail(400,'Invalid score counters');
+    exec('UPDATE runs SET score_counts=?,expedition=? WHERE id=?',JSON.stringify(counts),JSON.stringify(expedition||{}),r.id);
     const dirty = r.dirty || b.clean !== true;
     exec(
       "UPDATE runs SET t=?,budget=?,beat=?,dirty=?,speed=?,doubled=? WHERE id=?",
@@ -340,7 +343,7 @@ function createApp(opts = {}) {
       r.doubled || speed>1 ? 1 : 0,
       r.id,
     );
-    return { ...r, t, dirty, counts, doubled: r.doubled || speed>1 };
+    return { ...r, t, dirty, counts, expedition, doubled: r.doubled || speed>1 };
   }
   function runUpdate(u, b, end = false) {
     return atomic(() => {
@@ -356,7 +359,7 @@ function createApp(opts = {}) {
         s,
         r,
         r.t,
-        b.alive === true || (end && r.mode === "s" && r.t > G.Difficulty.WIN),
+        b.alive === true || (end && (r.mode === "q" ? r.expedition?.arceus : r.mode === "s" && r.t > G.Difficulty.WIN)),
         !r.dirty,
       );
       const rewards=JSON.parse(r.run_rewards||'{}');rewards.packs ||= {};rewards.seen ||= {boss:0,rift:0};
@@ -650,7 +653,7 @@ function createApp(opts = {}) {
           Number.isFinite(b.clientStarted)?Math.max(now()-7*864e5,Math.min(now(),b.clientStarted)):now(),
           now(),
           b.clean === true ? 0 : 1,
-          b.mode === "g" ? "g" : "s",
+          b.mode === "g" ? "g" : b.mode === "q" ? "q" : "s",
           r?.id || null,
         );
         exec('UPDATE runs SET speed=?,speed_owner=? WHERE id=?',initialSpeed,speedOwner,id);
@@ -680,7 +683,7 @@ function createApp(opts = {}) {
       const value = atomic(() => {
         const r = checkRun(u, b),
           s = saved(u.uid).save;
-        if (r.dirty || r.t <= G.Difficulty.WIN || b.alive !== true)
+        if (r.dirty || (r.mode==='q' ? !r.expedition?.arceus||!r.expedition?.cashout : r.t <= G.Difficulty.WIN) || b.alive !== true)
           throw fail(400, "No eligible victory");
         record(s, r, r.t, true, true);
         if (

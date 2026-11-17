@@ -370,6 +370,7 @@ G.Server = (() => {
       lv: p?.level || 1,
       kills: p?.kills || 0,
       scoreCounts:G.Game?.scoreCounts?.(),
+      expedition:G.Expedition?.summary?.(),
     };
   }
   function receipts(){

@@ -118,12 +118,13 @@ G.RunUI = (() => {
   function showVictory(stars,bonus,team,waiting,onCashout,onContinue){
     $('victory-title').textContent=G.T(waiting?'El equipo ha cumplido el objetivo de supervivencia.':'¡Has ganado esta partida!');
     for(const id of ['victory-unlock','victory-question','victory-bonus'])$(id).classList.toggle('hidden',waiting);
-    $('victory-question').textContent=G.T(bonus?'¿Terminar ahora con el doble de monedas o seguir sobreviviendo hasta el jefe más poderoso?':'¿Terminar ahora o seguir sobreviviendo hasta el jefe más poderoso?');
+    $('victory-question').textContent=G.Expedition?.active?(G.I18n.lang==='zh'?'阿尔宙斯已被击败！现在收获战果，还是继续下一段远征？':G.I18n.lang==='en'?'Arceus has been defeated! Collect your rewards now or continue the expedition?':'¡Arceus ha sido derrotado! ¿Cobrar ahora o continuar la expedición?'):G.T(bonus?'¿Terminar ahora con el doble de monedas o seguir sobreviviendo hasta el jefe más poderoso?':'¿Terminar ahora o seguir sobreviviendo hasta el jefe más poderoso?');
     $('victory-unlock').textContent=stars<8?G.I18n.f('Ya puedes desafiar la dificultad {x}★.',stars+1):G.T('¡Has superado las ocho dificultades!');
     $('victory-bonus').textContent=G.T(bonus?'Recoge el doble de monedas o guarda esta recompensa para otra victoria.':'Puedes recoger tus monedas o continuar la aventura.');
     $('victory-team').classList.toggle('hidden',!team);
     $('victory-team').textContent=G.T('En grupo decide el anfitrión. Cada jugador cobra según su propia oportunidad disponible.');
     const cash=$('victory-cashout'),next=$('victory-continue'),status=$('victory-status');
+    if(G.Expedition?.active)next.textContent=G.I18n.lang==='zh'?'继续远征':G.I18n.lang==='en'?'Continue expedition':'Continuar expedición';
     cash.textContent=G.T(bonus?'Terminar y cobrar el doble de monedas':'Terminar y cobrar las monedas');
     cash.classList.toggle('hidden',waiting);next.classList.toggle('hidden',waiting);
     cash.disabled=next.disabled=false;status.textContent=waiting?G.T('Esperando la decisión del anfitrión…'):'';
@@ -160,6 +161,7 @@ G.RunUI = (() => {
     groupInvite.hidden=!G.Community.shouldInviteAtEnd();
     $('over-title').textContent = r.victory ? 'Dificultad superada' : r.completed ? G.T('Objetivo de supervivencia cumplido') : r.dead ? 'Has caído…' : 'Run terminada';
     $('over-stats').innerHTML = `
+      ${r.expedition ? `<div><span>${G.I18n.lang==='zh'?'远征天数':G.I18n.lang==='en'?'Expedition days':'Días de expedición'}</span><b>${r.expedition.day}</b></div>`:''}
       ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : r.completed ? G.T('Objetivo cumplido, sin registrar') : G.T('Sin superar')}</b></div>` : ''}
       ${r.progressExcluded ? `<p class="note" style="grid-column:1/-1">${G.T('Esta aventura no cuenta para las medallas.')}</p>` : ''}
       ${r.score?`<div class="run-score-result" style="grid-column:1/-1"><span>${G.T('Puntuación de aventura')}</span><b class="gold">${r.score.total.toLocaleString()}</b><small>${G.T('Derrotas')} ${r.score.kills.toLocaleString()} · ${G.T('Supervivencia')} ${r.score.survival.toLocaleString()} · ${G.T('Eventos')} ${r.score.events.toLocaleString()} · ×${r.score.multiplier}</small></div>`:''}

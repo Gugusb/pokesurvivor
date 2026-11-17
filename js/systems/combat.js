@@ -630,8 +630,9 @@ G.Combat = (() => {
           projectiles.splice(i, 1);
           continue;
         }
-        if (G.U.dist2(p.x, p.y, pl.x, pl.y) < (p.r + pl.r) * (p.r + pl.r)) {
-          pl.hurt(p.dmg, p.mtype, false, { kind: 'ranged', enemy: p.sourceId && G.EnemyMgr.get(p.sourceId) });
+        const victim=(G.Squad?.active?G.Squad.actors():[pl]).find(o=>!o.dead&&G.U.dist2(p.x,p.y,o.x,o.y)<(p.r+o.r)**2);
+        if (victim) {
+          victim.hurt(p.dmg, p.mtype, false, { kind: 'ranged', enemy: p.sourceId && G.EnemyMgr.get(p.sourceId) });
           G.FX.burst(p.x, p.y - G.LIFT, p.color, 7, 110);
           projectiles.splice(i, 1);
         }
@@ -704,17 +705,18 @@ G.Combat = (() => {
           break;
         }
 
+        const owner=p.owner||pl;
         const raw = G.ZMoves ? G.ZMoves.projectileDamage(p,e) : p.dmg;
         if(raw<=0)continue;
-        const crit = isCrit(pl,p.specMove);
-        const k = (p.mtype ? typeK(p.mtype, e, pl) : 1) * (crit ? critMul(pl,p.specMove) : 1);
-        const dealt = e.hurt(raw * k, p.color, p.vx || (e.x - pl.x), p.vy || (e.y - pl.y), p.knock,
-               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(pl, p.mtype, e.types)) : null, pl, { id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved }) || 0;
+        const crit = isCrit(owner,p.specMove);
+        const k = (p.mtype ? typeK(p.mtype, e, owner) : 1) * (crit ? critMul(owner,p.specMove) : 1);
+        const dealt = e.hurt(raw * k, p.color, p.vx || (e.x - owner.x), p.vy || (e.y - owner.y), p.knock,
+               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, { id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved }) || 0;
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
-        pl.dmgDealt += dealt;
-        pl.onDealt(dealt);
-        if (p.burn) e.applyBurn(p.burn, pl);
-        if (p.poison) e.applyPoison(p.poison, pl);
+        owner.dmgDealt += dealt;
+        owner.onDealt(dealt);
+        if (p.burn) e.applyBurn(p.burn, owner);
+        if (p.poison) e.applyPoison(p.poison, owner);
         if (p.slow) e.applySlow(p.slow);
 
         if (!p.orb) {
@@ -729,7 +731,10 @@ G.Combat = (() => {
     }
 
     // --- contacto enemigo <-> jugador ---
-    if (pl.dead) return;
+    const bodies=G.Squad?.active?G.Squad.actors():[pl];
+    for(const body of bodies){
+    const pl=body;
+    if (pl.dead) continue;
     for (const e of G.EnemyMgr.queryCircle(pl.x, pl.y, pl.r + 40)) {
       if (G.U.dist2(e.x, e.y, pl.x, pl.y) > (e.r + pl.r) * (e.r + pl.r)) continue;
       if (e.touchCd > 0 || e.freezeT>0 || e.behavior === 'thief') continue;
@@ -739,6 +744,7 @@ G.Combat = (() => {
       if (landed && pl.hasItem('rockyhelmet')) e.hurt((15 + pl.level * 4)*.2*G.Items.count(pl,'rockyhelmet'), '#9aa6b5', e.x - pl.x, e.y - pl.y, 16*G.Items.count(pl,'rockyhelmet'), null, pl);
       const [nx, ny] = G.U.norm(e.x - pl.x, e.y - pl.y);
       e.kx += nx * 150; e.ky += ny * 150;
+    }
     }
   }
 

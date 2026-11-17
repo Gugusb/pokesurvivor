@@ -1,6 +1,6 @@
 /* Device-local aim; remote casts already carry their final angle. */
 G.Targeting=(()=>{
- const manual=p=>!p.remote&&!!G.Settings?.get('manualAim');
+ const manual=p=>!p.remote&&!p.isSquadMember&&!!G.Settings?.get('manualAim');
  function forward(p,range=520,angle=p.aim){
   let best=null,score=Infinity;
   for(const e of G.EnemyMgr.all()){

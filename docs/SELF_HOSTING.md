@@ -1,5 +1,23 @@
 # 自建账号、排行榜与好友服务（v0.20.0）
 
+## 玩法迭代线 alpha.2 的独立测试
+
+`codex/gameplay-next` 的 v0.43.0-alpha.2 新增小队远征，稳定线 `main` 不受影响。新前后端必须配套运行；`runs` 自动添加 `expedition` 进度列，旧生存对局仍兼容，但新远征不能接入旧账号服务。请勿让两条维护线共用生产数据库。新模式授予难度奖牌但不写旧生存得分榜，详情见 [EXPEDITION.md](EXPEDITION.md)。
+
+本地独立启动示例（默认只监听本机）：
+
+```powershell
+Set-Location 'D:\GuguFiles\AIWorkspace\PokeSurvivor-Next'
+npm --prefix server ci
+$env:HOST='127.0.0.1'
+$env:PORT='8002'
+$env:DB_FILE='D:\GuguFiles\AIWorkspace\PokeSurvivor-Next\tools\cache\expedition-preview.sqlite'
+$env:NODE_ENV='development'
+node server/server.cjs
+```
+
+试玩入口 http://127.0.0.1:8002/，本地源码与 F2 调试入口 http://127.0.0.1:8002/dev.html。数据库仅用于该开发维护线，未复用玩家云存档；正式服务器仍禁止源码调试入口和开发模块，不可部署 `--expose` 构建。
+
 **v0.20.0 暂时关闭邀请联机**：正式服务不提供创建、加入、邀请或开始房间的接口，主菜单保留单人游玩。旧 P2P 实现保留供后续恢复，`coopEnabled` 仅由内部回归测试创建隔离服务时开启，不提供公网环境变量开关。
 
 新增孵蛋屋和免费好友赠礼，均需登录自建账号；纯静态／游客模式没有这些服务器持久化功能。孵蛋计时、亲本快照、好友参与限制、邀请有效期、奖励随机与领取事务由同源服务及 SQLite 管理，不需要额外进程、定时任务或战斗中转。正常启动会自动创建新增表，旧账户与存档保留；升级前先用下文备份命令保留数据库。

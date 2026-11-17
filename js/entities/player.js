@@ -112,10 +112,10 @@ G.Player = class Player {
   buffFraction(stat) { const b = this.buffs[stat]; return this.buffStacks(b) * b.amount; }
   get attackMultiplier() { return Math.max(0, this.atkMul +
     G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
-  get atk() { return this.baseAtk * (1+this.statGrowth.atk+this.buffFraction('atk')) * this.attackMultiplier; }
-  get spa() { return this.baseSpa * (1+this.statGrowth.spa+this.buffFraction('atk')) * this.attackMultiplier; }
-  get agility() { return this.baseAgility * (1+this.statGrowth.agility); }
-  get stamina() { return this.baseStamina * (1+this.statGrowth.stamina); }
+  get atk() { return this.baseAtk * (1+this.statGrowth.atk+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
+  get spa() { return this.baseSpa * (1+this.statGrowth.spa+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
+  get agility() { return this.baseAgility * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0)); }
+  get stamina() { return this.baseStamina * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0)); }
   get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
   get ppInterval() { return G.MonProgression ? G.MonProgression.ppInterval(this.stamina) : 1; }
   isPrimaryMove(m) { const group=this.slots.find(g=>g.some(x=>x===m||x.id===m?.id));return !group||group===this.activeGroup(); }
@@ -143,7 +143,7 @@ G.Player = class Player {
       (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1);
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0)); }
-  get flatRegen() { return this.regenFlat + this.baseHp*this.regenBase + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0); }
+  get flatRegen() { return this.regenFlat + this.baseHp*this.regenBase + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0)+this.baseHp*(G.Squad?.growth(this,'regen')||0); }
   get missingHpRegen() { return this.buffFraction('regen'); }
   get regen() { return this.flatRegen + Math.max(0,this.maxHp-this.hp)*this.missingHpRegen; }
   regenerate(dt) {
@@ -555,7 +555,10 @@ G.Player = class Player {
 
     const protection = Math.max(this.invuln, this.dashGuardT);
     const alpha = protection > 0 && !this.dead ? (Math.floor(protection * 18) % 2 ? 0.45 : 1) : 1;
+    ctx.save();
+    if(this.squadCaptain||this.isSquadMember){ctx.shadowColor='#49c9ff';ctx.shadowBlur=9;}
     this.anim.draw(ctx, this.x, this.y, { flash: this.flash > 0, softFlash: true, alpha, color: '#ffcb3d' });
+    ctx.restore();
 
     // Arcos de buff alrededor de los pies.
     const COL = { atk: '#ff6b4d', spd: '#7fe0ff', def: '#b0b8c8', regen: '#5fe08a' };

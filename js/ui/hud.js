@@ -89,7 +89,7 @@ G.HUD = (() => {
     }
     ctx.font = F(600, 10);
     ctx.fillStyle = '#8fa3c4';
-    ctx.fillText(G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' MONEDAS', w / 2, 58);
+    ctx.fillText(G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' ' + (G.Expedition?.active?G.T('Pokémonedas'):'MONEDAS'), w / 2, 58);
 
     // Live score stays clear of the health bar, boss bar and touch controls.
     if(G.Game.runScore){

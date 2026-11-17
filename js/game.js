@@ -91,7 +91,9 @@ G.Game = (() => {
 
   /** @param coop  { seed, host, members } para una partida en grupo */
   let startingRun=false;
-  async function startRun(coop = null) {
+  async function startRun(coop = null, expeditionReady = false) {
+    if(!coop&&!expeditionReady){G.Expedition.setup();return;}
+    G.Expedition.reset();
     G.BossRewards.reset();openMastery=false;
     if(startingRun)return;
     holdBy = []; awayBy = null;
@@ -99,11 +101,11 @@ G.Game = (() => {
     // A run always starts at the first form, even when the selected Pokédex
     // entry is an evolved form.  IVs are read from that form's collection
     // entry and then carried through the evolution stages.
-    const startDex = G.MonProgression ? G.MonProgression.rootFor(save.partner) : save.partner;
+    const startDex = !coop ? save.partner : G.MonProgression ? G.MonProgression.rootFor(save.partner) : save.partner;
     protectionRunId=Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,14);
     if(G.DB.mode==='server'&&G.DB.online){
       startingRun=true;
-      try{const prepared=await G.Server.prepareRun(coop?'g':'s',startDex,coop?.difficulty??save.difficulty.selected,!coop||coop.host===G.Net?.uid);protectionRunId=prepared.id;}
+      try{const prepared=await G.Server.prepareRun(coop?'g':'q',startDex,coop?.difficulty??save.difficulty.selected,!coop||coop.host===G.Net?.uid);protectionRunId=prepared.id;}
       catch(e){G.UI.toast(e.message,6000);G.MenuUI.open();return;}
       finally{startingRun=false;}
     }
@@ -137,7 +139,7 @@ G.Game = (() => {
     pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(save.partner), save.partner);
     if (G.MonProgression) {
       pl.evolutionPath = evolutionPath.slice();
-      pl.monStage = G.MonProgression.stageFor(startDex, 1, pl.evolutionPath);
+      pl.monStage = coop ? G.MonProgression.stageFor(startDex, 1, pl.evolutionPath) : startDex;
     }
     G.FailureProtection?.begin(pl,save,challenge?.stars||1,protectionRunId);
     banked = { t1: 0, t10: 0 };
@@ -168,6 +170,17 @@ G.Game = (() => {
     deathT = 0;
 
     state = 'playing';
+    if(!coop){challenge.mode='q';challenge.expedition={day:0,arceus:false,cashout:false};G.Expedition.begin(pl);}
+  }
+
+  function expeditionPause(){if(pl)state='journey';}
+  function expeditionResume(){if(pl)state='playing';}
+  function expeditionEnd(){endRun(false);}
+  function expeditionVictory(){
+    if(!pl||!challenge)return;
+    challenge.expedition=G.Expedition.summary();challenge.survived=true;
+    G.Difficulty.record(G.DB.save,challenge,time,true,clean());G.DB.commit(true);
+    victoryChoice();
   }
 
   function quitRun() {
@@ -176,6 +189,7 @@ G.Game = (() => {
   }
 
   function checkChallenge() {
+    if(G.Expedition?.active){challenge.expedition=G.Expedition.summary();return;}
     if (!G.Difficulty || !challenge || pl.dead || time <= G.Difficulty.WIN) return;
     challenge.survived = true;
     if (challenge.victory || !clean()) return;
@@ -193,6 +207,7 @@ G.Game = (() => {
       ()=>cashoutVictory(),()=>{
         if(state!=='victory'||victoryBusy)return;
         G.UI.hide('scr-victory');state='playing';
+        if(G.Expedition?.active)G.Expedition.continueAfterVictory();
         if(G.Coop.active)G.Coop.holdEnd();
       });
   }
@@ -249,7 +264,7 @@ G.Game = (() => {
   function cycleSpeed(){const all=G.CardPacks?.allowedSpeeds(G.DB.save)||[1];return setSpeed(all[(all.indexOf(runSpeed)+1)%all.length]);}
 
   /** Todos los jugadores de la partida (tú primero). */
-  function everyone() { return G.Coop.active ? G.Coop.players() : [pl]; }
+  function everyone() { return G.Coop.active ? G.Coop.players() : G.Squad?.active ? G.Squad.actors() : [pl]; }
 
   /** Experiencia que hace falta para el siguiente nivel (cofres con candado). */
   function levelXp() {
@@ -406,7 +421,8 @@ G.Game = (() => {
     // In solo, the clock stops on death. A late death cannot undo having
     // survived twenty minutes, even if the checkpoint was missed that frame.
     // In co-op, team time may continue while this player is already down.
-    const completed=!!(G.Difficulty&&challenge&&time>G.Difficulty.WIN&&(challenge.survived||challenge.victory||!coop));
+    const completed=G.Expedition?.active ? !!G.Expedition.summary()?.arceus : !!(G.Difficulty&&challenge&&time>G.Difficulty.WIN&&(challenge.survived||challenge.victory||!coop));
+    if(G.Expedition?.active)challenge.expedition=G.Expedition.summary();
     if (G.Difficulty) G.Difficulty.record(save, challenge, time, completed||!pl.dead, ok);
     const progressExcluded=challenge&&!challenge.victory?(tampered?'debug':!challenge.eligible?'locked':!ok?'validation':null):null;
     const coins=base+victoryBonus;
@@ -434,7 +450,7 @@ G.Game = (() => {
     // Ranking: en solitario cada uno lo suyo; en grupo lo sube el anfitrión.
     const mark = { t: Math.floor(time), lv: pl.level, kills: pl.kills };
     // Si la partida se ha tocado (ver clean()), no sube al ranking (sin avisar); lo demás, sí.
-    const ranked = ok && (!challenge || challenge.eligible) && !coop;
+    const ranked = ok && (!challenge || challenge.eligible) && !coop && !G.Expedition?.active;
     if(G.DB.mode==='server')G.Server.finish(ok,dead&&pl.dead).catch(()=>{});
     const sent = ranked && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.dex, shiny: pl.shiny }))
                : ranked && wasHost ? G.Ranking.submitGroup(Object.assign(mark, { members: team })) : null;
@@ -442,7 +458,7 @@ G.Game = (() => {
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge,
-      loot:runLoot,moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
+      expedition:G.Expedition?.summary(),loot:runLoot,moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (pl.coinMul > 1 ? ` · ×${pl.coinMul.toFixed(2)} Fortuna` : '')+
                  (victoryBonus>0?` · ×2 ${G.T('Bonificación de victoria')}`:'')
@@ -751,10 +767,23 @@ G.Game = (() => {
     G.UI.tick(Math.min(1/30,real));
     G.BackpackUI.tick(pl,!!pl&&['playing','inventory','held'].includes(state)&&!G.Judgment.cinematic);
 
+    G.Expedition?.hud();
     G.Input.endFrame();
   }
 
   function update(dt) {
+    if(G.Expedition?.active&&!G.Expedition.inCombat){
+      if(G.Expedition.phase==='rewards'){
+        for(const o of [...G.Pickups.all()]){G.Pickups.removeId(o.id);onCollect(o,pl);}
+        if(state!=='playing')return;
+        maybeLevelUp();if(state!=='playing')return;
+        if(laterItems.length)afterLevelUp();if(state!=='playing')return;
+        if(pl.bonds>0)offerBond(true);if(state!=='playing')return;
+        maybeSpecialization();if(state!=='playing')return;
+        G.Expedition.depart();
+      }
+      return;
+    }
     const coop = G.Coop.active;
     if (flashT > 0) flashT -= dt;
     // La Sentencia de Arceus: mientras dura la animación, todo lo demás se para.
@@ -784,7 +813,7 @@ G.Game = (() => {
     }
 
     const b = Math.floor(time / 240);
-    if (b !== biome && !G.Rift.inArena && !G.Judgment.active) {
+    if (!G.Expedition?.active && b !== biome && !G.Rift.inArena && !G.Judgment.active) {
       biome = b;
       for (const p of everyone()) G.Abilities.resetStage(p, b);
       G.World.setBiome(b);
@@ -795,6 +824,7 @@ G.Game = (() => {
 
     pl.frozen = coop && (G.UI.isOpen('scr-pause') || G.UI.isOpen('scr-item'));
     pl.update(dt);
+    if(G.Squad?.active)G.Squad.tick(dt);
     if (coop) {
       for (const p of G.Coop.puppets()) { p.netUpdate(dt); if (G.ZMoves) G.ZMoves.tick(p, dt); G.Combat.ghostOrbit(p, dt, time); }
       if (pl.dead) reviveTick(dt);
@@ -803,20 +833,23 @@ G.Game = (() => {
     G.World.update(dt, G.Camera);
 
     const all = everyone();
-    if (!coop || G.Coop.isHost) { G.Path.update(dt, all); G.Spawner.update(dt, all, time); }
+    if (!coop || G.Coop.isHost) { G.Path.update(dt, all); if(!G.Expedition?.active)G.Spawner.update(dt, all, time); }
     else G.Spawner.tickBanner(dt);
     G.EnemyMgr.update(dt, all);
     G.EnemyMgr.rebuildGrid();
     G.Combat.tick(dt, pl, time);
+    if(G.Squad?.active)for(const p of G.Squad.deployed())G.Combat.tick(dt,p,time);
     G.Projectiles.update(dt, pl, G.EnemyMgr.all());
     G.Combat.resolve(dt, pl, time);
     G.Combat.updateFields(dt);
-    G.Pickups.update(dt, all, onCollect);
+    G.Pickups.update(dt, G.Squad?.active?[pl]:all, onCollect);
     G.Hazards.update(dt);
-    G.Interact.update(dt, pl);
-    G.Rift.update(dt, pl, time);
-    G.Judgment.update(dt, pl, time);
-    G.Events.update(dt, all, time);
+    if(!G.Expedition?.active){
+      G.Interact.update(dt, pl);
+      G.Rift.update(dt, pl, time);
+      G.Judgment.update(dt, pl, time);
+      G.Events.update(dt, all, time);
+    }
     G.Weather.update(dt, time, pl);
     checkChallenge();
     G.FX.update(dt);
@@ -831,6 +864,7 @@ G.Game = (() => {
       maybeSpecialization();
     }
     if (G.Coop.isHost) checkAllDown(dt);
+    if(G.Expedition?.active&&state==='playing')G.Expedition.tick(dt);
   }
 
   /** Caído en grupo: un compañero a tu lado te va levantando. */
@@ -888,7 +922,7 @@ G.Game = (() => {
     ctx.save();
     ctx.scale(G.Camera.scale, G.Camera.scale);
     G.Camera.apply(ctx);
-    drawScene(G.Camera, G.Coop.active ? [pl, ...G.Coop.puppets()] : [pl]);
+    drawScene(G.Camera, everyone());
     G.Projectiles.draw(ctx);
     G.Combat.drawAirFields(ctx);
     if (G.ZMoves) G.ZMoves.draw(ctx);
@@ -1023,7 +1057,7 @@ G.Game = (() => {
   })();
 
   return {
-    init, startRun, everyone, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
+    expeditionPause,expeditionResume,expeditionEnd,expeditionVictory, init, startRun, everyone, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
     debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },
@@ -1035,7 +1069,7 @@ G.Game = (() => {
     /** Para grabar vídeos: abre las cartas de subir de nivel. */
     debugLevelUp() { tampered = true; pl.level++; pl.xpNext = G.Player.xpFor(pl.level); G.Abilities.onLevel(pl); pendingLevels++; },
     debugItem(id) { if (G.Dev && G.Dev.canUse() && pl && G.Items.BY[id]) { tampered = true; onCollect({id:-1,kind:'item',value:id},pl); } },
-    toUI() { state = 'ui'; Backdrop.restore(); },
+    toUI() { state = 'ui'; G.Expedition.reset(); Backdrop.restore(); },
     get state() { return state; }, get player() { return pl; }, st
   };
 })();

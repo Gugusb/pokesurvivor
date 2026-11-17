@@ -44,11 +44,14 @@ G.Hazards = (() => {
       if (!h.hit && h.t >= h.delay) {
         h.hit = true;
         detonate(h);
+        for(const target of (G.Squad?.active?G.Squad.actors():[pl])){
+        const pl=target;
         if (pl && !pl.dead && inside(h, pl.x, pl.y, pl.r)) {
           pl.invuln = pl.dashGuardT = 0;
           pl.hurt(h.pct ? Math.max(h.dmg, pl.maxHp * h.pct) : h.dmg, h.type, !!h.pure,
             { kind: h.sourceKind || (h.kind === 'beam' ? 'ranged' : 'environment'), enemy: h.sourceId && G.EnemyMgr.get(h.sourceId) });
         }
+      }
       }
       if (h.hit && h.t >= h.delay + h.end) list.splice(i, 1);
     }

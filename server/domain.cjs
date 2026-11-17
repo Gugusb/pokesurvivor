@@ -25,6 +25,7 @@ for (const f of [
   "js/systems/nursery-rules.js",
   "js/data/abilities.js",
   "js/systems/progression-mon.js",
+  "js/systems/expedition-rules.js",
   "js/systems/difficulty.js",
   "js/systems/failure-protection.js",
   "js/systems/offline.js",
@@ -146,7 +147,7 @@ function sanitize(input, old, name, options={}) {
   return s;
 }
 function record(s, run, t, alive, clean) {
-  const r = { stars: run.stars, dex: run.dex, eligible: clean, victory: false };
+  const r = { stars: run.stars, dex: run.dex, eligible: clean, victory: false,mode:run.mode,expedition:run.expedition };
   return G.Difficulty.record(s, r, t, alive, clean);
 }
 module.exports = { ROOT, G, fresh, sanitize, clone, record, safeObject };

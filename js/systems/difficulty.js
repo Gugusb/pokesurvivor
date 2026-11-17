@@ -115,7 +115,7 @@ G.Difficulty = (() => {
     if (!run || !run.eligible || !clean || !seconds(time) || !G.DEX_BY[run.dex]) return false;
     const rows = s.difficultyRecords[run.dex] ||= {};
     const old = rows[run.stars] || { best: 0, won: false };
-    const win = alive && time > WIN;
+    const win = alive && (run.mode==='q' ? run.expedition?.arceus===true : time > WIN);
     rows[run.stars] = { best: Math.max(old.best, time), won: old.won || win };
     if (win) {
       s.difficulty.cleared[run.stars] = true; run.victory = true;

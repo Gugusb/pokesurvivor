@@ -79,6 +79,7 @@
 </script>
 <!-- seo:end -->
 <link rel="stylesheet" href="css/style.css?v=dev-0.9.0">
+<link rel="stylesheet" href="css/expedition.css">
 </head>
 <body>
 
@@ -595,12 +596,16 @@
   </div>
 </section>
 
+<section id="scr-journey" class="scr dim hidden"><div id="journey-content" class="box journey-box"></div></section>
+<div id="journey-status" hidden translate="no"></div>
+
 <!-- datos generados -->
 <!-- scripts:begin -->
 <script defer src="js/core/util.js"></script>
 <script defer src="js/core/i18n.js"></script>
 <script defer src="js/data/lang-en.js"></script>
 <script defer src="js/data/lang-zh.js"></script>
+<script defer src="js/data/expedition-lang.js"></script>
 <script defer src="js/core/settings.js"></script>
 <script defer src="js/data/music.js"></script>
 <script defer src="js/data/pokedex.js"></script>
@@ -657,6 +662,9 @@
 <script defer src="js/entities/enemy.js"></script>
 <script defer src="js/entities/pickup.js"></script>
 <script defer src="js/entities/player.js"></script>
+<script defer src="js/systems/expedition-rules.js"></script>
+<script defer src="js/systems/squad.js"></script>
+<script defer src="js/systems/expedition.js"></script>
 <!-- sistemas -->
 <script defer src="js/systems/move-control.js"></script>
 <script defer src="js/systems/move-pp.js"></script>

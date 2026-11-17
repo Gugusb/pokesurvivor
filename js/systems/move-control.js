@@ -8,6 +8,7 @@ G.MoveControl = (()=>{
     return s;
   }
   function wants(p,m){
+    if(p.isSquadMember)return !p.dead;
     const group=p.slots.find(g=>g.includes(m));if(!group)return false;
     const s=state(p);
     return s.mode==='auto'||s.mode==='toggle'&&s.enabled.get(group)!==false||s.mode==='click'&&s.pending.has(m);

@@ -576,6 +576,8 @@ def game_en():
     src = dev[:a] + app + dev[b:]
     css = re.search(r'<link rel="stylesheet" href="css/style\.css\?v=[^"]+">', idx).group(0)
     src = re.sub(r'<link rel="stylesheet" href="css/style\.css(?:\?[^"]*)?">', css, src, count=1)
+    expedition_css = re.search(r'<link rel="stylesheet" href="css/expedition\.css\?v=[^"]+">', idx).group(0)
+    src = re.sub(r'<link rel="stylesheet" href="css/expedition\.css(?:\?[^"]*)?">', expedition_css, src, count=1)
     src = re.sub(r'<!-- seo:(begin|end) -->\n?', '', src)
     src = re.sub(r'<meta name="robots" content="noindex">\s*', '', src)
     src = re.sub(r'<!-- dev\.html: página fuente[^>]*-->\n?', '', src)

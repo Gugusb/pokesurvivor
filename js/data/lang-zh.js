@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Compañeros en ruta · v0.43.0-alpha.2": "伙伴列队，新的远征 · v0.43.0-alpha.2",
+  "Elige un capitán y reúne un equipo durante la aventura. Los compañeros siguen tus pasos y usan su propio movimiento; las parejas iguales pueden subir de rango y evolucionar.": "选好队长，在旅途中捕获、邀请伙伴。队员会沿着队长的路线前进，自动使用自己的招式；同种同阶的伙伴还能合成升阶、继续进化。",
+  "Un itinerario de cartas conecta combates, élites, tiendas y descansos. Usa el oro de la expedición para invitar compañeros, comprar objetos y ampliar tu formación.": "日程卡牌串起战斗、精英、商店与休整。用远征中的金币邀请伙伴、选购道具、升级商店，扩充小队编队。",
+  "Cada ciclo termina ante un jefe. En el tercer ciclo te espera Arceus: vencerlo supera la dificultad. Puedes cobrar entonces el doble de Pokémonedas, una vez por dificultad, o seguir la expedición.": "每个周期末都有BOSS守候，第三周期末则是阿尔宙斯。击败它即可通关当前难度；此时可领取每个难度一次的双倍宝可梦币，也可以继续远征。",
+  "Un resplandor azul distingue a tu equipo. Los compañeros caídos dejan de atacar, conservan su apoyo y vuelven tras la etapa.": "蓝色荧光会标出咱们的队伍。倒下的队员暂停攻击、保留支援特性，并在阶段结束后恢复。",
+  "Pegué una concha azul a cada mochila para no perder de vista a nadie. Quien cocina lleva el mapa; yo cerraré la fila… cuando termine de ajustar esta capucha.": "每只行囊上都别好蓝色贝壳啦，咱们可不能落下谁。做饭的那家伙拿地图，我来压阵……等我先把歪掉的兜帽扶正。",
+
   "Diez pequeños descubrimientos · v0.42.0": "十张小旗，慢慢挑 · v0.42.0",
   "Los paquetes permiten diez elecciones seguidas. Recoge una carta y pasa a la siguiente; si sales, tu elección pendiente te espera.": "卡包现可十连抽：连续完成十次三选一，每次选择后自动进入下一轮；中途离开，还能接着选。",
   "Abrir y elegir cartas es más fluido incluso cuando la conexión tarda. Tu colección se guarda aquí y se sincroniza en segundo plano.": "开包与选卡即时完成，网络慢时也不用等。收获先保存在本机，再由后台合并同步。",

@@ -210,6 +210,7 @@
         if (this.shiny) { G.FX.burst(this.x, cy, '#ffe9a0', 30, 220); G.FX.ring(this.x, this.y, this.r, this.r * 7, '#9ae6ff', 0.7, 5); }
         return;
       }
+      G.Expedition?.killed(this);
       G.Abilities.onKill(this.lastAttacker, this.id);
       if (G.Mega) G.Mega.onKill(this.lastAttacker, this.id);
       if(G.ZMoves)G.ZMoves.onKill(this);
@@ -696,6 +697,7 @@
       for (let i = 0; i < 2; i++) {
         const a = Math.random() * 6.2832;
         const m = new Enemy(def, this.x + Math.cos(a) * 30, this.y + Math.sin(a) * 22, this.sc || { hp: 1, spd: 1, dmg: 1 });
+        if(this.expedition){m.expedition=true;if(G.Expedition?.run?.kind==='elite')m.makeElite();}
         if(Math.random()<(G.Difficulty?G.Difficulty.eliteChance():.005))m.makeElite();
         G.EnemyMgr.add(m);
         this.minions.push(m);

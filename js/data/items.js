@@ -76,5 +76,5 @@ G.Items = (() => {
   }
   const typeBonus=(p,m)=>G.STARTER_ITEMS?.reduce((n,i)=>n+(i.type&&i.type===m.type?.toLowerCase()||i.effect&&i.effect===m.damageClass?.toLowerCase()?count(p,i.id)*(i.value||.05):0),0)||0;
   const critBonus=p=>.03*count(p,'scopelens'),critDamage=p=>.1*count(p,'zoomlens');
-  return {typeBonus,critBonus,critDamage,LIST,BY,ACTIVE,count,icon,gain,remove,roll,rewardChoices,damageBonus,cooldownFactor,ranged,onCast,onHit,useActive};
+  return {permitted,typeBonus,critBonus,critDamage,LIST,BY,ACTIVE,count,icon,gain,remove,roll,rewardChoices,damageBonus,cooldownFactor,ranged,onCast,onHit,useActive};
 })();
