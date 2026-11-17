@@ -9,7 +9,7 @@ G.Player = class Player {
    * @param perks mejoras permanentes ya resueltas (ver data/upgrades.js)
    * @param ivDex entrada inicial; cada evolución lee su propia entrada
    */
-  constructor(mon, perks = {}, shiny = false, ivDex = mon.dex) {
+  constructor(mon, perks = {}, shiny = false, ivDex = mon.dex, initialIV = null) {
     this.mon = mon;
     this.dex = mon.dex;
     this.ivDex = ivDex || mon.dex;
@@ -33,7 +33,7 @@ G.Player = class Player {
     this.xpMul = perks.xpMul || 1;
     this.baseCoinMul = perks.coinMul || 1;
 
-    const ivs = G.MonProgression ? G.MonProgression.values(this.dex) : Array(8).fill(16);
+    const ivs = initialIV ? G.MonProgression.normalizeIV(initialIV) : G.MonProgression ? G.MonProgression.values(this.dex) : Array(8).fill(16);
     const ivm = G.MonProgression ? ivs.map(G.MonProgression.ivMod) : Array(8).fill(1);
     this.statGrowth = Object.assign({hp:0,atk:0,spa:0,defense:0,spdef:0,spd:0,agility:0,stamina:0},perks.statGrowth);
     this.baseHp = mon.hp * ivm[0];

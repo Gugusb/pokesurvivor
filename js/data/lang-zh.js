@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Una despedida en la formación · v0.43.0-alpha.5": "编队中的小小告别 · v0.43.0-alpha.5",
+  "Arrastra un compañero hasta Liberar, junto a la reserva, para dejarlo marchar de esta expedición.": "把伙伴拖到候补仓库旁的「放生」槽，就会离开本次远征。",
+  "Invitar y liberar compañeros de la expedición mantiene intacta tu colección permanente.": "远征伙伴的招募与放生只影响本局小队，不会改动局外收藏。",
+  "Pegué una banderita junto a la reserva para que nadie confunda el camino. Quien cocina guarda las fichas; yo me encargo de despedir a los compañeros con una concha de recuerdo.": "仓库边贴好小旗啦，别让伙伴走错方向。做饭的那家伙收着档案，我负责挥挥鲸尾，再送一枚贝壳作纪念。",
+
   "Un descanso tras la batalla · v0.43.0-alpha.4": "战后歇歇脚 · v0.43.0-alpha.4",
   "Al terminar un combate, recoge el botín y recibe como máximo un compañero. Las mejoras de nivel esperan hasta después del combate.": "战斗结束后先收好本回合战利品，每场最多领取一位新伙伴；升级选择也留到战后慢慢挑。",
   "La reserva tiene cuatro plazas. Si se llena, puedes liberar un compañero y volver a recoger tu recompensa.": "候补仓库可容纳四位伙伴。仓库满了，可以先在小队中放生，再回来领取奖励。",

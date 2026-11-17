@@ -9,6 +9,11 @@ function controller(s){
 }
 function setup(){const s=context('zh',false),g=s.G;for(const f of ['js/core/settings.js','js/data/egg-groups.js','js/entities/projectile.js','js/systems/expedition-rules.js','js/systems/squad.js','js/systems/move-control.js','js/systems/move-pp.js'])s.load(f);g.Sprites.preload=noop;g.Sprites.Animator.prototype._start=noop;return s;}
 
+test('run-only recruitment, rank evolution and release never register an unowned species or overwrite collection IVs',()=>{
+ const s=setup(),g=s.G,leader=s.player(25);g.Squad.begin(leader);const before=JSON.stringify(g.DB.save.owned);for(let i=0;i<4;i++)g.Squad.recruit(4,'ember');const p=g.Squad.roster[0];assert.equal(p.dex,6);assert.equal(p.rank,3);assert.equal(g.DB.owns(4),false);assert.equal(g.DB.owns(6),false);g.Squad.release(p);assert.equal(JSON.stringify(g.DB.save.owned),before);
+ g.DB.save.owned[7]={iv:Array(8).fill(31)};const a=g.Squad.recruit(7);close(a.baseHp,g.MonProgression.stats(7,Array(8).fill(31)).hp);g.Squad.release(a);assert.ok(g.DB.save.owned[7].iv.every(n=>n===31));
+});
+
 test('reserve warehouse has four slots, rejects overflow without changes, allows merging when full and release frees a slot',()=>{
  const s=setup(),g=s.G;g.Squad.begin(s.player(4));const team=[6,9,3,26,65,68,94].map(d=>g.Squad.recruit(d));assert.ok(team.every(Boolean));assert.equal(g.Squad.reserves().length,4);assert.equal(g.Squad.roster.length,7);
  assert.equal(g.Squad.recruit(143),null);assert.equal(g.Squad.roster.length,7);assert.equal(g.Squad.bench(team[0]),false);assert.equal(g.Squad.release(g.Squad.actors()[0]),false);

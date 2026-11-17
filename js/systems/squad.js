@@ -23,7 +23,7 @@ G.Squad = (() => {
   }
   class Member extends G.Player{
     constructor(dex,rank=1,moveId=null){
-      const perks=G.Upgrades.perks(G.DB.upgradesOf(dex));super(G.DEX_BY[dex],perks,false,dex);
+      const perks=G.Upgrades.perks(G.DB.upgradesOf(dex)),iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[dex]?.iv);super(G.DEX_BY[dex],perks,false,dex,iv);
       this.isSquadMember=true;this.squadId=nextId++;this.rank=rank;this.ability=null;this.activeItem=null;
       this.megaState=null;this.zState=null;this.x=captain?.x||0;this.y=captain?.y||0;this.permanentGrowth={...(perks.statGrowth||{})};
       const ids=G.Moves.poolFor(this.mon);this.addMove(moveId&&ids.includes(moveId)?moveId:G.U.pick(ids));
@@ -64,7 +64,7 @@ G.Squad = (() => {
   }
   function evolve(p){
     const choices=G.ExpeditionRules.next(p.dex);if(!choices.length)return;
-    const dex=G.U.pick(choices),mon=G.DEX_BY[dex],fraction=p.hp/p.maxHp,iv=G.MonProgression.values(p.ivDex),s=G.MonProgression.stats(dex,iv);
+    const dex=G.U.pick(choices),mon=G.DEX_BY[dex],fraction=p.hp/p.maxHp,iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[p.ivDex]?.iv),s=G.MonProgression.stats(dex,iv);
     p.mon=mon;p.dex=p.spriteDex=dex;p.baseHp=s.hp;p.baseAtk=s.atk;p.baseSpa=s.spa;p.baseDefense=s.defense;p.baseSpDef=s.spdef;p.baseSpd=s.spd;p.baseAgility=s.agility;p.baseStamina=s.stamina;
     p.squadHpBonus=0;p.maxHp=s.hp*(1+p.statGrowth.hp);p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
     G.Sprites.preload([dex]);
