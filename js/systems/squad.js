@@ -1,6 +1,6 @@
 /* Run-only companions. Their support talents remain active when knocked out. */
 G.Squad = (() => {
-  let captain=null,roster=[],trail=[],level=1,nextId=1,bonus={};
+  let captain=null,roster=[],trail=[],formation=[],level=1,nextId=1,bonus={};
   const support={
     fire:['atk',.03,'Apoyo ardiente'],fighting:['atk',.03,'Espíritu de lucha'],dark:['atk',.03,'Emboscada'],dragon:['atk',.03,'Fuerza dracónica'],
     water:['regen',.001,'Marea vital'],grass:['regen',.001,'Brote vital'],fairy:['regen',.001,'Bendición'],
@@ -8,7 +8,8 @@ G.Squad = (() => {
     bug:['stamina',.05,'Reserva natural'],poison:['stamina',.05,'Metabolismo'],psychic:['stamina',.05,'Concentración'],ghost:['stamina',.05,'Vigor espectral'],
     electric:['agility',.05,'Impulso eléctrico'],ice:['agility',.05,'Mente fría'],flying:['agility',.05,'Viento favorable']
   };
-  const deployed=()=>roster.slice(0,Math.max(0,G.ExpeditionRules.capacity(level)-1));
+  const deployed=()=>formation.filter(p=>p&&roster.includes(p));
+  const reserves=()=>roster.filter(p=>!deployed().includes(p));
   const actors=()=>captain?[captain,...deployed()]:[];
   function growth(p,key){return captain&&actors().includes(p)?bonus[key]||0:0;}
   function refresh(){
@@ -35,7 +36,8 @@ G.Squad = (() => {
       for(const b of Object.values(this.buffs))if(b.n>0){b.t-=dt;if(b.t<=0)b.n=0;}
       this.regenerate(dt);this.target=G.Projectiles.nearest(G.EnemyMgr.all(),this.x,this.y,520);
       if(this.target)this.aim=Math.atan2(this.target.y-this.y,this.target.x-this.x);
-      this.anim.dir=G.Sprites.dirFromAngle(this.target?this.aim:this.moveAngle);this.anim.loop(this.walking?'Walk':'Idle',1);
+      const face=this.attackFace>0||!this.walking?this.aim:this.moveAngle;
+      this.anim.dir=G.Sprites.dirFromAngle(face);this.anim.loop(this.walking?'Walk':'Idle',this.walking?Math.max(.6,Math.min(1.8,(this.followSpeed||110)/110)):1);
     }
     gainXp(){} // Only the captain receives experience and upgrade choices.
     draw(ctx){
@@ -45,8 +47,8 @@ G.Squad = (() => {
       ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.fillStyle=this.dead?'#9ca3af':'#bfeeff';ctx.fillText('★'.repeat(this.rank),this.x,y-3);
     }
   }
-  function begin(p){captain=p;roster=[];trail=[{x:p.x,y:p.y}];level=1;bonus={};nextId=1;p.squadCaptain=true;}
-  function reset(){captain=null;roster=[];trail=[];bonus={};}
+  function begin(p){captain=p;roster=[];trail=[{x:p.x,y:p.y}];level=1;formation=Array(G.ExpeditionRules.capacity(level)-1).fill(null);bonus={};nextId=1;p.squadCaptain=true;}
+  function reset(){captain=null;roster=[];trail=[];formation=[];bonus={};}
   function evolve(p){
     const choices=G.ExpeditionRules.next(p.dex);if(!choices.length)return;
     const dex=G.U.pick(choices),mon=G.DEX_BY[dex],fraction=p.hp/p.maxHp,iv=G.MonProgression.values(p.ivDex),s=G.MonProgression.stats(dex,iv);
@@ -58,6 +60,7 @@ G.Squad = (() => {
     let merged=true;while(merged){merged=false;
       for(let i=0;i<roster.length&&!merged;i++)for(let j=i+1;j<roster.length;j++){
         const a=roster[i],b=roster[j];if(a.dex!==b.dex||a.rank!==b.rank||a.rank>=3)continue;
+        const ai=formation.indexOf(a),bi=formation.indexOf(b);if(bi>=0){formation[bi]=ai<0?a:null;if(ai<0){a.x=b.x;a.y=b.y;}}
         a.rank++;a.dead=a.dead&&b.dead;a.hp=a.dead?0:Math.max(a.hp,b.hp,1);G.Projectiles.clearOrbs(b);roster.splice(j,1);evolve(a);merged=true;break;
       }
     }
@@ -65,10 +68,21 @@ G.Squad = (() => {
   }
   function recruit(dex){
     if(!captain||!G.DEX_BY[dex]||!G.SPRITE_META[dex])return null;
-    const p=new Member(dex);p.level=captain.level;roster.push(p);consolidate();G.Sprites.preload([dex]);return p;
+    const p=new Member(dex);p.level=captain.level;roster.push(p);const slot=formation.indexOf(null);if(slot>=0)formation[slot]=p;consolidate();G.Sprites.preload([dex]);return p;
   }
-  function reorder(index,dir){const j=index+dir;if(j<0||j>=roster.length)return false;[roster[index],roster[j]]=[roster[j],roster[index]];refresh();return true;}
-  function upgrade(){if(level>=G.ExpeditionRules.MAX_SHOP)return false;level++;refresh();return true;}
+  function reorder(index,dir){const j=index+dir;if(j<0||j>=roster.length)return false;[roster[index],roster[j]]=[roster[j],roster[index]];formation=Array.from({length:G.ExpeditionRules.capacity(level)-1},(_,i)=>roster[i]||null);refresh();return true;}
+  function upgrade(){if(level>=G.ExpeditionRules.MAX_SHOP)return false;level++;formation.push(reserves()[0]||null);refresh();return true;}
+  function place(p,slot){
+    if(!roster.includes(p)||!Number.isInteger(slot)||slot<0||slot>=formation.length)return false;
+    const old=formation.indexOf(p),other=formation[slot];if(old===slot)return false;
+    if(old>=0)formation[old]=other;formation[slot]=p;refresh();return true;
+  }
+  function bench(p){const i=formation.indexOf(p);if(i<0)return false;formation[i]=null;refresh();return true;}
+  function swap(p,q){
+    if(!roster.includes(p)||!roster.includes(q)||p===q)return false;
+    const qi=formation.indexOf(q),pi=formation.indexOf(p);if(qi>=0)return place(p,qi);if(pi>=0)return place(q,pi);
+    const a=roster.indexOf(p),b=roster.indexOf(q);[roster[a],roster[b]]=[roster[b],roster[a]];return true;
+  }
   function tick(dt){
     if(!captain)return;refresh();const last=trail[0],d=Math.hypot(captain.x-last.x,captain.y-last.y);
     if(d>500){trail=Array.from({length:120},()=>({x:captain.x,y:captain.y}));}
@@ -78,14 +92,19 @@ G.Squad = (() => {
       const desired=(i+1)*34;let walked=0,point=trail[trail.length-1];
       for(let j=1;j<trail.length;j++){walked+=Math.hypot(trail[j].x-trail[j-1].x,trail[j].y-trail[j-1].y);if(walked>=desired){point=trail[j];break;}}
       const dx=point.x-p.x,dy=point.y-p.y,len=Math.hypot(dx,dy),step=Math.min(len,Math.max(100,captain.spd*1.35)*(p.slowT>0?.5:1)*dt);
-      p.walking=len>3;if(len>0){p.x+=dx/len*step;p.y+=dy/len*step;p.moveAngle=Math.atan2(dy,dx);}G.World.collide(p);p.update(dt);
+      const ox=p.x,oy=p.y;if(len>0){p.x+=dx/len*step;p.y+=dy/len*step;}G.World.collide(p);
+      const moved=Math.hypot(p.x-ox,p.y-oy);
+      // Sampled path targets can be reached between samples. Keep walking through these tiny gaps.
+      p.walkGrace=moved>.01?.18:Math.max(0,(p.walkGrace||0)-dt);
+      p.walking=!p.dead&&p.walkGrace>0;p.followSpeed=G.U.damp(p.followSpeed||0,dt>0?moved/dt:0,10,dt);
+      if(moved>.01)p.moveAngle=Math.atan2(p.y-oy,p.x-ox);p.update(dt);
     }
     // Reserves share level, but contribute neither attacks nor support talents.
     for(const p of roster)p.level=captain.level;
   }
-  function recover(){for(const p of roster){p.level=captain.level;p.dead=false;p.hp=p.maxHp;p.invuln=1;G.MovePP?.restore(p,p.moves);p.anim._start?.('Idle',false);G.Projectiles.clearOrbs(p);}trail=[{x:captain.x,y:captain.y}];for(const p of roster){p.x=captain.x;p.y=captain.y;}}
+  function recover(){for(const p of roster){p.level=captain.level;p.dead=false;p.walking=false;p.walkGrace=0;p.followSpeed=0;p.hp=p.maxHp;p.invuln=1;G.MovePP?.restore(p,p.moves);p.anim._start?.('Idle',false);G.Projectiles.clearOrbs(p);}trail=[{x:captain.x,y:captain.y}];for(const p of roster){p.x=captain.x;p.y=captain.y;}}
   function tags(p){return {types:p.mon.types,eggs:G.EGG_GROUPS[p.dex]||[15],skill:p.moves[0]?.kind};}
   function talent(p){const [key,value,name]=support[p.mon.types[0]]||support.normal;return {key,value:value*p.rank,name};}
-  return {refresh,begin,reset,recruit,consolidate,reorder,upgrade,tick,recover,deployed,actors,growth,tags,talent,support,Member,
-    get active(){return !!captain;},get roster(){return roster;},get shopLevel(){return level;},get capacity(){return G.ExpeditionRules.capacity(level);}};
+  return {refresh,begin,reset,recruit,consolidate,reorder,place,bench,swap,reserves,upgrade,tick,recover,deployed,actors,growth,tags,talent,support,Member,
+    get active(){return !!captain;},get roster(){return roster;},get formation(){return formation.slice();},get shopLevel(){return level;},get capacity(){return G.ExpeditionRules.capacity(level);}};
 })();

@@ -265,7 +265,7 @@ G.Player = class Player {
     const SND = { boomerang: 'projectile', chain: 'beam', mine: 'nova', meteor: 'nova', turret: 'buff', dash: 'melee', trail: 'aura', cone: 'projectile' };
     // El rastro no suena a cada charco (sería un zumbido constante).
     if (m.kind !== 'trail') G.Audio.sfx('shot', { kind: SND[m.kind] || m.kind, type: m.type });
-    if (m.kind === 'trail'||!this.isPrimaryMove(m)) return;
+    if (m.kind === 'trail'||!this.isSquadMember&&!this.isPrimaryMove(m)) return;
     // No reinicies una animación que va por la mitad: se vería a tirones.
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
     const meta = G.Sprites.animMeta(this.spriteDex, anim);

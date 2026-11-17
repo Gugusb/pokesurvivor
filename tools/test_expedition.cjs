@@ -13,7 +13,7 @@ test('non-Boss schedule distribution follows 10:2:5:5 and generation pool includ
  const gens=R.generations(g.DEX_BY[6],rng);assert.equal(gens.length,3);assert.equal(new Set(gens).size,3);assert.ok(gens.includes(1));assert.ok(R.pool(gens).every(p=>gens.includes(p.gen)&&g.SPRITE_META[p.dex]));
 });
 test('cycle transition is a discrete large increase; finite waves have bounded spawn count and deadline',()=>{
- const R=setup().G.ExpeditionRules;for(let day=1;day<200;day++){const w=R.wave(day);assert.ok(w.count>0&&w.count<=92);assert.ok(w.duration>=24&&w.duration<=60);assert.ok(Number.isFinite(w.hp)&&Number.isFinite(w.dmg));}
+ const R=setup().G.ExpeditionRules;for(let day=1;day<200;day++){const w=R.wave(day);assert.ok(w.count>0&&w.count<=168);assert.ok(w.duration>=24&&w.duration<=60);assert.ok(Number.isFinite(w.hp)&&Number.isFinite(w.dmg));}
  close(R.wave(21).hp/R.wave(1).hp,3);close(R.wave(41).dmg/R.wave(21).dmg,1.8);for(const day of [20,40,60,80]){assert.ok(R.wave(day+1).hp>R.wave(day).hp);assert.ok(R.wave(day+1).dmg>R.wave(day).dmg);assert.ok(R.wave(day+1).speed>=R.wave(day).speed);}
  assert.equal(R.capacity(1),4);assert.equal(R.capacity(6),9);assert.ok(R.upgradeCost(5)>R.upgradeCost(1));
 });
@@ -39,6 +39,32 @@ test('snake formation follows sampled captain route, shares level, and keeps mem
  const s=setup(),g=s.G,leader=s.player(4);g.Squad.begin(leader);for(const d of [7,25,133])g.Squad.recruit(d);leader.level=7;
  for(let i=0;i<160;i++){leader.x+=3;if(i>80)leader.y+=2;g.Squad.tick(1/30);}
  const members=g.Squad.deployed();assert.ok(members.every(p=>p.level===7&&p.x<leader.x&&Number.isFinite(p.y)));assert.ok(members[0].x>members[1].x&&members[1].x>members[2].x);
+});
+test('real companion Walk frames advance across sampled-path gaps, casts animate without losing half-stat role, and Faint holds',()=>{
+ const s=setup(),g=s.G;s.load('js/core/sprites.js');g.Sprites.preload=noop;const leader=s.player(4);g.Squad.begin(leader);const p=g.Squad.recruit(7),frames=new Set(),states=[];
+ for(let i=0;i<180;i++){leader.x+=leader.spd/60;g.Squad.tick(1/60);if(i>70){states.push(p.anim.cur);if(p.anim.cur==='Walk')frames.add(p.anim.frame);}}
+ assert.ok(frames.size>=3,JSON.stringify({frames:[...frames],states}));assert.ok(states.filter(x=>x==='Walk').length>states.length*.9);
+ const m=g.Moves.instance('water-gun');p.moves=[m];p.slots=[[m]];p.anim._start('Idle',false);assert.equal(p.isPrimaryMove(m),false);p.cast(m);assert.equal(p.anim.cur,'Shoot');assert.ok(p.anim.once);const shotFrames=new Set();for(let i=0;i<24;i++){p.update(1/60);if(p.anim.cur==='Shoot')shotFrames.add(p.anim.frame);}assert.ok(shotFrames.size>=2);
+ p.dead=true;p.anim.play('Faint',{hold:true});for(let i=0;i<180;i++)p.update(1/60);assert.equal(p.anim.cur,'Faint');assert.equal(p.anim.done,true);
+});
+test('companion details show full stat totals and the effective half agility/stamina actually consumed by its skill',()=>{
+ const s=setup(),g=s.G;for(const f of ['js/systems/player-stats.js','js/ui/squad-ui.js'])s.load(f);g.Squad.begin(s.player(4));const p=g.Squad.recruit(7);p.baseAgility=160;p.baseStamina=200;
+ const rows=g.SquadUI.statRows(p);assert.equal(rows.length,8);assert.equal(rows.find(r=>r.key==='agility').total,160);assert.ok(rows.find(r=>r.key==='agility').battle.includes('80'));assert.equal(rows.find(r=>r.key==='stamina').total,200);assert.ok(rows.find(r=>r.key==='stamina').battle.includes('100'));assert.ok(rows.find(r=>r.key==='stamina').battle.includes('3 PP/s'));
+});
+test('timed world chests accumulate nearby time, lose progress away, and still open once after 3.5 seconds',()=>{
+ const s=setup(),g=s.G;s.load('js/systems/interact.js');const p=s.player(4),chest={type:'bigchest',x:0,y:0,r:14,open:0};let opens=0;g.World.specialsNear=()=>opens?[]:[chest];g.World.breakProp=()=>opens++;
+ g.Interact.update(3,p);assert.equal(opens,0);close(chest.open,3);p.x=500;g.Interact.update(1,p);close(chest.open,1.5);p.x=0;g.Interact.update(1.99,p);assert.equal(opens,0);g.Interact.update(.02,p);assert.equal(opens,1);g.Interact.update(20,p);assert.equal(opens,1);
+});
+test('new expedition difficulty has fivefold enemy health and double finite-wave spawn frequency, with the original deadline and field cap',()=>{
+ const R=setup().G.ExpeditionRules;for(const day of [1,20,21,40,60]){const c=R.cycleOf(day),w=(day-1)%20+1;close(R.wave(day).hp,5*(1+.8*Math.pow(w/20,1.7))*Math.pow(3,c-1));assert.equal(R.wave(day).count,2*(12+Math.min(72,day*2)));close(R.wave(day).duration,Math.min(60,24+day*1.2));}
+});
+test('drag formation can swap active and reserve partners, leave an empty field slot and deploy again without changing membership',()=>{
+ const s=setup(),g=s.G,leader=s.player(4);g.Squad.begin(leader);const a=g.Squad.recruit(6),b=g.Squad.recruit(7),c=g.Squad.recruit(25),d=g.Squad.recruit(133),ids=g.Squad.roster.map(p=>p.squadId);assert.equal(g.Squad.reserves()[0],d);
+ assert.ok(g.Squad.place(d,0));assert.equal(g.Squad.formation[0],d);assert.ok(g.Squad.reserves().includes(a));assert.equal(g.Squad.growth(leader,'atk'),0);assert.ok(g.Squad.bench(b));assert.equal(g.Squad.formation[1],null);assert.equal(g.Squad.deployed().length,2);assert.ok(g.Squad.place(a,1));assert.equal(g.Squad.formation[1],a);assert.ok(g.Squad.growth(leader,'atk')>0);assert.ok(g.Squad.swap(c,b));assert.equal(g.Squad.formation[2],b);assert.ok(g.Squad.reserves().includes(c));assert.deepEqual(g.Squad.roster.map(p=>p.squadId),ids);
+ assert.equal(g.Squad.place(leader,0),false);assert.equal(g.Squad.place(a,8),false);assert.equal(g.Squad.place(a,-1),false);assert.equal(new Set(g.Squad.deployed()).size,g.Squad.deployed().length);
+});
+test('new recruits fill vacancies, and merging an active copy into a reserve copy preserves its formation slot',()=>{
+ const s=setup(),g=s.G;g.Squad.begin(s.player(25));const a=g.Squad.recruit(4);g.Squad.bench(a);g.Squad.recruit(4);assert.equal(g.Squad.roster.length,1);assert.equal(g.Squad.formation[0],a);assert.equal(a.dex,5);assert.equal(a.rank,2);g.Squad.bench(a);const b=g.Squad.recruit(7);assert.equal(g.Squad.formation[0],b);assert.ok(g.Squad.reserves().includes(a));
 });
 test('shop border uses all eight IVs and perfect values are red; unregistered species stay white',()=>{
  const g=setup().G,R=g.ExpeditionRules,s={owned:{}};assert.equal(R.border(s,4),'white');for(const [v,color]of [[1,'blue'],[16,'purple'],[25,'orange'],[31,'red']]){s.owned[4]={iv:Array(8).fill(v)};assert.equal(R.border(s,4),color);}

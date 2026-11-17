@@ -34,6 +34,7 @@ G.Game = (() => {
     addEventListener('resize', resize);
     G.Touch.init(cv);
     G.BackpackUI.init();
+    G.SquadUI.init();
     // Switching apps pauses solo play; either screen orientation is supported.
     document.addEventListener('visibilitychange', () => { if (document.hidden) autoPause(); });
     G.RunUI.wirePause(() => { state = 'playing'; G.UI.hideAll(); }, quitRun);
@@ -78,6 +79,15 @@ G.Game = (() => {
     if(!pl||pl.dead||!['playing','held'].includes(state)||G.Judgment.cinematic||G.UI.isOpen('scr-pause')||G.ZMoves?.busy(pl))return;
     if(!G.Coop.active)state='inventory';
     G.BackpackUI.show(pl);
+  }
+  function toggleSquad(){
+    if(G.SquadUI?.isOpen()){G.SquadUI.close();return;}
+    if(!pl||pl.dead||!G.Expedition?.active||!['playing','journey','paused'].includes(state)||G.ZMoves?.busy(pl)||G.SettingsUI?.isOpen)return;
+    const previous=state;state='squad';G.Touch.reset();
+    G.SquadUI.show({editable:['route','shop'].includes(G.Expedition.phase),onClose:()=>{
+      state=previous;G.Touch.reset();
+      if(previous==='journey')G.Expedition.refreshScreen();else if(previous==='paused')G.UI.show('scr-pause');
+    }});
   }
   let openMastery=false;
   function maybeSpecialization(){
@@ -646,6 +656,7 @@ G.Game = (() => {
   // ---------------- teclado ----------------
 
   function handleKeys() {
+    if(G.SquadUI?.isOpen()){if(G.Input.tap('keyt'))G.SquadUI.close();else if(G.Input.tap('escape'))G.SquadUI.back();return;}
     if(G.BackpackUI.isOpen()){if(G.Input.tap('keye')||G.Input.tap('escape'))toggleBackpack();return;}
     if(G.UI.isOpen('scr-specialization')){for(let i=0;i<3;i++)if(G.Input.tap('digit'+(i+1))||G.Input.tap('numpad'+(i+1)))G.SpecializationUI.pick(i);if(G.Input.tap('keyr'))G.SpecializationUI.reroll();return;}
     if(state==='victory')return;
@@ -674,6 +685,7 @@ G.Game = (() => {
       }
       return;
     }
+    if(G.Input.tap('keyt')&&!document.activeElement?.closest('input,textarea,select,[contenteditable]')){toggleSquad();return;}
     if (state === 'ui') {
       // Esc en una subpantalla del menú vuelve al menú.
       if (G.Input.tap('escape') && !G.UI.isOpen('scr-profile') && ['scr-dex', 'scr-upgrades', 'scr-gacha', 'scr-friends', 'scr-rank', 'scr-goals'].some(G.UI.isOpen)
@@ -767,6 +779,7 @@ G.Game = (() => {
     G.UI.tick(Math.min(1/30,real));
     G.BackpackUI.tick(pl,!!pl&&['playing','inventory','held'].includes(state)&&!G.Judgment.cinematic);
 
+    G.SquadUI?.tick();
     G.Expedition?.hud();
     G.Input.endFrame();
   }
@@ -844,8 +857,8 @@ G.Game = (() => {
     G.Combat.updateFields(dt);
     G.Pickups.update(dt, G.Squad?.active?[pl]:all, onCollect);
     G.Hazards.update(dt);
+    G.Interact.update(dt, pl);
     if(!G.Expedition?.active){
-      G.Interact.update(dt, pl);
       G.Rift.update(dt, pl, time);
       G.Judgment.update(dt, pl, time);
       G.Events.update(dt, all, time);
@@ -1063,7 +1076,7 @@ G.Game = (() => {
     debugTime(t) { tampered = true; time = t; },
     /** Para grabar vídeos: cámara lenta (0,5 = mitad de velocidad). */
     debugSpeed(k) { if (k > 1) tampered = true; speedK = k; },
-    togglePause,toggleBackpack,
+    togglePause,toggleBackpack,toggleSquad,
     /** Abandona la partida en curso (p. ej. al cerrar sesión desde Ajustes). */
     quit() { if (state !== 'ui' && state !== 'over') quitRun(); },
     /** Para grabar vídeos: abre las cartas de subir de nivel. */

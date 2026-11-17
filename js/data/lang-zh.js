@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "El equipo cobra vida · v0.43.0-alpha.3": "伙伴们，动起来啦 · v0.43.0-alpha.3",
+  "Los compañeros vuelven a mostrar sus pasos y sus ataques con animaciones continuas.": "队员的行走与施法动画恢复了，跟随队长时也能连贯地迈开脚步。",
+  "El equipo tiene su propia página con formación y reserva. Arrastra a los compañeros para cambiar posiciones; toca un Pokémon para abrir su ficha.": "小队编队移至独立页面，出战队伍与候补仓库一目了然。拖拽伙伴即可调整位置，点击宝可梦后才会弹出属性、招式、特性与标签详情。",
+  "Durante el combate, abre el equipo con T o su botón. La batalla espera mientras consultas a tus compañeros.": "战斗中可按T或点击小队按钮查看伙伴，查看时战斗会暂停。",
+  "Los cofres cerrados vuelven a abrirse al permanecer cerca. Los rivales de la expedición son más resistentes y aparecen con mayor frecuencia.": "计时宝箱恢复靠近开启；远征中的敌人更耐打，也会更密集地出现。",
+  "Les até una cinta al paso para que nadie se quedara inmóvil en la foto. Quien cocina guarda las fichas en una carpeta nueva; yo ya encontré un huequito para el mapa y una pegatina de ballena.": "队伍里系好一条小缎带，这回合影可别再站成木头啦。做饭的那家伙把伙伴档案装进新册子，我还替地图留了个角，贴一只小鲸鱼刚刚好。",
+
   "Compañeros en ruta · v0.43.0-alpha.2": "伙伴列队，新的远征 · v0.43.0-alpha.2",
   "Elige un capitán y reúne un equipo durante la aventura. Los compañeros siguen tus pasos y usan su propio movimiento; las parejas iguales pueden subir de rango y evolucionar.": "选好队长，在旅途中捕获、邀请伙伴。队员会沿着队长的路线前进，自动使用自己的招式；同种同阶的伙伴还能合成升阶、继续进化。",
   "Un itinerario de cartas conecta combates, élites, tiendas y descansos. Usa el oro de la expedición para invitar compañeros, comprar objetos y ampliar tu formación.": "日程卡牌串起战斗、精英、商店与休整。用远征中的金币邀请伙伴、选购道具、升级商店，扩充小队编队。",

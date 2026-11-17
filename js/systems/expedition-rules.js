@@ -12,8 +12,8 @@ G.ExpeditionRules = (() => {
   const upgradeCost=level=>60+level*45;
   const wave=day=>{
     const cycle=cycleOf(day),within=(day-1)%DAYS+1,boost=Math.pow(3,cycle-1);
-    return {count:Math.round(12+Math.min(72,day*2)),duration:Math.min(60,24+day*1.2),
-      hp:(1+.8*Math.pow(within/20,1.7))*boost,dmg:(1+.35*Math.pow(within/20,1.3))*Math.pow(1.8,cycle-1),
+    return {count:2*Math.round(12+Math.min(72,day*2)),duration:Math.min(60,24+day*1.2),
+      hp:5*(1+.8*Math.pow(within/20,1.7))*boost,dmg:(1+.35*Math.pow(within/20,1.3))*Math.pow(1.8,cycle-1),
       speed:Math.min(1.8,1+within*.005+(cycle-1)*.12),coins:Math.round(35+day*4)};
   };
   function generations(captain,rng=Math.random){
