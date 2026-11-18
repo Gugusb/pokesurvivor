@@ -30,7 +30,9 @@ const moves = Object.values(G.Moves.BY_ID).map(m => {
   const evo = G.Moves.evoInfo(inst, {});
   return { id: m.id, name: m.name, type: m.type, kind: m.kind, damageClass:m.damageClass, desc: m.desc, maxLvl: m.maxLvl, evo: evo ? { name: evo.name, damageClass:evo.damageClass, needs: evo.needName, text: evo.text } : null };
 });
+for(const f of ['js/data/evolutions.js','js/systems/progression-mon.js','js/data/expedition-quality.js'])load(f);
 const out = {
+  expeditionQuality: G.ExpeditionQualityMap,
   dex: G.DEX,
   fixedSkills: G.FIXED_SKILLS,
   legends: G.DEX.filter(p => p.leg).map(p => p.dex),

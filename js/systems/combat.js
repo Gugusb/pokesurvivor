@@ -23,6 +23,7 @@ G.Combat = (() => {
     if(G.MovePP)G.MovePP.tick(pl,dt);
     if (G.ZMoves) { const locked = G.ZMoves.busy(pl); G.ZMoves.tick(pl, dt); if (locked || G.ZMoves.busy(pl)) return; }
     if (pl.dead) return;
+    if(G.SquadAssault&&!G.SquadAssault.canAttack(pl)){for(const m of pl.moves)m.t=Math.max(0,m.t-dt*rateFor(pl,m));return;}
     if (!G.Abilities.canCast(pl)) {
       for (const m of pl.moves) m.t = Math.max(0, m.t - dt * rateFor(pl,m));
       G.Projectiles.clearOrbs(pl); return;
@@ -55,8 +56,8 @@ G.Combat = (() => {
     }
     if (m.t > 0||!wanted) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
-    const manual=G.Targeting?.manual(pl),preview=G.SquadBonds?.move(pl,G.Specialization?.move(pl,m)||m)||m,traitPreview=G.TypeBonds?.move(pl,preview)||preview,castReach=reach(G.SquadTraits?.move(pl,traitPreview)||traitPreview),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
-    if (needsTarget(m) && !(manual&&m.kind!=='chain') && !(target && G.U.dist(pl.x, pl.y, target.x, target.y) <= castReach)) {
+    const manual=G.Targeting?.manual(pl),preview=G.SquadBonds?.move(pl,G.Specialization?.move(pl,m)||m)||m,traitPreview=G.TypeBonds?.move(pl,preview)||preview,finalPreview=G.SquadTraits?.move(pl,traitPreview)||traitPreview,castReach=G.SquadAssault?.controls(pl)?finalPreview.radius||reach(finalPreview):reach(finalPreview),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
+    if (needsTarget(m) && !(manual&&m.kind!=='chain') && !(target && G.U.dist(pl.x, pl.y, target.x, target.y) <= castReach+(G.SquadAssault?.controls(pl)&&m.kind==='melee'?target.r||0:0))) {
       m.t = 0.05;
       return;
     }
@@ -819,7 +820,7 @@ G.Combat = (() => {
     }
   }
 
-  return { tick, resolve, ghostCast, ghostOrbit, counterTackle, updateFields, drawGroundFields, drawAirFields, clearFields,
+  return { reach, tick, resolve, ghostCast, ghostOrbit, counterTackle, updateFields, drawGroundFields, drawAirFields, clearFields,
            zHit(pl, e, dmg, m) { hit(pl,e,dmg,G.U.TYPE_COLOR[m.type],e.x-pl.x,e.y-pl.y,m.knock||0,{...m,zMove:true}); },
            get fieldCount() { return fields.length; } };
 })();

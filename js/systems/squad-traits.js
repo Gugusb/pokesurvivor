@@ -6,7 +6,7 @@ G.SquadTraits=(()=>{
   const L=(es,en,zh)=>local({es,en,zh});
   const def=p=>G.SquadTraitDefs.BY[p?.squadTrait]||G.SquadTraitDefs.forDex(p?.dex);
   function state(p){let s=records.get(p);if(!s)records.set(p,s={counts:{},shield:0});return s;}
-  const weight=p=>Math.max(1,Math.min(3,p?.rank||1))*(G.SquadTraitDefs.weights[Math.max(1,Math.min(5,p?.mon?.rarity||1))]||1);
+  const weight=p=>Math.max(1,Math.min(3,p?.rank||1))*(G.SquadTraitDefs.weights[Math.max(1,Math.min(5,(G.ExpeditionQuality?G.ExpeditionQuality.quality(p):p?.mon?.rarity)||1))]||1);
   function activeTags(p,scope='all'){
     if(!G.Squad?.active||!G.Squad.deployed().includes(p))return [];
     const tags=G.Squad.tags(p),out=[];G.SquadBonds.refresh();
@@ -67,7 +67,7 @@ G.SquadTraits=(()=>{
       text=L('Por capa propia activa × peso: ','Per own active stack × weight: ','自身已激活羁绊每层×总权重：')+rules.join(' + ')+caps+'\n'+L('Ahora: ','Current: ','当前：')+text;
     }
     const category={stacking:L('Acumulación','Stacking','叠层'),economic:L('Economía','Economy','经济'),terminal:L('Terminal','Terminal','终端')}[d.category];
-    return name+' ['+category+'] · '+L('Rango','Rank','阶级')+' '+r+' · '+L('Calidad','Quality','品质')+' '+(p.mon?.rarity||1)+' · ×'+factor+'\n'+text;
+    return name+' ['+category+'] · '+L('Rango','Rank','阶级')+' '+r+' · '+L('Calidad','Quality','品质')+' '+(G.ExpeditionQuality?G.ExpeditionQuality.quality(p):p.mon?.rarity||1)+' · ×'+factor+'\n'+text;
   }
   function draw(ctx){for(const p of team()){const value=shield(p);if(value<=0)continue;ctx.save();ctx.strokeStyle='#e4f6ff';ctx.lineWidth=2;ctx.globalAlpha=.65;ctx.beginPath();ctx.ellipse(p.x,p.y-p.bodyH*.4,p.r+9,p.bodyH*.6+8,0,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillStyle='#effaff';ctx.fillText('◈ '+Math.ceil(value),p.x,p.y-p.bodyH-20);ctx.restore();}}
   return {assign,reset,def,weight,local,activeTags,layers,trigger,hit,hurt,kill,visitShop,dayEnd,finishBattle,release,merge,beforeHit,cooldown,move,beginBattle,absorb,shield,price,description,draw,get coinCarry(){return carry;}};

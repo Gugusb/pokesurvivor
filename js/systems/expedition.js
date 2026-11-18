@@ -78,7 +78,7 @@ G.Expedition = (() => {
     for(let i=0;i<count;i++){
       if(retained.has(i)){offer.push(retained.get(i));continue;}
       if(i===count-1||i>0&&Math.random()<.25){const items=G.Items.LIST.filter(it=>G.Items.permitted(it)&&(!it.boss||lv>=4)),it=G.U.pick(items);offer.push({kind:'item',id:it.id,cost:it.boss?100:35+lv*4});}
-      else{let mon=R.shopMon(run.pool,lv);const rank=R.shopRank(lv);for(let n=1;n<rank;n++){const choices=R.next(mon.dex);if(choices.length)mon=G.DEX_BY[G.U.pick(choices)];}offer.push({kind:'mon',dex:mon.dex,rank,moveId:G.FIXED_SKILLS?.[mon.dex]||G.Moves.startFor(mon),cost:Math.round(R.monCost(mon)*[1,1.8,3][rank-1])});}
+      else{const drawn=R.shopMon(run.pool,lv),rank=1,mon=G.DEX_BY[R.formForRank(drawn.dex,rank)];offer.push({kind:'mon',dex:mon.dex,rank,moveId:G.FIXED_SKILLS?.[mon.dex]||G.Moves.startFor(mon),cost:Math.round(R.monCost(mon)*[1,1.8,3][rank-1])});}
     }
   }
   function buy(index,ticket=false){
@@ -94,15 +94,15 @@ G.Expedition = (() => {
     const layout=node('div','journey-layout journey-layout-wide'),goods=node('div','journey-goods');
     offer.forEach((o,i)=>{
       const cost=G.SquadTraits?.price(o.cost,o.kind)??o.cost;
-      const card=node('article','journey-product '+(o.kind==='mon'?'iv-'+R.border(G.DB.save,o.dex):'item'));card.dataset.product=i;
+      const card=node('article','journey-product '+(o.kind==='mon'?'quality-'+(G.ExpeditionQuality?.quality(o.dex)||1):'item'));card.dataset.product=i;
       const content=node('div','journey-product-art');
-      if(o.kind==='mon'){const mon=G.DEX_BY[o.dex],rank=o.rank||1,move=G.Moves.instance(o.moveId,rank===1?2:5);if(rank===3)G.Moves.evolve(move);content.append(portrait(mon,100));card.append(content,node('small','',L('Compañero','Companion','队员邀请')+' · '+'★'.repeat(rank)),node('h3','',T(mon.name)));const dummy={mon,dex:mon.dex,rank,moves:[move]};if(G.SquadTraits){const trait=node('p','journey-shop-trait',G.SquadTraits.description(dummy));trait.setAttribute('translate','no');card.append(trait);}card.append(tags(dummy),node('p','journey-shop-move',T(move.name)+' · '+(rank===3?L('Definitivo','Ultimate','超武'):'Lv.'+move.lvl)));}
+      if(o.kind==='mon'){const mon=G.DEX_BY[o.dex],rank=o.rank||1,move=G.Moves.instance(o.moveId,rank===1?2:5);if(rank===3)G.Moves.evolve(move);content.append(portrait(mon,100));card.append(content,node('small','',L('Compañero','Companion','队员邀请')+' · '+(G.ExpeditionQuality?.label(mon)||'')+' · '+'★'.repeat(rank)),node('h3','',T(mon.name)));const dummy={mon,dex:mon.dex,rank,moves:[move]};if(G.SquadTraits){const trait=node('p','journey-shop-trait',G.SquadTraits.description(dummy));trait.setAttribute('translate','no');card.append(trait);}card.append(tags(dummy),node('p','journey-shop-move',T(move.name)+' · '+(rank===3?L('Definitivo','Ultimate','超武'):'Lv.'+move.lvl)));}
       else{content.innerHTML=G.Icons.html(G.Items.icon(o.id),64);card.append(content,node('small','',L('Objeto especial','Special item','特殊道具')),node('h3','',T(G.Items.BY[o.id].name)),node('p','',T(G.Items.BY[o.id].desc)));}
       const b=button(o.sold?L('Invitado / adquirido','Recruited / acquired','已邀请／购入'):cost+' '+L('oro','gold','金币'),()=>buy(i),'btn gold');b.dataset.buy=i;b.disabled=o.sold||run.gold<cost;const lock=button(o.locked?L('Desbloquear','Unlock','取消锁定'):L('Bloquear','Lock','锁定商品'),()=>{if(run.phase!=='shop'||o.sold)return;o.locked=!o.locked;renderShop();},'btn small');lock.dataset.lock=i;lock.disabled=!!o.sold;lock.setAttribute('aria-pressed',String(!!o.locked));card.append(b,lock);if(o.kind==='mon'&&run.traitRecruitTickets>0){const t=button(L('Invitación dirigida','Directed recruit ticket','使用定向招募券')+' · '+run.traitRecruitTickets,()=>buy(i,true),'btn');t.dataset.recruitTicket=i;t.disabled=!!o.sold;card.append(t);}goods.append(card);
     });
     const controls=node('div','journey-shop-controls'),up=button(lv>=R.MAX_SHOP?L('Nivel máximo','Maximum level','商店已满级'):L('Mejorar tienda','Upgrade shop','升级商店')+' · '+R.upgradeCost(lv)+' '+L('oro','gold','金币'),upgrade,'btn');up.id='journey-upgrade';up.disabled=lv>=R.MAX_SHOP||run.gold<R.upgradeCost(lv);
     const refresh=button(L('Renovar','Refresh','刷新商品')+' · '+(run.traitFreeRefresh>0?L('Gratis','Free','免费')+' ('+run.traitFreeRefresh+')':'10'),refreshShop);refresh.id='journey-refresh';refresh.disabled=!(run.traitFreeRefresh>0)&&run.gold<10;
-    controls.append(up,refresh,button(L('Seguir la ruta','Continue route','离开商店'),()=>finishStage(),'btn gold'));goods.append(controls,node('p','note',L('Bordes: blanco sin registrar · azul · morado · naranja · rojo IV perfectos.','Borders: white unregistered · blue · purple · orange · red perfect IVs.','图鉴个体值边框：白色未获得 → 蓝色 → 紫色 → 橙色 → 红色满值。')));layout.append(goods);box.append(layout);G.UI.show('scr-journey');
+    controls.append(up,refresh,button(L('Seguir la ruta','Continue route','离开商店'),()=>finishStage(),'btn gold'));goods.append(controls,node('p','note',L('Calidad: blanco · verde · azul · morado · dorado. Cada invitación es de rango uno.','Quality: white · green · blue · purple · gold. All invitations start at one star.','品质边框：白 → 绿 → 蓝 → 紫 → 金。商店邀请均为1星，升级提高高品质概率。')));layout.append(goods);box.append(layout);G.UI.show('scr-journey');
   }
   function startBattle(kind){
     run.phase='combat';run.kind=kind;run.elapsed=0;run.spawned=0;run.acc=0;run.kills=0;run.wave=R.wave(run.day);run.bossDead=false;run.waveType=Math.random()<.5?G.U.pick([...new Set(run.pool.flatMap(p=>p.types))]):null;
@@ -147,7 +147,7 @@ G.Expedition = (() => {
     run.kills++;run.gold+=e.boss?25:e.elite?5:1;
     if(e.boss)run.bossDead=true;
     // One run-only companion per battle, received exclusively on the loot screen.
-    if(!e.boss&&!run.companion&&Math.random()<.12)run.companion=e.dex;
+    if(!e.boss&&!run.companion&&Math.random()<.12)run.companion=R.formForRank(e.dex,1);
   }
   function finishBattle(cleared){
     if(run.phase!=='combat')return;G.SquadTraits?.finishBattle(cleared);if(run.day===60&&run.kind==='boss'&&cleared){run.arceus=true;run.cashout=true;}run.phase='rewards';run.pendingSpawns=[];const amount=Math.round(run.wave.coins*(run.kind==='elite'?1.8:run.kind==='boss'?3:1)*(cleared?1.5:1));run.gold+=amount;
@@ -186,7 +186,7 @@ G.Expedition = (() => {
     if(run.companion){
       const mon=G.DEX_BY[run.companion],card=node('section','journey-loot-companion');card.append(portrait(mon,120),node('h3','',T(mon.name)),node('p','',run.companionResolved?L('¡Compañero recibido!','Companion received!','伙伴已领取！'):L('Un compañero quiere unirse.','A companion wants to join.','这位伙伴想与咱们同行。')),squadShortcut());
       if(!run.companionResolved){const actions=node('div','journey-actions'),claim=button(L('Recibir compañero','Receive companion','领取伙伴'),claimCompanion,'btn gold');claim.id='journey-claim';claim.disabled=!G.Squad.canRecruit(run.companion);actions.append(claim,button(L('Dejar marchar','Let go','放弃领取'),()=>{run.companionResolved=true;run.companion=null;renderLoot();}));card.append(actions);if(claim.disabled)card.append(node('p','journey-full',L('Reserva llena. Abre el equipo y libera un compañero.','Reserves full. Open the squad and release a companion.','候补仓库已满。打开小队，放生伙伴后即可领取。')));}
-      box.append(card);
+      if(G.ExpeditionQuality){card.style.borderColor=G.ExpeditionQuality.color(mon);card.append(node('p','',G.ExpeditionQuality.label(mon)));}box.append(card);
     }
     const actions=node('div','journey-actions');if(!run.companion)actions.append(squadShortcut());const next=button(run.levels?L('Elegir mejoras','Choose upgrades','选择升级')+' · '+run.levels:L('Seguir la ruta','Continue route','继续旅程'),()=>{
       if(run.phase!=='loot')return;run.companionResolved=true;run.phase='upgrades';G.UI.hideAll();G.Game.expeditionResume();

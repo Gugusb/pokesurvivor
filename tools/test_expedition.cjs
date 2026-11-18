@@ -17,7 +17,7 @@ test('run-only recruitment, rank evolution and release never register an unowned
 test('reserve warehouse has four slots, rejects overflow without changes, allows merging when full and release frees a slot',()=>{
  const s=setup(),g=s.G;g.Squad.begin(s.player(4));const team=[6,9,3,26,65,68,94].map(d=>g.Squad.recruit(d));assert.ok(team.every(Boolean));assert.equal(g.Squad.reserves().length,4);assert.equal(g.Squad.roster.length,7);
  assert.equal(g.Squad.recruit(143),null);assert.equal(g.Squad.roster.length,7);assert.equal(g.Squad.bench(team[0]),false);assert.equal(g.Squad.release(g.Squad.actors()[0]),false);
- assert.ok(g.Squad.recruit(94));assert.equal(g.Squad.roster.length,7);assert.equal(g.Squad.roster.find(p=>p.dex===94).rank,2);assert.ok(g.Squad.release(team[3]));assert.equal(g.Squad.reserves().length,3);assert.ok(g.Squad.recruit(143));assert.equal(g.Squad.reserves().length,4);
+ assert.ok(g.Squad.recruit(94));assert.equal(g.Squad.roster.length,7);assert.equal(g.Squad.roster.find(p=>p.dex===93).rank,2);assert.ok(g.Squad.release(team[3]));assert.equal(g.Squad.reserves().length,3);assert.ok(g.Squad.recruit(143));assert.equal(g.Squad.reserves().length,4);
 });
 
 test('rank-one, rank-two and rank-three companion attacks use level 2, level 5 and the actual evolved move',()=>{
@@ -56,7 +56,7 @@ test('buff moves support only self and immediate formation neighbors at thirty p
 test('battle recruitment is deferred, at most one companion; pending loot can wait for release and cannot be claimed twice',()=>{
  const s=setup(),g=s.G,E=controller(s);E.run.map[1][3].kind='battle';assert.ok(E.choose(1,3));s.random([0,0,0]);E.killed({expedition:true,dex:7});E.killed({expedition:true,dex:25});assert.equal(g.Squad.roster.length,0);assert.equal(E.run.companion,7);assert.equal(E.claimCompanion(),false);
  E.run.phase='rewards';E.recordPickup({kind:'xp',value:25});E.recordPickup({kind:'ticket',value:1});E.recordPickup({kind:'coin',value:12});E.showLoot(2);assert.equal(E.phase,'loot');assert.equal(E.run.levels,2);assert.equal(E.run.loot.xp,25);assert.equal(E.run.loot.coin,12);
- for(const d of [6,9,3,26,65,68,94])g.Squad.recruit(d);assert.equal(E.claimCompanion(),false);assert.equal(E.run.companionResolved,false);g.Squad.release(g.Squad.reserves()[0]);assert.equal(E.claimCompanion(),true);assert.equal(E.claimCompanion(),false);assert.equal(g.Squad.reserves().length,4);
+ for(const d of [6,37,3,26,65,68,94])g.Squad.recruit(d);assert.equal(E.claimCompanion(),false);assert.equal(E.run.companionResolved,false);g.Squad.release(g.Squad.reserves()[0]);assert.equal(E.claimCompanion(),true);assert.equal(E.claimCompanion(),false);assert.equal(g.Squad.reserves().length,4);
 });
 
 test('shop moves are rolled before purchase, survive page refresh, and insufficient capacity never spends gold or stock',()=>{
@@ -94,7 +94,7 @@ test('two equal species and equal ranks combine, evolve one stage and never exce
  for(let i=0;i<4;i++)g.Squad.recruit(4);assert.equal(g.Squad.roster.length,2);assert.ok(g.Squad.roster.every(p=>p.dex===6&&p.rank===3));
 });
 test('tags include both types, both egg groups, and the actual random skill class',()=>{
- const s=setup(),g=s.G;g.Squad.begin(s.player(25));const p=g.Squad.recruit(6),t=g.Squad.tags(p);assert.deepEqual(Array.from(t.types),['fire','flying']);assert.deepEqual(Array.from(t.eggs),[1,14]);assert.equal(t.skill,p.moves[0].kind);
+ const s=setup(),g=s.G;g.Squad.begin(s.player(25));const p=g.Squad.recruit(6,null,3),t=g.Squad.tags(p);assert.deepEqual(Array.from(t.types),['fire','flying']);assert.deepEqual(Array.from(t.eggs),[1,14]);assert.equal(t.skill,p.moves[0].kind);
 });
 test('knocked out deployed members keep support talents; reserves give no support; rearrangement and shop upgrade change deployed roster',()=>{
  const s=setup(),g=s.G,leader=s.player(4);g.Squad.begin(leader);const a=g.Squad.recruit(6),b=g.Squad.recruit(7),c=g.Squad.recruit(25),reserve=g.Squad.recruit(12);const talent=g.Squad.talent(a);assert.equal(talent.key,'atk');close(g.Squad.growth(leader,'atk'),.03);a.dead=true;a.hp=0;g.Squad.refresh();close(g.Squad.growth(leader,'atk'),.03);assert.ok(!g.Squad.actors().includes(reserve));assert.equal(g.Squad.growth(reserve,'atk'),0);const before=leader.agility;assert.ok(g.Squad.reorder(3,-1));assert.ok(g.Squad.deployed().includes(reserve));assert.ok(leader.agility<before);assert.ok(g.Squad.upgrade());assert.equal(g.Squad.deployed().length,4);assert.ok(g.Squad.actors().includes(c));

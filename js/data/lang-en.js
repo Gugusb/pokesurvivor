@@ -828,3 +828,5 @@ G.I18n.add({"Obtener MT de Especialización": "Get Mastery TM", "Maximizar movim
 G.I18n.add({"Paquetes de cartas": "Card Packs", "Cartas para toda tu colección": "Cards for your whole collection"});
 
 G.I18n.add({"Nivel inicial adicional": "Extra Starting Level", "+1 nivel al empezar": "+1 starting level and its level-up choice"});
+
+G.I18n.add({"Baya Ofensiva":"Offense Berry","Baya Protectora":"Guard Berry","Refuerza ambos ataques naturales.":"Strengthens both base attacks.","Refuerza ambas defensas naturales.":"Strengthens both base defenses.","Refuerza la vida natural.":"Strengthens base HP."});

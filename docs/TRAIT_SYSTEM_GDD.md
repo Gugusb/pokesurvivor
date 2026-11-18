@@ -1,6 +1,6 @@
 # 远征宝可梦特性系统 · 首轮实现
 
-来源：提供的Trait System GDD及后续确认。v0.43.0-alpha.10 接入首轮可玩系统，仅用于Next远征队员；完整30项目录及966物种分配见 [TRAIT_CATALOG.md](TRAIT_CATALOG.md)。
+来源：提供的Trait System GDD及后续确认。v0.43.0-alpha.10 接入首轮可玩系统，仅用于Next远征队员；v0.43.0-alpha.11 起品质改用独立的[远征品质](EXPEDITION_QUALITY.md)，不再采用旧抽卡rarity；完整30项目录及966物种分配见 [TRAIT_CATALOG.md](TRAIT_CATALOG.md)。
 
 ## 定位
 
@@ -26,7 +26,7 @@
 | 2 优良 | 1.2 |
 | 3 稀有 | 1.5 |
 | 4 史诗 | 2.0 |
-| 5 神兽（含幻兽） | 2.5 |
+| 5 最高品质（神兽/幻兽固定） | 2.5 |
 
 3阶4品的总权重为6.0。
 

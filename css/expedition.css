@@ -62,3 +62,7 @@
 .journey-product .journey-shop-trait{white-space:pre-line;flex:initial;text-align:left;width:100%;box-sizing:border-box}
 @media(max-width:900px){.journey-goods{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:660px){.journey-goods{grid-template-columns:minmax(0,1fr)}.journey-product{padding:18px}.journey-product .btn{max-width:100%}}
+/* Quality owns the border; type colors remain in tag badges and portrait backgrounds. */
+.journey-product.quality-1{border-color:#d8e2ed}.journey-product.quality-2{border-color:#66cf91}.journey-product.quality-3{border-color:#5897f5}.journey-product.quality-4{border-color:#b17aeb}.journey-product.quality-5{border-color:#ffd166;box-shadow:0 0 14px #ffd16622}
+.squad-unit .squad-unit-art,.squad-unit.captain .squad-unit-art,.squad-warehouse-strip .squad-unit{border-color:var(--quality-color,#d8e2ed)}
+.squad-quality-factors{padding:10px 12px;border:1px solid #6a8d9b;border-radius:8px;color:#ffe5a0;line-height:1.8}.squad-assault-status{color:#a7e5ef;line-height:1.8}

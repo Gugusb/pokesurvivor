@@ -3,7 +3,7 @@ G.MovePP = (() => {
   const players=new WeakMap();
   const baseMax=m=>m.kind==='melee'?24:m.kind==='dash'?20:m.kind==='buff'?10:15;
   const max=(p,m)=>Math.max(1,Math.floor((baseMax(m)+Math.max(0,p.maxPpBonus||0))*(G.Specialization?.stats(m).maxPP||1)));
-  const busy=(p,m)=>G.MoveControl?G.MoveControl.releasing(p,m):(p.moves||[]).includes(m);
+  const busy=(p,m)=>G.SquadAssault?.controls(p)&&!G.SquadAssault.canAttack(p)?false:G.MoveControl?G.MoveControl.releasing(p,m):(p.moves||[]).includes(m);
   const factor=(p,on)=>on?.7:1.5*(G.Abilities?.has(p,'innerfocus')?1.2:1);
   function state(p,m){
     let moves=players.get(p);if(!moves)players.set(p,moves=new WeakMap());
@@ -34,7 +34,7 @@ G.MovePP = (() => {
     s.current=Math.max(0,s.current-regular);p.tempPP=Math.max(0,(p.tempPP||0)-(n-regular));return true;
   }
   function tick(p,dt){
-    if(p.dead||p.remote)return;
+    if(p.dead||p.remote||G.SquadAssault&&!G.SquadAssault.canRecover(p))return;
     for(const m of p.moves){
       const s=state(p,m),next=busy(p,m),primary=p.isPrimaryMove?.(m)??true;let left=Math.max(0,dt);
       const interval=()=>p.ppIntervalFor?.(m,s.primary)||p.ppInterval||1;

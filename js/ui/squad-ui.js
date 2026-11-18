@@ -47,10 +47,10 @@ G.SquadUI=(()=>{
     renderDetails();modal.classList.remove('hidden');$('squad-member-close').focus();
   }
   function unit(p,bench=false){
-    const article=node('div','squad-unit squad-card'+(p.dead?' fainted':'')+(p===leader()?' captain':''));article.style.setProperty('--unit-color',G.U.TYPE_COLOR[p.mon.types[0]]||'#67b9ec');
+    const article=node('div','squad-unit squad-card'+(p.dead?' fainted':'')+(p===leader()?' captain':''));article.style.setProperty('--unit-color',G.U.TYPE_COLOR[p.mon.types[0]]||'#67b9ec');article.style.setProperty('--quality-color',G.ExpeditionQuality?.color(p)||'#d8e2ed');article.dataset.quality=G.ExpeditionQuality?.quality(p)||1;
     if(p.isSquadMember){article.dataset.dragKey=id(p);if(bench)article.dataset.squadDrop='unit:'+id(p);}
     const pick=button('',()=>choose(p),'squad-pick'+(p===selected?' selected':''));pick.dataset.squadSelect=id(p);pick.setAttribute('aria-pressed',String(p===selected));
-    const art=node('span','squad-unit-art');art.append(portrait(p,bench?76:104));art.style.setProperty('--hp',Math.max(0,p.hp/p.maxHp)*100+'%');pick.append(art,node('b','squad-unit-name',T(p.mon.name)),node('small','',p===leader()?L('Capitán','Leader','队长'):'★'.repeat(p.rank)+' · Lv.'+p.level));const names=node('span','squad-card-moves',p.moves.map(m=>T(m.name)+(m.evolved?' ✦':'')).join(' / '));names.title=names.textContent;pick.append(names,G.Expedition.tags(p));article.append(pick);
+    const art=node('span','squad-unit-art');art.append(portrait(p,bench?76:104));art.style.setProperty('--hp',Math.max(0,p.hp/p.maxHp)*100+'%');pick.append(art,node('b','squad-unit-name',T(p.mon.name)),node('small','',p===leader()?L('Capitán','Leader','队长'):'★'.repeat(p.rank)+' · '+(G.ExpeditionQuality?.label(p)||'')+' · Lv.'+p.level));const names=node('span','squad-card-moves',p.moves.map(m=>T(m.name)+(m.evolved?' ✦':'')).join(' / '));names.title=names.textContent;pick.append(names,G.Expedition.tags(p));article.append(pick);
     if(p.isSquadMember&&canEdit()){const grip=node('span','squad-drag-handle','⠿');grip.title=L('Arrastrar','Drag to move','拖动调整位置');grip.setAttribute('aria-label',grip.title);article.append(grip);}return article;
   }
   function renderList(){
@@ -99,11 +99,12 @@ G.SquadUI=(()=>{
   }
   function renderDetails(){
     if(!all().includes(selected))selected=leader();const p=selected,box=$('squad-detail');box.replaceChildren();stats=[];moves=[];const closeBar=node('div','squad-detail-closebar'),dismiss=button('×',()=>closeDetails(),'btn small');dismiss.id='squad-member-close';dismiss.setAttribute('aria-label',L('Cerrar detalles','Close details','关闭详情'));closeBar.append(dismiss);box.append(closeBar);
-    const hero=node('div','squad-hero');hero.append(portrait(p,144));const title=node('div');title.append(node('small','squad-status',status(p)),node('h3','',T(p.mon.name)),node('p','',L('Nivel','Level','等级')+' '+p.level+(p.isSquadMember?' · '+'★'.repeat(p.rank):'')));
+    const hero=node('div','squad-hero');const art=portrait(p,144);if(G.ExpeditionQuality){art.style.border='3px solid '+G.ExpeditionQuality.color(p);art.style.borderRadius='14px';}hero.append(art);const title=node('div');title.append(node('small','squad-status',status(p)),node('h3','',T(p.mon.name)),node('p','',L('Nivel','Level','等级')+' '+p.level+(p.isSquadMember?' · '+'★'.repeat(p.rank):'')));
     health=node('p','squad-health-value');title.append(health);hero.append(title);box.append(hero,G.Expedition.tags(p));
     const talent=node('section','squad-talent');talent.append(node('h4','',L('Habilidad','Ability','特性')));
     if(p.isSquadMember){const text=node('p','',G.Expedition.talentText(p));text.setAttribute('translate','no');talent.append(text);talent.append(node('small','',L('Activa mientras está vivo y en formación.','Active while alive and deployed.','仅上阵且存活时触发；候补和倒下者不触发。')));}
     else{const def=G.AbilityDefs.LIST.find(a=>a.ability===p.ability);talent.append(node('p','',def?T(def.name)+' · '+T(def.desc):L('Sin habilidad','No ability','尚未装备特性勋章')));}box.append(talent);
+    if(G.ExpeditionQuality){const f=G.ExpeditionQuality.factors(p);box.append(node('p','squad-quality-factors',G.ExpeditionQuality.label(p)+(p.isSquadMember?' · '+L('Ataques','Attacks','双攻')+' ×'+f.ad+' · '+L('Vida','HP','生命')+' ×'+f.hp:'')));}if(G.SquadAssault?.controls(p))box.append(node('p','squad-assault-status',G.SquadAssault.label(p)+' · '+L('Busca a 4× alcance. Sin regeneración natural de PP fuera de la formación; vuelve y espera la recarga completa.','Searches at 4× attack reach. No natural PP regeneration away; returns and waits for full PP.','索敌距离为攻击距离4倍；离队期间停止自然回复PP，归队后充满再出击。')));
     box.append(node('h4','squad-section-title',L('Atributos actuales','Current stats','当前属性')));
     const table=node('div','squad-stats');for(const r of statRows(p)){const cell=node('div','squad-stat');cell.dataset.stat=r.key;const value=node('b','',G.PlayerStats.fmt(r.total)),battle=node('small','',r.battle);cell.append(node('span','',T(r.name)),value,battle);table.append(cell);stats.push({key:r.key,value,battle});}box.append(table);
     box.append(node('h4','squad-section-title',L('Movimientos','Moves','招式')));

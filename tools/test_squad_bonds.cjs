@@ -5,7 +5,7 @@ function setup(kind='projectile',count=6){
  const s=context('zh',false),g=s.G;for(const f of ['js/core/settings.js','js/data/egg-groups.js','js/entities/projectile.js','js/systems/expedition-rules.js','js/systems/squad.js','js/systems/squad-bonds.js','js/systems/move-control.js','js/systems/move-pp.js','js/systems/combat.js'])s.load(f);
  g.Sprites.preload=()=>{};g.Sprites.Animator.prototype._start=()=>{};g.FX=new Proxy({},{get:(t,k)=>t[k]||(()=>{})});g.World.propsInCircle=()=>[];g.World.projectileBlock=()=>null;g.World.isWall=()=>false;g.VFX={forMove:()=>({}),forType:()=>({})};g.EnemyMgr.get=id=>s.enemies.find(e=>e.id===id);
  const cap=s.player(25);cap.moves=[g.Moves.instance(moves[kind],2)];cap.slots=[cap.moves];g.Squad.begin(cap);for(let i=0;i<3;i++)g.Squad.upgrade();
- for(const dex of [6,9,3,26,65,68].slice(0,count)){const p=g.Squad.recruit(dex);p.moves=[g.Moves.instance(moves[kind],2)];p.slots=[p.moves];p.active=0;p.critChance=0;p.invuln=100;}
+ for(const dex of [6,9,3,26,65,68].slice(0,count)){const p=g.Squad.recruit(dex,null,3);p.moves=[g.Moves.instance(moves[kind],2)];p.slots=[p.moves];p.active=0;p.critChance=0;p.invuln=100;}
  g.Squad.refresh();const p=g.Squad.deployed()[0];g.Game.player=cap;return Object.assign(s,{p,cap,m:p.moves[0]});
 }
 function enemy(s,x=60,y=0){const e=s.enemy();e.x=x;e.y=y;e.touchCd=100;e.hp=e.maxHp=1e9;e.calls=[];e.hurt=(n,...args)=>{e.calls.push({n,args});return n;};return e;}

@@ -36,15 +36,17 @@ G.LevelUp = (() => {
       apply: pl => pl.heal(pl.maxHp * 0.45) }
   ];
 
+  const TEAM_STATS=[berry('hp','Baya Vital','Refuerza la vida natural.','hp',.12),berry('atk','Baya Ofensiva','Refuerza ambos ataques naturales.','attacks',.10,40),berry('def','Baya Protectora','Refuerza ambas defensas naturales.','defenses',.08,30)];
+
   function teamBerryDesc(s,n=1){
-    const names={hp:['vida base','base HP','基础生命'],atk:['ataque físico base','base Attack','基础物攻'],spa:['ataque especial base','base Sp. Atk','基础特攻'],defense:['defensa base','base Defense','基础物防'],spdef:['defensa especial base','base Sp. Def','基础特防'],spd:['velocidad base','base movement speed','基础移速'],agility:['agilidad base','base agility','基础敏捷'],stamina:['aguante base','base stamina','基础耐力'],maxpp:['PP máximos','maximum PP','最大PP'],temppp:['PP de reserva','reserve PP','备用PP']};
+    const names={attacks:['ambos ataques base','both base attacks','基础双攻'],defenses:['ambas defensas base','both base defenses','基础双防'],hp:['vida base','base HP','基础生命'],atk:['ataque físico base','base Attack','基础物攻'],spa:['ataque especial base','base Sp. Atk','基础特攻'],defense:['defensa base','base Defense','基础物防'],spdef:['defensa especial base','base Sp. Def','基础特防'],spd:['velocidad base','base movement speed','基础移速'],agility:['agilidad base','base agility','基础敏捷'],stamina:['aguante base','base stamina','基础耐力'],maxpp:['PP máximos','maximum PP','最大PP'],temppp:['PP de reserva','reserve PP','备用PP']};
     const i=G.I18n.lang==='zh'?2:G.I18n.lang==='en'?1:0,amount=Number((s.amount*n*.5*(['maxpp','temppp'].includes(s.stat)?1:100)).toFixed(2)),unit=['maxpp','temppp'].includes(s.stat)?'':'%';
     return ['Todos los compañeros actuales y futuros: ','All current and future companions: ','全体现有及未来队员：'][i]+names[s.stat][i]+' +'+amount+unit;
   }
   /** Construye el conjunto de cartas candidatas, con pesos. */
   function candidates(pl) {
     const out = [];
-    if(G.Squad?.active)return STATS.filter(s=>s.stat&&(!s.max||(pl.statsTaken[s.id]||0)<s.max)).map(s=>({w:1,category:'stat',type:'stat',key:'stat:'+s.id,icon:s.icon,color:'#8fa3c4',tag:({zh:'全体队员 · 半效果子',en:'All companions · half strength',es:'Compañeros · media potencia'})[G.I18n.lang],title:s.title,desc:teamBerryDesc(s),apply:p=>{G.ExpeditionGrowth.reward(s.stat,s.amount);p.statsTaken[s.id]=(p.statsTaken[s.id]||0)+1;}}));
+    if(G.Squad?.active)return TEAM_STATS.filter(s=>s.stat&&(!s.max||(pl.statsTaken[s.id]||0)<s.max)).map(s=>({w:1,category:'stat',type:'stat',key:'stat:'+s.id,icon:s.icon,color:'#8fa3c4',tag:({zh:'全体队员 · 半效果子',en:'All companions · half strength',es:'Compañeros · media potencia'})[G.I18n.lang],title:s.title,desc:teamBerryDesc(s),apply:p=>{G.ExpeditionGrowth.reward(s.stat,s.amount);p.statsTaken[s.id]=(p.statsTaken[s.id]||0)+1;}}));
 
     // --- movimientos nuevos ---
     if (pl.slots.length < pl.maxMoves) {
@@ -163,7 +165,7 @@ G.LevelUp = (() => {
     if(!options.length)return [];
     const directions=shuffled(options).slice(0,3), count=options.length===1?3:directions.length;
     const expedition=!!G.Squad?.active;
-    const pool=shuffled(STATS.filter(s=>(!expedition||s.stat)&&s.triple&&(!s.max||(pl.statsTaken[s.id]||0)+3<=s.max)));
+    const pool=shuffled((expedition?TEAM_STATS:STATS).filter(s=>(!expedition||s.stat)&&s.triple&&(!s.max||(pl.statsTaken[s.id]||0)+3<=s.max)));
     return Array.from({length:count},(_,i)=>{
       const direction=directions[options.length===1?0:i],s=pool[i%pool.length],bonus=expedition?()=>G.ExpeditionGrowth.reward(s.stat,s.amount*3):s.triple;
       return {type:'evolution',key:'direction:'+direction.dex+':'+s.id,category:'stat',evolutionDex:direction.dex,evolutionPath:direction.path,
@@ -172,5 +174,5 @@ G.LevelUp = (() => {
     });
   }
 
-  return { offer, STATS, evolutionOffer };
+  return { offer, STATS, TEAM_STATS, evolutionOffer };
 })();

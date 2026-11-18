@@ -18,18 +18,23 @@ G.Squad = (() => {
     G.SquadBonds?.refresh();
     bonus={};for(const p of (G.SquadTraits?[]:deployed())){const [key,value]=support[p.mon.types[0]]||support.normal;bonus[key]=(bonus[key]||0)+value*p.rank;}
     for(const p of [captain,...roster].filter(Boolean)){
+      G.ExpeditionQuality?.sync(p);
       const value=actors().includes(p)?(bonus.hp||0)*p.baseHp:0,delta=value-(p.squadHpBonus||0);
       p.maxHp=Math.max(1,p.maxHp+delta);if(!p.dead)p.hp=Math.min(p.maxHp,Math.max(1,p.hp+delta));p.squadHpBonus=value;
     }
   }
   class Member extends G.Player{
     constructor(dex,rank=1,moveId=null){
+      dex=G.ExpeditionRules.formForRank(dex,rank);
       const perks=G.Upgrades.perks(G.DB.upgradesOf(dex)),iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[dex]?.iv);super(G.DEX_BY[dex],perks,false,dex,iv);
       this.isSquadMember=true;this.squadId=nextId++;this.rank=rank;this.ability=null;this.activeItem=null;
       this.megaState=null;this.zState=null;this.x=captain?.x||0;this.y=captain?.y||0;this.permanentGrowth={...(perks.statGrowth||{})};
       const ids=G.Moves.poolFor(this.mon);this.addMove(moveId&&ids.includes(moveId)?moveId:(G.FIXED_SKILLS?.[dex]||G.Moves.startFor(this.mon)));
-      this.moveId=this.moves[0].id;G.SquadTraits?.assign(this);rankMove(this);this.invuln=1;
+      this.moveId=this.moves[0].id;G.SquadTraits?.assign(this);rankMove(this);G.ExpeditionQuality?.sync(this);this.invuln=1;
     }
+    get atk(){return super.atk*(G.ExpeditionQuality?.factors(this).ad||1);}
+    get spa(){return super.spa*(G.ExpeditionQuality?.factors(this).ad||1);}
+    addMaxHp(amount){super.addMaxHp(amount*(G.ExpeditionQuality?.factors(this).hp||1));}
     isPrimaryMove(){return false;}
     agilityFor(m){return super.agilityFor(m)*(G.SquadBonds?.agility(this,m)||1);}
     staminaFor(m){return super.staminaFor(m)*(G.SquadBonds?.stamina(this,m)||1);}
@@ -39,7 +44,7 @@ G.Squad = (() => {
       this.level=captain.level;this.invuln=Math.max(0,this.invuln-dt);this.dashGuardT=Math.max(0,this.dashGuardT-dt);this.flash=Math.max(0,this.flash-dt);this.attackFace=Math.max(0,this.attackFace-dt);
       this.slowT=Math.max(0,this.slowT-dt);this.attackDebuffT=Math.max(0,this.attackDebuffT-dt);if(!this.attackDebuffT)this.attackDebuff=0;
       for(const b of Object.values(this.buffs))if(b.n>0){b.t-=dt;if(b.t<=0)b.n=0;}
-      this.regenerate(dt);this.target=G.Projectiles.nearest(G.EnemyMgr.all(),this.x,this.y,520);
+      this.regenerate(dt);if(!G.SquadAssault?.controls(this))this.target=G.Projectiles.nearest(G.EnemyMgr.all(),this.x,this.y,520);
       if(this.target)this.aim=Math.atan2(this.target.y-this.y,this.target.x-this.x);
       const face=this.attackFace>0||!this.walking?this.aim:this.moveAngle;
       this.anim.dir=G.Sprites.dirFromAngle(face);this.anim.loop(this.walking?'Walk':'Idle',this.walking?Math.max(.6,Math.min(1.8,(this.followSpeed||110)/110)):1);
@@ -48,7 +53,7 @@ G.Squad = (() => {
     draw(ctx){
       ctx.save();if(this.dead){ctx.filter='grayscale(1)';ctx.globalAlpha=.55;}super.draw(ctx);ctx.restore();
       const w=28,x=this.x-w/2,y=this.y-this.bodyH-12;
-      ctx.fillStyle='#10213c';ctx.fillRect(x,y,w,3);ctx.fillStyle=this.dead?'#8792a4':'#7addff';ctx.fillRect(x,y,w*Math.max(0,this.hp/this.maxHp),3);
+      ctx.strokeStyle=G.ExpeditionQuality?.color(this)||'#7addff';ctx.lineWidth=1.5;ctx.strokeRect(x-1,y-1,w+2,5);ctx.fillStyle='#10213c';ctx.fillRect(x,y,w,3);ctx.fillStyle=this.dead?'#8792a4':'#7addff';ctx.fillRect(x,y,w*Math.max(0,this.hp/this.maxHp),3);
       ctx.font='bold 9px monospace';ctx.textAlign='center';ctx.fillStyle=this.dead?'#9ca3af':'#bfeeff';ctx.fillText('★'.repeat(this.rank),this.x,y-3);
     }
   }
@@ -67,15 +72,15 @@ G.Squad = (() => {
   }
   function evolve(p){
     const choices=G.ExpeditionRules.next(p.dex);if(!choices.length)return;
-    const dex=G.U.pick(choices),mon=G.DEX_BY[dex],fraction=p.hp/p.maxHp,iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[p.ivDex]?.iv),s=G.MonProgression.stats(dex,iv);
-    p.mon=mon;p.dex=p.spriteDex=dex;p.baseHp=s.hp;p.baseAtk=s.atk;p.baseSpa=s.spa;p.baseDefense=s.defense;p.baseSpDef=s.spdef;p.baseSpd=s.spd;p.baseAgility=s.agility;p.baseStamina=s.stamina;
-    p.squadHpBonus=0;p.maxHp=s.hp*(1+p.statGrowth.hp);p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
+    const dex=G.U.pick(choices),mon=G.DEX_BY[dex],fraction=p.hp/p.maxHp,iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[dex]?.iv),s=G.MonProgression.stats(dex,iv);
+    p.mon=mon;p.dex=p.spriteDex=p.ivDex=dex;p.baseHp=s.hp;p.baseAtk=s.atk;p.baseSpa=s.spa;p.baseDefense=s.defense;p.baseSpDef=s.spdef;p.baseSpd=s.spd;p.baseAgility=s.agility;p.baseStamina=s.stamina;
+    p.squadHpBonus=0;p.qualityHpFactor=G.ExpeditionQuality?.factors(p).hp||1;p.maxHp=s.hp*(1+p.statGrowth.hp)*p.qualityHpFactor;p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
     G.Sprites.preload([dex]);
   }
   function consolidate(){
     let merged=true;while(merged){merged=false;
       for(let i=0;i<roster.length&&!merged;i++)for(let j=i+1;j<roster.length;j++){
-        const a=roster[i],b=roster[j];if(a.dex!==b.dex||a.rank!==b.rank||a.rank>=3)continue;
+        const a=roster[i],b=roster[j];if(G.MonProgression.rootFor(a.dex)!==G.MonProgression.rootFor(b.dex)||a.rank!==b.rank||a.rank>=3)continue;
         const ai=formation.indexOf(a),bi=formation.indexOf(b);if(bi>=0){formation[bi]=ai<0?a:null;if(ai<0){a.x=b.x;a.y=b.y;}}
         a.rank++;a.dead=a.dead&&b.dead;a.hp=a.dead?0:Math.max(a.hp,b.hp,1);G.Projectiles.clearOrbs(b);roster.splice(j,1);evolve(a);rankMove(a);refresh();G.SquadTraits?.merge(a,b);merged=true;break;
       }
@@ -83,10 +88,10 @@ G.Squad = (() => {
     refresh();
   }
   function recruit(dex,moveId=null,rank=1){
-    if(!canRecruit(dex,rank))return null;
+    dex=G.ExpeditionRules.formForRank(dex,rank);if(!canRecruit(dex,rank))return null;
     const p=new Member(dex,rank,moveId);p.level=captain.level;roster.push(p);G.ExpeditionGrowth?.sync(p);const slot=formation.indexOf(null);if(slot>=0)formation[slot]=p;consolidate();G.Sprites.preload([dex]);return p;
   }
-  function canRecruit(dex,rank=1){return !!captain&&Number.isInteger(rank)&&rank>=1&&rank<=3&&!!G.DEX_BY[dex]&&!!G.SPRITE_META[dex]&&(formation.includes(null)||reserves().length<RESERVE_LIMIT||rank<3&&roster.some(p=>p.dex===dex&&p.rank===rank));}
+  function canRecruit(dex,rank=1){dex=G.ExpeditionRules.formForRank(dex,rank);return !!captain&&Number.isInteger(rank)&&rank>=1&&rank<=3&&!!G.DEX_BY[dex]&&!!G.SPRITE_META[dex]&&(formation.includes(null)||reserves().length<RESERVE_LIMIT||rank<3&&roster.some(p=>G.MonProgression.rootFor(p.dex)===G.MonProgression.rootFor(dex)&&p.rank===rank));}
   function release(p){const i=roster.indexOf(p);if(i<0)return false;G.SquadTraits?.release(p);const slot=formation.indexOf(p);if(slot>=0)formation[slot]=null;for(const shot of [...G.Projectiles.all()])if(shot.owner===p)G.Projectiles.remove(shot);G.Combat?.clearFields(p);roster.splice(i,1);refresh();return true;}
   function reorder(index,dir){const j=index+dir;if(j<0||j>=roster.length)return false;[roster[index],roster[j]]=[roster[j],roster[index]];formation=Array.from({length:G.ExpeditionRules.capacity(level)-1},(_,i)=>roster[i]||null);refresh();return true;}
   function upgrade(){if(level>=G.ExpeditionRules.MAX_SHOP)return false;level++;formation.push(reserves()[0]||null);refresh();return true;}
@@ -129,8 +134,9 @@ G.Squad = (() => {
         point=p.idleTarget||{x:captain.x,y:captain.y};
         if(Math.hypot(p.x-captain.x,p.y-captain.y)<Math.max(100,front.length*13+30))pace=30+i%3*5;
       }
+      const sortie=G.SquadAssault?.plan(p,captain,point);if(sortie){point=sortie.point;pace=sortie.pace;}
       let dx=point.x-p.x,dy=point.y-p.y,len=Math.hypot(dx,dy);
-      if(gathering&&len>120){const dir=G.Path.dirFor(p,captain);if(dir){dx=dir[0];dy=dir[1];}}
+      if(gathering&&len>120&&!sortie){const dir=G.Path.dirFor(p,captain);if(dir){dx=dir[0];dy=dir[1];}}
       const angle=Math.atan2(dy,dx),step=Math.min(len,pace*(p.slowT>0?.5:1)*dt),ox=p.x,oy=p.y;
       for(const turn of [0,.7,-.7,1.3,-1.3]){
         const x=ox+Math.cos(angle+turn)*step,y=oy+Math.sin(angle+turn)*step;
@@ -142,7 +148,7 @@ G.Squad = (() => {
       if(p.stuckTime>2){
         const candidates=[{x:captain.x,y:captain.y}];for(let a=0;a<16;a++)candidates.push({x:captain.x+Math.cos(a*Math.PI/8)*42,y:captain.y+Math.sin(a*Math.PI/8)*42});
         const free=candidates.find(q=>(!G.World.isFree||G.World.isFree(q.x,q.y,p.r,true))&&(!G.World.arenaContains||G.World.arenaContains(q.x,q.y,p.r)));
-        if(free){p.x=free.x;p.y=free.y;p.stuckTime=0;p.idleTarget=null;moved=0;G.Projectiles.clearOrbs(p);}
+        if(free){p.x=free.x;p.y=free.y;p.stuckTime=0;p.idleTarget=null;moved=0;G.SquadAssault?.recalled(p);G.Projectiles.clearOrbs(p);}
       }
       // Sampled path targets can be reached between samples. Keep walking through these tiny gaps.
       p.walkGrace=moved>.01?.18:Math.max(0,(p.walkGrace||0)-dt);
@@ -152,7 +158,7 @@ G.Squad = (() => {
     // Reserves share level, but contribute neither attacks nor support talents.
     for(const p of roster)p.level=captain.level;
   }
-  function recover(){for(const p of roster){p.level=captain.level;p.dead=false;p.walking=false;p.walkGrace=0;p.followSpeed=0;p.hp=p.maxHp;p.invuln=1;G.MovePP?.restore(p,p.moves);p.anim._start?.('Idle',false);G.Projectiles.clearOrbs(p);}trail=[{x:captain.x,y:captain.y}];resetFollow();for(const p of roster){p.x=captain.x;p.y=captain.y;}}
+  function recover(){for(const p of roster){p.level=captain.level;G.SquadAssault?.reset(p);p.dead=false;p.walking=false;p.walkGrace=0;p.followSpeed=0;p.hp=p.maxHp;p.invuln=1;G.MovePP?.restore(p,p.moves);p.anim._start?.('Idle',false);G.Projectiles.clearOrbs(p);}trail=[{x:captain.x,y:captain.y}];resetFollow();for(const p of roster){p.x=captain.x;p.y=captain.y;}}
   function tags(p){return {types:p.mon.types,eggs:G.EGG_GROUPS[p.dex]||[15],skill:p.moves[0]?.kind};}
   function talent(p){if(G.SquadTraits){const d=G.SquadTraits.def(p);return {...d,name:G.SquadTraits.local(d.name),description:G.SquadTraits.description(p)};}const [key,value,name]=support[p.mon.types[0]]||support.normal;return {key,value:value*p.rank,name};}
   return {refresh,begin,reset,recruit,canRecruit,release,RESERVE_LIMIT,buffTargets,consolidate,reorder,place,bench,swap,reserves,upgrade,tick,recover,deployed,actors,growth,tags,talent,support,Member,rankMove,

@@ -30,18 +30,24 @@ G.ExpeditionRules = (() => {
     if(!save?.owned?.[dex])return 'white';const raw=save.owned[dex]?.iv||[],iv=G.MonProgression.normalizeIV(raw),sum=iv.reduce((a,b)=>a+b,0);
     return sum===248?'red':sum>=192?'orange':sum>=120?'purple':'blue';
   }
-  function shopMon(pool,level,rng=Math.random){
-    const cap=Math.min(5,1+Math.floor(level*.75)),candidates=pool.filter(p=>p.rarity<=cap);
-    if(!candidates.length)return pool[0];
-    const weighted=candidates.flatMap(p=>Array(Math.max(1,6-Math.abs(p.rarity-Math.ceil(level*.7))*2)).fill(p));
-    return weighted[Math.min(weighted.length-1,Math.floor(rng()*weighted.length))];
+  function formForRank(dex,rank,rng=Math.random){
+    if(!G.DEX_BY[dex]||!Number.isInteger(rank)||rank<1||rank>3)return dex;
+    const root=G.MonProgression.rootFor(dex),hint=G.MonProgression.pathFor(dex),depth=hint.indexOf(dex);let current=root;
+    for(let step=1;step<rank;step++){const children=next(current).filter(d=>G.DEX_BY[d]);if(!children.length)break;current=depth>=step&&children.includes(hint[step])?hint[step]:children[Math.min(children.length-1,Math.floor(rng()*children.length))];}
+    return current;
   }
-  const monCost=p=>18+p.rarity*12;
-  const rankRates=[[1,0,0],[.85,.15,0],[.65,.30,.05],[.45,.42,.13],[.25,.50,.25],[.10,.50,.40]];
+  const qualityRates=[[.70,.25,.05,0,0],[.50,.30,.17,.03,0],[.30,.35,.25,.09,.01],[.15,.30,.32,.20,.03],[.08,.20,.32,.32,.08],[.03,.10,.25,.40,.22]];
+  function shopMon(pool,level,rng=Math.random){
+    const families=[...new Map(pool.map(p=>[G.MonProgression.rootFor(p.dex),G.DEX_BY[formForRank(p.dex,1)]])).values()],q=p=>G.ExpeditionQuality?.quality(p)||p.rarity,buckets=Array.from({length:5},(_,i)=>families.filter(p=>q(p)===i+1)),rates=qualityRates[Math.max(0,Math.min(MAX_SHOP-1,Math.floor(level)-1))];
+    const sum=rates.reduce((n,w,i)=>n+(buckets[i].length?w:0),0);if(!sum)return families[Math.min(families.length-1,Math.floor(rng()*families.length))];
+    let roll=rng()*sum;for(let i=0;i<5;i++)if(buckets[i].length){roll-=rates[i];if(roll<0){const a=buckets[i];return a[Math.min(a.length-1,Math.floor(rng()*a.length))];}}return families[0];
+  }
+  const monCost=p=>18+(G.ExpeditionQuality?.quality(p)||p.rarity)*12;
+  const rankRates=Array.from({length:MAX_SHOP},()=>[1,0,0]);
   function shopRank(level,rng=Math.random){const rates=rankRates[Math.max(0,Math.min(MAX_SHOP-1,Math.floor(level)-1))];let n=rng();for(let i=0;i<3;i++){n-=rates[i];if(n<0)return i+1;}return 3;}
   function progress(input,old={}){
     const day=Math.max(0,Math.min(10000,Math.floor(Number(input?.day)||0))),arceus=!!(old.arceus||day>=60&&input?.arceus===true);
     return {day:Math.max(day,old.day||0),arceus,cashout:arceus&&day===60&&input?.cashout===true&&!(old.arceus&&old.cashout===false)};
   }
-  return {DAYS,COLS,MAX_SHOP,weights,matrix,reachable,cycleOf,capacity,upgradeCost,wave,generations,pool,next,border,shopMon,shopRank,rankRates,monCost,progress};
+  return {DAYS,COLS,MAX_SHOP,weights,matrix,reachable,cycleOf,capacity,upgradeCost,wave,generations,pool,next,border,formForRank,shopMon,shopRank,rankRates,qualityRates,monCost,progress};
 })();

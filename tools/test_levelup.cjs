@@ -9,7 +9,7 @@ function setup() {
   for (const f of ['js/core/util.js', 'js/data/moves.js']) vm.runInContext(fs.readFileSync(path.join(ROOT, f), 'utf8'), s);
   s.G.FX = { ring: noop, burst: noop }; s.G.Audio = { sfx: noop }; s.G.Progress = { event: noop };
   vm.runInContext(fs.readFileSync(path.join(ROOT, 'js/systems/levelup.js'), 'utf8').replace(
-    'return { offer, STATS, evolutionOffer };', 'return { offer, STATS, evolutionOffer, _candidates: candidates, _draw: draw };'), s);
+    'return { offer, STATS, TEAM_STATS, evolutionOffer };', 'return { offer, STATS, TEAM_STATS, evolutionOffer, _candidates: candidates, _draw: draw };'), s);
   let seed = 271828;
   s.Math.random = () => ((seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0) / 2 ** 32);
   s.player = (ids = ['ember']) => ({

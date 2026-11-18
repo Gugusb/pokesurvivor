@@ -14,5 +14,5 @@ test('explicit trained moves survive same-species merging and evolution instead 
  const s=setup(),g=s.G;const p=g.Squad.recruit(1,'vine-whip');assert.equal(p.moves[0].id,'vine-whip');g.Squad.recruit(1);assert.equal(g.Squad.roster.length,1);assert.equal(p.dex,2);assert.equal(p.rank,2);assert.equal(p.moves[0].id,'vine-whip');assert.equal(p.moves[0].lvl,5);
 });
 test('regional branch shop species have their exact supplied default and training can still select another legal move',()=>{
- const s=setup(),g=s.G;for(const dex of [133,134,863,903,864])assert.equal(new g.Squad.Member(dex).moves[0].id,g.FIXED_SKILLS[dex]);const p=new g.Squad.Member(1,1,'vine-whip');assert.equal(p.moves[0].id,'vine-whip');assert.ok(g.Moves.poolFor(g.DEX_BY[1]).length>1);
+ const s=setup(),g=s.G;for(const dex of [133,134,863,903,864]){const p=new g.Squad.Member(dex);assert.equal(p.dex,g.MonProgression.rootFor(dex));assert.equal(p.moves[0].id,g.FIXED_SKILLS[p.dex]);};const p=new g.Squad.Member(1,1,'vine-whip');assert.equal(p.moves[0].id,'vine-whip');assert.ok(g.Moves.poolFor(g.DEX_BY[1]).length>1);
 });
