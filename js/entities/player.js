@@ -34,6 +34,7 @@ G.Player = class Player {
     this.baseCoinMul = perks.coinMul || 1;
 
     const ivs = G.MonProgression ? G.MonProgression.values(this.dex) : Array(8).fill(16);
+    this.levelIV=ivs.slice();
     const ivm = G.MonProgression ? ivs.map(G.MonProgression.ivMod) : Array(8).fill(1);
     this.statGrowth = Object.assign({hp:0,atk:0,spa:0,defense:0,spdef:0,spd:0,agility:0,stamina:0},perks.statGrowth);
     this.baseHp = mon.hp * ivm[0];
@@ -112,10 +113,13 @@ G.Player = class Player {
   buffFraction(stat) { const b = this.buffs[stat]; return this.buffStacks(b) * b.amount; }
   get attackMultiplier() { return Math.max(0, this.atkMul +
     G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
-  get atk() { return this.baseAtk * (1+this.statGrowth.atk+this.buffFraction('atk')) * this.attackMultiplier; }
-  get spa() { return this.baseSpa * (1+this.statGrowth.spa+this.buffFraction('atk')) * this.attackMultiplier; }
-  get agility() { return this.baseAgility * (1+this.statGrowth.agility); }
-  get stamina() { return this.baseStamina * (1+this.statGrowth.stamina); }
+  levelMultiplier(key){return G.LevelGrowth?.of(this,key)||1;}
+  get maxHp(){return (this._maxHp||0)*this.levelMultiplier('hp');}
+  set maxHp(value){this._maxHp=value/this.levelMultiplier('hp');}
+  get atk() { return this.baseAtk * (1+this.statGrowth.atk+this.buffFraction('atk')) * this.attackMultiplier*this.levelMultiplier('atk'); }
+  get spa() { return this.baseSpa * (1+this.statGrowth.spa+this.buffFraction('atk')) * this.attackMultiplier*this.levelMultiplier('spa'); }
+  get agility() { return this.baseAgility * (1+this.statGrowth.agility)*this.levelMultiplier('agility'); }
+  get stamina() { return this.baseStamina * (1+this.statGrowth.stamina)*this.levelMultiplier('stamina'); }
   get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
   get ppInterval() { return G.MonProgression ? G.MonProgression.ppInterval(this.stamina) : 1; }
   isPrimaryMove(m) { const group=this.slots.find(g=>g.some(x=>x===m||x.id===m?.id));return !group||group===this.activeGroup(); }
@@ -130,8 +134,8 @@ G.Player = class Player {
   attackFor(move) { return move?.damageClass === 'special' ? this.spa : this.atk; }
   defenseFor(source) {
     const kind=source?.kind;
-    if (kind==='contact' || kind==='melee') return Math.max(.1,this.baseDefense*(1+this.statGrowth.defense+this.buffFraction('def')));
-    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,this.baseSpDef*(1+this.statGrowth.spdef+this.buffFraction('def')));
+    if (kind==='contact' || kind==='melee') return Math.max(.1,this.baseDefense*(1+this.statGrowth.defense+this.buffFraction('def')))*this.levelMultiplier('defense');
+    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,this.baseSpDef*(1+this.statGrowth.spdef+this.buffFraction('def')))*this.levelMultiplier('spdef');
     return 1;
   }
   get spd() {
@@ -140,7 +144,7 @@ G.Player = class Player {
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return s * (G.Abilities.slowImmune(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
-      (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1);
+      (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1)*this.levelMultiplier('spd');
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0)); }
   get flatRegen() { return this.regenFlat + this.baseHp*this.regenBase + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0); }
@@ -354,7 +358,8 @@ G.Player = class Player {
     this.attackDebuffT = Math.max(this.attackDebuffT, duration); return true;
   }
 
-  addMaxHp(amount) { amount *= G.Mega && G.Mega.active(this) ? G.Mega.HP : 1; this.maxHp += amount; this.hp += amount; }
+  addMaxHp(amount) { amount *= (G.Mega && G.Mega.active(this) ? G.Mega.HP : 1)*this.levelMultiplier('hp'); this.maxHp += amount; this.hp += amount; }
+  gainLevel(){const fraction=this.maxHp>0?this.hp/this.maxHp:1;this.level++;this.hp=Math.min(this.maxHp,this.maxHp*fraction);G.Abilities.onLevel(this);this.xpNext=G.Player.xpFor(this.level);}
 
   /** Devuelve cuántos niveles ha subido (pueden ser varios de golpe). */
   gainXp(amount) {
@@ -362,9 +367,7 @@ G.Player = class Player {
     let leveled = 0;
     while (this.xp >= this.xpNext) {
       this.xp -= this.xpNext;
-      this.level++;
-      G.Abilities.onLevel(this);
-      this.xpNext = Player.xpFor(this.level);
+      this.gainLevel();
       leveled++;
     }
     return leveled;

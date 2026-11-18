@@ -8,7 +8,7 @@ G.STARTER_ITEMS=[
     "type": "normal",
     "desc": "Daño de tipo normal +5%.",
     "descEn": "Normal-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "一般属性技能伤害提高5%。",
     "icon": "type:normal",
     "unlock": true
   },
@@ -20,7 +20,7 @@ G.STARTER_ITEMS=[
     "type": "fire",
     "desc": "Daño de tipo fire +5%.",
     "descEn": "Fire-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "火属性技能伤害提高5%。",
     "icon": "type:fire",
     "unlock": true
   },
@@ -32,7 +32,7 @@ G.STARTER_ITEMS=[
     "type": "water",
     "desc": "Daño de tipo water +5%.",
     "descEn": "Water-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "水属性技能伤害提高5%。",
     "icon": "type:water",
     "unlock": true
   },
@@ -44,7 +44,7 @@ G.STARTER_ITEMS=[
     "type": "grass",
     "desc": "Daño de tipo grass +5%.",
     "descEn": "Grass-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "草属性技能伤害提高5%。",
     "icon": "type:grass",
     "unlock": true
   },
@@ -56,7 +56,7 @@ G.STARTER_ITEMS=[
     "type": "electric",
     "desc": "Daño de tipo electric +5%.",
     "descEn": "Electric-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "电属性技能伤害提高5%。",
     "icon": "type:electric",
     "unlock": true
   },
@@ -68,7 +68,7 @@ G.STARTER_ITEMS=[
     "type": "ice",
     "desc": "Daño de tipo ice +5%.",
     "descEn": "Ice-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "冰属性技能伤害提高5%。",
     "icon": "type:ice",
     "unlock": true
   },
@@ -80,7 +80,7 @@ G.STARTER_ITEMS=[
     "type": "fighting",
     "desc": "Daño de tipo fighting +5%.",
     "descEn": "Fighting-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "格斗属性技能伤害提高5%。",
     "icon": "type:fighting",
     "unlock": true
   },
@@ -92,7 +92,7 @@ G.STARTER_ITEMS=[
     "type": "poison",
     "desc": "Daño de tipo poison +5%.",
     "descEn": "Poison-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "毒属性技能伤害提高5%。",
     "icon": "type:poison",
     "unlock": true
   },
@@ -104,7 +104,7 @@ G.STARTER_ITEMS=[
     "type": "ground",
     "desc": "Daño de tipo ground +5%.",
     "descEn": "Ground-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "地面属性技能伤害提高5%。",
     "icon": "type:ground",
     "unlock": true
   },
@@ -116,7 +116,7 @@ G.STARTER_ITEMS=[
     "type": "flying",
     "desc": "Daño de tipo flying +5%.",
     "descEn": "Flying-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "飞行属性技能伤害提高5%。",
     "icon": "type:flying",
     "unlock": true
   },
@@ -128,7 +128,7 @@ G.STARTER_ITEMS=[
     "type": "psychic",
     "desc": "Daño de tipo psychic +5%.",
     "descEn": "Psychic-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "超能力属性技能伤害提高5%。",
     "icon": "type:psychic",
     "unlock": true
   },
@@ -140,7 +140,7 @@ G.STARTER_ITEMS=[
     "type": "bug",
     "desc": "Daño de tipo bug +5%.",
     "descEn": "Bug-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "虫属性技能伤害提高5%。",
     "icon": "type:bug",
     "unlock": true
   },
@@ -152,7 +152,7 @@ G.STARTER_ITEMS=[
     "type": "rock",
     "desc": "Daño de tipo rock +5%.",
     "descEn": "Rock-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "岩石属性技能伤害提高5%。",
     "icon": "type:rock",
     "unlock": true
   },
@@ -164,7 +164,7 @@ G.STARTER_ITEMS=[
     "type": "ghost",
     "desc": "Daño de tipo ghost +5%.",
     "descEn": "Ghost-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "幽灵属性技能伤害提高5%。",
     "icon": "type:ghost",
     "unlock": true
   },
@@ -176,7 +176,7 @@ G.STARTER_ITEMS=[
     "type": "dragon",
     "desc": "Daño de tipo dragon +5%.",
     "descEn": "Dragon-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "龙属性技能伤害提高5%。",
     "icon": "type:dragon",
     "unlock": true
   },
@@ -188,7 +188,7 @@ G.STARTER_ITEMS=[
     "type": "dark",
     "desc": "Daño de tipo dark +5%.",
     "descEn": "Dark-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "恶属性技能伤害提高5%。",
     "icon": "type:dark",
     "unlock": true
   },
@@ -200,7 +200,7 @@ G.STARTER_ITEMS=[
     "type": "steel",
     "desc": "Daño de tipo steel +5%.",
     "descEn": "Steel-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "钢属性技能伤害提高5%。",
     "icon": "type:steel",
     "unlock": true
   },
@@ -212,7 +212,7 @@ G.STARTER_ITEMS=[
     "type": "fairy",
     "desc": "Daño de tipo fairy +5%.",
     "descEn": "Fairy-type damage +5%.",
-    "descZh": "对应属性技能伤害提高5%。",
+    "descZh": "妖精属性技能伤害提高5%。",
     "icon": "type:fairy",
     "unlock": true
   },

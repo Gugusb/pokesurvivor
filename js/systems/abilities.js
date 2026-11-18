@@ -32,7 +32,7 @@ G.Abilities = (() => {
     const baseHp = G.MonProgression ? G.MonProgression.stats(p.monStage || p.dex).hp : p.mon.hp;
     const hpScale = G.Mega && G.Mega.active(p) ? G.Mega.HP : 1;
     // Compare dimensionless permanent growth, never raw HP against speed or temporary buffs.
-    const scores = [p.maxHp / hpScale / baseHp, p.atkMul + s.growthAtk,
+    const scores = [p.maxHp / hpScale / baseHp / (p.levelMultiplier?.('hp')||1), p.atkMul + s.growthAtk,
       p.spdMul + s.growthSpeed, (1 + s.growthCooldown) / p.cdMul,
       1 / ((1 - Math.min(0.8, p.dmgReduce)) * s.defenseFactor)];
     const lowest = Math.min(...scores), ties = scores.map((v, i) => v <= lowest + 1e-8 ? i : -1).filter(i => i >= 0);

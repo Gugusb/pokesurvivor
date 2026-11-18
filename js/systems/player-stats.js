@@ -16,9 +16,9 @@ G.PlayerStats=(()=>{
       ['stamina','Resistencia base',p.baseStamina,p.stamina,0,G.T('Recuperación base')+' '+fmt(1/p.ppInterval)+' PP/s']
     ];
     return data.map(([key,name,base,total,skillFraction,battle])=>{
-      if(total==null)total=key==='atk'?base*p.atk/p.baseAtk:key==='spa'?base*p.spa/p.baseSpa:base*(pre(key)+skillFraction);
+      if(total==null)total=key==='atk'?base*p.atk/p.baseAtk:key==='spa'?base*p.spa/p.baseSpa:base*(pre(key)+skillFraction)*(p.levelMultiplier?.(key)||1);
       const permanent=base*(u[key]||0),fruit=base*((g[key]||0)-(u[key]||0)),skills=base*skillFraction,other=total-base-permanent-fruit-skills;
-      return {key,name,base,permanent,fruit,skills,other,total,battle};
+      return {key,name,base,permanent,fruit,skills,other,total,battle,levelFactor:p.levelMultiplier?.(key)||1};
     });
   }
   function cooldown(p,m){return Math.max(.05,m.cd*p.cdMul)*(p.agilityCooldownFor?.(m)||p.agilityCooldown)*(G.Items?.cooldownFactor(p)||1)*(G.Specialization?.stats(m).cooldown||1)/G.Abilities.cooldownRate(p,m)/(G.Mega?.cooldownRate(p,m)||1);}

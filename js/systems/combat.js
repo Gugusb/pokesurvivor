@@ -520,7 +520,7 @@ G.Combat = (() => {
     }
   }
 
-  function clearFields(owner) { fields = owner ? fields.filter(f => f.owner !== owner) : []; }
+  function clearFields(owner,moveId) { fields = owner ? fields.filter(f => f.owner !== owner || moveId&&f.m?.id!==moveId) : []; }
 
   function orbit(pl, m, dt, now, isGhost = false) {
     const rehit=m.remoteRehit||Math.max(.12,m.cd)*pl.cdMul/rateFor(pl,m);

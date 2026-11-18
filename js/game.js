@@ -95,6 +95,7 @@ G.Game = (() => {
     if(!coop&&!prepared){if(state==='ui')G.RunSetupUI.open();return;}
     G.BossRewards.reset();openMastery=false;
     if(startingRun)return;
+    G.SettingsUI?.enterMobileFull?.();
     holdBy = []; awayBy = null;
     const save = G.DB.save;
     // A run always starts at the first form, even when the selected Pokédex
@@ -152,7 +153,7 @@ G.Game = (() => {
     pl.banned = new Set(G.RunSetup.bans(save,save.partner));
     // Team level and level-up selections are owned by the host.
     if(!coop||coop.host===G.Net.uid)for(let n=0;n<(perks.startLevels||0);n++){
-      pl.level++;pl.xpNext=G.Player.xpFor(pl.level);G.Abilities.onLevel(pl);pendingLevels++;
+      pl.gainLevel();pendingLevels++;
     }
 
     if (coop) {
@@ -239,6 +240,7 @@ G.Game = (() => {
   function setSpeed(value, fromHost = false) {
     if (![1,1.5,2,3].includes(value) || !pl || !['playing','paused','held','levelup'].includes(state)) return false;
     if (G.Coop.active && !G.Coop.isHost && !fromHost) return false;
+    if(!fromHost&&value>1&&lowHealthSpeed()){G.UI.toast(G.T('Vida baja: velocidad limitada a 1×'));return false;}
     if(!fromHost&&!G.CardPacks?.speedAllowed(G.DB.save,value))return false;
     if(!fromHost)G.Settings.set('runSpeed',value);
     const changed=runSpeed!==value;
@@ -248,6 +250,9 @@ G.Game = (() => {
   }
 
   function cycleSpeed(){const all=G.CardPacks?.allowedSpeeds(G.DB.save)||[1];return setSpeed(all[(all.indexOf(runSpeed)+1)%all.length]);}
+  function openForget(){if(state!=='paused'||G.Coop.active||G.ZMoves?.busy(pl)||!(pl?.forgetTokens>0))return;state='forget';G.ForgetUI.open(pl,()=>{state='paused';G.RunUI.showPause();});}
+  function lowHealthSpeed(){return G.Settings.get('lowHealthSpeed')!==false&&pl&&!pl.dead&&pl.hp<pl.maxHp*.5;}
+  function guardSpeed(){if(runSpeed>1&&lowHealthSpeed()&&(!G.Coop.active||G.Coop.isHost))setSpeed(1);}
 
   /** Todos los jugadores de la partida (tú primero). */
   function everyone() { return G.Coop.active ? G.Coop.players() : [pl]; }
@@ -293,7 +298,7 @@ G.Game = (() => {
     syncTeam(t) {
       if (Math.abs(t.time - time) > 0.4) time = t.time;
       if (t.level > pl.level) G.Audio.sfx('xp');
-      for (let level = pl.level; level < t.level; level++) G.Abilities.onLevel(pl);
+      while(pl.level<t.level)pl.gainLevel();
       pl.level = t.level; pl.xp = t.xp; pl.xpNext = t.xpNext;
       pl.kills = t.kills; pl.bosses = t.bosses; pl.coins = t.coins;
       if(t.scoreCounts)scoreCounters=G.Difficulty.scoreCounts(t.scoreCounts);
@@ -722,6 +727,7 @@ G.Game = (() => {
   }
 
   function frame(ts) {
+    if(state==='playing')guardSpeed();
     const real = (ts - last) / 1000 || 0;
     let step = Math.min(1 / 30, real) * speedK;
     last = ts;
@@ -1030,11 +1036,11 @@ G.Game = (() => {
     debugTime(t) { tampered = true; time = t; },
     /** Para grabar vídeos: cámara lenta (0,5 = mitad de velocidad). */
     debugSpeed(k) { if (k > 1) tampered = true; speedK = k; },
-    togglePause,toggleBackpack,
+    togglePause,toggleBackpack,openForget,enforceSpeedSafety:guardSpeed,
     /** Abandona la partida en curso (p. ej. al cerrar sesión desde Ajustes). */
     quit() { if (state !== 'ui' && state !== 'over') quitRun(); },
     /** Para grabar vídeos: abre las cartas de subir de nivel. */
-    debugLevelUp() { tampered = true; pl.level++; pl.xpNext = G.Player.xpFor(pl.level); G.Abilities.onLevel(pl); pendingLevels++; },
+    debugLevelUp() { tampered = true; pl.gainLevel(); pendingLevels++; },
     debugItem(id) { if (G.Dev && G.Dev.canUse() && pl && G.Items.BY[id]) { tampered = true; onCollect({id:-1,kind:'item',value:id},pl); } },
     toUI() { state = 'ui'; Backdrop.restore(); },
     get state() { return state; }, get player() { return pl; }, st
@@ -1073,6 +1079,7 @@ G.Flow = {
       if (e.type === 'keydown' && ['Shift', 'Control', 'Alt', 'Meta', 'Tab'].includes(e.key)) return;
       e.preventDefault(); e.stopPropagation();
       G.Audio.unlock();
+      G.SettingsUI?.enterMobileFull?.();
       el.classList.add('hidden');
       el.removeEventListener('click', go); removeEventListener('keydown', go, true);
       then();

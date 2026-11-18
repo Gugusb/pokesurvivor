@@ -51,9 +51,9 @@ test('enemy defenses resolve the move category once, while status/environment da
  let sent;e.remote=true;G.Coop.hit=(enemy,dmg)=>sent=dmg;before=e.hp;e.hurt(100,'#fff',0,0,0,null,p,{damageClass:'special'});assert.equal(sent,100);assert.equal(before-e.hp,100);
 });
 test('evolution refreshes all six base stats and keeps earned HP, ratio and dual-attack upgrades',()=>{
- const s=fixture(),{G}=s,p=s.player(4);p.evolutionPath=[4,5,6];p.level=8;p.monStage=4;p.atkMul=1.4;p.maxHp+=60;p.hp=p.maxHp*.4;
+ const s=fixture(),{G}=s,p=s.player(4);p.evolutionPath=[4,5,6];p.level=8;p.monStage=4;p.atkMul=1.4;p.addMaxHp(60);p.hp=p.maxHp*.4;
  G.DB.save.owned[5]={at:1,iv:[31,1,2,31,30,29]};assert.equal(G.MonProgression.evolve(p,{dex:5}),true);const st=G.MonProgression.stats(5);
- close(p.baseAtk,st.atk);close(p.baseSpa,st.spa);close(p.baseDefense,st.defense);close(p.baseSpDef,st.spdef);close(p.baseSpd,st.spd);close(p.maxHp,st.hp+60);close(p.hp,p.maxHp*.4);close(p.atk/st.atk,1.4);close(p.spa/st.spa,1.4);
+ close(p.baseAtk,st.atk);close(p.baseSpa,st.spa);close(p.baseDefense,st.defense);close(p.baseSpDef,st.spdef);close(p.baseSpd,st.spd);close(p.maxHp,(st.hp+60)*p.levelMultiplier("hp"));close(p.hp,p.maxHp*.4);close(p.atk/st.atk,1.4*p.levelMultiplier("atk"));close(p.spa/st.spa,1.4*p.levelMultiplier("spa"));
 });
 test('P2P host reconstructs normal and evolved damage classes and applies only the target defense',()=>{
  const s=fixture(),{G}=s;let receive;G.Net={uid:'host',on:f=>receive=f,onPeer:noop};G.startMoveOf=()=> 'shadow-ball';G.Sprites.preload=noop;G.Game.st={time:1};s.load('js/net/coop.js');

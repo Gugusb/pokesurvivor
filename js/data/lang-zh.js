@@ -4043,3 +4043,13 @@ G.I18n.addChinese({
   "Vetar movimientos tiene acceso directo en el menú y la Pokédex. Busca tus Pokémon por nombre o número, busca movimientos y comparte los vetos con toda su familia evolutiva. Los límites desbloqueados y el movimiento inicial se conservan.": "主菜单和宝可梦详情新增技能禁用直达入口，支持按名称或编号搜索已拥有的宝可梦，也能搜索技能。禁用设置对整条进化家族生效，保留已解锁名额与初始技能保护。",
   "He dejado una pequeña lista junto a la puerta del taller. Quien cocina podrá revisar la mochila mientras yo sujeto el mapa; esta vez las casillas importantes están a la vista.": "我在开发室门边贴了一张小清单。做饭的那家伙检查背包，咱们就抱着地图等一会儿；这回重要的格子都摆在眼前，就不用翻箱倒柜啦。"
 });
+
+G.I18n.addChinese({
+  "Un paso más, a tu ritmo · v0.44.0": "慢一点，也能走得更远 · v0.44.0",
+  "En móvil, el juego intenta entrar en pantalla completa al arrancar y al confirmar la aventura. Por defecto, bajar del 50% de vida fuerza 1×; al curarte sigue en 1× hasta que la cambies. Puedes desactivar esta ayuda en Ajustes → Controles.": "手机启动与确认出发时会尝试自动全屏。默认在生命低于50%时强制回到1倍速，恢复后保持1倍速，需手动调整；可在设置→操作中关闭。",
+  "La preparación incluye atajos de habilidades y los interruptores de objetos desbloqueados. Retiramos el botón de vetos junto a Jugar. Los objetos elementales indican exactamente qué tipo mejoran.": "冒险准备页加入快捷技能槽与已解锁特殊道具开关，移除开始按钮旁的技能禁用按钮。属性增伤道具会明确写出对应的属性。",
+  "Los jefes de grieta ganan una reducción de daño independiente, que crece al perder vida. Las recompensas aleatorias de fuera de la aventura duplican su probabilidad; las garantizadas duplican su cantidad. La experiencia y la elección de objeto especial no se duplican.": "裂缝BOSS新增独立减伤，生命越低减伤越强。随机掉落的局外奖励掉率翻倍，必掉奖励数量翻倍；局内经验和特殊道具三选一保持原样。",
+  "El paquete Principiante añade Evento de olvido. Tras desbloquearlo, completar eventos especiales puede darte una oportunidad de olvidar una habilidad desde la pausa. Conservas al menos una habilidad.": "初心者包新增“技能遗忘事件”解锁卡。解锁后，完成特殊事件有小概率获得一次遗忘技能机会，可在暂停菜单使用，至少保留一个技能。",
+  "Sólo actúa la primera habilidad de desplazamiento activada. Si ya conoces una, las cartas de nivel no ofrecen aprender, mejorar ni evolucionar habilidades de desplazamiento. Cada nivel aumenta los ocho atributos con un multiplicador final según cada valor individual, hasta nivel 100.": "多个位移技能只生效最先开启的一个；拥有位移技能后，升级奖励不再出现位移技能的学习、强化及超武。升级时八项属性按各自个体值获得最终乘区，成长至100级。",
+  "He puesto una pequeña bandera junto al ritmo de la aventura. Quien cocina revisa el mapa y yo sujeto el termo: si la salud flojea, podemos bajar el paso y cuidar de nuestros compañeros antes de seguir.": "我在冒险的步调旁插了一面小旗。做饭的那家伙检查地图，我抱着热饮等一会儿：生命告急时，咱们放慢脚步，先照顾好伙伴再往前走。"
+});

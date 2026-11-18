@@ -30,7 +30,7 @@ function context(lang = 'zh', neutralStats = true) {
     'ready, register, login,', '_test: {newSave, migrate, sanitize}, ready, register, login,');
   vm.runInContext(db, s, { filename: 'js/core/db.js' }); G.DB.playAsGuest();
   s.load('js/systems/progression-mon.js');
-  for (const file of ['js/systems/abilities.js', 'js/systems/gacha.js', 'js/systems/ability-gacha.js', 'js/entities/player.js', 'js/entities/enemy.js']) s.load(file);
+  for (const file of ['js/systems/abilities.js', 'js/systems/gacha.js', 'js/systems/ability-gacha.js', 'js/systems/level-growth.js', 'js/entities/player.js', 'js/entities/enemy.js']) s.load(file);
   G.EnemyMgr = { all: () => s.enemies, queryCircle: (x,y,r) => s.enemies.filter(e => !e.dead && (e.x-x)**2+(e.y-y)**2 <= r*r) };
   s.player = (dex, ability) => {
     const p = new G.Player(G.DEX_BY[dex]); p.ability = ability || null;

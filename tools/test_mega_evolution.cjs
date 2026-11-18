@@ -109,13 +109,13 @@ test('dash post-guard reduces damage by 70% and real outgoing damage applies Meg
   p.hurt(13,null,true);close(p.maxHp-p.hp,3);p.megaDashGuard=0;p.invuln=0;
   p.x=0;p.y=0;G.EnemyMgr.rebuildGrid();const hp=e.hp;G.Combat.counterTackle(p,e);const tackle=G.Moves.instance('tackle');close(hp-e.hp,Math.round(tackle.dmg*p.atk*G.Types.mult('normal',e.types)*1.5));
 });
-test('every rift has a 20% Mega branch, excludes partial forms, and 5% awards are authority-driven and idempotent',()=>{
+test('every rift has a 20% Mega branch, excludes partial forms, and 10% awards are authority-driven and idempotent',()=>{
   const s=context(),{G}=s,p=s.player();s.loadRift();s.Math.random=()=>.1999;G.Rift._start();assert.ok(G.Rift.arena.mega);assert.equal(G.Mega.BY[G.Rift.arena.mega].basicComplete,true);
   let boss=G.EnemyMgr.get(G.Rift.arena.bossId);assert.equal(boss.spriteDex,G.Rift.arena.mega);assert.deepEqual(Array.from(boss.types),Array.from(G.MEGA_TYPES[boss.mega]));
-  const id=boss.mega;boss.die();G.EnemyMgr.clear();s.Math.random=()=>.0499;G.Rift.update(.01,p,100);assert.equal(G.Mega.owns(G.DB.save,id),false);G.Game.offerSpecialChoice=noop;G.BossRewards.receive(91,{rift:true,stone:id,options:G.Items.rewardChoices()});assert.ok(G.Mega.owns(G.DB.save,id));assert.equal(G.DB.save.abilityGems,11);
-  G.Rift.onEvent(['aw',id]);assert.equal(G.DB.save.abilityGems,11);
+  const id=boss.mega;boss.die();G.EnemyMgr.clear();s.Math.random=()=>.0999;G.Rift.update(.01,p,100);assert.equal(G.Mega.owns(G.DB.save,id),false);G.Game.offerSpecialChoice=noop;G.BossRewards.receive(91,{rift:true,stone:id,options:G.Items.rewardChoices()});assert.ok(G.Mega.owns(G.DB.save,id));assert.equal(G.DB.save.abilityGems,12);
+  G.Rift.onEvent(['aw',id]);assert.equal(G.DB.save.abilityGems,12);
   G.Rift.reset();s.Math.random=()=>.2;G.Rift._start();assert.equal(G.Rift.arena.mega,null);
-  G.Rift.reset();s.Math.random=()=>.1;G.Rift._start(null,'65-mega');boss=G.EnemyMgr.get(G.Rift.arena.bossId);boss.die();s.Math.random=()=>.05;G.Rift.update(.01,p,100);assert.equal(G.Mega.owns(G.DB.save,'65-mega'),false);
+  G.Rift.reset();s.Math.random=()=>.1;G.Rift._start(null,'65-mega');boss=G.EnemyMgr.get(G.Rift.arena.bossId);boss.die();s.Math.random=()=>.1;G.Rift.update(.01,p,100);assert.equal(G.Mega.owns(G.DB.save,'65-mega'),false);
 });
 test('co-op validates Mega species, applies one damage multiplier, pushes once and credits only the killer',()=>{
   const s=context(),{G}=s;let receive;G.Net={uid:'host',on:f=>receive=f,onPeer:noop};G.startMoveOf=()=> 'ember';s.load('js/net/coop.js');

@@ -15,7 +15,7 @@ test('purchased growth adds to berry growth, while combat buffs remain a separat
 test('evolving recalculates permanent and berry HP/growth and regeneration from the new form without granting lost health',()=>{
  const {G}=setup(),p=new G.Player(G.DEX_BY[4],G.Upgrades.perks({hp:10,atk:10,cd:8,def:8,regen:5}));p.level=8;p.monStage=4;p.evolutionPath=[4,5,6];p.growStat('hp',.12);p.hp=p.maxHp*.4;
  const choice=G.MonProgression.evolutionOptions(p).find(c=>c.dex===5);assert.ok(choice);G.Sprites.preload=()=>{};assert.ok(G.MonProgression.evolve(p,choice));
- close(p.maxHp,p.baseHp*1.42);close(p.hp,p.maxHp*.4);close(p.atk,p.baseAtk*1.4);close(p.agility,p.baseAgility*1.24);close(p.defenseFor({kind:'contact'}),p.baseDefense*1.4);close(p.regen,p.baseHp*.01);
+ close(p.maxHp,p.baseHp*1.42*p.levelMultiplier("hp"));close(p.hp,p.maxHp*.4);close(p.atk,p.baseAtk*1.4*p.levelMultiplier("atk"));close(p.agility,p.baseAgility*1.24*p.levelMultiplier("agility"));close(p.defenseFor({kind:'contact'}),p.baseDefense*1.4*p.levelMultiplier('defense'));close(p.regen,p.baseHp*.01);
 });
 test('saved levels and family sharing keep their meaning, clamp to existing caps, and utility upgrades keep their existing effects',()=>{
  const {G}=setup();G.DB.save.pupg[4]={hp:2,def:3,cd:4};const before=JSON.stringify(G.DB.save.pupg);G.DB._test.sanitize(G.DB.save);assert.equal(JSON.stringify(G.DB.save.pupg),before);assert.equal(G.DB.upgradesOf(6),G.DB.upgradesOf(4));

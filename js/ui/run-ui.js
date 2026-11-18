@@ -12,6 +12,7 @@ G.RunUI = (() => {
     heading.classList.toggle('hidden',evolution);evolutionHeading.classList.toggle('hidden',!evolution);
     evolutionHeading.textContent=G.T('Dirección evolutiva');
     $('lvl-num').textContent = level;
+    let growth=$('lvl-growth');if(!growth){growth=document.createElement('p');growth.id='lvl-growth';growth.className='level-growth-note';heading.insertAdjacentElement('afterend',growth);}growth.textContent=G.T('¡Todos los atributos del Pokémon han aumentado!');growth.hidden=evolution;
     $('lvl-wait').textContent = '';
     $('lvl-wait').classList.toggle('hidden', !coop);
     $('cards').classList.remove('done');
@@ -277,6 +278,7 @@ G.RunUI = (() => {
   }
 
   function showPause(coop = false) {
+    const forget=$('btn-forget');forget.hidden=coop||!(G.Game.player?.forgetTokens>0);forget.disabled=(G.Game.player?.moves.length||0)<=1||!!G.ZMoves?.busy(G.Game.player);forget.textContent=G.T('Olvidar movimiento')+' ×'+(G.Game.player?.forgetTokens||0);forget.onclick=()=>G.Game.openForget();
     G.UI.soundControls($('pause-sound'));
     const bag=$('pause-items');if(bag){const entries=Object.entries(G.Game.player?.specialItems||{});bag.innerHTML='<h3>'+G.T('Objetos especiales')+'</h3>'+entries.map(([id,n])=>'<div>'+G.Icons.html(G.Items.icon(id),24)+' <b>'+G.T(G.Items.BY[id].name)+' ×'+n+'</b><small>'+G.T(G.Items.BY[id].desc)+'</small></div>').join('');}
     $('pause-coop').classList.toggle('hidden', !coop);

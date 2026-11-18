@@ -20,7 +20,7 @@ G.BackpackUI=(()=>{
       row.append(node('strong','',T(r.name)),node('b','bag-total',fmt(r.total)));
       const equation=node('div','bag-equation');equation.append(node('span','bag-base','= '+fmt(r.base)));
       for(const [key,title]of [['permanent','Mejoras permanentes'],['fruit','Bayas'],['skills','Movimientos'],['other','Otros efectos']]){const el=node('span','bag-'+key,'('+(r[key]>=0?'+':'')+fmt(r[key])+')');el.title=T(title);equation.append(el);}
-      row.append(equation,node('small','bag-battle',r.battle));stats.append(row);
+      row.append(equation,node('small','bag-battle',r.battle+' · '+T('Multiplicador final de nivel')+' ×'+(+r.levelFactor.toFixed(4)).toLocaleString(G.I18n.lang,{maximumFractionDigits:4})));stats.append(row);
     }
     $('backpack-def-note').textContent=T('Reducción adicional')+' '+fmt(p.reduction*100)+'% · '+T('Principal')+' · '+T('Recuperación al usar')+' '+fmt(.7/p.ppInterval)+' PP/s · '+T('Sin usar')+' '+fmt(1.5*(G.Abilities.has(p,'innerfocus')?1.2:1)/p.ppInterval)+' PP/s';
     const moves=$('backpack-moves'),existing=new Map([...moves.children].map(el=>[el.dataset.move,el]));

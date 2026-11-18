@@ -77,7 +77,7 @@
 }
 </script>
 
-<link rel="stylesheet" href="css/style.css?v=0c494de3d8">
+<link rel="stylesheet" href="css/style.css?v=81a70fdd6a">
 </head>
 <body>
 
@@ -181,7 +181,6 @@
       <div class="menu-list">
         <div class="play-row">
           <button class="menu-item play" data-go="play">Jugar<small>Prepara tu aventura</small></button>
-          <button class="menu-item" data-go="moves">Vetar movimientos<small>Busca un Pokémon y prepara sus movimientos</small></button>
           <div class="difficulty-picker"><label for="menu-difficulty">Dificultad</label><select id="menu-difficulty"></select><small id="difficulty-note"></small></div>
         </div>
         <button class="menu-item" data-go="dex">Pokémon<small id="menu-dex-count">Tu colección</small></button>
@@ -585,6 +584,7 @@
     <div id="pause-sound" class="sound-inline"></div>
     <div class="row" style="justify-content:center">
       <button id="btn-resume" class="btn gold">Continuar</button>
+      <button id="btn-forget" class="btn" hidden>Olvidar movimiento</button>
       <button id="btn-run-speed" class="btn">Velocidad: 1×</button>
       <button id="btn-pause-settings" class="btn">Ajustes</button>
       <button id="btn-quit" class="btn">Abandonar run</button>
@@ -592,6 +592,7 @@
   </div>
 </section>
 
+<section id="scr-forget" class="scr dim hidden"><div class="box" style="width:min(520px,100%)"><h2>Olvidar movimiento</h2><p>Elige un movimiento para olvidarlo. Debes conservar al menos uno.</p><div id="forget-choices" class="forget-choices"></div><button id="forget-back" class="btn">Volver sin gastar</button></div></section>
 <section id="scr-over" class="scr dim hidden">
   <div class="box center" style="width:min(480px,100%)">
     <h2 id="over-title">Has caído…</h2>
@@ -606,6 +607,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=0c494de3d8"></script>
+<script defer src="js/app.min.js?v=81a70fdd6a"></script>
 </body>
 </html>

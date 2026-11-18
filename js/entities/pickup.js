@@ -27,7 +27,7 @@ G.Pickups = (() => {
   };
   /** Probabilidad de que un Pokémon normal suelte un ticket del gacha. */
   const BOSS_T10 = 1 / 3;               // ticket ×10 de un jefe normal
-  const LEGEND_T10 = 1 / 2;             // ticket ×10 del legendario de la grieta
+  const LEGEND_T10 = 1;                 // Rift chance doubled from 50% to 100%.
   const TICKET_RATE = 1 / 400;          // (antes 1/260; más raros desde 2026-10-10)
 
   function clear() { list = []; }

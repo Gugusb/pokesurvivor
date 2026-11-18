@@ -9,7 +9,7 @@ G.BossRewards=(()=>{
     if(!Number.isSafeInteger(id)||id<1||opened.has(id)||!data||typeof data.rift!=='boolean'||!Array.isArray(data.options)||data.options.length!==3||new Set(data.options).size!==3||data.options.some(i=>!G.Items.BY[i]))return false;
     if(data.stone&&!G.Mega?.BY[data.stone])return false;
     opened.add(id);
-    if(data.rift){G.Game.recordLoot?.('gems',null,1);G.DB.save.abilityGems=(G.DB.save.abilityGems||0)+1;G.DB.commit(true);G.UI.toast(G.T('+1 Gema de habilidad'));}
+    if(data.rift){G.Game.recordLoot?.('gems',null,2);G.DB.save.abilityGems=(G.DB.save.abilityGems||0)+2;G.DB.commit(true);G.UI.toast(G.T('+2 Gemas de habilidad'));}
     if(data.rift&&data.stone)G.Mega.award(data.stone);
     const bonus=G.FailureProtection?.lootBonus(G.Game.player)||0;
     const blocked=data.options.some(id=>G.Items.BY[id].unlock&&!G.CardPacks?.enabled(G.DB.save,id));
@@ -22,8 +22,8 @@ G.BossRewards=(()=>{
     const data={rift,stone:rift?value.stone:null,options:G.Items.rewardChoices(Math.random,rift)};
     if(!receive(p.id,data))return false;
     G.Pickups.dropXp(p.x,p.y,value.xp,true,rift);
-    for(let i=0;i<10;i++)G.Pickups.drop('coin',p.x+G.U.rand(-40,40),p.y+G.U.rand(-30,30),5);
-    if(rift){for(let i=0;i<10;i++)G.Pickups.drop('coin',p.x+G.U.rand(-50,50),p.y+G.U.rand(-35,35),8);for(let i=0;i<3;i++)G.Pickups.drop('ticket',p.x+G.U.rand(-30,30),p.y+G.U.rand(-20,20),1);}
+    for(let i=0;i<10;i++)G.Pickups.drop('coin',p.x+G.U.rand(-40,40),p.y+G.U.rand(-30,30),rift?10:5);
+    if(rift){for(let i=0;i<10;i++)G.Pickups.drop('coin',p.x+G.U.rand(-50,50),p.y+G.U.rand(-35,35),16);for(let i=0;i<3;i++)G.Pickups.drop('ticket',p.x+G.U.rand(-30,30),p.y+G.U.rand(-20,20),2);}
     G.FX.ring(p.x,p.y,8,100,rift?'#cf9cff':'#ffd95e',.7,4);G.Audio.sfx('legend');
     if(G.Coop.isHost)G.Coop.broadcast(['bc',p.id,data]);
     return true;

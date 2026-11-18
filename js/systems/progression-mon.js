@@ -79,13 +79,13 @@ G.MonProgression = (() => {
     if(!allowed)return false;
     const oldDex=p.monStage || p.dex, oldBase=stats(oldDex).hp, fraction=p.maxHp>0?p.hp/p.maxHp:1;
     if(G.Mega?.active(p))G.Mega.finish(p);
-    const growthHp=p.statGrowth?.hp||0,bonus=p.maxHp-oldBase*(1+growthHp), next=choice.dex, ivs=values(next), mon=G.DEX_BY[next], dir=p.anim?.dir || 0;
+    const growthHp=p.statGrowth?.hp||0,bonus=p.maxHp/(p.levelMultiplier?.('hp')||1)-oldBase*(1+growthHp), next=choice.dex, ivs=values(next), mon=G.DEX_BY[next], dir=p.anim?.dir || 0;
     p.evolutionPath=allowed.path.slice();p.monStage=p.dex=next;
     p.mon={...mon,types:mon.types.slice()};p.spriteDex=next;
     const nextStats=stats(next,ivs);
     p.baseAtk=nextStats.atk;p.baseSpa=nextStats.spa;p.baseDefense=nextStats.defense;p.baseSpDef=nextStats.spdef;p.baseSpd=nextStats.spd;
     p.baseHp=nextStats.hp;p.baseAgility=nextStats.agility;p.baseStamina=nextStats.stamina;
-    p.maxHp=Math.max(1,nextStats.hp*(1+growthHp)+bonus);p.hp=Math.min(p.maxHp,p.maxHp*fraction);
+    p.levelIV=ivs.slice();p.maxHp=Math.max(1,nextStats.hp*(1+growthHp)+bonus)*(p.levelMultiplier?.('hp')||1);p.hp=Math.min(p.maxHp,p.maxHp*fraction);
     p.anim=new G.Sprites.Animator(next,1,p.shiny);p.anim.dir=dir;
     p.r=G.Sprites.bodyRadius(next);p.bodyH=G.Sprites.bodyHeight(next);G.Sprites.preload([next],8000,p.shiny);
     p.ability=G.Abilities?.equipped(G.DB.save,next) || null;

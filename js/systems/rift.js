@@ -182,7 +182,7 @@ G.Rift = (() => {
       keepInside();
       const boss = G.EnemyMgr.get(arena.bossId);
       if (boss && boss.dead || arena.defeated) {
-        const stone = arena.mega && (forceStone || Math.random() < 0.05) ? arena.mega : null;
+        const stone = arena.mega && (forceStone || Math.random() < 0.10) ? arena.mega : null;
         if (arena.mega) forceStone = false;
         G.Coop.isHost && G.Coop.broadcast(['aw', stone]); won(stone); return;
       }

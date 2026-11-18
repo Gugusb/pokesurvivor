@@ -62,7 +62,7 @@ const { chromium } = require(
       contexts.push(c);
       pages.push(p);
       p.on("pageerror", (e) => errors.push(e.message));
-      await p.goto(base + "/dev.html");
+      await p.goto(base + "/dev.html", {waitUntil:'domcontentloaded'});
       await p.waitForFunction(
         () =>
           !document.getElementById("tap-start").classList.contains("hidden") ||
@@ -128,7 +128,7 @@ const { chromium } = require(
     );
     await pages[1].waitForFunction(() => window.qaProbe?.length === 60000);
     assert.equal((await pages[1].evaluate(() => window.qaProbe)).from, ids[0]);
-    await host.locator("#lobby-start").click();
+    await host.locator("#lobby-start").click({noWaitAfter:true});
     await Promise.all(
       pages.map((p) =>
         p.waitForFunction(() => G.Coop.active && G.Game.state === "playing"),
@@ -232,7 +232,7 @@ const { chromium } = require(
           return fill.call(this, t, ...a);
         };
       });
-      await p.goto(base + "/");
+      await p.goto(base + "/", {waitUntil:'domcontentloaded'});
       await p.waitForFunction(
         () =>
           !document.getElementById("tap-start").classList.contains("hidden") ||
@@ -275,7 +275,7 @@ const { chromium } = require(
     assert.ok(
       (await built[0].locator("#lobby-members").textContent()).includes("P2P"),
     );
-    await built[0].locator("#lobby-start").click();
+    await built[0].locator("#lobby-start").click({noWaitAfter:true});
     await Promise.all(
       built.map((p) =>
         p.waitForFunction(() => window.qaTime >= 3 && window.qaP2P),

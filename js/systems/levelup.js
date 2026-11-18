@@ -46,7 +46,7 @@ G.LevelUp = (() => {
       // llenar los 4 huecos con ellos deja la run sin salida.
       const buffs = pl.moves.filter(m => m.kind === 'buff').length;
       const pool = G.Moves.poolFor(pl.mon).filter(id =>
-        !pl.hasMove(id) && !(pl.banned && pl.banned.has(id)) && !(buffs >= 2 && G.Moves.BY_ID[id].kind === 'buff'));
+        !pl.hasMove(id) && !(pl.banned && pl.banned.has(id)) && !(buffs >= 2 && G.Moves.BY_ID[id].kind === 'buff') && !(G.Moves.BY_ID[id].kind==='dash'&&pl.moves.some(m=>m.kind==='dash')));
       for (const id of pool) {
         const d = G.Moves.BY_ID[id];
         out.push({
@@ -62,6 +62,7 @@ G.LevelUp = (() => {
     // --- evoluciones: movimiento al máximo + su condición cumplida ---
     const waiting = {};                   // stat -> movimiento que la espera para evolucionar
     for (const m of pl.moves) {
+      if(m.kind==='dash')continue;
       const ev = G.Moves.evoInfo(m, pl.statsTaken);
       if (!ev) continue;
       if (!ev.ready) { waiting[ev.needs]=m;if(ev.needs==='atk')waiting.spa=m;if(ev.needs==='def')waiting.spdef=m;continue; }
@@ -81,6 +82,7 @@ G.LevelUp = (() => {
 
     // --- mejoras de movimientos que ya tienes ---
     for (const m of pl.moves) {
+      if(m.kind==='dash')continue;
       const txt = G.Moves.nextUpText(m);
       if (!txt) continue;
       out.push({

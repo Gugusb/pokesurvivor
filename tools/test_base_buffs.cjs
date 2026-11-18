@@ -57,7 +57,7 @@ test('Clear Body, Mega effective stacks and specialization power preserve base-s
 test('base-stat effects survive evolution and use the evolved IV-adjusted bases',()=>{
   const s=setup(),{G}=s,p=s.player(4);p.evolutionPath=[4,5,6];p.monStage=4;p.growStat('atk',.5);p.growStat('defense',.3);
   const a=G.Moves.instance('swords-dance'),d=G.Moves.instance('harden');p.addBuff(a.stat,a.amount,a.dur,a.stacks);p.addBuff(d.stat,d.amount,d.dur,d.stacks);
-  p.level=25;assert.ok(G.MonProgression.evolve(p,{dex:5}));assert.ok(G.MonProgression.evolve(p,{dex:6}));assert.equal(p.monStage,6);close(p.atk,p.baseAtk*(1.5+a.amount));close(p.defenseFor({kind:'contact'}),p.baseDefense*(1.3+d.amount));
+  p.level=25;assert.ok(G.MonProgression.evolve(p,{dex:5}));assert.ok(G.MonProgression.evolve(p,{dex:6}));assert.equal(p.monStage,6);close(p.atk,p.baseAtk*(1.5+a.amount)*p.levelMultiplier("atk"));close(p.defenseFor({kind:'contact'}),p.baseDefense*(1.3+d.amount)*p.levelMultiplier("defense"));
 });
 
 test('Aqua Ring restores a percentage of missing HP rather than flat HP or maximum HP',()=>{

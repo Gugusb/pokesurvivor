@@ -14,7 +14,7 @@ G.SettingsUI = (() => {
   G.I18n.addChinese({'Todos los huecos pueden actuar a la vez. El seleccionado es principal; los demás usan la mitad de agilidad y aguante.':'所有技能槽可同时释放。选中槽为主要技能，其余技能按一半敏捷与耐力结算。','Principal':'主','Secundario':'副','Agilidad efectiva':'结算敏捷','Aguante efectivo':'结算耐力'});
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '0.43.0 · 2026-11-18';
+  const VERSION = '0.44.0 · 2026-11-18';
   const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 
@@ -60,6 +60,7 @@ G.SettingsUI = (() => {
     }
     setTimeout(() => { if (isOpen()) render(); }, 300);
   }
+  function enterMobileFull(){if((G.Settings.touch||navigator.maxTouchPoints>0)&&canFull()&&!isFull()&&!standalone()){try{toggleFull();}catch(e){/* Unsupported requests must never stop startup. */}}}
 
   // ---------------- piezas ----------------
   function section(title, sub) { return `<h3 class="set-h">${esc(title)}</h3>${sub ? `<p class="sub">${sub}</p>` : ''}`; }
@@ -104,6 +105,7 @@ G.SettingsUI = (() => {
         + choice('castMode',[['auto','Siempre activo'],['toggle','Activar o desactivar'],['click','Un lanzamiento por clic']])
         + section('Velocidad preferida','Desbloquea velocidades en los paquetes.')
         + choice('runSpeed',[[1,'1×'],[1.5,'1.5×'],[2,'2×'],[3,'3×']])
+        + toggle('lowHealthSpeed','Vida baja: velocidad 1×','Por debajo del 50% de vida, vuelve a 1× y permanece así hasta que la cambies.')
         + toggle('manualAim','Apuntado manual','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.')
         + section('En móvil o tablet')
         + `<p class="sub">Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.</p>`
@@ -167,10 +169,10 @@ G.SettingsUI = (() => {
   }
 
   function wire(box) {
-    box.querySelectorAll('.switch[data-k]').forEach(b => { b.onclick = () => { G.Settings.set(b.dataset.k, !G.Settings.get(b.dataset.k)); render(); }; });
+    box.querySelectorAll('.switch[data-k]').forEach(b => { b.onclick = () => { G.Settings.set(b.dataset.k, !G.Settings.get(b.dataset.k));if(b.dataset.k==='lowHealthSpeed')G.Game.enforceSpeedSafety?.();render(); }; });
     box.querySelectorAll('.chip[data-k]').forEach(b => {
       if(b.dataset.k==='runSpeed'&&!G.CardPacks.speedAllowed(G.DB.save,+b.dataset.v)){b.disabled=true;b.textContent+=' · '+G.T('Bloqueado');}
-      b.onclick = () => { const v = b.dataset.v; G.Settings.set(b.dataset.k, isNaN(+v) ? v : +v);if(b.dataset.k==='runSpeed')G.Game.setSpeed(+v);render(); };
+      b.onclick = () => { const v = b.dataset.v;if(b.dataset.k==='runSpeed'){if(G.Game.state==='ui'||G.Game.setSpeed(+v))G.Settings.set('runSpeed',+v);}else G.Settings.set(b.dataset.k,isNaN(+v)?v:+v);render(); };
     });
     const zoom = $('set-zoom');
     if (zoom) {
@@ -203,5 +205,5 @@ G.SettingsUI = (() => {
     G.DB.logout().then(() => G.Flow.toLogin());
   }
 
-  return { init, open, close, get isOpen() { return isOpen(); } };
+  return { init, open, close, enterMobileFull, get isOpen() { return isOpen(); } };
 })();

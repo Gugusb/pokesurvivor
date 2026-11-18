@@ -18,6 +18,7 @@ G.CardPacks=(()=>{
  ];
  const speedCards=[1.5,2,3].map(value=>({id:'speed:'+value,kind:'speed',key:value,max:1,name:{es:'Velocidad '+value+'×',en:value+'× Speed',zh:value+'倍速权限'},desc:{es:'Desbloquea esta velocidad de juego',en:'Unlocks this game speed',zh:'解锁此游戏速度，可在操作设置中选择'},icon:'clock'}));
  packs[0].cards.push(...speedCards.slice(0,2));packs[1].cards.push(speedCards[2]);
+ packs[0].cards.push({id:'event:forget',kind:'event',key:'forget',max:1,name:{es:'Evento de olvido',en:'Move Forgetting Event',zh:'技能遗忘事件'},desc:{es:'Los eventos especiales pueden conceder una oportunidad de olvidar un movimiento.',en:'Special events can grant an opportunity to forget one move.',zh:'解锁后，完成特殊事件有小概率获得 1 次本局遗忘技能机会，可在暂停菜单使用。'},icon:'book'});
  const cards=packs.flatMap(p=>p.cards),BY=Object.assign(Object.create(null),Object.fromEntries([...cards,legacy].map(c=>[c.id,c])));
  const packBy=Object.assign(Object.create(null),Object.fromEntries(packs.map(p=>[p.id,p])));
  const available=(s,p,c)=>Math.max(0,c.max-(p.taken[c.id]||0))*(c.kind==='z'&&G.ZAccess?.allowed(s,c.key)?0:1);
@@ -98,6 +99,6 @@ G.CardPacks=(()=>{
  const speedAllowed=(s,value)=>value===1||speedCards.some(c=>c.key===value&&normalize(s).taken[c.id]>0);
  const allowedSpeeds=s=>[1,...speedCards.filter(c=>normalize(s).taken[c.id]>0).map(c=>c.key)];
  function grantToken(s,id,n=1){const p=normalize(s);if(!packBy[id]||!Number.isSafeInteger(n)||n<1)return false;p.tokens[id]=Math.min(1e6,p.tokens[id]+n);return true;}
- function rollBoss(rift=false,rng=Math.random){return rng()<(rift?.2:.1)?(rng()<.75?'beginner':'breakthrough'):null;}
+ function rollBoss(rift=false,rng=Math.random){return rng()<(rift?.4:.1)?(rng()<.75?'beginner':'breakthrough'):null;}
  return {settlement,resume,apply,reconcile,drawMany,speedAllowed,allowedSpeeds,grantToken,rollBoss,PRICE,packs,packBy,skills,items,cards,BY,themes,local,normalize,levels,remaining,draw,choose,toggle,equip,enabled};
 })();

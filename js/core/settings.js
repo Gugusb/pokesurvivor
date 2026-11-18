@@ -18,7 +18,7 @@ G.Settings = (() => {
   try { Object.assign(s, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* nada */ }
   const zoomValue = v => typeof v === 'number' && Number.isFinite(v) ? Math.round(Math.max(0.5, Math.min(1.5, v)) * 20) / 20 : 1;
   s.zoom = zoomValue(s.zoom);
-  s.manualAim=s.manualAim===true;s.hostileRed=s.hostileRed===true;s.runSpeed=[1,1.5,2,3].includes(s.runSpeed)?s.runSpeed:1;
+  s.lowHealthSpeed=s.lowHealthSpeed!==false;s.manualAim=s.manualAim===true;s.hostileRed=s.hostileRed===true;s.runSpeed=[1,1.5,2,3].includes(s.runSpeed)?s.runSpeed:1;
   if(!['auto','toggle','click'].includes(s.castMode))s.castMode='auto';
   if(!['superpotion','none'].includes(s.activeItem))s.activeItem='superpotion';
   const fns = new Set();
@@ -28,9 +28,10 @@ G.Settings = (() => {
   let autoLevel = touchy ? 1 : 2;
   let acc = 0, frames = 0, slowT = 0, fastT = 0;
 
+  DEF.lowHealthSpeed=true;
   function save() { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) { /* nada */ } }
   function get(k) { return s[k]; }
-  function set(k, v) { if(k==='runSpeed'&&![1,1.5,2,3].includes(v))return; if(['manualAim','hostileRed'].includes(k)&&typeof v!=='boolean')return; if(k==='castMode'&&!['auto','toggle','click'].includes(v))return;if(k==='activeItem'&&!['superpotion','none'].includes(v))return;if (k === 'zoom') v = zoomValue(v); s[k] = v; save(); fns.forEach(fn => { try { fn(k, v); } catch (e) { /* nada */ } }); }
+  function set(k, v) { if(k==='runSpeed'&&![1,1.5,2,3].includes(v))return; if(['manualAim','hostileRed','lowHealthSpeed'].includes(k)&&typeof v!=='boolean')return; if(k==='castMode'&&!['auto','toggle','click'].includes(v))return;if(k==='activeItem'&&!['superpotion','none'].includes(v))return;if (k === 'zoom') v = zoomValue(v); s[k] = v; save(); fns.forEach(fn => { try { fn(k, v); } catch (e) { /* nada */ } }); }
 
   /** Lo llama el bucle del juego en cada fotograma (sólo durante la partida). */
   function sample(dt) {

@@ -75,10 +75,10 @@ test('Sheer Force strips real melee and projectile debuffs, knockback and drain 
 test('level growth procs once for every XP level and extra card choices never create growth',()=>{
   const s=context(),{G}=s,p=s.player(888,'intrepidsword'),base=p.atk;
   const cost=G.Player.xpFor(1)+G.Player.xpFor(2)+G.Player.xpFor(3);
-  assert.equal(p.gainXp(cost),3);approx(p.atk,base*1.06);
-  G.Abilities.levelChoices(p);G.Abilities.levelChoices(p);approx(p.atk,base*1.06);
+  assert.equal(p.gainXp(cost),3);approx(p.atk/p.levelMultiplier("atk"),base*1.06);
+  G.Abilities.levelChoices(p);G.Abilities.levelChoices(p);approx(p.atk/p.levelMultiplier("atk"),base*1.06);
   p.ability='dauntlessshield';p.gainXp(p.xpNext);p.maxHp=p.hp=100;p.dmgReduce=.4;
-  p.hurt(100,null,false,{kind:'ranged'});approx(p.hp,100-60*.99);
+  p.hurt(100,null,false,{kind:'ranged'});approx(p.hp,100-60*.99/p.defenseFor({kind:"ranged"}));
   p.invuln=0;p.hp=100;p.hurt(100,null,true,{kind:'attack'});approx(p.hp,1);
 });
 
@@ -783,17 +783,17 @@ test('a real local account retains spent gems, unlocked medals and equipment aft
   assert.equal(G.DB.save.abilityGems, 3); assert.equal(G.Abilities.equipped(G.DB.save, 144), 'snowcloak');
   assert.equal(G.Abilities.equipped(G.DB.save, 149), 'multiscale');
 });
-test('rift chest opening awards one gem; victory alone and duplicate opening award none', () => {
+test('rift chest opening awards two gems; victory alone and duplicate opening award none', () => {
   const s = context(), { G } = s, p = s.player(144, 'pressure');
   G.Game.player = p; G.Progress = { event: noop }; G.Pickups = { pullAll: noop,drop:(kind,x,y,value)=>({id:91,kind,x,y,value}) };G.EnemyMgr.get=()=>null;G.Game.st={time:100};G.Game.offerSpecialChoice=noop; G.Spawner = { say: noop };
   const source = fs.readFileSync(path.join(ROOT, 'js/systems/rift.js'), 'utf8').replace(
     'reset, update, drawable,', '_setArena(a) { arena = a; }, reset, update, drawable,');
   vm.runInContext(source, s);
   G.Rift._setArena({ phase: 'fight', dex: 150, type: 'psychic' });
-  G.Rift.onEvent(['aw']); assert.equal(G.DB.save.abilityGems, 10); assert.equal(p.bonds, 0);G.BossRewards.receive(91,{rift:true,stone:null,options:G.Items.rewardChoices()});assert.equal(G.DB.save.abilityGems,11);
-  G.Rift.onEvent(['aw']); assert.equal(G.DB.save.abilityGems, 11);
+  G.Rift.onEvent(['aw']); assert.equal(G.DB.save.abilityGems, 10); assert.equal(p.bonds, 0);G.BossRewards.receive(91,{rift:true,stone:null,options:G.Items.rewardChoices()});assert.equal(G.DB.save.abilityGems,12);
+  G.Rift.onEvent(['aw']); assert.equal(G.DB.save.abilityGems, 12);
   G.Rift._setArena({ phase: 'fight', dex: 150, type: 'psychic' }); G.Rift.onEvent(['al']);
-  assert.equal(G.DB.save.abilityGems, 11);
+  assert.equal(G.DB.save.abilityGems, 12);
 });
 test('enemy hazard source distinguishes ranged magic, contact strikes and environmental damage', () => {
   const s = context(), { G } = s, p = s.player(144, 'snowcloak'), e = s.enemy();

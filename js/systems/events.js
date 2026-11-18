@@ -94,6 +94,7 @@ G.Events = (() => {
     if (!cur) return;
     if(success&&G.ZMoves)G.ZMoves.eventReward();
     if(success&&authority()&&G.Game.scoreEvent)G.Game.scoreEvent();
+    if(success&&authority())G.Forget?.eventReward(G.Game.player);
     cur = null;
     if (G.Coop.isHost) G.Coop.broadcast(['ev', 'e']);
   }

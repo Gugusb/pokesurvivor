@@ -13,6 +13,7 @@ G.BossCombat = (() => {
     s.resistance = Math.max(0, Math.min(.85, (s.load / e.maxHp - .08) / (s.load / e.maxHp + .16)));
   }
   function damage(e, amount) {
+    if(e.legend&&!e.judge&&!e.remote)amount*=1-(.2+.4*Math.max(0,Math.min(1,(1-e.hp/e.maxHp)/.7)));
     if (!enabled(e)) return amount;
     if (!e.ai) e.bossInit();
     let opening = 0;

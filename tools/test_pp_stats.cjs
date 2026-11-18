@@ -82,8 +82,8 @@ test('berries boost their own base stat layer; HP growth scales with evolution a
   berry('spa').apply(p);close(p.spa,p.baseSpa*1.1*1.5);
   berry('def').apply(p);berry('spdef').apply(p);close(p.defenseFor({kind:'contact'}),p.baseDefense*1.08);close(p.dmgReduce,.2);
   berry('cd').apply(p);berry('stamina').apply(p);close(p.agility,p.baseAgility*1.12);close(p.stamina,p.baseStamina*1.12);close(p.cdMul,.8);
-  berry('hp').apply(p);close(p.maxHp,p.baseHp*1.12);p.addMaxHp(20);p.hp=p.maxHp*.4;p.level=8;p.evolutionPath=[4,5,6];
-  assert.ok(G.MonProgression.evolve(p,{dex:5}));close(p.maxHp,p.baseHp*1.12+20);close(p.hp,p.maxHp*.4);close(p.atk,p.baseAtk*1.1*1.5);
+  berry('hp').apply(p);close(p.maxHp,p.baseHp*1.12);p.addMaxHp(20);p.hp=p.maxHp*.4;while(p.level<8)p.gainLevel();p.evolutionPath=[4,5,6];
+  assert.ok(G.MonProgression.evolve(p,{dex:5}));close(p.maxHp,(p.baseHp*1.12+20)*p.levelMultiplier("hp"));close(p.hp,p.maxHp*.4);close(p.atk,p.baseAtk*1.1*1.5*p.levelMultiplier('atk'));
   berry('temppp').apply(p);assert.equal(p.tempPP,20);berry('ppmax').apply(p);assert.equal(p.maxPpBonus,1);
 });
 test('either physical or special berries can unlock existing attack/defense ultimate prerequisites',()=>{

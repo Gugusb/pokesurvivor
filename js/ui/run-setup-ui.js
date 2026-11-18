@@ -63,16 +63,18 @@ G.RunSetupUI=(()=>{
     for(const [name,value]of extra)stats.append(node('p','setup-extra',G.T(name)+' · '+value));
     stats.append(node('p','setup-extra',T('Conservar PP','PP retention','PP 留存率')+' · +'+G.PlayerStats.fmt(p.ppRetention*100)+'%'),node('p','setup-extra',T('Radio de recogida','Pickup radius','拾取范围')+' · +'+G.PlayerStats.fmt((p.magnetMul-1)*100)+'%'),node('p','setup-extra',T('Cambios de cartas adicionales','Extra rerolls','额外重选次数')+' · +'+p.rerolls));
     const evo=title(box,T('Evoluciones posibles','Possible evolutions','进化路线'));evo.append(node('p','sub',T('Elige una rama al evolucionar durante la aventura.','Choose a branch when evolving during the run.','本局从初始形态出发，达到进化等级后可选择分支。')));evolution(evo,data);
-    const bans=title(box,T('Vetar movimientos','Ban moves','技能禁用'));preferences(bans,data.dex);
+    const bans=title(box,T('Movimientos y atajos','Moves and shortcuts','技能禁用与快捷槽'));G.MenuUI.preferences(bans,data.dex);
     const items=title(box,T('Objetos especiales de esta aventura','Special item pool','本局特殊道具池'));
     items.append(node('p','sub',T('Los activados pueden aparecer como botín; no empiezas con ellos.','Enabled items may drop during the run; they are not starting equipment.','已启用道具可在局内掉落或奖励箱中出现，并非开局直接获得。')));
+    let itemBusy=false;
     for(const [state,heading]of [['enabled',T('Activados','Enabled','已启用')],['disabled',T('Desactivados','Disabled','已禁用')],['locked',T('Sin desbloquear','Locked','未解锁')]]){
       const group=node('details','setup-items');group.dataset.itemState=state;const rows=data.items.filter(i=>i.state===state);group.open=state!=='locked';group.append(node('summary','',heading+' · '+rows.length));
       if(!rows.length)group.append(node('p','sub',G.T('Ninguno')));
-      for(const entry of rows){const it=G.Items.BY[entry.id],row=node('div','setup-item');row.dataset.setupItem=it.id;row.insertAdjacentHTML('afterbegin',G.Icons.html(G.Items.icon(it.id),22));row.append(node('b','',G.T(it.name)),node('small','',G.T(it.desc)));group.append(row);}items.append(group);
+      for(const entry of rows){const it=G.Items.BY[entry.id],row=node('div','setup-item');row.dataset.setupItem=it.id;row.insertAdjacentHTML('afterbegin',G.Icons.html(G.Items.icon(it.id),22));row.append(node('b','',G.T(it.name)),node('small','',G.T(it.desc)));
+        if(it.unlock&&state!=='locked'){const b=button(state==='enabled'?T('Desactivar','Disable','禁用'):T('Activar','Enable','启用'),async()=>{if(itemBusy||starting||G.Game.state!=='ui')return;itemBusy=true;b.disabled=true;const scroll=box.parentElement.scrollTop;try{if(G.DB.mode==='server')G.Server.packLocal({action:'toggle',id:it.id});else{G.CardPacks.toggle(G.DB.save,it.id);G.DB.commit(true);}open();box.parentElement.scrollTop=scroll;}catch(e){G.UI.toast(e.message);b.disabled=false;}finally{itemBusy=false;}});b.classList.add('small');b.dataset.toggleSetupItem=it.id;row.append(b);}group.append(row);}items.append(group);
     }
     for(const [section,label]of [[bans,T('Vetar movimientos','Ban moves','技能禁用')],[items,T('Objetos especiales','Special items','特殊道具')],[held,T('Objeto equipado','Held item','携带道具')],[stats,T('Bonificaciones','Bonuses','属性加成')],[evo,T('Evoluciones','Evolutions','进化路线')]]){const b=button(label,()=>section.scrollIntoView({block:'start',behavior:'smooth'}));b.classList.add('small');nav.append(b);}
-    let starting=false;const start=$('run-setup-start');start.disabled=false;start.onclick=async()=>{if(starting||G.Game.state!=='ui')return;if(G.DB.save.partner!==data.dex){open();return;}starting=true;start.disabled=true;try{await G.Game.startRun(null,true);}finally{starting=false;start.disabled=false;}};
+    let starting=false;const start=$('run-setup-start');start.disabled=false;start.onclick=async()=>{if(starting||itemBusy||G.Game.state!=='ui')return;if(G.DB.save.partner!==data.dex){open();return;}starting=true;start.disabled=true;try{await G.Game.startRun(null,true);}finally{starting=false;start.disabled=false;}};
     $('run-setup-back').onclick=()=>{if(!starting)G.MenuUI.open();};G.UI.chrome(false);G.UI.show('scr-run-setup');
   }
   return {open,manage,preferences,browser};
