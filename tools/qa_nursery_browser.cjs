@@ -287,7 +287,7 @@ const { chromium } = require(
       path: path.join(__dirname, "cache/z-access-mobile.png"),
     });
     await a.locator("#scr-dex [data-back]").first().click();
-    await a.locator('[data-go="play"]').click();
+    await a.locator('[data-go="play"]').click();await a.locator('#run-setup-start').click();
     await a.locator("#scr-menu").waitFor({ state: "hidden" });
     if (!process.argv.includes("--built")) {
       await a.waitForFunction(() => G.Game.state === "playing");

@@ -44,7 +44,7 @@ const { chromium } = require(process.env.PLAYWRIGHT_MODULE || path.join(__dirnam
       assert.equal(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true);
       await p.screenshot({ path: path.join(__dirname, `cache/v0.20.3-zoom-${lang}${built ? '-built' : ''}.png`), animations: 'disabled' });
       await p.locator('#set-close').click();
-      await p.locator('[data-go="play"]').click();
+      await p.locator('[data-go="play"]').click();await p.locator('#run-setup-start').click();
       await p.locator('#scr-menu').waitFor({ state: 'hidden' });
       await p.keyboard.press('v');
       if (!built) {

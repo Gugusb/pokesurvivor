@@ -27,7 +27,7 @@ const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
       if(await page.locator('#tap-start').isVisible())await page.locator('#tap-start').click();
       await page.locator('#f-user').fill(account.name);await page.locator('#f-pass').fill(account.password);await page.locator('#btn-auth').click();await page.locator('#scr-menu:not(.hidden)').waitFor();
       async function start(){
-        await page.locator('[data-go="play"]').click();await page.locator('#backpack-open:not(.hidden)').waitFor();
+        await page.locator('[data-go="play"]').click();await page.locator('#run-setup-start').click();await page.locator('#backpack-open:not(.hidden)').waitFor();
         await page.evaluate(()=>{G.Spawner.update=()=>{};G.Events.update=()=>{};G.EnemyMgr.clear();G.Weather.clear();});
       }
       async function advance(target){

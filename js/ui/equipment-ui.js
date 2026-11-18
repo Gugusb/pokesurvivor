@@ -1,11 +1,11 @@
 G.EquipmentUI=(()=>{
-  function render(parent,dex){
+  function render(parent,dex,onChange){
     const s=G.DB.save,section=document.createElement('section');section.className='ability-equipment carried-equipment';
     const title=document.createElement('h4');title.textContent=G.T('Objeto equipado');
     const note=document.createElement('p');note.className='note';note.textContent=G.T('Elige un objeto para esta aventura. Las piedras Mega y Z ocupan el mismo espacio.');
     const select=document.createElement('select');select.id='dex-carried-item';select.setAttribute('aria-label',G.T('Objeto equipado'));
     function option(value,label,disabled=false){const o=document.createElement('option');o.value=value;o.textContent=label;o.disabled=disabled;select.append(o);}
-    option('none',G.T('Ninguno'));for(const item of Object.values(G.Items.ACTIVE))option(item.id,G.T(item.name)+' · 0');
+    option('none',G.T('Ninguno'));for(const item of Object.values(G.Items.ACTIVE))option(item.id,G.T(item.name));
     const z=G.ZAccess.allowed(s,dex);
     for(const type of G.ZMoves.TYPES)option('z:'+type,G.ZMovesUI.label(type)+(z?'':' · '+G.T('Requiere permiso Z')), !z);
     for(const f of G.Mega.formsFor(dex))option('mega:'+f.id,G.Mega.label(f.id)+' · '+G.T('Megapiedra')+(G.Mega.owns(s,f.id)?'':' · '+G.T('Sin piedra')),!G.Mega.owns(s,f.id));
@@ -14,7 +14,7 @@ G.EquipmentUI=(()=>{
     button.onclick=()=>{
       if(G.Game.state!=='ui')return;
       const value=select.value,ok=value.startsWith('z:')?G.ZMoves.equip(s,dex,value.slice(2)):value.startsWith('mega:')?G.Mega.equip(s,dex,value.slice(5)):G.Equipment.equip(s,dex,value==='none'?null:value);
-      if(ok){G.DB.commit(true);section.remove();render(parent,dex);}
+      if(ok){G.DB.commit(true);section.remove();render(parent,dex,onChange);onChange?.();}
     };
     section.append(title,note,select,button);parent.append(section);return section;
   }

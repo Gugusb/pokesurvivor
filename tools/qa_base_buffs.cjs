@@ -18,7 +18,7 @@ const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-7,`${a} != ${b}`);
       await page.goto(base+'/dev.html');await page.waitForFunction(()=>!document.getElementById('tap-start').classList.contains('hidden')||!document.getElementById('scr-login').classList.contains('hidden'));
       if(await page.locator('#tap-start').isVisible())await page.locator('#tap-start').click();
       await page.locator('#f-user').fill(name);await page.locator('#f-pass').fill(password);await page.locator('#btn-auth').click();await page.locator('#scr-menu:not(.hidden)').waitFor();
-      await page.locator('[data-go="play"]').click();await page.locator('#backpack-open:not(.hidden)').waitFor();
+      await page.locator('[data-go="play"]').click();await page.locator('#run-setup-start').click();await page.locator('#backpack-open:not(.hidden)').waitFor();
       await page.evaluate(()=>{G.Game.debugMark();G.Spawner.update=()=>{};G.Events.update=()=>{};G.EnemyMgr.clear();G.Game.player.invuln=10000;});
       await page.keyboard.press('e');await page.locator('#scr-backpack:not(.hidden)').waitFor();
       const state=await page.evaluate(()=>{

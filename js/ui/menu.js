@@ -9,13 +9,14 @@ G.MenuUI = (() => {
     dexFilter === 'shiny' ? !!s.shiny?.[p.dex] : /^\d$/.test(dexFilter) ? p.rarity === +dexFilter : true;
 
   function init() {
-    const ICON = { play: 'ball', dex: 'book', nursery:'ball', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
+    const ICON = { play: 'ball', moves:'ban', dex: 'book', nursery:'ball', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
     document.querySelectorAll('#scr-menu [data-go]').forEach(b => {
       b.insertAdjacentHTML('afterbegin', `<span class="mi-ico">${G.Icons.html(ICON[b.dataset.go], 26)}</span>`);
       b.dataset.sfx = b.dataset.go === 'play' ? 'confirm' : 'click';
       b.onclick = () => {
         const go = b.dataset.go;
         if (go === 'play') { if (G.Social.room) G.LobbyUI.open(); else G.Flow.play(); }
+        else if (go === 'moves') G.RunSetupUI.manage();
         else if (go === 'dex') openDex();
         else if (go === 'upgrades') openUpgrades();
         else if (go === 'gacha') G.GachaUI.open();
@@ -257,6 +258,7 @@ G.MenuUI = (() => {
     G.UI.sprite($('dex-big'), dex, { lively: own, spin: own, silhouette: !reveal, scale: 3, hero: true, shiny: own && viewShiny });
     if (G.AbilityDefs.medalsFor(dex).length) G.GachaUI.renderEquipment(box, dex);
     if (G.EquipmentUI && own) G.EquipmentUI.render(box, dex);
+    if(own){const moves=document.createElement('button');moves.className='btn';moves.textContent=G.T('Vetar movimientos');moves.onclick=()=>{G.RunSetupUI.manage();const select=document.querySelector('#move-manager-body [data-preference-pokemon]');select.value=dex;select.onchange();};box.append(moves);}
     box.querySelectorAll('.seg button').forEach(b => {
       b.onclick = () => { viewShiny = b.dataset.v === '1'; showDetail(dex); };
     });
@@ -279,16 +281,16 @@ G.MenuUI = (() => {
   }
 
   function renderUpgrades(){G.CardPacksUI.refresh();}
-  function preferences(box,dex){upgDex=dex;box.appendChild(bindPanel());const max=G.DB.upgradesOf(dex).ban||0;if(max)box.appendChild(banPicker(max));}
+  function preferences(box,dex){upgDex=G.RunSetup.root(dex);G.RunSetupUI.preferences(box,dex);box.appendChild(bindPanel());}
 
   // ---------------- atajos: hueco fijo para cada movimiento ----------------
   // save.pbind[dex] = [movimiento del hueco 1, del 2, del 3, del 4] (o null).
-  function bindPanel() {
+  function bindPanel(dex = upgDex) {
     const s = G.DB.save;
     s.pbind = s.pbind || {};
-    const list = s.pbind[upgDex] || [null, null, null, null];
-    const mon = G.DEX_BY[upgDex];
-    const ids = G.Moves.poolFor(mon).concat([G.startMoveOf(upgDex)]).filter((v, i, a) => a.indexOf(v) === i)
+    const list = s.pbind[dex] || [null, null, null, null];
+    const mon = G.DEX_BY[dex];
+    const ids = G.Moves.poolFor(mon).concat([G.startMoveOf(dex)]).filter((v, i, a) => a.indexOf(v) === i)
       .sort((a, b) => G.Moves.BY_ID[a].name.localeCompare(G.Moves.BY_ID[b].name, 'es'));
     const el = document.createElement('div');
     el.className = 'panel bind-panel';
@@ -299,49 +301,16 @@ G.MenuUI = (() => {
           `<option value="${id}" ${list[i] === id ? 'selected' : ''}>${G.Moves.BY_ID[id].name}</option>`).join('')}</select></label>`).join('')}</div>`;
     el.querySelectorAll('select[data-slot]').forEach(sel => {
       sel.onchange = () => {
-        const l = (s.pbind[upgDex] || [null, null, null, null]).slice(0, 4);
+        const l = (s.pbind[dex] || [null, null, null, null]).slice(0, 4);
         while (l.length < 4) l.push(null);
         const i = +sel.dataset.slot, id = sel.value || null;
         // Un movimiento sólo puede estar en un hueco.
         for (let j = 0; j < 4; j++) if (id && l[j] === id) l[j] = null;
         l[i] = id;
-        s.pbind[upgDex] = l;
+        s.pbind[dex] = l;
         G.DB.commit();
         G.Audio.sfx('select');
-        renderUpgrades();
-      };
-    });
-    return el;
-  }
-
-  // ---------------- veto: movimientos bloqueados ----------------
-  // Lista por Pokémon en save.pban[dex]; con N niveles de Veto, N movimientos.
-  let banOpen = false;
-  function banList() {
-    const s = G.DB.save;
-    s.pban = s.pban || {};
-    return s.pban[upgDex] || (s.pban[upgDex] = []);
-  }
-  function banPicker(max) {
-    const mon = G.DEX_BY[upgDex];
-    const start = G.startMoveOf(upgDex);
-    const ids = G.Moves.poolFor(mon).filter(id => id !== start)
-      .sort((a, b) => G.Moves.BY_ID[a].name.localeCompare(G.Moves.BY_ID[b].name, 'es'));
-    const list = banList();
-    const el = document.createElement('div');
-    el.className = 'panel ban-picker';
-    el.innerHTML = `<p class="sub" style="margin:0 0 8px">Toca los movimientos que no quieres que te salgan en las cartas (${list.length}/${max}). El movimiento de inicio no se puede vetar.</p>
-      <div class="ban-moves">${ids.map(id => { const d = G.Moves.BY_ID[id]; const on = list.includes(id);
-        return `<button class="chip ${on ? 'on ban' : ''}" data-id="${id}">${G.Icons.html('move:' + id, 16)} ${d.name}${on ? ' ' + G.Icons.html('ban', 14) : ''}</button>`; }).join('')}</div>`;
-    el.querySelectorAll('[data-id]').forEach(b => {
-      b.onclick = () => {
-        const l = banList(), id = b.dataset.id, i = l.indexOf(id);
-        if (i >= 0) l.splice(i, 1);
-        else if (l.length >= max) { G.UI.toast('Ya tienes ' + max + ' vetados: quita uno primero'); return; }
-        else l.push(id);
-        G.DB.commit();
-        G.Audio.sfx('select');
-        renderUpgrades();
+        el.replaceWith(bindPanel(dex));
       };
     });
     return el;

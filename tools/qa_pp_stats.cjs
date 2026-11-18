@@ -25,7 +25,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
    await page.setViewportSize({width:320,height:740});assert.ok(await page.locator('#dex-detail').evaluate(e=>e.scrollWidth<=e.clientWidth+1));
    await page.locator('#dex-detail .stat').first().scrollIntoViewIfNeeded();
    await page.screenshot({path:path.join(__dirname,`cache/pp-${built?'built':'source'}-${lang}-dex-mobile.png`),animations:'disabled'});
-   await page.setViewportSize({width:1280,height:900});await page.locator('#scr-dex [data-back]').first().click();await page.locator('[data-go="play"]').click();await page.locator('#scr-menu').waitFor({state:'hidden'});
+   await page.setViewportSize({width:1280,height:900});await page.locator('#scr-dex [data-back]').first().click();await page.locator('[data-go="play"]').click();await page.locator('#run-setup-start').click();await page.locator('#scr-menu').waitFor({state:'hidden'});
    await page.waitForFunction(()=>window.qaText.some(t=>/^PP \d+\/\d+$/.test(t)));
    if(!built){
     const mechanics=await page.evaluate(()=>{

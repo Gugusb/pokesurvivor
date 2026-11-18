@@ -77,7 +77,7 @@
 }
 </script>
 
-<link rel="stylesheet" href="css/style.css?v=99b49f6d03">
+<link rel="stylesheet" href="css/style.css?v=0c494de3d8">
 </head>
 <body>
 
@@ -180,7 +180,8 @@
     <div class="box">
       <div class="menu-list">
         <div class="play-row">
-          <button class="menu-item play" data-go="play">Jugar<small>Entra en la mazmorra</small></button>
+          <button class="menu-item play" data-go="play">Jugar<small>Prepara tu aventura</small></button>
+          <button class="menu-item" data-go="moves">Vetar movimientos<small>Busca un Pokémon y prepara sus movimientos</small></button>
           <div class="difficulty-picker"><label for="menu-difficulty">Dificultad</label><select id="menu-difficulty"></select><small id="difficulty-note"></small></div>
         </div>
         <button class="menu-item" data-go="dex">Pokémon<small id="menu-dex-count">Tu colección</small></button>
@@ -199,6 +200,17 @@
       <div id="menu-stats" style="font-size:14px;color:var(--muted)"></div>
     </div>
   </div>
+</section>
+
+<section id="scr-run-setup" class="scr dim hidden">
+  <div class="box setup-house">
+    <h2>Preparar aventura</h2>
+    <div id="run-setup-body"></div>
+    <div class="setup-actions"><button id="run-setup-back" class="btn">Volver al menú</button><button id="run-setup-start" class="btn gold">Comenzar aventura</button></div>
+  </div>
+</section>
+<section id="scr-move-manager" class="scr dim hidden">
+  <div class="box setup-house"><h2>Vetar movimientos</h2><p>Busca un Pokémon y prepara sus movimientos</p><div id="move-manager-body"></div><button id="move-manager-back" class="btn">Volver al menú</button></div>
 </section>
 
 <div id="topbar" class="topbar hidden">
@@ -594,6 +606,6 @@
 </section>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=99b49f6d03"></script>
+<script defer src="js/app.min.js?v=0c494de3d8"></script>
 </body>
 </html>

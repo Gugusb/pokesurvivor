@@ -18,7 +18,7 @@ const CASES=['ember','tackle','ice-beam','fire-spin','thunderbolt','quick-attack
     await p.waitForFunction(()=>!document.getElementById('tap-start').classList.contains('hidden')||!document.getElementById('scr-login').classList.contains('hidden'));
     if(await p.locator('#tap-start').isVisible())await p.locator('#tap-start').click();
     await p.evaluate(()=>{G.DB.playAsGuest();G.DB.grant(6,'qa');G.DB.save.partner=6;G.Flow.afterLogin();});
-    await p.locator('[data-go="play"]').click();await p.waitForFunction(()=>G.Game.state==='playing');
+    await p.locator('[data-go="play"]').click();await p.locator('#run-setup-start').click();await p.waitForFunction(()=>G.Game.state==='playing');
     await p.evaluate(()=>{G.Spawner.update=()=>{};G.Events.update=()=>{};G.Weather.clear();});
     for(const id of process.argv.includes('--built-only')?[]:CASES){
       await p.keyboard.press('F2');await p.locator('#dev-z-move').selectOption(id);await p.locator('[data-dev="z-prepare"]').click();await p.locator('#dev-close').click();
@@ -62,7 +62,7 @@ const CASES=['ember','tackle','ice-beam','fire-spin','thunderbolt','quick-attack
     await b.waitForFunction(()=>!document.getElementById('tap-start').classList.contains('hidden')||!document.getElementById('scr-login').classList.contains('hidden'));
     if(await b.locator('#tap-start').isVisible())await b.locator('#tap-start').click();
     await b.locator('#f-user').fill('ZBrowserFixture');await b.locator('#f-pass').fill(pass);await b.locator('#btn-auth').click();
-    await b.locator('#scr-menu:not(.hidden)').waitFor();await b.locator('[data-go="play"]').click();await b.locator('#dev-launcher').waitFor();
+    await b.locator('#scr-menu:not(.hidden)').waitFor();await b.locator('[data-go="play"]').click();await b.locator('#run-setup-start').click();await b.locator('#dev-launcher').waitFor();
     const builtCases=['ember','heat-wave','flamethrower','spikes','will-o-wisp','toxic'];
     for(const id of builtCases){
       await b.keyboard.press('F2');

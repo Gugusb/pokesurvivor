@@ -19,7 +19,7 @@ try{
   assert.equal(await p.locator('#dex-detail .stat').count(),8);for(const label of ['物攻','特攻','物防','特防','敏捷','耐力'])assert.ok((await p.locator('#dex-detail').textContent()).includes(label));
   await p.setViewportSize({width:320,height:740});assert.ok(await p.locator('#dex-detail').evaluate(e=>e.scrollWidth<=e.clientWidth+1));
   await p.locator('#dex-detail .stat').first().scrollIntoViewIfNeeded();await p.screenshot({path:path.join(__dirname,'cache/battle-stats-'+(built?'built':'source')+'-mobile.png'),animations:'disabled'});await p.setViewportSize({width:1280,height:960});
-  await p.locator('#scr-dex [data-back]').first().click();await p.locator('[data-go="play"]').click();await p.locator('#scr-menu').waitFor({state:'hidden'});await p.waitForFunction(()=>window.qaText.some(t=>t.includes('特殊')));
+  await p.locator('#scr-dex [data-back]').first().click();await p.locator('[data-go="play"]').click();await p.locator('#run-setup-start').click();await p.locator('#scr-menu').waitFor({state:'hidden'});await p.waitForFunction(()=>window.qaText.some(t=>t.includes('特殊')));
   if(!built){
    const result=await p.evaluate(()=>{
     G.Game.debugMark();G.Spawner.update=()=>{};G.EnemyMgr.clear();G.Projectiles.clear();G.Weather.clear();G.World.propsInCircle=()=>[];G.World.projectileBlock=()=>null;G.World.damageProp=()=>{};

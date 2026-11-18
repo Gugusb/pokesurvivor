@@ -17,7 +17,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
    await page.waitForFunction(()=>!document.getElementById('tap-start').classList.contains('hidden')||!document.getElementById('scr-login').classList.contains('hidden'));
    if(await page.locator('#tap-start').isVisible())await page.locator('#tap-start').click();
    await page.locator('#f-user').fill(name);await page.locator('#f-pass').fill(password);await page.locator('#btn-auth').click();await page.locator('#scr-menu:not(.hidden)').waitFor();
-   await page.locator('[data-go="play"]').click();await page.locator('#backpack-open:not(.hidden)').waitFor();
+   await page.locator('[data-go="play"]').click();await page.locator('#run-setup-start').click();await page.locator('#backpack-open:not(.hidden)').waitFor();
    if(!built)await page.evaluate(()=>{G.Game.debugMark();G.Spawner.update=()=>{};G.Events.update=()=>{};G.EnemyMgr.clear();const p=G.Game.player;p.maxHp=p.hp=100000;p.invuln=10000;p.growStat('atk',.1);p.growStat('stamina',.12);G.Items.gain(p,'leftovers');G.Items.gain(p,'candyjar');});
    await page.keyboard.press('e');await page.locator('#scr-backpack:not(.hidden)').waitFor();assert.equal(await page.locator('#backpack-stats .bag-stat').count(),8);
    const content=await page.locator('#scr-backpack').textContent();for(const label of ({zh:['战斗背包','物攻倍率','敏捷','耐力','临时PP'],en:['Battle bag','Physical multiplier','Agility','Stamina'],es:['Mochila de combate','Multiplicador físico','Agilidad base','Resistencia base']})[lang])assert.ok(content.includes(label),label);

@@ -28,7 +28,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
    await page.locator('#btn-settings').click();await page.locator('#set-tabs [data-t="ctl"]').click();assert.equal(await page.locator('[data-k="castMode"]').count(),3);
    for(const v of ['auto','click','toggle'])await page.locator(`[data-k="castMode"][data-v="${v}"]`).click();
    await page.screenshot({path:path.join(__dirname,`cache/items-${built?'built':'source'}-${lang}-settings.png`),animations:'disabled'});await page.locator('#set-close').click();
-   await page.locator('[data-go="play"]').click();await page.locator('#scr-menu').waitFor({state:'hidden'});await page.waitForFunction(()=>window.qaText.some(t=>/^PP \d+\/\d+$/.test(t)));
+   await page.locator('[data-go="play"]').click();await page.locator('#run-setup-start').click();await page.locator('#scr-menu').waitFor({state:'hidden'});await page.waitForFunction(()=>window.qaText.some(t=>/^PP \d+\/\d+$/.test(t)));
    if(!built){
     await page.evaluate(()=>{
      G.Game.debugMark();G.Spawner.update=()=>{};G.Events.update=()=>{};G.EnemyMgr.clear();G.Projectiles.clear();G.Hazards.clear();const p=G.Game.player;p.ability=null;p.invuln=1000;p.maxHp=1000;p.hp=100;

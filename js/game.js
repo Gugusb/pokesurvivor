@@ -91,7 +91,8 @@ G.Game = (() => {
 
   /** @param coop  { seed, host, members } para una partida en grupo */
   let startingRun=false;
-  async function startRun(coop = null) {
+  async function startRun(coop = null, prepared = false) {
+    if(!coop&&!prepared){if(state==='ui')G.RunSetupUI.open();return;}
     G.BossRewards.reset();openMastery=false;
     if(startingRun)return;
     holdBy = []; awayBy = null;
@@ -148,7 +149,7 @@ G.Game = (() => {
     (save.pbind && save.pbind[startDex] || []).forEach((id, i) => { if (id) pl.bind[id] = i; });
     pl.addMove(G.startMoveOf(startDex));
     // Mejora "Veto": movimientos que no quieres que te salgan.
-    pl.banned = new Set((save.pban && save.pban[startDex] || []).slice(0, perks.bans));
+    pl.banned = new Set(G.RunSetup.bans(save,save.partner));
     // Team level and level-up selections are owned by the host.
     if(!coop||coop.host===G.Net.uid)for(let n=0;n<(perks.startLevels||0);n++){
       pl.level++;pl.xpNext=G.Player.xpFor(pl.level);G.Abilities.onLevel(pl);pendingLevels++;

@@ -22,7 +22,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
    await p.locator('#tap-start:not(.hidden),#scr-login:not(.hidden)').first().waitFor();if(await p.locator('#tap-start').isVisible())await p.locator('#tap-start').click();
    await p.locator('#f-user').fill(name);await p.locator('#f-pass').fill(pass);await p.locator('#btn-auth').click();try{await p.locator('#scr-menu:not(.hidden)').waitFor();}catch(e){console.log('Login diagnostics',{lang,stars,error:await p.locator('#login-err').textContent(),connection:await p.locator('#login-mode').textContent(),pageErrors:errors});throw e;}
    if(lang==='zh')assert.match(await p.locator('#difficulty-note').textContent(),/得分倍率/);
-   await p.locator('[data-go="play"]').click();await p.locator('#scr-menu').waitFor({state:'hidden'});await p.keyboard.press('v');
+   await p.locator('[data-go="play"]').click();await p.locator('#run-setup-start').click();await p.locator('#scr-menu').waitFor({state:'hidden'});await p.keyboard.press('v');
    await p.waitForFunction(()=>window.qaText.some(x=>/预计得分|Estimated score|Puntuación estimada/.test(x)));
    await p.waitForTimeout(1700);
    await p.screenshot({path:path.join(__dirname,`cache/score-${built?'built':'source'}-${lang}-${stars}-hud.png`),animations:'disabled'});
@@ -41,7 +41,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
   if(!built){
    const c=await browser.newContext({viewport:{width:1280,height:960},locale:'zh-CN'}),p=await c.newPage();p.on('pageerror',e=>errors.push(e.message));
    await p.goto(base+'/dev.html');await p.locator('#tap-start:not(.hidden),#scr-login:not(.hidden)').first().waitFor();if(await p.locator('#tap-start').isVisible())await p.locator('#tap-start').click();
-   await p.evaluate(()=>{G.DB.playAsGuest();G.DB.grant(6,'fixture');G.DB.save.partner=6;G.Flow.afterLogin();});await p.locator('[data-go="play"]').click();await p.waitForFunction(()=>G.Game.state==='playing');
+   await p.evaluate(()=>{G.DB.playAsGuest();G.DB.grant(6,'fixture');G.DB.save.partner=6;G.Flow.afterLogin();});await p.locator('[data-go="play"]').click();await p.locator('#run-setup-start').click();await p.waitForFunction(()=>G.Game.state==='playing');
    const combat=await p.evaluate(()=>{
     G.Game.debugMark();G.Spawner.update=()=>{};G.EnemyMgr.clear();G.Projectiles.clear();G.Weather.clear();G.World.isLiquid=()=>false;
     const pl=G.Game.player;pl.moves=[];pl.slots=[];pl.maxHp=pl.hp=1000;pl.ability=null;pl.item=null;

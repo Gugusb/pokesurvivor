@@ -11,7 +11,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||path.join(__dirname,'cac
     await p.goto(base+'/dev.html');await p.waitForFunction(()=>!document.getElementById('tap-start').classList.contains('hidden')||!document.getElementById('scr-login').classList.contains('hidden'));
     if(await p.locator('#tap-start').isVisible())await p.locator('#tap-start').click();
     await p.evaluate(()=>{G.DB.playAsGuest();G.DB.grant(6,'qa');G.DB.save.partner=6;G.Flow.afterLogin();});
-    await p.locator('[data-go="play"]').click();await p.waitForFunction(()=>G.Game.state==='playing');
+    await p.locator('[data-go="play"]').click();await p.locator('#run-setup-start').click();await p.waitForFunction(()=>G.Game.state==='playing');
     await p.evaluate(()=>{
       G.Game.debugMark();G.Spawner.update=()=>{};G.EnemyMgr.clear();G.Projectiles.clear();
       G.World.isFree=()=>true;G.World.collide=()=>{};G.World.isLiquid=()=>false;G.World.propsInCircle=()=>[];
