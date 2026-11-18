@@ -307,7 +307,8 @@ G.Player = class Player {
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1)*(['environment','weather'].includes(source.kind)?Math.pow(.9,G.Items.count(this,'safetygoggles')):1);
-    const finalDamage=d*(G.TypeBonds?.defense(this)||1);
+    let finalDamage=d*(G.TypeBonds?.defense(this)||1);
+    finalDamage=G.SquadTraits?.absorb(this,finalDamage)??finalDamage;if(!(finalDamage>0)){this.invuln=.45;return false;}
     if (G.FailureProtection?.avoidLethal(this,finalDamage)) return false;
     const hpLost=Math.min(this.hp,finalDamage);
     this.hp -= finalDamage;G.TypeBonds?.onDamage(this,hpLost);
@@ -339,6 +340,7 @@ G.Player = class Player {
       G.Projectiles.clearOrbs(this);
       this.reviveT = 0;
     }
+    G.SquadTraits?.hurt(this,hpLost,source);
     return true;
   }
 

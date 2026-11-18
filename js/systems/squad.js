@@ -1,4 +1,4 @@
-/* Run-only companions. Their support talents remain active when knocked out. */
+/* Run-only companions. Expedition traits replace legacy primary-type support. */
 G.Squad = (() => {
   let captain=null,roster=[],trail=[],formation=[],level=1,nextId=1,bonus={},still=0,leaderPos=null,gathering=false;
   const RESERVE_LIMIT=4;
@@ -16,7 +16,7 @@ G.Squad = (() => {
   function growth(p,key){return captain&&actors().includes(p)?bonus[key]||0:0;}
   function refresh(){
     G.SquadBonds?.refresh();
-    bonus={};for(const p of deployed()){const [key,value]=support[p.mon.types[0]]||support.normal;bonus[key]=(bonus[key]||0)+value*p.rank;}
+    bonus={};for(const p of (G.SquadTraits?[]:deployed())){const [key,value]=support[p.mon.types[0]]||support.normal;bonus[key]=(bonus[key]||0)+value*p.rank;}
     for(const p of [captain,...roster].filter(Boolean)){
       const value=actors().includes(p)?(bonus.hp||0)*p.baseHp:0,delta=value-(p.squadHpBonus||0);
       p.maxHp=Math.max(1,p.maxHp+delta);if(!p.dead)p.hp=Math.min(p.maxHp,Math.max(1,p.hp+delta));p.squadHpBonus=value;
@@ -28,7 +28,7 @@ G.Squad = (() => {
       this.isSquadMember=true;this.squadId=nextId++;this.rank=rank;this.ability=null;this.activeItem=null;
       this.megaState=null;this.zState=null;this.x=captain?.x||0;this.y=captain?.y||0;this.permanentGrowth={...(perks.statGrowth||{})};
       const ids=G.Moves.poolFor(this.mon);this.addMove(moveId&&ids.includes(moveId)?moveId:(G.FIXED_SKILLS?.[dex]||G.Moves.startFor(this.mon)));
-      this.moveId=this.moves[0].id;rankMove(this);this.invuln=1;
+      this.moveId=this.moves[0].id;G.SquadTraits?.assign(this);rankMove(this);this.invuln=1;
     }
     isPrimaryMove(){return false;}
     agilityFor(m){return super.agilityFor(m)*(G.SquadBonds?.agility(this,m)||1);}
@@ -53,8 +53,8 @@ G.Squad = (() => {
     }
   }
   function resetFollow(){still=0;gathering=false;leaderPos=captain?{x:captain.x,y:captain.y}:null;for(const p of roster)p.idleTarget=null;}
-  function begin(p){G.TypeBonds?.reset();captain=p;roster=[];trail=[{x:p.x,y:p.y}];level=1;formation=Array(G.ExpeditionRules.capacity(level)-1).fill(null);bonus={};nextId=1;p.squadCaptain=true;resetFollow();G.SquadBonds?.reset();G.ExpeditionGrowth?.reset();G.ExpeditionDamage?.reset();G.ExpeditionGrowth?.sync();refresh();}
-  function reset(){G.TypeBonds?.reset();captain=null;roster=[];trail=[];formation=[];bonus={};resetFollow();G.SquadBonds?.reset();}
+  function begin(p){G.TypeBonds?.reset();captain=p;roster=[];trail=[{x:p.x,y:p.y}];level=1;formation=Array(G.ExpeditionRules.capacity(level)-1).fill(null);bonus={};nextId=1;p.squadCaptain=true;resetFollow();G.SquadBonds?.reset();G.ExpeditionGrowth?.reset();G.ExpeditionDamage?.reset();G.SquadTraits?.reset();G.ExpeditionGrowth?.sync();refresh();}
+  function reset(){G.TypeBonds?.reset();captain=null;roster=[];trail=[];formation=[];bonus={};resetFollow();G.SquadBonds?.reset();G.SquadTraits?.reset();}
   function rankMove(p){
     G.Projectiles.clearOrbs(p);
     const m=p.moves[0],target=p.rank===1?2:p.rank===2?5:m.def.maxLvl;
@@ -77,7 +77,7 @@ G.Squad = (() => {
       for(let i=0;i<roster.length&&!merged;i++)for(let j=i+1;j<roster.length;j++){
         const a=roster[i],b=roster[j];if(a.dex!==b.dex||a.rank!==b.rank||a.rank>=3)continue;
         const ai=formation.indexOf(a),bi=formation.indexOf(b);if(bi>=0){formation[bi]=ai<0?a:null;if(ai<0){a.x=b.x;a.y=b.y;}}
-        a.rank++;a.dead=a.dead&&b.dead;a.hp=a.dead?0:Math.max(a.hp,b.hp,1);G.Projectiles.clearOrbs(b);roster.splice(j,1);evolve(a);rankMove(a);merged=true;break;
+        a.rank++;a.dead=a.dead&&b.dead;a.hp=a.dead?0:Math.max(a.hp,b.hp,1);G.Projectiles.clearOrbs(b);roster.splice(j,1);evolve(a);rankMove(a);refresh();G.SquadTraits?.merge(a,b);merged=true;break;
       }
     }
     refresh();
@@ -87,7 +87,7 @@ G.Squad = (() => {
     const p=new Member(dex,rank,moveId);p.level=captain.level;roster.push(p);G.ExpeditionGrowth?.sync(p);const slot=formation.indexOf(null);if(slot>=0)formation[slot]=p;consolidate();G.Sprites.preload([dex]);return p;
   }
   function canRecruit(dex,rank=1){return !!captain&&Number.isInteger(rank)&&rank>=1&&rank<=3&&!!G.DEX_BY[dex]&&!!G.SPRITE_META[dex]&&(formation.includes(null)||reserves().length<RESERVE_LIMIT||rank<3&&roster.some(p=>p.dex===dex&&p.rank===rank));}
-  function release(p){const i=roster.indexOf(p);if(i<0)return false;const slot=formation.indexOf(p);if(slot>=0)formation[slot]=null;for(const shot of [...G.Projectiles.all()])if(shot.owner===p)G.Projectiles.remove(shot);G.Combat?.clearFields(p);roster.splice(i,1);refresh();return true;}
+  function release(p){const i=roster.indexOf(p);if(i<0)return false;G.SquadTraits?.release(p);const slot=formation.indexOf(p);if(slot>=0)formation[slot]=null;for(const shot of [...G.Projectiles.all()])if(shot.owner===p)G.Projectiles.remove(shot);G.Combat?.clearFields(p);roster.splice(i,1);refresh();return true;}
   function reorder(index,dir){const j=index+dir;if(j<0||j>=roster.length)return false;[roster[index],roster[j]]=[roster[j],roster[index]];formation=Array.from({length:G.ExpeditionRules.capacity(level)-1},(_,i)=>roster[i]||null);refresh();return true;}
   function upgrade(){if(level>=G.ExpeditionRules.MAX_SHOP)return false;level++;formation.push(reserves()[0]||null);refresh();return true;}
   function place(p,slot){
@@ -154,7 +154,7 @@ G.Squad = (() => {
   }
   function recover(){for(const p of roster){p.level=captain.level;p.dead=false;p.walking=false;p.walkGrace=0;p.followSpeed=0;p.hp=p.maxHp;p.invuln=1;G.MovePP?.restore(p,p.moves);p.anim._start?.('Idle',false);G.Projectiles.clearOrbs(p);}trail=[{x:captain.x,y:captain.y}];resetFollow();for(const p of roster){p.x=captain.x;p.y=captain.y;}}
   function tags(p){return {types:p.mon.types,eggs:G.EGG_GROUPS[p.dex]||[15],skill:p.moves[0]?.kind};}
-  function talent(p){const [key,value,name]=support[p.mon.types[0]]||support.normal;return {key,value:value*p.rank,name};}
+  function talent(p){if(G.SquadTraits){const d=G.SquadTraits.def(p);return {...d,name:G.SquadTraits.local(d.name),description:G.SquadTraits.description(p)};}const [key,value,name]=support[p.mon.types[0]]||support.normal;return {key,value:value*p.rank,name};}
   return {refresh,begin,reset,recruit,canRecruit,release,RESERVE_LIMIT,buffTargets,consolidate,reorder,place,bench,swap,reserves,upgrade,tick,recover,deployed,actors,growth,tags,talent,support,Member,rankMove,
     get active(){return !!captain;},get roster(){return roster;},get formation(){return formation.slice();},get shopLevel(){return level;},get capacity(){return G.ExpeditionRules.capacity(level);}};
 })();

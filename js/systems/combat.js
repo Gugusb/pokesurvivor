@@ -32,7 +32,7 @@ G.Combat = (() => {
     for(const m of [...primary,...pl.moves.filter(m=>!primary.includes(m))])tickMove(dt,pl,m,now);
   }
 
-  const rateFor=(pl,m)=>G.Abilities.cooldownRate(pl,m)*(G.Mega?G.Mega.cooldownRate(pl,m):1)/(pl.agilityCooldownFor?.(m)||pl.agilityCooldown||1)/(G.Items?.cooldownFactor(pl)||1)/(G.Specialization?.stats(m).cooldown||1);
+  const rateFor=(pl,m)=>G.Abilities.cooldownRate(pl,m)/(G.SquadTraits?.cooldown(pl)||1)*(G.Mega?G.Mega.cooldownRate(pl,m):1)/(pl.agilityCooldownFor?.(m)||pl.agilityCooldown||1)/(G.Items?.cooldownFactor(pl)||1)/(G.Specialization?.stats(m).cooldown||1);
   function tickMove(dt, pl, m, now) {
     const cooldownRate = rateFor(pl,m);
     m.t -= dt * cooldownRate;
@@ -55,7 +55,7 @@ G.Combat = (() => {
     }
     if (m.t > 0||!wanted) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
-    const manual=G.Targeting?.manual(pl),preview=G.SquadBonds?.move(pl,G.Specialization?.move(pl,m)||m)||m,castReach=reach(G.TypeBonds?.move(pl,preview)||preview),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
+    const manual=G.Targeting?.manual(pl),preview=G.SquadBonds?.move(pl,G.Specialization?.move(pl,m)||m)||m,traitPreview=G.TypeBonds?.move(pl,preview)||preview,castReach=reach(G.SquadTraits?.move(pl,traitPreview)||traitPreview),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
     if (needsTarget(m) && !(manual&&m.kind!=='chain') && !(target && G.U.dist(pl.x, pl.y, target.x, target.y) <= castReach)) {
       m.t = 0.05;
       return;
@@ -88,6 +88,7 @@ G.Combat = (() => {
     if (G.Mega) m = G.Mega.move(pl, m);
     if(G.SquadBonds)m=G.SquadBonds.move(pl,m);
     if(G.TypeBonds)m=G.TypeBonds.move(pl,m);
+    if(G.SquadTraits)m=G.SquadTraits.move(pl,m);
     m = G.Abilities.move(pl, m);
     switch (m.kind) {
       case 'projectile': fireProjectiles(pl, m); break;
@@ -577,6 +578,7 @@ G.Combat = (() => {
     if (G.Mega) m = G.Mega.move(pl, m);
     if(G.SquadBonds)m=G.SquadBonds.move(pl,m);
     if(G.TypeBonds)m=G.TypeBonds.move(pl,m);
+    if(G.SquadTraits)m=G.SquadTraits.move(pl,m);
     m = G.Abilities.move(pl, m);
     const col = G.U.TYPE_COLOR[m.type];
     const want = Math.max(1, m.count | 0);

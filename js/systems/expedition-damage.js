@@ -9,14 +9,14 @@ G.ExpeditionDamage=(()=>{
     if(!G.Squad?.active||!p||!(n>0)||!Number.isFinite(n))return;
     const id=attack?.id||'',bond=attack?.bondDamageKind||(id.startsWith('typebond-')?id.slice(9):null);
     if(bond)addBond(bond,n);
-    else if(context?.execute)addBond('fairy',n);
+    else if(context?.execute)addBond(context.executionSource||'fairy',n);
     else{
       const factors=[...(context?.contributions||[]),...(attack?.bondDamageContributions||[])],total=factors.reduce((k,[,v])=>k*v,1);let base=n/total;actor(p).damage+=base;
       for(const [type,k]of factors){addBond(type,base*(k-1));base*=k;}
     }
   }
   const snapshot=()=>[...rows.values()].map(r=>({...r})).sort((a,b)=>b.damage-a.damage||a.id.localeCompare(b.id));
-  const label=r=>r.kind==='bond'?(G.U.TYPE_NAME[r.type]?G.T(G.U.TYPE_NAME[r.type]):G.Expedition.skillLabel(r.type))+L(' · vínculo',' bond damage','羁绊伤害'):G.T(r.name);
+  const label=r=>r.type?.startsWith('trait:')?G.SquadTraits.local(G.SquadTraitDefs.BY[r.type.slice(6)].name)+L(' · rasgo',' trait damage','特性伤害'):r.kind==='bond'?(G.U.TYPE_NAME[r.type]?G.T(G.U.TYPE_NAME[r.type]):G.Expedition.skillLabel(r.type))+L(' · vínculo',' bond damage','羁绊伤害'):G.T(r.name);
   function render(target,data=snapshot()){
     target.replaceChildren();const title=document.createElement('h3');title.textContent=L('Daño del equipo','Squad damage','小队伤害统计');target.append(title);
     for(const r of data){const row=document.createElement('div');row.className='expedition-damage-row';const name=document.createElement('span'),value=document.createElement('b');name.textContent=label(r);value.textContent=Math.round(r.damage).toLocaleString();row.append(name,value);target.append(row);}

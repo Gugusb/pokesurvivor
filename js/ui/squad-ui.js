@@ -9,7 +9,7 @@ G.SquadUI=(()=>{
   const id=p=>p.isSquadMember?String(p.squadId):'captain';
   const deployed=p=>G.Squad.actors().includes(p);
   const canEdit=()=>editable&&['route','shop','loot'].includes(G.Expedition.phase);
-  function status(p){return p===leader()?L('Capitán','Captain','队长'):!deployed(p)?L('Suplente','Reserve','候补'):p.dead?L('Caído · mantiene su apoyo','Fainted · support remains','已倒下 · 支援仍生效'):L('En formación','Deployed','已上阵');}
+  function status(p){return p===leader()?L('Capitán','Captain','队长'):!deployed(p)?L('Suplente','Reserve','候补'):p.dead?L('Caído · rasgo inactivo','Fainted · trait inactive','已倒下 · 特性暂停'):L('En formación','Deployed','已上阵');}
   function button(text,fn,cls='btn'){const b=node('button',cls,text);b.type='button';b.onclick=fn;return b;}
   function portrait(p,size){const canvas=node('canvas');canvas.width=canvas.height=size;const view=G.UI.sprite(canvas,p.spriteDex||p.dex,{scale:3,hero:true,shiny:!!p.shiny,lively:false,anim:'Walk'});if(p.dead){view.a.play('Faint',{hold:true});canvas.style.filter='grayscale(1)';}canvas.setAttribute('aria-hidden','true');return canvas;}
   function init(){const b=$('squad-open');b.innerHTML=G.Icons.html('friends',24)+'<kbd>T</kbd>';b.title=b.ariaLabel=L('Ver equipo','View squad','查看小队');b.onclick=()=>G.Game.toggleSquad();}
@@ -87,6 +87,7 @@ G.SquadUI=(()=>{
         for(const [key,values]of Object.entries(isType.values)){const unit=['freeze','interval'].includes(key)?'s':['spikes','shields'].includes(key)?'':'%',factor=unit==='%'?100:1,fmt=n=>Number((n*factor).toFixed(2))+unit;detail.append(node('p','',L(...labels[key])+' · 0 / 100 / 300: '+values.map(fmt).join(' / ')));}row.append(detail);
       }rows.append(row);
     }box.append(rows,node('p','note',L('Cada especie cuenta una vez por etiqueta.','Each species counts once per tag.','同名伙伴对同一羁绊只计一次生效数。')));
+    if(G.SquadTraits){const counts={stacking:0,economic:0,terminal:0};for(const p of G.Squad.deployed())if(!p.dead)counts[G.SquadTraits.def(p).category]++;box.append(node('h4','',L('Motor de rasgos','Trait engine','特性概况')),node('p','note',L('Acumulación / economía / terminal','Stacking / economy / terminal','叠层 / 经济 / 终端')+' · '+[counts.stacking,counts.economic,counts.terminal].join(' / ')));return;}
     box.append(node('h4','',L('Apoyo activo','Active support','当前支援')));let found=false;for(const [key,label]of [['atk',L('Ataques','Attacks','基础双攻')],['hp',L('Vida','HP','基础生命')],['agility',L('Agilidad','Agility','基础敏捷')],['stamina',L('Aguante','Stamina','基础耐力')],['regen',L('Vida/s','HP/s','基础生命/秒')]]){const value=G.Squad.growth(leader(),key);if(value){found=true;box.append(node('p','squad-support-line',label+' +'+Number((value*100).toFixed(1))+'%'));}}if(!found)box.append(node('p','note',L('Sin apoyo todavía','No support yet','暂无队员支援')));
   }
   function statRows(p){
@@ -101,7 +102,7 @@ G.SquadUI=(()=>{
     const hero=node('div','squad-hero');hero.append(portrait(p,144));const title=node('div');title.append(node('small','squad-status',status(p)),node('h3','',T(p.mon.name)),node('p','',L('Nivel','Level','等级')+' '+p.level+(p.isSquadMember?' · '+'★'.repeat(p.rank):'')));
     health=node('p','squad-health-value');title.append(health);hero.append(title);box.append(hero,G.Expedition.tags(p));
     const talent=node('section','squad-talent');talent.append(node('h4','',L('Habilidad','Ability','特性')));
-    if(p.isSquadMember){talent.append(node('p','',G.Expedition.talentText(p)));talent.append(node('small','',deployed(p)?L('El apoyo se mantiene incluso al caer.','Support stays active even while fainted.','即使倒下，支援特性仍然生效。'):L('El apoyo se activa al entrar en formación.','Support activates when deployed.','上阵后支援特性才会生效。')));}
+    if(p.isSquadMember){const text=node('p','',G.Expedition.talentText(p));text.setAttribute('translate','no');talent.append(text);talent.append(node('small','',L('Activa mientras está vivo y en formación.','Active while alive and deployed.','仅上阵且存活时触发；候补和倒下者不触发。')));}
     else{const def=G.AbilityDefs.LIST.find(a=>a.ability===p.ability);talent.append(node('p','',def?T(def.name)+' · '+T(def.desc):L('Sin habilidad','No ability','尚未装备特性勋章')));}box.append(talent);
     box.append(node('h4','squad-section-title',L('Atributos actuales','Current stats','当前属性')));
     const table=node('div','squad-stats');for(const r of statRows(p)){const cell=node('div','squad-stat');cell.dataset.stat=r.key;const value=node('b','',G.PlayerStats.fmt(r.total)),battle=node('small','',r.battle);cell.append(node('span','',T(r.name)),value,battle);table.append(cell);stats.push({key:r.key,value,battle});}box.append(table);
@@ -118,6 +119,7 @@ G.SquadUI=(()=>{
   }
   function refreshDetails(){
     if(!selected||!health)return;health.textContent=Math.ceil(selected.hp)+' / '+Math.ceil(selected.maxHp)+' HP';
+    const trait=document.querySelector?.('#squad-detail .squad-talent p');if(trait&&selected.isSquadMember&&G.SquadTraits)trait.textContent=G.SquadTraits.description(selected);
     const rows=statRows(selected);for(const el of stats){const r=rows.find(r=>r.key===el.key);el.value.textContent=G.PlayerStats.fmt(r.total);el.battle.textContent=r.battle;}
     for(const el of moves){const p=G.MovePP.state(selected,el.m);el.pp.textContent=G.PlayerStats.fmt(p.current)+' / '+p.max+' PP';}
   }

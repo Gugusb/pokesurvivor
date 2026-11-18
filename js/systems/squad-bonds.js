@@ -19,10 +19,12 @@ G.SquadBonds=(()=>{
   function layer(category,id){return layers[key(category,id)]??(category==='types'?0:1);}
   function setLayer(category,id,n){
     const valid=category==='types'?Object.hasOwn(G.U.TYPE_NAME,id):category==='eggs'?Number.isInteger(+id)&&+id>=1&&+id<=15:category==='skill'&&G.Moves.ALL.some(m=>m.kind===id);
-    if(!G.Squad?.active||!valid||!Number.isSafeInteger(n)||n<0||n>10000)return false;
+    if(!G.Squad?.active||!valid||!Number.isFinite(n)||n<0||n>10000)return false;
+    n=Math.round(n*1e6)/1e6;
     if(layers[key(category,id)]!==n)revision++;layers[key(category,id)]=n;return true;
   }
-  const scale=n=>n>0?1+.25*Math.log2(n):0;
+  function addLayer(category,id,amount){if(!Number.isFinite(amount)||amount<=0)return false;return setLayer(category,id,Math.min(10000,layer(category,id)+amount));}
+  const scale=n=>n>0?Math.max(0,1+.25*Math.log2(n)):0;
   function state(kind){const n=count('skill',kind),l=layer('skill',kind);return {count:n,layers:l,tier:!KINDS.includes(kind)||!l?0:n>=6?6:n>=3?3:0,scale:scale(l)};}
   const applies=(p,m)=>!!p?.isSquadMember&&G.Squad?.active&&G.Squad.deployed().includes(p)&&!m?.zMove;
   function stats(p,m){return applies(p,m)?state(m?.kind):{count:0,layers:0,tier:0,scale:0};}
@@ -50,5 +52,5 @@ G.SquadBonds=(()=>{
       chain:L('3: más saltos. 6: saltos retardados, breve pausa y más agilidad.','3: more jumps. 6: delayed jumps, a brief stagger and more agility.','3：连锁数量提高。6：敏捷提高，延迟连锁使目标短暂停顿，可同时释放新连锁。')
     })[kind]||L('Efecto por diseñar','Effect awaiting design','羁绊效果待设计');
   }
-  return {KINDS,reset,refresh,count,layer,setLayer,state,stats,scale,agility,stamina,sustain,move,meleeDamage,description,get revision(){return revision;}};
+  return {KINDS,reset,refresh,count,layer,setLayer,addLayer,state,stats,scale,agility,stamina,sustain,move,meleeDamage,description,get revision(){return revision;}};
 })();

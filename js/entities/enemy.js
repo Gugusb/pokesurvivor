@@ -122,6 +122,8 @@
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
       const bond=!this.remote?G.TypeBonds?.beforeHit(attacker,this,attack):null;
       if(bond)amount*=bond.factor;
+      const terminal=G.SquadTraits?.beforeHit(attacker,this,attack);if(terminal)amount*=terminal.factor;
+      const damageContext={contributions:[...(bond?.contributions||[]),...(terminal?.contributions||[])],execute:!!(bond?.execute||terminal?.execute),executionSource:terminal?.execute?terminal.executionSource:'fairy'};
       if(G.TypeBonds)knock*=G.TypeBonds.knock(attacker,attack);
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
       if (!this.remote && attacker&&!attack.typeBondFraction) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass);
@@ -130,7 +132,7 @@
         amount /= defense || 1;
       }
       if (!this.remote && this.mega&&!attack.typeBondFraction) amount /= 1.3;
-      if(bond?.execute)amount=Math.max(amount,this.hp+(this.shield||0)+1);
+      if(bond?.execute||terminal?.execute)amount=Math.max(amount,this.hp+(this.shield||0)+1);
       const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
       // quien decide si cae. Aquí sólo se ve (número, destello y animación).
@@ -150,14 +152,14 @@
       }
       hpDamage = Math.round(hpDamage);
       if (!hpDamage) {
-        G.ExpeditionDamage?.record(attacker,attack,shieldDamage,bond);
+        G.ExpeditionDamage?.record(attacker,attack,shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',shieldDamage);
         if(bond)G.TypeBonds.afterHit(attacker,this,attack,shieldDamage,bond);
         G.FX.dmgText(this.x, this.y - this.bodyH - 4, Math.round(shieldDamage), '#9fd8ff'); this.flash = 0.05;
         return shieldDamage;
       }
       if (G.BossCombat&&!attack.typeBondFraction) hpDamage = G.BossCombat.damage(this,hpDamage);
       if (!(hpDamage > 0)) return shieldDamage;
-      G.ExpeditionDamage?.record(attacker,attack,Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage,bond);
+      G.ExpeditionDamage?.record(attacker,attack,Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage);
       this.hp -= hpDamage;
       if (attacker) this.lastAttacker = attacker;
       this.lastTypeBondAttack=attack;
@@ -205,7 +207,7 @@
     die() {
       if (this.dead) return;
       this.dead = true;
-      G.TypeBonds?.death(this);
+      G.TypeBonds?.death(this);G.SquadTraits?.kill(this.lastAttacker);
       if (G.Rift && G.Rift.noteDefeated) G.Rift.noteDefeated(this);
       this.fade = 0.9;
       this.anim.play('Faint', { hold: true });

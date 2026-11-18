@@ -18,7 +18,7 @@ test('counts deduplicate a species per tag, count different evolution names, kee
 
 test('bond stacks are independent of contributor count, bounded inputs, monotonic effects, zero disables, and new runs reset stacks',()=>{
  const s=setup('projectile',2),g=s.G,B=g.SquadBonds,n=B.count('skill','projectile'),before=s.p.agilityFor(s.m),save=JSON.stringify(g.DB.save);assert.equal(B.layer('skill','projectile'),1);assert.equal(B.state('projectile').tier,3);assert.ok(B.setLayer('skill','projectile',8));close(B.scale(8),1.75);assert.equal(B.count('skill','projectile'),n);assert.ok(s.p.agilityFor(s.m)>before);assert.equal(JSON.stringify(g.DB.save),save);
- for(const args of [['skill','bad',1],['types','__proto__',1],['eggs',0,1],['skill','beam',1.5],['skill','beam',-1],['skill','beam',10001]])assert.equal(B.setLayer(...args),false);
+ for(const args of [['skill','bad',1],['types','__proto__',1],['eggs',0,1],['skill','beam',NaN],['skill','beam',-1],['skill','beam',10001]])assert.equal(B.setLayer(...args),false);
  B.setLayer('skill','projectile',0);assert.equal(B.state('projectile').tier,0);close(s.p.agilityFor(s.m),s.p.agility*.5);g.Squad.begin(s.cap);assert.equal(B.layer('skill','projectile'),1);
 });
 

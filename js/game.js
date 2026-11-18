@@ -946,7 +946,7 @@ G.Game = (() => {
     ctx.scale(G.Camera.scale, G.Camera.scale);
     G.Camera.apply(ctx);
     drawScene(G.Camera, everyone());
-    G.Projectiles.draw(ctx);
+    G.SquadTraits?.draw(ctx);G.Projectiles.draw(ctx);
     G.Combat.drawAirFields(ctx);
     G.TypeBonds?.drawAir(ctx);
     if (G.ZMoves) G.ZMoves.draw(ctx);
