@@ -104,6 +104,7 @@ G.Expedition = (() => {
     run.companion=null;run.companionResolved=false;run.loot={};run.goldStart=run.gold;run.extraStart=JSON.parse(JSON.stringify(G.Game.loot||{}));
     G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Pickups.clear();G.Hazards.clear();G.Path.clear();
     G.World.setBiome(Math.floor((run.day-1)/5));G.Squad.recover();
+    G.TypeBonds?.beginStage();
     for(const p of G.Squad.actors())G.Abilities.resetStage(p,run.day);
     if(kind==='boss'){spawn(true);run.spawned=1;}
     G.UI.hideAll();G.Touch.reset();G.Game.expeditionResume();G.Audio.sfx('confirm');
@@ -180,7 +181,7 @@ G.Expedition = (() => {
   }
   function depart(){if(run?.phase!=='upgrades')return;finishStage(note);}
   function finishStage(message=''){
-    if(!run)return;G.Game.scoreEvent();G.Squad.recover();run.captain.heal(run.captain.maxHp*.15);note=message;
+    if(!run)return;G.Game.scoreEvent();G.TypeBonds?.beginStage();G.Squad.recover();run.captain.heal(run.captain.maxHp*.15);note=message;
     if(run.day%20===0&&run.day>0){run.cycle++;run.map=R.matrix(run.cycle);run.row=0;run.history=[{day:run.day,col:run.col}];note+=' '+L('Un nuevo ciclo: los rivales se han fortalecido.','A new cycle: foes have grown much stronger.','新的周期开始了，对手变得更强了。');}
     if(run.day===60&&run.cashout){G.Game.expeditionVictory();return;}
     showRoute();

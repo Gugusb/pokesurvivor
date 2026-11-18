@@ -846,6 +846,7 @@ G.Game = (() => {
     pl.frozen = coop && (G.UI.isOpen('scr-pause') || G.UI.isOpen('scr-item'));
     pl.update(dt);
     if(G.Squad?.active)G.Squad.tick(dt);
+    G.TypeBonds?.tick(dt);
     if (coop) {
       for (const p of G.Coop.puppets()) { p.netUpdate(dt); if (G.ZMoves) G.ZMoves.tick(p, dt); G.Combat.ghostOrbit(p, dt, time); }
       if (pl.dead) reviveTick(dt);
@@ -914,6 +915,7 @@ G.Game = (() => {
     G.World.drawLiquid(ctx, cam, t);
     G.Hazards.draw(ctx);
     G.Combat.drawGroundFields(ctx);
+    G.TypeBonds?.drawGround(ctx);
     if (G.ZMoves) G.ZMoves.drawGround(ctx);
     G.Pickups.draw(ctx);
 
@@ -946,6 +948,7 @@ G.Game = (() => {
     drawScene(G.Camera, everyone());
     G.Projectiles.draw(ctx);
     G.Combat.drawAirFields(ctx);
+    G.TypeBonds?.drawAir(ctx);
     if (G.ZMoves) G.ZMoves.draw(ctx);
     G.FX.draw(ctx);
     G.Judgment.drawAir(ctx);

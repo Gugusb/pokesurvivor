@@ -47,6 +47,7 @@ G.Combat = (() => {
           m.t=0;return;
         }
         m.t=Math.max(.05,m.cd*pl.cdMul)*G.Abilities.onCast(pl,m)*(G.SquadBonds?.sustain(pl,m)||1);
+        m.typeCastId=G.TypeBonds?.cast(pl,m)||0;if(pl.dead)return;
         G.MoveControl?.cast(pl,m);G.Items?.onCast(pl,m);
         extras(pl,m,m.t/cooldownRate);
       }
@@ -54,13 +55,14 @@ G.Combat = (() => {
     }
     if (m.t > 0||!wanted) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
-    const manual=G.Targeting?.manual(pl),castReach=reach(G.SquadBonds?.move(pl,G.Specialization?.move(pl,m)||m)||m),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
+    const manual=G.Targeting?.manual(pl),preview=G.SquadBonds?.move(pl,G.Specialization?.move(pl,m)||m)||m,castReach=reach(G.TypeBonds?.move(pl,preview)||preview),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
     if (needsTarget(m) && !(manual&&m.kind!=='chain') && !(target && G.U.dist(pl.x, pl.y, target.x, target.y) <= castReach)) {
       m.t = 0.05;
       return;
     }
     if(G.MovePP&&!G.MovePP.consume(pl,m)){m.t=0;return;}
     m.t = Math.max(0.05, m.cd * pl.cdMul) * G.Abilities.onCast(pl, m);
+    m.typeCastId=G.TypeBonds?.cast(pl,m)||0;if(pl.dead)return;
     G.MoveControl?.cast(pl,m);G.Items?.onCast(pl,m);
     // Snapshot this cast's real interval, including its one-time cooldown penalty.
     const castCooldown = m.t / cooldownRate;
@@ -85,6 +87,7 @@ G.Combat = (() => {
     if (G.Mega) G.Mega.particles(pl);
     if (G.Mega) m = G.Mega.move(pl, m);
     if(G.SquadBonds)m=G.SquadBonds.move(pl,m);
+    if(G.TypeBonds)m=G.TypeBonds.move(pl,m);
     m = G.Abilities.move(pl, m);
     switch (m.kind) {
       case 'projectile': fireProjectiles(pl, m); break;
@@ -110,15 +113,15 @@ G.Combat = (() => {
     if (m.kind === 'melee') return m.radius + 30;
     if (m.kind === 'beam') return m.radius + 20;
     if (m.kind === 'boomerang') return m.radius + 40;
-    if (m.kind === 'chain') return 280;
-    if (m.kind === 'meteor') return 340;
+    if (m.kind === 'chain') return 280*(m.typeReachFactor||1);
+    if (m.kind === 'meteor') return 340*(m.typeReachFactor||1);
     if (m.kind === 'dash') return m.radius + 60;
     if (m.kind === 'cone') return m.speed * m.life + 30;
     return 520;
   }
 
   function payload(m) {
-    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, moveKind: m.kind, moveId: m.id, damageClass:m.damageClass, evolved:!!m.evolved, phaseWalls:!!m.phaseWalls, specMove:m,bondUnstable:!!m.bondUnstable,bondScale:m.bondScale||1 };
+    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, moveKind: m.kind, moveId: m.id, damageClass:m.damageClass, evolved:!!m.evolved, phaseWalls:!!m.phaseWalls, specMove:m,bondUnstable:!!m.bondUnstable,bondScale:m.bondScale||1,typeCastId:m.typeCastId||0 };
   }
 
   /** Tabla de tipos × clima para un ataque de tipo `type` contra `e`. */
@@ -573,6 +576,7 @@ G.Combat = (() => {
     if(G.Specialization)m=G.Specialization.move(pl,m);
     if (G.Mega) m = G.Mega.move(pl, m);
     if(G.SquadBonds)m=G.SquadBonds.move(pl,m);
+    if(G.TypeBonds)m=G.TypeBonds.move(pl,m);
     m = G.Abilities.move(pl, m);
     const col = G.U.TYPE_COLOR[m.type];
     const want = Math.max(1, m.count | 0);
@@ -639,7 +643,7 @@ G.Combat = (() => {
 
   // Golpe crítico (Mejoras → Golpe Crítico): x1,5 de daño, número naranja y grande.
   const isCrit = (pl,m) => {const chance=Math.min(1,(pl.critChance||0)+(G.Items?.critBonus(pl)||0)+(G.Specialization?.stats(m).crit||0));return !ghost&&chance>0&&Math.random()<chance;};
-  const critMul=(pl,m)=>G.Abilities.critMultiplier(pl)+(G.Items?.critDamage(pl)||0)+(G.Specialization?.stats(m).critDamage||0);
+  const critMul=(pl,m,e)=>G.Abilities.critMultiplier(pl)+(G.Items?.critDamage(pl)||0)+(G.Specialization?.stats(m).critDamage||0)+(e?G.TypeBonds?.critBonus(pl,e)||0:0);
   function unstableRoll(pl,p){
     if(!p.bondUnstable||p.zMove||!p.bondBudget||p.bondProcs>=p.bondBudget||G.Abilities.suppressEffects(pl))return -1;
     p.bondProcs++;return Math.min(4,Math.floor(Math.random()*5));
@@ -659,9 +663,9 @@ G.Combat = (() => {
 
   function hit(pl, e, dmg, col, dx, dy, knock, m) {
     const k = typeK(m.type, e, pl);
-    const crit = m.zCrit || isCrit(pl,m);
-    dmg *= k * (crit ? critMul(pl,m) : 1);
-    const dealt = e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Abilities.outgoingType(pl, m.type, e.types)), ghost ? null : pl, m) || 0;
+    const crit = m.zCrit ||G.TypeBonds?.forceCrit(pl,e)|| isCrit(pl,m);
+    dmg *= k * (crit ? critMul(pl,m,e) : 1);
+    const dealt = e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Abilities.outgoingType(pl, m.type, e.types)), ghost ? null : pl, {...m,typeBondCritApplied:true}) || 0;
     if (!ghost) pl.onDealt(dealt);
     pl.dmgDealt += dealt;
     if (m.burn) e.applyBurn(m.burn, pl);
@@ -771,10 +775,10 @@ G.Combat = (() => {
         const owner=p.owner||pl;
         const raw = G.ZMoves ? G.ZMoves.projectileDamage(p,e) : p.dmg;
         if(raw<=0)continue;
-        const unstable=unstableRoll(owner,p),crit=unstable===3||isCrit(owner,p.specMove);
-        const k = (p.mtype ? typeK(p.mtype, e, owner) : 1) * (crit ? critMul(owner,p.specMove)*(unstable===3?1+(p.bondScale||1):1) : 1);
+        const unstable=unstableRoll(owner,p),crit=unstable===3||G.TypeBonds?.forceCrit(owner,e)||isCrit(owner,p.specMove);
+        const k = (p.mtype ? typeK(p.mtype, e, owner) : 1) * (crit ? critMul(owner,p.specMove,e)*(unstable===3?1+(p.bondScale||1):1) : 1);
         const dealt = e.hurt(raw * k, p.color, p.vx || (e.x - owner.x), p.vy || (e.y - owner.y), p.knock,
-               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, { id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved }) || 0;
+               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, { id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved,typeCastId:p.typeCastId||0,typeBondSecondary:!!p.typeBondSecondary,noDragonCount:!!p.noDragonCount,typeBondCritApplied:true }) || 0;
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
         owner.dmgDealt += dealt;
         owner.onDealt(dealt);
@@ -803,6 +807,7 @@ G.Combat = (() => {
       if (G.U.dist2(e.x, e.y, pl.x, pl.y) > (e.r + pl.r) * (e.r + pl.r)) continue;
       if (e.touchCd > 0 || e.freezeT>0 || e.behavior === 'thief') continue;
       e.touchCd = 0.55;
+      G.TypeBonds?.contact(pl,e);if(e.dead)continue;
       e.strike(pl);
       const landed = pl.hurt(G.Abilities.enemyDamage(e, e.dmg), e.atkType, false, { kind: 'contact', enemy: e });
       if (landed && pl.hasItem('rockyhelmet')) e.hurt((15 + pl.level * 4)*.2*G.Items.count(pl,'rockyhelmet'), '#9aa6b5', e.x - pl.x, e.y - pl.y, 16*G.Items.count(pl,'rockyhelmet'), null, pl);

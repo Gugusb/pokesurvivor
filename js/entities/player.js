@@ -112,10 +112,10 @@ G.Player = class Player {
   buffFraction(stat) { const b = this.buffs[stat]; return this.buffStacks(b) * b.amount; }
   get attackMultiplier() { return Math.max(0, this.atkMul +
     G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
-  get atk() { return this.baseAtk * (1+this.statGrowth.atk+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
-  get spa() { return this.baseSpa * (1+this.statGrowth.spa+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
-  get agility() { return this.baseAgility * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0)); }
-  get stamina() { return this.baseStamina * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0)); }
+  get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)) * (1+this.statGrowth.atk+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
+  get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)) * (1+this.statGrowth.spa+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
+  get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1); }
+  get stamina() { return (this.baseStamina+(G.TypeBonds?.baseBonus(this,'stamina')||0)) * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0)); }
   get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
   get ppInterval() { return G.MonProgression ? G.MonProgression.ppInterval(this.stamina) : 1; }
   isPrimaryMove(m) { const group=this.slots.find(g=>g.some(x=>x===m||x.id===m?.id));return !group||group===this.activeGroup(); }
@@ -130,20 +130,20 @@ G.Player = class Player {
   attackFor(move) { return move?.damageClass === 'special' ? this.spa : this.atk; }
   defenseFor(source) {
     const kind=source?.kind;
-    if (kind==='contact' || kind==='melee') return Math.max(.1,this.baseDefense*(1+this.statGrowth.defense+this.buffFraction('def')));
-    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,this.baseSpDef*(1+this.statGrowth.spdef+this.buffFraction('def')));
+    if (kind==='contact' || kind==='melee') return Math.max(.1,(this.baseDefense+(G.TypeBonds?.baseBonus(this,'defense')||0))*(1+this.statGrowth.defense+this.buffFraction('def')));
+    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,(this.baseSpDef+(G.TypeBonds?.baseBonus(this,'spdef')||0))*(1+this.statGrowth.spdef+this.buffFraction('def')));
     return 1;
   }
   get spd() {
-    const s = this.baseSpd * (1+this.statGrowth.spd+this.buffFraction('spd')) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
+    const s = (this.baseSpd+(G.TypeBonds?.baseBonus(this,'spd')||0)) * (1+this.statGrowth.spd+this.buffFraction('spd')) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
       (1 + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return s * (G.Abilities.slowImmune(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
-      (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1);
+      (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1)*(G.TypeBonds?.speed(this)||1);
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0)); }
-  get flatRegen() { return this.regenFlat + this.baseHp*this.regenBase + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0)+this.baseHp*(G.Squad?.growth(this,'regen')||0); }
+  get flatRegen() { return this.regenFlat + this.baseHp*this.regenBase + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0)+this.baseHp*(G.Squad?.growth(this,'regen')||0)+(G.TypeBonds?.regen(this)||0); }
   get missingHpRegen() { return this.buffFraction('regen'); }
   get regen() { return this.flatRegen + Math.max(0,this.maxHp-this.hp)*this.missingHpRegen; }
   regenerate(dt) {
@@ -295,6 +295,7 @@ G.Player = class Player {
     if (type === 'electric' && G.Abilities.has(this, 'voltabsorb')) { this.heal(this.maxHp * 0.25); return false; }
     if (this.invuln > 0 || this.dashGuardT > 0) return false;
     if (!G.Abilities.beforeHurt(this, source)) return false;
+    if(G.TypeBonds?.block(this,source)){this.invuln=.45;return false;}
     let eff = null;
     if (type) {
       const k = G.Abilities.has(this, 'multitype') ? 1 : G.Types.mult(type, this.mon.types);
@@ -306,9 +307,10 @@ G.Player = class Player {
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1)*(['environment','weather'].includes(source.kind)?Math.pow(.9,G.Items.count(this,'safetygoggles')):1);
-    if (G.FailureProtection?.avoidLethal(this,d)) return false;
-    const hpLost=Math.min(this.hp,d);
-    this.hp -= d;
+    const finalDamage=d*(G.TypeBonds?.defense(this)||1);
+    if (G.FailureProtection?.avoidLethal(this,finalDamage)) return false;
+    const hpLost=Math.min(this.hp,finalDamage);
+    this.hp -= finalDamage;G.TypeBonds?.onDamage(this,hpLost);
     if(G.BossCombat&&source.enemy)G.BossCombat.leech(source.enemy,hpLost,this.maxHp);
     G.Abilities.onDamage(this);
     G.Abilities.afterHurt(this, source, type);
@@ -321,7 +323,7 @@ G.Player = class Player {
       G.Camera.kick(0.38);
       if(!['environment','weather'].includes(source.kind))G.Game.hitStop?.();
     }
-    G.FX.dmgText(this.x, this.y - this.bodyH - 4, '-' + Math.round(d), eff === 'super' ? '#ff3048' : eff === 'weak' ? '#c9a0a8' : '#ff6b7a', eff === 'super');
+    G.FX.dmgText(this.x, this.y - this.bodyH - 4, '-' + Math.max(1,Math.round(finalDamage)), eff === 'super' ? '#ff3048' : eff === 'weak' ? '#c9a0a8' : '#ff6b7a', eff === 'super');
     G.FX.burst(this.x, this.y - this.bodyH * 0.5, '#ff5f6d', 6, 90);
     if (this.hp <= 0) G.Abilities.saveLethal(this);
     // Cada Banda Focus evita un golpe mortal y se consume.

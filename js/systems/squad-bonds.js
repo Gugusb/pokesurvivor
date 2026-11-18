@@ -16,7 +16,7 @@ G.SquadBonds=(()=>{
     counts=new Map([...names].map(([k,n])=>[k,n.size]));
   }
   function count(category,id){return counts.get(key(category,id))||0;}
-  function layer(category,id){return layers[key(category,id)]??1;}
+  function layer(category,id){return layers[key(category,id)]??(category==='types'?0:1);}
   function setLayer(category,id,n){
     const valid=category==='types'?Object.hasOwn(G.U.TYPE_NAME,id):category==='eggs'?Number.isInteger(+id)&&+id>=1&&+id<=15:category==='skill'&&G.Moves.ALL.some(m=>m.kind===id);
     if(!G.Squad?.active||!valid||!Number.isSafeInteger(n)||n<0||n>10000)return false;

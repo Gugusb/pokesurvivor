@@ -5,7 +5,7 @@ G.Dev = (() => {
   let god = false, panel, launcher;
   let viewMultiplier = 1.5;
   let zTestMove = 'ember', zShortCooldown = false;
-  let bondTestKind='projectile';
+  let bondTestKind='projectile',bondTestCategory='skill';
   try {
     const stored = Number(localStorage.getItem('ps.dev.view'));
     if (stored >= 1 && stored <= 2) viewMultiplier = stored;
@@ -89,7 +89,7 @@ G.Dev = (() => {
       '<label for="dev-view">视野范围：<output id="dev-view-value">' + viewMultiplier.toFixed(2) + '×</output></label>' +
       '<input id="dev-view" type="range" min="1" max="2" step="0.05" value="' + viewMultiplier + '">' +
       '<p class="note">向右拉可看得更远，默认 1.5×；关闭开发者模式后恢复设置中的视野。</p>' +
-      (G.Squad?.active&&G.SquadBonds?'<h4>小队羁绊层数</h4><label>职业羁绊 <select id="dev-bond-kind">'+G.SquadBonds.KINDS.map(k=>'<option value="'+k+'"'+(k===bondTestKind?' selected':'')+'>'+G.Expedition.skillLabel(k)+' · '+G.SquadBonds.layer('skill',k)+'层</option>').join('')+'</select></label><label>层数 <input id="dev-bond-layer" type="number" min="0" max="10000" step="1" value="'+G.SquadBonds.layer('skill',bondTestKind)+'"></label><div class="row wrap"><button class="btn small" data-dev="bond-layer">设置本局羁绊层数</button><button class="btn small" data-dev="bond-party">组建6名同类技能测试队员</button></div><p class="note">组队测试会替换本局队员；层数只在本局生效。</p>':'')+
+      (G.Squad?.active&&G.SquadBonds?'<h4>小队羁绊层数</h4><label>类别 <select id="dev-bond-category"><option value="skill"'+(bondTestCategory==='skill'?' selected':'')+'>职业羁绊</option><option value="types"'+(bondTestCategory==='types'?' selected':'')+'>属性羁绊</option></select></label><label>羁绊 <select id="dev-bond-kind">'+(bondTestCategory==='types'?G.TypeBondDefs.LIST.map(d=>d.id):G.SquadBonds.KINDS).map(k=>'<option value="'+k+'"'+(k===bondTestKind?' selected':'')+'>'+(bondTestCategory==='types'?G.T(G.U.TYPE_NAME[k]):G.Expedition.skillLabel(k))+' · '+G.SquadBonds.layer(bondTestCategory,k)+'层</option>').join('')+'</select></label><label>层数 <input id="dev-bond-layer" type="number" min="0" max="10000" step="1" value="'+G.SquadBonds.layer(bondTestCategory,bondTestKind)+'"></label><div class="row wrap"><button class="btn small" data-dev="bond-layer">设置本局羁绊层数</button><button class="btn small" data-dev="bond-party">组建同类标签测试队员</button><button class="btn small" data-dev="type-bond-reset">重置本阶段属性状态</button></div><p class="note">组队测试会替换本局队员。属性0层有基础效果，100/300为成长节点；300层后继续增长。</p>':'')+
       '<h4>货币增减</h4><p class="note">输入每次增减的数量。余额最低为 0，立即保存。</p>' +
       currencies.map(c => '<div class="dev-currency"><span>' + c.name + '：' + (save ? balance(c.id) : 0) + '</span>' +
         '<input type="number" id="dev-amount-' + c.id + '" aria-label="' + c.name + '增减数量" min="1" max="1000000000" step="1" value="' + c.step + '">' +
@@ -121,7 +121,8 @@ G.Dev = (() => {
       '<div class="row wrap"><button class="btn small" data-dev="weather">召唤天气 20s</button><button class="btn small" data-dev="clear-weather">清除天气</button><button class="btn small" data-dev="damage">测试受伤 10%</button><button class="btn small" data-dev="same-type">测试同属性伤害</button><button class="btn small" data-dev="fire-damage">测试火属性伤害</button><button class="btn small" data-dev="lethal">测试致命伤害</button></div>' +
       '<div class="row wrap"><button class="btn small" data-dev="mastery">' + G.T('Obtener MT de Especialización') + '</button><button class="btn small" data-dev="move-max">' + G.T('Maximizar movimientos activos') + '</button><button class="btn small" data-dev="god">无敌：' + (god ? '开' : '关') + '</button><button class="btn small" data-dev="heal">回满生命</button><button class="btn small" data-dev="level">升一级</button><button class="btn small" data-dev="slow">自身减速 3.5s</button><button class="btn small" data-dev="time">时间 +60s</button><button class="btn small" data-dev="rift">开启裂隙战斗</button><button class="btn small" data-dev="boss">击败裂隙 Boss</button><button class="btn small" data-dev="quit">结束本局</button></div>';
     panel.querySelector('#dev-close').onclick = () => panel.classList.add('hidden');
-    panel.querySelector('#dev-bond-kind')?.addEventListener('change',e=>{bondTestKind=e.target.value;panel.querySelector('#dev-bond-layer').value=G.SquadBonds.layer('skill',bondTestKind);});
+    panel.querySelector('#dev-bond-category')?.addEventListener('change',e=>{bondTestCategory=e.target.value;bondTestKind=bondTestCategory==='types'?'normal':'projectile';renderPanel();});
+    panel.querySelector('#dev-bond-kind')?.addEventListener('change',e=>{bondTestKind=e.target.value;panel.querySelector('#dev-bond-layer').value=G.SquadBonds.layer(bondTestCategory,bondTestKind);});
     panel.querySelector('#dev-view').oninput = e => {
       if (setView(Number(e.target.value))) panel.querySelector('#dev-view-value').textContent = viewMultiplier.toFixed(2) + '×';
     };
@@ -147,11 +148,12 @@ G.Dev = (() => {
       action(() => {
         const s = G.DB.save;
         switch (b.dataset.dev) {
-          case 'bond-layer': if(requireRun()){const kind=panel.querySelector('#dev-bond-kind').value,n=Number(panel.querySelector('#dev-bond-layer').value);if(!G.SquadBonds.setLayer('skill',kind,n))G.UI.toast('请输入0至10000的整数层数');}break;
+          case 'bond-layer': if(requireRun()){const kind=panel.querySelector('#dev-bond-kind').value,n=Number(panel.querySelector('#dev-bond-layer').value);if(!G.SquadBonds.setLayer(bondTestCategory,kind,n))G.UI.toast('请输入0至10000的整数层数');}break;
+          case 'type-bond-reset':if(requireRun())G.TypeBonds?.beginStage();break;
           case 'bond-party':{
             if(!requireRun()||!G.Squad.active)break;while(G.Squad.capacity<7)G.Squad.upgrade();for(const p of [...G.Squad.roster])G.Squad.release(p);
             const kind=panel.querySelector('#dev-bond-kind').value,seen=new Set();
-            for(const mon of G.DEX){if(seen.has(mon.name)||!G.SPRITE_META[mon.dex])continue;const id=G.Moves.poolFor(mon).find(id=>G.Moves.BY_ID[id].kind===kind);if(!id)continue;seen.add(mon.name);G.Squad.recruit(mon.dex,id);if(seen.size===6)break;}G.Squad.refresh();break;
+            for(const mon of G.DEX){if(seen.has(mon.name)||!G.SPRITE_META[mon.dex])continue;const id=bondTestCategory==='types'?(mon.types.includes(kind)?G.Moves.startFor(mon):null):G.Moves.poolFor(mon).find(id=>G.Moves.BY_ID[id].kind===kind);if(!id)continue;seen.add(mon.name);G.Squad.recruit(mon.dex,id);if(seen.size===6)break;}G.Squad.refresh();break;
           }
           case 'z-grant': for(const d of Object.keys(s.owned))G.ZAccess.unlock(s,d);G.UI.toast(G.T('Permiso Z desbloqueado para tu colección.'));break;
           case 'z-charge': {const p=requireRun();if(p)G.ZMoves.debugCharge(p);break;}

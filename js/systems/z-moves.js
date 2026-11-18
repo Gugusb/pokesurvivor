@@ -94,6 +94,7 @@ G.ZMoves = (() => {
   const duration = m => ({ melee:2.2, beam:3, orbit:5, chain:5, dash:0.5, meteor:3.4,boomerang:2.4,nova:2.2,aura:4,mine:2.6,turret:5.3,trail:4,cone:3 }[m.kind] || Math.max(1.2,m.life||1.4));
   function entry(p, learned, ghost=false, angle=null) {
     let m=G.Abilities.move(p,G.Specialization?G.Specialization.move(p,{...learned}):{...learned});
+    if(!ghost)m.typeCastId=G.TypeBonds?.cast(p,m)||0;
     return { m, learned, ghost, vis:G.VFX.forMove(m), seed:Math.random()*100,
       x:p.x,y:p.y, angle:angle??aim(p,m), atk:p.attackFor ? p.attackFor(m) : p.atk, t:0, prev:0, next:0, pulses:0,
       duration:duration(m), budget:power(m)*(G.Specialization?.stats(m).power||1)*(p.attackFor ? p.attackFor(m) : p.atk), damage:new Map(), groups:new Set(),
@@ -133,7 +134,7 @@ G.ZMoves = (() => {
     G.Projectiles.spawn({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,dmg:e.budget*fraction,
       r:(m.size||6)*size,life,pierce:(m.pierce||0)+999,color:G.U.TYPE_COLOR[m.type],vis:e.vis,owner:p,ghost:e.ghost,
       friendly:true,hits:new Set(),burn:m.burn||0,poison:m.poison||0,slow:m.slow||0,knock:m.knock||0,homing,homingTarget:target,
-      mtype:m.type,moveKind:m.kind,moveId:m.id,damageClass:m.damageClass,evolved:!!m.evolved,specMove:m,zMove:true,zCast:e,zGroup:group,visualScale:((m.size||6)>=8?1.5:1)*size});
+      mtype:m.type,moveKind:m.kind,moveId:m.id,damageClass:m.damageClass,evolved:!!m.evolved,specMove:m,zMove:true,zCast:e,zGroup:group,typeCastId:m.typeCastId||0,visualScale:((m.size||6)>=8?1.5:1)*size});
   }
   function projectile(p,e) {
     const m=e.m,col=G.U.TYPE_COLOR[m.type];

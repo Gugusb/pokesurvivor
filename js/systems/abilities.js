@@ -264,7 +264,7 @@ G.Abilities = (() => {
     b.remaining -= active; b.tick -= active;
     while (b.tick <= 1e-8 && !e.dead) {
       b.tick += 1;
-      e.hurt(b.total / 5, '#ff9a4d', 0, 0, 0, null, b.owner);
+      e.hurt(b.total / 5, '#ff9a4d', 0, 0, 0, null, b.owner,{typeBondSecondary:true,typeBondDot:true});
     }
     if (b.remaining <= 1e-8 || e.dead) e.abilityBurn = null;
   }

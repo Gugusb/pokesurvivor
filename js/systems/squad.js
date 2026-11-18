@@ -53,8 +53,8 @@ G.Squad = (() => {
     }
   }
   function resetFollow(){still=0;gathering=false;leaderPos=captain?{x:captain.x,y:captain.y}:null;for(const p of roster)p.idleTarget=null;}
-  function begin(p){captain=p;roster=[];trail=[{x:p.x,y:p.y}];level=1;formation=Array(G.ExpeditionRules.capacity(level)-1).fill(null);bonus={};nextId=1;p.squadCaptain=true;resetFollow();G.SquadBonds?.reset();refresh();}
-  function reset(){captain=null;roster=[];trail=[];formation=[];bonus={};resetFollow();G.SquadBonds?.reset();}
+  function begin(p){G.TypeBonds?.reset();captain=p;roster=[];trail=[{x:p.x,y:p.y}];level=1;formation=Array(G.ExpeditionRules.capacity(level)-1).fill(null);bonus={};nextId=1;p.squadCaptain=true;resetFollow();G.SquadBonds?.reset();refresh();}
+  function reset(){G.TypeBonds?.reset();captain=null;roster=[];trail=[];formation=[];bonus={};resetFollow();G.SquadBonds?.reset();}
   function rankMove(p){
     G.Projectiles.clearOrbs(p);
     const m=p.moves[0],target=p.rank===1?2:p.rank===2?5:m.def.maxLvl;

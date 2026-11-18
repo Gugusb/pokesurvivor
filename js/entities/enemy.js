@@ -118,15 +118,19 @@
     hurt(amount, color = '#fff', dirX = 0, dirY = 0, knock = 0, eff = null, attacker = null, attack = {}) {
       if (this.dead || !(amount > 0)) return 0;
       const shielded = this.shield > 0;
-      const bypass = !this.remote && shielded && attacker && attack.kind === 'melee' &&
+      const bypass = !!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
+      const bond=!this.remote?G.TypeBonds?.beforeHit(attacker,this,attack):null;
+      if(bond)amount*=bond.factor;
+      if(G.TypeBonds)knock*=G.TypeBonds.knock(attacker,attack);
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
-      if (!this.remote && attacker) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass);
+      if (!this.remote && attacker&&!attack.typeBondFraction) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass);
       if (!this.remote && attack.damageClass) {
         const defense=attack.damageClass==='special'?this.spdef:this.defense;
         amount /= defense || 1;
       }
-      if (!this.remote && this.mega) amount /= 1.3;
+      if (!this.remote && this.mega&&!attack.typeBondFraction) amount /= 1.3;
+      if(bond?.execute)amount=Math.max(amount,this.hp+(this.shield||0)+1);
       const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
       // quien decide si cae. Aquí sólo se ve (número, destello y animación).
@@ -146,13 +150,16 @@
       }
       hpDamage = Math.round(hpDamage);
       if (!hpDamage) {
+        if(bond)G.TypeBonds.afterHit(attacker,this,attack,shieldDamage,bond);
         G.FX.dmgText(this.x, this.y - this.bodyH - 4, Math.round(shieldDamage), '#9fd8ff'); this.flash = 0.05;
         return shieldDamage;
       }
-      if (G.BossCombat) hpDamage = G.BossCombat.damage(this,hpDamage);
+      if (G.BossCombat&&!attack.typeBondFraction) hpDamage = G.BossCombat.damage(this,hpDamage);
       if (!(hpDamage > 0)) return shieldDamage;
       this.hp -= hpDamage;
       if (attacker) this.lastAttacker = attacker;
+      this.lastTypeBondAttack=attack;
+      if(bond)G.TypeBonds.afterHit(attacker,this,attack,hpDamage+shieldDamage,bond);
       if (attacker) {G.Abilities.onHit(attacker, this, attack);G.Items?.onHit(attacker,this,attack);G.Specialization?.onHit(attacker,this,attack,hpDamage);}
       G.Judgment.noteDmg(hpDamage, this);
       this.showHurt(hpDamage, color, dirX, dirY, eff);
@@ -196,6 +203,7 @@
     die() {
       if (this.dead) return;
       this.dead = true;
+      G.TypeBonds?.death(this);
       if (G.Rift && G.Rift.noteDefeated) G.Rift.noteDefeated(this);
       this.fade = 0.9;
       this.anim.play('Faint', { hold: true });
@@ -283,6 +291,11 @@
     }
 
     update(dt, pl) {
+      const locked=G.TypeBonds?.immobile(this),x=this.x,y=this.y;
+      if(locked&&this.jump){this.jump=null;this.phase='walk';}
+      try{this.updateAI(dt,pl);}finally{if(locked&&!this.dead){this.x=x;this.y=y;this.kx=this.ky=0;}}
+    }
+    updateAI(dt, pl) {
       // Fuera de pantalla no hace falta animar (sí moverse y pensar).
       const seen = G.Camera.sees(this.x, this.y, 120);
       if (seen || this.dead) this.anim.update(dt);
@@ -296,9 +309,10 @@
           G.FX.twinkle(this.x + G.U.rand(-this.r, this.r) * 1.2, this.y - G.U.rand(4, this.bodyH * 1.1));
         }
       }
-      const attackRate = G.Abilities.pressure(this);
+      const attackRate = G.Abilities.pressure(this)*(G.TypeBonds?.enemyRate(this)||1);
       if (this.touchCd > 0) this.touchCd -= dt * attackRate;
       G.Abilities.enemyTick(this, dt);
+      G.TypeBonds?.enemyTick(this,dt);
       if (this.dead) return;
       this.bob += dt * 6;
 
@@ -306,12 +320,12 @@
       if (this.slowT > 0) { this.slowT -= dt; if (this.slowT <= 0) this.slow = 0; }
       if (this.burn > 0) {
         this.burnT -= dt; this.burnTick -= dt;
-        if (this.burnTick <= 0) { this.burnTick = 0.5; this.hurt(1.6 * this.burn * (1 + pl.level * 0.06), '#ff9a4d', 0, 0, 0, null, this.burnOwner); }
+        if (this.burnTick <= 0) { this.burnTick = 0.5; this.hurt(1.6 * this.burn * (1 + pl.level * 0.06), '#ff9a4d', 0, 0, 0, null, this.burnOwner,{typeBondSecondary:true,typeBondDot:true}); }
         if (this.burnT <= 0) this.burn = 0;
       }
       if (this.poison > 0) {
         this.poisonT -= dt; this.poisonTick -= dt;
-        if (this.poisonTick <= 0) { this.poisonTick = 0.6; this.hurt(this.maxHp * 0.012 * this.poison + 1, '#d47cf0', 0, 0, 0, null, this.poisonOwner); }
+        if (this.poisonTick <= 0) { this.poisonTick = 0.6; this.hurt(this.maxHp * 0.012 * this.poison + 1, '#d47cf0', 0, 0, 0, null, this.poisonOwner,{typeBondSecondary:true,typeBondDot:true}); }
         if (this.poisonT <= 0) this.poison = 0;
       }
       if (this.dead) return;
@@ -328,7 +342,7 @@
         } else if (le.slow) terrainMul = le.slow < 0.5 ? 0.45 : 0.55;
       }
 
-      const spd = this.spd * G.Abilities.slowFactor(this, terrainMul * G.Weather.speedFor(this.types));
+      const spd = this.spd * G.Abilities.slowFactor(this, terrainMul * G.Weather.speedFor(this.types))*(G.TypeBonds?G.TypeBonds.enemySpeed(this):1);
       let [dx, dy] = G.U.norm(pl.x - this.x, pl.y - this.y);
       const dist = G.U.dist(this.x, this.y, pl.x, pl.y);
       this.contactHold=Math.max(0,(this.contactHold||0)-dt);
@@ -482,7 +496,7 @@
       if (!ai.fury && this.hp < this.maxHp * 0.5) this.enrage();
       const k = ai.fury ? 1.25 : 1;
       if (ai.cast) return this.bossCast(dt, pl);
-      ai.modeT -= dt; ai.cd -= dt * k * G.Abilities.pressure(this);
+      ai.modeT -= dt; ai.cd -= dt * k * G.Abilities.pressure(this)*(G.TypeBonds?.enemyRate(this)||1);
       // Alterna siempre: en su distancia favorita está más rato (7-9 s) que en la otra (4-5 s).
       if (ai.modeT <= 0) {
         ai.mode = ai.mode === 'far' ? 'close' : 'far';
@@ -795,6 +809,7 @@
       }
 
       // Apoyos: icono encima, para saber a quién ir primero.
+      G.TypeBonds?.drawEnemy(ctx,this);
       const SUP = { healer: 'heart', shielder: 'shield', summoner: 'friends' };
       if (SUP[this.behavior]) G.Icons.draw(ctx, SUP[this.behavior], Math.round(this.x - 6), Math.round(this.y - this.bodyH - (this.hp < this.maxHp ? 26 : 18)), 12);
       if (this.staticT > 0 || this.unnerveT > 0) G.Icons.draw(ctx, this.staticT > 0 ? 'type:electric' : 'type:psychic', Math.round(this.x + 8), Math.round(this.y - this.bodyH - 25), 12);
