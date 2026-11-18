@@ -470,7 +470,7 @@ G.Game = (() => {
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge,
-      expedition:G.Expedition?.summary(),damage:G.Expedition?.active?G.ExpeditionDamage?.snapshot():[],loot:runLoot,moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
+      expedition:G.Expedition?.summary(),damage:G.Expedition?.active?G.ExpeditionDamage?.snapshot():[],damageBattle:G.Expedition?.active?G.ExpeditionDamage?.snapshot('battle'):[],damageBattleDay:G.ExpeditionDamage?.battleDay,loot:runLoot,moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (pl.coinMul > 1 ? ` · ×${pl.coinMul.toFixed(2)} Fortuna` : '')+
                  (victoryBonus>0?` · ×2 ${G.T('Bonificación de victoria')}`:'')

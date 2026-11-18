@@ -204,7 +204,7 @@ G.UI = (() => {
     const a = new G.Sprites.Animator(dex, 1, !!opts.shiny);
     a.dir = opts.dir || 0;
     a.loop(opts.anim || 'Idle');
-    const s = { cv, ctx: cv.getContext('2d'), a, dex, opts, t: Math.random() * 3, spinT: 0, sparkT: 0 };
+    const s = { cv, ctx: cv.getContext('2d'), a, dex, opts, t: opts.portrait ? 0 : Math.random() * 3, spinT: 0, sparkT: 0 };
     live.add(s);
     if (io) io.observe(cv);
     return s;
@@ -230,6 +230,23 @@ G.UI = (() => {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, cv.width, cv.height);
       ctx.imageSmoothingEnabled = false;
+
+      // Compact portraits trim transparent frame padding and favor the upper body.
+      // Scan once per canvas; reuse the bounds as Idle advances, without new assets.
+      if(s.opts.portrait){
+        const m=G.Sprites.animMeta(s.dex,'Idle',!!s.opts.shiny),sheet=G.Sprites.sheet(s.dex,'Idle',!!s.opts.shiny);
+        if(m&&sheet?.ready){
+          const row=Math.min(s.a.dir,m.r-1);
+          if(!s.portraitBox){
+            const tmp=document.createElement('canvas');tmp.width=m.w;tmp.height=m.h;const c=tmp.getContext('2d');c.drawImage(sheet.img,0,row*m.h,m.w,m.h,0,0,m.w,m.h);
+            const pixels=c.getImageData(0,0,m.w,m.h).data;let x0=m.w,y0=m.h,x1=-1,y1=-1;
+            for(let y=0;y<m.h;y++)for(let x=0;x<m.w;x++)if(pixels[(y*m.w+x)*4+3]>8){x0=Math.min(x0,x);x1=Math.max(x1,x);y0=Math.min(y0,y);y1=Math.max(y1,y);}
+            if(x1>=x0)s.portraitBox={x:x0,y:y0,w:x1-x0+1,h:y1-y0+1};
+          }
+          const b=s.portraitBox;
+          if(b){const h=Math.min(b.h,b.w*1.1),k=.92*Math.min(cv.width/b.w,cv.height/h),frame=Math.min(s.a.frame,m.n-1);ctx.drawImage(sheet.img,frame*m.w+b.x,row*m.h+b.y,b.w,h,(cv.width-b.w*k)/2,(cv.height-h*k)/2,b.w*k,h*k);continue;}
+        }
+      }
 
       // Escala entera para que los píxeles queden nítidos.
       const m = G.Sprites.animMeta(s.dex, 'Idle');
