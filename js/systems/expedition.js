@@ -77,7 +77,7 @@ G.Expedition = (() => {
     for(let i=0;i<count;i++){
       if(retained.has(i)){offer.push(retained.get(i));continue;}
       if(i===count-1||i>0&&Math.random()<.25){const items=G.Items.LIST.filter(it=>G.Items.permitted(it)&&(!it.boss||lv>=4)),it=G.U.pick(items);offer.push({kind:'item',id:it.id,cost:it.boss?100:35+lv*4});}
-      else{let mon=R.shopMon(run.pool,lv);const rank=R.shopRank(lv);for(let n=1;n<rank;n++){const choices=R.next(mon.dex);if(choices.length)mon=G.DEX_BY[G.U.pick(choices)];}offer.push({kind:'mon',dex:mon.dex,rank,moveId:G.U.pick(G.Moves.poolFor(mon)),cost:Math.round(R.monCost(mon)*[1,1.8,3][rank-1])});}
+      else{let mon=R.shopMon(run.pool,lv);const rank=R.shopRank(lv);for(let n=1;n<rank;n++){const choices=R.next(mon.dex);if(choices.length)mon=G.DEX_BY[G.U.pick(choices)];}offer.push({kind:'mon',dex:mon.dex,rank,moveId:G.FIXED_SKILLS?.[mon.dex]||G.Moves.startFor(mon),cost:Math.round(R.monCost(mon)*[1,1.8,3][rank-1])});}
     }
   }
   function buy(index){

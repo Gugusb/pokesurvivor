@@ -27,7 +27,7 @@ G.Squad = (() => {
       const perks=G.Upgrades.perks(G.DB.upgradesOf(dex)),iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[dex]?.iv);super(G.DEX_BY[dex],perks,false,dex,iv);
       this.isSquadMember=true;this.squadId=nextId++;this.rank=rank;this.ability=null;this.activeItem=null;
       this.megaState=null;this.zState=null;this.x=captain?.x||0;this.y=captain?.y||0;this.permanentGrowth={...(perks.statGrowth||{})};
-      const ids=G.Moves.poolFor(this.mon);this.addMove(moveId&&ids.includes(moveId)?moveId:G.U.pick(ids));
+      const ids=G.Moves.poolFor(this.mon);this.addMove(moveId&&ids.includes(moveId)?moveId:(G.FIXED_SKILLS?.[dex]||G.Moves.startFor(this.mon)));
       this.moveId=this.moves[0].id;rankMove(this);this.invuln=1;
     }
     isPrimaryMove(){return false;}
