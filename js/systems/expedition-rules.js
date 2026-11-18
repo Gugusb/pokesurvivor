@@ -1,8 +1,8 @@
 /* Pure rules shared by the expedition UI, tests and account service. */
 G.ExpeditionRules = (() => {
   const DAYS=20, COLS=7, MAX_SHOP=6;
-  const weights=[['battle',10],['elite',2],['shop',5],['rest',5]];
-  function roll(rng=Math.random){let n=rng()*22;for(const [id,w]of weights){n-=w;if(n<0)return id;}return 'rest';}
+  const weights=[['battle',10],['elite',2],['shop',5],['rest',5],['training',3]];
+  function roll(rng=Math.random){let n=rng()*weights.reduce((n,[,w])=>n+w,0);for(const [id,w]of weights){n-=w;if(n<0)return id;}return 'rest';}
   function matrix(cycle=1,rng=Math.random){
     return Array.from({length:DAYS+1},(_,r)=>Array.from({length:COLS},(_,c)=>({kind:r===0?'start':r===DAYS?'boss':roll(rng),row:r,col:c,day:(cycle-1)*DAYS+r})));
   }

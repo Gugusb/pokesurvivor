@@ -74,10 +74,10 @@ test('schedule is 21 by 7: start at column four, only three adjacent next-day ce
  for(let cycle=1;cycle<=4;cycle++){const grid=R.matrix(cycle);assert.equal(grid.length,21);assert.ok(grid.every(r=>r.length===7));assert.ok(grid[20].every(c=>c.kind==='boss'&&c.day===cycle*20));assert.equal(grid[0][3].day,(cycle-1)*20);for(const row of grid)for(const c of row)assert.equal(R.reachable(0,3,c.row,c.col),c.row===1&&[2,3,4].includes(c.col));}
  assert.equal(R.matrix(3)[20][0].day,60);assert.equal(R.reachable(3,0,4,0),true);assert.equal(R.reachable(3,0,4,-1),false);assert.equal(R.reachable(3,0,5,0),false);
 });
-test('non-Boss schedule distribution follows 10:2:5:5 and generation pool includes captain plus two distinct regions',()=>{
- const g=setup().G,R=g.ExpeditionRules;let seed=7;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32),counts={battle:0,elite:0,shop:0,rest:0};
+test('non-Boss schedule distribution follows 10:2:5:5:3 including training and generation pool includes captain plus two distinct regions',()=>{
+ const g=setup().G,R=g.ExpeditionRules;let seed=7;const rng=()=>((seed=(Math.imul(seed,1664525)+1013904223)>>>0)/2**32),counts={battle:0,elite:0,shop:0,rest:0,training:0};
  for(let i=0;i<300;i++)for(const row of R.matrix(1,rng).slice(1,20))for(const c of row)counts[c.kind]++;
- const total=300*19*7;for(const [id,w]of R.weights)assert.ok(Math.abs(counts[id]/total-w/22)<.01,JSON.stringify(counts));
+ const total=300*19*7;for(const [id,w]of R.weights)assert.ok(Math.abs(counts[id]/total-w/25)<.01,JSON.stringify(counts));
  const gens=R.generations(g.DEX_BY[6],rng);assert.equal(gens.length,3);assert.equal(new Set(gens).size,3);assert.ok(gens.includes(1));assert.ok(R.pool(gens).every(p=>gens.includes(p.gen)&&g.SPRITE_META[p.dex]));
 });
 test('cycle transition is a discrete large increase; finite waves have bounded spawn count and deadline',()=>{

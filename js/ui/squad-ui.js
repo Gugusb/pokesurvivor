@@ -37,7 +37,7 @@ G.SquadUI=(()=>{
   }
   function releaseMember(p,ask=true){
     if(!canEdit()||!G.Squad.roster.includes(p))return false;
-    if(ask&&!confirm(L('¿Liberar a este compañero? No podrás recuperarlo.','Release this companion? This cannot be undone.','确定放生这位伙伴吗？本次远征中无法找回。')))return false;
+    if(ask&&G.Expedition.phase!=='loot'&&!confirm(L('¿Liberar a este compañero? No podrás recuperarlo.','Release this companion? This cannot be undone.','确定放生这位伙伴吗？本次远征中无法找回。')))return false;
     if(!G.Squad.release(p))return false;closeDetails(false);selected=null;render();
     G.UI.toast(L('Compañero liberado','Companion released','已放生伙伴')+' · '+T(p.mon.name));return true;
   }
@@ -77,8 +77,7 @@ G.SquadUI=(()=>{
     const tabs=node('div','squad-bond-tabs');for(const [key,name]of [['types',L('Tipo','Type','属性')],['eggs',L('Especie','Species','蛋组')],['skill',L('Oficio','Class','职业')]]){const b=button(name,()=>{bondMode=key;renderBonds();},'squad-bond-tab'+(bondMode===key?' on':''));tabs.append(b);}box.append(tabs);
     G.SquadBonds?.refresh();const labels=new Map();
     for(const p of G.Squad.actors()){const t=G.Squad.tags(p),values=bondMode==='types'?t.types.map(id=>[id,T(G.U.TYPE_NAME[id])]):bondMode==='eggs'?t.eggs.map(id=>[id,G.ExpeditionTerms.egg(id)]):p.moves.map(m=>[m.kind,G.Expedition.skillLabel(m.kind)]);for(const [id,name]of values)labels.set(id,name);}
-    if(bondMode==='skill')for(const id of G.SquadBonds?.KINDS||[])labels.set(id,G.Expedition.skillLabel(id));
-    if(bondMode==='types')for(const d of G.TypeBondDefs?.LIST||[])labels.set(d.id,T(G.U.TYPE_NAME[d.id]));
+
     const rows=node('div','squad-bond-rows');for(const [id,name]of [...labels].sort((a,b)=>(G.SquadBonds?.count(bondMode,b[0])||0)-(G.SquadBonds?.count(bondMode,a[0])||0))){
       const count=G.SquadBonds?.count(bondMode,id)||0,isType=bondMode==='types'&&G.TypeBondDefs?.BY[id],designed=isType||bondMode==='skill'&&G.SquadBonds?.KINDS.includes(id),s=isType?G.TypeBonds.state(id):designed?G.SquadBonds.state(id):null,row=node('div','squad-bond-row'+(s?.tier?' active':''));row.dataset.bond=id;
       row.append(node('b','',name),node('span','',count+(designed?' / '+(isType?(count<2?2:5):(count<3?3:6)):'')),node('small','squad-bond-stack',L('Capas','Stacks','羁绊层数')+' '+(G.SquadBonds?.layer(bondMode,id)??1)));

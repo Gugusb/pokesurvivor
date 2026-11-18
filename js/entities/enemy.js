@@ -150,12 +150,14 @@
       }
       hpDamage = Math.round(hpDamage);
       if (!hpDamage) {
+        G.ExpeditionDamage?.record(attacker,attack,shieldDamage,bond);
         if(bond)G.TypeBonds.afterHit(attacker,this,attack,shieldDamage,bond);
         G.FX.dmgText(this.x, this.y - this.bodyH - 4, Math.round(shieldDamage), '#9fd8ff'); this.flash = 0.05;
         return shieldDamage;
       }
       if (G.BossCombat&&!attack.typeBondFraction) hpDamage = G.BossCombat.damage(this,hpDamage);
       if (!(hpDamage > 0)) return shieldDamage;
+      G.ExpeditionDamage?.record(attacker,attack,Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage,bond);
       this.hp -= hpDamage;
       if (attacker) this.lastAttacker = attacker;
       this.lastTypeBondAttack=attack;

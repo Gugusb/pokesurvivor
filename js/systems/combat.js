@@ -186,7 +186,7 @@ G.Combat = (() => {
     const near=G.EnemyMgr.queryCircle(pl.x,pl.y,m.radius).filter(e=>!e.dead),crowd=G.SquadBonds?.meleeDamage(pl,m,near.length)||1;
     for (const e of near) {
       if (!inArc(pl.x, pl.y, e.x, e.y, pl.aim, half)) continue;
-      hit(pl, e, m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk)*crowd, col, e.x - pl.x, e.y - pl.y, m.knock || 0, m);
+      hit(pl, e, m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk)*crowd, col, e.x - pl.x, e.y - pl.y, m.knock || 0, crowd>1?{...m,bondDamageContributions:[['melee',crowd]]}:m);
     }
     for (const p of G.World.propsInCircle(pl.x, pl.y, m.radius)) {
       if (inArc(pl.x, pl.y, p.x, p.y, pl.aim, half)) G.World.damageProp(p, m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk), col);
@@ -198,7 +198,7 @@ G.Combat = (() => {
       const source=pl.moves.find(s=>s.id===m.id),target=pl.target;
       if(!source||!target||target.dead)return;
       fields.push({kind:'bondbeam',owner:pl,source,target,m:{...m},wait:.5});
-      beam(pl,{...m,bondPulse:true,dmg:m.dmg*.5*m.bondScale});return;
+      beam(pl,{...m,bondPulse:true,bondDamageKind:'beam',dmg:m.dmg*.5*m.bondScale});return;
     }
     const col = G.U.TYPE_COLOR[m.type];
     const w = m.width;
@@ -656,7 +656,7 @@ G.Combat = (() => {
       const next=G.EnemyMgr.queryCircle(e.x,e.y,240*Math.sqrt(scale)).filter(t=>!t.dead&&!p.hits.has(t.id)).sort((a,b)=>G.U.dist2(e.x,e.y,a.x,a.y)-G.U.dist2(e.x,e.y,b.x,b.y))[0];
       if(next){const a=Math.atan2(next.y-e.y,next.x-e.x),speed=Math.max(80,Math.hypot(p.vx,p.vy));p.x=p.px=e.x;p.y=p.py=e.y;p.vx=Math.cos(a)*speed;p.vy=Math.sin(a)*speed;p.pierce++;p.life=Math.max(p.life,p.t+.35);return true;}
     }
-    if(mode===2){const r=60*Math.sqrt(scale),m=p.specMove||{id:p.moveId,type:p.mtype,kind:p.moveKind,damageClass:p.damageClass};G.FX.ring(e.x,e.y,4,r,col,.3,3);for(const t of G.EnemyMgr.queryCircle(e.x,e.y,r))if(!t.dead)hit(pl,t,p.dmg*.35*scale,col,t.x-e.x,t.y-e.y,0,m);}
+    if(mode===2){const r=60*Math.sqrt(scale),m=p.specMove||{id:p.moveId,type:p.mtype,kind:p.moveKind,damageClass:p.damageClass};G.FX.ring(e.x,e.y,4,r,col,.3,3);for(const t of G.EnemyMgr.queryCircle(e.x,e.y,r))if(!t.dead)hit(pl,t,p.dmg*.35*scale,col,t.x-e.x,t.y-e.y,0,{...m,bondDamageKind:'projectile'});}
     if(mode===4){p.r=Math.min(p.bondBaseR*(1+scale),p.r*(1+.35*scale));p.visualScale=p.bondBaseScale*p.r/p.bondBaseR;}
     return false;
   }

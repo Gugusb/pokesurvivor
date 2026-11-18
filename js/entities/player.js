@@ -369,6 +369,7 @@ G.Player = class Player {
       this.xpNext = Player.xpFor(this.level);
       leveled++;
     }
+    if(leveled)G.ExpeditionGrowth?.sync();
     return leveled;
   }
 

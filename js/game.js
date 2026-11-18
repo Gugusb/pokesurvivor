@@ -91,7 +91,8 @@ G.Game = (() => {
   }
   let openMastery=false;
   function maybeSpecialization(){
-    if(G.Expedition?.inCombat)return;
+    if(G.Expedition?.active)return;
+    if(G.Expedition?.active)return;
     if(state!=='playing'||!pl||pl.dead||openItem||G.Rift.inArena||everyone().some(p=>G.ZMoves?.busy(p)))return;
     if(!(pl.specTokens>0)||!G.Specialization.eligible(pl).length)return;
     openMastery=true;state='choice';if(G.Coop.active)G.Coop.holdStart();
@@ -469,7 +470,7 @@ G.Game = (() => {
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge,
-      expedition:G.Expedition?.summary(),loot:runLoot,moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
+      expedition:G.Expedition?.summary(),damage:G.Expedition?.active?G.ExpeditionDamage?.snapshot():[],loot:runLoot,moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (pl.coinMul > 1 ? ` · ×${pl.coinMul.toFixed(2)} Fortuna` : '')+
                  (victoryBonus>0?` · ×2 ${G.T('Bonificación de victoria')}`:'')
@@ -716,7 +717,7 @@ G.Game = (() => {
   let deathT = 0;
 
   let frameDt = 0, speedK = 1, runSpeed = 1, speedBonus = 0, hitStopUntil = 0;
-  function hitStop(){if(state==='playing'&&!G.Settings.get('calm'))hitStopUntil=performance.now()+35;}
+  function hitStop(duration=35){if(state==='playing'&&!G.Settings.get('calm'))hitStopUntil=Math.max(hitStopUntil,performance.now()+Math.max(0,Math.min(35,duration)));}
   function hurtEdge(){
     if(state!=='playing'||!pl||pl.dead||!(pl.maxHp>0)||pl.hp>=pl.maxHp*.5)return;
     const severity=Math.max(0,Math.min(1,1-pl.hp/(pl.maxHp*.5))),calm=G.Settings.get('calm');
@@ -780,7 +781,7 @@ G.Game = (() => {
 
     // En cooperativo la pausa del golpe sólo retiene la imagen, nunca la simulación ni la red.
     if (pl && state !== 'ui') {if(!stopped||!G.Coop.active)render();} else Backdrop.render(ctx,w,h,dpr,Math.min(1/30,real));
-    G.UI.tick(Math.min(1/30,real));
+    G.UI.tick(Math.min(1/30,real));G.ExpeditionDamage?.tick();
     G.BackpackUI.tick(pl,!!pl&&['playing','inventory','held'].includes(state)&&!G.Judgment.cinematic);
 
     G.SquadUI?.tick();
@@ -799,8 +800,7 @@ G.Game = (() => {
         if(state!=='playing')return;
         maybeLevelUp();if(state!=='playing')return;
         if(laterItems.length)afterLevelUp();if(state!=='playing')return;
-        if(pl.bonds>0)offerBond(true);if(state!=='playing')return;
-        maybeSpecialization();if(state!=='playing')return;
+        // Links and specializations are now purchased at training events.
         G.Expedition.depart();
       }
       return;
@@ -911,7 +911,7 @@ G.Game = (() => {
 
   function drawScene(cam, extra) {
     const t = performance.now() / 1000;
-    G.World.drawGround(ctx, cam);
+    G.World.drawGround(ctx, cam);G.Expedition?.drawWarnings(ctx);
     G.World.drawLiquid(ctx, cam, t);
     G.Hazards.draw(ctx);
     G.Combat.drawGroundFields(ctx);

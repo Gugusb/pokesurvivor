@@ -1,6 +1,8 @@
-# 小队远征（v0.43.0-alpha.7）
+# 小队远征（v0.43.0-alpha.8）
 
 本玩法属于 `codex/gameplay-next`，稳定线 `main` 的 v0.42.0 不变。当前默认单人入口改为远征；原联机对局仍使用原生存流程，新小队不通过 P2P 同步。
+
+> alpha.8 的成长、商店、战利品、刷怪、技能修炼规则以 [EXPEDITION_ITERATION.md](EXPEDITION_ITERATION.md) 为准；下文保留基础流程及历史数值说明。
 
 ## 队长与伙伴
 

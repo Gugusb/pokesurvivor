@@ -11,7 +11,7 @@ G.LevelUp = (() => {
   const family = m => m.kind === 'buff' ? 'buff' : 'attack';
 
   // Berries add a fraction of the species/IV base, in a separate stat layer.
-  const berry=(id,title,desc,stat,amount,max)=>({id,icon:'berry:'+id,title,desc,max,
+  const berry=(id,title,desc,stat,amount,max)=>({id,stat,amount,icon:'berry:'+id,title,desc,max,
     apply:p=>p.growStat(stat,amount),triple:p=>p.growStat(stat,amount*3)});
   const STATS = [
     berry('hp','Baya Vital','Refuerza la vida natural y recupera esa energía.','hp',.12),
@@ -22,9 +22,9 @@ G.LevelUp = (() => {
     berry('spd','Baya Veloz','Refuerza la velocidad natural.','spd',.07,8),
     berry('cd','Baya Ágil','Refuerza la agilidad natural: tus movimientos se recargan antes.','agility',.12,10),
     berry('stamina','Baya Tenaz','Refuerza la resistencia natural: tus PP se recuperan antes.','stamina',.12,10),
-    {id:'ppmax',icon:'berry:ppmax',title:'Baya Plena',desc:'Todos los movimientos ganan 1 PP máximo.',max:20,
+    {id:'ppmax',stat:'maxpp',amount:1,icon:'berry:ppmax',title:'Baya Plena',desc:'Todos los movimientos ganan 1 PP máximo.',max:20,
       apply:p=>G.MovePP.increaseMax(p,1),triple:p=>G.MovePP.increaseMax(p,3)},
-    {id:'temppp',icon:'berry:temppp',title:'Baya Reserva',desc:'Guarda 20 PP de reserva para cuando un movimiento se quede sin PP.',
+    {id:'temppp',stat:'temppp',amount:20,icon:'berry:temppp',title:'Baya Reserva',desc:'Guarda 20 PP de reserva para cuando un movimiento se quede sin PP.',
       apply:p=>p.tempPP=(p.tempPP||0)+20},
     { id: 'rgn', icon: 'sprout', title: 'Síntesis', desc: '+0.9 de vida regenerada por segundo.',
       apply: pl => pl.regenFlat += 0.9, triple:p=>p.regenFlat+=2.7 },
@@ -36,9 +36,15 @@ G.LevelUp = (() => {
       apply: pl => pl.heal(pl.maxHp * 0.45) }
   ];
 
+  function teamBerryDesc(s,n=1){
+    const names={hp:['vida base','base HP','基础生命'],atk:['ataque físico base','base Attack','基础物攻'],spa:['ataque especial base','base Sp. Atk','基础特攻'],defense:['defensa base','base Defense','基础物防'],spdef:['defensa especial base','base Sp. Def','基础特防'],spd:['velocidad base','base movement speed','基础移速'],agility:['agilidad base','base agility','基础敏捷'],stamina:['aguante base','base stamina','基础耐力'],maxpp:['PP máximos','maximum PP','最大PP'],temppp:['PP de reserva','reserve PP','备用PP']};
+    const i=G.I18n.lang==='zh'?2:G.I18n.lang==='en'?1:0,amount=Number((s.amount*n*.5*(['maxpp','temppp'].includes(s.stat)?1:100)).toFixed(2)),unit=['maxpp','temppp'].includes(s.stat)?'':'%';
+    return ['Todos los compañeros actuales y futuros: ','All current and future companions: ','全体现有及未来队员：'][i]+names[s.stat][i]+' +'+amount+unit;
+  }
   /** Construye el conjunto de cartas candidatas, con pesos. */
   function candidates(pl) {
     const out = [];
+    if(G.Squad?.active)return STATS.filter(s=>s.stat&&(!s.max||(pl.statsTaken[s.id]||0)<s.max)).map(s=>({w:1,category:'stat',type:'stat',key:'stat:'+s.id,icon:s.icon,color:'#8fa3c4',tag:({zh:'全体队员 · 半效果子',en:'All companions · half strength',es:'Compañeros · media potencia'})[G.I18n.lang],title:s.title,desc:teamBerryDesc(s),apply:p=>{G.ExpeditionGrowth.reward(s.stat,s.amount);p.statsTaken[s.id]=(p.statsTaken[s.id]||0)+1;}}));
 
     // --- movimientos nuevos ---
     if (pl.slots.length < pl.maxMoves) {
@@ -156,12 +162,13 @@ G.LevelUp = (() => {
     const options=G.MonProgression.evolutionOptions(pl);
     if(!options.length)return [];
     const directions=shuffled(options).slice(0,3), count=options.length===1?3:directions.length;
-    const pool=shuffled(STATS.filter(s=>s.triple&&(!s.max||(pl.statsTaken[s.id]||0)+3<=s.max)));
+    const expedition=!!G.Squad?.active;
+    const pool=shuffled(STATS.filter(s=>(!expedition||s.stat)&&s.triple&&(!s.max||(pl.statsTaken[s.id]||0)+3<=s.max)));
     return Array.from({length:count},(_,i)=>{
-      const direction=directions[options.length===1?0:i],s=pool[i%pool.length],bonus=s.triple;
+      const direction=directions[options.length===1?0:i],s=pool[i%pool.length],bonus=expedition?()=>G.ExpeditionGrowth.reward(s.stat,s.amount*3):s.triple;
       return {type:'evolution',key:'direction:'+direction.dex+':'+s.id,category:'stat',evolutionDex:direction.dex,evolutionPath:direction.path,
         statId:s.id,icon:s.icon,color:'#ffd23f',tag:G.T('Dirección evolutiva')+' · ×3',title:s.title,
-        desc:s.desc+' '+G.T('Efecto triple.'),apply:p=>{if(!G.MonProgression.evolve(p,direction))return false;bonus(p);p.statsTaken[s.id]=(p.statsTaken[s.id]||0)+3;return true;}};
+        desc:expedition?teamBerryDesc(s,3):s.desc+' '+G.T('Efecto triple.'),apply:p=>{if(!G.MonProgression.evolve(p,direction))return false;bonus(p);p.statsTaken[s.id]=(p.statsTaken[s.id]||0)+3;return true;}};
     });
   }
 

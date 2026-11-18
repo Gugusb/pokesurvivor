@@ -160,6 +160,7 @@ G.RunUI = (() => {
     groupInvite.textContent=G.T('Grupo de juego')+' · '+G.Community.groupId;
     groupInvite.hidden=!G.Community.shouldInviteAtEnd();
     $('over-title').textContent = r.victory ? 'Dificultad superada' : r.completed ? G.T('Objetivo de supervivencia cumplido') : r.dead ? 'Has caído…' : 'Run terminada';
+    if(G.ExpeditionDamage){let damage=document.getElementById('over-damage');if(!damage){damage=document.createElement('section');damage.id='over-damage';$('over-stats').insertAdjacentElement('afterend',damage);}damage.hidden=!r.damage?.length;if(r.damage?.length)G.ExpeditionDamage.render(damage,r.damage);}
     $('over-stats').innerHTML = `
       ${r.expedition ? `<div><span>${G.I18n.lang==='zh'?'远征天数':G.I18n.lang==='en'?'Expedition days':'Días de expedición'}</span><b>${r.expedition.day}</b></div>`:''}
       ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : r.completed ? G.T('Objetivo cumplido, sin registrar') : G.T('Sin superar')}</b></div>` : ''}

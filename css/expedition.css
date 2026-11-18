@@ -36,3 +36,25 @@
 .squad-battle-grid{grid-template-rows:repeat(2,minmax(220px,auto));align-items:start}.squad-field-slot{height:100%;align-items:flex-start}.squad-pick>.journey-tags{justify-content:center;gap:3px;margin:3px 0;max-width:100%}.squad-pick>.journey-tags>span{font-size:8px;padding:2px 4px;line-height:1.4;overflow-wrap:anywhere}.squad-card-moves{font-size:10px;color:#ffe3a5;line-height:1.5;overflow-wrap:anywhere}.squad-release{margin-top:20px;color:#ffc4b9;border-color:#aa6767;background:#56363f}.squad-bonds{max-height:500px}.squad-warehouse-strip .squad-unit{flex-basis:130px}.squad-warehouse-strip .journey-tags>span{font-size:7px}.squad-warehouse-strip .squad-card-moves{font-size:9px}
 @media(max-width:900px){.squad-battle-grid{grid-template-rows:repeat(2,minmax(220px,auto))}}
 @media(max-width:660px){.squad-battle-grid{grid-template-rows:repeat(2,minmax(205px,auto))}.squad-pick{padding:0 2px}.squad-pick>.journey-tags{gap:2px}.squad-pick>.journey-tags>span{padding:1px 2px;font-size:7px}.squad-card-moves{font-size:8px}.squad-warehouse-strip .squad-unit{flex-basis:110px}.journey-loot-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.journey-loot-value{padding:12px}.journey-loot-value small{overflow-wrap:anywhere}}
+
+/* Expedition iteration: readable typography, responsive information and damage ledger. */
+.journey-box,.squad-box{font-size:15px;line-height:1.65}
+.journey-product h3{font-size:21px;line-height:1.4;margin:10px 0}
+.journey-product p,.journey-shop-move{font-size:15px;line-height:1.7;white-space:normal;overflow-wrap:anywhere}
+.journey-product .btn,.journey-shop-controls .btn{font-size:16px;min-height:46px;white-space:normal}
+.journey-goods{gap:20px}.journey-product{padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.journey-tags>span,.squad-pick>.journey-tags>span,.squad-warehouse-strip .journey-tags>span{font-size:11px;padding:3px 5px;line-height:1.6}
+.squad-card-moves,.squad-warehouse-strip .squad-card-moves{font-size:13px;line-height:1.6}
+.squad-pick strong{font-size:16px}.squad-pick small{font-size:12px}
+.squad-bond-effect,.squad-bond-preview,.squad-bond-stack{font-size:13px;line-height:1.8}
+.squad-bond-row{padding:12px;gap:8px}.squad-bonds{max-height:560px}.squad-battle-grid{grid-template-rows:repeat(2,minmax(255px,auto))}
+.squad-detail{font-size:15px}.squad-detail p,.squad-skill small,.squad-stats small{font-size:13px;line-height:1.7}
+.journey-training{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px;margin:20px 0}
+.journey-training .btn{white-space:normal;text-align:left;padding:18px;font-size:16px;line-height:1.6}
+.journey-training .btn small{display:block;font-size:13px;color:#c5dce7;font-weight:normal;margin-top:10px}
+.journey-event.training{border-color:#bb9df0}
+.expedition-damage{position:fixed;right:12px;top:124px;z-index:22;width:200px;max-height:45vh;overflow:auto;padding:12px;border:1px solid #78b9ce66;border-radius:12px;background:#102b3dd9;color:#e5f5ff;font-size:12px;line-height:1.6;text-shadow:none;pointer-events:auto}
+.expedition-damage[hidden]{display:none}.expedition-damage h3,#over-damage h3{font-size:15px;margin:0 0 8px}
+.expedition-damage-row{display:flex;justify-content:space-between;align-items:start;gap:12px;margin:5px 0}.expedition-damage-row span{overflow-wrap:anywhere;min-width:0}.expedition-damage-row b{font-variant-numeric:tabular-nums;color:#ffe7a8;white-space:nowrap}
+#over-damage{text-align:left;padding:16px;margin:16px 0;border:1px solid #7bafbd77;border-radius:12px;font-size:14px}
+@media(max-width:660px){.journey-box,.squad-box{font-size:14px}.journey-product{padding:14px}.journey-product h3{font-size:19px}.journey-product p{font-size:14px}.squad-bond-effect,.squad-bond-preview,.squad-bond-stack{font-size:12px}.squad-card-moves{font-size:12px}.squad-battle-grid{grid-template-rows:repeat(2,minmax(240px,auto))}.expedition-damage{right:7px;top:120px;width:145px;max-height:23vh;font-size:10px;padding:8px}.expedition-damage h3{font-size:12px}.squad-warehouse-strip .squad-unit{flex-basis:135px}}
