@@ -168,6 +168,24 @@ G.Expedition = (() => {
     if(!G.Squad.recruit(run.companion)){G.UI.toast(L('Libera un compañero para dejar espacio.','Release a companion to make room.','先放生一位伙伴，腾出空位吧。'));return false;}
     run.companionResolved=true;renderLoot();return true;
   }
+  function lootCompanionPreview(card,mon){
+    const rank=1;
+    const moveId=G.FIXED_SKILLS?.[mon.dex]||G.Moves.startFor(mon);
+    const move=G.Moves.instance(moveId,2);
+    const candidate={mon,dex:mon.dex,rank,moves:[move]};
+    const preview=node('div','journey-loot-preview');
+    const quality=G.ExpeditionQuality?.label(mon);
+    const rankText=L('Rango 1','1 star','1星');
+    preview.append(node('p','journey-loot-rank',[quality,'★ '+rankText].filter(Boolean).join(' · ')));
+    preview.append(tags(candidate));
+    preview.append(node('p','journey-loot-move',T(move.name)+' · Lv.'+move.lvl+' · '+G.Moves.classLabel(move)));
+    if(G.SquadTraits){
+      const trait=node('p','journey-shop-trait',talentText(candidate));
+      trait.setAttribute('translate','no');
+      preview.append(trait);
+    }
+    card.append(preview);
+  }
   function renderLoot(){
     const box=header(L('Botín del día','Today’s loot','本回合战利品'),L('Descansa y recoge el botín antes de preparar los movimientos.','Take a breath and collect the loot before choosing upgrades.','歇一歇，收好战利品，再为伙伴挑选成长方向。'));
     box.append(node('p','journey-notice',note));const rows=node('div','journey-loot-grid');
@@ -183,12 +201,16 @@ G.Expedition = (() => {
       const count=n-(before[kind]?.[id]||0);if(count>0)add(kind==='packs'?G.CardPacks.local(G.CardPacks.packBy[id]?.name||id):T(G.Mega.BY[id]?.name||id),count);
     }
     box.append(rows);
-    if(G.ExpeditionDamage){const meter=node('section','journey-loot-damage');meter.id='journey-damage';G.ExpeditionDamage.render(meter,null,'loot');box.append(meter);}
     if(run.companion){
-      const mon=G.DEX_BY[run.companion],card=node('section','journey-loot-companion');card.append(portrait(mon,120),node('h3','',T(mon.name)),node('p','',run.companionResolved?L('¡Compañero recibido!','Companion received!','伙伴已领取！'):L('Un compañero quiere unirse.','A companion wants to join.','这位伙伴想与咱们同行。')),squadShortcut());
+      const mon=G.DEX_BY[R.formForRank(run.companion,1)],card=node('section','journey-loot-companion');
+      if(G.ExpeditionQuality)card.style.borderColor=G.ExpeditionQuality.color(mon);
+      card.append(portrait(mon,120),node('h3','',T(mon.name)),node('p','',run.companionResolved?L('¡Compañero recibido!','Companion received!','伙伴已领取！'):L('Un compañero quiere unirse.','A companion wants to join.','这位伙伴想与咱们同行。')));
+      lootCompanionPreview(card,mon);
+      card.append(squadShortcut());
       if(!run.companionResolved){const actions=node('div','journey-actions'),claim=button(L('Recibir compañero','Receive companion','领取伙伴'),claimCompanion,'btn gold');claim.id='journey-claim';claim.disabled=!G.Squad.canRecruit(run.companion);actions.append(claim,button(L('Dejar marchar','Let go','放弃领取'),()=>{run.companionResolved=true;run.companion=null;renderLoot();}));card.append(actions);if(claim.disabled)card.append(node('p','journey-full',L('Reserva llena. Abre el equipo y libera un compañero.','Reserves full. Open the squad and release a companion.','候补仓库已满。打开小队，放生伙伴后即可领取。')));}
-      if(G.ExpeditionQuality){card.style.borderColor=G.ExpeditionQuality.color(mon);card.append(node('p','',G.ExpeditionQuality.label(mon)));}box.append(card);
+      box.append(card);
     }
+    if(G.ExpeditionDamage){const meter=node('section','journey-loot-damage');meter.id='journey-damage';G.ExpeditionDamage.render(meter,null,'loot');box.append(meter);}
     const actions=node('div','journey-actions');if(!run.companion)actions.append(squadShortcut());const next=button(run.levels?L('Elegir mejoras','Choose upgrades','选择升级')+' · '+run.levels:L('Seguir la ruta','Continue route','继续旅程'),()=>{
       if(run.phase!=='loot')return;run.companionResolved=true;run.phase='upgrades';G.UI.hideAll();G.Game.expeditionResume();
     },'btn gold');next.id='journey-loot-next';next.disabled=false;actions.append(next);box.append(actions);G.UI.show('scr-journey');

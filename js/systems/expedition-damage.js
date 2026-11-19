@@ -1,5 +1,6 @@
 /* Actual HP/shield loss, conserved across actors, bonds and traits; two run-local scopes. */
 G.ExpeditionDamage=(()=>{
+  const MAX_VISIBLE_ROWS=6;
   let rows=new Map(),battle=new Map(),actors=new WeakMap(),serial=0,last=0,battleDay=0;
   const widgets=new WeakMap(),preferences={live:{scope:'run',collapsed:false},loot:{scope:'battle',collapsed:false},result:{scope:'run',collapsed:false}};
   const L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
@@ -44,7 +45,9 @@ G.ExpeditionDamage=(()=>{
   function update(target,s){
     const {pref}=s,collapsed=pref.collapsed;target.classList.toggle('damage-collapsed',collapsed);s.body.hidden=collapsed;s.fold.textContent=collapsed?'▸':'−';s.fold.setAttribute('aria-expanded',String(!collapsed));s.fold.setAttribute('aria-label',collapsed?L('Mostrar daño','Expand damage meter','展开伤害统计'):L('Ocultar daño','Collapse damage meter','收起伤害统计'));
     for(const b of s.tabs)b.setAttribute('aria-pressed',String(b.dataset.damageScope===pref.scope));if(collapsed)return;
-    const data=s.source?(s.source[pref.scope]||[]):snapshot(pref.scope),total=data.reduce((n,r)=>n+r.damage,0),day=s.source?s.source.day:battleDay;
+    const ranked=s.source?(s.source[pref.scope]||[]):snapshot(pref.scope);
+    const total=ranked.reduce((n,r)=>n+r.damage,0);
+    const data=ranked.slice(0,MAX_VISIBLE_ROWS),day=s.source?s.source.day:battleDay;
     s.total.textContent=(pref.scope==='battle'&&day?L('Día ','Day ','第')+day+(G.I18n.lang==='zh'?'天':'')+' · ':'')+L('Total ','Total ','总伤害 ')+fmt(total);const ids=data.map(r=>r.id).join('|');
     for(const r of data){
       let item=s.cache.get(r.id);if(!item){const row=node('div','expedition-damage-row');row.dataset.damageId=r.id;const portrait=node('span','damage-portrait'),info=node('div','damage-info'),name=node('span','damage-name'),numbers=node('div','damage-numbers'),value=node('b','damage-value'),percent=node('small','damage-share'),track=node('div','damage-track'),bar=node('span','damage-bar');track.append(bar);numbers.append(value,percent);info.append(name,numbers,track);row.append(portrait,info);item={row,portrait,name,value,percent,bar,dex:null};s.cache.set(r.id,item);}

@@ -1,6 +1,6 @@
-/* Run-wide companion rewards and level growth; speed is excluded from level growth. */
+/* Run-wide companion rewards and level growth. */
 G.ExpeditionGrowth=(()=>{
-  const KEYS=['hp','atk','spa','defense','spdef','agility','stamina'];
+  const KEYS=['hp','atk','spa','defense','spdef'];
   let berries={};
   function sync(p){
     if(!G.Squad?.active)return;
@@ -8,7 +8,11 @@ G.ExpeditionGrowth=(()=>{
     for(const a of list){
       const level=G.Game?.player?.level||G.Squad.actors()[0]?.level||a.level;
       const desired={...(a.isSquadMember?berries:{})};
-      for(const key of KEYS)desired[key]=(desired[key]||0)+Math.max(0,level-1)*(a.isSquadMember?.05:.10);
+      const levelsGained=Math.max(0,level-1);
+      for(const key of KEYS){
+        const perLevel=a.isSquadMember ? .05 : key==='defense'||key==='spdef' ? .03 : .10;
+        desired[key]=(desired[key]||0)+levelsGained*perLevel;
+      }
       const old=a.expeditionGrowth||{};
       for(const key of new Set([...Object.keys(old),...Object.keys(desired)])){
         const delta=(desired[key]||0)-(old[key]||0);if(!delta)continue;
