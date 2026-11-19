@@ -431,5 +431,163 @@
     "maxPending": 100,
     "maxLocalRecords": 100,
     "maxSquadSnapshot": 32
+  },
+  "classBonds": {
+    "layerNodes": [
+      0,
+      200,
+      500
+    ],
+    "after500SlopeFactor": 0.5,
+    "bossStunFactor": 0.5,
+    "projectile": {
+      "agility": [
+        0.5,
+        1,
+        1.5
+      ],
+      "stamina": [
+        0.5,
+        1,
+        1.5
+      ],
+      "pierceGrowth": 0.2
+    },
+    "melee": {
+      "range": [
+        0.5,
+        1,
+        1.5
+      ],
+      "crowdRadius": 180,
+      "agilityPerEnemy": 0.1,
+      "lifestealPerEnemy": 0.02,
+      "maxCrowd": 10
+    },
+    "area": {
+      "agility": [
+        0.8,
+        1.5,
+        2.5
+      ],
+      "stamina": [
+        0.8,
+        1.5,
+        2.5
+      ],
+      "windupMultiplier": 2,
+      "windupSeconds": 1,
+      "maxRadiusMultiplier": 3,
+      "placementMultiplier": 2
+    },
+    "bloom": {
+      "damage": [
+        0.2,
+        1,
+        1.5
+      ],
+      "rangeBonus": 2,
+      "stunChance": 0.25,
+      "stunSeconds": 1
+    },
+    "orbit": {
+      "radiusBonus": 1,
+      "damage": [
+        0.5,
+        1,
+        1.5
+      ],
+      "launchRadius": 420,
+      "launchSpeed": 420,
+      "launchDamage": 3,
+      "reloadSeconds": 1.2,
+      "flightSeconds": 1.5,
+      "homing": 10
+    },
+    "summon": {
+      "life": [
+        0.5,
+        1,
+        1.5
+      ],
+      "quantity": [
+        1,
+        2,
+        3
+      ],
+      "turretTargetsBonus": 2,
+      "fireRateMultiplier": 3,
+      "turretDamage": [
+        0.2,
+        0.5,
+        1
+      ],
+      "mineRadiusBonus": 2,
+      "mineDamage": [
+        1,
+        2,
+        3
+      ],
+      "mineStunSeconds": 2,
+      "maxPerMove": 128
+    },
+    "visuals": {
+      "projectile": [
+        "#53228c",
+        "#ff52dc",
+        "#85ffca",
+        "#e0fff3",
+        "#ffffff"
+      ],
+      "melee": [
+        "#592063",
+        "#fb3d74",
+        "#ffb358",
+        "#fff2b5",
+        "#ffffff"
+      ],
+      "beam": [
+        "#46327d",
+        "#ff78bd",
+        "#ad9aff",
+        "#e9e0ff",
+        "#ffffff"
+      ],
+      "chain": [
+        "#452467",
+        "#bd76ff",
+        "#6dffe0",
+        "#e3fff9",
+        "#ffffff"
+      ],
+      "area": [
+        "#3e235b",
+        "#be69ff",
+        "#ff9578",
+        "#ffe1b0",
+        "#ffffff"
+      ],
+      "bloom": [
+        "#492262",
+        "#68fff5",
+        "#ff8bc7",
+        "#fff8c9",
+        "#ffffff"
+      ],
+      "orbit": [
+        "#47226e",
+        "#ff6fe0",
+        "#8ec6ff",
+        "#d8fffb",
+        "#ffffff"
+      ],
+      "summon": [
+        "#442561",
+        "#ed77ff",
+        "#baff72",
+        "#e5ffbd",
+        "#ffffff"
+      ]
+    }
   }
 }

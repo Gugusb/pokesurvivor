@@ -277,7 +277,7 @@ G.VFX = (() => {
     cv = document.createElement('canvas');
     cv.width = S.w; cv.height = S.h;
     const c = cv.getContext('2d');
-    const colors = PAL[pal] || PAL.normal;
+    const colors = PAL[pal] || G.SquadBonds?.palette(pal) || PAL.normal;
     for (let y = 0; y < S.h; y++) for (let x = 0; x < S.w; x++) {
       const ch = P.g[y][x];
       if (!ch) continue;
@@ -393,7 +393,7 @@ G.VFX = (() => {
   function forMove(m) {
     const v = MOVE[m.id] || {};
     return Object.assign({ pal: m.type, proj: TYPE_SHAPE[m.type] || 'ball' }, v,
-      { pal: m.megaFx ? 'mega' : v.pal || m.type }, m.megaFx ? { trail: v.trail || 'spark' } : {});
+      { pal: m.bondPalette || (m.megaFx ? 'mega' : v.pal || m.type) }, m.megaFx ? { trail: v.trail || 'spark' } : {});
   }
   function forType(type) { return { proj: TYPE_SHAPE[type] || 'ball', pal: PAL[type] ? type : 'normal' }; }
 

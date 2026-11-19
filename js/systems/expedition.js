@@ -141,7 +141,7 @@ G.Expedition = (() => {
         const text=node('div');text.append(node('h4','',name),node('p','',types.join(' / ')));
         if(mode==='recruit'){
           card.style.borderColor=G.ExpeditionQuality.color(mon);
-          text.append(node('p','',G.ExpeditionQuality.label(mon)+' · ★'),node('p','',skill+' · '+G.ExpeditionTerms.skill(skillNames[move?.kind])));
+          text.append(node('p','',G.ExpeditionQuality.label(mon)+' · ★'),node('p','',skill+' · '+G.SquadBonds.label(move?.kind)));
           text.append(node('small','',recruitByLoot.has(mon.dex)?L('Tienda / botín','Shop / loot','商店／战后邀请'):L('Tienda','Shop','商店')));
         }else{
           const labels=[];
@@ -204,7 +204,7 @@ G.Expedition = (() => {
   const skillNames={projectile:'Proyectil',melee:'Cuerpo a cuerpo',beam:'Rayo',orbit:'Órbita',chain:'Cadena',dash:'Embestida',meteor:'Meteoro',buff:'Atributos',boomerang:'Bumerán',nova:'Onda',aura:'Aura',mine:'Mina',turret:'Torreta',trail:'Rastro',cone:'Abanico'};
   function tags(p){
     const t=G.Squad.tags(p),wrap=node('div','journey-tags');
-    const groups=[[L('Vínculo de tipo','Type link','属性联结'),t.types.map(x=>T(G.U.TYPE_NAME[x]||x))], [L('Talento de especie','Species talent','种族天赋'),t.eggs.map(x=>G.ExpeditionTerms.egg(x))], [L('Vínculo de oficio','Class bond','职业羁绊'),[G.ExpeditionTerms.skill(skillNames[t.skill])]]];
+    const groups=[[L('Vínculo de tipo','Type link','属性联结'),t.types.map(x=>T(G.U.TYPE_NAME[x]||x))], [L('Talento de especie','Species talent','种族天赋'),t.eggs.map(x=>G.ExpeditionTerms.egg(x))], [L('Vínculo de oficio','Class bond','职业羁绊'),[G.SquadBonds.label(t.skill)]]];
     for(const [label,names]of groups){const s=node('span','',names.join(' / '));s.title=label;wrap.append(s);}return wrap;
   }
   function talentText(p){
@@ -471,6 +471,6 @@ G.Expedition = (() => {
     el.dataset.pressure=pressure||'';
     el.textContent=L('Día','Day','第')+' '+run.day+(G.I18n.lang==='zh'?' 天':'')+' · '+L('Ciclo','Cycle','周期')+' '+R.cycleOf(run.day)+' · '+run.gold+' '+L('oro','gold','局内金币')+' · '+objective+' · '+(G.Squad.deployed().filter(p=>!p.dead).length+1)+'/'+G.Squad.capacity;
   }
-  return {skillLabel:kind=>G.ExpeditionTerms.skill(skillNames[kind]),tags,talentText,refreshScreen,recordPickup,showLoot,claimCompanion,setup,begin,reset,choose,buy,refreshShop,toggleShopLock,upgrade,tick,killed,depart,continueAfterVictory,hud,summary,showRoute,
+  return {skillLabel:kind=>G.SquadBonds.label(kind),tags,talentText,refreshScreen,recordPickup,showLoot,claimCompanion,setup,begin,reset,choose,buy,refreshShop,toggleShopLock,upgrade,tick,killed,depart,continueAfterVictory,hud,summary,showRoute,
     drawWarnings,drawEnemyPointers,get active(){return !!run;},get inCombat(){return run?.phase==='combat';},get phase(){return run?.phase;},get run(){return run;},get offers(){return offer;}};
 })();

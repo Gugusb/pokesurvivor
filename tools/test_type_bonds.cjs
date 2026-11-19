@@ -14,7 +14,7 @@ function setup(type='fire',n=5){
 
 test('all 18 definitions use 2/5 thresholds and exact 0/100/300 anchors, extrapolating the last slope beyond 300',()=>{
  const {g,B}=setup();assert.equal(g.TypeBondDefs.LIST.length,18);for(const d of g.TypeBondDefs.LIST){assert.deepEqual(Array.from(d.thresholds),[2,5]);for(const nodes of Object.values(d.values))for(const [l,want]of [[0,nodes[0]],[100,nodes[1]],[300,nodes[2]],[400,nodes[2]+(nodes[2]-nodes[1])*.5]])close(g.TypeBondDefs.interpolate(nodes,l),want);}
- assert.equal(g.SquadBonds.layer('types','fire'),0);assert.equal(g.SquadBonds.layer('skill','projectile'),1);assert.equal(B.state('fire').tier,5);
+ assert.equal(g.SquadBonds.layer('types','fire'),0);assert.equal(g.SquadBonds.layer('skill','projectile'),0);assert.equal(B.state('fire').tier,5);
 });
 test('damage basis sums only living deployed same-type physical and special attacks and multiplies by 30 percent',()=>{
  const {g,B,cap,members}=setup('fire',3),expected=g.Squad.actors().reduce((s,p)=>s+p.atk+p.spa,0)*.3;close(B.base('fire'),expected);members[0].dead=true;close(B.base('fire'),(cap.atk+cap.spa+members[1].atk+members[1].spa)*.3);g.Squad.bench(members[1]);close(B.base('fire'),(cap.atk+cap.spa)*.3);assert.equal(B.base('water'),0);

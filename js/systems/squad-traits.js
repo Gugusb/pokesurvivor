@@ -11,7 +11,7 @@ G.SquadTraits=(()=>{
     if(!G.Squad?.active||!G.Squad.deployed().includes(p))return [];
     const tags=G.Squad.tags(p),out=[];G.SquadBonds.refresh();
     if(scope!=='skill')for(const id of new Set(scope==='first'?tags.types.slice(0,1):tags.types))if(G.SquadBonds.count('types',id)>=2)out.push(['types',id]);
-    if(scope!=='first')for(const id of new Set(p.moves.map(m=>m.kind)))if(G.SquadBonds.KINDS.includes(id)&&G.SquadBonds.state(id).tier>0)out.push(['skill',id]);
+    if(scope!=='first')for(const id of new Set(p.moves.map(m=>G.SquadBonds.group(m.kind))))if(G.SquadBonds.KINDS.includes(id)&&G.SquadBonds.state(id).tier>0)out.push(['skill',id]);
     // Undesigned egg/class tags have no activation rule and cannot generate fuel yet.
     return out;
   }

@@ -8,7 +8,7 @@ G.PokemonTraining=(()=>{
   const available=(run,kind)=>eligible(run)&&(!run.labChoice||kind==='breakthrough'&&run.labChoice===kind);
   const xp=run=>Math.ceil(run.captain.xpNext*cfg().experienceBars);
   const sameEgg=(a,b)=>(G.EGG_GROUPS[a.dex]||[15]).some(id=>(G.EGG_GROUPS[b.dex]||[15]).includes(id));
-  const sameSkill=(a,b)=>a.moves.some(m=>b.moves.some(n=>n.kind===m.kind));
+  const sameSkill=(a,b)=>a.moves.some(m=>b.moves.some(n=>G.SquadBonds.group(n.kind)===G.SquadBonds.group(m.kind)));
   function materials(run,target,kind,exclude){
     if(!owned(run).includes(target)||!target.isSquadMember||target.rank>=G.EconomyConfig.compatibility.maxRank)return [];
     return G.Squad.roster.filter(p=>p!==target&&p!==exclude&&p.rank===target.rank&&(kind==='egg'?sameEgg(target,p):sameSkill(target,p)));

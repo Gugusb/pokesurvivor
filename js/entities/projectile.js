@@ -31,7 +31,6 @@ G.Projectiles = (() => {
       if (p.boom) p.boom /= k;
     }
     if (p.friendly && !p.orb && !p.phits) p.phits = new Set();
-    if(p.friendly&&!p.orb&&p.moveKind==='projectile'&&p.bondUnstable&&!p.zMove){p.bondBudget=1+Math.max(0,Math.floor(p.pierce));p.bondProcs=0;p.bondBaseR=p.r;p.bondBaseScale=p.visualScale||(p.r>=8?1.5:1);}
     list.push(p);
     return p;
   }
@@ -51,7 +50,7 @@ G.Projectiles = (() => {
       const p = list[i];
       p.t += dt;
 
-      if (p.orb) {
+      if (p.orb && !p.seeking) {
         // Gira alrededor de su jugador.
         const o = p.owner || player;
         p.oa += p.ospeed * dt;
@@ -60,7 +59,7 @@ G.Projectiles = (() => {
         continue;
       }
 
-      if (p.t >= p.life) { list.splice(i, 1); continue; }
+      if (p.t >= p.life) { remove(p); continue; }
 
       // Bumerán: a los `boom` segundos se da la vuelta (y puede volver a
       // golpear a los mismos) y vuelve a su dueño; al llegar, desaparece.
@@ -77,7 +76,7 @@ G.Projectiles = (() => {
 
       // Teledirigido: curva la velocidad hacia el enemigo más cercano.
       if (p.homing > 0 && p.friendly) {
-        const tg = p.zMove && p.homingTarget && !p.homingTarget.dead ? p.homingTarget : nearest(enemies, p.x, p.y, 340);
+        const tg = (p.zMove || p.seeking) && p.homingTarget && !p.homingTarget.dead ? p.homingTarget : nearest(enemies, p.x, p.y, 340);
         if (tg) {
           const [dx, dy] = G.U.norm(tg.x - p.x, tg.cy() - p.y);
           const sp = Math.hypot(p.vx, p.vy);
@@ -95,7 +94,7 @@ G.Projectiles = (() => {
       p.y += p.vy * dt;
 
       // Fuera de la vista con margen generoso -> se descarta.
-      if (!G.Camera.sees(p.x, p.y, 260)) { list.splice(i, 1); continue; }
+      if (!G.Camera.sees(p.x, p.y, 260)) { remove(p); continue; }
     }
   }
 
@@ -111,7 +110,7 @@ G.Projectiles = (() => {
 
   function remove(p) {
     const i = list.indexOf(p);
-    if (i >= 0) list.splice(i, 1);
+    if (i >= 0) { list.splice(i, 1); if(p.seeking&&p.orbitSlotState)p.orbitSlotState.wait=G.EconomyConfig.classBonds.orbit.reloadSeconds; }
   }
 
   function draw(ctx) {
@@ -133,9 +132,9 @@ G.Projectiles = (() => {
   function drawSprite(ctx,p) {
       const v = p.vis || G.VFX.forType('normal');
       const shape = v.proj;
-      const a = p.orb ? 1 : Math.min(1, (p.life - p.t) * 4);
+      const a = p.orb && !p.seeking ? 1 : Math.min(1, (p.life - p.t) * 4);
       let angle = 0;
-      if (G.VFX.isDir(shape)) angle = p.orb ? p.oa + Math.PI / 2 : Math.atan2(p.vy, p.vx);
+      if (G.VFX.isDir(shape)) angle = p.orb && !p.seeking ? p.oa + Math.PI / 2 : Math.atan2(p.vy, p.vx);
       else if (G.VFX.spins(shape)) angle = p.t * 9;
       G.VFX.draw(ctx,shape,p.friendly===false&&G.Settings?.get('hostileRed')===true?'hostileRed':v.pal,p.x, p.y - G.LIFT, {
         angle, alpha: a, scale: p.visualScale || (p.r >= 8 ? 1.5 : 1),

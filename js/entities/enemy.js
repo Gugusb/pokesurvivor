@@ -305,7 +305,7 @@
       if (seen || this.dead) this.anim.update(dt);
       if (this.flash > 0) this.flash -= dt;
       if (this.dead) { this.fade -= dt; return; }
-      if(G.BossCombat)G.BossCombat.tick(this,dt);
+      if(G.BossCombat&&!(this.classStunT>0))G.BossCombat.tick(this,dt);
       if (this.shiny && seen) {
         this.sparkT -= dt;
         if (this.sparkT <= 0) {
@@ -333,6 +333,8 @@
         if (this.poisonT <= 0) this.poison = 0;
       }
       if (this.dead) return;
+
+      if(this.classStunT>0){this.classStunT=Math.max(0,this.classStunT-dt);this.kx=this.ky=0;this.anim.loop('Idle');return;}
 
       // --- terreno ---
       let terrainMul = 1;
@@ -792,6 +794,8 @@
         for(let i=0;i<5;i++){const a=t*2+i*6.2832/5;G.VFX.draw(ctx,'star','psychic',this.x+Math.cos(a)*this.r*1.6,this.y-this.bodyH*.35+Math.sin(a)*this.r*.65,{scale:.7,frame:(t*12)|0});}
         ctx.restore();
       }
+
+      if(this.classStunT>0){const t=performance.now()/1000;for(let i=0;i<3;i++){const a=t*4+i*Math.PI*2/3;G.VFX.draw(ctx,'star','class:bloom',this.x+Math.cos(a)*this.r,this.y-this.bodyH-8+Math.sin(a)*3,{scale:.65,frame:(t*12)|0});}}
 
       // Escudo: burbuja azul.
       if (this.shield > 0 || (this.net && this.net.st & 4)) {

@@ -342,7 +342,7 @@ test('Multitype melee and projectile damage bypass real type immunity and are bo
   const m=G.Moves.instance('tackle',1);m.t=0;p.target=e;p.moves=[m];p.slots=[[m]];p.aim=0;G.Combat.tick(.1,p,1);
   assert.equal(e.hp,500-Math.round(m.dmg*p.atk*1.2));
   const hp=e.hp,shots=[{friendly:true,ghost:false,x:30,y:0,r:5,dmg:10,mtype:'normal',pierce:0,hits:new Set(),phits:new Set()}];
-  G.Projectiles.all=()=>shots;G.Combat.resolve(.1,p,2);assert.equal(e.hp,hp-12);
+  G.Projectiles.all=()=>shots;G.Projectiles.remove=p=>shots.splice(shots.indexOf(p),1);G.Combat.resolve(.1,p,2);assert.equal(e.hp,hp-12);
 });
 
 test('co-op host applies peer Multitype once and synchronizes Flame Body knockback and burn ownership', () => {
