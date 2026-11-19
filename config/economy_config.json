@@ -415,13 +415,10 @@
       25
     ]
   },
-  "waveDropValues": {
-    "coin": 1,
-    "treasure": 1
-  },
   "pokemonTraining": {
     "experienceBars": 1,
     "eggDays": 10,
     "permission": "training:pokemon-breakthrough"
-  }
+  },
+  "combatGoldDrops": false
 }

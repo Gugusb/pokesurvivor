@@ -33,7 +33,7 @@ G.Economy=(()=>{
         s.flawlessStreak++;report.streakBonus=config().streak.tiers.find(t=>s.flawlessStreak>=t.minStreak&&(s.flawlessStreak<=t.maxStreak||t===config().streak.tiers.at(-1)))?.bonus||0;
         if(eventType==='ELITE_BATTLE')report.eliteFlawlessBonus=config().streak.eliteFlawlessBonus;
       }else{s.flawlessStreak=0;if(input.remainingHpRatio<config().streak.comebackHpThreshold)report.comebackBounty=config().streak.comebackBounty;}
-      report.inWaveDrops=Math.max(0,Number(input.inWaveCoinDrops)||0);
+      report.inWaveDrops=config().combatGoldDrops?Math.max(0,Number(input.inWaveCoinDrops)||0):0;
       report.totalGoldGained=report.baseWage+report.interest+report.streakBonus+report.comebackBounty+report.eliteFlawlessBonus+report.inWaveDrops;s.gold+=report.totalGoldGained;
       report.grantFreePostBossShop=eventType==='BOSS_BATTLE';
     }

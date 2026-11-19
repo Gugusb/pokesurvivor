@@ -85,8 +85,9 @@ G.Game = (() => {
     if(!pl||pl.dead||!G.Expedition?.active||!['playing','journey','paused'].includes(state)||G.ZMoves?.busy(pl)||G.SettingsUI?.isOpen)return;
     const previous=state;state='squad';G.Touch.reset();
     G.SquadUI.show({editable:['route','shop','loot'].includes(G.Expedition.phase),onClose:()=>{
-      state=previous;G.Touch.reset();
-      if(previous==='journey')G.Expedition.refreshScreen();else if(previous==='paused')G.UI.show('scr-pause');
+      const expeditionMenu=G.Expedition?.active&&['route','shop','loot'].includes(G.Expedition.phase);
+      state=expeditionMenu?'journey':previous;G.Touch.reset();
+      if(expeditionMenu||previous==='journey')G.Expedition.refreshScreen();else if(previous==='paused')G.UI.show('scr-pause');
     }});
   }
   let openMastery=false;

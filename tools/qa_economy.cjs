@@ -20,18 +20,18 @@ try{
   assert.equal(await p.evaluate(()=>G.Expedition.run.gold),0);assert.equal(await p.evaluate(()=>G.Squad.capacity),1);
   await p.evaluate(()=>{const r=G.Expedition.run;r.gold=50;r.map[1][3].kind='battle';G.Expedition.choose(1,3);G.EnemyMgr.clear();r.spawned=r.wave.count;r.pendingSpawns=[];G.Pickups.drop('coin',r.captain.x,r.captain.y,999);r.captain.hp=r.captain.maxHp*.9;G.Expedition.tick(.01);});
   await p.locator('#journey-loot-next').waitFor();
-  assert.deepEqual(await p.evaluate(()=>{const r=G.Expedition.run;return {gold:r.gold,wage:r.settlement.baseWage,interest:r.settlement.interest,drops:r.settlement.inWaveDrops,xp:r.trainerXp};}),{gold:61,wage:5,interest:5,drops:1,xp:2});
+  assert.deepEqual(await p.evaluate(()=>{const r=G.Expedition.run;return {gold:r.gold,wage:r.settlement.baseWage,interest:r.settlement.interest,drops:r.settlement.inWaveDrops,xp:r.trainerXp};}),{gold:60,wage:5,interest:5,drops:0,xp:2});
   await p.locator('#journey-claim').click();await p.locator('#journey-loot-next').click();await p.locator('.journey-grid').waitFor();
   await p.evaluate(()=>{const r=G.Expedition.run;r.map[2][3].kind='shop';G.Expedition.choose(2,3);window.oldOffers=G.Expedition.offers;window.stockBefore=Array.from(r.unitPool.stock);});
   assert.equal(await p.locator('.journey-product').count(),5);assert.equal(await p.locator('.journey-odds span').count(),5);assert.match(await p.locator('#journey-upgrade').innerText(),/4 G.*4 XP/);
   await p.locator('#journey-upgrade').click();assert.equal(await p.evaluate(()=>G.Expedition.run.trainerLevel),2);assert.equal(await p.evaluate(()=>G.Expedition.run.trainerXp),2);assert.equal(await p.evaluate(()=>G.Squad.capacity),2);assert.equal(await p.evaluate(()=>G.Expedition.offers===window.oldOffers),true);
   await p.locator('#journey-shop-lock').click();await p.locator('.journey-shop-controls button').nth(2).click();
   await p.evaluate(()=>{const r=G.Expedition.run;r.map[3][3].kind='shop';G.Expedition.choose(3,3);});assert.equal(await p.evaluate(()=>G.Expedition.offers===window.oldOffers),true);
-  await p.locator('#journey-refresh').click();assert.equal(await p.evaluate(()=>G.Expedition.run.shopLocked),false);assert.equal(await p.evaluate(()=>G.Expedition.run.gold),57);
+  await p.locator('#journey-refresh').click();assert.equal(await p.evaluate(()=>G.Expedition.run.shopLocked),false);assert.equal(await p.evaluate(()=>G.Expedition.run.gold),56);
   await p.screenshot({path:'tools/cache/alpha16-shop-mobile.png'});
   await p.locator('.journey-shop-controls button').nth(2).click();
   await p.evaluate(()=>{const r=G.Expedition.run;r.map[4][3].kind='wild';G.Expedition.choose(4,3);});
-  const wild=await p.locator('[data-wild-capture]').count();assert.ok(wild>=2&&wild<=3);await p.locator('[data-wild-capture]').first().click();await p.locator('#journey-content > button').last().click();await p.locator('.journey-grid').waitFor();assert.equal(await p.evaluate(()=>G.Expedition.run.gold),57);assert.equal(await p.evaluate(()=>G.Expedition.run.trainerXp),3);
+  const wild=await p.locator('[data-wild-capture]').count();assert.ok(wild>=2&&wild<=3);await p.locator('[data-wild-capture]').first().click();await p.locator('#journey-content > button').last().click();await p.locator('.journey-grid').waitFor();assert.equal(await p.evaluate(()=>G.Expedition.run.gold),56);assert.equal(await p.evaluate(()=>G.Expedition.run.trainerXp),3);
   await p.evaluate(()=>{const r=G.Expedition.run;r.map[5][3].kind='training';G.Expedition.choose(5,3);});assert.match(await p.locator('[data-training=up]').innerText(),/免费/);await p.locator('#journey-content > button').last().click();await p.locator('.journey-grid').waitFor();assert.equal(await p.evaluate(()=>G.Expedition.run.trainerXp),5);
   // Jump the controlled route to its Boss day, preserving an isolated test account.
   await p.evaluate(()=>{const r=G.Expedition.run;r.row=19;r.day=19;G.Expedition.showRoute();G.Expedition.choose(20,3);G.EnemyMgr.clear();r.pendingSpawns=[];r.spawned=1;r.bossDead=true;G.Expedition.tick(.01);});

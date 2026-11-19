@@ -236,7 +236,7 @@ G.Expedition = (() => {
     };render();
   }
   function openShop(free=false){
-    run.phase='shop';run.postBossShop=free;run.shopFreeRefreshes=G.EconomyConfig.shop.shopDayFreeRefreshes;G.SquadTraits?.visitShop();rollShop();renderShop();
+    run.phase='shop';G.Game.expeditionPause();run.postBossShop=free;run.shopFreeRefreshes=G.EconomyConfig.shop.shopDayFreeRefreshes;G.SquadTraits?.visitShop();rollShop();renderShop();
   }
   function rollShop(force=false){
     if(run.shopLocked&&!force)return;
@@ -388,6 +388,7 @@ G.Expedition = (() => {
   }
   function recordPickup(p){
     if(!run||!['combat','rewards'].includes(run.phase))return;
+    if(!G.EconomyConfig.combatGoldDrops&&['coin','treasure'].includes(p.kind))return;
     if(p.kind==='coin'||p.kind==='treasure')run.inWaveCoinDrops+=Math.max(0,Number(p.value)||0);
     const k=p.kind,key=k==='item'?'item:'+p.value:k;
     if(['xp','xpBig','coin','treasure'].includes(k))run.loot[key]=(run.loot[key]||0)+Number(p.value||0);
@@ -423,7 +424,7 @@ G.Expedition = (() => {
     const add=(name,value)=>{if(!value)return;const card=node('div','journey-loot-value');card.append(node('small','',name),node('b','',String(value)));rows.append(card);};
     add(L('Oro','Expedition gold','局内金币'),run.gold-run.goldStart);
     add(L('Experiencia','Experience','经验'),(run.loot.xp||0)+(run.loot.xpBig||0));
-    add(L('Monedas recogidas','Wave gold drops','波次金币掉落'),(run.loot.coin||0)+(run.loot.treasure||0));
+    if(G.EconomyConfig.combatGoldDrops)add(L('Monedas recogidas','Wave gold drops','波次金币掉落'),(run.loot.coin||0)+(run.loot.treasure||0));
     add(L('Vales','Tickets','抽奖券'),(run.loot.ticket||0)+(run.loot.ticket10||0)*10);
     add(L('Cofres de jefe','Boss chests','BOSS奖励箱'),run.loot.bossChest);
     for(const [key,n]of Object.entries(run.loot))if(key.startsWith('item:'))add(T(G.Items.BY[key.slice(5)]?.name||key.slice(5)),n);
