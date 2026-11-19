@@ -996,6 +996,7 @@ function createApp(opts = {}) {
     ".svg": "image/svg+xml",
     ".mp3": "audio/mpeg",
     ".ogg": "audio/ogg",
+    ".wav": "audio/wav",
     ".woff2": "font/woff2",
     ".ttf": "font/ttf",
     ".jpg": "image/jpeg",

@@ -139,7 +139,7 @@
       if (this.remote) {
         G.Coop.hit(this, d, color, dirX, dirY, knock, attack);
         this.hp = Math.max(1, this.hp - d);
-        this.showHurt(d, color, dirX, dirY, eff);
+        this.showHurt(d, color, dirX, dirY, eff, attack);
         return d;
       }
       let hpDamage = d, shieldDamage = 0;
@@ -155,7 +155,7 @@
         G.ExpeditionDamage?.record(attacker,attack,shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',shieldDamage);
         if(bond)G.TypeBonds.afterHit(attacker,this,attack,shieldDamage,bond);
         G.FX.dmgText(this.x, this.y - this.bodyH - 4, Math.round(shieldDamage), '#9fd8ff'); this.flash = 0.05;
-        if(shieldDamage>0)G.Audio.sfx('hit');
+        if(shieldDamage>0)G.Audio.sfx('hit',{kind:attack.kind,type:attack.type});
         return shieldDamage;
       }
       if (G.BossCombat&&!attack.typeBondFraction) hpDamage = G.BossCombat.damage(this,hpDamage);
@@ -167,7 +167,7 @@
       if(bond)G.TypeBonds.afterHit(attacker,this,attack,hpDamage+shieldDamage,bond);
       if (attacker) {G.Abilities.onHit(attacker, this, attack);G.Items?.onHit(attacker,this,attack);G.Specialization?.onHit(attacker,this,attack,hpDamage);}
       G.Judgment.noteDmg(hpDamage, this);
-      this.showHurt(hpDamage, color, dirX, dirY, eff);
+      this.showHurt(hpDamage, color, dirX, dirY, eff, attack);
       if (knock > 0 && !this.boss) {
         const [nx, ny] = G.U.norm(dirX, dirY);
         this.kx += nx * knock;
@@ -179,14 +179,14 @@
     }
 
     /** Lo que se VE al recibir un golpe. */
-    showHurt(d, color, dirX = 0, dirY = 0, eff = null) {
+    showHurt(d, color, dirX = 0, dirY = 0, eff = null, attack = {}) {
       this.flash = 0.09;
       // Muy eficaz: número amarillo y grande. Poco eficaz: gris. Crítico: naranja y grande.
       G.FX.dmgText(this.x, this.y - this.bodyH - 4, d, eff === 'crit' ? '#ff9a3c' : eff === 'super' ? '#ffe14d' : eff === 'weak' ? '#a3abb8' : color,
                    this.boss || eff === 'super' || eff === 'crit');
       G.FX.spark(this.x, this.y - this.bodyH * 0.5, color, dirX, dirY, 3);
       if (!this.anim.busy() && this.phase !== 'dash') this.anim.play('Hurt');
-      G.Audio.sfx('hit');
+      G.Audio.sfx('hit',{kind:attack.kind,type:attack.type});
     }
 
     applySlow(factor, dur = 1.2) {
@@ -220,7 +220,7 @@
       // En una copia, el botín y los shinies los reparte el anfitrión.
       if (this.remote) {
         if (this.boss) G.Camera.kick(0.9);
-        G.Audio.sfx(this.boss ? 'bossDown' : 'faint');
+        G.Audio.sfx(this.boss ? 'bossDown' : 'faint',{elite:!!this.elite});
         if (this.shiny) { G.FX.burst(this.x, cy, '#ffe9a0', 30, 220); G.FX.ring(this.x, this.y, this.r, this.r * 7, '#9ae6ff', 0.7, 5); }
         return;
       }
@@ -244,7 +244,7 @@
         if (this.def.loot === 'ticket10') G.Pickups.drop('ticket10', this.x, this.y - 12, this.elite?5:1);
         G.FX.ring(this.x, this.y, this.r, this.r * 5, '#ffd23f', 0.6, 4);
       }
-      G.Audio.sfx(this.boss ? 'bossDown' : 'faint');
+      G.Audio.sfx(this.boss ? 'bossDown' : 'faint',{elite:!!this.elite});
       if (this.shiny) {
         G.FX.burst(this.x, cy, '#ffe9a0', 30, 220);
         G.FX.ring(this.x, this.y, this.r, this.r * 7, '#9ae6ff', 0.7, 5);

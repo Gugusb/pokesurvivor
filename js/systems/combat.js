@@ -50,7 +50,7 @@ G.Combat = (() => {
         }
         m.t=Math.max(.05,m.cd*pl.cdMul)*G.Abilities.onCast(pl,m)*(G.SquadBonds?.sustain(pl,m)||1);
         m.typeCastId=G.TypeBonds?.cast(pl,m)||0;if(pl.dead)return;
-        G.MoveControl?.cast(pl,m);G.Items?.onCast(pl,m);
+        pl.cast(m);G.MoveControl?.cast(pl,m);G.Items?.onCast(pl,m);
         refill=true;extras(pl,m,m.t/cooldownRate);
       }
       orbit(pl,m,dt,now,false,refill);return;
@@ -268,6 +268,7 @@ G.Combat = (() => {
         G.FX.sp(vis.buff || 'arrow',vis.pal,target.x+G.U.rand(-target.r*1.4,target.r*1.4),target.y-G.U.rand(0,target.bodyH*.8),{vy:-70,life:.6});
       }
     }
+    if(targets.length)G.Audio.sfx('hit',{kind:'buff',type:m.type});
   }
 
   // ---------------- familias nuevas (2026-10-10) ----------------
@@ -493,7 +494,7 @@ G.Combat = (() => {
         if (trig || f.t >= f.life) {
           G.FX.ring(f.x, f.y, 4, f.r, f.col, 0.3, 4);
           G.FX.burst(f.x, f.y - 6, f.col, 10, 150);
-          if (G.Camera.sees(f.x, f.y, 40)) G.Audio.sfx('break');
+          if (G.Camera.sees(f.x, f.y, 40)) G.Audio.sfx('hit',{kind:f.m.kind,type:f.m.type});
           blast(f, f.r, trig ? 1 : 0.5);
           fields.splice(i, 1);
         }
@@ -501,7 +502,7 @@ G.Combat = (() => {
         if (f.t >= f.fall) {
           G.FX.ring(f.x, f.y, 4, f.r, f.col, 0.35, 4);
           G.FX.burst(f.x, f.y - 6, f.col, 12, 170);
-          if (G.Camera.sees(f.x, f.y, 40)) { G.Audio.sfx('break'); G.Camera.kick(0.12); }
+          if (G.Camera.sees(f.x, f.y, 40)) { G.Audio.sfx('hit',{kind:f.m.kind,type:f.m.type}); G.Camera.kick(0.12); }
           blast(f, f.r);
           fields.splice(i, 1);
         }
@@ -612,8 +613,10 @@ G.Combat = (() => {
     }
 
     // Animación de concentración de vez en cuando, para que se note vivo.
-    pl.orbCastT = (pl.orbCastT || 0) - dt;
-    if (pl.orbCastT <= 0) { pl.orbCastT = 1.6; pl.cast({ ...m, cd: 1.6 }); }
+    if(isGhost){
+      pl.orbCastT = (pl.orbCastT || 0) - dt;
+      if (pl.orbCastT <= 0) { pl.orbCastT = 1.6; pl.cast({ ...m, cd: 1.6 }); }
+    }
   }
 
   /** Repite el ataque de un compañero sólo para verlo (sin daño). */

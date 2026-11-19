@@ -1,5 +1,5 @@
 /* ============ audio.js — sintetizador, secuenciador y efectos de sonido ============
- * Todo el sonido se genera en el momento con Web Audio: no hay ficheros.
+ * Música y UI sintetizadas; combate con muestras WAV y síntesis de respaldo.
  *
  *   G.Audio.music('village')   cambia de tema con fundido (ver data/music.js)
  *   G.Audio.sfx('coin')        efecto de sonido (con límite de repetición)
@@ -15,6 +15,69 @@ G.Audio = (() => {
   let settings = { music: 0.55, sfx: 0.7, muted: false };
   try { Object.assign(settings, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* nada */ }
   let noiseBuf = null;
+  const SKILL_KINDS = ['projectile','melee','beam','nova','aura','buff','orbit','boomerang','chain','mine','meteor','turret','dash','trail','cone'];
+  const SAMPLE_KEYS = SKILL_KINDS.flatMap(k => ['skills/'+k+'_cast','skills/'+k+'_hit']).concat(['kills/kill_normal','kills/kill_elite','kills/kill_boss']);
+  const samples = new Map(), activeSamples = [];
+  let warmup = null;
+
+  function loadSample(key) {
+    let entry = samples.get(key);
+    if (entry?.buffer || entry?.pending) return entry.pending || Promise.resolve();
+    if (!ctx || performance.now() < (entry?.retryAt || 0)) return Promise.resolve();
+    if (!entry) { entry = {}; samples.set(key, entry); }
+    entry.pending = (async () => {
+      try {
+        const res = await fetch('assets/audio/pokemon-survivors-sfx/'+key+'.wav?v=1');
+        if (!res.ok) throw Error('Audio HTTP '+res.status);
+        entry.buffer = await ctx.decodeAudioData(await res.arrayBuffer());
+      } catch (e) { entry.retryAt = performance.now()+10000; }
+      finally { entry.pending = null; }
+    })();
+    return entry.pending;
+  }
+
+  // No playback queue: late downloads must never play an old attack.
+  function preloadCombat() {
+    if (!ctx) return Promise.resolve({ready:0,total:SAMPLE_KEYS.length});
+    if (warmup) return warmup;
+    let cursor = 0;
+    warmup = Promise.all(Array.from({length:4}, async () => {
+      while (cursor < SAMPLE_KEYS.length) await loadSample(SAMPLE_KEYS[cursor++]);
+    })).then(() => ({ready:SAMPLE_KEYS.filter(k=>samples.get(k)?.buffer).length,total:SAMPLE_KEYS.length})).finally(() => { warmup = null; });
+    return warmup;
+  }
+
+  function sampleFor(name, opts = {}) {
+    const kind = SKILL_KINDS.includes(opts.kind) ? opts.kind : opts.kind==='typebond' ? 'nova' : 'projectile';
+    if (name==='shot') return {key:'skills/'+kind+'_cast',gain:.28,priority:1};
+    if (name==='hit') return {key:'skills/'+kind+'_hit',gain:.34,priority:2};
+    if (name==='faint') return {key:'kills/kill_'+(opts.elite?'elite':'normal'),gain:opts.elite?.46:.4,priority:3};
+    if (name==='bossDown') return {key:'kills/kill_boss',gain:.5,priority:4};
+    return null;
+  }
+
+  function playSample(sample) {
+    const buffer = samples.get(sample.key)?.buffer;
+    if (!buffer) { loadSample(sample.key); return false; }
+    // Bound long sounds too, using their real lifetime rather than a fixed timer.
+    if (activeSamples.filter(v=>v.key===sample.key).length>=3) return true;
+    if (activeSamples.length>=18) {
+      const victim = activeSamples.find(v=>v.priority<sample.priority);
+      if (!victim) return true;
+      victim.source.stop(); victim.cleanup();
+    }
+    const source = ctx.createBufferSource(), gain = ctx.createGain();
+    source.buffer = buffer; source.playbackRate.value = 1;
+    gain.gain.value = sample.gain;
+    source.connect(gain).connect(sfxBus);
+    const voice = {key:sample.key,priority:sample.priority,source,cleanup(){
+      const i=activeSamples.indexOf(voice);if(i>=0)activeSamples.splice(i,1);
+      source.disconnect();gain.disconnect();
+    }};
+    source.onended = voice.cleanup;
+    activeSamples.push(voice); source.start();
+    return true;
+  }
 
   function save() { try { localStorage.setItem(KEY, JSON.stringify(settings)); } catch (e) { /* nada */ } }
 
@@ -62,6 +125,7 @@ G.Audio = (() => {
     // 'suspended' o 'interrupted' (iPhone al volver de otra app): se reanuda.
     if (ctx.state !== 'running') ctx.resume().catch(() => {});
     if (wanted && !current) startSong(wanted);
+    if (!samples.size) preloadCombat();
   }
   // En móvil, tocar la pantalla (pointerdown) no cuenta como gesto para el
   // sonido: sí levantar el dedo (pointerup / touchend). Se escuchan todos.
@@ -387,6 +451,8 @@ G.Audio = (() => {
     select:  () => tone('square', 990, 1180, 0.04, 0.045),
     error:   () => arp('square', [330, 262], 0.08, 0.09, 0.05),
     shot(o) {
+      const aliases={boomerang:'projectile',chain:'beam',mine:'nova',meteor:'nova',turret:'buff',dash:'melee',trail:'aura',cone:'projectile'};
+      o={...o,kind:aliases[o.kind]||o.kind};
       const f=(SHOT_PITCH[o.type]||600)*.38;
       if(o.kind==='melee'){hiss(.075,.07,'lowpass',700,180);tone('sine',110,65,.07,.04);}
       else if(o.kind==='beam'){tone('triangle',f,f*.55,.13,.045);hiss(.09,.025,'bandpass',700,250,0,1.2);}
@@ -458,10 +524,13 @@ G.Audio = (() => {
     const fn = SFX[name];
     if (!fn) return;
     const now = performance.now();
-    const key = name === 'shot' && opts ? 'shot' + opts.kind : name;
-    if (now - (last[key] || 0) < (MIN_GAP[name] || 0)) return;
-    if (voices > 24) return;                    // tope de voces simultáneas
+    const sample = sampleFor(name,opts);
+    const key = sample?.key || name;
+    const gap = name==='bossDown'?300:name==='faint'&&opts?.elite?180:MIN_GAP[name]||0;
+    if (now - (last[key] ?? -Infinity) < gap) return;
     last[key] = now;
+    try { if (sample && playSample(sample)) return; } catch (e) { /* synthesis fallback */ }
+    if (voices > 24) return;                    // tope de voces sintetizadas
     voices++; setTimeout(() => voices--, 150);
     try { fn(opts); } catch (e) { /* un efecto nunca debe romper el juego */ }
   }
@@ -501,7 +570,7 @@ G.Audio = (() => {
   }
 
   return {
-    music, sfx, setVolume, toggleMute, unlock, debugMeter, debugStream,
+    music, sfx, setVolume, toggleMute, unlock, preloadCombat, debugMeter, debugStream,
     /** ¿Ya puede sonar? (el navegador sólo deja tras tocar algo, salvo excepciones) */
     canPlay() { return !!ctx && ctx.state === 'running'; },
     get settings() { return settings; },
