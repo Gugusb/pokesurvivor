@@ -4,24 +4,26 @@ function setup(){const s=context('zh',false),g=s.G;
  for(const file of ['js/core/settings.js','js/data/egg-groups.js','js/entities/projectile.js','js/systems/expedition-rules.js','js/systems/squad.js','js/systems/expedition-growth.js','js/systems/expedition-damage.js','js/systems/squad-bonds.js','js/data/type-bonds.js','js/systems/type-bonds.js','js/systems/move-control.js','js/systems/move-pp.js','js/systems/combat.js','js/systems/levelup.js','js/systems/z-access.js','js/data/starter-items.js','js/data/breakthrough-items.js','js/systems/card-packs.js','js/systems/expedition-training.js'])s.load(file);
  g.Sprites.preload=noop;g.Sprites.Animator.prototype._start=noop;g.World.isFree=()=>true;g.World.isWall=()=>false;g.World.propsInCircle=()=>[];g.World.projectileBlock=()=>null;g.VFX={forMove:()=>({}),forType:()=>({})};g.Input={axis:()=>[0,0]};
  const cap=s.player(6);g.Game.player=cap;g.Squad.begin(cap);g.CardPacks.normalize(g.DB.save);return {...s,g,cap};}
-test('expedition levels keep agility and stamina fixed and grant captain defenses only 3% per level',()=>{
+test('expedition levels grant one percent HP and attacks to both roles without defenses or movement growth',()=>{
  const {g,cap}=setup(),member=g.Squad.recruit(1);
  const unchanged=['agility','stamina','spd'];
  const before=[cap,member].map(p=>unchanged.map(key=>p[key]));
  cap.level=4;
  g.ExpeditionGrowth.sync();
- for(const [p,i,atk,def] of [[cap,0,.30,.09],[member,1,.15,.15]]){
+ for(const [p,i,atk,def] of [[cap,0,.03,0],[member,1,.03,0]]){
+   close(p.expeditionGrowth.hp,atk);
    close(p.expeditionGrowth.atk,atk);
-   close(p.expeditionGrowth.defense,def);
-   close(p.expeditionGrowth.spdef,def);
+   close(p.expeditionGrowth.spa,atk);
+   close(p.expeditionGrowth.defense||0,def);
+   close(p.expeditionGrowth.spdef||0,def);
    unchanged.forEach((key,j)=>close(p[key],before[i][j]));
  }
  const hp=member.hp;
  g.ExpeditionGrowth.sync();
  close(member.hp,hp);
  const late=g.Squad.recruit(7);
- close(late.expeditionGrowth.atk,.15);
- close(late.expeditionGrowth.defense,.15);
+ close(late.expeditionGrowth.atk,.03);
+ close(late.expeditionGrowth.defense||0,0);
  for(const key of unchanged)assert.equal(late.expeditionGrowth[key],undefined);
 });
 test('half-strength companion berries apply to reserves and future recruits without buffing captain',()=>{

@@ -17,6 +17,7 @@ G.ExpeditionDamage=(()=>{
   function beginBattle(day=G.Expedition?.run?.day||0){battle=new Map();battleDay=day;last=0;for(const p of G.Squad?.actors()||[])entry(battle,actor(p));}
   function record(p,attack,n,context){
     if(!G.Squad?.active||!p||!(n>0)||!Number.isFinite(n))return;
+    G.ExpeditionRecorder?.damage(n);
     const id=attack?.id||'',bond=attack?.bondDamageKind||(id.startsWith('typebond-')?id.slice(9):null),element=attack?.type||p.mon.types[0];
     if(bond)addBond(bond,n,element);
     else if(context?.execute)addBond(context.executionSource||'fairy',n,element);

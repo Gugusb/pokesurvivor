@@ -394,6 +394,7 @@ G.Server = (() => {
     beating=enqueue(async()=>{if(run!==target)return;if(dirty||pendingSave)await upload();await ensureStarted(target);const r=await api('/run/beat',{...snapshot(),id:target.id,rev});accept(r,!!r.save);lastError=0;return r;});
     try{return await beating;}finally{beating=null;}
   }
+  function recordDps(id,report){const target=run?.id===id?run:null;return enqueue(async()=>{if(target)await ensureStarted(target);return api('/run/dps',{id,report});});}
   function presence(){if(!G.DB.online||G.DB.mode!=='server'||run)return Promise.resolve();return enqueue(async()=>{if(dirty||pendingSave)await upload();const r=await api('/presence',{rev});accept(r,!!r.save);}).catch(error);}
   async function claimBonus(challenge, coins) {
     await runPromise;
@@ -479,6 +480,8 @@ G.Server = (() => {
     prepareRun,
     startRun,
     heartbeat,
+    recordDps,
+    get runId(){return run?.id||null;},
     presence,
     finish,
     retryRuns,

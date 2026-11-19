@@ -1,6 +1,6 @@
 /* Run-wide companion rewards and level growth. */
 G.ExpeditionGrowth=(()=>{
-  const KEYS=['hp','atk','spa','defense','spdef'];
+  const KEYS=['hp','atk','spa'];
   let berries={};
   function sync(p){
     if(!G.Squad?.active)return;
@@ -10,7 +10,7 @@ G.ExpeditionGrowth=(()=>{
       const desired={...(a.isSquadMember?berries:{})};
       const levelsGained=Math.max(0,level-1);
       for(const key of KEYS){
-        const perLevel=a.isSquadMember ? .05 : key==='defense'||key==='spdef' ? .03 : .10;
+        const perLevel=G.EconomyConfig.levelGrowth[key];
         desired[key]=(desired[key]||0)+levelsGained*perLevel;
       }
       const old=a.expeditionGrowth||{};

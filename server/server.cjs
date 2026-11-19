@@ -14,6 +14,7 @@ const { promisify } = require("node:util"),
 const { openStore } = require("./store.cjs"),
   { ROOT, G, fresh, sanitize, clone, record, safeObject } = require("./domain.cjs");
 const {characterFor}=require('./character-profiles.cjs');
+const {createRecorder}=require('./expedition-recorder.cjs');
 const derive = promisify(scrypt),
   digest = (s) => createHash("sha256").update(s).digest("hex");
 const VERSION = require('./package.json').version,
@@ -47,6 +48,7 @@ function createApp(opts = {}) {
     now = opts.now || Date.now,
     coopEnabled = opts.coopEnabled === true; // Internal regression fixtures only; public service stays solo.
   const connections=new Map();
+  const dpsRecorder=createRecorder(db,now);
   const sockets = new Map(),
     rooms = new Map(),
     invites = new Map(),
@@ -439,6 +441,7 @@ function createApp(opts = {}) {
       "/profile",
       "/admin/users",
       "/admin/reports",
+      "/admin/expedition-dps",
     ];
     if (method !== (reads.includes(route) ? "GET" : "POST"))
       throw fail(405, "Method not allowed");
@@ -532,6 +535,7 @@ function createApp(opts = {}) {
       return json(res, 200, { user: publicUser(u), ...saved(u.uid) });
     }
     const u = auth(req);
+    if(route==='/run/dps'){rate('dps:'+u.uid,120,60e3);return json(res,200,dpsRecorder.save(u,b.id,b.report));}
     if(!coopEnabled && (route.startsWith('/room/') || route==='/run/start' && b.mode==='g'))
       throw fail(403,'Co-op invitations temporarily unavailable');
     rate("user:" + u.uid, 900, 60e3);
@@ -563,6 +567,7 @@ function createApp(opts = {}) {
           "time_scores",
           "run_scores",
           "completion_scores",
+          "expedition_dps",
         ])
           exec(`DELETE FROM ${table} WHERE uid=?`, u.uid);
         exec("DELETE FROM friends WHERE a=? OR b=?", u.uid, u.uid);
@@ -923,6 +928,7 @@ function createApp(opts = {}) {
     }
     if (route.startsWith("/admin/")) {
       if (u.role !== "admin") throw fail(403, "Administrator required");
+      if(route==='/admin/expedition-dps')return json(res,200,dpsRecorder.list(url.searchParams));
       if (route === "/admin/users" && method === "GET") {
         const search = String(url.searchParams.get("q") || "").slice(0, 32);
         return json(res, 200, {

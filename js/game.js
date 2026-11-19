@@ -418,6 +418,7 @@ G.Game = (() => {
 
   function endRun(dead = true, victoryBonus=0) {
     if (state === 'over' || !pl) return;
+    if(G.Expedition?.inCombat)G.ExpeditionRecorder?.finish(dead?'defeat':'abandoned');
     G.UI.hide('scr-victory');
     const coop = !!pl.uid;                    // sólo las partidas en grupo le ponen uid
     const wasHost = !!pl.coopHost;

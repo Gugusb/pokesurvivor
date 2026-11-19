@@ -420,5 +420,16 @@
     "eggDays": 10,
     "permission": "training:pokemon-breakthrough"
   },
-  "combatGoldDrops": false
+  "combatGoldDrops": false,
+  "levelGrowth": {
+    "hp": 0.01,
+    "atk": 0.01,
+    "spa": 0.01
+  },
+  "damageRecorder": {
+    "windowSeconds": 5,
+    "maxPending": 100,
+    "maxLocalRecords": 100,
+    "maxSquadSnapshot": 32
+  }
 }

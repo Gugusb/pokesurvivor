@@ -178,7 +178,7 @@ G.Expedition = (() => {
   }
   function begin(captain){
     const gens=draft?.gens||R.generations(captain.mon);run={...G.Economy.create(),captain,gens,pool:R.pool(gens),day:0,row:0,col:3,cycle:1,map:R.matrix(1),phase:'route',arceus:false,cashout:false,history:[],kills:0};
-    offer=[];run.shopLocked=false;run.emblems={};G.Squad.begin(captain);run.unitPool=new G.UnitPool(run.pool);G.Squad.syncTrainer();draft=null;note='';showRoute();
+    offer=[];run.shopLocked=false;run.emblems={};G.Squad.begin(captain);run.unitPool=new G.UnitPool(run.pool);G.Squad.syncTrainer();G.ExpeditionRecorder?.beginRun();draft=null;note='';showRoute();
   }
   function showRoute(){
     if(!run)return;run.phase='route';G.Game.expeditionPause();renderRoute();
@@ -281,7 +281,7 @@ G.Expedition = (() => {
     G.UI.toast(run.gold+' G · '+L('Interés al ganar','Interest on victory','战后利息')+' +'+G.Economy.interest(run.gold)+' G');run.extraStart=JSON.parse(JSON.stringify(G.Game.loot||{}));
     run.pendingSpawns=[];G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Pickups.clear();G.Hazards.clear();G.Path.clear();
     G.World.setBiome(Math.floor((run.day-1)/5));G.Squad.recover();
-    G.ExpeditionDamage?.beginBattle(run.day);G.TypeBonds?.beginStage();G.SquadTraits?.beginBattle();
+    G.ExpeditionDamage?.beginBattle(run.day);G.TypeBonds?.beginStage();G.SquadTraits?.beginBattle();G.ExpeditionRecorder?.beginBattle(run);
     for(const p of G.Squad.actors())G.Abilities.resetStage(p,run.day);
     if(kind==='boss')run.spawned=spawn(true)?1:0;
     G.UI.hideAll();G.Touch.reset();G.Game.expeditionResume();G.Audio.sfx('confirm');
@@ -313,6 +313,7 @@ G.Expedition = (() => {
   function tick(dt){
     if(!run||run.phase!=='combat'||run.captain.dead)return;
     run.elapsed+=dt;
+    G.ExpeditionRecorder?.tick(dt);
     for(const warning of run.pendingSpawns||[])warning.left-=dt;
     const ready=(run.pendingSpawns||[]).filter(w=>w.left<=0);run.pendingSpawns=(run.pendingSpawns||[]).filter(w=>w.left>0);
     for(const {enemy} of ready){
@@ -376,6 +377,7 @@ G.Expedition = (() => {
   }
   function finishBattle(cleared){
     if(run.phase!=='combat')return;
+    G.ExpeditionRecorder?.finish(cleared?'cleared':'survived');
     if(run.kind!=='boss'){run.companionOffer=run.unitPool.draw(Math.min(G.EconomyConfig.levels.at(-1).level,run.trainerLevel+(run.kind==='elite'?1:0)));run.companion=run.companionOffer?.dex||null;}
     if(run.kind==='boss'){const types=Object.keys(G.U.TYPE_NAME);run.bossEmblemChoices=[];while(run.bossEmblemChoices.length<G.EconomyConfig.bossEmblem.choices)run.bossEmblemChoices.push(types.splice(Math.floor(Math.random()*types.length),1)[0]);run.bossEmblemClaimed=false;}
     run.remainingHpRatio=Math.max(0,run.captain.hp/run.captain.maxHp);
@@ -458,7 +460,7 @@ G.Expedition = (() => {
     if(run.freeShopPending){run.freeShopPending=false;openShop(true);}else showRoute();
   }
   function continueAfterVictory(){if(!run)return;run.cashout=false;G.Server?.heartbeat?.().catch(()=>{});if(run.freeShopPending){run.freeShopPending=false;openShop(true);}else showRoute();}
-  function reset(){run=null;G.Squad.reset();const el=$('journey-status');if(el)el.hidden=true;}
+  function reset(){G.ExpeditionRecorder?.reset();run=null;G.Squad.reset();const el=$('journey-status');if(el)el.hidden=true;}
   function hud(){
     const el=$('journey-status');if(!el)return;el.hidden=run?.phase!=='combat'||G.Game.state!=='playing';if(el.hidden||performance.now()-lastHud<150)return;lastHud=performance.now();
     const pressure=battlePressure(),seconds=Math.max(0,Math.ceil(run.wave.duration-run.elapsed));
