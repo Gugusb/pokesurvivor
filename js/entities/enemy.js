@@ -155,6 +155,7 @@
         G.ExpeditionDamage?.record(attacker,attack,shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',shieldDamage);
         if(bond)G.TypeBonds.afterHit(attacker,this,attack,shieldDamage,bond);
         G.FX.dmgText(this.x, this.y - this.bodyH - 4, Math.round(shieldDamage), '#9fd8ff'); this.flash = 0.05;
+        if(shieldDamage>0)G.Audio.sfx('hit');
         return shieldDamage;
       }
       if (G.BossCombat&&!attack.typeBondFraction) hpDamage = G.BossCombat.damage(this,hpDamage);
@@ -213,7 +214,8 @@
       this.anim.play('Faint', { hold: true });
       const col = this.boss ? '#ffd95e' : '#ffffff';
       const cy = this.y - this.bodyH * 0.5;
-      G.FX.burst(this.x, cy, col, this.boss ? 34 : 9, this.boss ? 260 : 120);
+      const palette=G.Sprites.themeColors?.(this.spriteDex,this.shiny)||this.types.map(t=>G.U.TYPE_COLOR[t]).filter(Boolean);
+      if(G.FX.koSplash)G.FX.koSplash(this.x,cy,palette,this.boss);else G.FX.burst(this.x,cy,palette[0]||col,this.boss?34:14,this.boss?200:125);
       G.FX.ring(this.x, this.y, this.r, this.r * (this.boss ? 6 : 2.6), col, this.boss ? 0.6 : 0.3, this.boss ? 6 : 3);
       // En una copia, el botín y los shinies los reparte el anfitrión.
       if (this.remote) {

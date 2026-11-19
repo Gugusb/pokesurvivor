@@ -98,3 +98,7 @@ test('invalid projectile values are removed before collision queries and extreme
 test('expiring a double-cast orbit copy does not delete shots already launched from that copy',()=>{
  const s=setup('orbit'),g=s.G;enemy(s,80);s.m.specializations=['t9'];s.m.cd=.05;cast(s);g.Combat.updateFields(.001);const shots=g.Projectiles.all().filter(p=>p.bondOrbitShot&&p.mid!==s.m.id);assert.ok(shots.length>0);const f=g.Combat._fields().find(f=>f.kind==='orbitcopy');g.Combat.updateFields(f.life+.01);assert.ok(shots.every(p=>g.Projectiles.all().includes(p)));
 });
+
+test('orbit shots end on first enemy contact even with foreign pierce or zero damage',()=>{
+ for(const zero of [false,true]){const s=setup('orbit'),g=s.G,e=enemy(s,30);enemy(s,60);cast(s);const p=g.Projectiles.all()[0];for(const q of [...g.Projectiles.all()])if(q!==p)g.Projectiles.remove(q);p.x=80;p.px=0;p.y=p.py=0;p.pierce=999;if(zero)g.ZMoves={projectileDamage:()=>0};g.Combat.resolve(.01,s.cap,1);assert.equal(g.Projectiles.count,0);assert.equal(e.calls.length,zero?0:1);assert.equal(s.enemies[1].calls.length,0);}
+});

@@ -25,6 +25,27 @@ G.Sprites = (() => {
    * que ctx.filter en cada dibujo, que era lo que más ralentizaba con muchos
    * enemigos a la vez.
    */
+  const themeCache=new Map();
+  // Sample one local sprite frame per species/variant; keep only a few color strings.
+  function themeColors(dex,shiny=false){
+    const key=dex+':'+!!shiny;if(themeCache.has(key))return themeCache.get(key);
+    for(const anim of ['Idle','Walk']){
+      const s=sheet(dex,anim,shiny),m=animMeta(dex,anim,shiny);if(!s?.ready||!m)continue;
+      try{
+        const cv=document.createElement('canvas');cv.width=Math.min(96,m.w);cv.height=Math.min(96,m.h);
+        const c=cv.getContext('2d',{willReadFrequently:true});c.imageSmoothingEnabled=false;c.drawImage(s.img,0,0,m.w,m.h,0,0,cv.width,cv.height);
+        const data=c.getImageData(0,0,cv.width,cv.height).data,bins=new Map();
+        for(let i=0;i<data.length;i+=4){const r=data[i],g=data[i+1],b=data[i+2],hi=Math.max(r,g,b),lo=Math.min(r,g,b);if(data[i+3]<180||hi<45)continue;
+          const k=(r>>4)+','+(g>>4)+','+(b>>4),score=.35+(hi-lo)/255;let v=bins.get(k);if(!v)bins.set(k,v={r:0,g:0,b:0,n:0,score:0});v.r+=r;v.g+=g;v.b+=b;v.n++;v.score+=score;
+        }
+        const colors=[];for(const v of [...bins.values()].sort((a,b)=>b.score-a.score)){
+          const rgb=[v.r/v.n,v.g/v.n,v.b/v.n].map(Math.round);if(colors.some(c=>c.reduce((n,x,i)=>n+(x-rgb[i])**2,0)<48**2))continue;colors.push(rgb);if(colors.length===3)break;
+        }
+        if(colors.length){const palette=colors.map(rgb=>'#'+rgb.map(v=>v.toString(16).padStart(2,'0')).join(''));if(themeCache.size>=512)themeCache.delete(themeCache.keys().next().value);themeCache.set(key,palette);return palette;}
+      }catch(e){/* Missing/unsupported image data falls back to the species types. */}
+    }
+    return null;
+  }
   const whites = new WeakMap();
   function white(img) {
     let c = whites.get(img);
@@ -258,6 +279,6 @@ G.Sprites = (() => {
     }
   }
 
-  return { PX, meta, hasShiny, hovers, white, animMeta, sheet, preload, dirFromAngle, bodyRadius, bodyHeight,
+  return { PX, meta, themeColors, hasShiny, hovers, white, animMeta, sheet, preload, dirFromAngle, bodyRadius, bodyHeight,
            drawShadow, Animator, ANIMS, get sheetCount() { return sheets.size; } };
 })();

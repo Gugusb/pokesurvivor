@@ -762,7 +762,7 @@ G.Combat = (() => {
 
         const owner=p.owner||pl;
         const raw = G.ZMoves ? G.ZMoves.projectileDamage(p,e) : p.dmg;
-        if(raw<=0)continue;
+        if(raw<=0){if(p.bondOrbitShot){G.Projectiles.remove(p);break;}continue;}
         const crit=G.TypeBonds?.forceCrit(owner,e)||isCrit(owner,p.specMove);
         const k = (p.mtype ? typeK(p.mtype, e, owner) : 1) * (crit ? critMul(owner,p.specMove,e) : 1);
         const dealt = e.hurt(raw * k, p.color, p.vx || (e.x - owner.x), p.vy || (e.y - owner.y), p.knock,
@@ -775,6 +775,7 @@ G.Combat = (() => {
         if (p.slow) e.applySlow(p.slow);
         G.SquadBonds?.afterHit(owner,e,p.specMove||{kind:p.moveKind},dealt);
 
+        if(p.bondOrbitShot){G.Projectiles.remove(p);break;}
         if (!p.orb) {
           if (p.pierce > 0) { G.SquadBonds?.onPierce(p);p.pierce--; }
           else {

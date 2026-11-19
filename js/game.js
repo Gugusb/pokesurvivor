@@ -621,7 +621,9 @@ G.Game = (() => {
     if (mine || p.kind === 'bomb') G.Audio.sfx(PICK_SFX[p.kind]);
     if(p.kind==='bossChest'){G.BossRewards.open(p);return;}
     if (p.kind === 'xp' || p.kind === 'xpBig') {
-      pendingLevels += pl.gainXp(p.value * (G.Coop.active ? G.Coop.xpFactor() : 1));
+      const bonus=G.Expedition?.takeStoredXp?.(p.value)||0;
+      if(bonus>0)G.Expedition.recordPickup({kind:'xp',value:bonus});
+      pendingLevels += pl.gainXp((p.value+bonus) * (G.Coop.active ? G.Coop.xpFactor() : 1));
       return;
     }
     if (p.kind === 'coin'||p.kind==='treasure') {
@@ -798,6 +800,7 @@ G.Game = (() => {
   function update(dt) {
     if(G.Expedition?.active&&!G.Expedition.inCombat){
       if(G.Expedition.phase==='rewards'){
+        G.Expedition.bankGroundXp();
         for(const o of [...G.Pickups.all()]){G.Pickups.removeId(o.id);onCollect(o,pl);}
         // Opening a chest can create more pickups. Drain them before presenting the summary.
         if(G.Pickups.all().length)return;

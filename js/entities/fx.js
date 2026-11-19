@@ -34,6 +34,14 @@ G.FX = (() => {
     }
   }
 
+  function koSplash(x,y,colors,boss=false){
+    const palette=colors?.length?colors:['#ffffff'],calm=G.Settings.get('calm');
+    const n=Math.max(1,Math.round((boss?36:14)*DENS[q()]*(calm?.6:1))),power=(boss?200:125)*(calm?.65:1);
+    for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=G.U.rand(power*.35,power);
+      px(x,y,palette[i%palette.length],{vx:Math.cos(a)*s,vy:Math.sin(a)*s-35,grav:220,drag:.88,life:G.U.rand(.18,.36),size:i%3===0?2:1});
+    }
+  }
+
   function spark(x, y, color, dirX, dirY, n = 4) {
     n = Math.max(1, Math.round(n * DENS[q()]));
     const base = Math.atan2(dirY, dirX);
@@ -283,7 +291,7 @@ G.FX = (() => {
     }
   }
 
-  return { clear, px, burst, spark, sp, twinkle, trail, dmgText, ring, slash, beam, update, draw,
+  return { clear, px, burst, koSplash, spark, sp, twinkle, trail, dmgText, ring, slash, beam, update, draw,
            drawBeam, drawSlash, drawMeteorShadow, drawMeteor,
            get count() { return parts.length + sprites.length + texts.length; } };
 })();

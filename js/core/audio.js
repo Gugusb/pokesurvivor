@@ -387,16 +387,16 @@ G.Audio = (() => {
     select:  () => tone('square', 990, 1180, 0.04, 0.045),
     error:   () => arp('square', [330, 262], 0.08, 0.09, 0.05),
     shot(o) {
-      const f = SHOT_PITCH[o.type] || 600;
-      if (o.kind === 'melee') hiss(0.12, 0.13, 'bandpass', 600, 2800, 0, 1.4);
-      else if (o.kind === 'beam') { tone('sawtooth', f * 0.6, f * 0.35, 0.3, 0.05); hiss(0.25, 0.04, 'bandpass', f * 2, f, 0, 3); }
-      else if (o.kind === 'nova') { hiss(0.2, 0.1, 'lowpass', 2400, 300); tone('sine', 140, 60, 0.16, 0.12); }
-      else if (o.kind === 'aura') { tone('sine', f * 0.5, f * 0.55, 0.25, 0.04); tone('sine', f * 0.75, f * 0.8, 0.25, 0.03); }
-      else if (o.kind === 'buff') arp('sine', [f, f * 1.25, f * 1.5], 0.05, 0.12, 0.05);
-      else if (o.kind === 'orbit') tone('triangle', f, f * 1.5, 0.15, 0.04);
-      else { tone('triangle', f * 1.5, f * 0.5, 0.09, 0.05); if (o.type === 'fire' || o.type === 'electric') hiss(0.06, 0.03, 'highpass', 3000); }
+      const f=(SHOT_PITCH[o.type]||600)*.38;
+      if(o.kind==='melee'){hiss(.075,.07,'lowpass',700,180);tone('sine',110,65,.07,.04);}
+      else if(o.kind==='beam'){tone('triangle',f,f*.55,.13,.045);hiss(.09,.025,'bandpass',700,250,0,1.2);}
+      else if(o.kind==='nova'){hiss(.09,.065,'lowpass',900,180);tone('sine',125,50,.12,.09);}
+      else if(o.kind==='aura'){tone('sine',f*.65,f*.75,.16,.03);tone('sine',f,f*.9,.13,.018);}
+      else if(o.kind==='buff')arp('sine',[f*.65,f*.8,f],.025,.075,.035);
+      else if(o.kind==='orbit')tone('triangle',f*.7,f,.1,.035);
+      else{tone('triangle',f,f*.5,.075,.045);if(o.type==='fire'||o.type==='electric')hiss(.025,.018,'bandpass',900,500);}
     },
-    hit:     () => tone('triangle', 230, 90, 0.045, 0.045),
+    hit() { hiss(.018,.04,'highpass',1800,3200);tone('triangle',620,180,.026,.045); },
     faint:   () => tone('sine', 720, 240, 0.08, 0.04),
     bossDown() { hiss(0.7, 0.18, 'lowpass', 1500, 100); arp('triangle', [262, 330, 392, 523], 0.09, 0.4, 0.08); },
     xp() {
@@ -451,7 +451,7 @@ G.Audio = (() => {
   };
 
   // Separación mínima entre repeticiones del mismo efecto (ms).
-  const MIN_GAP = { hit: 45, faint: 60, xp: 35, coin: 50, grass: 70, shot: 70, hover: 40, break: 60, judge: 80 };
+  const MIN_GAP = { hit: 35, faint: 60, xp: 35, coin: 50, grass: 70, shot: 70, hover: 40, break: 60, judge: 80 };
 
   function sfx(name, opts) {
     if (!ctx || settings.muted || settings.sfx <= 0 || ctx.state !== 'running') return;

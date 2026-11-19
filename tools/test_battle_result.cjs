@@ -18,3 +18,8 @@ test('both outcomes freeze combat and hold the correct headline for 1500 real mi
 test('reset cancels the result presentation and cannot resume an old run',()=>{
  const s=setup(),{g,E,nodes}=s;s.performance.now=()=>0;outcome(s,true);assert.ok(nodes.has('expedition-battle-result'));E.reset();g.Game.state='ui';s.performance.now=()=>10000;E.tickPresentation();assert.equal(nodes.has('expedition-battle-result'),false);assert.equal(E.active,false);assert.equal(g.Game.state,'ui');
 });
+
+test('uncollected XP is banked once, withdrawn equally only in combat, and reset between runs',()=>{
+ const s=setup(),{g,E}=s;s.load('js/entities/pickup.js');g.Pickups.drop('xp',100,0,25);g.Pickups.drop('xpBig',100,0,35);g.Pickups.drop('ticket',100,0,1);const xp=E.run.captain.xp;outcome(s,true);assert.equal(E.run.xpJar,60);assert.equal(E.run.xpJarStored,60);assert.equal(E.run.captain.xp,xp);assert.equal(g.Pickups.all().some(p=>p.kind==='xp'||p.kind==='xpBig'),false);E.bankGroundXp();assert.equal(E.run.xpJar,60);assert.equal(E.takeStoredXp(20),0);
+ E.run.phase='rewards';g.Pickups.drop('xpBig',100,0,10);E.bankGroundXp();assert.equal(E.run.xpJar,70);E.run.phase='combat';assert.equal(E.takeStoredXp(20),20);assert.equal(E.run.xpJar,50);assert.equal(E.takeStoredXp(60),50);assert.equal(E.run.xpJar,0);assert.equal(E.run.xpJarSpent,70);assert.equal(E.takeStoredXp(20),0);assert.equal(E.takeStoredXp(NaN),0);E.begin(E.run.captain);assert.equal(E.run.xpJar,0);
+});
