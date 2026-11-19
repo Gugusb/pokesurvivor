@@ -424,7 +424,7 @@ G.World = (() => {
       G.Camera.kick(0.25);
       const n = G.U.randInt(4, 7);
       for (let i = 0; i < n; i++) G.Pickups.drop('coin', p.x + G.U.rand(-14, 14), p.y + G.U.rand(-10, 10), 3);
-      G.Pickups.drop(Math.random() < 0.5 ? 'heal' : 'magnet', p.x, p.y);
+      if(Math.random()<.5)G.Pickups.drop('heal',p.x,p.y);
       G.Pickups.dropXp(p.x, p.y, 20);
       if (Math.random() < 0.08) G.Pickups.drop('item', p.x, p.y - 12, G.Items.roll());
       return;

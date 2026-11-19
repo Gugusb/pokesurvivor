@@ -18,13 +18,10 @@ G.ExpeditionDamage=(()=>{
   function record(p,attack,n,context){
     if(!G.Squad?.active||!p||!(n>0)||!Number.isFinite(n))return;
     G.ExpeditionRecorder?.damage(n);
-    const id=attack?.id||'',bond=attack?.bondDamageKind||(id.startsWith('typebond-')?id.slice(9):null),element=attack?.type||p.mon.types[0];
+    const id=attack?.id||'',bond=id.startsWith('typebond-')?id.slice(9):attack?.typeBondSecondary?attack?.bondDamageKind:null,element=attack?.type||p.mon.types[0];
     if(bond)addBond(bond,n,element);
     else if(context?.execute)addBond(context.executionSource||'fairy',n,element);
-    else{
-      const factors=[...(context?.contributions||[]),...(attack?.bondDamageContributions||[])],total=factors.reduce((k,[,v])=>k*v,1);let base=n/total;add(actor(p,true),base,element);
-      for(const [type,k]of factors){addBond(type,base*(k-1),element);base*=k;}
-    }
+    else add(actor(p,true),n,element);
   }
   const snapshot=(scope='run')=>[...(scope==='battle'?battle:rows).values()].map(r=>({...r,types:r.types?.slice(),elements:{...r.elements}})).sort((a,b)=>b.damage-a.damage||a.id.localeCompare(b.id));
   function label(r){if(r.type?.startsWith('trait:')){const d=G.SquadTraitDefs?.BY[r.type.slice(6)];return (d?G.SquadTraits.local(d.name):r.type.slice(6))+L(' · rasgo',' trait damage','特性伤害');}return r.kind==='bond'?(G.U.TYPE_NAME[r.type]?G.T(G.U.TYPE_NAME[r.type]):G.Expedition.skillLabel(r.type))+L(' · vínculo',' bond damage','羁绊伤害'):G.T(r.name);}

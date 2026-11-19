@@ -480,7 +480,10 @@
       "windupMultiplier": 2,
       "windupSeconds": 1,
       "maxRadiusMultiplier": 3,
-      "placementMultiplier": 2
+      "placementMultiplier": 2,
+      "trailPlacementBase": 160,
+      "trailMinDistanceMultiplier": 1.1,
+      "placementAttempts": 16
     },
     "bloom": {
       "damage": [
@@ -499,10 +502,10 @@
         1,
         1.5
       ],
-      "launchRadius": 420,
       "launchSpeed": 420,
-      "launchDamage": 3,
-      "flightSeconds": 1.5
+      "launchDamage": 1.2,
+      "flightSeconds": 1.5,
+      "launchRangeMultiplier": 1.1
     },
     "summon": {
       "life": [

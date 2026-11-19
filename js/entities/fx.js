@@ -11,9 +11,9 @@ G.FX = (() => {
   // Topes según la calidad (Ajustes → Gráficos): bajo, medio, alto.
   const CAP_PARTS = [350, 800, 1400], CAP_SPRITES = [110, 210, 320], CAP_TEXTS = [25, 45, 70], DENS = [0.35, 0.65, 1];
   const q = () => G.Settings.fx;
-  let parts = [], sprites = [], texts = [], rings = [], slashes = [], beams = [];
+  let parts = [], sprites = [], texts = [], rings = [], slashes = [], beams = [],lastKOImpact=-Infinity;
 
-  function clear() { parts = []; sprites = []; texts = []; rings = []; slashes = []; beams = []; }
+  function clear() { lastKOImpact=-Infinity;parts = []; sprites = []; texts = []; rings = []; slashes = []; beams = []; }
 
   const snap = v => Math.round(v / PX) * PX;
 
@@ -23,7 +23,7 @@ G.FX = (() => {
   function px(x, y, color, o = {}) {
     if (parts.length >= CAP_PARTS[q()]) return;
     parts.push({ x, y, vx: o.vx || 0, vy: o.vy || 0, t: 0, life: o.life || 0.4, color,
-                 s: (o.size || 1) * PX, grav: o.grav || 0, drag: o.drag == null ? 0.9 : o.drag });
+                 s: (o.size || 1) * PX, grav: o.grav || 0, drag: o.drag == null ? 0.9 : o.drag,realAt:o.realTime?performance.now():null });
   }
 
   function burst(x, y, color, n = 8, power = 110) {
@@ -35,11 +35,14 @@ G.FX = (() => {
   }
 
   function koSplash(x,y,colors,boss=false){
-    const palette=colors?.length?colors:['#ffffff'],calm=G.Settings.get('calm');
-    const n=Math.max(1,Math.round((boss?36:14)*DENS[q()]*(calm?.6:1))),power=(boss?200:125)*(calm?.65:1);
-    for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=G.U.rand(power*.35,power);
-      px(x,y,palette[i%palette.length],{vx:Math.cos(a)*s,vy:Math.sin(a)*s-35,grav:220,drag:.88,life:G.U.rand(.18,.36),size:i%3===0?2:1});
+    const palette=colors?.length?colors:['#ffffff'],calm=G.Settings.get('calm'),now=performance.now();
+    const bright=palette.map(c=>{const n=parseInt(c.slice(1),16);return '#'+[n>>16&255,n>>8&255,n&255].map(v=>Math.round(v+(255-v)*.62).toString(16).padStart(2,'0')).join('');});
+    const n=Math.max(1,Math.round((boss?56:36)*DENS[q()]*(calm?.55:1))),power=(boss?480:380)*(calm?.65:1);
+    for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,s=G.U.rand(power*.45,power);
+      px(x,y,(i%4===0?bright:palette)[i%palette.length],{vx:Math.cos(a)*s,vy:Math.sin(a)*s-55,grav:320,drag:.96,life:G.U.rand(.35,.6),size:i%4===0?4:3,realTime:true});
     }
+    if(!calm)px(x,y,bright[0],{life:.065,size:boss?10:6,realTime:true});
+    if(!calm&&G.Game?.state==='playing'&&G.Camera.sees(x,y,0)&&now-lastKOImpact>=200){lastKOImpact=now;ring(x,y,5,boss?110:62,bright[0],.18,4,true);G.Camera.kick(.07);G.Game.hitStop?.(16);}
   }
 
   function spark(x, y, color, dirX, dirY, n = 4) {
@@ -92,8 +95,8 @@ G.FX = (() => {
   }
 
   /** Anillo de onda (puntos de píxel). */
-  function ring(x, y, r0, r1, color, life = 0.3, width = 3) {
-    rings.push({ x, y, r0, r1, color, life, t: 0, width });
+  function ring(x, y, r0, r1, color, life = 0.3, width = 3, realTime = false) {
+    rings.push({ x, y, r0, r1, color, life, realAt:realTime?performance.now():null,t: 0, width });
   }
 
   /** Golpe cuerpo a cuerpo. fx: { pal, melee } (ver G.VFX.forMove). */
@@ -127,13 +130,15 @@ G.FX = (() => {
   // ---------------- actualización ----------------
 
   function update(dt) {
+    const now=performance.now();
     for (let i = parts.length - 1; i >= 0; i--) {
       const p = parts[i];
-      p.t += dt;
+      const step=p.realAt==null?dt:Math.max(0,(now-p.realAt)/1000);if(p.realAt!=null)p.realAt=now;
+      p.t += step;
       if (p.t >= p.life) { parts.splice(i, 1); continue; }
-      p.vy += p.grav * dt;
-      p.x += p.vx * dt; p.y += p.vy * dt;
-      const k = Math.pow(p.drag, dt * 60);
+      p.vy += p.grav * step;
+      p.x += p.vx * step; p.y += p.vy * step;
+      const k = Math.pow(p.drag, step * 60);
       p.vx *= k; p.vy *= k;
     }
     for (let i = sprites.length - 1; i >= 0; i--) {
@@ -152,7 +157,8 @@ G.FX = (() => {
     }
     for (const arr of [rings, slashes, beams]) {
       for (let i = arr.length - 1; i >= 0; i--) {
-        arr[i].t += dt;
+        const fx=arr[i],step=fx.realAt==null?dt:Math.max(0,(now-fx.realAt)/1000);if(fx.realAt!=null)fx.realAt=now;
+        fx.t += step;
         if (arr[i].t >= arr[i].life) arr.splice(i, 1);
       }
     }

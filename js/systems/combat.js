@@ -413,7 +413,13 @@ G.Combat = (() => {
     const last = pl.lastPatch;
     if (!m.extraCast && last && G.U.dist2(last.x, last.y, pl.x, pl.y) < (m.radius * 0.9) ** 2 && last.t < 1) return;
     let x=pl.x,y=pl.y;const windup=m.bondArea?G.EconomyConfig.classBonds.area.windupSeconds:0;
-    if(m.bondArea){const a=Math.random()*Math.PI*2,d=G.U.rand(0,m.radius*(m.bondPlacement||1));const tx=x+Math.cos(a)*d,ty=y+Math.sin(a)*d;if(G.World.isFree(tx,ty,1,true)){x=tx;y=ty;}}
+    if(m.bondArea){
+      const c=G.EconomyConfig.classBonds.area,full=m.radius*c.maxRadiusMultiplier,max=Math.max(c.trailPlacementBase,full)*(m.bondPlacement||1),min=Math.min(max*.9,full*c.trailMinDistanceMultiplier);
+      let placed=false;for(let i=0;i<c.placementAttempts;i++){const a=Math.random()*Math.PI*2,d=Math.sqrt(G.U.rand(min*min,max*max)),tx=pl.x+Math.cos(a)*d,ty=pl.y+Math.sin(a)*d;
+        if(G.World.isFree(tx,ty,1,true)){x=tx;y=ty;placed=true;break;}
+      }
+      if(!placed)return;
+    }
     const f = { kind: 'patch', owner: pl, ghost, m, col, vis, x, y, t: 0, windup, life: (m.dur || 3)+windup, baseR:m.radius, r: m.radius,
                 tick: 0, dmg: m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk) };
     fields.push(f);
@@ -480,7 +486,7 @@ G.Combat = (() => {
         orbit(f.owner,f.m,dt,f.t,f.ghost,!f.started);f.started=true;continue;
       }
       if (f.gone || !f.owner || (f.life && f.t >= f.life && f.kind !== 'mine')) { fields.splice(i, 1); continue; }
-      if(f.m.bondArea){const t=f.kind==='meteor'?f.t/f.fall:(f.t-(f.windup||0))/(f.life-(f.windup||0));f.r=f.baseR*(1+(G.EconomyConfig.classBonds.area.maxRadiusMultiplier-1)*G.U.clamp(t,0,1));}
+      if(f.m.bondArea){const t=f.kind==='meteor'?f.t/f.fall:(f.t-(f.windup||0))/(f.life-(f.windup||0));f.r=f.baseR*(1+(G.EconomyConfig.classBonds.area.maxRadiusMultiplier-1)*G.U.clamp(t,0,1));if(f.kind==='meteor')f.visualScale=f.r/f.baseR;}
       if (f.kind === 'mine') {
         const armed = f.t >= f.arm;
         const trig = armed && G.EnemyMgr.queryCircle(f.x, f.y, 14).length > 0;
@@ -595,10 +601,12 @@ G.Combat = (() => {
       for(let i=orbs.length;i<want;i++)G.Projectiles.spawnOrb({owner:pl,ghost:isGhost,mid,orbitSlot:i,x:pl.x,y:pl.y,r:m.size,color:col,vis:G.VFX.forMove(m),dmg:m.dmg*(pl.attackFor?pl.attackFor(m):pl.atk),oa:base+i/want*Math.PI*2,orad:m.radius,ospeed:m.speed,rehit,...payload(m)});
       if(relayout)G.Projectiles.all().filter(mine).forEach((p,i)=>{p.oa=base+i/want*Math.PI*2;p.x=pl.x+Math.cos(p.oa)*m.radius;p.y=pl.y+Math.sin(p.oa)*m.radius*.7;});
     }
+    const search=m.radius*conf.launchRangeMultiplier;
+    const launchTargets=m.bondLaunch&&!isGhost?G.EnemyMgr.all().filter(e=>!e.dead&&G.U.dist2(pl.x,pl.y,e.x,e.y)<=search*search):[];
     for(const p of G.Projectiles.all().filter(mine)){
       Object.assign(p,payload(m));p.dmg=m.dmg*(pl.attackFor?pl.attackFor(m):pl.atk);p.orad=m.radius;p.ospeed=m.speed;p.rehit=rehit;p.r=m.size;p.color=col;p.vis=G.VFX.forMove(m);
       if(m.bondLaunch&&!isGhost){
-        const target=G.Projectiles.nearest(G.EnemyMgr.all(),p.x,p.y,conf.launchRadius);
+        const target=G.Projectiles.nearest(launchTargets,p.x,p.y,Infinity);
         if(target){const a=Math.atan2(target.y-p.y,target.x-p.x);Object.assign(p,{orb:false,bondOrbitShot:true,ignoreTerrain:true,homing:0,vx:Math.cos(a)*conf.launchSpeed,vy:Math.sin(a)*conf.launchSpeed,t:0,life:conf.flightSeconds,pierce:0,hits:new Set(),phits:new Set(),dmg:p.dmg*conf.launchDamage,bondDamageContributions:[...(p.bondDamageContributions||[]),['orbit',conf.launchDamage]]});}
       }
     }

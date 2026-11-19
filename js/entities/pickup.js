@@ -34,6 +34,7 @@ G.Pickups = (() => {
   function all() { return list; }
 
   function push(o) {
+    if(o.kind==='bomb'||o.kind==='magnet')return;
     // En cooperativo sólo el anfitrión crea objetos (las copias llegan por la red).
     if (G.Coop.active && !G.Coop.isHost) return;
     o.id = nextId++;
@@ -57,6 +58,7 @@ G.Pickups = (() => {
 
   /** Copia de un objeto del anfitrión. */
   function addRemote(id, kind, x, y, value) {
+    if(kind==='bomb'||kind==='magnet')return;
     if (list.some(p => p.id === id)) return;
     const o = orb(kind, x, y, value);
     o.id = id;
@@ -82,7 +84,6 @@ G.Pickups = (() => {
       }
       if (plain) return;
       push(orb('heal', x + 24, y, 0));
-      push(orb('magnet', x - 24, y, 0));
       // Ticket ×10: siempre el legendario de la grieta; un jefe normal, 1 de cada 3 veces.
       // (Hasta el 12-10-2026 el legendario de la grieta daba siempre 2: salían demasiados.)
       if (Math.random() < (legend ? LEGEND_T10 : BOSS_T10)) push(orb('ticket10', x, y - 20, 1));
@@ -94,12 +95,11 @@ G.Pickups = (() => {
     // Drops ocasionales.
     const r = Math.random();
     if (r < 0.012) push(orb('heal', x + G.U.rand(-8, 8), y, 0));
-    else if (r < 0.020) push(orb('magnet', x, y, 0));
-    else if (r < 0.026) push(orb('bomb', x, y, 0));
   }
 
   /** Suelta un objeto suelto: 'heal' | 'magnet' | 'bomb' | 'coin'. */
   function drop(kind, x, y, value = 0) {
+    if(kind==='bomb'||kind==='magnet')return null;
     if(G.Expedition?.active&&!G.EconomyConfig?.combatGoldDrops&&['coin','treasure'].includes(kind))return null;
     const o=orb(kind,x,y,value);push(o);return o;
   }

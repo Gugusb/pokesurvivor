@@ -41,7 +41,7 @@ test('melee splash and dash width grow while dash distance stays fixed; crowd gr
 });
 
 test('area strikes delay damage and grow radius during warning/active lifetime; projectile placement reach is expanded',()=>{
- const s=setup('meteor'),g=s.G;enemy(s,40);cast(s);const f=g.Combat._fields()[0];close(f.fall,1);const base=f.r;g.Combat.updateFields(.5);close(f.r,base*2);assert.equal(s.enemies[0].calls.length,0);g.Combat.updateFields(.5);assert.equal(s.enemies[0].calls.length,1);close(f.r,base*3);close(g.Combat.reach(g.SquadBonds.move(s.p,s.m)),680);close(g.SquadBonds.agility(s.p,s.m),1.8);
+ const s=setup('meteor'),g=s.G;enemy(s,40);cast(s);const f=g.Combat._fields()[0];close(f.fall,1);const base=f.r;g.Combat.updateFields(.5);close(f.r,base*2);close(f.visualScale,2);assert.equal(s.enemies[0].calls.length,0);g.Combat.updateFields(.5);assert.equal(s.enemies[0].calls.length,1);close(f.r,base*3);close(g.Combat.reach(g.SquadBonds.move(s.p,s.m)),680);close(g.SquadBonds.agility(s.p,s.m),1.8);
  const t=setup('trail'),h=t.G;t.Math.random=()=>.5;const e=enemy(t,0);cast(t);const patch=h.Combat._fields()[0];e.x=patch.x;e.y=patch.y;h.Combat.updateFields(.9);assert.equal(e.calls.length,0);h.Combat.updateFields(.2);assert.equal(e.calls.length,1);h.Combat.updateFields(1);assert.ok(patch.r>patch.baseR*1.6);
 });
 
@@ -50,12 +50,12 @@ test('bloom buffs both physical kinds and stuns elites fully, Bosses for half du
 });
 
 test('tier-six orbit replenishes a full ring only on cooldown casts, independently of earlier shots',()=>{
- const s=setup('orbit'),g=s.G;g.MovePP.tick=()=>{};const e=enemy(s,80);const pp=g.MovePP.state(s.p,s.m),want=g.SquadBonds.move(s.p,s.m).count;cast(s);const first=g.Projectiles.all().filter(p=>p.bondOrbitShot);assert.equal(first.length,want);close(pp.current,pp.max-1);for(const p of first){assert.equal(p.orb,false);assert.equal(p.moveKind,'orbit');assert.equal(p.specMove.kind,'orbit');assert.equal(p.homing,0);assert.equal(p.pierce,0);close(p.dmg,s.m.dmg*s.p.attackFor(s.m)*1.5*3);}
+ const s=setup('orbit'),g=s.G;g.MovePP.tick=()=>{};const e=enemy(s,80);const pp=g.MovePP.state(s.p,s.m),want=g.SquadBonds.move(s.p,s.m).count;cast(s);const first=g.Projectiles.all().filter(p=>p.bondOrbitShot);assert.equal(first.length,want);close(pp.current,pp.max-1);for(const p of first){assert.equal(p.orb,false);assert.equal(p.moveKind,'orbit');assert.equal(p.specMove.kind,'orbit');assert.equal(p.homing,0);assert.equal(p.pierce,0);close(p.dmg,s.m.dmg*s.p.attackFor(s.m)*1.5*1.2);}
  g.Combat.tick(.001,s.p,.001);assert.equal(g.Projectiles.count,want);s.m.t=0;g.Combat.tick(.001,s.p,1);assert.equal(g.Projectiles.count,2*want);assert.ok(first.every(p=>g.Projectiles.all().includes(p)));close(pp.current,pp.max-2);
  for(const p of [...g.Projectiles.all()])g.Projectiles.remove(p);g.Combat.tick(.001,s.p,1.001);assert.equal(g.Projectiles.count,0);s.m.t=0;g.Combat.tick(.001,s.p,2);assert.equal(g.Projectiles.count,want);
 });
 
-test('orbit volleys fly straight through terrain and hit only the first enemy at triple orbit damage',()=>{
+test('orbit volleys fly straight through terrain and hit only the first enemy at 1.2 times orbit damage',()=>{
  const s=setup('orbit'),g=s.G;const e=enemy(s,80);cast(s);const p=g.Projectiles.all()[0];for(const q of [...g.Projectiles.all()])if(q!==p)g.Projectiles.remove(q);const damage=p.dmg;p.x=p.px=0;p.y=p.py=0;p.vx=100;p.vy=0;e.x=60;const second=enemy(s,30);g.World.projectileBlock=()=>{throw Error('terrain query');};g.World.propsInCircle=()=>{throw Error('prop query');};g.Camera.sees=()=>false;
  g.Projectiles.update(.6,s.cap,s.enemies);assert.ok(g.Projectiles.all().includes(p));close(p.y,0);g.Combat.resolve(.6,s.cap,1);assert.equal(g.Projectiles.count,0);assert.equal(e.calls.length,0);assert.equal(second.calls.length,1);close(second.calls[0].n,damage);const attack=second.calls[0].args.at(-1);assert.equal(attack.kind,'orbit');assert.ok(attack.bondDamageContributions.every(([kind])=>kind==='orbit'));
 });
@@ -80,7 +80,7 @@ test('beam channel and delayed chain keep established effects and PP consumption
 });
 
 test('class damage attribution conserves actual damage across member and bond rows',()=>{
- const s=setup('aura'),g=s.G,e=enemy(s);const m=g.SquadBonds.move(s.p,s.m);g.ExpeditionDamage.record(s.p,m,120);const rows=g.ExpeditionDamage.snapshot();close(rows.reduce((n,r)=>n+r.damage,0),120);close(rows.find(r=>r.type==='bloom').damage,20);close(rows.find(r=>r.kind==='pokemon').damage,100);
+ const s=setup('aura'),g=s.G,e=enemy(s);const m=g.SquadBonds.move(s.p,s.m);g.ExpeditionDamage.record(s.p,m,120);const rows=g.ExpeditionDamage.snapshot();close(rows.reduce((n,r)=>n+r.damage,0),120);assert.ok(!rows.some(r=>r.kind==='bond'));close(rows.find(r=>r.kind==='pokemon').damage,120);
 });
 
 test('boomerang penetration growth has bounded collision and art while preserving repeated damage scaling',()=>{
@@ -101,4 +101,12 @@ test('expiring a double-cast orbit copy does not delete shots already launched f
 
 test('orbit shots end on first enemy contact even with foreign pierce or zero damage',()=>{
  for(const zero of [false,true]){const s=setup('orbit'),g=s.G,e=enemy(s,30);enemy(s,60);cast(s);const p=g.Projectiles.all()[0];for(const q of [...g.Projectiles.all()])if(q!==p)g.Projectiles.remove(q);p.x=80;p.px=0;p.y=p.py=0;p.pierce=999;if(zero)g.ZMoves={projectileDamage:()=>0};g.Combat.resolve(.01,s.cap,1);assert.equal(g.Projectiles.count,0);assert.equal(e.calls.length,zero?0:1);assert.equal(s.enemies[1].calls.length,0);}
+});
+
+test('orbit acquisition is centered on the caster and limited to 110 percent of the settled orbit radius',()=>{
+ const s=setup('orbit'),g=s.G,m=g.SquadBonds.move(s.p,s.m),e=enemy(s,s.p.x+m.radius*1.11,s.p.y);cast(s);const ring=g.Projectiles.all().filter(p=>p.orb);assert.equal(ring.length,m.count);assert.equal(g.Projectiles.all().some(p=>p.bondOrbitShot),false);e.x=s.p.x+m.radius*1.09;g.Combat.tick(.001,s.p,.001);assert.equal(g.Projectiles.all().filter(p=>p.bondOrbitShot).length,m.count);
+});
+
+test('tier-six trail placement retries blocked candidates and lands beyond the full-grown splash radius',()=>{
+ const s=setup('trail'),g=s.G;s.Math.random=()=>.5;let calls=0;g.World.isFree=()=>++calls>3;cast(s);const f=g.Combat._fields()[0];assert.ok(f);assert.equal(calls,4);assert.ok(Math.hypot(f.x-s.p.x,f.y-s.p.y)>f.baseR*3);g.Combat.clearFields();g.World.isFree=()=>false;s.p.lastPatch=null;cast(s);assert.equal(g.Combat.fieldCount,0);
 });

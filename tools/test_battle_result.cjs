@@ -23,3 +23,7 @@ test('uncollected XP is banked once, withdrawn equally only in combat, and reset
  const s=setup(),{g,E}=s;s.load('js/entities/pickup.js');g.Pickups.drop('xp',100,0,25);g.Pickups.drop('xpBig',100,0,35);g.Pickups.drop('ticket',100,0,1);const xp=E.run.captain.xp;outcome(s,true);assert.equal(E.run.xpJar,60);assert.equal(E.run.xpJarStored,60);assert.equal(E.run.captain.xp,xp);assert.equal(g.Pickups.all().some(p=>p.kind==='xp'||p.kind==='xpBig'),false);E.bankGroundXp();assert.equal(E.run.xpJar,60);assert.equal(E.takeStoredXp(20),0);
  E.run.phase='rewards';g.Pickups.drop('xpBig',100,0,10);E.bankGroundXp();assert.equal(E.run.xpJar,70);E.run.phase='combat';assert.equal(E.takeStoredXp(20),20);assert.equal(E.run.xpJar,50);assert.equal(E.takeStoredXp(60),50);assert.equal(E.run.xpJar,0);assert.equal(E.run.xpJarSpent,70);assert.equal(E.takeStoredXp(20),0);assert.equal(E.takeStoredXp(NaN),0);E.begin(E.run.captain);assert.equal(E.run.xpJar,0);
 });
+
+test('bomb and magnet drops are blocked for normal monsters, Boss rewards and scripted/remote drops',()=>{
+ const s=setup(),{g}=s;s.load('js/entities/pickup.js');for(const v of [.015,.023]){s.Math.random=()=>v;g.Pickups.dropXp(0,0,10);g.Pickups.dropXp(0,0,140,true);}for(const kind of ['bomb','magnet']){assert.equal(g.Pickups.drop(kind,0,0),null);g.Pickups.addRemote(999,kind,0,0,0);}assert.ok(g.Pickups.all().some(p=>p.kind==='xp'));assert.ok(g.Pickups.all().some(p=>p.kind==='heal'));assert.equal(g.Pickups.all().some(p=>['bomb','magnet'].includes(p.kind)),false);
+});
