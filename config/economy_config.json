@@ -1,0 +1,420 @@
+{
+  "cycleLengthDays": 20,
+  "clearCycleThreshold": 3,
+  "interest": {
+    "divisor": 10,
+    "maxInterest": 5
+  },
+  "streak": {
+    "flawlessHpThreshold": 0.8,
+    "comebackHpThreshold": 0.4,
+    "comebackBounty": 2,
+    "eliteFlawlessBonus": 2,
+    "tiers": [
+      {
+        "minStreak": 2,
+        "maxStreak": 3,
+        "bonus": 1
+      },
+      {
+        "minStreak": 4,
+        "maxStreak": 5,
+        "bonus": 2
+      },
+      {
+        "minStreak": 6,
+        "maxStreak": 999,
+        "bonus": 3
+      }
+    ]
+  },
+  "wagesByCycle": {
+    "1": {
+      "NORMAL_BATTLE": 5,
+      "ELITE_BATTLE": 8,
+      "BOSS_BATTLE": 12
+    },
+    "2": {
+      "NORMAL_BATTLE": 6,
+      "ELITE_BATTLE": 10,
+      "BOSS_BATTLE": 16
+    },
+    "3": {
+      "NORMAL_BATTLE": 7,
+      "ELITE_BATTLE": 12,
+      "BOSS_BATTLE": 20
+    },
+    "4_plus": {
+      "NORMAL_BATTLE": 8,
+      "ELITE_BATTLE": 14,
+      "BOSS_BATTLE": 24
+    }
+  },
+  "freeXpByEvent": {
+    "NORMAL_BATTLE": 2,
+    "ELITE_BATTLE": 4,
+    "BOSS_BATTLE": 6,
+    "SHOP": 0,
+    "SKILL_TRAINING": 2,
+    "WILD_EXPEDITION": 1
+  },
+  "buyXp": {
+    "goldCost": 4,
+    "xpGain": 4
+  },
+  "levels": [
+    {
+      "level": 1,
+      "squadCap": 1,
+      "xpToNext": 4,
+      "odds": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 2,
+      "squadCap": 2,
+      "xpToNext": 6,
+      "odds": [
+        100,
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 3,
+      "squadCap": 3,
+      "xpToNext": 10,
+      "odds": [
+        75,
+        25,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 4,
+      "squadCap": 4,
+      "xpToNext": 16,
+      "odds": [
+        55,
+        30,
+        15,
+        0,
+        0
+      ]
+    },
+    {
+      "level": 5,
+      "squadCap": 5,
+      "xpToNext": 24,
+      "odds": [
+        45,
+        33,
+        20,
+        2,
+        0
+      ]
+    },
+    {
+      "level": 6,
+      "squadCap": 6,
+      "xpToNext": 36,
+      "odds": [
+        30,
+        40,
+        25,
+        5,
+        0
+      ]
+    },
+    {
+      "level": 7,
+      "squadCap": 7,
+      "xpToNext": 52,
+      "odds": [
+        19,
+        30,
+        35,
+        15,
+        1
+      ]
+    },
+    {
+      "level": 8,
+      "squadCap": 8,
+      "xpToNext": 72,
+      "odds": [
+        15,
+        20,
+        32,
+        27,
+        6
+      ]
+    },
+    {
+      "level": 9,
+      "squadCap": 9,
+      "xpToNext": 96,
+      "odds": [
+        10,
+        15,
+        25,
+        35,
+        15
+      ]
+    },
+    {
+      "level": 10,
+      "squadCap": 10,
+      "xpToNext": null,
+      "odds": [
+        5,
+        10,
+        20,
+        40,
+        25
+      ]
+    }
+  ],
+  "unitTiers": {
+    "1": {
+      "cost": 1,
+      "poolPerSpecies": 22,
+      "starMultipliers": [
+        1,
+        1.75,
+        3.1
+      ],
+      "sellValues": [
+        1,
+        3,
+        9
+      ]
+    },
+    "2": {
+      "cost": 2,
+      "poolPerSpecies": 18,
+      "starMultipliers": [
+        1,
+        1.75,
+        3.1
+      ],
+      "sellValues": [
+        2,
+        5,
+        17
+      ]
+    },
+    "3": {
+      "cost": 3,
+      "poolPerSpecies": 15,
+      "starMultipliers": [
+        1,
+        1.8,
+        3.25
+      ],
+      "sellValues": [
+        3,
+        8,
+        26
+      ]
+    },
+    "4": {
+      "cost": 4,
+      "poolPerSpecies": 12,
+      "starMultipliers": [
+        1,
+        1.8,
+        3.4
+      ],
+      "sellValues": [
+        4,
+        11,
+        35
+      ]
+    },
+    "5": {
+      "cost": 5,
+      "poolPerSpecies": 9,
+      "starMultipliers": [
+        1,
+        1.85,
+        4.2
+      ],
+      "sellValues": [
+        5,
+        14,
+        44
+      ]
+    }
+  },
+  "shop": {
+    "unitSlotCount": 5,
+    "itemSlotCount": 3,
+    "baseRefreshCost": 2,
+    "endlessCycle5PlusRefreshCost": 3,
+    "shopDayFreeRefreshes": 1,
+    "itemSellRefundRatio": 0.5
+  },
+  "itemTiers": {
+    "COMMON": {
+      "unlockLevel": 1,
+      "minPrice": 4,
+      "maxPrice": 6
+    },
+    "TACTIC": {
+      "unlockLevel": 4,
+      "minPrice": 8,
+      "maxPrice": 10
+    },
+    "EMBLEM": {
+      "unlockLevel": 5,
+      "minPrice": 12,
+      "maxPrice": 15
+    },
+    "POP_CAP": {
+      "unlockLevel": 6,
+      "price": 20,
+      "maxPurchasesPerRun": 1
+    }
+  },
+  "skillTraining": {
+    "tiers": {
+      "BASIC": 6,
+      "ADVANCED": 10,
+      "MASTER": 15
+    },
+    "actions": {
+      "up": "BASIC",
+      "learn": "ADVANCED",
+      "replace": "BASIC",
+      "specialize": "ADVANCED",
+      "link": "MASTER",
+      "breakthrough": "MASTER"
+    }
+  },
+  "endless": {
+    "unlockCycle": 4,
+    "extraPopLicenseBaseCost": 100,
+    "extraPopLicenseStepCost": 40,
+    "megaStonePrice": 30,
+    "skillOverclockBaseCost": 15,
+    "skillOverclockStepCost": 5,
+    "overclockDamagePerPurchase": 0.05
+  },
+  "initial": {
+    "gold": 0,
+    "trainerLevel": 1,
+    "trainerXp": 0
+  },
+  "compatibility": {
+    "mergeCopies": 2,
+    "maxRank": 3,
+    "shopSellsItems": false,
+    "enableMega": false,
+    "normalClearItems": 1,
+    "eliteVictoryItems": 2,
+    "unitStatMultipliers": {
+      "ad": [
+        [
+          1,
+          1.5,
+          2.25
+        ],
+        [
+          1.25,
+          1.875,
+          2.81
+        ],
+        [
+          1.5,
+          2.25,
+          3.38
+        ],
+        [
+          1.875,
+          2.81,
+          4.22
+        ],
+        [
+          2.5,
+          3.75,
+          5.63
+        ]
+      ],
+      "hp": [
+        [
+          1,
+          1.8,
+          3.24
+        ],
+        [
+          1.25,
+          2.25,
+          4.05
+        ],
+        [
+          1.5,
+          2.7,
+          4.86
+        ],
+        [
+          1.875,
+          3.38,
+          6.08
+        ],
+        [
+          2.5,
+          4.5,
+          8.1
+        ]
+      ]
+    }
+  },
+  "captainEvolutionLevels": [
+    1,
+    5,
+    8
+  ],
+  "wild": {
+    "minEncounters": 2,
+    "maxEncounters": 3
+  },
+  "bossEmblem": {
+    "choices": 3,
+    "countBonus": 1
+  },
+  "eventWeights": {
+    "battle": 10,
+    "elite": 2,
+    "shop": 5,
+    "wild": 5,
+    "training": 3
+  },
+  "nonCombatEquivalentGoldByCycle": {
+    "1": [
+      10,
+      13
+    ],
+    "2": [
+      16,
+      21
+    ],
+    "3": [
+      20,
+      25
+    ]
+  },
+  "waveDropValues": {
+    "coin": 1,
+    "treasure": 1
+  }
+}

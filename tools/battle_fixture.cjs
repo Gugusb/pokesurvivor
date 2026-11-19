@@ -14,6 +14,8 @@ function context(lang = 'zh', neutralStats = true) {
   for (const file of ['js/core/util.js', 'js/core/i18n.js', 'js/data/lang-en.js', 'js/data/lang-zh.js',
     'js/data/pokedex.js', 'js/data/evolutions.js', 'js/data/sprites-meta.js', 'js/data/moves.js', 'js/data/fixed-skills.js', 'js/data/items.js','js/systems/boss-rewards.js','js/systems/specialization.js', 'js/systems/equipment.js', 'js/data/abilities.js', 'js/data/upgrades.js']) s.load(file);
   const G = s.G;
+  G.EconomyConfig=JSON.parse(fs.readFileSync(path.join(ROOT,'config/economy_config.json'),'utf8'));
+  s.load('js/systems/economy.js');s.load('js/systems/unit-pool.js');
   G.FIREBASE_CONFIG = null;
   G.FX = new Proxy({}, { get: () => noop }); G.Audio = { sfx: noop }; G.Camera = { kick: noop, sees: () => false };
   G.World = { liquidEffect: () => ({ slow: 0.5 }), isLiquid: () => false, collide: () => false };

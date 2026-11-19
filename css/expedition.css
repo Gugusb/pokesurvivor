@@ -122,4 +122,17 @@ body:has(#scr-journey:not(.hidden) .journey-prep) :is(#topbar,#credits-line){dis
 .squad-formation-surface > .squad-release-slot.drop-target{background:#913c51!important}
 #journey-status[data-pressure=chase]{border-color:#efbb58;color:#ffe5a4}
 #journey-status[data-pressure=enraged]{border-color:#ff8279;color:#ffc9bb}
+.journey-event-economy{font:normal 10px/1.4 system-ui;color:#e2d5a9;text-align:center}
+.journey-event.wild>b{color:#7ddeb4}
+.journey-odds{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 20px}
+.journey-odds span{padding:6px 12px;border:1px solid #527497;border-radius:20px;color:#d6e5fa;font-variant-numeric:tabular-nums}
+.journey-odds .quality-1{border-color:#d8e2ed}.journey-odds .quality-2{border-color:#66cf91}.journey-odds .quality-3{border-color:#5897f5}.journey-odds .quality-4{border-color:#b17aeb}.journey-odds .quality-5{border-color:#ffd166}
+.journey-empty{display:grid;place-content:center;min-height:160px;color:#a6bed0}
+.journey-emblem-choices{padding:18px;margin:20px 0;border:1px solid #c8a95e;border-radius:14px;background:#40361f}
+.journey-emblem-choices .btn{margin:5px}
+.squad-battle-grid{grid-auto-rows:minmax(240px,auto)}
+.journey-goods{grid-template-columns:repeat(5,minmax(0,1fr))}
+@media(max-width:1000px){.journey-goods{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.journey-goods{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:660px){.journey-event-economy{font-size:9px}.journey-odds{gap:5px}.journey-odds span{padding:4px 7px;font-size:12px}}
 @media(max-width:660px){.squad-formation-surface:has(> .squad-release-slot){grid-template-areas:'release' 'board' 'warehouse' 'bonds' 'finish'}}

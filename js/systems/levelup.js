@@ -161,6 +161,7 @@ G.LevelUp = (() => {
   }
   function shuffled(a){const out=a.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
   function evolutionOffer(pl){
+    if(G.Squad?.active&&pl.squadCaptain)return [];
     const options=G.MonProgression.evolutionOptions(pl);
     if(!options.length)return [];
     const directions=shuffled(options).slice(0,3), count=options.length===1?3:directions.length;

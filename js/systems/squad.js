@@ -12,6 +12,7 @@ G.Squad = (() => {
   const deployed=()=>formation.filter(p=>p&&roster.includes(p));
   const reserves=()=>roster.filter(p=>!deployed().includes(p));
   const actors=()=>captain?[captain,...deployed()]:[];
+  const capacity=()=>G.Expedition?.run?.trainerLevel?G.Economy.capacity(G.Expedition.run):G.ExpeditionRules.capacity(level);
   function buffTargets(p){const team=actors(),i=team.indexOf(p);return i<0?[p]:team.slice(Math.max(0,i-1),i+2).filter(q=>!q.dead);}
   function growth(p,key){return captain&&actors().includes(p)?bonus[key]||0:0;}
   function refresh(){
@@ -72,9 +73,11 @@ G.Squad = (() => {
   }
   function evolve(p){
     const choices=G.ExpeditionRules.next(p.dex);if(!choices.length)return;
+    if(!p.isSquadMember&&G.Mega?.active(p))G.Mega.finish(p);
     const dex=G.U.pick(choices),mon=G.DEX_BY[dex],fraction=p.hp/p.maxHp,iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[dex]?.iv),s=G.MonProgression.stats(dex,iv);
     p.mon=mon;p.dex=p.spriteDex=p.ivDex=dex;p.baseHp=s.hp;p.baseAtk=s.atk;p.baseSpa=s.spa;p.baseDefense=s.defense;p.baseSpDef=s.spdef;p.baseSpd=s.spd;p.baseAgility=s.agility;p.baseStamina=s.stamina;
-    p.squadHpBonus=0;p.qualityHpFactor=G.ExpeditionQuality?.factors(p).hp||1;p.maxHp=s.hp*(1+p.statGrowth.hp)*p.qualityHpFactor;p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
+    p.squadHpBonus=0;p.qualityHpFactor=p.isSquadMember?(G.ExpeditionQuality?.factors(p).hp||1):1;p.maxHp=s.hp*(1+p.statGrowth.hp)*p.qualityHpFactor;p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
+    if(!p.isSquadMember){p.monStage=dex;p.evolutionPath=G.MonProgression.pathFor(dex);p.ability=G.Abilities.equipped(G.DB.save,dex)||null;G.Mega?.init(p,G.DB.save);}
     G.Sprites.preload([dex]);
   }
   function consolidate(){
@@ -92,9 +95,15 @@ G.Squad = (() => {
     const p=new Member(dex,rank,moveId);p.level=captain.level;roster.push(p);G.ExpeditionGrowth?.sync(p);const slot=formation.indexOf(null);if(slot>=0)formation[slot]=p;consolidate();G.Sprites.preload([dex]);return p;
   }
   function canRecruit(dex,rank=1){dex=G.ExpeditionRules.formForRank(dex,rank);return !!captain&&Number.isInteger(rank)&&rank>=1&&rank<=3&&!!G.DEX_BY[dex]&&!!G.SPRITE_META[dex]&&(formation.includes(null)||reserves().length<RESERVE_LIMIT||rank<3&&roster.some(p=>G.MonProgression.rootFor(p.dex)===G.MonProgression.rootFor(dex)&&p.rank===rank));}
-  function release(p){const i=roster.indexOf(p);if(i<0)return false;G.SquadTraits?.release(p);const slot=formation.indexOf(p);if(slot>=0)formation[slot]=null;for(const shot of [...G.Projectiles.all()])if(shot.owner===p)G.Projectiles.remove(shot);G.Combat?.clearFields(p);roster.splice(i,1);refresh();return true;}
-  function reorder(index,dir){const j=index+dir;if(j<0||j>=roster.length)return false;[roster[index],roster[j]]=[roster[j],roster[index]];formation=Array.from({length:G.ExpeditionRules.capacity(level)-1},(_,i)=>roster[i]||null);refresh();return true;}
-  function upgrade(){if(level>=G.ExpeditionRules.MAX_SHOP)return false;level++;formation.push(reserves()[0]||null);refresh();return true;}
+  function release(p){const i=roster.indexOf(p);if(i<0)return false;const r=G.Expedition?.run;if(r?.unitPool){r.gold+=r.unitPool.sellValue(p);r.unitPool.returnCopies(p.dex,r.unitPool.copies(p.rank));}G.SquadTraits?.release(p);const slot=formation.indexOf(p);if(slot>=0)formation[slot]=null;for(const shot of [...G.Projectiles.all()])if(shot.owner===p)G.Projectiles.remove(shot);G.Combat?.clearFields(p);roster.splice(i,1);refresh();return true;}
+  function reorder(index,dir){const j=index+dir;if(j<0||j>=roster.length)return false;[roster[index],roster[j]]=[roster[j],roster[index]];formation=Array.from({length:capacity()-1},(_,i)=>roster[i]||null);refresh();return true;}
+  function syncTrainer(){
+    const r=G.Expedition?.run;if(r?.trainerLevel)level=r.trainerLevel;
+    while(formation.length<capacity()-1)formation.push(reserves()[0]||null);
+    if(r?.trainerLevel&&captain){const target=G.EconomyConfig.captainEvolutionLevels.filter(l=>level>=l).length;captain.trainerRank||=1;while(captain.trainerRank<target){captain.trainerRank++;evolve(captain);}}
+    refresh();
+  }
+  function upgrade(){const r=G.Expedition?.run;if(r?.trainerLevel){if(!G.Economy.buyXp(r))return false;syncTrainer();return true;}if(level>=G.ExpeditionRules.MAX_SHOP)return false;level++;formation.push(reserves()[0]||null);refresh();return true;}
   function place(p,slot){
     if(!roster.includes(p)||!Number.isInteger(slot)||slot<0||slot>=formation.length)return false;
     const old=formation.indexOf(p),other=formation[slot];if(old===slot)return false;
@@ -161,6 +170,6 @@ G.Squad = (() => {
   function recover(){for(const p of roster){p.level=captain.level;G.SquadAssault?.reset(p);p.dead=false;p.walking=false;p.walkGrace=0;p.followSpeed=0;p.hp=p.maxHp;p.invuln=1;G.MovePP?.restore(p,p.moves);p.anim._start?.('Idle',false);G.Projectiles.clearOrbs(p);}trail=[{x:captain.x,y:captain.y}];resetFollow();for(const p of roster){p.x=captain.x;p.y=captain.y;}}
   function tags(p){return {types:p.mon.types,eggs:G.EGG_GROUPS[p.dex]||[15],skill:p.moves[0]?.kind};}
   function talent(p){if(G.SquadTraits){const d=G.SquadTraits.def(p);return {...d,name:G.SquadTraits.local(d.name),description:G.SquadTraits.description(p)};}const [key,value,name]=support[p.mon.types[0]]||support.normal;return {key,value:value*p.rank,name};}
-  return {refresh,begin,reset,recruit,canRecruit,release,RESERVE_LIMIT,buffTargets,consolidate,reorder,place,bench,swap,reserves,upgrade,tick,recover,deployed,actors,growth,tags,talent,support,Member,rankMove,
-    get active(){return !!captain;},get roster(){return roster;},get formation(){return formation.slice();},get shopLevel(){return level;},get capacity(){return G.ExpeditionRules.capacity(level);}};
+  return {refresh,begin,reset,recruit,canRecruit,release,RESERVE_LIMIT,buffTargets,consolidate,reorder,place,bench,swap,reserves,upgrade,syncTrainer,tick,recover,deployed,actors,growth,tags,talent,support,Member,rankMove,
+    get active(){return !!captain;},get roster(){return roster;},get formation(){return formation.slice();},get shopLevel(){return level;},get capacity(){return capacity();}};
 })();

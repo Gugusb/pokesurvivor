@@ -24,7 +24,7 @@ G.SquadTraits=(()=>{
     if(s.counts[event]<d.every)return;s.counts[event]-=d.every;
     if(d.category==='stacking'){for(const [category,id]of activeTags(p,d.scope))G.SquadBonds.addLayer(category,id,d.base*weight(p));return;}
     if(d.category!=='economic')return;
-    const r=run();if(!r)return;gold(d.id==='daily-interest'?basis*d.base*weight(p):d.base*weight(p));
+    const r=run();if(!r)return;if(r.trainerLevel&&event==='day'&&!['battle','elite','boss'].includes(r.eventKind))return;gold(d.id==='daily-interest'?basis*d.base*weight(p):d.base*weight(p));
     if(d.id==='elite-supplier')r.traitFreeRefresh=(r.traitFreeRefresh||0)+(p.rank||1);
     if(d.id==='boss-recruiter')r.traitRecruitTickets=(r.traitRecruitTickets||0)+(p.rank||1);
   }

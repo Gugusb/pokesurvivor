@@ -622,6 +622,7 @@ G.Game = (() => {
       return;
     }
     if (p.kind === 'coin'||p.kind==='treasure') {
+      if(G.Expedition?.active)return; // Run gold is settled after all pickups; never also bank it as account coins.
       pl.coins += p.value;
       G.FX.dmgText(who.x, who.y - who.bodyH - 6, '+' + p.value, '#ffd23f');
       return;

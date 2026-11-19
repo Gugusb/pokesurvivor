@@ -66,8 +66,8 @@ G.SquadUI=(()=>{
     const board=node('section','squad-field-panel');board.append(node('h3','',L('Equipo de combate','Battle squad','出战队伍')));
     const grid=node('div','squad-battle-grid');const line=document.createElementNS('http://www.w3.org/2000/svg','svg');line.setAttribute('viewBox','0 0 1000 320');line.setAttribute('class','squad-snake-path');line.innerHTML='<path d="M100 80 H900 Q975 80 975 160 Q975 240 900 240 H300" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="3 14" stroke-linecap="round"/>';grid.append(line);
     const formation=G.Squad.formation;
-    for(let n=0;n<9;n++){
-      const locked=n>=G.Squad.capacity,slot=node('div','squad-field-slot'+(locked?' locked':''));slot.style.gridRow=n<5?'1':'2';slot.style.gridColumn=String(n<5?n+1:10-n);slot.dataset.squadDrop=n===0||locked?'locked':'slot:'+(n-1);slot.dataset.slot=n;
+    for(let n=0;n<Math.max(10,G.Squad.capacity);n++){
+      const locked=n>=G.Squad.capacity,slot=node('div','squad-field-slot'+(locked?' locked':''));slot.style.gridRow=String(Math.floor(n/5)+1);slot.style.gridColumn=String(Math.floor(n/5)%2?5-n%5:n%5+1);slot.dataset.squadDrop=n===0||locked?'locked':'slot:'+(n-1);slot.dataset.slot=n;
       const p=n===0?leader():formation[n-1];if(p)slot.append(unit(p));else{const empty=node('div','squad-vacancy');empty.append(node('b','',locked?'◇':'+'),node('small','',locked?L('Cerrado','Locked','未解锁'):L('Plaza libre','Open slot','空位')));slot.append(empty);}
       slot.append(node('small','squad-slot-number',String(n+1)));grid.append(slot);
     }
@@ -122,7 +122,7 @@ G.SquadUI=(()=>{
       if(m.kind==='buff')card.append(node('p','',L('Apoya al usuario y a sus vecinos de formación al 30% del efecto original.','Supports the user and adjacent formation partners at 30% of the original effect.','增益自身与编队中前、后各一位队友，效果为原来的30%。')));
     }
     if(p.isSquadMember&&canEdit()){
-      const release=button(L('Liberar compañero','Release companion','放生伙伴'),()=>releaseMember(p),'btn squad-release');release.id='squad-release';box.append(release);
+      const release=button(L('Liberar compañero','Release companion','放生伙伴')+' · +'+(G.Expedition.run.unitPool?.sellValue(p)||0)+' G',()=>releaseMember(p),'btn squad-release');release.id='squad-release';box.append(release);
     }
     refreshDetails();
   }

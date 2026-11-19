@@ -100,6 +100,7 @@ G.Pickups = (() => {
 
   /** Suelta un objeto suelto: 'heal' | 'magnet' | 'bomb' | 'coin'. */
   function drop(kind, x, y, value = 0) {
+    if(G.Expedition?.active&&G.EconomyConfig?.waveDropValues[kind]!=null)value=G.EconomyConfig.waveDropValues[kind];
     const o=orb(kind,x,y,value);push(o);return o;
   }
 
