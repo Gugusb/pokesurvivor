@@ -29,6 +29,7 @@ G.Squad = (() => {
       dex=G.ExpeditionRules.formForRank(dex,rank);
       const perks=G.Upgrades.perks(G.DB.upgradesOf(dex)),iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[dex]?.iv);super(G.DEX_BY[dex],perks,false,dex,iv);
       this.isSquadMember=true;this.squadId=nextId++;this.rank=rank;this.ability=null;this.activeItem=null;
+      this.poolCopies=(G.EconomyConfig?.compatibility.mergeCopies||2)**(rank-1);
       this.megaState=null;this.zState=null;this.x=captain?.x||0;this.y=captain?.y||0;this.permanentGrowth={...(perks.statGrowth||{})};
       const ids=G.Moves.poolFor(this.mon);this.addMove(moveId&&ids.includes(moveId)?moveId:(G.FIXED_SKILLS?.[dex]||G.Moves.startFor(this.mon)));
       this.moveId=this.moves[0].id;G.SquadTraits?.assign(this);rankMove(this);G.ExpeditionQuality?.sync(this);this.invuln=1;
@@ -85,17 +86,20 @@ G.Squad = (() => {
       for(let i=0;i<roster.length&&!merged;i++)for(let j=i+1;j<roster.length;j++){
         const a=roster[i],b=roster[j];if(G.MonProgression.rootFor(a.dex)!==G.MonProgression.rootFor(b.dex)||a.rank!==b.rank||a.rank>=3)continue;
         const ai=formation.indexOf(a),bi=formation.indexOf(b);if(bi>=0){formation[bi]=ai<0?a:null;if(ai<0){a.x=b.x;a.y=b.y;}}
-        a.rank++;a.dead=a.dead&&b.dead;a.hp=a.dead?0:Math.max(a.hp,b.hp,1);G.Projectiles.clearOrbs(b);roster.splice(j,1);evolve(a);rankMove(a);refresh();G.SquadTraits?.merge(a,b);merged=true;break;
+        a.poolCopies=(a.poolCopies??2**(a.rank-1))+(b.poolCopies??2**(b.rank-1));a.rank++;a.dead=a.dead&&b.dead;a.hp=a.dead?0:Math.max(a.hp,b.hp,1);G.Projectiles.clearOrbs(b);roster.splice(j,1);evolve(a);rankMove(a);refresh();G.SquadTraits?.merge(a,b);merged=true;break;
       }
     }
     refresh();
   }
-  function recruit(dex,moveId=null,rank=1){
+  function recruit(dex,moveId=null,rank=1,options={}){
     dex=G.ExpeditionRules.formForRank(dex,rank);if(!canRecruit(dex,rank))return null;
-    const p=new Member(dex,rank,moveId);p.level=captain.level;roster.push(p);G.ExpeditionGrowth?.sync(p);const slot=formation.indexOf(null);if(slot>=0)formation[slot]=p;consolidate();G.Sprites.preload([dex]);return p;
+    const p=new Member(dex,rank,moveId);if(options.poolCopies!=null)p.poolCopies=options.poolCopies;p.level=captain.level;roster.push(p);G.ExpeditionGrowth?.sync(p);const slot=formation.indexOf(null);if(slot>=0)formation[slot]=p;consolidate();G.Sprites.preload([dex]);return p;
   }
   function canRecruit(dex,rank=1){dex=G.ExpeditionRules.formForRank(dex,rank);return !!captain&&Number.isInteger(rank)&&rank>=1&&rank<=3&&!!G.DEX_BY[dex]&&!!G.SPRITE_META[dex]&&(formation.includes(null)||reserves().length<RESERVE_LIMIT||rank<3&&roster.some(p=>G.MonProgression.rootFor(p.dex)===G.MonProgression.rootFor(dex)&&p.rank===rank));}
-  function release(p){const i=roster.indexOf(p);if(i<0)return false;const r=G.Expedition?.run;if(r?.unitPool){r.gold+=r.unitPool.sellValue(p);r.unitPool.returnCopies(p.dex,r.unitPool.copies(p.rank));}G.SquadTraits?.release(p);const slot=formation.indexOf(p);if(slot>=0)formation[slot]=null;for(const shot of [...G.Projectiles.all()])if(shot.owner===p)G.Projectiles.remove(shot);G.Combat?.clearFields(p);roster.splice(i,1);refresh();return true;}
+  function remove(p,sell){const i=roster.indexOf(p);if(i<0)return false;const r=G.Expedition?.run;if(r?.unitPool){if(sell)r.gold+=r.unitPool.sellValue(p);r.unitPool.returnCopies(p.dex,p.poolCopies??r.unitPool.copies(p.rank));}if(sell)G.SquadTraits?.release(p);const slot=formation.indexOf(p);if(slot>=0)formation[slot]=null;for(const shot of [...G.Projectiles.all()])if(shot.owner===p)G.Projectiles.remove(shot);G.Combat?.clearFields(p);roster.splice(i,1);refresh();return true;}
+  const release=p=>remove(p,true);
+  const consume=p=>remove(p,false);
+  function promote(p,material){if(!roster.includes(p)||p.rank>=G.EconomyConfig.compatibility.maxRank)return false;p.rank++;evolve(p);rankMove(p);refresh();G.SquadTraits?.merge(p,material);consolidate();return true;}
   function reorder(index,dir){const j=index+dir;if(j<0||j>=roster.length)return false;[roster[index],roster[j]]=[roster[j],roster[index]];formation=Array.from({length:capacity()-1},(_,i)=>roster[i]||null);refresh();return true;}
   function syncTrainer(){
     const r=G.Expedition?.run;if(r?.trainerLevel)level=r.trainerLevel;
@@ -170,6 +174,6 @@ G.Squad = (() => {
   function recover(){for(const p of roster){p.level=captain.level;G.SquadAssault?.reset(p);p.dead=false;p.walking=false;p.walkGrace=0;p.followSpeed=0;p.hp=p.maxHp;p.invuln=1;G.MovePP?.restore(p,p.moves);p.anim._start?.('Idle',false);G.Projectiles.clearOrbs(p);}trail=[{x:captain.x,y:captain.y}];resetFollow();for(const p of roster){p.x=captain.x;p.y=captain.y;}}
   function tags(p){return {types:p.mon.types,eggs:G.EGG_GROUPS[p.dex]||[15],skill:p.moves[0]?.kind};}
   function talent(p){if(G.SquadTraits){const d=G.SquadTraits.def(p);return {...d,name:G.SquadTraits.local(d.name),description:G.SquadTraits.description(p)};}const [key,value,name]=support[p.mon.types[0]]||support.normal;return {key,value:value*p.rank,name};}
-  return {refresh,begin,reset,recruit,canRecruit,release,RESERVE_LIMIT,buffTargets,consolidate,reorder,place,bench,swap,reserves,upgrade,syncTrainer,tick,recover,deployed,actors,growth,tags,talent,support,Member,rankMove,
+  return {refresh,begin,reset,recruit,canRecruit,release,consume,promote,RESERVE_LIMIT,buffTargets,consolidate,reorder,place,bench,swap,reserves,upgrade,syncTrainer,tick,recover,deployed,actors,growth,tags,talent,support,Member,rankMove,
     get active(){return !!captain;},get roster(){return roster;},get formation(){return formation.slice();},get shopLevel(){return level;},get capacity(){return capacity();}};
 })();

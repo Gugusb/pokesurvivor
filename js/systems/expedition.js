@@ -4,8 +4,8 @@ G.Expedition = (() => {
   let run=null,draft=null,offer=[],note='',busy=false,lastHud=0;
   const T=s=>G.T(s),L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
   const $=id=>document.getElementById(id),node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;};
-  const eventName=k=>({battle:L('Combate','Battle','战斗'),elite:L('Combate de élite','Elite battle','精英战斗'),shop:L('Tienda Pokémon','Pokémon shop','宝可梦商店'),training:L('Dojo de movimientos','Skill training','技能修炼'),wild:L('Exploración silvestre','Wild expedition','野外探险'),rest:L('Descanso','Rest stop','休整'),boss:L('Combate de jefe','Boss battle','BOSS战'),start:L('Partida','Start','出发')})[k];
-  const eventIcon=k=>({battle:'⚔',elite:'✦',shop:'▣',training:'✎',wild:'❧',rest:'❧',boss:'♛',start:'⚑'})[k];
+  const eventName=k=>({battle:L('Combate','Battle','战斗'),elite:L('Combate de élite','Elite battle','精英战斗'),shop:L('Tienda Pokémon','Pokémon shop','宝可梦商店'),training:L('Dojo de movimientos','Skill training','技能修炼'),'pokemon-training':L('Sala Pokémon','Pokémon training room','宝可梦训练室'),wild:L('Exploración silvestre','Wild expedition','野外探险'),rest:L('Descanso','Rest stop','休整'),boss:L('Combate de jefe','Boss battle','BOSS战'),start:L('Partida','Start','出发')})[k];
+  const eventIcon=k=>({battle:'⚔',elite:'✦',shop:'▣',training:'✎','pokemon-training':'★',wild:'❧',rest:'❧',boss:'♛',start:'⚑'})[k];
   const genNames=['Kanto','Johto','Hoenn','Sinnoh','Teselia','Kalos','Alola','Galar','Paldea'];
   const summary=()=>run?R.progress({day:run.day,arceus:run.arceus,cashout:run.cashout}):null;
   function header(title,sub){
@@ -187,6 +187,7 @@ G.Expedition = (() => {
     const box=header(L('Tu itinerario','Your itinerary','日程表'),L('Elige una carta adyacente de la siguiente fila.','Choose an adjacent card in the next row.','选择下一行相邻的事件，踏上新一天的旅程。'));
     const info=node('div','journey-meta');info.append(node('b','',L('Ciclo','Cycle','周期')+' '+run.cycle),node('span','',L('Día','Day','天数')+' '+run.day),node('b','journey-gold',L('Oro','Gold','局内金币')+' '+run.gold),node('span','',run.gens.map(g=>T(genNames[g-1])).join(' · ')));info.append(squadShortcut(),node('span','',L('Entrenador','Trainer','训练家')+' Lv.'+run.trainerLevel+' · '+run.trainerXp+' XP'),node('b','',L('BOSS en ','BOSS in ','距BOSS ')+(G.EconomyConfig.cycleLengthDays-run.row)+L(' días',' days',' 天')));box.append(info);
     if(note)box.append(node('p','journey-notice',note));
+    const eggs=G.PokemonTraining?.eggPanel(run,renderRoute);if(eggs)box.append(eggs);
     const layout=node('div','journey-layout journey-layout-wide'),route=node('div','journey-route'),grid=node('div','journey-grid');grid.setAttribute('role','group');grid.setAttribute('aria-label',L('Itinerario','Schedule','事件日程'));
     for(const row of run.map)for(const cell of row){
       const allowed=R.reachable(run.row,run.col,cell.row,cell.col),current=cell.row===run.row&&cell.col===run.col,visited=run.history.some(h=>h.day===cell.day&&h.col===cell.col);
@@ -218,6 +219,7 @@ G.Expedition = (() => {
     const cell=run.map[row][col];run.row=row;run.col=col;run.day=cell.day;run.totalDay=cell.day;run.dayInCycle=cell.row;run.history.push({day:run.day,col,kind:cell.kind});note='';run.eventKind=cell.kind;
     if(cell.kind==='shop')openShop();
     else if(cell.kind==='training'){run.phase='training';G.ExpeditionTraining.open(run,()=>finishStage());}
+    else if(cell.kind==='pokemon-training'){run.phase='pokemon-training';G.PokemonTraining.open(run,()=>{if(run.labChoice==='train'){run.phase='upgrades';G.UI.hideAll();G.Game.expeditionResume();}else finishStage();});}
     else if(cell.kind==='wild'||cell.kind==='rest')openWild();
     else startBattle(cell.kind);
     return true;
@@ -449,6 +451,7 @@ G.Expedition = (() => {
   function depart(){if(run?.phase!=='upgrades')return;finishStage(note);}
   function finishStage(message=''){
     if(!run)return;if(!run.settledDays.has(run.day)){G.Economy.settleDay(run,{eventType:run.eventKind==='rest'?'wild':run.eventKind});G.Squad.syncTrainer();}G.SquadTraits?.dayEnd();G.Game.scoreEvent();G.TypeBonds?.beginStage();G.Squad.recover();run.captain.heal(run.captain.maxHp*.15);note=message;
+    const hatched=G.PokemonTraining?.hatch(run)||0;if(hatched)note+=' '+L('Huevos eclosionados: ','Hatched companions: ','孵化伙伴：')+hatched;
     if(run.day%G.EconomyConfig.cycleLengthDays===0&&run.day>0){run.cycle++;G.Economy.addXp(run,0);G.Squad.syncTrainer();run.map=R.matrix(run.cycle);run.row=0;run.history=[{day:run.day,col:run.col}];note+=' '+L('Un nuevo ciclo: los rivales se han fortalecido.','A new cycle: foes have grown much stronger.','新的周期开始了，对手变得更强了。');}
     if(run.day===G.EconomyConfig.cycleLengthDays*G.EconomyConfig.clearCycleThreshold&&run.cashout){G.Game.expeditionVictory();return;}
     if(run.freeShopPending){run.freeShopPending=false;openShop(true);}else showRoute();

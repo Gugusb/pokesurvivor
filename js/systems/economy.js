@@ -1,7 +1,7 @@
 /* Run-local economy. Combat drops are credited once, after pickup collection. */
 G.Economy=(()=>{
   const config=()=>G.EconomyConfig;
-  const events={battle:'NORMAL_BATTLE',elite:'ELITE_BATTLE',boss:'BOSS_BATTLE',shop:'SHOP',training:'SKILL_TRAINING',wild:'WILD_EXPEDITION'};
+  const events={battle:'NORMAL_BATTLE',elite:'ELITE_BATTLE',boss:'BOSS_BATTLE',shop:'SHOP',training:'SKILL_TRAINING','pokemon-training':'POKEMON_TRAINING',wild:'WILD_EXPEDITION'};
   const levelRow=level=>config().levels.find(row=>row.level===level);
   const maxLevel=s=>s.cycle>=config().endless.unlockCycle?config().levels.at(-1).level:config().levels.at(-2).level;
   const interest=gold=>Math.max(0,Math.min(config().interest.maxInterest,Math.floor(gold/config().interest.divisor)));
@@ -20,7 +20,7 @@ G.Economy=(()=>{
   function buyXp(s){if(s.phase!=='shop'||s.trainerLevel>=maxLevel(s)||s.gold<config().buyXp.goldCost)return false;s.gold-=config().buyXp.goldCost;addXp(s,config().buyXp.xpGain);return true;}
   function buyLicense(s){if(s.phase!=='shop'||s.cycle<config().endless.unlockCycle||s.trainerLevel!==config().levels.at(-1).level||s.gold<licenseCost(s))return false;s.gold-=licenseCost(s);s.extraPopPurchases++;return true;}
   function buyPopCap(s){const tier=config().itemTiers.POP_CAP;if(s.phase!=='shop'||s.trainerLevel<tier.unlockLevel||s.hasPopCapItem||s.gold<tier.price)return false;s.gold-=tier.price;s.hasPopCapItem=true;return true;}
-  function overclock(s){if(s.phase!=='training'||s.cycle<config().endless.unlockCycle||s.gold<overclockCost(s))return false;s.gold-=overclockCost(s);s.skillOverclockCount++;return true;}
+  function overclock(s){if(s.phase!=='training'||s.trainingUsed||s.cycle<config().endless.unlockCycle)return false;s.skillOverclockCount++;s.trainingUsed=true;return true;}
   function settle(s,input){
     const eventType=events[input.eventType]||input.eventType;
     const report={baseWage:0,interest:0,streakBonus:0,comebackBounty:0,eliteFlawlessBonus:0,inWaveDrops:0,totalGoldGained:0,xpGained:0,leveledUpTo:null,grantFreePostBossShop:false};

@@ -1,4 +1,4 @@
-/* One paid choice per training event. No charge until a valid change is applied. */
+/* One free choice per skill-training event, including endless overclock. */
 G.ExpeditionTraining=(()=>{
   const prices=()=>Object.fromEntries(Object.entries(G.EconomyConfig.skillTraining.actions).map(([id,tier])=>[id,G.EconomyConfig.skillTraining.tiers[tier]]));
   const L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
@@ -20,23 +20,23 @@ G.ExpeditionTraining=(()=>{
     return [];
   }
   function price(kind,run){return kind==='overclock'?G.Economy.overclockCost(run):prices()[kind];}
-  function purchase(kind,choice,run){if(run.phase!=='training'||(kind!=='overclock'&&run.trainingUsed)||!unlocked(kind,run)||run.gold<price(kind,run)||!choice?.apply())return false;run.gold-=price(kind,run);if(kind==='overclock')run.skillOverclockCount++;else run.trainingUsed=true;return true;}
+  function purchase(kind,choice,run){if(run.phase!=='training'||run.trainingUsed||!Object.hasOwn(names(),kind)||!unlocked(kind,run)||!choice?.apply())return false;if(kind==='overclock')run.skillOverclockCount++;run.trainingUsed=true;return true;}
   function open(run,done){
     const root=document.getElementById('journey-content');run.trainingUsed=false;const cached=new Map();
     const node=(tag,text,cls)=>{const e=document.createElement(tag);e.textContent=text||'';e.className=cls||'';return e;};
     const button=(name,fn)=>{const b=node('button',name,'btn');b.type='button';b.onclick=fn;return b;};
     function render(kind,target){
-      root.replaceChildren();root.append(node('h2',L('Dojo de movimientos','Skill training','技能修炼')),node('p',L('Un entrenamiento básico por visita; la sobrecarga puede repetirse desde el cuarto ciclo.','One basic training per visit; overclock can be repeated from cycle four.','基础修炼每次事件可选一项；第4轮起技能超限可重复购买。离开获得训练家经验。'),'note'),node('b',L('Oro','Gold','局内金币')+' '+run.gold));
+      root.replaceChildren();root.append(node('h2',L('Dojo de movimientos','Skill training','技能修炼')),node('p',L('Elige un entrenamiento gratuito por visita; sobrecarga disponible desde el cuarto ciclo.','Choose one free training per visit; overclock unlocks in cycle four.','所有修炼免费，每次事件选择一项；第4轮起可选技能超限。离开获得训练家经验。'),'note'),node('b',L('Oro','Gold','局内金币')+' '+run.gold));
       const list=node('div','','journey-training');root.append(list);
-      if(!kind){for(const [key,name]of Object.entries(names())){const enabled=unlocked(key,run),b=button(name+' · '+price(key,run)+' '+L('oro','gold','金币')+(enabled?'':key==='overclock'?L(' · ciclo 4',' · cycle 4',' · 第4轮解锁'):L(' · bloqueado',' · locked',' · 需长征之路权限卡')),()=>render(key));b.dataset.training=key;b.disabled=!enabled||(key!=='overclock'&&run.trainingUsed)||run.gold<price(key,run);list.append(b);}}
+      if(!kind){for(const [key,name]of Object.entries(names())){const enabled=unlocked(key,run),b=button(name+' · '+L('Gratis','Free','免费')+(enabled?'':key==='overclock'?L(' · ciclo 4',' · cycle 4',' · 第4轮解锁'):L(' · bloqueado',' · locked',' · 需长征之路权限卡')),()=>render(key));b.dataset.training=key;b.disabled=!enabled||run.trainingUsed;list.append(b);}}
       else if(kind==='replace'&&!target){
         for(const a of G.Squad.roster)list.append(button(G.T(a.mon.name)+' · '+'★'.repeat(a.rank)+' · '+G.T(a.moves[0].name),()=>render(kind,a)));
         if(!G.Squad.roster.length)list.append(node('p',L('No hay compañeros.','No companions recruited.','尚未招募队员。')));
         list.append(button(L('Volver','Back','返回修炼项目'),()=>render()));
       }else{
         if(!cached.has(kind))cached.set(kind,choices(kind,run));const options=cached.get(kind);
-        root.insertBefore(node('h3',names()[kind]+' · '+price(kind,run)+' '+L('oro','gold','金币')),list);
-        for(const c of options.filter(c=>!target||c.owner===target)){const b=button(c.title,()=>{if(purchase(kind,c,run)){if(kind==='overclock')render(kind);else done();}});b.dataset.trainingChoice=kind;b.append(node('small',c.desc));list.append(b);}
+        root.insertBefore(node('h3',names()[kind]+' · '+L('Gratis','Free','免费')),list);
+        for(const c of options.filter(c=>!target||c.owner===target)){const b=button(c.title,()=>{if(purchase(kind,c,run))done();});b.dataset.trainingChoice=kind;b.append(node('small',c.desc));list.append(b);}
         if(!options.length)list.append(node('p',L('No hay objetivos válidos.','No eligible targets.','当前没有符合条件的目标。')));
         list.append(button(L('Volver','Back','返回修炼项目'),()=>render()));
       }

@@ -187,6 +187,7 @@ G.Game = (() => {
 
   function expeditionPause(){if(pl)state='journey';}
   function expeditionResume(){if(pl)state='playing';}
+  function expeditionGainXp(amount){if(!pl||pl.dead||G.Expedition?.phase!=='pokemon-training'||!Number.isFinite(amount)||amount<=0)return false;pendingLevels+=pl.gainXp(amount);return true;}
   function expeditionEnd(){endRun(false);}
   function expeditionVictory(){
     if(!pl||!challenge)return;
@@ -1083,7 +1084,7 @@ G.Game = (() => {
   })();
 
   return {
-    expeditionPause,expeditionResume,expeditionEnd,expeditionVictory, init, startRun, everyone, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
+    expeditionPause,expeditionResume,expeditionGainXp,expeditionEnd,expeditionVictory, init, startRun, everyone, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
     debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },
