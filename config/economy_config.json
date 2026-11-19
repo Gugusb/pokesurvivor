@@ -502,9 +502,7 @@
       "launchRadius": 420,
       "launchSpeed": 420,
       "launchDamage": 3,
-      "reloadSeconds": 1.2,
-      "flightSeconds": 1.5,
-      "homing": 10
+      "flightSeconds": 1.5
     },
     "summon": {
       "life": [

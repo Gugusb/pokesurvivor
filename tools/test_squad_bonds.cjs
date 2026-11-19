@@ -49,8 +49,20 @@ test('bloom buffs both physical kinds and stuns elites fully, Bosses for half du
  const s=setup('aura'),g=s.G,e=enemy(s,30);e.boss=true;s.Math.random=()=>.01;cast(s);const v=g.SquadBonds.move(s.p,s.m);close(v.dmg,s.m.dmg*1.2);close(v.radius,s.m.radius*3);close(e.classStunT,.5);let ticks=0;g.BossCombat={tick:()=>ticks++};e.updateAI(.1,s.cap);assert.equal(ticks,0);close(e.classStunT,.4);const n=g.SquadBonds.move(s.p,g.Moves.instance('heat-wave'));close(n.speed,g.Moves.instance('heat-wave').speed*3);e.boss=false;g.SquadBonds.afterHit(s.p,e,v,1);close(e.classStunT,1);
 });
 
-test('orbit launches tracking missiles at triple enhanced damage and waits after hit or timeout before refilling',()=>{
- const s=setup('orbit'),g=s.G,e=enemy(s,80);cast(s);let p=g.Projectiles.all()[0];assert.equal(p.seeking,true);close(p.dmg,s.m.dmg*s.p.attackFor(s.m)*1.5*3);close(p.orad,s.m.radius*2);assert.equal(p.homingTarget,e);const slot=p.orbitSlot,mid=p.mid;g.Projectiles.remove(p);g.Combat.tick(.2,s.p,.2);assert.equal(g.Projectiles.all().filter(p=>p.mid===mid&&p.orbitSlot===slot).length,0);g.Combat.tick(1,s.p,1.2);p=g.Projectiles.all().find(p=>p.mid===mid&&p.orbitSlot===slot);assert.ok(p);g.Projectiles.update(1.6,s.cap,s.enemies);assert.equal(g.Projectiles.all().includes(p),false);close(p.orbitSlotState.wait,1.2);g.Projectiles.clearOrbs(s.p);assert.equal(g.Projectiles.count,0);
+test('tier-six orbit replenishes a full ring only on cooldown casts, independently of earlier shots',()=>{
+ const s=setup('orbit'),g=s.G;g.MovePP.tick=()=>{};const e=enemy(s,80);const pp=g.MovePP.state(s.p,s.m),want=g.SquadBonds.move(s.p,s.m).count;cast(s);const first=g.Projectiles.all().filter(p=>p.bondOrbitShot);assert.equal(first.length,want);close(pp.current,pp.max-1);for(const p of first){assert.equal(p.orb,false);assert.equal(p.moveKind,'orbit');assert.equal(p.specMove.kind,'orbit');assert.equal(p.homing,0);assert.equal(p.pierce,0);close(p.dmg,s.m.dmg*s.p.attackFor(s.m)*1.5*3);}
+ g.Combat.tick(.001,s.p,.001);assert.equal(g.Projectiles.count,want);s.m.t=0;g.Combat.tick(.001,s.p,1);assert.equal(g.Projectiles.count,2*want);assert.ok(first.every(p=>g.Projectiles.all().includes(p)));close(pp.current,pp.max-2);
+ for(const p of [...g.Projectiles.all()])g.Projectiles.remove(p);g.Combat.tick(.001,s.p,1.001);assert.equal(g.Projectiles.count,0);s.m.t=0;g.Combat.tick(.001,s.p,2);assert.equal(g.Projectiles.count,want);
+});
+
+test('orbit volleys fly straight through terrain and hit only the first enemy at triple orbit damage',()=>{
+ const s=setup('orbit'),g=s.G;const e=enemy(s,80);cast(s);const p=g.Projectiles.all()[0];for(const q of [...g.Projectiles.all()])if(q!==p)g.Projectiles.remove(q);const damage=p.dmg;p.x=p.px=0;p.y=p.py=0;p.vx=100;p.vy=0;e.x=60;const second=enemy(s,30);g.World.projectileBlock=()=>{throw Error('terrain query');};g.World.propsInCircle=()=>{throw Error('prop query');};g.Camera.sees=()=>false;
+ g.Projectiles.update(.6,s.cap,s.enemies);assert.ok(g.Projectiles.all().includes(p));close(p.y,0);g.Combat.resolve(.6,s.cap,1);assert.equal(g.Projectiles.count,0);assert.equal(e.calls.length,0);assert.equal(second.calls.length,1);close(second.calls[0].n,damage);const attack=second.calls[0].args.at(-1);assert.equal(attack.kind,'orbit');assert.ok(attack.bondDamageContributions.every(([kind])=>kind==='orbit'));
+});
+
+test('launched orbit shots survive PP exhaustion and clearOrbs while attached orbits still follow normal cleanup',()=>{
+ const s=setup('orbit'),g=s.G;g.MovePP.tick=()=>{};enemy(s,80);cast(s);const shots=[...g.Projectiles.all()];g.Projectiles.clearOrbs(s.p);assert.ok(shots.every(p=>g.Projectiles.all().includes(p)));g.MovePP.state(s.p,s.m).current=0;s.m.t=0;g.Combat.tick(.01,s.p,1);assert.equal(g.Projectiles.count,shots.length);
+ s.enemies.length=0;g.MovePP.restore(s.p,s.p.moves);g.Combat.tick(.01,s.p,2);const ring=g.Projectiles.all().filter(p=>p.orb);assert.equal(ring.length,g.SquadBonds.move(s.p,s.m).count);g.Projectiles.clearOrbs(s.p);assert.equal(g.Projectiles.all().some(p=>p.orb),false);assert.ok(shots.every(p=>g.Projectiles.all().includes(p)));
 });
 
 test('summon lifetime and caps scale; turrets lock three distinct targets and fire three times faster',()=>{
@@ -81,4 +93,8 @@ test('boomerang penetration growth has bounded collision and art while preservin
 test('invalid projectile values are removed before collision queries and extreme base sizes are bounded at spawn',()=>{
  const s=setup(),g=s.G;const p=g.Projectiles.spawn({owner:s.p,bondPierceGrowth:.2,r:1000,dmg:10});assert.equal(p.r,128);g.Projectiles.clear();
  g.World.projectileBlock=()=>{throw Error('unsafe query');};for(const o of [{r:Infinity},{r:NaN},{r:0},{x:Infinity},{dmg:Infinity}])g.Projectiles.spawn({...o});g.Combat.resolve(0,s.cap,1);assert.equal(g.Projectiles.count,0);
+});
+
+test('expiring a double-cast orbit copy does not delete shots already launched from that copy',()=>{
+ const s=setup('orbit'),g=s.G;enemy(s,80);s.m.specializations=['t9'];s.m.cd=.05;cast(s);g.Combat.updateFields(.001);const shots=g.Projectiles.all().filter(p=>p.bondOrbitShot&&p.mid!==s.m.id);assert.ok(shots.length>0);const f=g.Combat._fields().find(f=>f.kind==='orbitcopy');g.Combat.updateFields(f.life+.01);assert.ok(shots.every(p=>g.Projectiles.all().includes(p)));
 });

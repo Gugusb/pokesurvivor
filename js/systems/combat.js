@@ -40,6 +40,7 @@ G.Combat = (() => {
     if(m.kind==='beam'&&fields.some(f=>f.kind==='bondbeam'&&f.owner===pl&&f.source===m&&!f.gone))return;
     const wanted=!G.MoveControl||G.MoveControl.wants(pl,m);
     if(m.kind==='orbit'){
+      let refill=false;
       if(!wanted&&!G.MoveControl.sustaining(pl,m)){for(const shot of G.Projectiles.all().filter(s=>s.orb&&s.owner===pl&&s.mid===m.id))G.Projectiles.remove(shot);m.t=Math.max(0,m.t);return;}
       // One PP sustains one cooldown cycle; no charge per frame or per orb hit.
       if(m.t<=0){
@@ -50,9 +51,9 @@ G.Combat = (() => {
         m.t=Math.max(.05,m.cd*pl.cdMul)*G.Abilities.onCast(pl,m)*(G.SquadBonds?.sustain(pl,m)||1);
         m.typeCastId=G.TypeBonds?.cast(pl,m)||0;if(pl.dead)return;
         G.MoveControl?.cast(pl,m);G.Items?.onCast(pl,m);
-        extras(pl,m,m.t/cooldownRate);
+        refill=true;extras(pl,m,m.t/cooldownRate);
       }
-      orbit(pl,m,dt,now);return;
+      orbit(pl,m,dt,now,false,refill);return;
     }
     if (m.t > 0||!wanted) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
@@ -475,8 +476,8 @@ G.Combat = (() => {
       }
       f.t += dt;
       if(f.kind==='orbitcopy'){
-        if(f.owner.dead||f.t>=f.life||G.ZMoves?.busy(f.owner)){for(const shot of G.Projectiles.all().filter(p=>p.owner===f.owner&&p.mid===f.m.orbitKey))G.Projectiles.remove(shot);f.owner.bondOrbitSlots?.delete(f.m.orbitKey);fields.splice(i,1);continue;}
-        orbit(f.owner,f.m,dt,performance.now()/1000,f.ghost);continue;
+        if(f.owner.dead||f.t>=f.life||G.ZMoves?.busy(f.owner)){for(const shot of G.Projectiles.all().filter(p=>p.orb&&p.owner===f.owner&&p.mid===f.m.orbitKey))G.Projectiles.remove(shot);fields.splice(i,1);continue;}
+        orbit(f.owner,f.m,dt,f.t,f.ghost,!f.started);f.started=true;continue;
       }
       if (f.gone || !f.owner || (f.life && f.t >= f.life && f.kind !== 'mine')) { fields.splice(i, 1); continue; }
       if(f.m.bondArea){const t=f.kind==='meteor'?f.t/f.fall:(f.t-(f.windup||0))/(f.life-(f.windup||0));f.r=f.baseR*(1+(G.EconomyConfig.classBonds.area.maxRadiusMultiplier-1)*G.U.clamp(t,0,1));}
@@ -572,7 +573,7 @@ G.Combat = (() => {
 
   function clearFields(owner) { fields = owner ? fields.filter(f => f.owner !== owner) : []; }
 
-  function orbit(pl, m, dt, now, isGhost = false) {
+  function orbit(pl, m, dt, now, isGhost = false, refill = false) {
     const rehit=m.remoteRehit||Math.max(.12,m.cd)*pl.cdMul/rateFor(pl,m);
     if(G.Specialization)m=G.Specialization.move(pl,m);
     if (G.Mega) m = G.Mega.move(pl, m);
@@ -582,20 +583,23 @@ G.Combat = (() => {
     m = G.Abilities.move(pl, m);
     const col = (m.bondColor||G.U.TYPE_COLOR[m.type]);
     const want=Math.max(1,m.count|0),mid=m.orbitKey||m.id,conf=G.EconomyConfig.classBonds.orbit;
-    pl.bondOrbitSlots||=new Map();if(!pl.bondOrbitSlots.has(mid))pl.bondOrbitSlots.set(mid,[]);
-    const slots=pl.bondOrbitSlots.get(mid),mine=p=>p.orb&&p.owner===pl&&p.mid===mid;
-    const relayout=slots.want!==want;slots.want=want;const base=G.Projectiles.all().find(p=>mine(p)&&!p.seeking)?.oa??now*m.speed;
-    for(const p of G.Projectiles.all().filter(mine))if(p.orbitSlot>=want)G.Projectiles.remove(p);
-    for(let i=0;i<want;i++){
-      const slot=slots[i]||=( {wait:0} );slot.wait=Math.max(0,slot.wait-dt);
-      let p=G.Projectiles.all().find(p=>mine(p)&&p.orbitSlot===i);
-      if(!p&&slot.wait<=0)p=G.Projectiles.spawnOrb({owner:pl,ghost:isGhost,mid,orbitSlot:i,orbitSlotState:slot,x:pl.x,y:pl.y,r:m.size,color:col,vis:G.VFX.forMove(m),dmg:m.dmg*(pl.attackFor?pl.attackFor(m):pl.atk),oa:now*m.speed+i/want*Math.PI*2,orad:m.radius,ospeed:m.speed,rehit,...payload(m)});
-      if(!p||p.seeking)continue;
-      if(relayout)p.oa=base+i/want*Math.PI*2;
+    const mine=p=>p.orb&&p.owner===pl&&p.mid===mid;
+    let orbs=G.Projectiles.all().filter(mine);
+    // Tier six replenishes a complete ring only on a successful cooldown/PP cast.
+    // Detached shots belong to prior casts and never occupy replenishment slots.
+    if(m.bondLaunch&&refill){for(const p of orbs)G.Projectiles.remove(p);orbs=[];}
+    if(!m.bondLaunch||refill){
+      const relayout=orbs.length!==want,anchor=m.orbitKey&&G.Projectiles.all().find(p=>p.orb&&p.owner===pl&&p.mid===m.id);
+      const base=orbs[0]?.oa??(anchor?anchor.oa+.12:now*m.speed);
+      for(const p of orbs.slice(want))G.Projectiles.remove(p);
+      for(let i=orbs.length;i<want;i++)G.Projectiles.spawnOrb({owner:pl,ghost:isGhost,mid,orbitSlot:i,x:pl.x,y:pl.y,r:m.size,color:col,vis:G.VFX.forMove(m),dmg:m.dmg*(pl.attackFor?pl.attackFor(m):pl.atk),oa:base+i/want*Math.PI*2,orad:m.radius,ospeed:m.speed,rehit,...payload(m)});
+      if(relayout)G.Projectiles.all().filter(mine).forEach((p,i)=>{p.oa=base+i/want*Math.PI*2;p.x=pl.x+Math.cos(p.oa)*m.radius;p.y=pl.y+Math.sin(p.oa)*m.radius*.7;});
+    }
+    for(const p of G.Projectiles.all().filter(mine)){
       Object.assign(p,payload(m));p.dmg=m.dmg*(pl.attackFor?pl.attackFor(m):pl.atk);p.orad=m.radius;p.ospeed=m.speed;p.rehit=rehit;p.r=m.size;p.color=col;p.vis=G.VFX.forMove(m);
       if(m.bondLaunch&&!isGhost){
         const target=G.Projectiles.nearest(G.EnemyMgr.all(),p.x,p.y,conf.launchRadius);
-        if(target){const a=Math.atan2(target.y-p.y,target.x-p.x);Object.assign(p,{seeking:true,homingTarget:target,homing:conf.homing,vx:Math.cos(a)*conf.launchSpeed,vy:Math.sin(a)*conf.launchSpeed,t:0,life:conf.flightSeconds,pierce:0,hits:new Set(),phits:new Set(),dmg:p.dmg*conf.launchDamage,bondDamageContributions:[...(p.bondDamageContributions||[]),['orbit',conf.launchDamage]]});}
+        if(target){const a=Math.atan2(target.y-p.y,target.x-p.x);Object.assign(p,{orb:false,bondOrbitShot:true,ignoreTerrain:true,homing:0,vx:Math.cos(a)*conf.launchSpeed,vy:Math.sin(a)*conf.launchSpeed,t:0,life:conf.flightSeconds,pierce:0,hits:new Set(),phits:new Set(),dmg:p.dmg*conf.launchDamage,bondDamageContributions:[...(p.bondDamageContributions||[]),['orbit',conf.launchDamage]]});}
       }
     }
 
@@ -656,6 +660,14 @@ G.Combat = (() => {
     return qx * qx + qy * qy;
   }
 
+  // Earliest swept-circle contact, so zero-pierce orbit shots hit the first body on their path.
+  function contactTime(sx,sy,x,y,e,r){
+    const dx=x-sx,dy=y-sy,fx=sx-e.x,fy=sy-e.y,rr=r+e.r,c=fx*fx+fy*fy-rr*rr;
+    if(c<=0)return 0;const a=dx*dx+dy*dy;if(!a)return Infinity;
+    const b=fx*dx+fy*dy,d=b*b-a*c;if(d<0)return Infinity;
+    const t=(-b-Math.sqrt(d))/a;return t>=0&&t<=1?t:Infinity;
+  }
+
   function resolve(dt, pl, now) {
     const projectiles = G.Projectiles.all();
 
@@ -683,8 +695,8 @@ G.Combat = (() => {
       // --- disparos de jugadores ---
       // Orbes de un compañero: sólo se ven.
       if (p.ghost) continue;
-      if(p.phaseWalls&&G.World.arenaContains&&!G.World.arenaContains(p.x,p.y,p.r)){G.Projectiles.remove(p);continue;}
-      if ((!p.orb || p.seeking) && !p.zMove && !p.phaseWalls) {
+      if(p.phaseWalls&&!p.ignoreTerrain&&G.World.arenaContains&&!G.World.arenaContains(p.x,p.y,p.r)){G.Projectiles.remove(p);continue;}
+      if (!p.orb && !p.zMove && !p.phaseWalls && !p.ignoreTerrain) {
         const block = G.World.projectileBlock(p.x, p.y, p.r);
         if (block === 'wall' || (block && !block.destructible)) {
           G.FX.burst(p.x, p.y - G.LIFT, p.color, 5, 80);
@@ -695,8 +707,8 @@ G.Combat = (() => {
 
       // Objetos del escenario (rocas, cofres, hierba).
       let consumed = false;
-      for (const prop of G.World.propsInCircle(p.x, p.y, p.r)) {
-        if (p.orb && !p.seeking) {
+      for (const prop of p.ignoreTerrain?[]:G.World.propsInCircle(p.x, p.y, p.r)) {
+        if (p.orb) {
           const k = 'p' + prop.id, last = p.hitLog.get(k) || -99;
           if (now - last < p.rehit) continue;
           p.hitLog.set(k, now);
@@ -722,11 +734,13 @@ G.Combat = (() => {
       // fotograma, no sólo el punto final. Un Impactrueno avanza 8 unidades por
       // fotograma: sin esto atravesaba a los enemigos pegados al jugador, que
       // eran inmunes a todos los movimientos de proyectil.
-      const sx = p.orb && !p.seeking || p.px == null ? p.x : p.px, sy = p.orb && !p.seeking || p.py == null ? p.y : p.py;
+      const sx = p.orb || p.px == null ? p.x : p.px, sy = p.orb || p.py == null ? p.y : p.py;
       const half = Math.hypot(p.x - sx, p.y - sy) / 2;
-      for (const e of G.EnemyMgr.queryCircle((sx + p.x) / 2, (sy + p.y) / 2, half + p.r)) {
+      const candidates=G.EnemyMgr.queryCircle((sx+p.x)/2,(sy+p.y)/2,half+p.r);
+      if(p.bondOrbitShot)candidates.sort((a,b)=>contactTime(sx,sy,p.x,p.y,a,p.r)-contactTime(sx,sy,p.x,p.y,b,p.r));
+      for (const e of candidates) {
         if (segDist2(sx, sy, p.x, p.y, e.x, e.y) > (p.r + e.r) * (p.r + e.r)) continue;
-        if (p.orb && !p.seeking) {
+        if (p.orb) {
           const last = p.hitLog.get(e.id) || -99;
           if (now - last < p.rehit) continue;
           p.hitLog.set(e.id, now);
@@ -761,7 +775,7 @@ G.Combat = (() => {
         if (p.slow) e.applySlow(p.slow);
         G.SquadBonds?.afterHit(owner,e,p.specMove||{kind:p.moveKind},dealt);
 
-        if (!p.orb || p.seeking) {
+        if (!p.orb) {
           if (p.pierce > 0) { G.SquadBonds?.onPierce(p);p.pierce--; }
           else {
             G.FX.burst(p.x, p.y - G.LIFT, p.color, 5, 80);
