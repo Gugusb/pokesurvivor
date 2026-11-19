@@ -137,6 +137,7 @@ G.Game = (() => {
     runReal = performance.now(); tampered = !!(G.Dev && G.Dev.enabled);
 
     pl = new G.Player(mon, perks, !!save.partnerShiny && G.DB.ownsShiny(save.partner), save.partner);
+    G.MirrorRecorder?.begin(protectionRunId,pl,!coop&&!tampered);
     if (G.MonProgression) {
       pl.evolutionPath = evolutionPath.slice();
       pl.monStage = G.MonProgression.stageFor(startDex, 1, pl.evolutionPath);
@@ -395,6 +396,8 @@ G.Game = (() => {
 
   function endRun(dead = true, victoryBonus=0) {
     if (state === 'over' || !pl) return;
+    if(!clean())G.MirrorRecorder?.invalidate(protectionRunId);
+    G.MirrorRecorder?.stop();
     G.UI.hide('scr-victory');
     const coop = !!pl.uid;                    // sólo las partidas en grupo le ponen uid
     const wasHost = !!pl.coopHost;
@@ -825,6 +828,7 @@ G.Game = (() => {
     G.Judgment.update(dt, pl, time);
     G.Events.update(dt, all, time);
     G.Weather.update(dt, time, pl);
+    G.MirrorRecorder?.tick(pl,time,dt);
     checkChallenge();
     G.FX.update(dt);
 

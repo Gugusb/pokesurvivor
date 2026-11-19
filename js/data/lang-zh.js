@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Dejar una imagen de desafío": "保留挑战镜像",
+  "Guarda tu equipo y movimientos en aventuras normales para la futura Arena. No graba vídeo. Afecta a las próximas capturas.": "在正常冒险中留下战斗配置，供今后的竞技场使用。不会录制画面；关闭后停止后续采集。",
+  "Las aventuras normales pueden guardar configuraciones de combate como imágenes para la futura Arena. Puedes desactivar las próximas capturas en Ajustes. No grabamos vídeo ni contraseñas.": "正常冒险可留下战斗配置镜像，供今后的竞技场使用。可在设置中停止后续采集，不录制画面，也不采集密码。",
+  "Preparando la Arena · v0.46.0": "为竞技场留下身影 · v0.46.0",
+  "Las aventuras normales pueden dejar una imagen de tu equipo para la futura Arena. Puedes desactivar las próximas capturas en Ajustes → Controles. La Arena todavía no está abierta.": "正常冒险可以留下队伍的战斗镜像，为今后的竞技场做准备。可在设置→操作中停止后续采集。竞技场尚未开放。",
+  "He abierto un álbum para las futuras visitas a la Arena. Quien cocina está trazando las puertas y yo guardo las primeras fichas; por ahora seguimos con nuestras aventuras de siempre.": "我给未来的竞技场准备了一本小手账。做饭的那家伙还在画挑战之门，我先收好伙伴们的资料；眼下咱们照旧冒险，不着急推开还没修好的门。",
   "La aventura en Android · v0.45.0": "把冒险装进口袋 · v0.45.0",
   "Nuevo cliente Android con los sprites, las formas Mega, los iconos y las fuentes incluidos. Las novedades del juego llegan desde la web sin reinstalar el APK.": "新增安卓客户端，内置宝可梦、Mega、图标和字体素材。游戏内容随网页更新，无需重新安装APK。",
   "Puedes jugar en vertical u horizontal. El botón Atrás abre las opciones del cliente para continuar, cambiar de servidor o cerrar.": "支持横屏与竖屏游玩。按手机返回键可继续游戏、更换服务器或关闭客户端。",

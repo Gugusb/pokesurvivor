@@ -24,6 +24,8 @@ for (const f of [
   "js/systems/equipment.js",
   "js/systems/nursery-rules.js",
   "js/data/abilities.js",
+  "js/data/moves.js",
+  "js/systems/mirror-snapshot.js",
   "js/systems/progression-mon.js",
   "js/systems/difficulty.js",
   "js/systems/failure-protection.js",

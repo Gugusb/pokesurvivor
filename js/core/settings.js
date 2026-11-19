@@ -13,7 +13,7 @@
  */
 G.Settings = (() => {
   const KEY = 'ps.settings';
-  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, zoom: 1, castMode: 'auto', manualAim: false, hostileRed:false, runSpeed:1, activeItem: 'superpotion' };
+  const DEF = { quality: 'auto', dmgNumbers: true, calm: false, fps: false, stick: 1, zoom: 1, castMode: 'auto', manualAim: false, hostileRed:false, runSpeed:1, activeItem: 'superpotion', mirrorRecording:true };
   let s = Object.assign({}, DEF);
   try { Object.assign(s, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) { /* nada */ }
   const zoomValue = v => typeof v === 'number' && Number.isFinite(v) ? Math.round(Math.max(0.5, Math.min(1.5, v)) * 20) / 20 : 1;

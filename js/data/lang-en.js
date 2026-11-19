@@ -828,3 +828,5 @@ G.I18n.add({"Obtener MT de Especialización": "Get Mastery TM", "Maximizar movim
 G.I18n.add({"Paquetes de cartas": "Card Packs", "Cartas para toda tu colección": "Cards for your whole collection"});
 
 G.I18n.add({"Nivel inicial adicional": "Extra Starting Level", "+1 nivel al empezar": "+1 starting level and its level-up choice"});
+
+G.I18n.add({"Dejar una imagen de desafío":"Leave a challenge mirror","Guarda tu equipo y movimientos en aventuras normales para la futura Arena. No graba vídeo. Afecta a las próximas capturas.":"Save combat builds during normal adventures for the future Arena. No video is recorded. This affects future captures.","Las aventuras normales pueden guardar configuraciones de combate como imágenes para la futura Arena. Puedes desactivar las próximas capturas en Ajustes. No grabamos vídeo ni contraseñas.":"Normal adventures may save combat builds as mirrors for the future Arena. Disable future captures in Settings. We do not record video or passwords."});

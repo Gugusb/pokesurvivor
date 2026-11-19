@@ -103,6 +103,7 @@ G.ZMoves = (() => {
     if(!selecting(p)) return false;
     const ms=eligible(p,i); if(!ms.length)return false;
     const s=state(p);if(!(s.charges>0))return false;s.charges--;p.active=i;s.phase='cast';s.elapsed=0;s.ppSlot=p.slots[i].slice();s.casts=ms.map(m=>entry(p,m));
+    G.MirrorRecorder?.zCast(p);
     p.anim.play('Charge');
     if(G.Coop.active && G.Coop.zCast)G.Coop.zCast(p,ms,s.casts.map(e=>e.angle));
     tick(p,0); return true;

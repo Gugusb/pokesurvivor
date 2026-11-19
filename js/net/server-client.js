@@ -17,6 +17,7 @@ G.Server = (() => {
     lastError = 0;
   let pendingSave=null,retryTimer=null,retryDelay=2000,beating=null,displayRun=null;
   let packTimer=null,packSince=0,packDirty=false,localPacksSupported=false;
+  let mirrorRecorder=false;
   const ident=()=>globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+"-"+Math.random().toString(36).slice(2);
   const reconcile=(c,b,n)=>G.SaveSync?G.SaveSync.rebase(c,b,n):G.DB.merge(c,n);
   const changed=(a,b)=>G.SaveSync?G.SaveSync.changed(a,b):JSON.stringify(a)!==JSON.stringify(b);
@@ -181,6 +182,7 @@ G.Server = (() => {
     } catch {}
   }
   function accept(value, full = false, sent = null) {
+    G.MirrorRecorder?.ack(value.mirrors);
     const prior=baseline&&copy(baseline);
     if (value.rev) rev = value.rev;
     if (value.progress && !value.save && G.DB.save) {
@@ -240,6 +242,7 @@ G.Server = (() => {
       const h = await api("/health");
       coopEnabled=h.coopEnabled===true;
       localPacksSupported=h.localPacks===true;
+      mirrorRecorder=h.mirrorRecorder===1;
       available = h?.ok === true && h.protocol === 2 && h.transport === "p2p";
       probeStatus = available ? 200 : 503;
       return available;
@@ -370,6 +373,7 @@ G.Server = (() => {
       lv: p?.level || 1,
       kills: p?.kills || 0,
       scoreCounts:G.Game?.scoreCounts?.(),
+      mirrors:mirrorRecorder?G.MirrorRecorder?.pending(run?.id):undefined,
     };
   }
   function receipts(){
@@ -495,6 +499,7 @@ G.Server = (() => {
     },
     get probeStatus() { return probeStatus; },
     get coopEnabled(){return coopEnabled;},
+    get mirrorRecorder(){return mirrorRecorder;},
     get conflict() {
       return conflict;
     },

@@ -25,7 +25,7 @@ G.MoveControl = (()=>{
     dash(p,s);
     return true;
   }
-  function cast(p,m){const s=state(p);if(s.mode==='click'){s.pending.delete(m);if(m.kind==='orbit')s.leases.add(m);}}
+  function cast(p,m){G.MirrorRecorder?.cast(p,m);const s=state(p);if(s.mode==='click'){s.pending.delete(m);if(m.kind==='orbit')s.leases.add(m);}}
   function forget(p,m){const s=state(p);s.pending.delete(m);s.leases.delete(m);if(s.dash===m)s.dash=null;}
   return {mode,wants,sustaining,releasing,input,cast,forget};
 })();

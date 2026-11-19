@@ -70,6 +70,7 @@ function createApp(opts = {}) {
   const q = (sql, ...a) => db.prepare(sql).get(...a),
     all = (sql, ...a) => db.prepare(sql).all(...a),
     exec = (sql, ...a) => db.prepare(sql).run(...a);
+  const mirrors=require('./mirror-recorder.cjs')({db,G,now,enabled:opts.mirrorRecorder!==false&&process.env.MIRROR_RECORDER!=='0'});
   function clientIp(req) {
     const ip = req.socket.remoteAddress || "unknown";
     return process.env.TRUST_PROXY === "1" &&
@@ -330,6 +331,7 @@ function createApp(opts = {}) {
     if((b.kills!==undefined&&(!Number.isSafeInteger(b.kills)||b.kills<0||!stale&&b.kills!==totalKills))||totalKills>256+t*160||counts.boss+counts.rift>20+Math.floor(t/30)||counts.events>2+Math.floor(t/60))throw fail(400,'Invalid score counters');
     exec('UPDATE runs SET score_counts=? WHERE id=?',JSON.stringify(counts),r.id);
     const dirty = r.dirty || b.clean !== true;
+    if(dirty)exec('DELETE FROM mirror_snapshots WHERE run=?',r.id);
     exec(
       "UPDATE runs SET t=?,budget=?,beat=?,dirty=?,speed=?,doubled=? WHERE id=?",
       t,
@@ -396,7 +398,8 @@ function createApp(opts = {}) {
       score(u.uid, s);
       G.Offline.stamp(s, now());
       const value = save(u.uid, s);
-      if (end) return {...value,won,runId:r.id,runLoot:rewards.packs,hatchAcceleration:rewards.hatches||[]};
+      const mirrorAck=mirrors.receive(u.uid,b.mirrors,{...r,uid:u.uid});
+      if (end) return {...value,mirrors:mirrorAck,won,runId:r.id,runLoot:rewards.packs,hatchAcceleration:rewards.hatches||[]};
       const progress = {offline:s.offline,packTokens:G.CardPacks.normalize(s).tokens};
       if(beforeProtection!==JSON.stringify(s.failureProtection))progress.failureProtection=s.failureProtection;
       if (beforeDifficulty !== JSON.stringify(s.difficulty))
@@ -409,7 +412,7 @@ function createApp(opts = {}) {
           ),
         );
       }
-      return {rev:value.rev,won,progress,runId:r.id,runLoot:rewards.packs,...(b.rev!==current.rev?{save:value.save}:{})};
+      return {rev:value.rev,mirrors:mirrorAck,won,progress,runId:r.id,runLoot:rewards.packs,...(b.rev!==current.rev?{save:value.save}:{})};
     });
   }
   const services = require('./social-services.cjs')({q,all,exec,atomic,saved,save,isFriend,now,fail,notifySocial,rng:opts.rewardRandom});
@@ -426,6 +429,7 @@ function createApp(opts = {}) {
         relay: false,
         coopEnabled,
         localPacks:true,
+        mirrorRecorder:mirrors.enabled?1:0,
       });
     rate("api:" + clientIp(req), 6000, 60e3);
     const reads = [
@@ -556,6 +560,7 @@ function createApp(opts = {}) {
         for (const table of [
           "sessions",
           "save_operations",
+          "mirror_snapshots",
           "saves",
           "time_scores",
           "run_scores",
@@ -618,6 +623,11 @@ function createApp(opts = {}) {
         return { ...save(u.uid, s), report };
       });
       return json(res, 200, value);
+    }
+    if (route === '/mirrors/batch' && method === 'POST') {
+      rate('mirrors:'+u.uid,20,60e3);
+      if(!Array.isArray(b.records)||b.records.length>10)throw fail(400,'Invalid mirror batch');
+      return json(res,200,atomic(()=>mirrors.receive(u.uid,b.records)));
     }
     if (route === "/run/start") {
       const s = saved(u.uid).save;

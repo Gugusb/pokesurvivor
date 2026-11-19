@@ -14,7 +14,7 @@ G.SettingsUI = (() => {
   G.I18n.addChinese({'Todos los huecos pueden actuar a la vez. El seleccionado es principal; los demás usan la mitad de agilidad y aguante.':'所有技能槽可同时释放。选中槽为主要技能，其余技能按一半敏捷与耐力结算。','Principal':'主','Secundario':'副','Agilidad efectiva':'结算敏捷','Aguante efectivo':'结算耐力'});
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '0.45.0 · 2026-11-19';
+  const VERSION = '0.46.0 · 2026-11-19';
   const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 
@@ -107,6 +107,7 @@ G.SettingsUI = (() => {
         + choice('runSpeed',[[1,'1×'],[1.5,'1.5×'],[2,'2×'],[3,'3×']])
         + toggle('lowHealthSpeed','Vida baja: velocidad 1×','Por debajo del 50% de vida, vuelve a 1× y permanece así hasta que la cambies.')
         + toggle('manualAim','Apuntado manual','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.')
+        + toggle('mirrorRecording','Dejar una imagen de desafío','Guarda tu equipo y movimientos en aventuras normales para la futura Arena. No graba vídeo. Afecta a las próximas capturas.')
         + section('En móvil o tablet')
         + `<p class="sub">Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.</p>`
         + `<div class="set-row"><div class="grow"><b>Tamaño del joystick</b><small>Cuánto hay que arrastrar el dedo.</small></div></div>`
