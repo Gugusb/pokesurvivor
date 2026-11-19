@@ -966,6 +966,7 @@ G.Game = (() => {
       ctx.fillRect(0, 0, w, h);
     }
     hurtEdge();
+    G.Expedition?.drawEnemyPointers(ctx,w,h);
     if (!G.Judgment.cinematic) G.HUD.draw(ctx, w, h, pl, st);
     G.Judgment.drawOverlay(ctx, w, h);
     G.Touch.draw(ctx);

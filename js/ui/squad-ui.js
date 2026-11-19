@@ -55,6 +55,14 @@ G.SquadUI=(()=>{
   }
   function renderList(){
     const list=$('squad-list');list.replaceChildren();
+    if(canEdit()){
+      const release=node('div','squad-release-slot');
+      release.id='squad-release-slot';
+      release.dataset.squadDrop='release';
+      release.setAttribute('aria-label',L('Arrastra aquí para liberar','Drag here to release','拖入此处放生伙伴'));
+      release.append(node('span','squad-release-mark','↗'),node('b','',L('Liberar','Release','放生')),node('small','',L('Arrastra aquí','Drop companion here','拖入伙伴')));
+      list.append(release);
+    }
     const board=node('section','squad-field-panel');board.append(node('h3','',L('Equipo de combate','Battle squad','出战队伍')));
     const grid=node('div','squad-battle-grid');const line=document.createElementNS('http://www.w3.org/2000/svg','svg');line.setAttribute('viewBox','0 0 1000 320');line.setAttribute('class','squad-snake-path');line.innerHTML='<path d="M100 80 H900 Q975 80 975 160 Q975 240 900 240 H300" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="3 14" stroke-linecap="round"/>';grid.append(line);
     const formation=G.Squad.formation;
@@ -65,10 +73,10 @@ G.SquadUI=(()=>{
     }
     board.append(grid);list.append(board);
     const bonds=node('aside','squad-bonds');bonds.id='squad-bonds';list.append(bonds);renderBonds();
-    const warehouse=node('section','squad-warehouse');warehouse.dataset.squadDrop='bench';
+    const warehouse=node('section','squad-warehouse');
     const label=node('div','squad-warehouse-label');label.append(node('h3','',L('Reserva de compañeros','Companion reserves','候补仓库')+' '+G.Squad.reserves().length+' / '+G.Squad.RESERVE_LIMIT));
-    if(canEdit()){const release=node('div','squad-release-slot');release.id='squad-release-slot';release.dataset.squadDrop='release';release.setAttribute('aria-label',L('Arrastra aquí para liberar','Drag here to release','拖入此处放生伙伴'));release.append(node('span','squad-release-mark','↗'),node('b','',L('Liberar','Release','放生')),node('small','',L('Arrastra aquí','Drag here','拖入伙伴')));label.append(release);}warehouse.append(label);
-    const strip=node('div','squad-warehouse-strip');for(const p of G.Squad.reserves())strip.append(unit(p,true));const empty=node('div','squad-bench-empty',G.Squad.reserves().length>=G.Squad.RESERVE_LIMIT?L('Reserva llena','Reserves full','仓库已满'):L('Arrastra aquí para retirar un compañero','Drop here to bench a companion','拖到这里转为候补'));empty.dataset.squadDrop='bench';strip.append(empty);warehouse.append(strip);list.append(warehouse);
+    warehouse.append(label);
+    const strip=node('div','squad-warehouse-strip');strip.dataset.squadDrop='bench';for(const p of G.Squad.reserves())strip.append(unit(p,true));const empty=node('div','squad-bench-empty',G.Squad.reserves().length>=G.Squad.RESERVE_LIMIT?L('Reserva llena','Reserves full','仓库已满'):L('Arrastra aquí para retirar un compañero','Drop here to bench a companion','拖到这里转为候补'));strip.append(empty);warehouse.append(strip);list.append(warehouse);
     const finish=node('div','squad-finish');finish.append(button(canEdit()?L('Formación lista','Formation ready','完成编队'):L('Volver al combate','Return to battle','返回战斗'),close,'btn gold'));list.append(finish);
   }
   function renderBonds(){

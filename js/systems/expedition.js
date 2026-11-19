@@ -13,19 +13,166 @@ G.Expedition = (() => {
   }
   function button(text,fn,cls='btn'){const b=node('button',cls,text);b.type='button';b.onclick=fn;return b;}
   function portrait(p,size=72){return G.UI.spriteCanvas(p.spriteDex||p.dex,size,size,{scale:2,shiny:!!p.shiny,hero:true,lively:true});}
+  function prepCard(title){
+    const section=node('section','journey-prep-card');
+    section.append(node('h3','',title));
+    return section;
+  }
+  function prepCaptain(mon){
+    const save=G.DB.save,perks=G.Upgrades.perks(G.DB.upgradesOf(mon.dex));
+    const section=prepCard(L('Capitán','Captain','队长资料'));
+    const label=node('label','journey-select',L('Cambiar capitán','Change captain','更换队长'));
+    const select=node('select');select.id='journey-captain';
+    for(const p of G.DEX.filter(p=>G.DB.owns(p.dex)&&G.SPRITE_META[p.dex])){
+      const option=node('option','',T(p.name));
+      option.value=p.dex;option.selected=p.dex===mon.dex;select.append(option);
+    }
+    label.append(select);
+    const move=G.Moves.instance(G.startMoveOf(mon.dex));
+    const shiny=mon.dex===save.partner&&!!save.partnerShiny&&G.DB.ownsShiny(mon.dex);
+    const identity=node('div'),hero=node('div','journey-prep-hero');
+    identity.append(node('h4','',T(mon.name)),tags({mon,dex:mon.dex,moves:[move]}));
+    hero.append(portrait({...mon,shiny},92),identity);
+    const facts=node('dl','journey-prep-facts');
+    const add=(name,value)=>facts.append(node('dt','',name),node('dd','',value));
+    add(L('Movimiento inicial','Starting move','起始招式'),T(move.name)+' · '+G.Moves.classLabel(move));
+    const ability=G.Abilities.equipped(save,mon.dex);
+    const medal=G.AbilityDefs.BY_ID[save.abilityEquipped?.[mon.dex]];
+    add(L('Habilidad equipada','Equipped ability','已装备特性'),ability&&medal?T(medal.name):L('Ninguna','None','未装备'));
+    const z=save.zEquipped?.[mon.dex],mega=save.megaEquipped?.[mon.dex];
+    const active=G.Items.ACTIVE[G.Equipment.active(save,mon.dex)];
+    const carried=z?T(G.U.TYPE_NAME[z])+' · '+L('Cristal Z','Z-Crystal','Z纯晶'):G.Mega.owns(save,mega)?G.Mega.label(mega):active?T(active.name):L('Ninguno','None','未携带');
+    add(L('Equipo inicial','Starting equipment','起始携带'),carried);
+    const bans=(save.pban?.[mon.dex]||[]).slice(0,perks.bans).map(id=>G.Moves.BY_ID[id]).filter(Boolean);
+    if(bans.length)add(L('Movimientos vetados','Banned moves','禁学招式'),bans.map(m=>T(m.name)).join(' / '));
+    const stats=G.MonProgression.stats(mon.dex),numbers=node('dl','journey-prep-stats');
+    const labels={
+      hp:L('PS','HP','生命'),atk:L('Ataque','Attack','物攻'),spa:L('At. esp.','Sp. Atk','特攻'),
+      defense:L('Defensa','Defense','物防'),spdef:L('Def. esp.','Sp. Def','特防'),spd:L('Velocidad','Speed','移速'),
+      agility:L('Agilidad','Agility','敏捷'),stamina:L('Aguante','Stamina','耐力')
+    };
+    for(const [key,name] of Object.entries(labels)){
+      const cell=node('div');cell.append(node('dt','',name),node('dd','',G.PlayerStats.fmt(stats[key])));
+      numbers.append(cell);
+    }
+    section.append(label,hero,facts,node('p','note',L('Atributos base con valores individuales','Base stats with individual values','含个体修正的基础属性')),numbers);
+    return {section,select};
+  }
+  function prepItems(){
+    const section=prepCard(L('Objetos de la expedición','Expedition items','道具池与禁用'));
+    const pack=G.CardPacks.normalize(G.DB.save);
+    const available=[],disabled=[],locked=[];
+    for(const item of G.Items.LIST){
+      if(G.Items.permitted(item))available.push(item);
+      else if(pack.taken['item:'+item.id]&&pack.disabled[item.id])disabled.push(item);
+      else locked.push(item);
+    }
+    for(const [entries,title,kind] of [
+      [disabled,L('Desactivados','Disabled','已禁用'),'disabled'],
+      [locked,L('Sin desbloquear','Locked','未解锁'),'locked'],
+      [available,L('Disponibles','Available','已加入道具池'),'available']
+    ]){
+      const group=node('details','journey-prep-items');group.open=kind==='disabled';group.dataset.itemStatus=kind;
+      group.append(node('summary','',title+' · '+entries.length));
+      if(!entries.length)group.append(node('p','note',L('Ninguno','None','无')));
+      else{
+        const list=node('ul','journey-prep-item-list');
+        for(const item of entries){
+          const row=node('li','',T(item.name));row.dataset.itemId=item.id;row.title=T(item.desc);
+          if(kind==='available'&&item.boss)row.append(node('small','',L('Tienda Nv. 4+','Shop Lv. 4+','商店 Lv.4 起')));
+          list.append(row);
+        }
+        group.append(list);
+      }
+      section.append(group);
+    }
+    section.append(node('p','note',L('La selección de objetos se ajusta en la colección de paquetes.','Item availability is managed in the pack collection.','可在卡包收藏中调整已解锁道具的启用状态。')));
+    return section;
+  }
+  function prepCandidates(gens){
+    const section=prepCard(L('Pokémon de esta expedición','Pokémon in this expedition','本局宝可梦候选'));
+    if(!gens){
+      section.append(node('p','note',L('Prepara la ruta para consultar sus regiones y Pokémon.','Prepare the route to review its regions and Pokémon.','生成本局路线后可查看地区和宝可梦候选。')));
+      return section;
+    }
+    const regions=node('div','journey-prep-regions');
+    for(const g of gens)regions.append(node('span','',T(genNames[g-1])));
+    section.append(regions);
+    const pool=R.pool(gens);
+    const fallback=entries=>entries.length?entries:pool;
+    const foes=new Map();
+    for(const day of [1,5,9,13])for(const mon of fallback(R.encounterCandidates(pool,day,false)))foes.set(mon.dex,mon);
+    const bosses=fallback(R.encounterCandidates(pool,20,true));
+    const bossDex=new Set(bosses.map(mon=>mon.dex));
+    const recruitByLoot=new Set(R.shopFamilies([...foes.values()]).map(mon=>mon.dex));
+    const encounters=new Map([...foes,...bosses.map(mon=>[mon.dex,mon])]);
+    encounters.set(493,G.DEX_BY[493]);
+    const sources={recruit:R.shopFamilies(pool),enemy:[...encounters.values()]};
+    for(const entries of Object.values(sources))entries.sort((a,b)=>a.dex-b.dex);
+    const switches={recruit:L('Reclutables','Recruitable','可招募'),enemy:L('Encuentros','Encounters','战斗遭遇')};
+    let mode='recruit',page=0;
+    const picker=node('select');picker.setAttribute('aria-label',L('Origen','Source','来源'));
+    for(const [id,name] of Object.entries(switches)){
+      const option=node('option','',name+' · '+sources[id].length);
+      option.value=id;picker.append(option);
+    }
+    const search=node('input');search.type='search';
+    search.placeholder=L('Nombre, tipo o movimiento','Name, type or move','搜索名称、属性或招式');
+    search.setAttribute('aria-label',search.placeholder);
+    const toolbar=node('div','journey-prep-filter');toolbar.append(picker,search);
+    const results=node('div','journey-prep-candidates');
+    const nav=node('div','journey-prep-pagination'),counter=node('span');
+    const previous=button(L('Anterior','Previous','上一页'),()=>{page--;render();},'btn small');
+    const nextPage=button(L('Siguiente','Next','下一页'),()=>{page++;render();},'btn small');
+    nav.append(previous,counter,nextPage);
+    function render(){
+      const query=search.value.trim().toLowerCase();
+      const found=sources[mode].map(mon=>{
+        const move=mode==='recruit'?G.Moves.BY_ID[G.FIXED_SKILLS?.[mon.dex]||G.Moves.startFor(mon)]:null;
+        const types=mon.types.map(type=>T(G.U.TYPE_NAME[type]||type));
+        return {mon,types,name:T(mon.name),skill:move?T(move.name):'',move};
+      }).filter(({mon,types,name,skill})=>[name,mon.name,'#'+mon.dex,...types,skill].some(v=>v.toLowerCase().includes(query)));
+      const perPage=12,pages=Math.max(1,Math.ceil(found.length/perPage));
+      page=Math.max(0,Math.min(page,pages-1));previous.disabled=page===0;nextPage.disabled=page+1===pages;
+      counter.textContent=found.length?page+1+' / '+pages:L('Sin resultados','No results','没有匹配结果');
+      results.replaceChildren();
+      for(const {mon,types,name,skill,move} of found.slice(page*perPage,(page+1)*perPage)){
+        const card=node('article','journey-prep-mon');card.dataset.candidate=mon.dex;
+        const text=node('div');text.append(node('h4','',name),node('p','',types.join(' / ')));
+        if(mode==='recruit'){
+          card.style.borderColor=G.ExpeditionQuality.color(mon);
+          text.append(node('p','',G.ExpeditionQuality.label(mon)+' · ★'),node('p','',skill+' · '+G.ExpeditionTerms.skill(skillNames[move?.kind])));
+          text.append(node('small','',recruitByLoot.has(mon.dex)?L('Tienda / botín','Shop / loot','商店／战后邀请'):L('Tienda','Shop','商店')));
+        }else{
+          const labels=[];
+          if(foes.has(mon.dex))labels.push(L('Oleadas','Waves','战斗波次'));
+          if(bossDex.has(mon.dex))labels.push('BOSS');
+          if(mon.dex===493)labels.push(L('Jefe del día 60','Day 60 boss','第 60 天首领'));
+          text.append(node('small','',labels.join(' · ')));
+        }
+        const glyph=G.UI.spriteCanvas(mon.dex,44,44,{portrait:true,hero:true,shadow:false});
+        glyph.setAttribute('aria-hidden','true');card.append(glyph,text);results.append(card);
+      }
+    }
+    picker.onchange=()=>{
+      mode=picker.value;page=0;
+      search.placeholder=mode==='recruit'?L('Nombre, tipo o movimiento','Name, type or move','搜索名称、属性或招式'):L('Nombre o tipo','Name or type','搜索名称或属性');
+      search.setAttribute('aria-label',search.placeholder);render();
+    };
+    search.oninput=()=>{page=0;render();};
+    section.append(toolbar,results,nav);render();return section;
+  }
   function setup(){
     draft={dex:G.DB.save.partner,gens:null};
     const render=()=>{
-      const mon=G.DEX_BY[draft.dex],box=header(L('Elige a tu capitán','Choose your captain','选择小队队长'),L('Traza tu ruta, reúne compañeros y afronta a Arceus en el día 60.','Chart a route, gather companions and face Arceus on day 60.','规划路线、邀请伙伴，在第60天直面阿尔宙斯。'));
-      const hero=node('div','journey-captain');hero.append(portrait(mon,128),node('h3','',T(mon.name)));box.append(hero);
-      const label=node('label','journey-select',L('Capitán','Captain','队长')),select=node('select');select.id='journey-captain';
-      for(const p of G.DEX.filter(p=>G.DB.owns(p.dex)&&G.SPRITE_META[p.dex])){const opt=node('option','',T(p.name));opt.value=p.dex;opt.selected=p.dex===draft.dex;select.append(opt);}
-      select.onchange=()=>{draft.dex=+select.value;draft.gens=null;render();};label.append(select);box.append(label);
-      if(draft.gens){const gen=node('div','journey-gens');for(const g of draft.gens)gen.append(node('span','',T(genNames[g-1])));box.append(gen,node('p','note',L('Estas regiones aportan los encuentros y las invitaciones de esta partida.','These regions supply this run’s encounters and shop invitations.','本局遭遇和商店邀请来自这些地区。进化仍遵循各自的进化链。')));}
+      const mon=G.DEX_BY[draft.dex],box=header(L('Preparar expedición','Expedition preparation','远征战前准备'),L('Revisa al capitán y los recursos de la ruta antes de partir.','Review your captain and route resources before setting out.','出发前查看队长、本局宝可梦候选和道具池。'));
+      const prep=node('div','journey-prep'),{section,select}=prepCaptain(mon);
+      select.onchange=()=>{draft.dex=+select.value;draft.gens=null;render();$('journey-captain').focus();};
+      prep.append(section,prepItems(),prepCandidates(draft.gens));
       const actions=node('div','journey-actions');actions.append(button(L('Volver','Back','返回'),()=>{draft=null;G.MenuUI.open();}));
       if(!draft.gens)actions.append(button(L('Preparar ruta','Prepare route','生成本局世代'),()=>{draft.gens=R.generations(mon);render();},'btn gold'));
-      else actions.append(button(L('¡En marcha!','Set out!','出发'),async()=>{if(busy)return;busy=true;try{G.DB.save.partner=draft.dex;G.DB.commit();await G.Game.startRun(null,true);}finally{busy=false;}},'btn gold'));
-      box.append(actions);G.UI.show('scr-journey');
+      else actions.append(button(L('¡En marcha!','Set out!','出发'),async()=>{if(busy)return;busy=true;try{if(G.DB.save.partner!==draft.dex)G.DB.save.partnerShiny=false;G.DB.save.partner=draft.dex;G.DB.commit();await G.Game.startRun(null,true);}finally{busy=false;}},'btn gold'));
+      actions.classList.add('journey-prep-actions');box.append(actions,prep);G.UI.show('scr-journey');
     };render();
   }
   function begin(captain){
@@ -105,7 +252,8 @@ G.Expedition = (() => {
     controls.append(up,refresh,button(L('Seguir la ruta','Continue route','离开商店'),()=>finishStage(),'btn gold'));goods.append(controls,node('p','note',L('Calidad: blanco · verde · azul · morado · dorado. Cada invitación es de rango uno.','Quality: white · green · blue · purple · gold. All invitations start at one star.','品质边框：白 → 绿 → 蓝 → 紫 → 金。商店邀请均为1星，升级提高高品质概率。')));layout.append(goods);box.append(layout);G.UI.show('scr-journey');
   }
   function startBattle(kind){
-    run.phase='combat';run.kind=kind;run.elapsed=0;run.spawned=0;run.acc=0;run.kills=0;run.wave=R.wave(run.day);run.bossDead=false;run.waveType=Math.random()<.5?G.U.pick([...new Set(run.pool.flatMap(p=>p.types))]):null;
+    run.phase='combat';run.kind=kind;run.elapsed=0;run.spawned=0;run.acc=0;run.kills=0;run.wave=R.wave(run.day,kind);run.bossDead=false;run.waveType=Math.random()<.5?G.U.pick([...new Set(run.pool.flatMap(p=>p.types))]):null;
+    run.appeared=new Set();
     run.companion=null;run.companionResolved=false;run.loot={};run.goldStart=run.gold;run.extraStart=JSON.parse(JSON.stringify(G.Game.loot||{}));
     run.pendingSpawns=[];G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Pickups.clear();G.Hazards.clear();G.Path.clear();
     G.World.setBiome(Math.floor((run.day-1)/5));G.Squad.recover();
@@ -115,7 +263,7 @@ G.Expedition = (() => {
     G.UI.hideAll();G.Touch.reset();G.Game.expeditionResume();G.Audio.sfx('confirm');
   }
   function spawn(boss=false){
-    const cap=run.captain,wave=run.wave,tier=Math.min(6,Math.ceil(((run.day-1)%20+1)/4)),candidates=run.pool.filter(p=>boss?p.bst>=480:p.rarity<=Math.min(4,tier)&&p.bst<700);
+    const cap=run.captain,wave=run.wave,candidates=R.encounterCandidates(run.pool,run.day,boss);
     const same=Math.random()<.85,typed=!boss&&run.waveType?candidates.filter(p=>p.types.includes(run.waveType)===same):null,mon=boss&&run.day===60?G.DEX_BY[493]:G.U.pick(typed?.length?typed:candidates.length?candidates:run.pool);
     let x=cap.x,y=cap.y,free=false;for(let i=0;i<24;i++){const a=Math.random()*Math.PI*2,d=100+Math.sqrt(Math.random())*Math.max(180,G.Camera.outerRadius());x=cap.x+Math.cos(a)*d;y=cap.y+Math.sin(a)*d;if(G.World.isFree(x,y,20)){free=true;break;}}if(!free)return null;
     const behavior=boss?'chase':G.Enemies.behaviorOf(mon),def={dex:mon.dex,name:mon.name,hp:boss?350+run.day*24:12+(mon.baseStats?.hp||60)*.2,spd:boss?55:48+(mon.baseStats?.spe||60)*.15,dmg:boss?14:4+Math.min(8,mon.rarity),xp:boss?80:10+Math.floor(run.day/2),behavior,shotDmg:boss?14:5,shotCd:3.5,range:200};
@@ -124,17 +272,35 @@ G.Expedition = (() => {
     if(G.Sprites.hasShiny(mon.dex)&&Math.random()<G.Spawner.SHINY_RATE)e.makeShiny();
     run.pendingSpawns.push({enemy:e,left:2});G.Sprites.preload([mon.dex]);return e;
   }
+  function battlePressure(){
+    if(run.elapsed<run.wave.standardDuration)return null;
+    return run.kind==='battle'?'chase':'enraged';
+  }
+  function applyPressure(){
+    const pressure=battlePressure();
+    if(!pressure)return;
+    for(const enemy of G.EnemyMgr.all()){
+      if(!enemy.expedition||enemy.dead||enemy.expeditionPressure)continue;
+      enemy.expeditionPressure=pressure;
+      enemy.spd*=pressure==='enraged'?1.35:1.30;
+      if(pressure==='enraged')enemy.dmg*=1.50;
+    }
+  }
   function tick(dt){
     if(!run||run.phase!=='combat'||run.captain.dead)return;
     run.elapsed+=dt;
     for(const warning of run.pendingSpawns||[])warning.left-=dt;
     const ready=(run.pendingSpawns||[]).filter(w=>w.left<=0);run.pendingSpawns=(run.pendingSpawns||[]).filter(w=>w.left>0);
-    for(const w of ready)G.EnemyMgr.add(w.enemy);
+    for(const {enemy} of ready){
+      G.EnemyMgr.add(enemy);
+      run.appeared.add(enemy.dex);
+    }
+    applyPressure();
     if(run.kind!=='boss'){
-      run.acc+=dt*(run.wave.count/Math.max(8,run.wave.duration*.25));
+      run.acc+=dt*(run.wave.count/Math.max(8,run.wave.standardDuration*.25));
       while(run.acc>=1&&run.spawned<run.wave.count&&G.EnemyMgr.count+(run.pendingSpawns?.length||0)<64){const enemy=spawn();if(!enemy){run.acc=Math.min(run.acc,1);break;}run.acc--;run.spawned++;}
       const alive=G.EnemyMgr.all().filter(e=>!e.dead).length,cleared=run.spawned>=run.wave.count&&alive===0&&G.EnemyMgr.count===0&&!run.pendingSpawns?.length;
-      if(cleared||run.elapsed>=run.wave.duration)finishBattle(cleared);
+      if(cleared||(run.kind==='battle'&&run.elapsed>=run.wave.duration))finishBattle(cleared);
     }else if(!run.spawned){if(spawn(true))run.spawned=1;}else if(run.bossDead&&!G.EnemyMgr.all().some(e=>e.boss))finishBattle(true);
   }
   function drawWarnings(ctx){
@@ -142,15 +308,52 @@ G.Expedition = (() => {
     for(const w of run.pendingSpawns||[]){const e=w.enemy,r=e.boss?65:30,k=1-w.left/2;ctx.globalAlpha=.55+.35*Math.sin(k*Math.PI*8)**2;ctx.fillStyle='#571438';ctx.strokeStyle='#fff494';ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(e.x,e.y,r,r*.7,0,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.fillStyle='#fff';ctx.fillText('! '+Math.max(0,w.left).toFixed(1),e.x,e.y+5);}
     ctx.restore();
   }
+  function drawEnemyPointers(ctx,w,h){
+    if(run?.phase!=='combat'||battlePressure()!=='chase')return;
+    const cam=G.Camera,markers=new Map();
+    const centerX=w/2,centerY=h/2;
+    const horizontal=Math.max(12,centerX-22),vertical=Math.max(12,centerY-82);
+    for(const enemy of G.EnemyMgr.all()){
+      if(enemy.dead||!enemy.expedition)continue;
+      const y=enemy.y-enemy.bodyH/2;
+      if(cam.sees(enemy.x,y,0))continue;
+      const dx=(enemy.x-cam.x)*cam.scale,dy=(y-cam.y)*cam.scale;
+      const scale=Math.min(horizontal/Math.abs(dx),vertical/Math.abs(dy));
+      const x=centerX+dx*scale,screenY=centerY+dy*scale;
+      const edge=Math.abs(dx*scale)>=horizontal-.01?(dx<0?'left':'right'):(dy<0?'top':'bottom');
+      const key=edge+':'+Math.round((edge==='left'||edge==='right'?screenY:x)/30);
+      const marker=markers.get(key);
+      if(marker)marker.count++;
+      else markers.set(key,{x,y:screenY,angle:Math.atan2(dy,dx),count:1,edge});
+    }
+    if(!markers.size)return;
+    const meter=$('expedition-damage');
+    const bounds=meter&&!meter.hidden?meter.getBoundingClientRect():null;
+    ctx.save();
+    ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.textBaseline='middle';
+    for(const marker of markers.values()){
+      const x=marker.edge==='right'&&bounds&&marker.y>=bounds.top-15&&marker.y<=bounds.bottom+15
+        ?Math.max(22,bounds.left-18):marker.x;
+      ctx.save();ctx.translate(x,marker.y);ctx.rotate(marker.angle);
+      ctx.beginPath();ctx.moveTo(11,0);ctx.lineTo(-7,-7);ctx.lineTo(-7,7);ctx.closePath();
+      ctx.fillStyle='#ffcf66';ctx.strokeStyle='#37141c';ctx.lineWidth=3;ctx.stroke();ctx.fill();
+      ctx.restore();
+      if(marker.count>1){
+        ctx.fillStyle='#311c26';ctx.fillRect(x-11,marker.y+9,22,15);
+        ctx.fillStyle='#fff3c9';ctx.fillText(String(marker.count),x,marker.y+16);
+      }
+    }
+    ctx.restore();
+  }
   function killed(e){
     if(!run||run.phase!=='combat'||!e.expedition)return;
     run.kills++;run.gold+=e.boss?25:e.elite?5:1;
     if(e.boss)run.bossDead=true;
-    // One run-only companion per battle, received exclusively on the loot screen.
-    if(!e.boss&&!run.companion&&Math.random()<.12)run.companion=R.formForRank(e.dex,1);
   }
   function finishBattle(cleared){
-    if(run.phase!=='combat')return;G.SquadTraits?.finishBattle(cleared);if(run.day===60&&run.kind==='boss'&&cleared){run.arceus=true;run.cashout=true;}run.phase='rewards';run.pendingSpawns=[];const amount=Math.round(run.wave.coins*(run.kind==='elite'?1.8:run.kind==='boss'?3:1)*(cleared?1.5:1));run.gold+=amount;
+    if(run.phase!=='combat')return;
+    run.companion=R.lootCompanion(run.appeared,run.pool,G.Squad.shopLevel);
+    G.SquadTraits?.finishBattle(cleared);if(run.day===60&&run.kind==='boss'&&cleared){run.arceus=true;run.cashout=true;}run.phase='rewards';run.pendingSpawns=[];const amount=Math.round(run.wave.coins*(run.kind==='elite'?1.8:run.kind==='boss'?3:1)*(cleared?1.5:1));run.gold+=amount;
     G.EnemyMgr.update(0,G.Squad.actors());
     note=(cleared?L('¡Todos derrotados!','All foes defeated!','全歼奖励！'):L('Etapa superada','Stage survived','成功度过波次'))+' +'+amount+' '+L('oro','gold','局内金币');
     G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Hazards.clear();
@@ -225,9 +428,15 @@ G.Expedition = (() => {
   function continueAfterVictory(){if(!run)return;run.cashout=false;G.Server?.heartbeat?.().catch(()=>{});showRoute();}
   function reset(){run=null;G.Squad.reset();const el=$('journey-status');if(el)el.hidden=true;}
   function hud(){
-    const el=$('journey-status');if(!el)return;el.hidden=!run||G.Game.state!=='playing';if(el.hidden||performance.now()-lastHud<150)return;lastHud=performance.now();
-    el.textContent=L('Día','Day','第')+' '+run.day+(G.I18n.lang==='zh'?' 天':'')+' · '+L('Ciclo','Cycle','周期')+' '+R.cycleOf(run.day)+' · '+run.gold+' '+L('oro','gold','局内金币')+' · '+(run.kind==='boss'?L('Derrota al jefe','Defeat the Boss','击败BOSS'):Math.max(0,Math.ceil(run.wave.duration-run.elapsed))+'s')+' · '+(G.Squad.deployed().filter(p=>!p.dead).length+1)+'/'+G.Squad.capacity;
+    const el=$('journey-status');if(!el)return;el.hidden=run?.phase!=='combat'||G.Game.state!=='playing';if(el.hidden||performance.now()-lastHud<150)return;lastHud=performance.now();
+    const pressure=battlePressure(),seconds=Math.max(0,Math.ceil(run.wave.duration-run.elapsed));
+    let objective=seconds+'s';
+    if(pressure==='chase')objective+=L(' · Enemigos señalados',' · Enemies marked',' · 已标记屏外敌人');
+    else if(pressure==='enraged')objective=L('Enemigos enfurecidos','Enemies enraged','敌人已激怒');
+    else if(run.kind!=='battle')objective=L('Furia en ','Enrage in ','距激怒 ')+seconds+'s';
+    el.dataset.pressure=pressure||'';
+    el.textContent=L('Día','Day','第')+' '+run.day+(G.I18n.lang==='zh'?' 天':'')+' · '+L('Ciclo','Cycle','周期')+' '+R.cycleOf(run.day)+' · '+run.gold+' '+L('oro','gold','局内金币')+' · '+objective+' · '+(G.Squad.deployed().filter(p=>!p.dead).length+1)+'/'+G.Squad.capacity;
   }
   return {skillLabel:kind=>G.ExpeditionTerms.skill(skillNames[kind]),tags,talentText,refreshScreen,recordPickup,showLoot,claimCompanion,setup,begin,reset,choose,buy,refreshShop,upgrade,tick,killed,depart,continueAfterVictory,hud,summary,showRoute,
-    drawWarnings,get active(){return !!run;},get inCombat(){return run?.phase==='combat';},get phase(){return run?.phase;},get run(){return run;},get offers(){return offer;}};
+    drawWarnings,drawEnemyPointers,get active(){return !!run;},get inCombat(){return run?.phase==='combat';},get phase(){return run?.phase;},get run(){return run;},get offers(){return offer;}};
 })();

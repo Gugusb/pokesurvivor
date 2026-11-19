@@ -1039,7 +1039,7 @@
         else if (!unseen) e.lagT = 0;
         if ((unseen && e.lagT > LAG_T) || d2 > 1400 * 1400) {
           e.lagT = 0;
-          if (!G.Spawner.ahead(e, near)) { list.splice(i, 1); byId.delete(e.id); if (G.Coop.isHost) G.Coop.enemyGone(e, false); }
+          if (!G.Spawner.ahead(e, near) && !e.expedition) { list.splice(i, 1); byId.delete(e.id); if (G.Coop.isHost) G.Coop.enemyGone(e, false); }
         }
       }
       for (let i = corpses.length - 1; i >= 0; i--) {

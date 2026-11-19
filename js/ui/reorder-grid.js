@@ -2,6 +2,10 @@
 G.ReorderGrid=(()=>{
   function bind(root,{enabled=()=>true,onDrop=()=>{}}={}){
     let pending=null,ghost=null,target=null,blockClickUntil=0;
+    function dropAt(x,y){
+      const hit=document.elementFromPoint(x,y)?.closest('[data-squad-drop]');
+      return hit&&root.contains(hit)&&hit.dataset.squadDrop!=='locked'?hit:null;
+    }
     function clear(){
       pending?.element.classList.remove('dragging');target?.classList.remove('drop-target');ghost?.remove();
       pending=null;ghost=null;target=null;document.body.classList.remove('squad-drag-active');
@@ -22,13 +26,14 @@ G.ReorderGrid=(()=>{
         ghost.style.width=rect.width+'px';ghost.style.height=rect.height+'px';document.body.append(ghost);pending.element.classList.add('dragging');document.body.classList.add('squad-drag-active');
       }
       ghost.style.left=(e.clientX-ghost.offsetWidth/2)+'px';ghost.style.top=(e.clientY-ghost.offsetHeight/2)+'px';
-      const hit=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-squad-drop]'),next=hit&&root.contains(hit)&&hit.dataset.squadDrop!=='locked'?hit:null;
+      const next=dropAt(e.clientX,e.clientY);
       if(next!==target){target?.classList.remove('drop-target');target=next;target?.classList.add('drop-target');}
       const scroll=e.target.closest?.('.squad-warehouse-strip');if(scroll){const box=scroll.getBoundingClientRect();if(e.clientX>box.right-35)scroll.scrollLeft+=12;else if(e.clientX<box.left+35)scroll.scrollLeft-=12;}
     }
     function up(e){
       if(!pending||e.pointerId!==pending.pointer)return;
-      const key=pending.key,drop=target?.dataset.squadDrop,dragged=!!ghost;
+      const key=pending.key,dragged=!!ghost;
+      const drop=dragged?dropAt(e.clientX,e.clientY)?.dataset.squadDrop:null;
       if(dragged){e.preventDefault();blockClickUntil=performance.now()+250;}clear();
       if(dragged&&drop&&enabled())onDrop(key,drop);
     }

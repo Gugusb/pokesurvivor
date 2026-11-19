@@ -54,8 +54,8 @@ test('buff moves support only self and immediate formation neighbors at thirty p
 });
 
 test('battle recruitment is deferred, at most one companion; pending loot can wait for release and cannot be claimed twice',()=>{
- const s=setup(),g=s.G,E=controller(s);E.run.map[1][3].kind='battle';assert.ok(E.choose(1,3));s.random([0,0,0]);E.killed({expedition:true,dex:7});E.killed({expedition:true,dex:25});assert.equal(g.Squad.roster.length,0);assert.equal(E.run.companion,7);assert.equal(E.claimCompanion(),false);
- E.run.phase='rewards';E.recordPickup({kind:'xp',value:25});E.recordPickup({kind:'ticket',value:1});E.recordPickup({kind:'coin',value:12});E.showLoot(2);assert.equal(E.phase,'loot');assert.equal(E.run.levels,2);assert.equal(E.run.loot.xp,25);assert.equal(E.run.loot.coin,12);
+ const s=setup(),g=s.G,E=controller(s);E.run.map[1][3].kind='battle';assert.ok(E.choose(1,3));s.random([0]);E.run.appeared=new Set([9,25]);E.killed({expedition:true,dex:25});assert.equal(g.Squad.roster.length,0);assert.equal(E.run.companion,null);assert.equal(E.claimCompanion(),false);
+ E.run.spawned=E.run.wave.count;E.tick(E.run.wave.duration);assert.equal(E.phase,'rewards');assert.equal(E.run.companion,7);E.recordPickup({kind:'xp',value:25});E.recordPickup({kind:'ticket',value:1});E.recordPickup({kind:'coin',value:12});E.showLoot(2);assert.equal(E.phase,'loot');assert.equal(E.run.levels,2);assert.equal(E.run.loot.xp,25);assert.equal(E.run.loot.coin,12);
  for(const d of [6,37,3,26,65,68,94])g.Squad.recruit(d);assert.equal(E.claimCompanion(),false);assert.equal(E.run.companionResolved,false);g.Squad.release(g.Squad.reserves()[0]);assert.equal(E.claimCompanion(),true);assert.equal(E.claimCompanion(),false);assert.equal(g.Squad.reserves().length,4);
 });
 
@@ -81,7 +81,7 @@ test('non-Boss schedule distribution follows 10:2:5:5:3 including training and g
  const gens=R.generations(g.DEX_BY[6],rng);assert.equal(gens.length,3);assert.equal(new Set(gens).size,3);assert.ok(gens.includes(1));assert.ok(R.pool(gens).every(p=>gens.includes(p.gen)&&g.SPRITE_META[p.dex]));
 });
 test('cycle transition is a discrete large increase; finite waves have bounded spawn count and deadline',()=>{
- const R=setup().G.ExpeditionRules;for(let day=1;day<200;day++){const w=R.wave(day);assert.ok(w.count>0&&w.count<=168);assert.ok(w.duration>=24&&w.duration<=60);assert.ok(Number.isFinite(w.hp)&&Number.isFinite(w.dmg));}
+ const R=setup().G.ExpeditionRules;for(let day=1;day<200;day++){const w=R.wave(day);assert.ok(w.count>0&&w.count<=168);assert.ok(w.duration>=44&&w.duration<=80);assert.ok(Number.isFinite(w.hp)&&Number.isFinite(w.dmg));}
  close(R.wave(21).hp/R.wave(1).hp,3);close(R.wave(41).dmg/R.wave(21).dmg,1.8);for(const day of [20,40,60,80]){assert.ok(R.wave(day+1).hp>R.wave(day).hp);assert.ok(R.wave(day+1).dmg>R.wave(day).dmg);assert.ok(R.wave(day+1).speed>=R.wave(day).speed);}
  assert.equal(R.capacity(1),4);assert.equal(R.capacity(6),9);assert.ok(R.upgradeCost(5)>R.upgradeCost(1));
 });
@@ -123,8 +123,8 @@ test('timed world chests accumulate nearby time, lose progress away, and still o
  const s=setup(),g=s.G;s.load('js/systems/interact.js');const p=s.player(4),chest={type:'bigchest',x:0,y:0,r:14,open:0};let opens=0;g.World.specialsNear=()=>opens?[]:[chest];g.World.breakProp=()=>opens++;
  g.Interact.update(3,p);assert.equal(opens,0);close(chest.open,3);p.x=500;g.Interact.update(1,p);close(chest.open,1.5);p.x=0;g.Interact.update(1.99,p);assert.equal(opens,0);g.Interact.update(.02,p);assert.equal(opens,1);g.Interact.update(20,p);assert.equal(opens,1);
 });
-test('new expedition difficulty has fivefold enemy health and double finite-wave spawn frequency, with the original deadline and field cap',()=>{
- const R=setup().G.ExpeditionRules;for(const day of [1,20,21,40,60]){const c=R.cycleOf(day),w=(day-1)%20+1;close(R.wave(day).hp,5*(1+.8*Math.pow(w/20,1.7))*Math.pow(3,c-1));assert.equal(R.wave(day).count,2*(12+Math.min(72,day*2)));close(R.wave(day).duration,Math.min(60,24+day*1.2));}
+test('expedition waves retain spawn counts and add twenty seconds only to the ordinary deadline',()=>{
+ const R=setup().G.ExpeditionRules;for(const day of [1,20,21,40,60]){const c=R.cycleOf(day),w=(day-1)%20+1;close(R.wave(day).hp,5*(1+.8*Math.pow(w/20,1.7))*Math.pow(3,c-1));assert.equal(R.wave(day).count,2*(12+Math.min(72,day*2)));const standard=Math.min(60,24+day*1.2);close(R.wave(day).duration,standard+20);close(R.wave(day,'elite').duration,standard);close(R.wave(day,'boss').duration,standard);}
 });
 test('drag formation can swap active and reserve partners, leave an empty field slot and deploy again without changing membership',()=>{
  const s=setup(),g=s.G,leader=s.player(4);g.Squad.begin(leader);const a=g.Squad.recruit(6),b=g.Squad.recruit(7),c=g.Squad.recruit(25),d=g.Squad.recruit(133),ids=g.Squad.roster.map(p=>p.squadId);assert.equal(g.Squad.reserves()[0],d);

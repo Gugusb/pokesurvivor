@@ -1,6 +1,6 @@
 /* Pure rules shared by the expedition UI, tests and account service. */
 G.ExpeditionRules = (() => {
-  const DAYS=20, COLS=7, MAX_SHOP=6;
+  const DAYS=20, COLS=7, MAX_SHOP=6, FINAL_CHASE=20;
   const weights=[['battle',10],['elite',2],['shop',5],['rest',5],['training',3]];
   function roll(rng=Math.random){let n=rng()*weights.reduce((n,[,w])=>n+w,0);for(const [id,w]of weights){n-=w;if(n<0)return id;}return 'rest';}
   function matrix(cycle=1,rng=Math.random){
@@ -10,9 +10,10 @@ G.ExpeditionRules = (() => {
   const cycleOf=day=>Math.floor(Math.max(0,day-1)/DAYS)+1;
   const capacity=level=>3+Math.max(1,Math.min(MAX_SHOP,level));
   const upgradeCost=level=>60+level*45;
-  const wave=day=>{
+  const wave=(day,kind='battle')=>{
     const cycle=cycleOf(day),within=(day-1)%DAYS+1,boost=Math.pow(3,cycle-1);
-    return {count:2*Math.round(12+Math.min(72,day*2)),duration:Math.min(60,24+day*1.2),
+    const standardDuration=Math.min(60,24+day*1.2);
+    return {count:2*Math.round(12+Math.min(72,day*2)),standardDuration,duration:standardDuration+(kind==='battle'?FINAL_CHASE:0),
       hp:5*(1+.8*Math.pow(within/20,1.7))*boost,dmg:(1+.35*Math.pow(within/20,1.3))*Math.pow(1.8,cycle-1),
       speed:Math.min(1.8,1+within*.005+(cycle-1)*.12),coins:Math.round(35+day*4)};
   };
@@ -37,10 +38,28 @@ G.ExpeditionRules = (() => {
     return current;
   }
   const qualityRates=[[.70,.25,.05,0,0],[.50,.30,.17,.03,0],[.30,.35,.25,.09,.01],[.15,.30,.32,.20,.03],[.08,.20,.32,.32,.08],[.03,.10,.25,.40,.22]];
+  const ratesAt=level=>qualityRates[Math.max(0,Math.min(MAX_SHOP-1,Math.floor(level)-1))];
+  const quality=mon=>G.ExpeditionQuality?.quality(mon)||mon.rarity;
+  function shopFamilies(pool){
+    const roots=new Set(pool.map(mon=>formForRank(mon.dex,1)));
+    return [...roots].map(dex=>G.DEX_BY[dex]);
+  }
+  function encounterCandidates(pool,day,boss){
+    const maxRarity=Math.min(4,Math.ceil(((day-1)%DAYS+1)/4));
+    return pool.filter(mon=>boss?mon.bst>=480:mon.rarity<=maxRarity&&mon.bst<700);
+  }
   function shopMon(pool,level,rng=Math.random){
-    const families=[...new Map(pool.map(p=>[G.MonProgression.rootFor(p.dex),G.DEX_BY[formForRank(p.dex,1)]])).values()],q=p=>G.ExpeditionQuality?.quality(p)||p.rarity,buckets=Array.from({length:5},(_,i)=>families.filter(p=>q(p)===i+1)),rates=qualityRates[Math.max(0,Math.min(MAX_SHOP-1,Math.floor(level)-1))];
+    const families=shopFamilies(pool),buckets=Array.from({length:5},(_,i)=>families.filter(p=>quality(p)===i+1)),rates=ratesAt(level);
     const sum=rates.reduce((n,w,i)=>n+(buckets[i].length?w:0),0);if(!sum)return families[Math.min(families.length-1,Math.floor(rng()*families.length))];
     let roll=rng()*sum;for(let i=0;i<5;i++)if(buckets[i].length){roll-=rates[i];if(roll<0){const a=buckets[i];return a[Math.min(a.length-1,Math.floor(rng()*a.length))];}}return families[0];
+  }
+  function lootCompanion(appeared,pool,level,rng=Math.random){
+    const cap=ratesAt(level).reduce((max,chance,i)=>chance>0?i+1:max,1);
+    const eligible=entries=>shopFamilies(entries).filter(mon=>G.SPRITE_META[mon.dex]&&quality(mon)<=cap);
+    let candidates=eligible([...appeared].map(dex=>G.DEX_BY[dex]).filter(Boolean));
+    if(!candidates.length)candidates=eligible(pool);
+    if(!candidates.length)candidates=eligible(G.DEX);
+    return candidates[Math.floor(rng()*candidates.length)]?.dex||null;
   }
   const monCost=p=>18+(G.ExpeditionQuality?.quality(p)||p.rarity)*12;
   const rankRates=Array.from({length:MAX_SHOP},()=>[1,0,0]);
@@ -49,5 +68,5 @@ G.ExpeditionRules = (() => {
     const day=Math.max(0,Math.min(10000,Math.floor(Number(input?.day)||0))),arceus=!!(old.arceus||day>=60&&input?.arceus===true);
     return {day:Math.max(day,old.day||0),arceus,cashout:arceus&&day===60&&input?.cashout===true&&!(old.arceus&&old.cashout===false)};
   }
-  return {DAYS,COLS,MAX_SHOP,weights,matrix,reachable,cycleOf,capacity,upgradeCost,wave,generations,pool,next,border,formForRank,shopMon,shopRank,rankRates,qualityRates,monCost,progress};
+  return {DAYS,COLS,MAX_SHOP,FINAL_CHASE,weights,matrix,reachable,cycleOf,capacity,upgradeCost,wave,generations,pool,next,border,formForRank,shopFamilies,encounterCandidates,shopMon,lootCompanion,shopRank,rankRates,qualityRates,monCost,progress};
 })();

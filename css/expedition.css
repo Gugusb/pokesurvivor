@@ -81,3 +81,45 @@
 .journey-loot-preview .journey-tags{justify-content:center}
 .journey-loot-preview .journey-loot-rank,.journey-loot-preview .journey-loot-move{color:#ffe5a0;font-size:14px;line-height:1.6;margin:8px 0}
 .journey-loot-preview .journey-shop-trait{text-align:left;margin:10px 0 0}
+
+.journey-prep-actions{justify-content:flex-start;margin:0 0 16px}
+body:has(#scr-journey:not(.hidden) .journey-prep) :is(#topbar,#credits-line){display:none}
+.journey-prep{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:14px}
+.journey-prep-card{min-width:0;padding:16px;border:1px solid #396182;border-radius:14px;background:#122a40}
+.journey-prep-card:last-child{grid-column:1/-1}
+.journey-prep-card h3{margin:0 0 12px;color:#dcf4ff;font-size:17px}
+.journey-prep-card h4{margin:0;color:#fff2ce}
+.journey-prep-card .journey-select{justify-content:flex-start;flex-wrap:wrap}
+.journey-prep-hero{display:flex;align-items:center;gap:12px;margin:8px 0}
+.journey-prep-hero canvas{flex:none;width:76px;height:76px;image-rendering:pixelated}
+.journey-prep-facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 10px;margin:8px 0;font-size:13px}
+.journey-prep dt{color:#aacada}
+.journey-prep dd{margin:0;overflow-wrap:anywhere}
+.journey-prep-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0;text-align:center}
+.journey-prep-stats div{padding:6px 3px;border-radius:7px;background:#1c3b55;font-size:12px}
+.journey-prep-stats dd{color:#ffe3a1;font-variant-numeric:tabular-nums}
+.journey-prep-items{border-top:1px solid #396182;padding:8px 0}
+.journey-prep-items summary{cursor:pointer;color:#e1f3fa}
+.journey-prep-items[data-item-status=disabled] summary{color:#ffbfb0}
+.journey-prep-item-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;max-height:184px;overflow:auto;margin:8px 0 0;padding:0;list-style:none}
+.journey-prep-item-list li{padding:6px 8px;background:#1a354c;border-radius:6px;font-size:12px}
+.journey-prep-item-list small{display:block;color:#a3c5d9}
+.journey-prep-regions{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.journey-prep-regions span{padding:3px 10px;border:1px solid #537da1;border-radius:20px;background:#193653;color:#bedfff;font-size:12px}
+.journey-prep-filter{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.journey-prep-filter input,.journey-prep-filter select{min-width:0;padding:7px 10px;border:1px solid #537da1;border-radius:8px;background:#10243c;color:#e2f3ff;font:inherit}
+.journey-prep-filter input{flex:1;min-width:min(100%,180px)}
+.journey-prep-candidates{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:8px}
+.journey-prep-mon{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #47708f;border-radius:9px;background:#132237;overflow-wrap:anywhere}
+.journey-prep-mon canvas{flex:none;width:40px;height:40px;image-rendering:pixelated}
+.journey-prep-mon h4,.journey-prep-mon p{font-size:12px;margin:0;line-height:1.55}
+.journey-prep-mon small{color:#a5c5d7;font-size:11px}
+.journey-prep-pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:12px;font-size:12px}
+@media(max-width:660px){.journey-prep{grid-template-columns:minmax(0,1fr)}.journey-prep-card{padding:12px}.journey-prep-candidates{grid-template-columns:repeat(auto-fit,minmax(136px,1fr))}}
+
+.squad-formation-surface:has(> .squad-release-slot){grid-template-areas:'release release' 'board bonds' 'warehouse finish'}
+.squad-formation-surface > .squad-release-slot{grid-area:release;position:sticky;top:0;z-index:5;flex-direction:row;gap:10px;min-height:46px;padding:8px 12px;background:#4c2c3d}
+.squad-formation-surface > .squad-release-slot.drop-target{background:#913c51!important}
+#journey-status[data-pressure=chase]{border-color:#efbb58;color:#ffe5a4}
+#journey-status[data-pressure=enraged]{border-color:#ff8279;color:#ffc9bb}
+@media(max-width:660px){.squad-formation-surface:has(> .squad-release-slot){grid-template-areas:'release' 'board' 'warehouse' 'bonds' 'finish'}}
