@@ -82,7 +82,7 @@ G.Game = (() => {
   }
   function toggleSquad(){
     if(G.SquadUI?.isOpen()){G.SquadUI.close();return;}
-    if(!pl||pl.dead||!G.Expedition?.active||!['playing','journey','paused'].includes(state)||G.ZMoves?.busy(pl)||G.SettingsUI?.isOpen)return;
+    if(!pl||pl.dead||!G.Expedition?.active||!['playing','journey','paused'].includes(state)||G.Expedition?.phase==='battle-result'||G.ZMoves?.busy(pl)||G.SettingsUI?.isOpen)return;
     const previous=state;state='squad';G.Touch.reset();
     G.SquadUI.show({editable:['route','shop','loot'].includes(G.Expedition.phase),onClose:()=>{
       const expeditionMenu=G.Expedition?.active&&['route','shop','loot'].includes(G.Expedition.phase);
@@ -665,6 +665,7 @@ G.Game = (() => {
   // ---------------- teclado ----------------
 
   function handleKeys() {
+    if(G.Expedition?.phase==='battle-result')return;
     if(G.SquadUI?.isOpen()){if(G.Input.tap('keyt'))G.SquadUI.close();else if(G.Input.tap('escape'))G.SquadUI.back();return;}
     if(G.BackpackUI.isOpen()){if(G.Input.tap('keye')||G.Input.tap('escape'))toggleBackpack();return;}
     if(G.UI.isOpen('scr-specialization')){for(let i=0;i<3;i++)if(G.Input.tap('digit'+(i+1))||G.Input.tap('numpad'+(i+1)))G.SpecializationUI.pick(i);if(G.Input.tap('keyr'))G.SpecializationUI.reroll();return;}
@@ -764,6 +765,7 @@ G.Game = (() => {
     if (state === 'playing') G.Settings.sample(real);
     fpsAcc += real; fpsN++;
     if (fpsAcc >= 0.5) { fpsShown = Math.round(fpsN / fpsAcc); fpsAcc = 0; fpsN = 0; }
+    G.Expedition?.tickPresentation();
     handleKeys();
     const networkDt = step * runSpeed;
     step *= G.ZMoves ? G.ZMoves.timeFactor() : 1;

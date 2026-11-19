@@ -1,7 +1,8 @@
 /* Schedule-driven solo expedition. Account resources and expedition gold are separate. */
 G.Expedition = (() => {
   const R=G.ExpeditionRules;
-  let run=null,draft=null,offer=[],note='',busy=false,lastHud=0;
+  let run=null,draft=null,offer=[],note='',busy=false,lastHud=0,battleResult=null;
+  const BATTLE_RESULT_MS=1500;
   const T=s=>G.T(s),L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
   const $=id=>document.getElementById(id),node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;};
   const eventName=k=>({battle:L('Combate','Battle','战斗'),elite:L('Combate de élite','Elite battle','精英战斗'),shop:L('Tienda Pokémon','Pokémon shop','宝可梦商店'),training:L('Dojo de movimientos','Skill training','技能修炼'),'pokemon-training':L('Sala Pokémon','Pokémon training room','宝可梦训练室'),wild:L('Exploración silvestre','Wild expedition','野外探险'),rest:L('Descanso','Rest stop','休整'),boss:L('Combate de jefe','Boss battle','BOSS战'),start:L('Partida','Start','出发')})[k];
@@ -177,6 +178,7 @@ G.Expedition = (() => {
     };render();
   }
   function begin(captain){
+    clearBattleResult();
     const gens=draft?.gens||R.generations(captain.mon);run={...G.Economy.create(),captain,gens,pool:R.pool(gens),day:0,row:0,col:3,cycle:1,map:R.matrix(1),phase:'route',arceus:false,cashout:false,history:[],kills:0};
     offer=[];run.shopLocked=false;run.emblems={};G.Squad.begin(captain);run.unitPool=new G.UnitPool(run.pool);G.Squad.syncTrainer();G.ExpeditionRecorder?.beginRun();draft=null;note='';showRoute();
   }
@@ -381,12 +383,34 @@ G.Expedition = (() => {
     if(run.kind!=='boss'){run.companionOffer=run.unitPool.draw(Math.min(G.EconomyConfig.levels.at(-1).level,run.trainerLevel+(run.kind==='elite'?1:0)));run.companion=run.companionOffer?.dex||null;}
     if(run.kind==='boss'){const types=Object.keys(G.U.TYPE_NAME);run.bossEmblemChoices=[];while(run.bossEmblemChoices.length<G.EconomyConfig.bossEmblem.choices)run.bossEmblemChoices.push(types.splice(Math.floor(Math.random()*types.length),1)[0]);run.bossEmblemClaimed=false;}
     run.remainingHpRatio=Math.max(0,run.captain.hp/run.captain.maxHp);
-    G.SquadTraits?.finishBattle(cleared);if(run.day===G.EconomyConfig.cycleLengthDays*G.EconomyConfig.clearCycleThreshold&&run.kind==='boss'&&cleared){run.arceus=true;run.cashout=true;}run.phase='rewards';run.pendingSpawns=[];
+    G.SquadTraits?.finishBattle(cleared);if(run.day===G.EconomyConfig.cycleLengthDays*G.EconomyConfig.clearCycleThreshold&&run.kind==='boss'&&cleared){run.arceus=true;run.cashout=true;}run.phase='battle-result';run.pendingSpawns=[];
     G.EnemyMgr.update(0,G.Squad.actors());
     note=cleared?L('¡Todos derrotados!','All foes defeated!','全歼奖励！'):L('Etapa superada','Stage survived','成功度过波次');
     G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Hazards.clear();
     const rewards=G.EconomyConfig.compatibility,itemCount=cleared?(run.kind==='battle'?rewards.normalClearItems:run.kind==='elite'?rewards.eliteVictoryItems:0):0;
     for(let i=0;i<itemCount;i++)G.Pickups.drop('item',run.captain.x,run.captain.y,G.Items.roll());
+    showBattleResult(cleared);
+  }
+  function clearBattleResult(){
+    battleResult?.element.remove();battleResult=null;
+  }
+  function showBattleResult(cleared){
+    clearBattleResult();G.Game.expeditionPause();G.Touch.reset();
+    const banner=node('div','expedition-battle-result');banner.id='expedition-battle-result';banner.dataset.cleared=String(cleared);
+    banner.setAttribute('role','status');banner.setAttribute('aria-live','polite');
+    const strip=node('div','expedition-battle-result-strip');
+    strip.append(node('small','',L('Día ','Day ','第')+run.day+(G.I18n.lang==='zh'?'天':'')+' · '+L('Combate terminado','Battle complete','战斗结束')),
+      node('strong','expedition-battle-result-title',cleared?L('¡Todos los enemigos derrotados!','ALL ENEMIES DEFEATED','全灭敌人'):L('TIEMPO AGOTADO','TIME UP','时间结束')),
+      node('span','',L('Preparando el botín','Preparing battle loot','准备结算战利品')));
+    banner.append(strip);document.body.append(banner);
+    battleResult={run,element:banner,until:performance.now()+BATTLE_RESULT_MS};
+  }
+  // Presentation uses wall time, independently of simulation speed and hit stops.
+  function tickPresentation(){
+    if(!battleResult)return;
+    if(run!==battleResult.run||run?.phase!=='battle-result'||run.captain.dead||['over','ui'].includes(G.Game.state)){clearBattleResult();return;}
+    if(performance.now()<battleResult.until)return;
+    clearBattleResult();run.phase='rewards';G.Game.expeditionResume();
   }
   function recordPickup(p){
     if(!run||!['combat','rewards'].includes(run.phase))return;
@@ -460,7 +484,7 @@ G.Expedition = (() => {
     if(run.freeShopPending){run.freeShopPending=false;openShop(true);}else showRoute();
   }
   function continueAfterVictory(){if(!run)return;run.cashout=false;G.Server?.heartbeat?.().catch(()=>{});if(run.freeShopPending){run.freeShopPending=false;openShop(true);}else showRoute();}
-  function reset(){G.ExpeditionRecorder?.reset();run=null;G.Squad.reset();const el=$('journey-status');if(el)el.hidden=true;}
+  function reset(){clearBattleResult();G.ExpeditionRecorder?.reset();run=null;G.Squad.reset();const el=$('journey-status');if(el)el.hidden=true;}
   function hud(){
     const el=$('journey-status');if(!el)return;el.hidden=run?.phase!=='combat'||G.Game.state!=='playing';if(el.hidden||performance.now()-lastHud<150)return;lastHud=performance.now();
     const pressure=battlePressure(),seconds=Math.max(0,Math.ceil(run.wave.duration-run.elapsed));
@@ -471,6 +495,6 @@ G.Expedition = (() => {
     el.dataset.pressure=pressure||'';
     el.textContent=L('Día','Day','第')+' '+run.day+(G.I18n.lang==='zh'?' 天':'')+' · '+L('Ciclo','Cycle','周期')+' '+R.cycleOf(run.day)+' · '+run.gold+' '+L('oro','gold','局内金币')+' · '+objective+' · '+(G.Squad.deployed().filter(p=>!p.dead).length+1)+'/'+G.Squad.capacity;
   }
-  return {skillLabel:kind=>G.SquadBonds.label(kind),tags,talentText,refreshScreen,recordPickup,showLoot,claimCompanion,setup,begin,reset,choose,buy,refreshShop,toggleShopLock,upgrade,tick,killed,depart,continueAfterVictory,hud,summary,showRoute,
+  return {skillLabel:kind=>G.SquadBonds.label(kind),tags,talentText,refreshScreen,recordPickup,showLoot,claimCompanion,setup,begin,reset,choose,buy,refreshShop,toggleShopLock,upgrade,tick,tickPresentation,killed,depart,continueAfterVictory,hud,summary,showRoute,
     drawWarnings,drawEnemyPointers,get active(){return !!run;},get inCombat(){return run?.phase==='combat';},get phase(){return run?.phase;},get run(){return run;},get offers(){return offer;}};
 })();

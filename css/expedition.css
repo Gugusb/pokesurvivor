@@ -147,3 +147,13 @@ body:has(#scr-journey:not(.hidden) .journey-prep) :is(#topbar,#credits-line){dis
 @media(max-width:520px){.journey-goods{grid-template-columns:minmax(0,1fr)}}
 @media(max-width:660px){.journey-event-economy{font-size:9px}.journey-odds{gap:5px}.journey-odds span{padding:4px 7px;font-size:12px}}
 @media(max-width:660px){.squad-formation-surface:has(> .squad-release-slot){grid-template-areas:'release' 'board' 'warehouse' 'bonds' 'finish'}}
+/* Brief battle outcome presentation, timed in real seconds at every simulation speed. */
+.expedition-battle-result{position:fixed;inset:0;z-index:180;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at center,#08162422,#030b1855);cursor:default;touch-action:none;user-select:none}
+.expedition-battle-result-strip{width:min(100%,1100px);display:flex;flex-direction:column;align-items:center;gap:15px;padding:32px 15px;text-align:center;color:#d6edff;border-block:2px solid #84c8f288;background:linear-gradient(90deg,#081a3200,#081a32ef 18%,#081a32ef 82%,#081a3200);animation:battle-result-enter .18s ease-out}
+.expedition-battle-result-strip small{font:600 clamp(12px,2vw,18px)/1.5 system-ui;letter-spacing:3px;color:#b6d6ec}
+.expedition-battle-result-title{font:900 clamp(32px,7vw,84px)/1.25 system-ui;letter-spacing:clamp(1px,.6vw,8px);text-shadow:0 3px 0 #071222,0 0 25px #75caff66;overflow-wrap:anywhere}
+.expedition-battle-result-strip>span{font:500 clamp(12px,2vw,17px)/1.5 system-ui;color:#b3c8dc}
+.expedition-battle-result[data-cleared=true] .expedition-battle-result-strip{border-color:#ffdc8da6;color:#ffe6a1;background:linear-gradient(90deg,#271c1000,#271c10ed 18%,#271c10ed 82%,#271c1000)}
+.expedition-battle-result[data-cleared=true] .expedition-battle-result-title{text-shadow:0 3px 0 #281409,0 0 28px #ffc95277}
+@keyframes battle-result-enter{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+@media(prefers-reduced-motion:reduce){.expedition-battle-result-strip{animation:none}}
