@@ -451,7 +451,9 @@
         1,
         1.5
       ],
-      "pierceGrowth": 0.2
+      "pierceGrowth": 0.2,
+      "maxSizeMultiplier": 6,
+      "maxRadius": 128
     },
     "melee": {
       "range": [

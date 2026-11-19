@@ -63,14 +63,19 @@ G.SquadBonds=(()=>{
   }
   function onPierce(p){
     if(!(p.pierce>0)||!p.bondPierceGrowth||p.zMove)return;
-    const k=1+p.bondPierceGrowth;p.visualScale=(p.visualScale||(p.r>=8?1.5:1))*k;p.r*=k;p.dmg*=k;
+    const k=1+p.bondPierceGrowth,c=cfg().projectile;
+    p.bondBaseR??=p.r;p.bondBaseScale??=p.visualScale||(p.r>=8?1.5:1);
+    p.bondSizeGrowth=Math.min(c.maxSizeMultiplier,(p.bondSizeGrowth||1)*k);
+    p.r=Math.min(c.maxRadius,p.bondBaseR*p.bondSizeGrowth);p.visualScale=p.bondBaseScale*p.r/p.bondBaseR;
+    // Keep damage growing independently of the size cap; leave headroom for later multipliers.
+    const before=p.dmg;p.dmg=Math.min(Number.MAX_VALUE/1e12,p.dmg*k);const damageK=before>0?p.dmg/before:1;
     const factors=[...(p.bondDamageContributions||[])],i=factors.findIndex(([id])=>id==='projectile');
-    if(i>=0)factors[i]=['projectile',factors[i][1]*k];else factors.push(['projectile',k]);p.bondDamageContributions=factors;
+    if(i>=0)factors[i]=['projectile',factors[i][1]*damageK];else factors.push(['projectile',damageK]);p.bondDamageContributions=factors;
   }
   function description(kind){
     const note=L(' Valores a 0/200/500 capas; después crecen a media pendiente.',' Values at 0/200/500 stacks; growth continues at half slope afterward.','数值对应0/200/500层；500层后按末段一半增速继续成长。');
     return ({
-      projectile:L('3: agilidad y aguante +50/100/150%. 6: cada perforación multiplica tamaño y daño por 1,2.','3: agility and stamina +50/100/150%. 6: each penetration multiplies size and damage by 1.2.','3：结算敏捷、耐力+50/100/150%。6：每次穿透后体积与伤害×1.2。')+note,
+      projectile:L('3: agilidad y aguante +50/100/150%. 6: cada perforación multiplica tamaño y daño por 1,2 (tamaño: máximo ×6, radio 128).','3: agility and stamina +50/100/150%. 6: each penetration multiplies size and damage by 1.2 (size capped at ×6, radius 128).','3：结算敏捷、耐力+50/100/150%。6：每次穿透后体积与伤害×1.2，尺寸最多初始6倍、半径上限128，伤害继续成长。')+note,
       melee:L('3: alcance +50/100/150%. 6: cada enemigo a 180 aporta 10% agilidad y 2% robo de vida, máximo 10.','3: splash range +50/100/150%. 6: each enemy within 180 grants 10% agility and 2% lifesteal, up to 10.','3：溅射范围+50/100/150%。6：180范围内每名敌人提供10%敏捷、2%吸血，最多计10名。')+note,
       beam:L('3: rayos más largos. 6: canaliza con PP.','3: longer beams. 6: channel by spending PP.','3：能量柱更长。6：持续消耗PP维持光柱。'),
       chain:L('3: más saltos. 6: saltos retardados, breve pausa y más agilidad.','3: more jumps. 6: delayed jumps, a brief stagger and more agility.','3：连锁数量提高。6：敏捷提高，延迟连锁使目标短暂停顿，可同时释放新连锁。'),

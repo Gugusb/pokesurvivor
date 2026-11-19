@@ -661,6 +661,8 @@ G.Combat = (() => {
 
     for (let i = projectiles.length - 1; i >= 0; i--) {
       const p = projectiles[i];
+      if(![p.x,p.y,p.r,p.dmg].every(Number.isFinite)||p.r<=0){G.Projectiles.remove(p);continue;}
+
 
       // --- disparos enemigos: paredes y objetos sólidos dan cobertura ---
       if (!p.friendly) {

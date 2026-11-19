@@ -31,6 +31,10 @@ G.Projectiles = (() => {
       if (p.boom) p.boom /= k;
     }
     if (p.friendly && !p.orb && !p.phits) p.phits = new Set();
+    if(p.bondPierceGrowth&&!p.zMove){
+      const c=G.EconomyConfig.classBonds.projectile;
+      p.r=Math.min(c.maxRadius,p.r);p.bondBaseR=p.r;p.bondBaseScale=p.visualScale||(p.r>=8?1.5:1);p.bondSizeGrowth=1;
+    }
     list.push(p);
     return p;
   }

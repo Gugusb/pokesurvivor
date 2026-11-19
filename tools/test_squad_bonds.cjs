@@ -70,3 +70,15 @@ test('beam channel and delayed chain keep established effects and PP consumption
 test('class damage attribution conserves actual damage across member and bond rows',()=>{
  const s=setup('aura'),g=s.G,e=enemy(s);const m=g.SquadBonds.move(s.p,s.m);g.ExpeditionDamage.record(s.p,m,120);const rows=g.ExpeditionDamage.snapshot();close(rows.reduce((n,r)=>n+r.damage,0),120);close(rows.find(r=>r.type==='bloom').damage,20);close(rows.find(r=>r.kind==='pokemon').damage,100);
 });
+
+test('boomerang penetration growth has bounded collision and art while preserving repeated damage scaling',()=>{
+ const s=setup('boomerang'),g=s.G;enemy(s,60);cast(s);const p=g.Projectiles.all()[0],base=p.dmg,r=p.r,art=p.visualScale||(r>=8?1.5:1);
+ for(let i=0;i<80;i++){g.SquadBonds.onPierce(p);p.pierce--;}
+ assert.ok(p.r<=Math.min(r*6,128));assert.ok(p.visualScale<=art*6);assert.ok(Number.isFinite(p.dmg));close(p.dmg/(base*1.2**80),1);
+ const radius=p.r,scale=p.visualScale;g.SquadBonds.onPierce(p);close(p.r,radius);close(p.visualScale,scale);
+});
+
+test('invalid projectile values are removed before collision queries and extreme base sizes are bounded at spawn',()=>{
+ const s=setup(),g=s.G;const p=g.Projectiles.spawn({owner:s.p,bondPierceGrowth:.2,r:1000,dmg:10});assert.equal(p.r,128);g.Projectiles.clear();
+ g.World.projectileBlock=()=>{throw Error('unsafe query');};for(const o of [{r:Infinity},{r:NaN},{r:0},{x:Infinity},{dmg:Infinity}])g.Projectiles.spawn({...o});g.Combat.resolve(0,s.cap,1);assert.equal(g.Projectiles.count,0);
+});
