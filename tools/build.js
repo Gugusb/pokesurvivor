@@ -68,4 +68,6 @@ fs.writeFileSync(OUT, html);
 // Versión publicada: los jugadores la miran cada 5 min y, si cambia, el juego se
 // actualiza solo (en el menú, o al acabar la partida). Ver js/core/updater.js.
 fs.writeFileSync(path.join(ROOT, 'version.json'), JSON.stringify({ v: hash, at: new Date().toISOString() }) + '\n');
+// Native Android clients use this public, compressed inventory to re-use only unchanged bundled art.
+require('./build_android_assets.cjs').buildAsync({version:hash}).catch(e=>{console.error(e);process.exitCode=1;});
 console.log(`${SIN_SEO ? '[sin SEO] ' : ''}${EXPOSE ? '[SIN PROTEGER, sólo pruebas] ' : ''}ok: ${files.length} scripts · ${(joined.length / 1024).toFixed(0)} KB -> ${(min.length / 1024).toFixed(0)} KB (app.min.js?v=${hash})`);

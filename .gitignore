@@ -23,3 +23,10 @@ docs/CONTACTOS_CREADORES.md
 
 # Caché local de wrangler (Cloudflare)
 .wrangler/
+
+# Android outputs and private signing material
+android/build/
+android/local.properties
+*.keystore
+*.jks
+outputs/android/

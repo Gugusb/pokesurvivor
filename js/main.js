@@ -47,7 +47,7 @@
   else boot();
 
   // Instalable como app (PWA). Sólo con http(s): abierto con doble clic (file://) no hace falta.
-  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !/PokeSurvivorAndroid\//.test(navigator.userAgent || '')) {
     addEventListener('load', () => navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).catch(e => console.warn('[PWA]', e.message)));
   }
 })();

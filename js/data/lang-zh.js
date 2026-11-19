@@ -1,6 +1,10 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "La aventura en Android · v0.45.0": "把冒险装进口袋 · v0.45.0",
+  "Nuevo cliente Android con los sprites, las formas Mega, los iconos y las fuentes incluidos. Las novedades del juego llegan desde la web sin reinstalar el APK.": "新增安卓客户端，内置宝可梦、Mega、图标和字体素材。游戏内容随网页更新，无需重新安装APK。",
+  "Puedes jugar en vertical u horizontal. El botón Atrás abre las opciones del cliente para continuar, cambiar de servidor o cerrar.": "支持横屏与竖屏游玩。按手机返回键可继续游戏、更换服务器或关闭客户端。",
+  "He guardado las imágenes de nuestros compañeros en una pequeña maleta azul. Quien cocina lleva el mapa; con menos equipaje que buscar por la red, podemos salir antes a la siguiente aventura.": "我把伙伴们的画像装进了蓝色小行李箱。做饭的那家伙拿着地图，咱们少从网络上搬些行李，就能早点踏上下一段冒险啦。",
   "Diez pequeños descubrimientos · v0.42.0": "十张小旗，慢慢挑 · v0.42.0",
   "Los paquetes permiten diez elecciones seguidas. Recoge una carta y pasa a la siguiente; si sales, tu elección pendiente te espera.": "卡包现可十连抽：连续完成十次三选一，每次选择后自动进入下一轮；中途离开，还能接着选。",
   "Abrir y elegir cartas es más fluido incluso cuando la conexión tarda. Tu colección se guarda aquí y se sincroniza en segundo plano.": "开包与选卡即时完成，网络慢时也不用等。收获先保存在本机，再由后台合并同步。",

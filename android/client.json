@@ -1,0 +1,10 @@
+{
+  "applicationId": "cn.gugusb.pokesurvivor",
+  "versionName": "1.0.0",
+  "versionCode": 1,
+  "minSdk": 24,
+  "targetSdk": 36,
+  "defaultUrl": "https://pokesurvivor.cn/",
+  "requestedAddress": "http://43.108.85.216/",
+  "minimumChromium": 100
+}
