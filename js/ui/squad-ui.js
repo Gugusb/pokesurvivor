@@ -64,13 +64,14 @@ G.SquadUI=(()=>{
     renderDetails();modal.classList.remove('hidden');$('squad-member-close').focus();
   }
   function unit(p,bench=false){
-    const article=node('div','squad-unit squad-card'+(p.dead?' fainted':'')+(p===leader()?' captain':''));article.style.setProperty('--unit-color',G.U.TYPE_COLOR[p.mon.types[0]]||'#67b9ec');article.style.setProperty('--quality-color',G.ExpeditionQuality.color(p));article.dataset.quality=G.ExpeditionQuality.quality(p);
+    const article=node('div','squad-unit squad-card'+(p.dead?' fainted':'')+(p===leader()?' captain':''));article.style.setProperty('--unit-color',G.U.TYPE_COLOR[p.mon.types[0]]||'#67b9ec');article.style.setProperty('--quality-color',G.ExpeditionQuality.color(p));article.dataset.quality=G.ExpeditionQuality.quality(p);article.dataset.cardLang=G.I18n.lang;
     if(p.isSquadMember){article.dataset.dragKey=id(p);if(bench)article.dataset.squadDrop='unit:'+id(p);}
     const pick=button('',()=>choose(p),'squad-pick'+(p===selected?' selected':''));pick.dataset.squadSelect=id(p);pick.setAttribute('aria-pressed',String(p===selected));
     const art=node('span','squad-unit-art');art.append(portrait(p,bench?64:100));art.style.setProperty('--hp',Math.max(0,p.hp/p.maxHp)*100+'%');
     const name=node('b','squad-unit-name',T(p.mon.name)),rank=node('strong','squad-unit-rank','★'.repeat(p.isSquadMember?p.rank:p.trainerRank||1));rank.dataset.stars=p.isSquadMember?p.rank:p.trainerRank||1;rank.setAttribute('aria-label',rank.textContent);
-    const types=node('span','squad-card-types');types.title=p.mon.types.map(t=>T(G.U.TYPE_NAME[t])).join(' / ');for(const type of p.mon.types)types.innerHTML+=G.Icons.html('type:'+type,14);
-    pick.append(art,name,rank,types);article.append(pick);if(p===leader())article.append(node('small','squad-captain-label',L('Capitán','Captain','队长')));
+    const identity=node('span','squad-card-identity');name.title=T(p.mon.name);identity.append(art,name);
+    const info=node('span','squad-card-info'),top=node('span','squad-card-top'),types=node('span','squad-card-types');types.title=p.mon.types.map(t=>T(G.U.TYPE_NAME[t])).join(' / ');for(const type of p.mon.types){const chip=node('span','squad-card-type');chip.innerHTML=G.Icons.html('type:'+type,14);chip.append(node('span','',T(G.U.TYPE_NAME[type])));types.append(chip);}
+    top.append(types,rank);const tags=node('span','squad-card-tags'),t=G.Squad.tags(p);for(const egg of t.eggs){const chip=node('span','squad-card-tag egg',G.ExpeditionTerms.egg(egg));chip.dataset.tagCategory='egg';tags.append(chip);}for(const kind of new Set(p.moves.map(m=>G.SquadBonds.group(m.kind)))){const chip=node('span','squad-card-tag skill',G.SquadBonds.label(kind));chip.dataset.tagCategory='skill';tags.append(chip);}info.append(top,tags);pick.append(identity,info);pick.setAttribute('aria-label',T(p.mon.name)+' · '+rank.textContent+' · '+types.title+' · '+tags.textContent);article.append(pick);article.onclick=e=>{if(!e.target.closest('button,.squad-drag-handle'))choose(p);};if(p===leader())article.append(node('small','squad-captain-label',L('Capitán','Captain','队长')));
     if(p.isSquadMember&&canEdit()){const grip=node('span','squad-drag-handle','⠿');grip.title=L('Arrastrar','Drag to move','拖动调整位置');grip.setAttribute('aria-label',grip.title);article.append(grip);}return article;
   }
   function renderList(){
@@ -84,7 +85,7 @@ G.SquadUI=(()=>{
       list.append(release);
     }
     const board=node('section','squad-field-panel');board.append(node('h3','',L('Equipo de combate','Battle squad','出战队伍')));
-    const grid=node('div','squad-battle-grid'),capacity=G.Squad.capacity,columns=Math.min(capacity,innerWidth<660?3:capacity>15?6:5),rows=Math.ceil(capacity/columns);grid.style.setProperty('--squad-columns',columns);grid.style.setProperty('--squad-rows',rows);grid.style.setProperty('--squad-art',Math.max(28,Math.min(80,(Math.min(830,innerHeight*.94)-360)/rows-85))+'px');grid.dataset.rows=rows;grid.dataset.crowded=rows>=4;
+    const grid=node('div','squad-battle-grid'),capacity=G.Squad.capacity,columns=Math.min(capacity,innerWidth<=760?2:innerWidth<1100?3:capacity>15?4:3),rows=Math.ceil(capacity/columns);grid.style.setProperty('--squad-columns',columns);grid.style.setProperty('--squad-rows',rows);grid.style.setProperty('--squad-art',Math.max(30,Math.min(52,(Math.min(830,innerHeight*.94)-380)/rows-30))+'px');grid.dataset.rows=rows;grid.dataset.crowded=rows>=4;
     const formation=G.Squad.formation;
     for(let n=0;n<G.Squad.capacity;n++){
       const locked=n>=G.Squad.capacity,slot=node('div','squad-field-slot'+(locked?' locked':''));slot.style.gridRow=String(Math.floor(n/columns)+1);slot.style.gridColumn=String(Math.floor(n/columns)%2?columns-n%columns:n%columns+1);slot.dataset.squadDrop=n===0||locked?'locked':'slot:'+(n-1);slot.dataset.slot=n;
