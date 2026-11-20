@@ -71,5 +71,10 @@ G.ExpeditionRules = (() => {
     const day=Math.max(0,Math.min(10000,Math.floor(Number(input?.day)||0))),arceus=!!(old.arceus||day>=60&&input?.arceus===true);
     return {day:Math.max(day,old.day||0),arceus,cashout:arceus&&day===60&&input?.cashout===true&&!(old.arceus&&old.cashout===false)};
   }
-  return {DAYS,COLS,MAX_SHOP,FINAL_CHASE,weights,matrix,reachable,cycleOf,capacity,upgradeCost,wave,generations,pool,next,border,formForRank,shopFamilies,encounterCandidates,shopMon,lootCompanion,shopRank,rankRates,qualityRates,monCost,progress};
+  function squadDamage(enemies,cycle){
+    const c=G.EconomyConfig.squadHealth,counts={normal:0,elite:0,boss:0};
+    for(const e of new Set(enemies))if(e.expedition&&!e.dead)counts[e.boss?'boss':e.elite?'elite':'normal']++;
+    const raw=counts.normal*c.normalDamage+counts.elite*c.eliteDamage+counts.boss*c.bossDamage,cap=c.cycleCaps[Math.min(c.cycleCaps.length-1,Math.max(0,cycle-1))];return {...counts,raw,cap,applied:Math.min(raw,cap)};
+  }
+  return {squadDamage,DAYS,COLS,MAX_SHOP,FINAL_CHASE,weights,matrix,reachable,cycleOf,capacity,upgradeCost,wave,generations,pool,next,border,formForRank,shopFamilies,encounterCandidates,shopMon,lootCompanion,shopRank,rankRates,qualityRates,monCost,progress};
 })();

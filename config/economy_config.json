@@ -30,22 +30,22 @@
   },
   "wagesByCycle": {
     "1": {
-      "NORMAL_BATTLE": 5,
+      "NORMAL_BATTLE": 3,
       "ELITE_BATTLE": 8,
       "BOSS_BATTLE": 12
     },
     "2": {
-      "NORMAL_BATTLE": 6,
+      "NORMAL_BATTLE": 4,
       "ELITE_BATTLE": 10,
       "BOSS_BATTLE": 16
     },
     "3": {
-      "NORMAL_BATTLE": 7,
+      "NORMAL_BATTLE": 5,
       "ELITE_BATTLE": 12,
       "BOSS_BATTLE": 20
     },
     "4_plus": {
-      "NORMAL_BATTLE": 8,
+      "NORMAL_BATTLE": 6,
       "ELITE_BATTLE": 14,
       "BOSS_BATTLE": 24
     }
@@ -187,7 +187,7 @@
   ],
   "unitTiers": {
     "1": {
-      "cost": 1,
+      "cost": 2,
       "poolPerSpecies": 22,
       "starMultipliers": [
         1,
@@ -201,7 +201,7 @@
       ]
     },
     "2": {
-      "cost": 2,
+      "cost": 3,
       "poolPerSpecies": 18,
       "starMultipliers": [
         1,
@@ -215,7 +215,7 @@
       ]
     },
     "3": {
-      "cost": 3,
+      "cost": 4,
       "poolPerSpecies": 15,
       "starMultipliers": [
         1,
@@ -229,7 +229,7 @@
       ]
     },
     "4": {
-      "cost": 4,
+      "cost": 5,
       "poolPerSpecies": 12,
       "starMultipliers": [
         1,
@@ -243,7 +243,7 @@
       ]
     },
     "5": {
-      "cost": 5,
+      "cost": 6,
       "poolPerSpecies": 9,
       "starMultipliers": [
         1,
@@ -314,7 +314,8 @@
   "initial": {
     "gold": 0,
     "trainerLevel": 1,
-    "trainerXp": 0
+    "trainerXp": 0,
+    "squadHp": 100
   },
   "compatibility": {
     "mergeCopies": 2,
@@ -602,5 +603,17 @@
     "enrageSpeed": 1.5,
     "enrageSpeedStep": 0.25,
     "enrageDamage": 1.5
-  }
+  },
+  "economicTraitsEnabled": false,
+  "squadHealth": {
+    "normalDamage": 1,
+    "eliteDamage": 2,
+    "bossDamage": 10,
+    "cycleCaps": [
+      10,
+      20,
+      30
+    ]
+  },
+  "earlyCompanionBattles": 3
 }

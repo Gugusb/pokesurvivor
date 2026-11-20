@@ -20,7 +20,7 @@ G.SquadTraits=(()=>{
   function reset(){records=new WeakMap();days=new Set();shops=new Set();battles=new Set();released=new WeakSet();merged=new WeakSet();carry=0;}
   function gold(n){const r=run();if(!r||!Number.isFinite(n)||n<=0)return;const value=Math.round((carry+n)*1e6)/1e6,whole=Math.floor(value+1e-9);carry=value-whole;r.gold+=whole;}
   function trigger(p,event,basis=run()?.gold){
-    if(!team().includes(p))return;const d=assign(p);if(d.event!==event)return;const s=state(p);s.counts[event]=(s.counts[event]||0)+1;
+    if(!team().includes(p))return;const d=assign(p);if(d.category==='economic'&&G.EconomyConfig.economicTraitsEnabled===false)return;if(d.event!==event)return;const s=state(p);s.counts[event]=(s.counts[event]||0)+1;
     if(s.counts[event]<d.every)return;s.counts[event]-=d.every;
     if(d.category==='stacking'){for(const [category,id]of activeTags(p,d.scope))G.SquadBonds.addLayer(category,id,d.base*weight(p));return;}
     if(d.category!=='economic')return;
@@ -51,9 +51,9 @@ G.SquadTraits=(()=>{
   function beginBattle(){for(const p of [...G.Squad.roster])state(p).shield=0;for(const p of team()){const t=terminal(p);if(t?.def.shield)state(p).shield=p.baseHp*t.fuel*t.def.shield;}}
   function absorb(p,n){if(!team().includes(p))return n;const s=state(p),absorbed=Math.min(n,s.shield);s.shield-=absorbed;if(absorbed>0)G.FX.dmgText(p.x,p.y-p.bodyH-6,'−'+Math.round(absorbed),'#e6f8ff');return n-absorbed;}
   const shield=p=>state(p).shield;
-  function price(base,kind){if(kind!=='mon')return base;const discount=Math.min(.5,team().reduce((n,p)=>n+(def(p)?.id==='recruit-bargain'?.08*weight(p):0),0));return Math.max(1,Math.ceil(base*(1-discount)));}
+  function price(base,kind){if(kind!=='mon'||G.EconomyConfig.economicTraitsEnabled===false)return base;const discount=Math.min(.5,team().reduce((n,p)=>n+(def(p)?.id==='recruit-bargain'?.08*weight(p):0),0));return Math.max(1,Math.ceil(base*(1-discount)));}
   function description(p){
-    const d=def(p);if(!d)return '';const factor=weight(p),r=p.rank||1,name=local(d.name);
+    const d=def(p);if(!d)return '';if(d.category==='economic'&&G.EconomyConfig.economicTraitsEnabled===false)return local(d.name)+' ['+L('Economía pausada','Economy paused','经济特性已暂停')+']';const factor=weight(p),r=p.rank||1,name=local(d.name);
     const events={kill:L('enemigos derrotados','enemies defeated','击败敌人'),hit:L('60 impactos propios','60 own skill hits','自身招式累计命中60次'),critical:L('10 críticos propios','10 own critical hits','自身累计暴击10次'),hurt:L('3 golpes recibidos','3 actual hits received','自身实际承受3次攻击'),day:L('cada fin de día','each day end','每天自然结束'),clear:L('limpieza completa','clearing a battle','战斗限时全歼'),release:L('al liberar otros compañeros','releasing other companions','放生其他伙伴'),elite:L('superar una etapa élite','completing an elite event','精英事件通关'),merge:L('fusionar el equipo','a squad rank merge','队伍合成升阶'),boss:L('vencer al jefe del ciclo','defeating a cycle Boss','击败周期BOSS'),shop:L('visitar una tienda','visiting a shop','访问商店')};
     const scopes={all:L('todos sus vínculos activos','all own active bonds','自身全部已激活羁绊'),first:L('su primer tipo activo','own active primary-type bond','自身首属性已激活羁绊'),skill:L('su oficio activo','own active class bonds','自身职业已激活羁绊')};
     let text='';

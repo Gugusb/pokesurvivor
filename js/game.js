@@ -190,6 +190,7 @@ G.Game = (() => {
   function expeditionResume(){if(pl)state='playing';}
   function expeditionGainXp(amount){if(!pl||pl.dead||G.Expedition?.phase!=='pokemon-training'||!Number.isFinite(amount)||amount<=0)return false;pendingLevels+=pl.gainXp(amount);return true;}
   function expeditionEnd(){endRun(false);}
+  function expeditionDefeat(){if(!pl||!G.Expedition.active)return;pl.hp=0;pl.dead=true;G.UI.toast(G.I18n.lang==='zh'?'小队生命耗尽，远征结束':G.I18n.lang==='en'?'Squad HP exhausted. Expedition ended.':'Vida del equipo agotada. Fin de expedición.',4000);endRun(true);}
   function expeditionVictory(){
     if(!pl||!challenge)return;
     challenge.expedition=G.Expedition.summary();challenge.survived=true;
@@ -1091,7 +1092,7 @@ G.Game = (() => {
   })();
 
   return {
-    expeditionPause,expeditionResume,expeditionGainXp,expeditionEnd,expeditionVictory, init, startRun, everyone, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
+    expeditionPause,expeditionResume,expeditionGainXp,expeditionEnd,expeditionDefeat,expeditionVictory, init, startRun, everyone, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
     debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },

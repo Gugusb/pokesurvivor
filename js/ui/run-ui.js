@@ -160,6 +160,7 @@ G.RunUI = (() => {
     groupInvite.textContent=G.T('Grupo de juego')+' · '+G.Community.groupId;
     groupInvite.hidden=!G.Community.shouldInviteAtEnd();
     $('over-title').textContent = r.victory ? 'Dificultad superada' : r.completed ? G.T('Objetivo de supervivencia cumplido') : r.dead ? 'Has caído…' : 'Run terminada';
+    if(G.Expedition?.run?.phase==='squad-defeat')$('over-title').textContent=G.I18n.lang==='zh'?'小队生命耗尽':G.I18n.lang==='en'?'Squad HP exhausted':'Vida del equipo agotada';
     if(G.ExpeditionDamage){let damage=document.getElementById('over-damage');if(!damage){damage=document.createElement('section');damage.id='over-damage';$('over-stats').insertAdjacentElement('afterend',damage);}damage.hidden=!r.damage?.length;if(r.damage?.length)G.ExpeditionDamage.render(damage,{run:r.damage,battle:r.damageBattle||[],day:r.damageBattleDay||0},'result');}
     $('over-stats').innerHTML = `
       ${r.expedition ? `<div><span>${G.I18n.lang==='zh'?'远征天数':G.I18n.lang==='en'?'Expedition days':'Días de expedición'}</span><b>${r.expedition.day}</b></div>`:''}
