@@ -592,5 +592,15 @@
         "#ffffff"
       ]
     }
+  },
+  "battleTiming": {
+    "eliteSeconds": 60,
+    "bossSeconds": 90,
+    "eliteEnrageAt": 30,
+    "bossEnrageAt": 45,
+    "enrageStepSeconds": 10,
+    "enrageSpeed": 1.5,
+    "enrageSpeedStep": 0.25,
+    "enrageDamage": 1.5
   }
 }

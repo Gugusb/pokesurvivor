@@ -13,8 +13,10 @@ G.ExpeditionRules = (() => {
   const upgradeCost=level=>60+level*45;
   const wave=(day,kind='battle')=>{
     const cycle=cycleOf(day),within=(day-1)%days()+1,boost=Math.pow(3,cycle-1);
-    const standardDuration=Math.min(60,24+day*1.2);
-    return {count:2*Math.round(12+Math.min(72,day*2)),standardDuration,duration:standardDuration+(kind==='battle'?FINAL_CHASE:0),
+    const standardDuration=Math.min(60,24+day*1.2),t=G.EconomyConfig.battleTiming;
+    const duration=kind==='elite'?t.eliteSeconds:kind==='boss'?t.bossSeconds:standardDuration+FINAL_CHASE;
+    const enrageAt=kind==='elite'?t.eliteEnrageAt:kind==='boss'?t.bossEnrageAt:standardDuration;
+    return {count:2*Math.round(12+Math.min(72,day*2)),standardDuration,duration,enrageAt,
       hp:5*(1+.8*Math.pow(within/20,1.7))*boost,dmg:(1+.35*Math.pow(within/20,1.3))*Math.pow(1.8,cycle-1),
       speed:Math.min(1.8,1+within*.005+(cycle-1)*.12),coins:Math.round(35+day*4)};
   };

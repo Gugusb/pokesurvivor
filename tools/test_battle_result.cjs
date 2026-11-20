@@ -27,3 +27,12 @@ test('uncollected XP is banked once, withdrawn equally only in combat, and reset
 test('bomb and magnet drops are blocked for normal monsters, Boss rewards and scripted/remote drops',()=>{
  const s=setup(),{g}=s;s.load('js/entities/pickup.js');for(const v of [.015,.023]){s.Math.random=()=>v;g.Pickups.dropXp(0,0,10);g.Pickups.dropXp(0,0,140,true);}for(const kind of ['bomb','magnet']){assert.equal(g.Pickups.drop(kind,0,0),null);g.Pickups.addRemote(999,kind,0,0,0);}assert.ok(g.Pickups.all().some(p=>p.kind==='xp'));assert.ok(g.Pickups.all().some(p=>p.kind==='heal'));assert.equal(g.Pickups.all().some(p=>['bomb','magnet'].includes(p.kind)),false);
 });
+
+test('elite and Boss survival clocks increase pressure every ten seconds without compounding or losing late spawns',()=>{
+ for(const kind of ['elite','boss']){const s=setup(),{g,E,enemies}=s,r=E.run;r.kind=kind;r.wave=g.ExpeditionRules.wave(r.day,kind);r.spawned=r.wave.count;r.pendingSpawns=[];const e={expedition:true,dead:false,spd:100,dmg:10};enemies.push(e);assert.equal(r.wave.duration,kind==='elite'?60:90);
+ r.elapsed=r.wave.enrageAt-.01;E.tick(.001);assert.equal(e.spd,100);E.tick(.01);assert.equal(e.spd,150);assert.equal(e.dmg,15);E.tick(.1);assert.equal(e.spd,150);r.elapsed=r.wave.enrageAt+10;E.tick(0);assert.equal(e.spd,175);e.spd*=1.15;r.elapsed=r.wave.enrageAt+20;E.tick(0);assert.ok(Math.abs(e.spd-230)<1e-7);assert.equal(e.dmg,15);
+ const late={expedition:true,dead:false,spd:100,dmg:10};enemies.push(late);E.tick(0);assert.equal(late.spd,200);assert.equal(late.dmg,15);r.elapsed=r.wave.duration;E.tick(.1);assert.equal(E.phase,'battle-result');assert.equal(s.nodes.get('expedition-battle-result').children[0].children[1].textContent,'成功生存');assert.equal(r.bossDead,false);
+ }
+});
+
+test('a Boss already killed at the deadline counts as defeated even during its fade animation',()=>{const s=setup(),r=s.E.run;r.kind='boss';r.wave=s.g.ExpeditionRules.wave(20,'boss');r.elapsed=r.wave.duration;r.bossDead=true;r.spawned=1;r.pendingSpawns=[];s.enemies.push({boss:true,dead:true});s.E.tick(0);assert.equal(s.nodes.get('expedition-battle-result').children[0].children[1].textContent,'全灭敌人');});

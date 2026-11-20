@@ -41,7 +41,7 @@ fs.writeFileSync(tmp, joined);
 const outJs = path.join(ROOT, 'js', 'app.min.js');
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
 const shell = process.platform === 'win32';
-execFileSync(npx, ['--yes', 'terser@5', tmp, '--compress', 'passes=1', '--mangle', '--comments', 'false', '--ecma', '2020', '-o', outJs],
+execFileSync(npx, ['--yes', 'terser@5.51.2', tmp, '--compress', 'passes=1', '--mangle', '--comments', 'false', '--ecma', '2020', '-o', outJs],
   { stdio: 'inherit', shell });
 // Y ofuscado: el código queda ilegible y se rompe solo si lo reformatean para
 // tocarlo. Las cadenas, en una tabla codificada (sólo una parte, para no frenar

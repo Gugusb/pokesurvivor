@@ -330,22 +330,26 @@ G.Expedition = (() => {
     run.pendingSpawns.push({enemy:e,left:2});G.Sprites.preload([mon.dex]);return e;
   }
   function battlePressure(){
-    if(run.elapsed<run.wave.standardDuration)return null;
+    if(run.elapsed<(run.wave.enrageAt??run.wave.standardDuration))return null;
     return run.kind==='battle'?'chase':'enraged';
   }
   function applyPressure(){
     const pressure=battlePressure();
     if(!pressure)return;
+    const t=G.EconomyConfig.battleTiming,level=pressure==='enraged'?1+Math.floor(Math.max(0,run.elapsed-run.wave.enrageAt)/t.enrageStepSeconds):1;
+    const speed=pressure==='enraged'?t.enrageSpeed+(level-1)*t.enrageSpeedStep:1.30;
     for(const enemy of G.EnemyMgr.all()){
-      if(!enemy.expedition||enemy.dead||enemy.expeditionPressure)continue;
-      enemy.expeditionPressure=pressure;
-      enemy.spd*=pressure==='enraged'?1.35:1.30;
-      if(pressure==='enraged')enemy.dmg*=1.50;
+      if(!enemy.expedition||enemy.dead||enemy.expeditionPressure===pressure&&enemy.expeditionPressureLevel===level)continue;
+      // Replace only the previous pressure multiplier, retaining enemy-specific speed changes.
+      enemy.spd=enemy.spd/(enemy.expeditionPressureSpeed||1)*speed;
+      if(pressure==='enraged'&&enemy.expeditionPressure!=='enraged')enemy.dmg*=t.enrageDamage;
+      enemy.expeditionPressure=pressure;enemy.expeditionPressureSpeed=speed;enemy.expeditionPressureLevel=level;
     }
   }
+
   function tick(dt){
     if(!run||run.phase!=='combat'||run.captain.dead)return;
-    run.elapsed+=dt;
+    dt=Math.max(0,Math.min(dt,run.wave.duration-run.elapsed));run.elapsed+=dt;
     G.ExpeditionRecorder?.tick(dt);
     for(const warning of run.pendingSpawns||[])warning.left-=dt;
     const ready=(run.pendingSpawns||[]).filter(w=>w.left<=0);run.pendingSpawns=(run.pendingSpawns||[]).filter(w=>w.left>0);
@@ -358,8 +362,8 @@ G.Expedition = (() => {
       run.acc+=dt*(run.wave.count/Math.max(8,run.wave.standardDuration*.25));
       while(run.acc>=1&&run.spawned<run.wave.count&&G.EnemyMgr.count+(run.pendingSpawns?.length||0)<64){const enemy=spawn();if(!enemy){run.acc=Math.min(run.acc,1);break;}run.acc--;run.spawned++;}
       const alive=G.EnemyMgr.all().filter(e=>!e.dead).length,cleared=run.spawned>=run.wave.count&&alive===0&&G.EnemyMgr.count===0&&!run.pendingSpawns?.length;
-      if(cleared||(run.kind==='battle'&&run.elapsed>=run.wave.duration))finishBattle(cleared);
-    }else if(!run.spawned){if(spawn(true))run.spawned=1;}else if(run.bossDead&&!G.EnemyMgr.all().some(e=>e.boss))finishBattle(true);
+      if(cleared||run.elapsed>=run.wave.duration)finishBattle(cleared);
+    }else if(run.bossDead&&!G.EnemyMgr.all().some(e=>e.boss&&!e.dead))finishBattle(true);else if(run.elapsed>=run.wave.duration)finishBattle(false);else if(!run.spawned){if(spawn(true))run.spawned=1;}
   }
   function drawWarnings(ctx){
     if(!run||run.phase!=='combat')return;ctx.save();ctx.textAlign='center';ctx.font='bold 15px sans-serif';
@@ -414,12 +418,12 @@ G.Expedition = (() => {
     if(run.kind!=='boss'){run.companionOffer=run.unitPool.draw(Math.min(G.EconomyConfig.levels.at(-1).level,run.trainerLevel+(run.kind==='elite'?1:0)));run.companion=run.companionOffer?.dex||null;}
     if(run.kind==='boss'){const types=Object.keys(G.U.TYPE_NAME);run.bossEmblemChoices=[];while(run.bossEmblemChoices.length<G.EconomyConfig.bossEmblem.choices)run.bossEmblemChoices.push(types.splice(Math.floor(Math.random()*types.length),1)[0]);run.bossEmblemClaimed=false;}
     run.remainingHpRatio=Math.max(0,run.captain.hp/run.captain.maxHp);
-    G.SquadTraits?.finishBattle(cleared);if(run.day===G.EconomyConfig.cycleLengthDays*G.EconomyConfig.clearCycleThreshold&&run.kind==='boss'&&cleared){run.arceus=true;run.cashout=true;}run.phase='battle-result';run.pendingSpawns=[];
+    G.SquadTraits?.finishBattle(cleared);if(run.day===G.EconomyConfig.cycleLengthDays*G.EconomyConfig.clearCycleThreshold&&run.kind==='boss'){run.arceus=true;run.cashout=true;}run.phase='battle-result';run.pendingSpawns=[];
     G.EnemyMgr.update(0,G.Squad.actors());
     bankGroundXp();
     note=cleared?L('¡Todos derrotados!','All foes defeated!','全歼奖励！'):L('Etapa superada','Stage survived','成功度过波次');
     G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Hazards.clear();
-    const rewards=G.EconomyConfig.compatibility,itemCount=cleared?(run.kind==='battle'?rewards.normalClearItems:run.kind==='elite'?rewards.eliteVictoryItems:0):0;
+    const rewards=G.EconomyConfig.compatibility,itemCount=run.kind==='elite'?rewards.eliteVictoryItems:cleared&&run.kind==='battle'?rewards.normalClearItems:0;
     for(let i=0;i<itemCount;i++)G.Pickups.drop('item',run.captain.x,run.captain.y,G.Items.roll());
     showBattleResult(cleared);
   }
@@ -432,7 +436,7 @@ G.Expedition = (() => {
     banner.setAttribute('role','status');banner.setAttribute('aria-live','polite');
     const strip=node('div','expedition-battle-result-strip');
     strip.append(node('small','',L('Día ','Day ','第')+run.day+(G.I18n.lang==='zh'?'天':'')+' · '+L('Combate terminado','Battle complete','战斗结束')),
-      node('strong','expedition-battle-result-title',cleared?L('¡Todos los enemigos derrotados!','ALL ENEMIES DEFEATED','全灭敌人'):L('TIEMPO AGOTADO','TIME UP','时间结束')),
+      node('strong','expedition-battle-result-title',cleared?L('¡Todos los enemigos derrotados!','ALL ENEMIES DEFEATED','全灭敌人'):run.kind==='battle'?L('TIEMPO AGOTADO','TIME UP','时间结束'):L('¡SUPERVIVENCIA LOGRADA!','SURVIVAL SUCCESS','成功生存')),
       node('span','',L('Preparando el botín','Preparing battle loot','准备结算战利品')));
     banner.append(strip);document.body.append(banner);
     battleResult={run,element:banner,until:performance.now()+BATTLE_RESULT_MS};
@@ -540,8 +544,8 @@ G.Expedition = (() => {
     const pressure=battlePressure(),seconds=Math.max(0,Math.ceil(run.wave.duration-run.elapsed));
     let objective=seconds+'s';
     if(pressure==='chase')objective+=L(' · Enemigos señalados',' · Enemies marked',' · 已标记屏外敌人');
-    else if(pressure==='enraged')objective=L('Enemigos enfurecidos','Enemies enraged','敌人已激怒');
-    else if(run.kind!=='battle')objective=L('Furia en ','Enrage in ','距激怒 ')+seconds+'s';
+    else if(pressure==='enraged')objective+=L(' · Furia ',' · Enrage ',' · 激怒 ')+(1+Math.floor(Math.max(0,run.elapsed-run.wave.enrageAt)/G.EconomyConfig.battleTiming.enrageStepSeconds));
+    else if(run.kind!=='battle')objective+=L(' · Furia en ',' · Enrage in ',' · 距激怒 ')+Math.max(0,Math.ceil(run.wave.enrageAt-run.elapsed))+'s';
     el.dataset.pressure=pressure||'';
     el.textContent=L('Día','Day','第')+' '+run.day+(G.I18n.lang==='zh'?' 天':'')+' · '+L('Ciclo','Cycle','周期')+' '+R.cycleOf(run.day)+' · '+run.gold+' '+L('oro','gold','局内金币')+' · '+objective+' · '+(G.Squad.deployed().filter(p=>!p.dead).length+1)+'/'+G.Squad.capacity+((run.xpJar||0)>0?' · '+L('Reserva XP ','XP jar ','经验罐 ')+Math.round(run.xpJar):'');
   }
