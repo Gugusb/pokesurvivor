@@ -38,7 +38,7 @@ G.ExpeditionLootUI=(()=>{
     xp.append(node('small','loot-resource-detail',L('Guardada ','Jar deposit ','存罐 ')+fmt(s.xpJarStored)+' · '+L('Reserva ','Balance ','余量 ')+fmt(s.xpJar)));
     xpProgress(xp,'',s.captain.level,s.captain.xp,s.captain.xpNext,'#75d6fb');
     const trainer=card('trainer',L('EXP entrenador','Trainer XP','训练家经验'),'book',report.xpGained||0),row=G.Economy.levelRow(s.trainerLevel);
-    trainer.append(node('p','loot-resource-detail',L('Progreso de entrenamiento','Trainer level progress','训练家等级进度')));xpProgress(trainer,'',s.trainerLevel,s.trainerXp,row.xpToNext,'#f8d174');box.append(grid);return box;
+    const extra=Math.max(0,(report.xpGained||0)-(report.baseXp||0)-(report.clearXpBonus||0));trainer.append(node('p','loot-resource-detail',L('Base ','Base ','基础 ')+fmt(report.baseXp)+(report.clearXpBonus?' + '+L('Limpieza ','Full clear ','全歼 ')+fmt(report.clearXpBonus):'')+(extra?' + '+L('Talento ','Talent ','潜能 ')+fmt(extra):'')));xpProgress(trainer,'',s.trainerLevel,s.trainerXp,row.xpToNext,'#f8d174');box.append(grid);return box;
   }
   function specials(s,actions){
     const box=section(L('Objetos especiales','Special rewards','特殊战利品'),'loot-specials'),grid=node('div','loot-items');

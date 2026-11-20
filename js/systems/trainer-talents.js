@@ -23,7 +23,15 @@ G.TrainerTalents=(()=>{
   const cap=s.captain,types=new Map();for(const p of G.Squad?.actors?.()||[cap])for(const type of p.mon.types)types.set(type,(types.get(type)||0)+1);
   if(!d.tagType)return 2;return 1+(cap.mon.types.includes(d.tagType)?12:0)+(types.get(d.tagType)||0)*4+(G.SquadBonds?.layer('types',d.tagType)||0)*.04;
  }
- function weighted(list,s,rng){let n=rng()*list.reduce((n,d)=>n+affinity(d,s),0);for(const d of list){n-=affinity(d,s);if(n<0)return d;}return list.at(-1);}
+ // Bond upgrades share one outer weight; type tailoring applies only after that group wins.
+ const bondUpgrade=d=>!!(d.effects.typeBondOffset||d.effects.captainOmniTag);
+ function pickWeighted(list,weight,rng){let n=rng()*list.reduce((sum,d)=>sum+weight(d),0);for(const d of list){n-=weight(d);if(n<0)return d;}return list.at(-1);}
+ function weighted(list,s,rng){
+  const bonds=list.filter(bondUpgrade),buckets=list.filter(d=>!bondUpgrade(d)).map(d=>({cards:[d],weight:affinity(d,s)}));
+  if(bonds.length)buckets.push({cards:bonds,weight:cfg().bondUpgradeGroupWeight});
+  const chosen=pickWeighted(buckets,b=>b.weight,rng).cards;
+  return chosen.length===1?chosen[0]:pickWeighted(chosen,d=>affinity(d,s),rng);
+ }
  function deal(s,p,rng=Math.random){
   const available=eligible(s,p),out=[];if(available.length<3)return null;
   for(const categories of [['BONDS','CAPTAIN'],['COMBAT'],['ECONOMY']]){const fresh=available.filter(d=>!out.includes(d)),preferred=fresh.filter(d=>categories.includes(d.category)),card=weighted(preferred.length?preferred:fresh,s,rng);out.push(card);}

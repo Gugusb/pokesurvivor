@@ -52,7 +52,7 @@
   },
   "freeXpByEvent": {
     "NORMAL_BATTLE": 2,
-    "ELITE_BATTLE": 4,
+    "ELITE_BATTLE": 2,
     "BOSS_BATTLE": 6,
     "SHOP": 0,
     "SKILL_TRAINING": 2,
@@ -592,7 +592,11 @@
         "#e5ffbd",
         "#ffffff"
       ]
-    }
+    },
+    "thresholds": [
+      3,
+      7
+    ]
   },
   "battleTiming": {
     "eliteSeconds": 60,
@@ -618,5 +622,7 @@
       30
     ]
   },
-  "earlyCompanionBattles": 3
+  "earlyCompanionBattles": 3,
+  "eliteClearBonusXp": 2,
+  "clearCompanionChance": 0.2
 }

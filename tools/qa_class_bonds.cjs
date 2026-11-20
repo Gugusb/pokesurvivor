@@ -21,11 +21,11 @@ try{
   await p.locator('#journey-captain').selectOption('4');await p.locator('.journey-prep-actions button').last().click();await p.locator('.journey-prep-actions button').last().click();await p.locator('.journey-grid').waitFor();
 
   await p.evaluate(()=>{
-    const r=G.Expedition.run;r.trainerLevel=10;G.Squad.syncTrainer();const team=[r.captain,...[1,7,16,19,21].map(d=>G.Squad.recruit(d))];
+    const r=G.Expedition.run;r.trainerLevel=10;G.Squad.syncTrainer();const team=[r.captain,...[1,7,16,19,21,23].map(d=>G.Squad.recruit(d))];
     team.forEach((a,i)=>{a.moves=[G.Moves.instance(['ember','razor-leaf','flamethrower'][i%3],2)];a.slots=[a.moves];a.active=0;});G.Squad.refresh();
-    if(G.SquadBonds.count('skill','cone')!==6)throw Error('unified counts');G.SquadUI.show({editable:true});
+    if(G.SquadBonds.count('skill','cone')!==7)throw Error('unified counts');G.SquadUI.show({editable:true});
   });
-  await p.getByRole('button',{name:'职业',exact:true}).click();assert.equal(await p.locator('[data-bond=projectile]').count(),1);assert.match(await p.locator('[data-bond=projectile]').innerText(),/6.*6/s);assert.match(await p.locator('[data-bond=projectile]').innerText(),/体积与伤害/);await p.waitForFunction(()=>getComputedStyle(document.getElementById('scr-squad')).opacity==='1');await p.screenshot({animations:'disabled',path:'tools/cache/class-bonds-formation.png',fullPage:true});await p.locator('#squad-close').click();
+  await p.getByRole('button',{name:'职业',exact:true}).click();assert.equal(await p.locator('[data-bond=projectile]').count(),1);assert.match(await p.locator('[data-bond=projectile]').innerText(),/7.*7/s);assert.match(await p.locator('[data-bond=projectile]').innerText(),/体积与伤害/);await p.waitForFunction(()=>getComputedStyle(document.getElementById('scr-squad')).opacity==='1');await p.screenshot({animations:'disabled',path:'tools/cache/class-bonds-formation.png',fullPage:true});await p.locator('#squad-close').click();
   const combat=await p.evaluate(()=>{
     const r=G.Expedition.run;r.map[1][3].kind='battle';G.Expedition.choose(1,3);G.Game.expeditionPause();G.EnemyMgr.clear();G.Combat.clearFields();G.Projectiles.clear();
     const near=(a,b)=>{if(Math.abs(a-b)>1e-6)throw Error(a+' != '+b);};

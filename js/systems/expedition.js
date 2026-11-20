@@ -404,10 +404,10 @@ G.Expedition = (() => {
   }
   function battleCompanion(){
     const early=run.battlesCompleted<=G.EconomyConfig.earlyCompanionBattles;
-    if(run.kind==='boss'&&!early)return;
-    const level=Math.min(G.EconomyConfig.levels.at(-1).level,run.trainerLevel+(run.kind==='elite'?1:0)),owned=new Set([run.captain,...G.Squad.roster].map(p=>G.MonProgression.rootFor(p.dex)));
-    run.companionOffer=(early?run.unitPool.draw(level,Math.random,p=>!owned.has(G.MonProgression.rootFor(p.dex))):null)||run.unitPool.draw(level);
-    if(!run.companionOffer&&early){const dex=R.lootCompanion(run.appeared||new Set(),run.pool,level);if(dex)run.companionOffer={kind:'mon',dex:R.formForRank(dex,1),rank:1,cost:R.monCost(G.DEX_BY[dex]),reserved:false,poolCopies:0};}
+    if(!early&&(!run.battleCleared||Math.random()>=G.EconomyConfig.clearCompanionChance))return;
+    const level=run.trainerLevel,owned=new Set([run.captain,...G.Squad.roster].map(p=>G.MonProgression.rootFor(p.dex)));
+    if(early)run.companionOffer=run.unitPool.draw(level,Math.random,p=>!owned.has(G.MonProgression.rootFor(p.dex)))||run.unitPool.draw(level);
+    if(!run.companionOffer){const dex=R.lootCompanion(run.appeared||new Set(),run.pool,level);if(dex)run.companionOffer={kind:'mon',dex:R.formForRank(dex,1),rank:1,cost:R.monCost(G.DEX_BY[dex]),reserved:false,poolCopies:0};}
     run.companion=run.companionOffer?.dex||null;
   }
   function finishBattle(cleared){
@@ -472,7 +472,7 @@ G.Expedition = (() => {
     if(['xp','xpBig','coin','treasure'].includes(k))run.loot[key]=(run.loot[key]||0)+Number(p.value||0);
     else if(['ticket','ticket10','item','bossChest'].includes(k))run.loot[key]=(run.loot[key]||0)+1;
   }
-  function showLoot(levels=0){if(run?.phase!=='rewards')return;G.Economy.settleDay(run,{eventType:run.kind,victory:!run.captain.dead,remainingHpRatio:run.remainingHpRatio,inWaveCoinDrops:run.inWaveCoinDrops,lockedGoldAtBattleStart:run.lockedGoldAtBattleStart});G.Squad.syncTrainer();run.freeShopPending=run.settlement.grantFreePostBossShop;run.levels=levels;run.phase='loot';G.Game.expeditionPause();if(run.pendingTalentPicks?.length)G.TrainerTalentsUI.showPickModal(renderLoot);else renderLoot();}
+  function showLoot(levels=0){if(run?.phase!=='rewards')return;G.Economy.settleDay(run,{eventType:run.kind,victory:!run.captain.dead,cleared:run.battleCleared,remainingHpRatio:run.remainingHpRatio,inWaveCoinDrops:run.inWaveCoinDrops,lockedGoldAtBattleStart:run.lockedGoldAtBattleStart});G.Squad.syncTrainer();run.freeShopPending=run.settlement.grantFreePostBossShop;run.levels=levels;run.phase='loot';G.Game.expeditionPause();if(run.pendingTalentPicks?.length)G.TrainerTalentsUI.showPickModal(renderLoot);else renderLoot();}
   function claimCompanion(){
     if(run?.phase!=='loot'||!run.companion||run.companionResolved)return false;
     if(!G.Squad.recruit(run.companion,run.companionOffer.moveId||null,1,run.companionOffer.poolCopies===0?{poolCopies:0}:{})){G.UI.toast(L('Organiza el equipo para recibir al compañero.','Arrange your squad to collect the companion.','请先整理小队，伙伴会保留等待领取。'));G.Game.toggleSquad();return false;}run.companionOffer.sold=true;

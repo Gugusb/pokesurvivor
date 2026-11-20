@@ -31,35 +31,35 @@ G.SquadBonds=(()=>{
     const v=cfg()[group(id)]?.[stat];if(!Array.isArray(v))return v||0;const [a,b,c]=cfg().layerNodes;
     return n<=b?v[0]+(v[1]-v[0])*(n-a)/(b-a):n<=c?v[1]+(v[2]-v[1])*(n-b)/(c-b):v[2]+(v[2]-v[1])*(n-c)/(c-b)*cfg().after500SlopeFactor;
   }
-  function state(kind){kind=group(kind);const n=count('skill',kind),l=layer('skill',kind);return {kind,count:n,layers:l,tier:!KINDS.includes(kind)?0:n>=6?6:n>=3?3:0,scale:scale(l)};}
+  function state(kind){kind=group(kind);const n=count('skill',kind),l=layer('skill',kind);return {kind,count:n,layers:l,tier:!KINDS.includes(kind)?0:n>=cfg().thresholds[1]?7:n>=cfg().thresholds[0]?3:0,scale:scale(l)};}
   const applies=(p,m)=>!!p?.isSquadMember&&G.Squad?.active&&G.Squad.deployed().includes(p)&&!m?.zMove;
   function stats(p,m){return applies(p,m)?state(m?.kind):{count:0,layers:0,tier:0,scale:0};}
   function crowd(p){const c=cfg().melee;return Math.min(c.maxCrowd,G.EnemyMgr.queryCircle(p.x,p.y,c.crowdRadius).filter(e=>!e.dead).length);}
-  function agility(p,m){const b=stats(p,m);if(!b.tier)return 1;return 1+(b.kind==='projectile'||b.kind==='area'?value(b.kind,'agility'):b.kind==='chain'&&b.tier===6?.3*b.scale:b.kind==='melee'&&b.tier===6?crowd(p)*cfg().melee.agilityPerEnemy:0);}
+  function agility(p,m){const b=stats(p,m);if(!b.tier)return 1;return 1+(b.kind==='projectile'||b.kind==='area'?value(b.kind,'agility'):b.kind==='chain'&&b.tier===7?.3*b.scale:b.kind==='melee'&&b.tier===7?crowd(p)*cfg().melee.agilityPerEnemy:0);}
   function stamina(p,m){const b=stats(p,m);return 1+(b.tier&&(b.kind==='projectile'||b.kind==='area')?value(b.kind,'stamina'):0);}
   const sustain=()=>1;
   function damage(v,kind,k){v.dmg*=k;v.bondDamageContributions=[...(v.bondDamageContributions||[]),[kind,k]];}
   function move(p,m){
     if(m.bondApplied||!applies(p,m))return m;const b=stats(p,m);if(!b.tier)return m;
     const v={...m,bondApplied:true,bondScale:b.scale,bondTier:b.tier,bondKind:b.kind};
-    if(b.tier===6){v.bondPalette='class:'+b.kind;v.bondColor=cfg().visuals[b.kind][2];}
-    if(b.kind==='projectile'&&b.tier===6)v.bondPierceGrowth=cfg().projectile.pierceGrowth;
+    if(b.tier===7){v.bondPalette='class:'+b.kind;v.bondColor=cfg().visuals[b.kind][2];}
+    if(b.kind==='projectile'&&b.tier===7)v.bondPierceGrowth=cfg().projectile.pierceGrowth;
     if(b.kind==='melee'){const k=1+value('melee','range');if(m.kind==='dash')v.width=(m.width||34)*k;else v.radius=m.radius*k;}
-    if(b.kind==='beam'){v.radius=m.radius*(1+.35*b.scale);v.bondSustain=b.tier===6;}
-    if(b.kind==='chain'){v.count=(m.count||1)+Math.max(1,Math.floor(2*b.scale));v.bondChain=b.tier===6;}
-    if(b.kind==='area'&&b.tier===6){v.bondArea=true;v.bondPlacement=cfg().area.placementMultiplier;}
-    if(b.kind==='bloom'){damage(v,b.kind,1+value('bloom','damage'));if(b.tier===6){const k=1+cfg().bloom.rangeBonus;if(m.radius!=null)v.radius=m.radius*k;if(m.size!=null)v.size=m.size*k;if(m.kind==='nova'){v.speed=m.speed*k;v.bondVisualScale=(m.size>=8?1.5:1)*k;}v.bondStun=cfg().bloom.stunSeconds;v.bondStunChance=cfg().bloom.stunChance;}}
-    if(b.kind==='orbit'){v.radius=m.radius*(1+cfg().orbit.radiusBonus);damage(v,b.kind,1+value('orbit','damage'));v.bondLaunch=b.tier===6;}
+    if(b.kind==='beam'){v.radius=m.radius*(1+.35*b.scale);v.bondSustain=b.tier===7;}
+    if(b.kind==='chain'){v.count=(m.count||1)+Math.max(1,Math.floor(2*b.scale));v.bondChain=b.tier===7;}
+    if(b.kind==='area'&&b.tier===7){v.bondArea=true;v.bondPlacement=cfg().area.placementMultiplier;}
+    if(b.kind==='bloom'){damage(v,b.kind,1+value('bloom','damage'));if(b.tier===7){const k=1+cfg().bloom.rangeBonus;if(m.radius!=null)v.radius=m.radius*k;if(m.size!=null)v.size=m.size*k;if(m.kind==='nova'){v.speed=m.speed*k;v.bondVisualScale=(m.size>=8?1.5:1)*k;}v.bondStun=cfg().bloom.stunSeconds;v.bondStunChance=cfg().bloom.stunChance;}}
+    if(b.kind==='orbit'){v.radius=m.radius*(1+cfg().orbit.radiusBonus);damage(v,b.kind,1+value('orbit','damage'));v.bondLaunch=b.tier===7;}
     if(b.kind==='summon'){
       v.dur=(m.dur||(m.kind==='mine'?7:6))*(1+value('summon','life'));v.bondQuantity=1+value('summon','quantity');
-      if(b.tier===6){if(m.kind==='turret'){v.bondTargets=1+cfg().summon.turretTargetsBonus;v.rate=(m.rate||.6)/cfg().summon.fireRateMultiplier;damage(v,b.kind,1+value('summon','turretDamage'));}
+      if(b.tier===7){if(m.kind==='turret'){v.bondTargets=1+cfg().summon.turretTargetsBonus;v.rate=(m.rate||.6)/cfg().summon.fireRateMultiplier;damage(v,b.kind,1+value('summon','turretDamage'));}
         else{v.radius=m.radius*(1+cfg().summon.mineRadiusBonus);damage(v,b.kind,1+value('summon','mineDamage'));v.bondStun=cfg().summon.mineStunSeconds;v.bondStunChance=1;}}
     }
     return v;
   }
   function afterHit(p,e,m,dealt){
     if(!(dealt>0)||!applies(p,m))return;
-    if(group(m.kind)==='melee'&&stats(p,m).tier===6)p.heal(dealt*crowd(p)*cfg().melee.lifestealPerEnemy);
+    if(group(m.kind)==='melee'&&stats(p,m).tier===7)p.heal(dealt*crowd(p)*cfg().melee.lifestealPerEnemy);
     if(m.bondStun&&!e.dead&&Math.random()<(m.bondStunChance??1)){e.classStunT=Math.max(e.classStunT||0,m.bondStun*(e.boss?cfg().bossStunFactor:1));G.FX.ring(e.x,e.y,e.r,e.r+8,m.bondColor||'#fff',.18,2);}
   }
   function onPierce(p){
@@ -87,7 +87,7 @@ G.SquadBonds=(()=>{
       orbit:()=>L('Radio +','Orbit radius +','环绕半径+')+pct(c.orbit.radiusBonus)+L(', daño +',', damage +','，伤害+')+pct(value(k,'damage')),
       summon:()=>L('Duración +','Lifetime +','持续时间+')+pct(value(k,'life'))+L(', límite +',', capacity +','，数量上限+')+pct(value(k,'quantity'))
     }[k]();
-    if(b.tier<6)return base+sep+L('El segundo efecto requiere 6 especies.','The second effect requires 6 species.','6名不同宝可梦解锁二级效果。');
+    if(b.tier<7)return base+sep+L('El segundo efecto requiere 7 especies.','The second effect requires 7 species.','7名不同宝可梦解锁二级效果。');
     const extra={
       projectile:()=>L('Tras perforar: tamaño y daño +','After penetration: size and damage +','每次穿透后体积与伤害+')+pct(c.projectile.pierceGrowth),
       melee:()=>L('Cada enemigo cercano: agilidad +','Per nearby enemy: agility +','周围每名敌人：敏捷+')+pct(c.melee.agilityPerEnemy)+L(', robo de vida +',', lifesteal +','，吸血率+')+pct(c.melee.lifestealPerEnemy)+L('; máximo ','; up to ','；最多')+c.melee.maxCrowd+L(' enemigos.',' enemies.','名敌人。'),

@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),{context}=require('./battle_fixture.cjs');
 const close=(a,b)=>assert.ok(Math.abs(a-b)<1e-6,`${a} != ${b}`);
-function setup(kind='projectile',count=5){
+function setup(kind='projectile',count=6){
  const s=context('zh',false),g=s.G;for(const f of ['js/core/settings.js','js/data/egg-groups.js','js/entities/projectile.js','js/systems/expedition-rules.js','js/systems/squad.js','js/systems/squad-bonds.js','js/systems/move-control.js','js/systems/move-pp.js','js/systems/expedition-damage.js'])s.load(f);
  vm.runInContext(fs.readFileSync('js/systems/combat.js','utf8').replace('return { reach, tick,','return { _fields:()=>fields, reach, tick,'),s);
  g.Sprites.preload=()=>{};g.Sprites.Animator.prototype._start=()=>{};g.FX=new Proxy({},{get:(t,k)=>t[k]||(()=>{})});g.World.propsInCircle=()=>[];g.World.projectileBlock=()=>null;g.World.isWall=()=>false;g.World.isFree=()=>true;g.VFX={forMove:m=>({pal:m.bondPalette||m.type}),forType:()=>({})};g.EnemyMgr.get=id=>s.enemies.find(e=>e.id===id);g.Camera.sees=()=>true;
@@ -11,6 +11,7 @@ function setup(kind='projectile',count=5){
 }
 function enemy(s,x=60,y=0){const e=s.enemy();e.x=x;e.y=y;e.touchCd=100;e.hp=e.maxHp=1e9;e.calls=[];e.hurt=(n,...args)=>{e.calls.push({n,args});return n;};return e;}
 function cast(s){s.p.target=s.enemies[0];s.p.aim=0;s.m.t=0;s.G.Combat.tick(.001,s.p,0);}
+test('six distinct participants keep only the first class effect; the seventh unlocks the second',()=>{const s=setup('projectile',5),g=s.G,B=g.SquadBonds;assert.equal(B.state('projectile').count,6);assert.equal(B.state('projectile').tier,3);assert.equal(B.move(s.p,s.m).bondPierceGrowth,undefined);assert.match(B.description('projectile'),/7名/);const p=g.Squad.recruit(23);p.moves=[g.Moves.instance(s.m.id,2)];p.slots=[p.moves];g.Squad.refresh();assert.equal(B.state('projectile').count,7);assert.equal(B.state('projectile').tier,7);assert.equal(B.move(s.p,s.m).bondPierceGrowth,.2);});
 
 test('unified classes share counts and stacks, captain counts but never benefits, reserves and duplicate names do not count',()=>{
  const s=setup('projectile',2),g=s.G,B=g.SquadBonds;g.Squad.deployed()[1].moves=[g.Moves.instance('razor-leaf')];s.p.moves.push(g.Moves.instance('flamethrower'));g.Squad.refresh();assert.equal(B.state('cone').count,3);assert.equal(B.state('cone').tier,3);assert.equal(B.layer('skill','cone'),0);B.setLayer('skill','boomerang',200);close(B.layer('skill','projectile'),200);close(B.agility(s.p,s.m),2);close(B.agility(s.cap,s.cap.moves[0]),1);close(B.agility(s.p,{...s.m,zMove:true}),1);assert.equal(B.move(s.cap,s.cap.moves[0]),s.cap.moves[0]);
@@ -49,7 +50,7 @@ test('bloom buffs both physical kinds and stuns elites fully, Bosses for half du
  const s=setup('aura'),g=s.G,e=enemy(s,30);e.boss=true;s.Math.random=()=>.01;cast(s);const v=g.SquadBonds.move(s.p,s.m);close(v.dmg,s.m.dmg*1.2);close(v.radius,s.m.radius*3);close(e.classStunT,.5);let ticks=0;g.BossCombat={tick:()=>ticks++};e.updateAI(.1,s.cap);assert.equal(ticks,0);close(e.classStunT,.4);const n=g.SquadBonds.move(s.p,g.Moves.instance('heat-wave'));close(n.speed,g.Moves.instance('heat-wave').speed*3);e.boss=false;g.SquadBonds.afterHit(s.p,e,v,1);close(e.classStunT,1);
 });
 
-test('tier-six orbit replenishes a full ring only on cooldown casts, independently of earlier shots',()=>{
+test('tier-seven orbit replenishes a full ring only on cooldown casts, independently of earlier shots',()=>{
  const s=setup('orbit'),g=s.G;g.MovePP.tick=()=>{};const e=enemy(s,80);const pp=g.MovePP.state(s.p,s.m),want=g.SquadBonds.move(s.p,s.m).count;cast(s);const first=g.Projectiles.all().filter(p=>p.bondOrbitShot);assert.equal(first.length,want);close(pp.current,pp.max-1);for(const p of first){assert.equal(p.orb,false);assert.equal(p.moveKind,'orbit');assert.equal(p.specMove.kind,'orbit');assert.equal(p.homing,0);assert.equal(p.pierce,0);close(p.dmg,s.m.dmg*s.p.attackFor(s.m)*1.5*1.2);}
  g.Combat.tick(.001,s.p,.001);assert.equal(g.Projectiles.count,want);s.m.t=0;g.Combat.tick(.001,s.p,1);assert.equal(g.Projectiles.count,2*want);assert.ok(first.every(p=>g.Projectiles.all().includes(p)));close(pp.current,pp.max-2);
  for(const p of [...g.Projectiles.all()])g.Projectiles.remove(p);g.Combat.tick(.001,s.p,1.001);assert.equal(g.Projectiles.count,0);s.m.t=0;g.Combat.tick(.001,s.p,2);assert.equal(g.Projectiles.count,want);
@@ -107,6 +108,6 @@ test('orbit acquisition is centered on the caster and limited to 110 percent of 
  const s=setup('orbit'),g=s.G,m=g.SquadBonds.move(s.p,s.m),e=enemy(s,s.p.x+m.radius*1.11,s.p.y);cast(s);const ring=g.Projectiles.all().filter(p=>p.orb);assert.equal(ring.length,m.count);assert.equal(g.Projectiles.all().some(p=>p.bondOrbitShot),false);e.x=s.p.x+m.radius*1.09;g.Combat.tick(.001,s.p,.001);assert.equal(g.Projectiles.all().filter(p=>p.bondOrbitShot).length,m.count);
 });
 
-test('tier-six trail placement retries blocked candidates and lands beyond the full-grown splash radius',()=>{
+test('tier-seven trail placement retries blocked candidates and lands beyond the full-grown splash radius',()=>{
  const s=setup('trail'),g=s.G;s.Math.random=()=>.5;let calls=0;g.World.isFree=()=>++calls>3;cast(s);const f=g.Combat._fields()[0];assert.ok(f);assert.equal(calls,4);assert.ok(Math.hypot(f.x-s.p.x,f.y-s.p.y)>f.baseR*3);g.Combat.clearFields();g.World.isFree=()=>false;s.p.lastPatch=null;cast(s);assert.equal(g.Combat.fieldCount,0);
 });

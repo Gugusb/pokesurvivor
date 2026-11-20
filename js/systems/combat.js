@@ -458,7 +458,7 @@ G.Combat = (() => {
       const f = fields[i];
       if(f.kind==='bondbeam'){
         const {owner:pl,source,target,m}=f;
-        if(f.gone||pl.dead||!G.Squad?.deployed().includes(pl)||!pl.moves.includes(source)||G.SquadBonds?.stats(pl,source).tier!==6||!G.Abilities.canCast(pl)||G.ZMoves?.busy(pl)||target.dead||G.U.dist2(pl.x,pl.y,target.x,target.y)>(m.radius+target.r)**2){fields.splice(i,1);continue;}
+        if(f.gone||pl.dead||!G.Squad?.deployed().includes(pl)||!pl.moves.includes(source)||G.SquadBonds?.stats(pl,source).tier!==7||!G.Abilities.canCast(pl)||G.ZMoves?.busy(pl)||target.dead||G.U.dist2(pl.x,pl.y,target.x,target.y)>(m.radius+target.r)**2){fields.splice(i,1);continue;}
         const aim=pl.aim;pl.aim=Math.atan2(target.y-pl.y,target.x-pl.x);
         let blocked=false;for(let d=8;d<Math.hypot(target.x-pl.x,target.y-pl.y);d+=8)if((G.World.arenaContains&&!G.World.arenaContains(pl.x+Math.cos(pl.aim)*d,pl.y+Math.sin(pl.aim)*d,0))||(!m.phaseWalls&&G.World.isWall(pl.x+Math.cos(pl.aim)*d,pl.y+Math.sin(pl.aim)*d))){blocked=true;break;}
         if(blocked){pl.aim=aim;fields.splice(i,1);continue;}

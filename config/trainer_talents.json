@@ -1354,5 +1354,6 @@
   ],
   "defaultRerolls": 2,
   "frontlineCount": 2,
-  "crownPulseRadius": 96
+  "crownPulseRadius": 96,
+  "bondUpgradeGroupWeight": 2
 }

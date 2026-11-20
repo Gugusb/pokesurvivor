@@ -23,7 +23,7 @@ G.Economy=(()=>{
   function overclock(s){if(s.phase!=='training'||s.trainingUsed||s.cycle<config().endless.unlockCycle)return false;s.skillOverclockCount++;s.trainingUsed=true;return true;}
   function settle(s,input){
     const eventType=events[input.eventType]||input.eventType;
-    const report={baseWage:0,interest:0,streakBonus:0,comebackBounty:0,eliteFlawlessBonus:0,inWaveDrops:0,totalGoldGained:0,xpGained:0,leveledUpTo:null,grantFreePostBossShop:false};
+    const report={baseWage:0,interest:0,streakBonus:0,comebackBounty:0,eliteFlawlessBonus:0,inWaveDrops:0,totalGoldGained:0,xpGained:0,baseXp:0,clearXpBonus:0,leveledUpTo:null,grantFreePostBossShop:false};
     const combat=Object.hasOwn(config().wagesByCycle['1'],eventType);
     if(combat){
       if(!input.victory)return report;
@@ -37,7 +37,7 @@ G.Economy=(()=>{
       report.totalGoldGained=report.baseWage+report.interest+report.streakBonus+report.comebackBounty+report.eliteFlawlessBonus+report.inWaveDrops;s.gold+=report.totalGoldGained;
       report.grantFreePostBossShop=eventType==='BOSS_BATTLE';
     }
-    report.xpGained=(config().freeXpByEvent[eventType]||0)+(combat&&input.victory?(G.TrainerTalents?.battleReward(s)||0):0);report.leveledUpTo=addXp(s,report.xpGained);return report;
+    report.baseXp=config().freeXpByEvent[eventType]||0;report.clearXpBonus=eventType==='ELITE_BATTLE'&&input.victory&&input.cleared===true?config().eliteClearBonusXp:0;report.xpGained=report.baseXp+report.clearXpBonus+(combat&&input.victory?(G.TrainerTalents?.battleReward(s)||0):0);report.leveledUpTo=addXp(s,report.xpGained);return report;
   }
   function settleDay(s,input){if(s.settledDays.has(s.day))return s.settlement;s.settledDays.add(s.day);return s.settlement=settle(s,input);}
   return {config,events,create,levelRow,maxLevel,interest,capacity,refreshCost,licenseCost,overclockCost,addXp,buyXp,buyLicense,buyPopCap,overclock,settle,settleDay};
