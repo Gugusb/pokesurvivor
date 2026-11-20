@@ -13,10 +13,11 @@ G.ExpeditionRules = (() => {
   const upgradeCost=level=>60+level*45;
   const wave=(day,kind='battle')=>{
     const cycle=cycleOf(day),within=(day-1)%days()+1,boost=Math.pow(3,cycle-1);
-    const standardDuration=Math.min(60,24+day*1.2),t=G.EconomyConfig.battleTiming;
-    const duration=kind==='elite'?t.eliteSeconds:kind==='boss'?t.bossSeconds:standardDuration+FINAL_CHASE;
-    const enrageAt=kind==='elite'?t.eliteEnrageAt:kind==='boss'?t.bossEnrageAt:standardDuration;
-    return {count:2*Math.round(12+Math.min(72,day*2)),standardDuration,duration,enrageAt,
+    const originalBase=Math.min(60,24+day*1.2),t=G.EconomyConfig.battleTiming,extra=t.baseExtensionSeconds;
+    const standardDuration=kind==='elite'?t.eliteEnrageAt+extra:kind==='boss'?t.bossEnrageAt+extra:originalBase+extra;
+    const duration=kind==='elite'?t.eliteSeconds+extra:kind==='boss'?t.bossSeconds+extra:standardDuration+FINAL_CHASE;
+    const spawnDuration=Math.max(t.minSpawnWindowSeconds,originalBase*t.spawnWindowRatio);
+    return {count:2*Math.round(12+Math.min(72,day*2)),standardDuration,duration,enrageAt:standardDuration,spawnDuration,
       hp:5*(1+.8*Math.pow(within/20,1.7))*boost,dmg:(1+.35*Math.pow(within/20,1.3))*Math.pow(1.8,cycle-1),
       speed:Math.min(1.8,1+within*.005+(cycle-1)*.12),coins:Math.round(35+day*4)};
   };

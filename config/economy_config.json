@@ -602,7 +602,10 @@
     "enrageStepSeconds": 10,
     "enrageSpeed": 1.5,
     "enrageSpeedStep": 0.25,
-    "enrageDamage": 1.5
+    "enrageDamage": 1.5,
+    "baseExtensionSeconds": 15,
+    "spawnWindowRatio": 0.15,
+    "minSpawnWindowSeconds": 4
   },
   "economicTraitsEnabled": false,
   "squadHealth": {

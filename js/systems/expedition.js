@@ -322,7 +322,13 @@ G.Expedition = (() => {
   function spawn(boss=false){
     const cap=run.captain,wave=run.wave,candidates=R.encounterCandidates(run.pool,run.day,boss);
     const same=Math.random()<.85,typed=!boss&&run.waveType?candidates.filter(p=>p.types.includes(run.waveType)===same):null,mon=boss&&run.day===60?G.DEX_BY[493]:G.U.pick(typed?.length?typed:candidates.length?candidates:run.pool);
-    let x=cap.x,y=cap.y,free=false;for(let i=0;i<24;i++){const a=Math.random()*Math.PI*2,d=100+Math.sqrt(Math.random())*Math.max(180,G.Camera.outerRadius());x=cap.x+Math.cos(a)*d;y=cap.y+Math.sin(a)*d;if(G.World.isFree(x,y,20)){free=true;break;}}if(!free)return null;
+    let x=cap.x,y=cap.y,free=false;for(let i=0;i<24;i++){const a=Math.random()*Math.PI*2,d=100+Math.sqrt(Math.random())*Math.max(180,G.Camera.outerRadius());x=cap.x+Math.cos(a)*d;y=cap.y+Math.sin(a)*d;if(G.World.isFree(x,y,20)){free=true;break;}}if(!free){
+      // A deterministic search keeps random misses from delaying the finite wave.
+      for(let radius=100;radius<=Math.max(180,G.Camera.outerRadius())+180&&!free;radius+=40)for(let j=0;j<32;j++){
+        const angle=j*Math.PI/16,px=cap.x+Math.cos(angle)*radius,py=cap.y+Math.sin(angle)*radius;
+        if(G.World.isFree(px,py,20)){x=px;y=py;free=true;break;}
+      }
+    }if(!free)return null;
     const behavior=boss?'chase':G.Enemies.behaviorOf(mon),def={dex:mon.dex,name:mon.name,hp:boss?350+run.day*24:12+(mon.baseStats?.hp||60)*.2,spd:boss?55:48+(mon.baseStats?.spe||60)*.15,dmg:boss?14:4+Math.min(8,mon.rarity),xp:boss?80:10+Math.floor(run.day/2),behavior,shotDmg:boss?14:5,shotCd:3.5,range:200};
     const e=new G.Enemy(def,x,y,{hp:wave.hp*(boss?1.6:1),spd:wave.speed,dmg:wave.dmg},boss);e.expedition=true;e.expeditionArceus=boss&&run.day===60;
     if(run.kind==='elite'&&!boss)e.makeElite();if(!boss&&Math.random()<G.Difficulty.eliteChance())e.makeElite();
@@ -359,8 +365,9 @@ G.Expedition = (() => {
     }
     applyPressure();
     if(run.kind!=='boss'){
-      run.acc+=dt*(run.wave.count/Math.max(8,run.wave.standardDuration*.25));
-      while(run.acc>=1&&run.spawned<run.wave.count&&G.EnemyMgr.count+(run.pendingSpawns?.length||0)<64){const enemy=spawn();if(!enemy){run.acc=Math.min(run.acc,1);break;}run.acc--;run.spawned++;}
+      // Fixed total and an absolute schedule: surviving enemies never delay later spawns.
+      const due=Math.min(run.wave.count,Math.floor(run.wave.count*run.elapsed/run.wave.spawnDuration+1e-8));
+      while(run.spawned<due){if(!spawn())break;run.spawned++;}
       const alive=G.EnemyMgr.all().filter(e=>!e.dead).length,cleared=run.spawned>=run.wave.count&&alive===0&&G.EnemyMgr.count===0&&!run.pendingSpawns?.length;
       if(cleared||run.elapsed>=run.wave.duration)finishBattle(cleared);
     }else if(run.bossDead&&!G.EnemyMgr.all().some(e=>e.boss&&!e.dead))finishBattle(true);else if(run.elapsed>=run.wave.duration)finishBattle(false);else if(!run.spawned){if(spawn(true))run.spawned=1;}

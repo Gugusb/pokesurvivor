@@ -29,10 +29,17 @@ test('bomb and magnet drops are blocked for normal monsters, Boss rewards and sc
 });
 
 test('elite and Boss survival clocks increase pressure every ten seconds without compounding or losing late spawns',()=>{
- for(const kind of ['elite','boss']){const s=setup(),{g,E,enemies}=s,r=E.run;r.kind=kind;r.wave=g.ExpeditionRules.wave(r.day,kind);r.spawned=r.wave.count;r.pendingSpawns=[];const e={expedition:true,dead:false,spd:100,dmg:10};enemies.push(e);assert.equal(r.wave.duration,kind==='elite'?60:90);
+ for(const kind of ['elite','boss']){const s=setup(),{g,E,enemies}=s,r=E.run;r.kind=kind;r.wave=g.ExpeditionRules.wave(r.day,kind);r.spawned=r.wave.count;r.pendingSpawns=[];const e={expedition:true,dead:false,spd:100,dmg:10};enemies.push(e);assert.equal(r.wave.duration,kind==='elite'?75:105);
  r.elapsed=r.wave.enrageAt-.01;E.tick(.001);assert.equal(e.spd,100);E.tick(.01);assert.equal(e.spd,150);assert.equal(e.dmg,15);E.tick(.1);assert.equal(e.spd,150);r.elapsed=r.wave.enrageAt+10;E.tick(0);assert.equal(e.spd,175);e.spd*=1.15;r.elapsed=r.wave.enrageAt+20;E.tick(0);assert.ok(Math.abs(e.spd-230)<1e-7);assert.equal(e.dmg,15);
  const late={expedition:true,dead:false,spd:100,dmg:10};enemies.push(late);E.tick(0);assert.equal(late.spd,200);assert.equal(late.dmg,15);r.elapsed=r.wave.duration;E.tick(.1);assert.equal(E.phase,'battle-result');assert.equal(s.nodes.get('expedition-battle-result').children[0].children[1].textContent,'成功生存');assert.equal(r.bossDead,false);
  }
 });
 
 test('a Boss already killed at the deadline counts as defeated even during its fade animation',()=>{const s=setup(),r=s.E.run;r.kind='boss';r.wave=s.g.ExpeditionRules.wave(20,'boss');r.elapsed=r.wave.duration;r.bossDead=true;r.spawned=1;r.pendingSpawns=[];s.enemies.push({boss:true,dead:true});s.E.tick(0);assert.equal(s.nodes.get('expedition-battle-result').children[0].children[1].textContent,'全灭敌人');});
+
+test('all wave clocks gain fifteen seconds and finite scheduling finishes even when 168 enemies remain alive',()=>{
+ for(const day of [1,10,60,100]){const s=setup(),{g,E,enemies}=s;for(const kind of ['battle','elite','boss']){const w=g.ExpeditionRules.wave(day,kind),old=Math.min(60,24+day*1.2);assert.equal(w.standardDuration,kind==='battle'?old+15:kind==='elite'?45:60);assert.equal(w.duration,kind==='battle'?old+35:kind==='elite'?75:105);assert.ok(w.spawnDuration+2.1<w.standardDuration);assert.equal(w.count,2*Math.round(12+Math.min(72,day*2)));}
+ const r=E.run;r.day=day;r.wave=g.ExpeditionRules.wave(day,'battle');r.elapsed=0;r.spawned=0;r.pendingSpawns=[];g.EnemyMgr.add=e=>enemies.push(e);g.Camera.outerRadius=()=>300;g.Enemies={behaviorOf:()=>'chase'};g.Enemy=class{constructor(){this.dead=false;this.spd=50;this.dmg=1;}makeElite(){this.elite=true;}};
+ for(let time=0;time<r.wave.spawnDuration+2.2;time+=.05)E.tick(.05);assert.equal(r.spawned,r.wave.count);assert.equal(r.pendingSpawns.length,0);assert.equal(enemies.filter(e=>!e.dead).length,r.wave.count);assert.ok(r.elapsed<r.wave.standardDuration);const total=r.spawned;E.tick(1);assert.equal(r.spawned,total);
+ }
+});
