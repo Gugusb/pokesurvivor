@@ -360,7 +360,7 @@ G.Player = class Player {
 
   /** Devuelve cuántos niveles ha subido (pueden ser varios de golpe). */
   gainXp(amount) {
-    this.xp += amount * this.effectiveXpMul;
+    const earned=amount*this.effectiveXpMul;this.xp+=earned;G.Expedition?.recordPokemonXp?.(this,earned);
     let leveled = 0;
     while (this.xp >= this.xpNext) {
       this.xp -= this.xpNext;
