@@ -29,16 +29,16 @@ G.ExpeditionLootUI=(()=>{
     const card=(key,title,image,value)=>{const e=node('article','loot-earning');e.dataset.earning=key;const head=node('div','loot-earning-title');head.append(icon(image,22),node('span','',title));e.append(head,node('b','loot-earning-value','+'+fmt(value)));grid.append(e);return e;};
     const gold=card('gold',L('Oro','Gold','金币'),'coin',report.totalGoldGained||0),formula=node('p','loot-gold-formula');
     const investment=Math.min(report.baseWage||0,G.TrainerTalents?.wage(s)||0);
-    const terms=[[L('Salario','Wage','工资'),(report.baseWage||0)-investment],[L('Inversión','Investment','投资'),investment],[L('Interés','Interest','利息'),report.interest||0],[L('Racha','Streak','连胜'),report.streakBonus],[L('Revancha','Comeback','逆境'),report.comebackBounty],[L('Élite','Elite bonus','精英奖励'),report.eliteFlawlessBonus],[L('Monedas','Drops','掉落'),report.inWaveDrops]];
+    const terms=[[L('Salario','Wage','工资'),(report.baseWage||0)-investment],[L('Inversión','Investment','投资'),investment],[L('Interés','Interest','利息'),report.interest||0],[L('Racha','Streak','连胜'),report.streakBonus],[L('Revancha','Comeback','逆境'),report.comebackBounty],[L('Élite','Elite bonus','精英奖励'),report.eliteFlawlessBonus],[L('Monedas','Drops','掉落'),report.inWaveDrops],[L('Rasgos','Traits','特性'),report.traitGold]];
     formula.textContent=terms.filter(([,n],i)=>n||i===0||i===2).map(([name,n])=>name+' '+fmt(n)).join(' + ')+' = '+fmt(report.totalGoldGained||0)+' G';gold.append(formula);
     const divisor=G.TrainerTalents?.interestDivisor(s)||G.EconomyConfig.interest.divisor,cap=G.TrainerTalents?.maxInterest(s)||G.EconomyConfig.interest.maxInterest;
     gold.append(node('small','loot-interest-rule',L('Interés: ','Interest: ','利息：')+'⌊'+fmt(s.lockedGoldAtBattleStart)+'G ÷ '+divisor+'⌋ · '+L('máx. ','cap ','上限 ')+cap+'G'));
     const raw=(s.loot.xp||0)+(s.loot.xpBig||0),xp=card('pokemon',L('EXP Pokémon','Pokémon XP','宝可梦经验'),'star',s.pokemonXpGained??raw);
-    xp.append(node('p','loot-resource-detail',L('Recogida ','Collected ','拾取 ')+fmt(Math.max(0,raw-(s.xpJarSpent||0)))+' · '+L('Retirada ','Jar withdrawal ','罐中提取 ')+fmt(s.xpJarSpent)));
+    xp.append(node('p','loot-resource-detail',L('Recogida ','Collected ','拾取 ')+fmt(Math.max(0,raw-(s.xpJarSpent||0)))+' · '+L('Retirada ','Jar withdrawal ','罐中提取 ')+fmt(s.xpJarSpent)+(s.traitBattleRewards?.mon_xp?' · '+L('Rasgos ','Traits ','特性 ')+fmt(s.traitBattleRewards.mon_xp):'')));
     xp.append(node('small','loot-resource-detail',L('Guardada ','Jar deposit ','存罐 ')+fmt(s.xpJarStored)+' · '+L('Reserva ','Balance ','余量 ')+fmt(s.xpJar)));
     xpProgress(xp,'',s.captain.level,s.captain.xp,s.captain.xpNext,'#75d6fb');
     const trainer=card('trainer',L('EXP entrenador','Trainer XP','训练家经验'),'book',report.xpGained||0),row=G.Economy.levelRow(s.trainerLevel);
-    const extra=Math.max(0,(report.xpGained||0)-(report.baseXp||0)-(report.clearXpBonus||0));trainer.append(node('p','loot-resource-detail',L('Base ','Base ','基础 ')+fmt(report.baseXp)+(report.clearXpBonus?' + '+L('Limpieza ','Full clear ','全歼 ')+fmt(report.clearXpBonus):'')+(extra?' + '+L('Talento ','Talent ','潜能 ')+fmt(extra):'')));xpProgress(trainer,'',s.trainerLevel,s.trainerXp,row.xpToNext,'#f8d174');box.append(grid);return box;
+    const extra=Math.max(0,(report.xpGained||0)-(report.baseXp||0)-(report.clearXpBonus||0)-(report.traitXp||0));trainer.append(node('p','loot-resource-detail',L('Base ','Base ','基础 ')+fmt(report.baseXp)+(report.clearXpBonus?' + '+L('Limpieza ','Full clear ','全歼 ')+fmt(report.clearXpBonus):'')+(extra?' + '+L('Talento ','Talent ','潜能 ')+fmt(extra):'')+(report.traitXp?' + '+L('Rasgos ','Traits ','特性 ')+fmt(report.traitXp):'')));xpProgress(trainer,'',s.trainerLevel,s.trainerXp,row.xpToNext,'#f8d174');box.append(grid);return box;
   }
   function specials(s,actions){
     const box=section(L('Objetos especiales','Special rewards','特殊战利品'),'loot-specials'),grid=node('div','loot-items');

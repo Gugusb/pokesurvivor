@@ -112,10 +112,10 @@ G.Player = class Player {
   buffFraction(stat) { const b = this.buffs[stat]; return this.buffStacks(b) * b.amount; }
   get attackMultiplier() { return Math.max(0, this.atkMul +
     G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
-  get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)) * (1+this.statGrowth.atk+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
-  get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)) * (1+this.statGrowth.spa+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
-  get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1); }
-  get stamina() { return (this.baseStamina+(G.TypeBonds?.baseBonus(this,'stamina')||0)) * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0)); }
+  get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)+(G.SquadTraits?.flat(this,'atk')||0)) * (1+this.statGrowth.atk+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'atk')||1); }
+  get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)+(G.SquadTraits?.flat(this,'spa')||0)) * (1+this.statGrowth.spa+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'spa')||1); }
+  get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)+(G.SquadTraits?.flat(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1)*(G.SquadTraits?.factor(this,'agility')||1); }
+  get stamina() { return (this.baseStamina+(G.TypeBonds?.baseBonus(this,'stamina')||0)+(G.SquadTraits?.flat(this,'stamina')||0)) * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0))*(G.SquadTraits?.factor(this,'stamina')||1); }
   get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
   get ppInterval() { return G.MonProgression ? G.MonProgression.ppInterval(this.stamina) : 1; }
   isPrimaryMove(m) { const group=this.slots.find(g=>g.some(x=>x===m||x.id===m?.id));return !group||group===this.activeGroup(); }
@@ -130,17 +130,17 @@ G.Player = class Player {
   attackFor(move) { return (move?.damageClass === 'special' ? this.spa : this.atk)*(1+(move?.overclock||0)*(G.EconomyConfig?.endless.overclockDamagePerPurchase||0)); }
   defenseFor(source) {
     const kind=source?.kind;
-    if (kind==='contact' || kind==='melee') return Math.max(.1,(this.baseDefense+(G.TypeBonds?.baseBonus(this,'defense')||0))*(1+this.statGrowth.defense+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1));
-    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,(this.baseSpDef+(G.TypeBonds?.baseBonus(this,'spdef')||0))*(1+this.statGrowth.spdef+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1));
+    if (kind==='contact' || kind==='melee') return Math.max(.1,(this.baseDefense+(G.TypeBonds?.baseBonus(this,'defense')||0)+(G.SquadTraits?.flat(this,'defense')||0))*(1+this.statGrowth.defense+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1)*(G.SquadTraits?.factor(this,'defense')||1));
+    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,(this.baseSpDef+(G.TypeBonds?.baseBonus(this,'spdef')||0)+(G.SquadTraits?.flat(this,'spdef')||0))*(1+this.statGrowth.spdef+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1)*(G.SquadTraits?.factor(this,'spdef')||1));
     return 1;
   }
   get spd() {
-    const s = (this.baseSpd+(G.TypeBonds?.baseBonus(this,'spd')||0)) * (1+this.statGrowth.spd+this.buffFraction('spd')+(G.TrainerTalents?.speedPct(this)||0)) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
+    const s = (this.baseSpd+(G.TypeBonds?.baseBonus(this,'spd')||0)+(G.SquadTraits?.flat(this,'spd')||0)) * (1+this.statGrowth.spd+this.buffFraction('spd')+(G.TrainerTalents?.speedPct(this)||0)) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
       (1 + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return s * (G.Abilities.slowImmune(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
-      (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1)*(G.TypeBonds?.speed(this)||1);
+      (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1)*(G.TypeBonds?.speed(this)||1)*(G.SquadTraits?.factor(this,'spd')||1);
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0)); }
   get flatRegen() { return this.regenFlat + this.baseHp*this.regenBase + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0)+this.baseHp*(G.Squad?.growth(this,'regen')||0)+(G.TypeBonds?.regen(this)||0); }
@@ -536,7 +536,7 @@ G.Player = class Player {
   }
 
   draw(ctx) {
-    const talentScale=G.TrainerTalents?.visualScale(this)||1;ctx.save();if(talentScale!==1){ctx.translate(this.x,this.y);ctx.scale(talentScale,talentScale);ctx.translate(-this.x,-this.y);}
+    const talentScale=(G.TrainerTalents?.visualScale(this)||1)*(G.SquadTraits?.visualScale(this)||1);ctx.save();if(talentScale!==1){ctx.translate(this.x,this.y);ctx.scale(talentScale,talentScale);ctx.translate(-this.x,-this.y);}
     // Halo del tipo del movimiento activo, en el suelo.
     const m = this.activeMove();
     if (m && !this.dead) {

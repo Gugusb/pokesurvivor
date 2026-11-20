@@ -248,7 +248,7 @@ G.Expedition = (() => {
   function restChoice(kind){
     if(run?.phase!=='rest'||run.restUsed||!['sleep','exercise'].includes(kind))return false;run.restUsed=true;
     if(kind==='sleep')run.captain.heal(run.captain.maxHp*G.EconomyConfig.rest.healFraction);else G.Economy.addXp(run,G.EconomyConfig.rest.trainerXp);
-    G.Squad.syncTrainer();finishStage(kind==='sleep'?L('Descanso completo','Rested well','睡饱了，继续出发。'):L('Entrenamiento completo','Exercise complete','锻炼完成，训练家经验 +3。'));return true;
+    G.Squad.syncTrainer();G.SquadTraits?.restEnd();finishStage(kind==='sleep'?L('Descanso completo','Rested well','睡饱了，继续出发。'):L('Entrenamiento completo','Exercise complete','锻炼完成，训练家经验 +3。'));return true;
   }
   function openRest(){
     run.phase='rest';run.restUsed=false;G.Game.expeditionPause();const scene=G.ExpeditionEventUI.room(run,L('Campamento de descanso','Rest camp','休息营地'),'heart',L('Elige cómo pasar el día.','Choose how to spend the day.','选择今天的休整方式：睡觉恢复队长生命，或锻炼提升训练家等级。'));
@@ -322,7 +322,7 @@ G.Expedition = (() => {
   function startBattle(kind){
     run.phase='combat';run.kind=kind;run.elapsed=0;run.spawned=0;run.acc=0;run.kills=0;run.wave=R.wave(run.day,kind);run.bossDead=false;run.waveType=Math.random()<.5?G.U.pick([...new Set(run.pool.flatMap(p=>p.types))]):null;
     run.appeared=new Set();run.xpJarStored=0;run.xpJarSpent=0;run.pokemonXpGained=0;run.battleCleared=false;
-    run.bossEmblemChoices=null;run.bossEmblemClaimed=false;run.companion=null;run.companionOffer=null;run.companionResolved=false;run.loot={};run.goldStart=run.gold;run.lockedGoldAtBattleStart=run.gold;run.inWaveCoinDrops=0;run.settlement=null;
+    run.bossEmblemChoices=null;run.bossEmblemClaimed=false;run.companion=null;run.companionOffer=null;run.companionResolved=false;run.loot={};run.goldStart=run.gold;run.lockedGoldAtBattleStart=run.gold;run.inWaveCoinDrops=0;run.settlement=null;run.traitBattleRewards={};
     run.extraStart=JSON.parse(JSON.stringify(G.Game.loot||{}));
     run.pendingSpawns=[];G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Pickups.clear();G.Hazards.clear();G.Path.clear();
     G.World.setBiome(Math.floor((run.day-1)/5));G.Squad.recover();
@@ -521,7 +521,7 @@ G.Expedition = (() => {
   function recordPokemonXp(p,amount){if(run&&run.captain===p&&['combat','rewards'].includes(run.phase)&&Number.isFinite(amount)&&amount>0)run.pokemonXpGained=(run.pokemonXpGained||0)+amount;}
   function depart(){if(run?.phase!=='upgrades')return;finishStage(note);}
   function finishStage(message=''){
-    if(!run)return;if(!run.settledDays.has(run.day)){G.Economy.settleDay(run,{eventType:run.eventKind});G.Squad.syncTrainer();}G.SquadTraits?.dayEnd();G.Game.scoreEvent();G.TypeBonds?.beginStage();G.Squad.recover();note=message;
+    if(!run)return;if(run.traitNeedsUpgrades){run.traitNeedsUpgrades=false;note=message||note;run.phase='upgrades';G.UI.hideAll();G.Game.expeditionResume();return;}if(!run.settledDays.has(run.day)){G.Economy.settleDay(run,{eventType:run.eventKind});G.Squad.syncTrainer();}G.SquadTraits?.dayEnd();G.Game.scoreEvent();G.TypeBonds?.beginStage();G.Squad.recover();note=message;
     const hatched=G.PokemonTraining?.hatch(run)||0;if(hatched)note+=' '+L('Huevos eclosionados: ','Hatched companions: ','孵化伙伴：')+hatched;
     if(run.day%G.EconomyConfig.cycleLengthDays===0&&run.day>0){run.cycle++;G.Economy.addXp(run,0);G.Squad.syncTrainer();run.map=R.matrix(run.cycle);run.row=0;run.history=[{day:run.day,col:run.col}];note+=' '+L('Un nuevo ciclo: los rivales se han fortalecido.','A new cycle: foes have grown much stronger.','新的周期开始了，对手变得更强了。');}
     if(run.day===G.EconomyConfig.cycleLengthDays*G.EconomyConfig.clearCycleThreshold&&run.cashout){G.Game.expeditionVictory();return;}

@@ -17,7 +17,7 @@ G.Economy=(()=>{
     else if(s.trainerLevel===maxLevel(s))s.trainerXp=Math.min(s.trainerXp,levelRow(s.trainerLevel).xpToNext);
     return s.trainerLevel!==old?s.trainerLevel:null;
   }
-  function buyXp(s){if(s.phase!=='shop'||s.pendingTalentPicks?.length||s.trainerLevel>=maxLevel(s)||s.gold<config().buyXp.goldCost)return false;s.gold-=config().buyXp.goldCost;addXp(s,config().buyXp.xpGain);return true;}
+  function buyXp(s){if(s.phase!=='shop'||s.pendingTalentPicks?.length||s.trainerLevel>=maxLevel(s)||s.gold<config().buyXp.goldCost)return false;s.gold-=config().buyXp.goldCost;addXp(s,config().buyXp.xpGain);G.SquadTraits?.buyXp();return true;}
   function buyLicense(s){if(s.phase!=='shop'||s.cycle<config().endless.unlockCycle||s.trainerLevel!==config().levels.at(-1).level||s.gold<licenseCost(s))return false;s.gold-=licenseCost(s);s.extraPopPurchases++;return true;}
   function buyPopCap(s){const tier=config().itemTiers.POP_CAP;if(s.phase!=='shop'||s.trainerLevel<tier.unlockLevel||s.hasPopCapItem||s.gold<tier.price)return false;s.gold-=tier.price;s.hasPopCapItem=true;return true;}
   function overclock(s){if(s.phase!=='training'||s.trainingUsed||s.cycle<config().endless.unlockCycle)return false;s.skillOverclockCount++;s.trainingUsed=true;return true;}
@@ -35,9 +35,9 @@ G.Economy=(()=>{
       }else{s.flawlessStreak=0;if(input.remainingHpRatio<config().streak.comebackHpThreshold)report.comebackBounty=config().streak.comebackBounty;}
       report.inWaveDrops=config().combatGoldDrops?Math.max(0,Number(input.inWaveCoinDrops)||0):0;
       report.totalGoldGained=report.baseWage+report.interest+report.streakBonus+report.comebackBounty+report.eliteFlawlessBonus+report.inWaveDrops;s.gold+=report.totalGoldGained;
-      report.grantFreePostBossShop=eventType==='BOSS_BATTLE';
+      report.grantFreePostBossShop=eventType==='BOSS_BATTLE';report.traitGold=s.traitBattleRewards?.gold||0;report.totalGoldGained+=report.traitGold;
     }
-    report.baseXp=config().freeXpByEvent[eventType]||0;report.clearXpBonus=eventType==='ELITE_BATTLE'&&input.victory&&input.cleared===true?config().eliteClearBonusXp:0;report.xpGained=report.baseXp+report.clearXpBonus+(combat&&input.victory?(G.TrainerTalents?.battleReward(s)||0):0);report.leveledUpTo=addXp(s,report.xpGained);return report;
+    report.baseXp=config().freeXpByEvent[eventType]||0;report.clearXpBonus=eventType==='ELITE_BATTLE'&&input.victory&&input.cleared===true?config().eliteClearBonusXp:0;report.xpGained=report.baseXp+report.clearXpBonus+(combat&&input.victory?(G.TrainerTalents?.battleReward(s)||0):0);report.leveledUpTo=addXp(s,report.xpGained);if(combat&&input.victory){report.traitXp=s.traitBattleRewards?.exp||0;report.xpGained+=report.traitXp;}return report;
   }
   function settleDay(s,input){if(s.settledDays.has(s.day))return s.settlement;s.settledDays.add(s.day);return s.settlement=settle(s,input);}
   return {config,events,create,levelRow,maxLevel,interest,capacity,refreshCost,licenseCost,overclockCost,addXp,buyXp,buyLicense,buyPopCap,overclock,settle,settleDay};

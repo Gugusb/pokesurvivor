@@ -11,6 +11,7 @@
 const fs = require('fs'), path = require('path'), crypto = require('crypto');
 const { execFileSync } = require('child_process');
 const ROOT = path.join(__dirname, '..');
+require('./import_trait_rework.cjs');
 const DEV = path.join(ROOT, 'dev.html'), OUT = path.join(ROOT, 'index.html');
 const BEGIN = '<!-- scripts:begin -->', END = '<!-- scripts:end -->';
 

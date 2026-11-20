@@ -8,7 +8,8 @@ G.SquadSupport=(()=>{
  function reset(){stocks=new WeakMap();}
  function state(p){let s=stocks.get(p);if(!s)stocks.set(p,s={time:0,bandages:0});return s;}
  function heal(target,n){const before=target.hp;target.heal(n);if(target.hp>before)G.FX.ring(target.x,target.y,6,target.r+20,'#8bf0be',.3,2);}
- function cast(p,m){if(G.Expedition?.phase!=='combat'||!p.isSquadMember||m.kind!=='buff'||!helpers().includes(p))return;const n=p.maxHp*cfg().castHealBase*(G.SquadTraits?.weight(p)||1);for(const q of actors())if(G.U.dist2(p.x,p.y,q.x,q.y)<=cfg().healRadius**2)heal(q,n);}
+ function cast(p,m){G.SquadTraits?.cast(p,m);}
+
  function reduction(p){return G.Squad?.active&&actors().includes(p)&&G.SquadBonds.state('buff').tier?Math.max(.05,1-G.SquadBonds.value('buff','reduction')):1;}
  function tick(dt){
   if(G.Expedition?.phase!=='combat'||!(dt>0)||G.SquadBonds.state('buff').tier<5)return;

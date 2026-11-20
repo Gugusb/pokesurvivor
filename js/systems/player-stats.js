@@ -16,7 +16,7 @@ G.PlayerStats=(()=>{
       ['stamina','Resistencia base',p.baseStamina,p.stamina,0,G.T('Recuperación base')+' '+fmt(1/p.ppInterval)+' PP/s']
     ];
     return data.map(([key,name,base,total,skillFraction,battle])=>{
-      if(total==null)total=key==='atk'?base*p.atk/p.baseAtk:key==='spa'?base*p.spa/p.baseSpa:base*(pre(key)+skillFraction);
+      if(total==null)total=key==='atk'?base*p.atk/p.baseAtk:key==='spa'?base*p.spa/p.baseSpa:key==='defense'?base*p.defenseFor({kind:'contact'})/p.baseDefense:key==='spdef'?base*p.defenseFor({kind:'ranged'})/p.baseSpDef:base*(pre(key)+skillFraction);
       const permanent=base*(u[key]||0),fruit=base*((g[key]||0)-(u[key]||0)),skills=base*skillFraction,other=total-base-permanent-fruit-skills;
       return {key,name,base,permanent,fruit,skills,other,total,battle};
     });

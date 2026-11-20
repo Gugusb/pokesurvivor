@@ -188,7 +188,7 @@ G.Game = (() => {
 
   function expeditionPause(){if(pl)state='journey';}
   function expeditionResume(){if(pl)state='playing';}
-  function expeditionGainXp(amount){if(!pl||pl.dead||G.Expedition?.phase!=='pokemon-training'||!Number.isFinite(amount)||amount<=0)return false;pendingLevels+=pl.gainXp(amount);return true;}
+  function expeditionGainXp(amount){if(!pl||pl.dead||!G.Expedition?.active||!Number.isFinite(amount)||amount<=0)return false;pendingLevels+=pl.gainXp(amount);return true;}
   function expeditionEnd(){endRun(false);}
   function expeditionDefeat(){if(!pl||!G.Expedition.active)return;pl.hp=0;pl.dead=true;G.UI.toast(G.I18n.lang==='zh'?'小队生命耗尽，远征结束':G.I18n.lang==='en'?'Squad HP exhausted. Expedition ended.':'Vida del equipo agotada. Fin de expedición.',4000);endRun(true);}
   function expeditionVictory(){

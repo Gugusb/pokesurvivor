@@ -1,5 +1,7 @@
 # 远征宝可梦特性系统 · 首轮实现
 
+> 此文保留首轮历史方案。v0.43.0-alpha.39起，以 `data/trait_rework_index.json` v2及[当前特性目录](TRAIT_CATALOG.md)为准，旧目录分配、乘权重和终端机制不再执行。
+
 来源：提供的Trait System GDD及后续确认。v0.43.0-alpha.10 接入首轮可玩系统，仅用于Next远征队员；v0.43.0-alpha.11 起品质改用独立的[远征品质](EXPEDITION_QUALITY.md)，不再采用旧抽卡rarity；完整30项目录及966物种分配见 [TRAIT_CATALOG.md](TRAIT_CATALOG.md)。
 
 ## 定位

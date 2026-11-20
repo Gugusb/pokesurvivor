@@ -627,7 +627,7 @@
     "spawnWindowRatio": 0.15,
     "minSpawnWindowSeconds": 4
   },
-  "economicTraitsEnabled": false,
+  "economicTraitsEnabled": true,
   "squadHealth": {
     "normalDamage": 1,
     "eliteDamage": 2,

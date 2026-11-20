@@ -122,7 +122,7 @@ G.SquadUI=(()=>{
       }const extra=[...row.children].slice(3);if(extra.length){const inspect=button('i',()=>showBondDetail(name,extra),'squad-bond-info');inspect.setAttribute('aria-label',L('Detalles de ','Details: ','查看羁绊：')+name);row.append(inspect);}rows.append(row);
     }box.append(rows,node('p','note',L('Cada especie cuenta una vez por etiqueta.','Each species counts once per tag.','同名伙伴对同一羁绊只计一次生效数。')));
     rows.scrollTop=previous;
-    if(G.SquadTraits){const counts={stacking:0,economic:0,terminal:0,support:0};for(const p of G.Squad.deployed())if(!p.dead)counts[G.SquadTraits.def(p).category]++;const overview=node('div','squad-trait-summary');overview.setAttribute('aria-label',L('Rasgos','Traits','特性概况'));for(const [key,title]of [['stacking',L('Acum.','Stacks','叠层')],['economic',L('Econ.','Econ.','经济')],['terminal',L('Final','Final','终端')],['support',L('Apoyo','Support','辅助')]])overview.append(node('span','',title+' '+counts[key]));box.append(overview);return;}
+    if(G.SquadTraits)return;
     box.append(node('h4','',L('Apoyo activo','Active support','当前支援')));let found=false;for(const [key,label]of [['atk',L('Ataques','Attacks','基础双攻')],['hp',L('Vida','HP','基础生命')],['agility',L('Agilidad','Agility','基础敏捷')],['stamina',L('Aguante','Stamina','基础耐力')],['regen',L('Vida/s','HP/s','基础生命/秒')]]){const value=G.Squad.growth(leader(),key);if(value){found=true;box.append(node('p','squad-support-line',label+' +'+Number((value*100).toFixed(1))+'%'));}}if(!found)box.append(node('p','note',L('Sin apoyo todavía','No support yet','暂无队员支援')));
   }
   function showBondDetail(name,extra){
