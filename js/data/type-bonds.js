@@ -23,5 +23,5 @@ G.TypeBondDefs=(()=>{
   const LIST=rows.map(([id,values,zh,en,es])=>({id,values,description:{zh,en,es},thresholds:[2,5]}));
   const BY=Object.fromEntries(LIST.map(d=>[d.id,d]));
   function interpolate(nodes,level){const l=Math.max(0,Number(level)||0);return l<=100?nodes[0]+(nodes[1]-nodes[0])*l/100:nodes[1]+(nodes[2]-nodes[1])*(l-100)/200;}
-  return {LIST,BY,interpolate,source:{file:'羁绊设计文档.xlsx',sheet:'Sheet1',range:'A1:E19',sha256:'9d85f0f51b463bee4b54427dcba1971476e8dc31b3b157408eb5334bd349c311'}};
+  return {LIST,BY,interpolate,source:{file:'羁绊设计文档.xlsx',sheet:'Sheet1',range:'A1:E19',sha256:'2561f8f644ca0f7f6765c46fc69738e6799081f53607efc751a101f7c620c363'}};
 })();

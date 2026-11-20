@@ -1,970 +1,973 @@
-/* User-provided expedition companion initial skills. Captain and training pools are unchanged. */
-G.FIXED_SKILLS = Object.freeze({
-  "1": "toxic",
-  "2": "toxic",
-  "3": "toxic",
-  "4": "ember",
-  "5": "ember",
-  "6": "ember",
-  "7": "water-gun",
-  "8": "water-gun",
-  "9": "water-gun",
-  "10": "bug-bite",
-  "11": "bug-bite",
-  "12": "bug-bite",
-  "13": "toxic",
-  "14": "toxic",
-  "15": "toxic",
-  "16": "gust",
-  "17": "gust",
-  "18": "gust",
-  "19": "tackle",
-  "20": "tackle",
-  "21": "gust",
-  "22": "gust",
-  "23": "sludge",
-  "24": "sludge",
-  "25": "thunder-shock",
-  "26": "thunder-shock",
-  "27": "mud-shot",
-  "28": "mud-shot",
-  "29": "sludge",
-  "30": "sludge",
-  "31": "sludge",
-  "32": "toxic",
-  "33": "toxic",
-  "34": "toxic",
-  "35": "fairy-wind",
-  "36": "fairy-wind",
-  "37": "ember",
-  "38": "ember",
-  "39": "dazzling-gleam",
-  "40": "dazzling-gleam",
-  "41": "gust",
-  "42": "gust",
-  "43": "vine-whip",
-  "44": "vine-whip",
-  "45": "vine-whip",
-  "46": "razor-leaf",
-  "47": "razor-leaf",
-  "48": "toxic",
-  "49": "toxic",
-  "50": "mud-shot",
-  "51": "mud-shot",
-  "52": "tackle",
-  "53": "tackle",
-  "54": "water-gun",
-  "55": "water-gun",
-  "56": "karate-chop",
-  "57": "karate-chop",
-  "58": "ember",
-  "59": "ember",
-  "60": "water-gun",
-  "61": "water-gun",
-  "62": "water-gun",
-  "63": "confusion",
-  "64": "confusion",
-  "65": "confusion",
-  "66": "karate-chop",
-  "67": "karate-chop",
-  "68": "karate-chop",
-  "69": "toxic",
-  "70": "toxic",
-  "71": "toxic",
-  "72": "toxic",
-  "73": "toxic",
-  "74": "bonemerang",
-  "75": "bonemerang",
-  "76": "bonemerang",
-  "77": "flamethrower",
-  "78": "flamethrower",
-  "79": "psycho-cut",
-  "80": "psycho-cut",
-  "81": "metal-claw",
-  "82": "metal-claw",
-  "83": "gust",
-  "84": "gust",
-  "85": "gust",
-  "86": "water-gun",
-  "87": "water-gun",
-  "88": "toxic",
-  "89": "toxic",
-  "90": "water-gun",
-  "91": "water-gun",
-  "92": "toxic",
-  "93": "toxic",
-  "94": "toxic",
-  "95": "bonemerang",
-  "96": "confusion",
-  "97": "confusion",
-  "98": "bubble",
-  "99": "bubble",
-  "100": "thunder-shock",
-  "101": "thunder-shock",
-  "102": "confusion",
-  "103": "confusion",
-  "104": "bulldoze",
-  "105": "bulldoze",
-  "106": "karate-chop",
-  "107": "karate-chop",
-  "108": "substitute",
-  "109": "toxic-spikes",
-  "110": "toxic-spikes",
-  "111": "rock-slide",
-  "112": "rock-slide",
-  "113": "quick-attack",
-  "114": "leaf-storm",
-  "115": "tackle",
-  "116": "hydro-pump",
-  "117": "hydro-pump",
-  "118": "bubble",
-  "119": "bubble",
-  "120": "bubble",
-  "121": "bubble",
-  "122": "dazzling-gleam",
-  "123": "string-shot",
-  "124": "confusion",
-  "125": "thunder-shock",
-  "126": "heat-wave",
-  "127": "bug-bite",
-  "128": "tackle",
-  "129": "bubble",
-  "130": "bubble",
-  "131": "powder-snow",
-  "132": "tackle",
-  "133": "quick-attack",
-  "134": "bubble",
-  "135": "thunder-shock",
-  "136": "flamethrower",
-  "137": "substitute",
-  "138": "bubble",
-  "139": "bubble",
-  "140": "bubble",
-  "141": "bubble",
-  "142": "gust",
-  "143": "substitute",
-  "144": "gust",
-  "145": "gust",
-  "146": "wing-attack",
-  "147": "dragon-rage",
-  "148": "dragon-rage",
-  "149": "dragon-rage",
-  "150": "psybeam",
-  "151": "psybeam",
-  "152": "vine-whip",
-  "153": "vine-whip",
-  "154": "vine-whip",
-  "155": "flamethrower",
-  "156": "flamethrower",
-  "157": "flamethrower",
-  "158": "hydro-pump",
-  "159": "hydro-pump",
-  "160": "hydro-pump",
-  "161": "quick-attack",
-  "162": "quick-attack",
-  "163": "gust",
-  "164": "gust",
-  "165": "gust",
-  "166": "gust",
-  "167": "toxic",
-  "168": "toxic",
-  "169": "gust",
-  "170": "discharge",
-  "171": "discharge",
-  "172": "thunder-shock",
-  "173": "fairy-wind",
-  "174": "dazzling-gleam",
-  "175": "dazzling-gleam",
-  "176": "dazzling-gleam",
-  "177": "gust",
-  "178": "gust",
-  "179": "discharge",
-  "180": "discharge",
-  "181": "discharge",
-  "182": "vine-whip",
-  "183": "fairy-wind",
-  "184": "fairy-wind",
-  "185": "rock-slide",
-  "186": "water-gun",
-  "187": "aerial-ace",
-  "188": "aerial-ace",
-  "189": "aerial-ace",
-  "190": "hyper-voice",
-  "191": "vine-whip",
-  "192": "vine-whip",
-  "193": "gust",
-  "194": "spikes",
-  "195": "spikes",
-  "196": "confusion",
-  "197": "bite",
-  "198": "gust",
-  "199": "psycho-cut",
-  "200": "shadow-ball",
-  "201": "psybeam",
-  "202": "psychic",
-  "203": "psycho-cut",
-  "204": "bug-bite",
-  "205": "bug-bite",
-  "206": "tackle",
-  "207": "gust",
-  "208": "bonemerang",
-  "209": "dazzling-gleam",
-  "210": "dazzling-gleam",
-  "211": "sludge",
-  "212": "string-shot",
-  "213": "rock-slide",
-  "214": "aura-sphere",
-  "215": "hail",
-  "216": "tackle",
-  "217": "tackle",
-  "218": "fire-spin",
-  "219": "fire-spin",
-  "220": "bonemerang",
-  "221": "bonemerang",
-  "222": "rock-slide",
-  "223": "hydro-pump",
-  "224": "hydro-pump",
-  "225": "gust",
-  "226": "wing-attack",
-  "227": "gust",
-  "228": "flamethrower",
-  "229": "flamethrower",
-  "230": "hydro-pump",
-  "231": "bulldoze",
-  "232": "bulldoze",
-  "233": "substitute",
-  "234": "tackle",
-  "235": "quick-attack",
-  "236": "karate-chop",
-  "237": "karate-chop",
-  "238": "confusion",
-  "239": "thunder-shock",
-  "240": "heat-wave",
-  "241": "quick-attack",
-  "242": "quick-attack",
-  "243": "discharge",
-  "244": "fire-spin",
-  "245": "hydro-pump",
-  "246": "rock-throw",
-  "247": "rock-throw",
-  "248": "rock-throw",
-  "249": "gust",
-  "250": "wing-attack",
-  "251": "leaf-storm",
-  "252": "razor-leaf",
-  "253": "razor-leaf",
-  "254": "razor-leaf",
-  "255": "fire-spin",
-  "256": "fire-spin",
-  "257": "fire-spin",
-  "258": "hydro-pump",
-  "259": "hydro-pump",
-  "260": "hydro-pump",
-  "261": "bite",
-  "262": "bite",
-  "263": "tackle",
-  "264": "tackle",
-  "265": "string-shot",
-  "266": "string-shot",
-  "267": "string-shot",
-  "268": "string-shot",
-  "269": "string-shot",
-  "270": "razor-leaf",
-  "271": "razor-leaf",
-  "272": "razor-leaf",
-  "273": "razor-leaf",
-  "274": "razor-leaf",
-  "275": "razor-leaf",
-  "276": "gust",
-  "277": "gust",
-  "278": "wing-attack",
-  "279": "wing-attack",
-  "280": "psychic",
-  "281": "psychic",
-  "282": "psychic",
-  "283": "string-shot",
-  "284": "string-shot",
-  "285": "razor-leaf",
-  "286": "razor-leaf",
-  "287": "quick-attack",
-  "288": "quick-attack",
-  "289": "quick-attack",
-  "290": "bug-buzz",
-  "291": "bug-buzz",
-  "292": "bug-buzz",
-  "293": "quick-attack",
-  "294": "quick-attack",
-  "295": "quick-attack",
-  "296": "aura-sphere",
-  "297": "aura-sphere",
-  "298": "fairy-wind",
-  "299": "rock-slide",
-  "300": "hyper-voice",
-  "301": "hyper-voice",
-  "302": "shadow-ball",
-  "303": "fairy-wind",
-  "304": "rock-throw",
-  "305": "rock-throw",
-  "306": "rock-throw",
-  "307": "psybeam",
-  "308": "psybeam",
-  "309": "discharge",
-  "310": "discharge",
-  "311": "thunderbolt",
-  "312": "thunderbolt",
-  "313": "bug-buzz",
-  "314": "bug-buzz",
-  "315": "toxic",
-  "316": "toxic-spikes",
-  "317": "toxic-spikes",
-  "318": "night-shade",
-  "319": "night-shade",
-  "320": "bubble-beam",
-  "321": "bubble-beam",
-  "322": "bulldoze",
-  "323": "bulldoze",
-  "324": "heat-wave",
-  "325": "psychic",
-  "326": "psychic",
-  "327": "hyper-voice",
-  "328": "bonemerang",
-  "329": "bonemerang",
-  "330": "bonemerang",
-  "331": "razor-leaf",
-  "332": "razor-leaf",
-  "333": "wing-attack",
-  "334": "wing-attack",
-  "335": "hyper-voice",
-  "336": "sludge",
-  "337": "psychic",
-  "338": "psycho-cut",
-  "339": "spikes",
-  "340": "spikes",
-  "341": "bubble-beam",
-  "342": "bubble-beam",
-  "343": "confusion",
-  "344": "confusion",
-  "345": "leaf-storm",
-  "346": "leaf-storm",
-  "347": "string-shot",
-  "348": "string-shot",
-  "349": "bubble-beam",
-  "350": "bubble-beam",
-  "351": "hyper-voice",
-  "352": "hyper-voice",
-  "353": "shadow-ball",
-  "354": "shadow-ball",
-  "355": "lick",
-  "356": "lick",
-  "357": "aerial-ace",
-  "358": "psycho-cut",
-  "359": "dark-pulse",
-  "360": "psychic",
-  "361": "ice-beam",
-  "362": "ice-beam",
-  "363": "bubble",
-  "364": "bubble",
-  "365": "bubble",
-  "366": "bubble-beam",
-  "367": "bubble-beam",
-  "368": "bubble-beam",
-  "369": "rock-slide",
-  "370": "bubble-beam",
-  "371": "dragon-rage",
-  "372": "dragon-rage",
-  "373": "dragon-rage",
-  "374": "psychic",
-  "375": "psychic",
-  "376": "psychic",
-  "377": "rock-throw",
-  "378": "powder-snow",
-  "379": "metal-claw",
-  "380": "confusion",
-  "381": "psychic",
-  "382": "water-gun",
-  "383": "bonemerang",
-  "384": "gust",
-  "385": "psycho-cut",
-  "386": "psycho-cut",
-  "387": "leaf-storm",
-  "388": "leaf-storm",
-  "389": "leaf-storm",
-  "390": "heat-wave",
-  "391": "heat-wave",
-  "392": "heat-wave",
-  "393": "water-gun",
-  "394": "water-gun",
-  "395": "water-gun",
-  "396": "gust",
-  "397": "gust",
-  "398": "gust",
-  "399": "hyper-voice",
-  "400": "hyper-voice",
-  "401": "bug-bite",
-  "402": "bug-bite",
-  "403": "thunderbolt",
-  "404": "thunderbolt",
-  "405": "thunderbolt",
-  "406": "toxic",
-  "407": "toxic",
-  "408": "rock-throw",
-  "409": "rock-throw",
-  "410": "flash-cannon",
-  "411": "flash-cannon",
-  "412": "bug-bite",
-  "413": "bug-bite",
-  "414": "bug-bite",
-  "415": "gust",
-  "416": "gust",
-  "417": "thunder-shock",
-  "418": "water-gun",
-  "419": "water-gun",
-  "420": "leaf-storm",
-  "421": "leaf-storm",
-  "422": "water-gun",
-  "423": "water-gun",
-  "424": "hyper-voice",
-  "425": "gust",
-  "426": "gust",
-  "427": "substitute",
-  "428": "substitute",
-  "429": "shadow-ball",
-  "430": "gust",
-  "431": "substitute",
-  "432": "substitute",
-  "433": "psycho-cut",
-  "434": "bite",
-  "435": "bite",
-  "436": "metal-claw",
-  "437": "metal-claw",
-  "438": "rock-slide",
-  "439": "dazzling-gleam",
-  "440": "quick-attack",
-  "441": "tackle",
-  "442": "dark-pulse",
-  "443": "bonemerang",
-  "444": "bonemerang",
-  "445": "bonemerang",
-  "446": "substitute",
-  "447": "aura-sphere",
-  "448": "aura-sphere",
-  "449": "spikes",
-  "450": "spikes",
-  "451": "sludge",
-  "452": "sludge",
-  "453": "karate-chop",
-  "454": "karate-chop",
-  "455": "leaf-storm",
-  "456": "water-gun",
-  "457": "water-gun",
-  "458": "wing-attack",
-  "459": "ice-beam",
-  "460": "ice-beam",
-  "461": "hail",
-  "462": "metal-claw",
-  "463": "substitute",
-  "464": "rock-slide",
-  "465": "leaf-storm",
-  "466": "thunder-shock",
-  "467": "heat-wave",
-  "468": "dazzling-gleam",
-  "469": "gust",
-  "470": "vine-whip",
-  "471": "ice-beam",
-  "472": "gust",
-  "473": "bonemerang",
-  "474": "substitute",
-  "475": "psychic",
-  "476": "rock-slide",
-  "477": "lick",
-  "478": "ice-beam",
-  "479": "lick",
-  "480": "psycho-cut",
-  "481": "confusion",
-  "482": "confusion",
-  "483": "flash-cannon",
-  "484": "water-gun",
-  "485": "meteor-mash",
-  "486": "substitute",
-  "487": "dragon-rage",
-  "488": "confusion",
-  "489": "water-gun",
-  "490": "water-gun",
-  "491": "dark-pulse",
-  "492": "giga-drain",
-  "493": "substitute",
-  "494": "flamethrower",
-  "495": "giga-drain",
-  "496": "giga-drain",
-  "497": "giga-drain",
-  "498": "will-o-wisp",
-  "499": "will-o-wisp",
-  "500": "will-o-wisp",
-  "501": "water-gun",
-  "502": "water-gun",
-  "503": "water-gun",
-  "504": "tackle",
-  "505": "tackle",
-  "506": "tackle",
-  "507": "tackle",
-  "508": "tackle",
-  "509": "night-shade",
-  "510": "night-shade",
-  "511": "giga-drain",
-  "512": "giga-drain",
-  "513": "will-o-wisp",
-  "515": "water-gun",
-  "517": "confusion",
-  "518": "confusion",
-  "519": "tackle",
-  "521": "tackle",
-  "524": "rock-slide",
-  "525": "rock-slide",
-  "526": "rock-slide",
-  "527": "wing-attack",
-  "528": "wing-attack",
-  "529": "spikes",
-  "530": "spikes",
-  "531": "tackle",
-  "532": "karate-chop",
-  "533": "karate-chop",
-  "534": "karate-chop",
-  "535": "water-gun",
-  "536": "water-gun",
-  "537": "water-gun",
-  "539": "karate-chop",
-  "540": "razor-leaf",
-  "541": "razor-leaf",
-  "542": "razor-leaf",
-  "543": "bug-bite",
-  "544": "bug-bite",
-  "545": "bug-bite",
-  "546": "fairy-wind",
-  "547": "fairy-wind",
-  "548": "giga-drain",
-  "549": "giga-drain",
-  "550": "water-gun",
-  "551": "bite",
-  "552": "bite",
-  "553": "bite",
-  "554": "flame-wheel",
-  "555": "flame-wheel",
-  "556": "vine-whip",
-  "557": "rock-slide",
-  "559": "aura-sphere",
-  "560": "aura-sphere",
-  "561": "wing-attack",
-  "562": "lick",
-  "563": "lick",
-  "566": "aerial-ace",
-  "567": "aerial-ace",
-  "568": "sludge",
-  "569": "sludge",
-  "570": "night-shade",
-  "571": "night-shade",
-  "572": "tackle",
-  "573": "tackle",
-  "574": "confusion",
-  "575": "confusion",
-  "576": "confusion",
-  "577": "confusion",
-  "578": "confusion",
-  "579": "confusion",
-  "580": "wing-attack",
-  "581": "wing-attack",
-  "582": "powder-snow",
-  "583": "powder-snow",
-  "584": "powder-snow",
-  "585": "giga-drain",
-  "586": "giga-drain",
-  "587": "gust",
-  "588": "bug-bite",
-  "589": "bug-bite",
-  "590": "toxic",
-  "594": "water-gun",
-  "595": "thunderbolt",
-  "596": "thunderbolt",
-  "597": "flash-cannon",
-  "598": "flash-cannon",
-  "599": "flash-cannon",
-  "600": "flash-cannon",
-  "601": "flash-cannon",
-  "602": "thunder-shock",
-  "603": "thunder-shock",
-  "604": "thunder-shock",
-  "605": "confusion",
-  "606": "confusion",
-  "607": "flame-wheel",
-  "608": "flame-wheel",
-  "609": "flame-wheel",
-  "610": "dragon-rage",
-  "611": "dragon-rage",
-  "612": "dragon-rage",
-  "613": "hail",
-  "614": "hail",
-  "615": "hail",
-  "617": "bug-bite",
-  "619": "karate-chop",
-  "620": "karate-chop",
-  "621": "dragon-rage",
-  "622": "hex",
-  "623": "hex",
-  "624": "bite",
-  "625": "bite",
-  "627": "tackle",
-  "628": "tackle",
-  "629": "gust",
-  "630": "gust",
-  "631": "flame-wheel",
-  "632": "meteor-mash",
-  "633": "dragon-rage",
-  "634": "dragon-rage",
-  "635": "dragon-rage",
-  "636": "flamethrower",
-  "637": "flamethrower",
-  "638": "aura-sphere",
-  "639": "karate-chop",
-  "640": "aura-sphere",
-  "641": "gust",
-  "642": "gust",
-  "643": "fire-spin",
-  "644": "thunder-shock",
-  "645": "aerial-ace",
-  "646": "powder-snow",
-  "647": "karate-chop",
-  "648": "psycho-cut",
-  "649": "flash-cannon",
-  "650": "vine-whip",
-  "651": "vine-whip",
-  "652": "vine-whip",
-  "653": "ember",
-  "654": "ember",
-  "655": "ember",
-  "656": "water-gun",
-  "657": "water-gun",
-  "658": "water-gun",
-  "659": "tackle",
-  "660": "tackle",
-  "661": "wing-attack",
-  "662": "wing-attack",
-  "663": "wing-attack",
-  "664": "bug-bite",
-  "665": "bug-bite",
-  "666": "bug-bite",
-  "667": "quick-attack",
-  "669": "fairy-wind",
-  "670": "fairy-wind",
-  "671": "fairy-wind",
-  "672": "vine-whip",
-  "673": "vine-whip",
-  "674": "karate-chop",
-  "675": "karate-chop",
-  "676": "tackle",
-  "677": "confusion",
-  "678": "confusion",
-  "679": "hex",
-  "680": "hex",
-  "681": "hex",
-  "682": "fairy-wind",
-  "684": "fairy-wind",
-  "685": "fairy-wind",
-  "686": "psycho-cut",
-  "687": "psycho-cut",
-  "688": "bubble-beam",
-  "689": "bubble-beam",
-  "690": "sludge",
-  "691": "sludge",
-  "692": "water-gun",
-  "693": "water-gun",
-  "694": "quick-attack",
-  "695": "quick-attack",
-  "696": "dragon-rage",
-  "697": "dragon-rage",
-  "698": "powder-snow",
-  "699": "powder-snow",
-  "700": "fairy-wind",
-  "701": "gust",
-  "702": "fairy-wind",
-  "703": "dazzling-gleam",
-  "704": "dragon-rage",
-  "705": "dragon-rage",
-  "706": "dragon-rage",
-  "707": "dazzling-gleam",
-  "708": "leaf-storm",
-  "709": "leaf-storm",
-  "710": "razor-leaf",
-  "711": "razor-leaf",
-  "712": "ice-beam",
-  "713": "ice-beam",
-  "714": "aerial-ace",
-  "715": "aerial-ace",
-  "716": "fairy-wind",
-  "717": "aerial-ace",
-  "718": "bonemerang",
-  "719": "dazzling-gleam",
-  "720": "lick",
-  "721": "hydro-pump",
-  "722": "vine-whip",
-  "723": "vine-whip",
-  "724": "vine-whip",
-  "725": "ember",
-  "726": "ember",
-  "727": "ember",
-  "728": "water-gun",
-  "729": "water-gun",
-  "730": "water-gun",
-  "731": "tackle",
-  "734": "tackle",
-  "736": "bug-bite",
-  "737": "bug-bite",
-  "738": "bug-bite",
-  "739": "karate-chop",
-  "740": "karate-chop",
-  "741": "aerial-ace",
-  "742": "fairy-wind",
-  "743": "fairy-wind",
-  "744": "rock-throw",
-  "745": "rock-throw",
-  "746": "water-gun",
-  "747": "bubble",
-  "748": "bubble",
-  "749": "mud-shot",
-  "750": "mud-shot",
-  "751": "string-shot",
-  "752": "string-shot",
-  "753": "vine-whip",
-  "754": "vine-whip",
-  "755": "fairy-wind",
-  "757": "fire-spin",
-  "758": "fire-spin",
-  "759": "aura-sphere",
-  "760": "aura-sphere",
-  "761": "vine-whip",
-  "762": "vine-whip",
-  "763": "vine-whip",
-  "764": "fairy-wind",
-  "766": "karate-chop",
-  "767": "hydro-pump",
-  "768": "hydro-pump",
-  "769": "spikes",
-  "770": "spikes",
-  "771": "water-gun",
-  "772": "tackle",
-  "773": "tackle",
-  "774": "aerial-ace",
-  "775": "tackle",
-  "776": "dragon-rage",
-  "777": "flash-cannon",
-  "778": "dazzling-gleam",
-  "779": "psycho-cut",
-  "780": "dragon-rage",
-  "781": "lick",
-  "782": "dragon-rage",
-  "783": "dragon-rage",
-  "784": "dragon-rage",
-  "785": "fairy-wind",
-  "786": "dazzling-gleam",
-  "787": "fairy-wind",
-  "788": "dazzling-gleam",
-  "789": "confusion",
-  "790": "confusion",
-  "791": "confusion",
-  "792": "confusion",
-  "793": "toxic-spikes",
-  "794": "aura-sphere",
-  "795": "aura-sphere",
-  "796": "thunder-shock",
-  "797": "gust",
-  "798": "meteor-mash",
-  "799": "bite",
-  "800": "confusion",
-  "801": "dazzling-gleam",
-  "802": "hex",
-  "803": "sludge",
-  "804": "sludge",
-  "805": "metal-claw",
-  "806": "hex",
-  "807": "thunder-shock",
-  "808": "meteor-mash",
-  "809": "meteor-mash",
-  "810": "vine-whip",
-  "811": "vine-whip",
-  "812": "vine-whip",
-  "813": "ember",
-  "814": "ember",
-  "815": "ember",
-  "816": "water-gun",
-  "817": "water-gun",
-  "818": "water-gun",
-  "819": "tackle",
-  "820": "tackle",
-  "821": "wing-attack",
-  "822": "wing-attack",
-  "823": "wing-attack",
-  "824": "bug-bite",
-  "825": "bug-bite",
-  "826": "bug-bite",
-  "827": "bite",
-  "828": "bite",
-  "829": "vine-whip",
-  "830": "vine-whip",
-  "831": "tackle",
-  "832": "tackle",
-  "833": "water-gun",
-  "834": "water-gun",
-  "835": "thunder-shock",
-  "836": "thunder-shock",
-  "840": "dragon-rage",
-  "841": "dragon-rage",
-  "842": "dragon-rage",
-  "843": "mud-shot",
-  "844": "mud-shot",
-  "845": "hydro-pump",
-  "846": "water-gun",
-  "847": "water-gun",
-  "848": "toxic",
-  "849": "toxic",
-  "850": "bug-buzz",
-  "851": "bug-buzz",
-  "852": "karate-chop",
-  "853": "karate-chop",
-  "854": "hex",
-  "855": "hex",
-  "856": "confusion",
-  "857": "confusion",
-  "858": "confusion",
-  "859": "bite",
-  "860": "bite",
-  "861": "bite",
-  "862": "tackle",
-  "863": "metal-claw",
-  "864": "hex",
-  "867": "lick",
-  "868": "fairy-wind",
-  "869": "fairy-wind",
-  "871": "thunder-shock",
-  "872": "bug-bite",
-  "873": "bug-bite",
-  "874": "rock-throw",
-  "875": "ice-beam",
-  "876": "quick-attack",
-  "877": "bite",
-  "880": "dragon-rage",
-  "881": "ice-beam",
-  "882": "water-gun",
-  "883": "powder-snow",
-  "884": "metal-claw",
-  "885": "lick",
-  "886": "lick",
-  "887": "lick",
-  "888": "fairy-wind",
-  "889": "karate-chop",
-  "890": "dragon-rage",
-  "891": "karate-chop",
-  "892": "karate-chop",
-  "894": "thunder-shock",
-  "895": "dragon-rage",
-  "896": "ice-beam",
-  "897": "lick",
-  "898": "giga-drain",
-  "899": "tackle",
-  "900": "string-shot",
-  "901": "tackle",
-  "902": "water-gun",
-  "903": "toxic",
-  "904": "sludge",
-  "905": "gust",
-  "906": "vine-whip",
-  "907": "vine-whip",
-  "908": "vine-whip",
-  "909": "ember",
-  "910": "ember",
-  "911": "ember",
-  "912": "water-gun",
-  "913": "water-gun",
-  "914": "water-gun",
-  "915": "tackle",
-  "916": "tackle",
-  "917": "bug-bite",
-  "918": "bug-bite",
-  "919": "bug-bite",
-  "920": "bug-bite",
-  "921": "thunder-shock",
-  "922": "thunder-shock",
-  "923": "thunder-shock",
-  "924": "tackle",
-  "925": "tackle",
-  "926": "fairy-wind",
-  "927": "fairy-wind",
-  "928": "quick-attack",
-  "930": "quick-attack",
-  "932": "rock-throw",
-  "933": "rock-throw",
-  "934": "rock-throw",
-  "935": "ember",
-  "936": "ember",
-  "937": "ember",
-  "938": "thunder-shock",
-  "939": "thunder-shock",
-  "940": "aerial-ace",
-  "941": "aerial-ace",
-  "946": "shadow-ball",
-  "951": "vine-whip",
-  "952": "vine-whip",
-  "953": "bug-bite",
-  "955": "confusion",
-  "957": "metal-claw",
-  "958": "metal-claw",
-  "959": "metal-claw",
-  "960": "water-gun",
-  "961": "water-gun",
-  "963": "water-gun",
-  "964": "water-gun",
-  "965": "toxic",
-  "966": "toxic",
-  "967": "tackle",
-  "968": "meteor-mash",
-  "969": "toxic",
-  "970": "toxic",
-  "971": "lick",
-  "972": "lick",
-  "974": "ice-beam",
-  "975": "ice-beam",
-  "976": "psycho-cut",
-  "977": "water-gun",
-  "978": "bubble-beam",
-  "979": "karate-chop",
-  "980": "spikes",
-  "981": "psycho-cut",
-  "982": "tackle",
-  "983": "bite",
-  "984": "aura-sphere",
-  "985": "psybeam",
-  "987": "lick",
-  "988": "bug-bite",
-  "989": "spikes",
-  "991": "bubble-beam",
-  "992": "discharge",
-  "994": "toxic-spikes",
-  "995": "thunderbolt",
-  "996": "hail",
-  "997": "hail",
-  "998": "hail",
-  "1000": "metal-claw",
-  "1004": "flamethrower",
-  "1005": "dark-pulse",
-  "1006": "karate-chop",
-  "1007": "dragon-rage",
-  "1009": "water-gun",
-  "1010": "confusion",
-  "1011": "dragon-rage",
-  "1012": "hex",
-  "1013": "hex",
-  "1015": "psychic",
-  "1016": "dazzling-gleam",
-  "1017": "vine-whip",
-  "1018": "metal-claw",
-  "1019": "dragon-rage",
-  "1024": "tackle"
-});
-G.FIXED_SKILLS_SOURCE = Object.freeze({"file":"fixed-skills.js","sha256":"388ea924d2f89e7fda942ad376c0983a277c86ff1a818495b71e0c8eb35dd0d5","entries":966});
+/* ============ fixed-skills.js — 宝可梦固定初始招式（进化链严格统一 + 严禁跨系） ============
+ * 规则：
+ * 1. 同一进化链所有形态 100% 绑定完全相同的固定技能，合成升阶时无缝保留并升级为超武。
+ * 2. 招式属性完全属于该进化链各形态公有属性，严禁任何跨系填充。
+ */
+G.FIXED_SKILLS = {
+  1: 'toxic', // Bulbasaur [grass/poison] -> trail (poison)
+  2: 'toxic', // Ivysaur [grass/poison] -> trail (poison)
+  3: 'toxic', // Venusaur [grass/poison] -> trail (poison)
+  4: 'ember', // Charmander [fire] -> projectile (fire)
+  5: 'ember', // Charmeleon [fire] -> projectile (fire)
+  6: 'ember', // Charizard [fire/flying] -> projectile (fire)
+  7: 'water-gun', // Squirtle [water] -> projectile (water)
+  8: 'water-gun', // Wartortle [water] -> projectile (water)
+  9: 'water-gun', // Blastoise [water] -> projectile (water)
+  10: 'bug-bite', // Caterpie [bug] -> melee (bug)
+  11: 'bug-bite', // Metapod [bug] -> melee (bug)
+  12: 'bug-bite', // Butterfree [bug/flying] -> melee (bug)
+  13: 'toxic', // Weedle [bug/poison] -> trail (poison)
+  14: 'toxic', // Kakuna [bug/poison] -> trail (poison)
+  15: 'toxic', // Beedrill [bug/poison] -> trail (poison)
+  16: 'gust', // Pidgey [normal/flying] -> orbit (flying)
+  17: 'gust', // Pidgeotto [normal/flying] -> orbit (flying)
+  18: 'gust', // Pidgeot [normal/flying] -> orbit (flying)
+  19: 'tackle', // Rattata [normal] -> melee (normal)
+  20: 'tackle', // Raticate [normal] -> melee (normal)
+  21: 'gust', // Spearow [normal/flying] -> orbit (flying)
+  22: 'gust', // Fearow [normal/flying] -> orbit (flying)
+  23: 'sludge', // Ekans [poison] -> projectile (poison)
+  24: 'sludge', // Arbok [poison] -> projectile (poison)
+  25: 'thunder-shock', // Pikachu [electric] -> projectile (electric)
+  26: 'thunder-shock', // Raichu [electric] -> projectile (electric)
+  27: 'mud-shot', // Sandshrew [ground] -> nova (ground)
+  28: 'mud-shot', // Sandslash [ground] -> nova (ground)
+  29: 'sludge', // Nidoran♀ [poison] -> projectile (poison)
+  30: 'sludge', // Nidorina [poison] -> projectile (poison)
+  31: 'sludge', // Nidoqueen [poison/ground] -> projectile (poison)
+  32: 'toxic', // Nidoran♂ [poison] -> trail (poison)
+  33: 'toxic', // Nidorino [poison] -> trail (poison)
+  34: 'toxic', // Nidoking [poison/ground] -> trail (poison)
+  35: 'fairy-wind', // Clefairy [fairy] -> nova (fairy)
+  36: 'fairy-wind', // Clefable [fairy] -> nova (fairy)
+  37: 'ember', // Vulpix [fire] -> projectile (fire)
+  38: 'ember', // Ninetales [fire] -> projectile (fire)
+  39: 'dazzling-gleam', // Jigglypuff [normal/fairy] -> aura (fairy)
+  40: 'dazzling-gleam', // Wigglytuff [normal/fairy] -> aura (fairy)
+  41: 'gust', // Zubat [poison/flying] -> orbit (flying)
+  42: 'gust', // Golbat [poison/flying] -> orbit (flying)
+  43: 'vine-whip', // Oddish [grass/poison] -> melee (grass)
+  44: 'vine-whip', // Gloom [grass/poison] -> melee (grass)
+  45: 'vine-whip', // Vileplume [grass/poison] -> melee (grass)
+  46: 'razor-leaf', // Paras [bug/grass] -> boomerang (grass)
+  47: 'razor-leaf', // Parasect [bug/grass] -> boomerang (grass)
+  48: 'toxic', // Venonat [bug/poison] -> trail (poison)
+  49: 'toxic', // Venomoth [bug/poison] -> trail (poison)
+  50: 'mud-shot', // Diglett [ground] -> nova (ground)
+  51: 'mud-shot', // Dugtrio [ground] -> nova (ground)
+  52: 'tackle', // Meowth [normal] -> melee (normal)
+  53: 'tackle', // Persian [normal] -> melee (normal)
+  54: 'water-gun', // Psyduck [water] -> projectile (water)
+  55: 'water-gun', // Golduck [water] -> projectile (water)
+  56: 'karate-chop', // Mankey [fighting] -> melee (fighting)
+  57: 'karate-chop', // Primeape [fighting] -> melee (fighting)
+  58: 'ember', // Growlithe [fire] -> projectile (fire)
+  59: 'ember', // Arcanine [fire] -> projectile (fire)
+  60: 'water-gun', // Poliwag [water] -> projectile (water)
+  61: 'water-gun', // Poliwhirl [water] -> projectile (water)
+  62: 'water-gun', // Poliwrath [water/fighting] -> projectile (water)
+  63: 'confusion', // Abra [psychic] -> projectile (psychic)
+  64: 'confusion', // Kadabra [psychic] -> projectile (psychic)
+  65: 'confusion', // Alakazam [psychic] -> projectile (psychic)
+  66: 'karate-chop', // Machop [fighting] -> melee (fighting)
+  67: 'karate-chop', // Machoke [fighting] -> melee (fighting)
+  68: 'karate-chop', // Machamp [fighting] -> melee (fighting)
+  69: 'toxic', // Bellsprout [grass/poison] -> trail (poison)
+  70: 'toxic', // Weepinbell [grass/poison] -> trail (poison)
+  71: 'toxic', // Victreebel [grass/poison] -> trail (poison)
+  72: 'toxic', // Tentacool [water/poison] -> trail (poison)
+  73: 'toxic', // Tentacruel [water/poison] -> trail (poison)
+  74: 'bonemerang', // Geodude [rock/ground] -> boomerang (ground)
+  75: 'bonemerang', // Graveler [rock/ground] -> boomerang (ground)
+  76: 'bonemerang', // Golem [rock/ground] -> boomerang (ground)
+  77: 'flamethrower', // Ponyta [fire] -> cone (fire)
+  78: 'flamethrower', // Rapidash [fire] -> cone (fire)
+  79: 'psycho-cut', // Slowpoke [water/psychic] -> boomerang (psychic)
+  80: 'psycho-cut', // Slowbro [water/psychic] -> boomerang (psychic)
+  81: 'metal-claw', // Magnemite [electric/steel] -> melee (steel)
+  82: 'metal-claw', // Magneton [electric/steel] -> melee (steel)
+  83: 'gust', // Farfetch’d [normal/flying] -> orbit (flying)
+  84: 'gust', // Doduo [normal/flying] -> orbit (flying)
+  85: 'gust', // Dodrio [normal/flying] -> orbit (flying)
+  86: 'water-gun', // Seel [water] -> projectile (water)
+  87: 'water-gun', // Dewgong [water/ice] -> projectile (water)
+  88: 'toxic', // Grimer [poison] -> trail (poison)
+  89: 'toxic', // Muk [poison] -> trail (poison)
+  90: 'water-gun', // Shellder [water] -> projectile (water)
+  91: 'water-gun', // Cloyster [water/ice] -> projectile (water)
+  92: 'toxic', // Gastly [ghost/poison] -> trail (poison)
+  93: 'toxic', // Haunter [ghost/poison] -> trail (poison)
+  94: 'toxic', // Gengar [ghost/poison] -> trail (poison)
+  95: 'bonemerang', // Onix [rock/ground] -> boomerang (ground)
+  96: 'confusion', // Drowzee [psychic] -> projectile (psychic)
+  97: 'confusion', // Hypno [psychic] -> projectile (psychic)
+  98: 'bubble', // Krabby [water] -> nova (water)
+  99: 'bubble', // Kingler [water] -> nova (water)
+  100: 'thunder-shock', // Voltorb [electric] -> projectile (electric)
+  101: 'thunder-shock', // Electrode [electric] -> projectile (electric)
+  102: 'confusion', // Exeggcute [grass/psychic] -> projectile (psychic)
+  103: 'confusion', // Exeggutor [grass/psychic] -> projectile (psychic)
+  104: 'bulldoze', // Cubone [ground] -> aura (ground)
+  105: 'bulldoze', // Marowak [ground] -> aura (ground)
+  106: 'karate-chop', // Hitmonlee [fighting] -> melee (fighting)
+  107: 'karate-chop', // Hitmonchan [fighting] -> melee (fighting)
+  108: 'substitute', // Lickitung [normal] -> turret (normal)
+  109: 'toxic-spikes', // Koffing [poison] -> mine (poison)
+  110: 'toxic-spikes', // Weezing [poison] -> mine (poison)
+  111: 'rock-slide', // Rhyhorn [ground/rock] -> meteor (rock)
+  112: 'rock-slide', // Rhydon [ground/rock] -> meteor (rock)
+  113: 'quick-attack', // Chansey [normal] -> dash (normal)
+  114: 'leaf-storm', // Tangela [grass] -> orbit (grass)
+  115: 'tackle', // Kangaskhan [normal] -> melee (normal)
+  116: 'hydro-pump', // Horsea [water] -> beam (water)
+  117: 'hydro-pump', // Seadra [water] -> beam (water)
+  118: 'bubble', // Goldeen [water] -> nova (water)
+  119: 'bubble', // Seaking [water] -> nova (water)
+  120: 'bubble', // Staryu [water] -> nova (water)
+  121: 'bubble', // Starmie [water/psychic] -> nova (water)
+  122: 'dazzling-gleam', // Mr. Mime [psychic/fairy] -> aura (fairy)
+  123: 'string-shot', // Scyther [bug/flying] -> mine (bug)
+  124: 'confusion', // Jynx [ice/psychic] -> projectile (psychic)
+  125: 'thunder-shock', // Electabuzz [electric] -> projectile (electric)
+  126: 'heat-wave', // Magmar [fire] -> nova (fire)
+  127: 'bug-bite', // Pinsir [bug] -> melee (bug)
+  128: 'tackle', // Tauros [normal] -> melee (normal)
+  129: 'bubble', // Magikarp [water] -> nova (water)
+  130: 'bubble', // Gyarados [water/flying] -> nova (water)
+  131: 'powder-snow', // Lapras [water/ice] -> aura (ice)
+  132: 'tackle', // Ditto [normal] -> melee (normal)
+  133: 'quick-attack', // Eevee [normal] -> dash (normal)
+  134: 'bubble', // Vaporeon [water] -> nova (water)
+  135: 'thunder-shock', // Jolteon [electric] -> projectile (electric)
+  136: 'flamethrower', // Flareon [fire] -> cone (fire)
+  137: 'substitute', // Porygon [normal] -> turret (normal)
+  138: 'bubble', // Omanyte [rock/water] -> nova (water)
+  139: 'bubble', // Omastar [rock/water] -> nova (water)
+  140: 'bubble', // Kabuto [rock/water] -> nova (water)
+  141: 'bubble', // Kabutops [rock/water] -> nova (water)
+  142: 'gust', // Aerodactyl [rock/flying] -> orbit (flying)
+  143: 'substitute', // Snorlax [normal] -> turret (normal)
+  144: 'gust', // Articuno [ice/flying] -> orbit (flying)
+  145: 'gust', // Zapdos [electric/flying] -> orbit (flying)
+  146: 'wing-attack', // Moltres [fire/flying] -> melee (flying)
+  147: 'dragon-rage', // Dratini [dragon] -> beam (dragon)
+  148: 'dragon-rage', // Dragonair [dragon] -> beam (dragon)
+  149: 'dragon-rage', // Dragonite [dragon/flying] -> beam (dragon)
+  150: 'psybeam', // Mewtwo [psychic] -> beam (psychic)
+  151: 'psybeam', // Mew [psychic] -> beam (psychic)
+  152: 'vine-whip', // Chikorita [grass] -> melee (grass)
+  153: 'vine-whip', // Bayleef [grass] -> melee (grass)
+  154: 'vine-whip', // Meganium [grass] -> melee (grass)
+  155: 'flamethrower', // Cyndaquil [fire] -> cone (fire)
+  156: 'flamethrower', // Quilava [fire] -> cone (fire)
+  157: 'flamethrower', // Typhlosion [fire] -> cone (fire)
+  158: 'hydro-pump', // Totodile [water] -> beam (water)
+  159: 'hydro-pump', // Croconaw [water] -> beam (water)
+  160: 'hydro-pump', // Feraligatr [water] -> beam (water)
+  161: 'quick-attack', // Sentret [normal] -> dash (normal)
+  162: 'quick-attack', // Furret [normal] -> dash (normal)
+  163: 'gust', // Hoothoot [normal/flying] -> orbit (flying)
+  164: 'gust', // Noctowl [normal/flying] -> orbit (flying)
+  165: 'gust', // Ledyba [bug/flying] -> orbit (flying)
+  166: 'gust', // Ledian [bug/flying] -> orbit (flying)
+  167: 'toxic', // Spinarak [bug/poison] -> trail (poison)
+  168: 'toxic', // Ariados [bug/poison] -> trail (poison)
+  169: 'gust', // Crobat [poison/flying] -> orbit (flying)
+  170: 'discharge', // Chinchou [water/electric] -> aura (electric)
+  171: 'discharge', // Lanturn [water/electric] -> aura (electric)
+  172: 'thunder-shock', // Pichu [electric] -> projectile (electric)
+  173: 'fairy-wind', // Cleffa [fairy] -> nova (fairy)
+  174: 'dazzling-gleam', // Igglybuff [normal/fairy] -> aura (fairy)
+  175: 'dazzling-gleam', // Togepi [fairy] -> aura (fairy)
+  176: 'dazzling-gleam', // Togetic [fairy/flying] -> aura (fairy)
+  177: 'gust', // Natu [psychic/flying] -> orbit (flying)
+  178: 'gust', // Xatu [psychic/flying] -> orbit (flying)
+  179: 'discharge', // Mareep [electric] -> aura (electric)
+  180: 'discharge', // Flaaffy [electric] -> aura (electric)
+  181: 'discharge', // Ampharos [electric] -> aura (electric)
+  182: 'vine-whip', // Bellossom [grass] -> melee (grass)
+  183: 'fairy-wind', // Marill [water/fairy] -> nova (fairy)
+  184: 'fairy-wind', // Azumarill [water/fairy] -> nova (fairy)
+  185: 'rock-slide', // Sudowoodo [rock] -> meteor (rock)
+  186: 'water-gun', // Politoed [water] -> projectile (water)
+  187: 'aerial-ace', // Hoppip [grass/flying] -> dash (flying)
+  188: 'aerial-ace', // Skiploom [grass/flying] -> dash (flying)
+  189: 'aerial-ace', // Jumpluff [grass/flying] -> dash (flying)
+  190: 'hyper-voice', // Aipom [normal] -> nova (normal)
+  191: 'vine-whip', // Sunkern [grass] -> melee (grass)
+  192: 'vine-whip', // Sunflora [grass] -> melee (grass)
+  193: 'gust', // Yanma [bug/flying] -> orbit (flying)
+  194: 'spikes', // Wooper [water/ground] -> mine (ground)
+  195: 'spikes', // Quagsire [water/ground] -> mine (ground)
+  196: 'confusion', // Espeon [psychic] -> projectile (psychic)
+  197: 'bite', // Umbreon [dark] -> melee (dark)
+  198: 'gust', // Murkrow [dark/flying] -> orbit (flying)
+  199: 'psycho-cut', // Slowking [water/psychic] -> boomerang (psychic)
+  200: 'shadow-ball', // Misdreavus [ghost] -> projectile (ghost)
+  201: 'psybeam', // Unown [psychic] -> beam (psychic)
+  202: 'psychic', // Wobbuffet [psychic] -> nova (psychic)
+  203: 'psycho-cut', // Girafarig [normal/psychic] -> boomerang (psychic)
+  204: 'bug-bite', // Pineco [bug] -> melee (bug)
+  205: 'bug-bite', // Forretress [bug/steel] -> melee (bug)
+  206: 'tackle', // Dunsparce [normal] -> melee (normal)
+  207: 'gust', // Gligar [ground/flying] -> orbit (flying)
+  208: 'bonemerang', // Steelix [steel/ground] -> boomerang (ground)
+  209: 'dazzling-gleam', // Snubbull [fairy] -> aura (fairy)
+  210: 'dazzling-gleam', // Granbull [fairy] -> aura (fairy)
+  211: 'sludge', // Qwilfish [water/poison] -> projectile (poison)
+  212: 'string-shot', // Scizor [bug/steel] -> mine (bug)
+  213: 'rock-slide', // Shuckle [bug/rock] -> meteor (rock)
+  214: 'aura-sphere', // Heracross [bug/fighting] -> projectile (fighting)
+  215: 'hail', // Sneasel [dark/ice] -> meteor (ice)
+  216: 'tackle', // Teddiursa [normal] -> melee (normal)
+  217: 'tackle', // Ursaring [normal] -> melee (normal)
+  218: 'fire-spin', // Slugma [fire] -> orbit (fire)
+  219: 'fire-spin', // Magcargo [fire/rock] -> orbit (fire)
+  220: 'bonemerang', // Swinub [ice/ground] -> boomerang (ground)
+  221: 'bonemerang', // Piloswine [ice/ground] -> boomerang (ground)
+  222: 'rock-slide', // Corsola [water/rock] -> meteor (rock)
+  223: 'hydro-pump', // Remoraid [water] -> beam (water)
+  224: 'hydro-pump', // Octillery [water] -> beam (water)
+  225: 'gust', // Delibird [ice/flying] -> orbit (flying)
+  226: 'wing-attack', // Mantine [water/flying] -> melee (flying)
+  227: 'gust', // Skarmory [steel/flying] -> orbit (flying)
+  228: 'flamethrower', // Houndour [dark/fire] -> cone (fire)
+  229: 'flamethrower', // Houndoom [dark/fire] -> cone (fire)
+  230: 'hydro-pump', // Kingdra [water/dragon] -> beam (water)
+  231: 'bulldoze', // Phanpy [ground] -> aura (ground)
+  232: 'bulldoze', // Donphan [ground] -> aura (ground)
+  233: 'substitute', // Porygon2 [normal] -> turret (normal)
+  234: 'tackle', // Stantler [normal] -> melee (normal)
+  235: 'quick-attack', // Smeargle [normal] -> dash (normal)
+  236: 'karate-chop', // Tyrogue [fighting] -> melee (fighting)
+  237: 'karate-chop', // Hitmontop [fighting] -> melee (fighting)
+  238: 'confusion', // Smoochum [ice/psychic] -> projectile (psychic)
+  239: 'thunder-shock', // Elekid [electric] -> projectile (electric)
+  240: 'heat-wave', // Magby [fire] -> nova (fire)
+  241: 'quick-attack', // Miltank [normal] -> dash (normal)
+  242: 'quick-attack', // Blissey [normal] -> dash (normal)
+  243: 'discharge', // Raikou [electric] -> aura (electric)
+  244: 'fire-spin', // Entei [fire] -> orbit (fire)
+  245: 'hydro-pump', // Suicune [water] -> beam (water)
+  246: 'rock-throw', // Larvitar [rock/ground] -> projectile (rock)
+  247: 'rock-throw', // Pupitar [rock/ground] -> projectile (rock)
+  248: 'rock-throw', // Tyranitar [rock/dark] -> projectile (rock)
+  249: 'gust', // Lugia [psychic/flying] -> orbit (flying)
+  250: 'wing-attack', // Ho-Oh [fire/flying] -> melee (flying)
+  251: 'leaf-storm', // Celebi [psychic/grass] -> orbit (grass)
+  252: 'razor-leaf', // Treecko [grass] -> boomerang (grass)
+  253: 'razor-leaf', // Grovyle [grass] -> boomerang (grass)
+  254: 'razor-leaf', // Sceptile [grass] -> boomerang (grass)
+  255: 'fire-spin', // Torchic [fire] -> orbit (fire)
+  256: 'fire-spin', // Combusken [fire/fighting] -> orbit (fire)
+  257: 'fire-spin', // Blaziken [fire/fighting] -> orbit (fire)
+  258: 'hydro-pump', // Mudkip [water] -> beam (water)
+  259: 'hydro-pump', // Marshtomp [water/ground] -> beam (water)
+  260: 'hydro-pump', // Swampert [water/ground] -> beam (water)
+  261: 'bite', // Poochyena [dark] -> melee (dark)
+  262: 'bite', // Mightyena [dark] -> melee (dark)
+  263: 'tackle', // Zigzagoon [normal] -> melee (normal)
+  264: 'tackle', // Linoone [normal] -> melee (normal)
+  265: 'string-shot', // Wurmple [bug] -> mine (bug)
+  266: 'string-shot', // Silcoon [bug] -> mine (bug)
+  267: 'string-shot', // Beautifly [bug/flying] -> mine (bug)
+  268: 'string-shot', // Cascoon [bug] -> mine (bug)
+  269: 'string-shot', // Dustox [bug/poison] -> mine (bug)
+  270: 'razor-leaf', // Lotad [water/grass] -> boomerang (grass)
+  271: 'razor-leaf', // Lombre [water/grass] -> boomerang (grass)
+  272: 'razor-leaf', // Ludicolo [water/grass] -> boomerang (grass)
+  273: 'razor-leaf', // Seedot [grass] -> boomerang (grass)
+  274: 'razor-leaf', // Nuzleaf [grass/dark] -> boomerang (grass)
+  275: 'razor-leaf', // Shiftry [grass/dark] -> boomerang (grass)
+  276: 'gust', // Taillow [normal/flying] -> orbit (flying)
+  277: 'gust', // Swellow [normal/flying] -> orbit (flying)
+  278: 'wing-attack', // Wingull [water/flying] -> melee (flying)
+  279: 'wing-attack', // Pelipper [water/flying] -> melee (flying)
+  280: 'psychic', // Ralts [psychic/fairy] -> nova (psychic)
+  281: 'psychic', // Kirlia [psychic/fairy] -> nova (psychic)
+  282: 'psychic', // Gardevoir [psychic/fairy] -> nova (psychic)
+  283: 'string-shot', // Surskit [bug/water] -> mine (bug)
+  284: 'string-shot', // Masquerain [bug/flying] -> mine (bug)
+  285: 'razor-leaf', // Shroomish [grass] -> boomerang (grass)
+  286: 'razor-leaf', // Breloom [grass/fighting] -> boomerang (grass)
+  287: 'quick-attack', // Slakoth [normal] -> dash (normal)
+  288: 'quick-attack', // Vigoroth [normal] -> dash (normal)
+  289: 'quick-attack', // Slaking [normal] -> dash (normal)
+  290: 'bug-buzz', // Nincada [bug/ground] -> aura (bug)
+  291: 'bug-buzz', // Ninjask [bug/flying] -> aura (bug)
+  292: 'bug-buzz', // Shedinja [bug/ghost] -> aura (bug)
+  293: 'quick-attack', // Whismur [normal] -> dash (normal)
+  294: 'quick-attack', // Loudred [normal] -> dash (normal)
+  295: 'quick-attack', // Exploud [normal] -> dash (normal)
+  296: 'aura-sphere', // Makuhita [fighting] -> projectile (fighting)
+  297: 'aura-sphere', // Hariyama [fighting] -> projectile (fighting)
+  298: 'fairy-wind', // Azurill [normal/fairy] -> nova (fairy)
+  299: 'rock-slide', // Nosepass [rock] -> meteor (rock)
+  300: 'hyper-voice', // Skitty [normal] -> nova (normal)
+  301: 'hyper-voice', // Delcatty [normal] -> nova (normal)
+  302: 'shadow-ball', // Sableye [dark/ghost] -> projectile (ghost)
+  303: 'fairy-wind', // Mawile [steel/fairy] -> nova (fairy)
+  304: 'rock-throw', // Aron [steel/rock] -> projectile (rock)
+  305: 'rock-throw', // Lairon [steel/rock] -> projectile (rock)
+  306: 'rock-throw', // Aggron [steel/rock] -> projectile (rock)
+  307: 'psybeam', // Meditite [fighting/psychic] -> beam (psychic)
+  308: 'psybeam', // Medicham [fighting/psychic] -> beam (psychic)
+  309: 'discharge', // Electrike [electric] -> aura (electric)
+  310: 'discharge', // Manectric [electric] -> aura (electric)
+  311: 'thunderbolt', // Plusle [electric] -> chain (electric)
+  312: 'thunderbolt', // Minun [electric] -> chain (electric)
+  313: 'bug-buzz', // Volbeat [bug] -> aura (bug)
+  314: 'bug-buzz', // Illumise [bug] -> aura (bug)
+  315: 'toxic', // Roselia [grass/poison] -> trail (poison)
+  316: 'toxic-spikes', // Gulpin [poison] -> mine (poison)
+  317: 'toxic-spikes', // Swalot [poison] -> mine (poison)
+  318: 'night-shade', // Carvanha [water/dark] -> aura (dark)
+  319: 'night-shade', // Sharpedo [water/dark] -> aura (dark)
+  320: 'bubble-beam', // Wailmer [water] -> cone (water)
+  321: 'bubble-beam', // Wailord [water] -> cone (water)
+  322: 'bulldoze', // Numel [fire/ground] -> aura (ground)
+  323: 'bulldoze', // Camerupt [fire/ground] -> aura (ground)
+  324: 'heat-wave', // Torkoal [fire] -> nova (fire)
+  325: 'psychic', // Spoink [psychic] -> nova (psychic)
+  326: 'psychic', // Grumpig [psychic] -> nova (psychic)
+  327: 'hyper-voice', // Spinda [normal] -> nova (normal)
+  328: 'bonemerang', // Trapinch [ground] -> boomerang (ground)
+  329: 'bonemerang', // Vibrava [ground/dragon] -> boomerang (ground)
+  330: 'bonemerang', // Flygon [ground/dragon] -> boomerang (ground)
+  331: 'razor-leaf', // Cacnea [grass] -> boomerang (grass)
+  332: 'razor-leaf', // Cacturne [grass/dark] -> boomerang (grass)
+  333: 'wing-attack', // Swablu [normal/flying] -> melee (flying)
+  334: 'wing-attack', // Altaria [dragon/flying] -> melee (flying)
+  335: 'hyper-voice', // Zangoose [normal] -> nova (normal)
+  336: 'sludge', // Seviper [poison] -> projectile (poison)
+  337: 'psychic', // Lunatone [rock/psychic] -> nova (psychic)
+  338: 'psycho-cut', // Solrock [rock/psychic] -> boomerang (psychic)
+  339: 'spikes', // Barboach [water/ground] -> mine (ground)
+  340: 'spikes', // Whiscash [water/ground] -> mine (ground)
+  341: 'bubble-beam', // Corphish [water] -> cone (water)
+  342: 'bubble-beam', // Crawdaunt [water/dark] -> cone (water)
+  343: 'confusion', // Baltoy [ground/psychic] -> projectile (psychic)
+  344: 'confusion', // Claydol [ground/psychic] -> projectile (psychic)
+  345: 'leaf-storm', // Lileep [rock/grass] -> orbit (grass)
+  346: 'leaf-storm', // Cradily [rock/grass] -> orbit (grass)
+  347: 'string-shot', // Anorith [rock/bug] -> mine (bug)
+  348: 'string-shot', // Armaldo [rock/bug] -> mine (bug)
+  349: 'bubble-beam', // Feebas [water] -> cone (water)
+  350: 'bubble-beam', // Milotic [water] -> cone (water)
+  351: 'hyper-voice', // Castform [normal] -> nova (normal)
+  352: 'hyper-voice', // Kecleon [normal] -> nova (normal)
+  353: 'shadow-ball', // Shuppet [ghost] -> projectile (ghost)
+  354: 'shadow-ball', // Banette [ghost] -> projectile (ghost)
+  355: 'lick', // Duskull [ghost] -> melee (ghost)
+  356: 'lick', // Dusclops [ghost] -> melee (ghost)
+  357: 'aerial-ace', // Tropius [grass/flying] -> dash (flying)
+  358: 'psycho-cut', // Chimecho [psychic] -> boomerang (psychic)
+  359: 'dark-pulse', // Absol [dark] -> nova (dark)
+  360: 'psychic', // Wynaut [psychic] -> nova (psychic)
+  361: 'ice-beam', // Snorunt [ice] -> beam (ice)
+  362: 'ice-beam', // Glalie [ice] -> beam (ice)
+  363: 'bubble', // Spheal [ice/water] -> nova (water)
+  364: 'bubble', // Sealeo [ice/water] -> nova (water)
+  365: 'bubble', // Walrein [ice/water] -> nova (water)
+  366: 'bubble-beam', // Clamperl [water] -> cone (water)
+  367: 'bubble-beam', // Huntail [water] -> cone (water)
+  368: 'bubble-beam', // Gorebyss [water] -> cone (water)
+  369: 'rock-slide', // Relicanth [water/rock] -> meteor (rock)
+  370: 'bubble-beam', // Luvdisc [water] -> cone (water)
+  371: 'dragon-rage', // Bagon [dragon] -> beam (dragon)
+  372: 'dragon-rage', // Shelgon [dragon] -> beam (dragon)
+  373: 'dragon-rage', // Salamence [dragon/flying] -> beam (dragon)
+  374: 'psychic', // Beldum [steel/psychic] -> nova (psychic)
+  375: 'psychic', // Metang [steel/psychic] -> nova (psychic)
+  376: 'psychic', // Metagross [steel/psychic] -> nova (psychic)
+  377: 'rock-throw', // Regirock [rock] -> projectile (rock)
+  378: 'powder-snow', // Regice [ice] -> aura (ice)
+  379: 'metal-claw', // Registeel [steel] -> melee (steel)
+  380: 'confusion', // Latias [dragon/psychic] -> projectile (psychic)
+  381: 'psychic', // Latios [dragon/psychic] -> nova (psychic)
+  382: 'water-gun', // Kyogre [water] -> projectile (water)
+  383: 'bonemerang', // Groudon [ground] -> boomerang (ground)
+  384: 'gust', // Rayquaza [dragon/flying] -> orbit (flying)
+  385: 'psycho-cut', // Jirachi [steel/psychic] -> boomerang (psychic)
+  386: 'psycho-cut', // Deoxys [psychic] -> boomerang (psychic)
+  387: 'leaf-storm', // Turtwig [grass] -> orbit (grass)
+  388: 'leaf-storm', // Grotle [grass] -> orbit (grass)
+  389: 'leaf-storm', // Torterra [grass/ground] -> orbit (grass)
+  390: 'heat-wave', // Chimchar [fire] -> nova (fire)
+  391: 'heat-wave', // Monferno [fire/fighting] -> nova (fire)
+  392: 'heat-wave', // Infernape [fire/fighting] -> nova (fire)
+  393: 'water-gun', // Piplup [water] -> projectile (water)
+  394: 'water-gun', // Prinplup [water] -> projectile (water)
+  395: 'water-gun', // Empoleon [water/steel] -> projectile (water)
+  396: 'gust', // Starly [normal/flying] -> orbit (flying)
+  397: 'gust', // Staravia [normal/flying] -> orbit (flying)
+  398: 'gust', // Staraptor [normal/flying] -> orbit (flying)
+  399: 'hyper-voice', // Bidoof [normal] -> nova (normal)
+  400: 'hyper-voice', // Bibarel [normal/water] -> nova (normal)
+  401: 'bug-bite', // Kricketot [bug] -> melee (bug)
+  402: 'bug-bite', // Kricketune [bug] -> melee (bug)
+  403: 'thunderbolt', // Shinx [electric] -> chain (electric)
+  404: 'thunderbolt', // Luxio [electric] -> chain (electric)
+  405: 'thunderbolt', // Luxray [electric] -> chain (electric)
+  406: 'toxic', // Budew [grass/poison] -> trail (poison)
+  407: 'toxic', // Roserade [grass/poison] -> trail (poison)
+  408: 'rock-throw', // Cranidos [rock] -> projectile (rock)
+  409: 'rock-throw', // Rampardos [rock] -> projectile (rock)
+  410: 'flash-cannon', // Shieldon [rock/steel] -> beam (steel)
+  411: 'flash-cannon', // Bastiodon [rock/steel] -> beam (steel)
+  412: 'bug-bite', // Burmy [bug] -> melee (bug)
+  413: 'bug-bite', // Wormadam [bug/grass] -> melee (bug)
+  414: 'bug-bite', // Mothim [bug/flying] -> melee (bug)
+  415: 'gust', // Combee [bug/flying] -> orbit (flying)
+  416: 'gust', // Vespiquen [bug/flying] -> orbit (flying)
+  417: 'thunder-shock', // Pachirisu [electric] -> projectile (electric)
+  418: 'water-gun', // Buizel [water] -> projectile (water)
+  419: 'water-gun', // Floatzel [water] -> projectile (water)
+  420: 'leaf-storm', // Cherubi [grass] -> orbit (grass)
+  421: 'leaf-storm', // Cherrim [grass] -> orbit (grass)
+  422: 'water-gun', // Shellos [water] -> projectile (water)
+  423: 'water-gun', // Gastrodon [water/ground] -> projectile (water)
+  424: 'hyper-voice', // Ambipom [normal] -> nova (normal)
+  425: 'gust', // Drifloon [ghost/flying] -> orbit (flying)
+  426: 'gust', // Drifblim [ghost/flying] -> orbit (flying)
+  427: 'substitute', // Buneary [normal] -> turret (normal)
+  428: 'substitute', // Lopunny [normal] -> turret (normal)
+  429: 'shadow-ball', // Mismagius [ghost] -> projectile (ghost)
+  430: 'gust', // Honchkrow [dark/flying] -> orbit (flying)
+  431: 'substitute', // Glameow [normal] -> turret (normal)
+  432: 'substitute', // Purugly [normal] -> turret (normal)
+  433: 'psycho-cut', // Chingling [psychic] -> boomerang (psychic)
+  434: 'bite', // Stunky [poison/dark] -> melee (dark)
+  435: 'bite', // Skuntank [poison/dark] -> melee (dark)
+  436: 'metal-claw', // Bronzor [steel/psychic] -> melee (steel)
+  437: 'metal-claw', // Bronzong [steel/psychic] -> melee (steel)
+  438: 'rock-slide', // Bonsly [rock] -> meteor (rock)
+  439: 'dazzling-gleam', // Mime Jr. [psychic/fairy] -> aura (fairy)
+  440: 'quick-attack', // Happiny [normal] -> dash (normal)
+  441: 'tackle', // Chatot [normal/flying] -> melee (normal)
+  442: 'dark-pulse', // Spiritomb [ghost/dark] -> nova (dark)
+  443: 'bonemerang', // Gible [dragon/ground] -> boomerang (ground)
+  444: 'bonemerang', // Gabite [dragon/ground] -> boomerang (ground)
+  445: 'bonemerang', // Garchomp [dragon/ground] -> boomerang (ground)
+  446: 'substitute', // Munchlax [normal] -> turret (normal)
+  447: 'aura-sphere', // Riolu [fighting] -> projectile (fighting)
+  448: 'aura-sphere', // Lucario [fighting/steel] -> projectile (fighting)
+  449: 'spikes', // Hippopotas [ground] -> mine (ground)
+  450: 'spikes', // Hippowdon [ground] -> mine (ground)
+  451: 'sludge', // Skorupi [poison/bug] -> projectile (poison)
+  452: 'sludge', // Drapion [poison/dark] -> projectile (poison)
+  453: 'karate-chop', // Croagunk [poison/fighting] -> melee (fighting)
+  454: 'karate-chop', // Toxicroak [poison/fighting] -> melee (fighting)
+  455: 'leaf-storm', // Carnivine [grass] -> orbit (grass)
+  456: 'water-gun', // Finneon [water] -> projectile (water)
+  457: 'water-gun', // Lumineon [water] -> projectile (water)
+  458: 'wing-attack', // Mantyke [water/flying] -> melee (flying)
+  459: 'ice-beam', // Snover [grass/ice] -> beam (ice)
+  460: 'ice-beam', // Abomasnow [grass/ice] -> beam (ice)
+  461: 'hail', // Weavile [dark/ice] -> meteor (ice)
+  462: 'metal-claw', // Magnezone [electric/steel] -> melee (steel)
+  463: 'substitute', // Lickilicky [normal] -> turret (normal)
+  464: 'rock-slide', // Rhyperior [ground/rock] -> meteor (rock)
+  465: 'leaf-storm', // Tangrowth [grass] -> orbit (grass)
+  466: 'thunder-shock', // Electivire [electric] -> projectile (electric)
+  467: 'heat-wave', // Magmortar [fire] -> nova (fire)
+  468: 'dazzling-gleam', // Togekiss [fairy/flying] -> aura (fairy)
+  469: 'gust', // Yanmega [bug/flying] -> orbit (flying)
+  470: 'vine-whip', // Leafeon [grass] -> melee (grass)
+  471: 'ice-beam', // Glaceon [ice] -> beam (ice)
+  472: 'gust', // Gliscor [ground/flying] -> orbit (flying)
+  473: 'bonemerang', // Mamoswine [ice/ground] -> boomerang (ground)
+  474: 'substitute', // Porygon-Z [normal] -> turret (normal)
+  475: 'psychic', // Gallade [psychic/fighting] -> nova (psychic)
+  476: 'rock-slide', // Probopass [rock/steel] -> meteor (rock)
+  477: 'lick', // Dusknoir [ghost] -> melee (ghost)
+  478: 'ice-beam', // Froslass [ice/ghost] -> beam (ice)
+  479: 'lick', // Rotom [electric/ghost] -> melee (ghost)
+  480: 'psycho-cut', // Uxie [psychic] -> boomerang (psychic)
+  481: 'confusion', // Mesprit [psychic] -> projectile (psychic)
+  482: 'confusion', // Azelf [psychic] -> projectile (psychic)
+  483: 'flash-cannon', // Dialga [steel/dragon] -> beam (steel)
+  484: 'water-gun', // Palkia [water/dragon] -> projectile (water)
+  485: 'meteor-mash', // Heatran [fire/steel] -> meteor (steel)
+  486: 'substitute', // Regigigas [normal] -> turret (normal)
+  487: 'dragon-rage', // Giratina [ghost/dragon] -> beam (dragon)
+  488: 'confusion', // Cresselia [psychic] -> projectile (psychic)
+  489: 'water-gun', // Phione [water] -> projectile (water)
+  490: 'water-gun', // Manaphy [water] -> projectile (water)
+  491: 'dark-pulse', // Darkrai [dark] -> nova (dark)
+  492: 'giga-drain', // Shaymin [grass] -> aura (grass)
+  493: 'substitute', // Arceus [normal] -> turret (normal)
+  494: 'flamethrower', // Victini [psychic/fire] -> cone (fire)
+  495: 'giga-drain', // Snivy [grass] -> aura (grass)
+  496: 'giga-drain', // Servine [grass] -> aura (grass)
+  497: 'giga-drain', // Serperior [grass] -> aura (grass)
+  498: 'will-o-wisp', // Tepig [fire] -> turret (fire)
+  499: 'will-o-wisp', // Pignite [fire/fighting] -> turret (fire)
+  500: 'will-o-wisp', // Emboar [fire/fighting] -> turret (fire)
+  501: 'water-gun', // Oshawott [water] -> projectile (water)
+  502: 'water-gun', // Dewott [water] -> projectile (water)
+  503: 'water-gun', // Samurott [water] -> projectile (water)
+  504: 'tackle', // Patrat [normal] -> melee (normal)
+  505: 'tackle', // Watchog [normal] -> melee (normal)
+  506: 'tackle', // Lillipup [normal] -> melee (normal)
+  507: 'tackle', // Herdier [normal] -> melee (normal)
+  508: 'tackle', // Stoutland [normal] -> melee (normal)
+  509: 'night-shade', // Purrloin [dark] -> aura (dark)
+  510: 'night-shade', // Liepard [dark] -> aura (dark)
+  511: 'giga-drain', // Pansage [grass] -> aura (grass)
+  512: 'giga-drain', // Simisage [grass] -> aura (grass)
+  513: 'will-o-wisp', // Pansear [fire] -> turret (fire)
+  515: 'water-gun', // Panpour [water] -> projectile (water)
+  517: 'confusion', // Munna [psychic] -> projectile (psychic)
+  518: 'confusion', // Musharna [psychic] -> projectile (psychic)
+  519: 'tackle', // Pidove [normal/flying] -> melee (normal)
+  521: 'tackle', // Unfezant [normal/flying] -> melee (normal)
+  524: 'rock-slide', // Roggenrola [rock] -> meteor (rock)
+  525: 'rock-slide', // Boldore [rock] -> meteor (rock)
+  526: 'rock-slide', // Gigalith [rock] -> meteor (rock)
+  527: 'wing-attack', // Woobat [psychic/flying] -> melee (flying)
+  528: 'wing-attack', // Swoobat [psychic/flying] -> melee (flying)
+  529: 'spikes', // Drilbur [ground] -> mine (ground)
+  530: 'spikes', // Excadrill [ground/steel] -> mine (ground)
+  531: 'tackle', // Audino [normal] -> melee (normal)
+  532: 'karate-chop', // Timburr [fighting] -> melee (fighting)
+  533: 'karate-chop', // Gurdurr [fighting] -> melee (fighting)
+  534: 'karate-chop', // Conkeldurr [fighting] -> melee (fighting)
+  535: 'water-gun', // Tympole [water] -> projectile (water)
+  536: 'water-gun', // Palpitoad [water/ground] -> projectile (water)
+  537: 'water-gun', // Seismitoad [water/ground] -> projectile (water)
+  539: 'karate-chop', // Sawk [fighting] -> melee (fighting)
+  540: 'razor-leaf', // Sewaddle [bug/grass] -> boomerang (grass)
+  541: 'razor-leaf', // Swadloon [bug/grass] -> boomerang (grass)
+  542: 'razor-leaf', // Leavanny [bug/grass] -> boomerang (grass)
+  543: 'bug-bite', // Venipede [bug/poison] -> melee (bug)
+  544: 'bug-bite', // Whirlipede [bug/poison] -> melee (bug)
+  545: 'bug-bite', // Scolipede [bug/poison] -> melee (bug)
+  546: 'fairy-wind', // Cottonee [grass/fairy] -> nova (fairy)
+  547: 'fairy-wind', // Whimsicott [grass/fairy] -> nova (fairy)
+  548: 'giga-drain', // Petilil [grass] -> aura (grass)
+  549: 'giga-drain', // Lilligant [grass] -> aura (grass)
+  550: 'water-gun', // Basculin [water] -> projectile (water)
+  551: 'bite', // Sandile [ground/dark] -> melee (dark)
+  552: 'bite', // Krokorok [ground/dark] -> melee (dark)
+  553: 'bite', // Krookodile [ground/dark] -> melee (dark)
+  554: 'flame-wheel', // Darumaka [fire] -> trail (fire)
+  555: 'flame-wheel', // Darmanitan [fire] -> trail (fire)
+  556: 'vine-whip', // Maractus [grass] -> melee (grass)
+  557: 'rock-slide', // Dwebble [bug/rock] -> meteor (rock)
+  559: 'aura-sphere', // Scraggy [dark/fighting] -> projectile (fighting)
+  560: 'aura-sphere', // Scrafty [dark/fighting] -> projectile (fighting)
+  561: 'wing-attack', // Sigilyph [psychic/flying] -> melee (flying)
+  562: 'lick', // Yamask [ghost] -> melee (ghost)
+  563: 'lick', // Cofagrigus [ghost] -> melee (ghost)
+  566: 'aerial-ace', // Archen [rock/flying] -> dash (flying)
+  567: 'aerial-ace', // Archeops [rock/flying] -> dash (flying)
+  568: 'sludge', // Trubbish [poison] -> projectile (poison)
+  569: 'sludge', // Garbodor [poison] -> projectile (poison)
+  570: 'night-shade', // Zorua [dark] -> aura (dark)
+  571: 'night-shade', // Zoroark [dark] -> aura (dark)
+  572: 'tackle', // Minccino [normal] -> melee (normal)
+  573: 'tackle', // Cinccino [normal] -> melee (normal)
+  574: 'confusion', // Gothita [psychic] -> projectile (psychic)
+  575: 'confusion', // Gothorita [psychic] -> projectile (psychic)
+  576: 'confusion', // Gothitelle [psychic] -> projectile (psychic)
+  577: 'confusion', // Solosis [psychic] -> projectile (psychic)
+  578: 'confusion', // Duosion [psychic] -> projectile (psychic)
+  579: 'confusion', // Reuniclus [psychic] -> projectile (psychic)
+  580: 'wing-attack', // Ducklett [water/flying] -> melee (flying)
+  581: 'wing-attack', // Swanna [water/flying] -> melee (flying)
+  582: 'powder-snow', // Vanillite [ice] -> aura (ice)
+  583: 'powder-snow', // Vanillish [ice] -> aura (ice)
+  584: 'powder-snow', // Vanilluxe [ice] -> aura (ice)
+  585: 'giga-drain', // Deerling [normal/grass] -> aura (grass)
+  586: 'giga-drain', // Sawsbuck [normal/grass] -> aura (grass)
+  587: 'gust', // Emolga [electric/flying] -> orbit (flying)
+  588: 'bug-bite', // Karrablast [bug] -> melee (bug)
+  589: 'bug-bite', // Escavalier [bug/steel] -> melee (bug)
+  590: 'toxic', // Foongus [grass/poison] -> trail (poison)
+  594: 'water-gun', // Alomomola [water] -> projectile (water)
+  595: 'thunderbolt', // Joltik [bug/electric] -> chain (electric)
+  596: 'thunderbolt', // Galvantula [bug/electric] -> chain (electric)
+  597: 'flash-cannon', // Ferroseed [grass/steel] -> beam (steel)
+  598: 'flash-cannon', // Ferrothorn [grass/steel] -> beam (steel)
+  599: 'flash-cannon', // Klink [steel] -> beam (steel)
+  600: 'flash-cannon', // Klang [steel] -> beam (steel)
+  601: 'flash-cannon', // Klinklang [steel] -> beam (steel)
+  602: 'thunder-shock', // Tynamo [electric] -> projectile (electric)
+  603: 'thunder-shock', // Eelektrik [electric] -> projectile (electric)
+  604: 'thunder-shock', // Eelektross [electric] -> projectile (electric)
+  605: 'confusion', // Elgyem [psychic] -> projectile (psychic)
+  606: 'confusion', // Beheeyem [psychic] -> projectile (psychic)
+  607: 'flame-wheel', // Litwick [ghost/fire] -> trail (fire)
+  608: 'flame-wheel', // Lampent [ghost/fire] -> trail (fire)
+  609: 'flame-wheel', // Chandelure [ghost/fire] -> trail (fire)
+  610: 'dragon-rage', // Axew [dragon] -> beam (dragon)
+  611: 'dragon-rage', // Fraxure [dragon] -> beam (dragon)
+  612: 'dragon-rage', // Haxorus [dragon] -> beam (dragon)
+  613: 'hail', // Cubchoo [ice] -> meteor (ice)
+  614: 'hail', // Beartic [ice] -> meteor (ice)
+  615: 'hail', // Cryogonal [ice] -> meteor (ice)
+  617: 'bug-bite', // Accelgor [bug] -> melee (bug)
+  619: 'karate-chop', // Mienfoo [fighting] -> melee (fighting)
+  620: 'karate-chop', // Mienshao [fighting] -> melee (fighting)
+  621: 'dragon-rage', // Druddigon [dragon] -> beam (dragon)
+  622: 'hex', // Golett [ground/ghost] -> chain (ghost)
+  623: 'hex', // Golurk [ground/ghost] -> chain (ghost)
+  624: 'bite', // Pawniard [dark/steel] -> melee (dark)
+  625: 'bite', // Bisharp [dark/steel] -> melee (dark)
+  627: 'tackle', // Rufflet [normal/flying] -> melee (normal)
+  628: 'tackle', // Braviary [normal/flying] -> melee (normal)
+  629: 'gust', // Vullaby [dark/flying] -> orbit (flying)
+  630: 'gust', // Mandibuzz [dark/flying] -> orbit (flying)
+  631: 'flame-wheel', // Heatmor [fire] -> trail (fire)
+  632: 'meteor-mash', // Durant [bug/steel] -> meteor (steel)
+  633: 'dragon-rage', // Deino [dark/dragon] -> beam (dragon)
+  634: 'dragon-rage', // Zweilous [dark/dragon] -> beam (dragon)
+  635: 'dragon-rage', // Hydreigon [dark/dragon] -> beam (dragon)
+  636: 'flamethrower', // Larvesta [bug/fire] -> cone (fire)
+  637: 'flamethrower', // Volcarona [bug/fire] -> cone (fire)
+  638: 'aura-sphere', // Cobalion [steel/fighting] -> projectile (fighting)
+  639: 'karate-chop', // Terrakion [rock/fighting] -> melee (fighting)
+  640: 'aura-sphere', // Virizion [grass/fighting] -> projectile (fighting)
+  641: 'gust', // Tornadus [flying] -> orbit (flying)
+  642: 'gust', // Thundurus [electric/flying] -> orbit (flying)
+  643: 'fire-spin', // Reshiram [dragon/fire] -> orbit (fire)
+  644: 'thunder-shock', // Zekrom [dragon/electric] -> projectile (electric)
+  645: 'aerial-ace', // Landorus [ground/flying] -> dash (flying)
+  646: 'powder-snow', // Kyurem [dragon/ice] -> aura (ice)
+  647: 'karate-chop', // Keldeo [water/fighting] -> melee (fighting)
+  648: 'psycho-cut', // Meloetta [normal/psychic] -> boomerang (psychic)
+  649: 'flash-cannon', // Genesect [bug/steel] -> beam (steel)
+  650: 'vine-whip', // Chespin [grass] -> melee (grass)
+  651: 'vine-whip', // Quilladin [grass] -> melee (grass)
+  652: 'vine-whip', // Chesnaught [grass/fighting] -> melee (grass)
+  653: 'ember', // Fennekin [fire] -> projectile (fire)
+  654: 'ember', // Braixen [fire] -> projectile (fire)
+  655: 'ember', // Delphox [fire/psychic] -> projectile (fire)
+  656: 'water-gun', // Froakie [water] -> projectile (water)
+  657: 'water-gun', // Frogadier [water] -> projectile (water)
+  658: 'water-gun', // Greninja [water/dark] -> projectile (water)
+  659: 'tackle', // Bunnelby [normal] -> melee (normal)
+  660: 'tackle', // Diggersby [normal/ground] -> melee (normal)
+  661: 'wing-attack', // Fletchling [normal/flying] -> melee (flying)
+  662: 'wing-attack', // Fletchinder [fire/flying] -> melee (flying)
+  663: 'wing-attack', // Talonflame [fire/flying] -> melee (flying)
+  664: 'bug-bite', // Scatterbug [bug] -> melee (bug)
+  665: 'bug-bite', // Spewpa [bug] -> melee (bug)
+  666: 'bug-bite', // Vivillon [bug/flying] -> melee (bug)
+  667: 'quick-attack', // Litleo [fire/normal] -> dash (normal)
+  669: 'fairy-wind', // Flabébé [fairy] -> nova (fairy)
+  670: 'fairy-wind', // Floette [fairy] -> nova (fairy)
+  671: 'fairy-wind', // Florges [fairy] -> nova (fairy)
+  672: 'vine-whip', // Skiddo [grass] -> melee (grass)
+  673: 'vine-whip', // Gogoat [grass] -> melee (grass)
+  674: 'karate-chop', // Pancham [fighting] -> melee (fighting)
+  675: 'karate-chop', // Pangoro [fighting/dark] -> melee (fighting)
+  676: 'tackle', // Furfrou [normal] -> melee (normal)
+  677: 'confusion', // Espurr [psychic] -> projectile (psychic)
+  678: 'confusion', // Meowstic [psychic] -> projectile (psychic)
+  679: 'hex', // Honedge [steel/ghost] -> chain (ghost)
+  680: 'hex', // Doublade [steel/ghost] -> chain (ghost)
+  681: 'hex', // Aegislash [steel/ghost] -> chain (ghost)
+  682: 'fairy-wind', // Spritzee [fairy] -> nova (fairy)
+  684: 'fairy-wind', // Swirlix [fairy] -> nova (fairy)
+  685: 'fairy-wind', // Slurpuff [fairy] -> nova (fairy)
+  686: 'psycho-cut', // Inkay [dark/psychic] -> boomerang (psychic)
+  687: 'psycho-cut', // Malamar [dark/psychic] -> boomerang (psychic)
+  688: 'bubble-beam', // Binacle [rock/water] -> cone (water)
+  689: 'bubble-beam', // Barbaracle [rock/water] -> cone (water)
+  690: 'sludge', // Skrelp [poison/water] -> projectile (poison)
+  691: 'sludge', // Dragalge [poison/dragon] -> projectile (poison)
+  692: 'water-gun', // Clauncher [water] -> projectile (water)
+  693: 'water-gun', // Clawitzer [water] -> projectile (water)
+  694: 'quick-attack', // Helioptile [electric/normal] -> dash (normal)
+  695: 'quick-attack', // Heliolisk [electric/normal] -> dash (normal)
+  696: 'dragon-rage', // Tyrunt [rock/dragon] -> beam (dragon)
+  697: 'dragon-rage', // Tyrantrum [rock/dragon] -> beam (dragon)
+  698: 'powder-snow', // Amaura [rock/ice] -> aura (ice)
+  699: 'powder-snow', // Aurorus [rock/ice] -> aura (ice)
+  700: 'fairy-wind', // Sylveon [fairy] -> nova (fairy)
+  701: 'gust', // Hawlucha [fighting/flying] -> orbit (flying)
+  702: 'fairy-wind', // Dedenne [electric/fairy] -> nova (fairy)
+  703: 'dazzling-gleam', // Carbink [rock/fairy] -> aura (fairy)
+  704: 'dragon-rage', // Goomy [dragon] -> beam (dragon)
+  705: 'dragon-rage', // Sliggoo [dragon] -> beam (dragon)
+  706: 'dragon-rage', // Goodra [dragon] -> beam (dragon)
+  707: 'dazzling-gleam', // Klefki [steel/fairy] -> aura (fairy)
+  708: 'leaf-storm', // Phantump [ghost/grass] -> orbit (grass)
+  709: 'leaf-storm', // Trevenant [ghost/grass] -> orbit (grass)
+  710: 'razor-leaf', // Pumpkaboo [ghost/grass] -> boomerang (grass)
+  711: 'razor-leaf', // Gourgeist [ghost/grass] -> boomerang (grass)
+  712: 'ice-beam', // Bergmite [ice] -> beam (ice)
+  713: 'ice-beam', // Avalugg [ice] -> beam (ice)
+  714: 'aerial-ace', // Noibat [flying/dragon] -> dash (flying)
+  715: 'aerial-ace', // Noivern [flying/dragon] -> dash (flying)
+  716: 'fairy-wind', // Xerneas [fairy] -> nova (fairy)
+  717: 'aerial-ace', // Yveltal [dark/flying] -> dash (flying)
+  718: 'bonemerang', // Zygarde [dragon/ground] -> boomerang (ground)
+  719: 'dazzling-gleam', // Diancie [rock/fairy] -> aura (fairy)
+  720: 'lick', // Hoopa [psychic/ghost] -> melee (ghost)
+  721: 'hydro-pump', // Volcanion [fire/water] -> beam (water)
+  722: 'vine-whip', // Rowlet [grass/flying] -> melee (grass)
+  723: 'vine-whip', // Dartrix [grass/flying] -> melee (grass)
+  724: 'vine-whip', // Decidueye [grass/ghost] -> melee (grass)
+  725: 'ember', // Litten [fire] -> projectile (fire)
+  726: 'ember', // Torracat [fire] -> projectile (fire)
+  727: 'ember', // Incineroar [fire/dark] -> projectile (fire)
+  728: 'water-gun', // Popplio [water] -> projectile (water)
+  729: 'water-gun', // Brionne [water] -> projectile (water)
+  730: 'water-gun', // Primarina [water/fairy] -> projectile (water)
+  731: 'tackle', // Pikipek [normal/flying] -> melee (normal)
+  734: 'tackle', // Yungoos [normal] -> melee (normal)
+  736: 'bug-bite', // Grubbin [bug] -> melee (bug)
+  737: 'bug-bite', // Charjabug [bug/electric] -> melee (bug)
+  738: 'bug-bite', // Vikavolt [bug/electric] -> melee (bug)
+  739: 'karate-chop', // Crabrawler [fighting] -> melee (fighting)
+  740: 'karate-chop', // Crabominable [fighting/ice] -> melee (fighting)
+  741: 'aerial-ace', // Oricorio [fire/flying] -> dash (flying)
+  742: 'fairy-wind', // Cutiefly [bug/fairy] -> nova (fairy)
+  743: 'fairy-wind', // Ribombee [bug/fairy] -> nova (fairy)
+  744: 'rock-throw', // Rockruff [rock] -> projectile (rock)
+  745: 'rock-throw', // Lycanroc [rock] -> projectile (rock)
+  746: 'water-gun', // Wishiwashi [water] -> projectile (water)
+  747: 'bubble', // Mareanie [poison/water] -> nova (water)
+  748: 'bubble', // Toxapex [poison/water] -> nova (water)
+  749: 'mud-shot', // Mudbray [ground] -> nova (ground)
+  750: 'mud-shot', // Mudsdale [ground] -> nova (ground)
+  751: 'string-shot', // Dewpider [water/bug] -> mine (bug)
+  752: 'string-shot', // Araquanid [water/bug] -> mine (bug)
+  753: 'vine-whip', // Fomantis [grass] -> melee (grass)
+  754: 'vine-whip', // Lurantis [grass] -> melee (grass)
+  755: 'fairy-wind', // Morelull [grass/fairy] -> nova (fairy)
+  757: 'fire-spin', // Salandit [poison/fire] -> orbit (fire)
+  758: 'fire-spin', // Salazzle [poison/fire] -> orbit (fire)
+  759: 'aura-sphere', // Stufful [normal/fighting] -> projectile (fighting)
+  760: 'aura-sphere', // Bewear [normal/fighting] -> projectile (fighting)
+  761: 'vine-whip', // Bounsweet [grass] -> melee (grass)
+  762: 'vine-whip', // Steenee [grass] -> melee (grass)
+  763: 'vine-whip', // Tsareena [grass] -> melee (grass)
+  764: 'fairy-wind', // Comfey [fairy] -> nova (fairy)
+  766: 'karate-chop', // Passimian [fighting] -> melee (fighting)
+  767: 'hydro-pump', // Wimpod [bug/water] -> beam (water)
+  768: 'hydro-pump', // Golisopod [bug/water] -> beam (water)
+  769: 'spikes', // Sandygast [ghost/ground] -> mine (ground)
+  770: 'spikes', // Palossand [ghost/ground] -> mine (ground)
+  771: 'water-gun', // Pyukumuku [water] -> projectile (water)
+  772: 'tackle', // Código Cero [normal] -> melee (normal)
+  773: 'tackle', // Silvally [normal] -> melee (normal)
+  774: 'aerial-ace', // Minior [rock/flying] -> dash (flying)
+  775: 'tackle', // Komala [normal] -> melee (normal)
+  776: 'dragon-rage', // Turtonator [fire/dragon] -> beam (dragon)
+  777: 'flash-cannon', // Togedemaru [electric/steel] -> beam (steel)
+  778: 'dazzling-gleam', // Mimikyu [ghost/fairy] -> aura (fairy)
+  779: 'psycho-cut', // Bruxish [water/psychic] -> boomerang (psychic)
+  780: 'dragon-rage', // Drampa [normal/dragon] -> beam (dragon)
+  781: 'lick', // Dhelmise [ghost/grass] -> melee (ghost)
+  782: 'dragon-rage', // Jangmo-o [dragon] -> beam (dragon)
+  783: 'dragon-rage', // Hakamo-o [dragon/fighting] -> beam (dragon)
+  784: 'dragon-rage', // Kommo-o [dragon/fighting] -> beam (dragon)
+  785: 'fairy-wind', // Tapu Koko [electric/fairy] -> nova (fairy)
+  786: 'dazzling-gleam', // Tapu Lele [psychic/fairy] -> aura (fairy)
+  787: 'fairy-wind', // Tapu Bulu [grass/fairy] -> nova (fairy)
+  788: 'dazzling-gleam', // Tapu Fini [water/fairy] -> aura (fairy)
+  789: 'confusion', // Cosmog [psychic] -> projectile (psychic)
+  790: 'confusion', // Cosmoem [psychic] -> projectile (psychic)
+  791: 'confusion', // Solgaleo [psychic/steel] -> projectile (psychic)
+  792: 'confusion', // Lunala [psychic/ghost] -> projectile (psychic)
+  793: 'toxic-spikes', // Nihilego [rock/poison] -> mine (poison)
+  794: 'aura-sphere', // Buzzwole [bug/fighting] -> projectile (fighting)
+  795: 'aura-sphere', // Pheromosa [bug/fighting] -> projectile (fighting)
+  796: 'thunder-shock', // Xurkitree [electric] -> projectile (electric)
+  797: 'gust', // Celesteela [steel/flying] -> orbit (flying)
+  798: 'meteor-mash', // Kartana [grass/steel] -> meteor (steel)
+  799: 'bite', // Guzzlord [dark/dragon] -> melee (dark)
+  800: 'confusion', // Necrozma [psychic] -> projectile (psychic)
+  801: 'dazzling-gleam', // Magearna [steel/fairy] -> aura (fairy)
+  802: 'hex', // Marshadow [fighting/ghost] -> chain (ghost)
+  803: 'sludge', // Poipole [poison] -> projectile (poison)
+  804: 'sludge', // Naganadel [poison/dragon] -> projectile (poison)
+  805: 'metal-claw', // Stakataka [rock/steel] -> melee (steel)
+  806: 'hex', // Blacephalon [fire/ghost] -> chain (ghost)
+  807: 'thunder-shock', // Zeraora [electric] -> projectile (electric)
+  808: 'meteor-mash', // Meltan [steel] -> meteor (steel)
+  809: 'meteor-mash', // Melmetal [steel] -> meteor (steel)
+  810: 'vine-whip', // Grookey [grass] -> melee (grass)
+  811: 'vine-whip', // Thwackey [grass] -> melee (grass)
+  812: 'vine-whip', // Rillaboom [grass] -> melee (grass)
+  813: 'ember', // Scorbunny [fire] -> projectile (fire)
+  814: 'ember', // Raboot [fire] -> projectile (fire)
+  815: 'ember', // Cinderace [fire] -> projectile (fire)
+  816: 'water-gun', // Sobble [water] -> projectile (water)
+  817: 'water-gun', // Drizzile [water] -> projectile (water)
+  818: 'water-gun', // Inteleon [water] -> projectile (water)
+  819: 'tackle', // Skwovet [normal] -> melee (normal)
+  820: 'tackle', // Greedent [normal] -> melee (normal)
+  821: 'wing-attack', // Rookidee [flying] -> melee (flying)
+  822: 'wing-attack', // Corvisquire [flying] -> melee (flying)
+  823: 'wing-attack', // Corviknight [flying/steel] -> melee (flying)
+  824: 'bug-bite', // Blipbug [bug] -> melee (bug)
+  825: 'bug-bite', // Dottler [bug/psychic] -> melee (bug)
+  826: 'bug-bite', // Orbeetle [bug/psychic] -> melee (bug)
+  827: 'bite', // Nickit [dark] -> melee (dark)
+  828: 'bite', // Thievul [dark] -> melee (dark)
+  829: 'vine-whip', // Gossifleur [grass] -> melee (grass)
+  830: 'vine-whip', // Eldegoss [grass] -> melee (grass)
+  831: 'tackle', // Wooloo [normal] -> melee (normal)
+  832: 'tackle', // Dubwool [normal] -> melee (normal)
+  833: 'water-gun', // Chewtle [water] -> projectile (water)
+  834: 'water-gun', // Drednaw [water/rock] -> projectile (water)
+  835: 'thunder-shock', // Yamper [electric] -> projectile (electric)
+  836: 'thunder-shock', // Boltund [electric] -> projectile (electric)
+  840: 'dragon-rage', // Applin [grass/dragon] -> beam (dragon)
+  841: 'dragon-rage', // Flapple [grass/dragon] -> beam (dragon)
+  842: 'dragon-rage', // Appletun [grass/dragon] -> beam (dragon)
+  843: 'mud-shot', // Silicobra [ground] -> nova (ground)
+  844: 'mud-shot', // Sandaconda [ground] -> nova (ground)
+  845: 'hydro-pump', // Cramorant [flying/water] -> beam (water)
+  846: 'water-gun', // Arrokuda [water] -> projectile (water)
+  847: 'water-gun', // Barraskewda [water] -> projectile (water)
+  848: 'toxic', // Toxel [electric/poison] -> trail (poison)
+  849: 'toxic', // Toxtricity [electric/poison] -> trail (poison)
+  850: 'bug-buzz', // Sizzlipede [fire/bug] -> aura (bug)
+  851: 'bug-buzz', // Centiskorch [fire/bug] -> aura (bug)
+  852: 'karate-chop', // Clobbopus [fighting] -> melee (fighting)
+  853: 'karate-chop', // Grapploct [fighting] -> melee (fighting)
+  854: 'hex', // Sinistea [ghost] -> chain (ghost)
+  855: 'hex', // Polteageist [ghost] -> chain (ghost)
+  856: 'confusion', // Hatenna [psychic] -> projectile (psychic)
+  857: 'confusion', // Hattrem [psychic] -> projectile (psychic)
+  858: 'confusion', // Hatterene [psychic/fairy] -> projectile (psychic)
+  859: 'bite', // Impidimp [dark/fairy] -> melee (dark)
+  860: 'bite', // Morgrem [dark/fairy] -> melee (dark)
+  861: 'bite', // Grimmsnarl [dark/fairy] -> melee (dark)
+  862: 'tackle', // Obstagoon [dark/normal] -> melee (normal)
+  863: 'metal-claw', // Perrserker [steel] -> melee (steel)
+  864: 'hex', // Cursola [ghost] -> chain (ghost)
+  867: 'lick', // Runerigus [ground/ghost] -> melee (ghost)
+  868: 'fairy-wind', // Milcery [fairy] -> nova (fairy)
+  869: 'fairy-wind', // Alcremie [fairy] -> nova (fairy)
+  871: 'thunder-shock', // Pincurchin [electric] -> projectile (electric)
+  872: 'bug-bite', // Snom [ice/bug] -> melee (bug)
+  873: 'bug-bite', // Frosmoth [ice/bug] -> melee (bug)
+  874: 'rock-throw', // Stonjourner [rock] -> projectile (rock)
+  875: 'ice-beam', // Eiscue [ice] -> beam (ice)
+  876: 'quick-attack', // Indeedee [psychic/normal] -> dash (normal)
+  877: 'bite', // Morpeko [electric/dark] -> melee (dark)
+  880: 'dragon-rage', // Dracozolt [electric/dragon] -> beam (dragon)
+  881: 'ice-beam', // Arctozolt [electric/ice] -> beam (ice)
+  882: 'water-gun', // Dracovish [water/dragon] -> projectile (water)
+  883: 'powder-snow', // Arctovish [water/ice] -> aura (ice)
+  884: 'metal-claw', // Duraludon [steel/dragon] -> melee (steel)
+  885: 'lick', // Dreepy [dragon/ghost] -> melee (ghost)
+  886: 'lick', // Drakloak [dragon/ghost] -> melee (ghost)
+  887: 'lick', // Dragapult [dragon/ghost] -> melee (ghost)
+  888: 'fairy-wind', // Zacian [fairy] -> nova (fairy)
+  889: 'karate-chop', // Zamazenta [fighting] -> melee (fighting)
+  890: 'dragon-rage', // Eternatus [poison/dragon] -> beam (dragon)
+  891: 'karate-chop', // Kubfu [fighting] -> melee (fighting)
+  892: 'karate-chop', // Urshifu [fighting/dark] -> melee (fighting)
+  894: 'thunder-shock', // Regieleki [electric] -> projectile (electric)
+  895: 'dragon-rage', // Regidrago [dragon] -> beam (dragon)
+  896: 'ice-beam', // Glastrier [ice] -> beam (ice)
+  897: 'lick', // Spectrier [ghost] -> melee (ghost)
+  898: 'giga-drain', // Calyrex [psychic/grass] -> aura (grass)
+  899: 'tackle', // Wyrdeer [normal/psychic] -> melee (normal)
+  900: 'string-shot', // Kleavor [bug/rock] -> mine (bug)
+  901: 'tackle', // Ursaluna [ground/normal] -> melee (normal)
+  902: 'water-gun', // Basculegion [water/ghost] -> projectile (water)
+  903: 'toxic', // Sneasler [fighting/poison] -> trail (poison)
+  904: 'sludge', // Overqwil [dark/poison] -> projectile (poison)
+  905: 'gust', // Enamorus [fairy/flying] -> orbit (flying)
+  906: 'vine-whip', // Sprigatito [grass] -> melee (grass)
+  907: 'vine-whip', // Floragato [grass] -> melee (grass)
+  908: 'vine-whip', // Meowscarada [grass/dark] -> melee (grass)
+  909: 'ember', // Fuecoco [fire] -> projectile (fire)
+  910: 'ember', // Crocalor [fire] -> projectile (fire)
+  911: 'ember', // Skeledirge [fire/ghost] -> projectile (fire)
+  912: 'water-gun', // Quaxly [water] -> projectile (water)
+  913: 'water-gun', // Quaxwell [water] -> projectile (water)
+  914: 'water-gun', // Quaquaval [water/fighting] -> projectile (water)
+  915: 'tackle', // Lechonk [normal] -> melee (normal)
+  916: 'tackle', // Oinkologne [normal] -> melee (normal)
+  917: 'bug-bite', // Tarountula [bug] -> melee (bug)
+  918: 'bug-bite', // Spidops [bug] -> melee (bug)
+  919: 'bug-bite', // Nymble [bug] -> melee (bug)
+  920: 'bug-bite', // Lokix [bug/dark] -> melee (bug)
+  921: 'thunder-shock', // Pawmi [electric] -> projectile (electric)
+  922: 'thunder-shock', // Pawmo [electric/fighting] -> projectile (electric)
+  923: 'thunder-shock', // Pawmot [electric/fighting] -> projectile (electric)
+  924: 'tackle', // Tandemaus [normal] -> melee (normal)
+  925: 'tackle', // Maushold [normal] -> melee (normal)
+  926: 'fairy-wind', // Fidough [fairy] -> nova (fairy)
+  927: 'fairy-wind', // Dachsbun [fairy] -> nova (fairy)
+  928: 'quick-attack', // Smoliv [grass/normal] -> dash (normal)
+  930: 'quick-attack', // Arboliva [grass/normal] -> dash (normal)
+  932: 'rock-throw', // Nacli [rock] -> projectile (rock)
+  933: 'rock-throw', // Naclstack [rock] -> projectile (rock)
+  934: 'rock-throw', // Garganacl [rock] -> projectile (rock)
+  935: 'ember', // Charcadet [fire] -> projectile (fire)
+  936: 'ember', // Armarouge [fire/psychic] -> projectile (fire)
+  937: 'ember', // Ceruledge [fire/ghost] -> projectile (fire)
+  938: 'thunder-shock', // Tadbulb [electric] -> projectile (electric)
+  939: 'thunder-shock', // Bellibolt [electric] -> projectile (electric)
+  940: 'aerial-ace', // Wattrel [electric/flying] -> dash (flying)
+  941: 'aerial-ace', // Kilowattrel [electric/flying] -> dash (flying)
+  946: 'shadow-ball', // Bramblin [grass/ghost] -> projectile (ghost)
+  951: 'vine-whip', // Capsakid [grass] -> melee (grass)
+  952: 'vine-whip', // Scovillain [grass/fire] -> melee (grass)
+  953: 'bug-bite', // Rellor [bug] -> melee (bug)
+  955: 'confusion', // Flittle [psychic] -> projectile (psychic)
+  957: 'metal-claw', // Tinkatink [fairy/steel] -> melee (steel)
+  958: 'metal-claw', // Tinkatuff [fairy/steel] -> melee (steel)
+  959: 'metal-claw', // Tinkaton [fairy/steel] -> melee (steel)
+  960: 'water-gun', // Wiglett [water] -> projectile (water)
+  961: 'water-gun', // Wugtrio [water] -> projectile (water)
+  963: 'water-gun', // Finizen [water] -> projectile (water)
+  964: 'water-gun', // Palafin [water] -> projectile (water)
+  965: 'toxic', // Varoom [steel/poison] -> trail (poison)
+  966: 'toxic', // Revavroom [steel/poison] -> trail (poison)
+  967: 'tackle', // Cyclizar [dragon/normal] -> melee (normal)
+  968: 'meteor-mash', // Orthworm [steel] -> meteor (steel)
+  969: 'toxic', // Glimmet [rock/poison] -> trail (poison)
+  970: 'toxic', // Glimmora [rock/poison] -> trail (poison)
+  971: 'lick', // Greavard [ghost] -> melee (ghost)
+  972: 'lick', // Houndstone [ghost] -> melee (ghost)
+  974: 'ice-beam', // Cetoddle [ice] -> beam (ice)
+  975: 'ice-beam', // Cetitan [ice] -> beam (ice)
+  976: 'psycho-cut', // Veluza [water/psychic] -> boomerang (psychic)
+  977: 'water-gun', // Dondozo [water] -> projectile (water)
+  978: 'bubble-beam', // Tatsugiri [dragon/water] -> cone (water)
+  979: 'karate-chop', // Annihilape [fighting/ghost] -> melee (fighting)
+  980: 'spikes', // Clodsire [poison/ground] -> mine (ground)
+  981: 'psycho-cut', // Farigiraf [normal/psychic] -> boomerang (psychic)
+  982: 'tackle', // Dudunsparce [normal] -> melee (normal)
+  983: 'bite', // Kingambit [dark/steel] -> melee (dark)
+  984: 'aura-sphere', // Colmilargo [ground/fighting] -> projectile (fighting)
+  985: 'psybeam', // Colagrito [fairy/psychic] -> beam (psychic)
+  987: 'lick', // Melenaleteo [ghost/fairy] -> melee (ghost)
+  988: 'bug-bite', // Reptalada [bug/fighting] -> melee (bug)
+  989: 'spikes', // Pelarena [electric/ground] -> mine (ground)
+  991: 'bubble-beam', // Ferrosaco [ice/water] -> cone (water)
+  992: 'discharge', // Ferropalmas [fighting/electric] -> aura (electric)
+  994: 'toxic-spikes', // Ferropolilla [fire/poison] -> mine (poison)
+  995: 'thunderbolt', // Ferropúas [rock/electric] -> chain (electric)
+  996: 'hail', // Frigibax [dragon/ice] -> meteor (ice)
+  997: 'hail', // Arctibax [dragon/ice] -> meteor (ice)
+  998: 'hail', // Baxcalibur [dragon/ice] -> meteor (ice)
+  1000: 'metal-claw', // Gholdengo [steel/ghost] -> melee (steel)
+  1004: 'flamethrower', // Chi-Yu [dark/fire] -> cone (fire)
+  1005: 'dark-pulse', // Bramaluna [dragon/dark] -> nova (dark)
+  1006: 'karate-chop', // Ferropaladín [fairy/fighting] -> melee (fighting)
+  1007: 'dragon-rage', // Koraidon [fighting/dragon] -> beam (dragon)
+  1009: 'water-gun', // Ondulagua [water/dragon] -> projectile (water)
+  1010: 'confusion', // Ferroverdor [grass/psychic] -> projectile (psychic)
+  1011: 'dragon-rage', // Dipplin [grass/dragon] -> beam (dragon)
+  1012: 'hex', // Poltchageist [grass/ghost] -> chain (ghost)
+  1013: 'hex', // Sinistcha [grass/ghost] -> chain (ghost)
+  1015: 'psychic', // Munkidori [poison/psychic] -> nova (psychic)
+  1016: 'dazzling-gleam', // Fezandipiti [poison/fairy] -> aura (fairy)
+  1017: 'vine-whip', // Ogerpon [grass] -> melee (grass)
+  1018: 'metal-claw', // Archaludon [steel/dragon] -> melee (steel)
+  1019: 'dragon-rage', // Hydrapple [grass/dragon] -> beam (dragon)
+  1024: 'tackle', // Terapagos [normal] -> melee (normal)
+};

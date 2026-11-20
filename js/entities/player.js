@@ -127,7 +127,7 @@ G.Player = class Player {
     this.statGrowth[key]=(this.statGrowth[key]||0)+fraction;
     if(key==='hp')this.addMaxHp(this.baseHp*fraction);
   }
-  attackFor(move) { return (move?.damageClass === 'special' ? this.spa : this.atk)*(1+(move?.overclock||0)*(G.EconomyConfig?.endless.overclockDamagePerPurchase||0)); }
+  attackFor(move) { return move?.damageClass === 'special' ? this.spa : this.atk; }
   defenseFor(source) {
     const kind=source?.kind;
     if (kind==='contact' || kind==='melee') return Math.max(.1,(this.baseDefense+(G.TypeBonds?.baseBonus(this,'defense')||0))*(1+this.statGrowth.defense+this.buffFraction('def')));
@@ -261,7 +261,10 @@ G.Player = class Player {
     const anim = { melee: 'Attack', beam: 'Shoot', projectile: 'Shoot', nova: 'Attack',
                    aura: 'Charge', buff: 'Charge', orbit: 'Charge', boomerang: 'Shoot', chain: 'Shoot',
                    mine: 'Charge', meteor: 'Charge', turret: 'Charge', dash: 'Attack', trail: 'Walk', cone: 'Shoot' }[m.kind] || 'Attack';
-    G.Audio.sfx('shot', { kind: m.kind, type: m.type });
+    // Las familias nuevas suenan como la parecida de las de siempre.
+    const SND = { boomerang: 'projectile', chain: 'beam', mine: 'nova', meteor: 'nova', turret: 'buff', dash: 'melee', trail: 'aura', cone: 'projectile' };
+    // El rastro no suena a cada charco (sería un zumbido constante).
+    if (m.kind !== 'trail') G.Audio.sfx('shot', { kind: SND[m.kind] || m.kind, type: m.type });
     if (m.kind === 'trail'||!this.isSquadMember&&!this.isPrimaryMove(m)) return;
     // No reinicies una animación que va por la mitad: se vería a tirones.
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
@@ -304,8 +307,7 @@ G.Player = class Player {
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1)*(['environment','weather'].includes(source.kind)?Math.pow(.9,G.Items.count(this,'safetygoggles')):1);
-    let finalDamage=d*(G.TypeBonds?.defense(this)||1);
-    finalDamage=G.SquadTraits?.absorb(this,finalDamage)??finalDamage;if(!(finalDamage>0)){this.invuln=.45;return false;}
+    const finalDamage=d*(G.TypeBonds?.defense(this)||1);
     if (G.FailureProtection?.avoidLethal(this,finalDamage)) return false;
     const hpLost=Math.min(this.hp,finalDamage);
     this.hp -= finalDamage;G.TypeBonds?.onDamage(this,hpLost);
@@ -337,7 +339,6 @@ G.Player = class Player {
       G.Projectiles.clearOrbs(this);
       this.reviveT = 0;
     }
-    G.SquadTraits?.hurt(this,hpLost,source);
     return true;
   }
 
@@ -368,7 +369,6 @@ G.Player = class Player {
       this.xpNext = Player.xpFor(this.level);
       leveled++;
     }
-    if(leveled)G.ExpeditionGrowth?.sync();
     return leveled;
   }
 

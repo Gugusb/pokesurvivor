@@ -122,8 +122,6 @@
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
       const bond=!this.remote?G.TypeBonds?.beforeHit(attacker,this,attack):null;
       if(bond)amount*=bond.factor;
-      const terminal=G.SquadTraits?.beforeHit(attacker,this,attack);if(terminal)amount*=terminal.factor;
-      const damageContext={contributions:[...(bond?.contributions||[]),...(terminal?.contributions||[])],execute:!!(bond?.execute||terminal?.execute),executionSource:terminal?.execute?terminal.executionSource:'fairy'};
       if(G.TypeBonds)knock*=G.TypeBonds.knock(attacker,attack);
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
       if (!this.remote && attacker&&!attack.typeBondFraction) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass);
@@ -132,14 +130,14 @@
         amount /= defense || 1;
       }
       if (!this.remote && this.mega&&!attack.typeBondFraction) amount /= 1.3;
-      if(bond?.execute||terminal?.execute)amount=Math.max(amount,this.hp+(this.shield||0)+1);
+      if(bond?.execute)amount=Math.max(amount,this.hp+(this.shield||0)+1);
       const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
       // quien decide si cae. Aquí sólo se ve (número, destello y animación).
       if (this.remote) {
         G.Coop.hit(this, d, color, dirX, dirY, knock, attack);
         this.hp = Math.max(1, this.hp - d);
-        this.showHurt(d, color, dirX, dirY, eff, attack);
+        this.showHurt(d, color, dirX, dirY, eff);
         return d;
       }
       let hpDamage = d, shieldDamage = 0;
@@ -152,22 +150,19 @@
       }
       hpDamage = Math.round(hpDamage);
       if (!hpDamage) {
-        G.ExpeditionDamage?.record(attacker,attack,shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',shieldDamage);
         if(bond)G.TypeBonds.afterHit(attacker,this,attack,shieldDamage,bond);
         G.FX.dmgText(this.x, this.y - this.bodyH - 4, Math.round(shieldDamage), '#9fd8ff'); this.flash = 0.05;
-        if(shieldDamage>0)G.Audio.sfx('hit',{kind:attack.kind,type:attack.type});
         return shieldDamage;
       }
       if (G.BossCombat&&!attack.typeBondFraction) hpDamage = G.BossCombat.damage(this,hpDamage);
       if (!(hpDamage > 0)) return shieldDamage;
-      G.ExpeditionDamage?.record(attacker,attack,Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage);
       this.hp -= hpDamage;
       if (attacker) this.lastAttacker = attacker;
       this.lastTypeBondAttack=attack;
       if(bond)G.TypeBonds.afterHit(attacker,this,attack,hpDamage+shieldDamage,bond);
       if (attacker) {G.Abilities.onHit(attacker, this, attack);G.Items?.onHit(attacker,this,attack);G.Specialization?.onHit(attacker,this,attack,hpDamage);}
       G.Judgment.noteDmg(hpDamage, this);
-      this.showHurt(hpDamage, color, dirX, dirY, eff, attack);
+      this.showHurt(hpDamage, color, dirX, dirY, eff);
       if (knock > 0 && !this.boss) {
         const [nx, ny] = G.U.norm(dirX, dirY);
         this.kx += nx * knock;
@@ -179,14 +174,14 @@
     }
 
     /** Lo que se VE al recibir un golpe. */
-    showHurt(d, color, dirX = 0, dirY = 0, eff = null, attack = {}) {
+    showHurt(d, color, dirX = 0, dirY = 0, eff = null) {
       this.flash = 0.09;
       // Muy eficaz: número amarillo y grande. Poco eficaz: gris. Crítico: naranja y grande.
       G.FX.dmgText(this.x, this.y - this.bodyH - 4, d, eff === 'crit' ? '#ff9a3c' : eff === 'super' ? '#ffe14d' : eff === 'weak' ? '#a3abb8' : color,
                    this.boss || eff === 'super' || eff === 'crit');
       G.FX.spark(this.x, this.y - this.bodyH * 0.5, color, dirX, dirY, 3);
       if (!this.anim.busy() && this.phase !== 'dash') this.anim.play('Hurt');
-      G.Audio.sfx('hit',{kind:attack.kind,type:attack.type});
+      G.Audio.sfx('hit');
     }
 
     applySlow(factor, dur = 1.2) {
@@ -208,19 +203,18 @@
     die() {
       if (this.dead) return;
       this.dead = true;
-      G.TypeBonds?.death(this);G.SquadTraits?.kill(this.lastAttacker);
+      G.TypeBonds?.death(this);
       if (G.Rift && G.Rift.noteDefeated) G.Rift.noteDefeated(this);
       this.fade = 0.9;
       this.anim.play('Faint', { hold: true });
       const col = this.boss ? '#ffd95e' : '#ffffff';
       const cy = this.y - this.bodyH * 0.5;
-      const palette=G.Sprites.themeColors?.(this.spriteDex,this.shiny)||this.types.map(t=>G.U.TYPE_COLOR[t]).filter(Boolean);
-      if(G.FX.koSplash)G.FX.koSplash(this.x,cy,palette,this.boss);else G.FX.burst(this.x,cy,palette[0]||col,this.boss?34:14,this.boss?200:125);
+      G.FX.burst(this.x, cy, col, this.boss ? 34 : 9, this.boss ? 260 : 120);
       G.FX.ring(this.x, this.y, this.r, this.r * (this.boss ? 6 : 2.6), col, this.boss ? 0.6 : 0.3, this.boss ? 6 : 3);
       // En una copia, el botín y los shinies los reparte el anfitrión.
       if (this.remote) {
         if (this.boss) G.Camera.kick(0.9);
-        G.Audio.sfx(this.boss ? 'bossDown' : 'faint',{elite:!!this.elite});
+        G.Audio.sfx(this.boss ? 'bossDown' : 'faint');
         if (this.shiny) { G.FX.burst(this.x, cy, '#ffe9a0', 30, 220); G.FX.ring(this.x, this.y, this.r, this.r * 7, '#9ae6ff', 0.7, 5); }
         return;
       }
@@ -244,7 +238,7 @@
         if (this.def.loot === 'ticket10') G.Pickups.drop('ticket10', this.x, this.y - 12, this.elite?5:1);
         G.FX.ring(this.x, this.y, this.r, this.r * 5, '#ffd23f', 0.6, 4);
       }
-      G.Audio.sfx(this.boss ? 'bossDown' : 'faint',{elite:!!this.elite});
+      G.Audio.sfx(this.boss ? 'bossDown' : 'faint');
       if (this.shiny) {
         G.FX.burst(this.x, cy, '#ffe9a0', 30, 220);
         G.FX.ring(this.x, this.y, this.r, this.r * 7, '#9ae6ff', 0.7, 5);
@@ -307,7 +301,7 @@
       if (seen || this.dead) this.anim.update(dt);
       if (this.flash > 0) this.flash -= dt;
       if (this.dead) { this.fade -= dt; return; }
-      if(G.BossCombat&&!(this.classStunT>0))G.BossCombat.tick(this,dt);
+      if(G.BossCombat)G.BossCombat.tick(this,dt);
       if (this.shiny && seen) {
         this.sparkT -= dt;
         if (this.sparkT <= 0) {
@@ -335,8 +329,6 @@
         if (this.poisonT <= 0) this.poison = 0;
       }
       if (this.dead) return;
-
-      if(this.classStunT>0){this.classStunT=Math.max(0,this.classStunT-dt);this.kx=this.ky=0;this.anim.loop('Idle');return;}
 
       // --- terreno ---
       let terrainMul = 1;
@@ -797,8 +789,6 @@
         ctx.restore();
       }
 
-      if(this.classStunT>0){const t=performance.now()/1000;for(let i=0;i<3;i++){const a=t*4+i*Math.PI*2/3;G.VFX.draw(ctx,'star','class:bloom',this.x+Math.cos(a)*this.r,this.y-this.bodyH-8+Math.sin(a)*3,{scale:.65,frame:(t*12)|0});}}
-
       // Escudo: burbuja azul.
       if (this.shield > 0 || (this.net && this.net.st & 4)) {
         ctx.save();
@@ -1045,7 +1035,7 @@
         else if (!unseen) e.lagT = 0;
         if ((unseen && e.lagT > LAG_T) || d2 > 1400 * 1400) {
           e.lagT = 0;
-          if (!G.Spawner.ahead(e, near) && !e.expedition) { list.splice(i, 1); byId.delete(e.id); if (G.Coop.isHost) G.Coop.enemyGone(e, false); }
+          if (!G.Spawner.ahead(e, near)) { list.splice(i, 1); byId.delete(e.id); if (G.Coop.isHost) G.Coop.enemyGone(e, false); }
         }
       }
       for (let i = corpses.length - 1; i >= 0; i--) {

@@ -2,19 +2,19 @@ const test=require('node:test'),assert=require('node:assert/strict'),{context}=r
 const noop=()=>{},close=(a,b,t=1e-7)=>assert.ok(Math.abs(a-b)<t,`${a} != ${b}`);
 function setup(type='fire',n=5){
  const s=context('zh',false),g=s.G;for(const f of ['js/core/settings.js','js/data/egg-groups.js','js/entities/projectile.js','js/systems/expedition-rules.js','js/systems/squad.js','js/systems/squad-bonds.js','js/data/type-bonds.js','js/systems/type-bonds.js','js/systems/move-control.js','js/systems/move-pp.js','js/systems/combat.js'])s.load(f);
- g.Sprites.preload=noop;g.Sprites.Animator.prototype._start=noop;g.FX=new Proxy({},{get:(o,k)=>o[k]||noop});g.Pickups={dropXp:noop,drop:noop};g.Difficulty={treasureChance:()=>0,onHurt:noop,factors:()=>({hp:1,damage:1,speed:1})};g.World.propsInCircle=()=>[];g.World.isWall=()=>false;g.World.projectileBlock=()=>null;g.VFX={forMove:()=>({}),forType:()=>({})};
+ g.Sprites.preload=noop;g.Sprites.Animator.prototype._start=noop;g.FX=new Proxy({},{get:(o,k)=>o[k]||noop});g.Pickups={dropXp:noop,drop:noop};g.Difficulty={treasureChance:()=>0,onHurt:noop};g.World.propsInCircle=()=>[];g.World.isWall=()=>false;g.World.projectileBlock=()=>null;g.VFX={forMove:()=>({}),forType:()=>({})};
  const cap=s.player(25);cap.mon={...cap.mon,types:[type]};g.Squad.begin(cap);for(let i=0;i<3;i++)g.Squad.upgrade();
  const members=[];for(let i=0;i<n-1;i++){const p=g.Squad.recruit([6,9,3,26,65,68][i]);p.mon={...p.mon,name:'Type partner '+i,types:[type]};members.push(p);}
  for(const p of g.Squad.actors()){p.baseAtk=10;p.baseSpa=20;p.baseDefense=2;p.baseSpDef=4;p.critChance=0;p.moves=[g.Moves.instance('tackle')];p.slots=[p.moves];p.active=0;}
  g.Squad.refresh();g.Game.player=cap;g.Game.everyone=()=>g.Squad.actors();s.Math.random=()=>.99;
  const foe=(x=40,y=0)=>{const e=s.enemy();e.x=x;e.y=y;e.hp=e.maxHp=1e6;e.defense=e.spdef=1;e.touchCd=100;return e;};
- const p=members[0]||cap,hit=(e,amount=10,owner=p,attack={})=>e.hurt(amount,'#fff',1,0,0,null,owner,{id:owner.moves[0]?.id||'test-hit',type,kind:'projectile',...attack});
+ const p=members[0]||cap,hit=(e,amount=10,owner=p,attack={})=>e.hurt(amount,'#fff',1,0,0,null,owner,{id:owner.moves[0].id,type,kind:'projectile',...attack});
  return {...s,g,cap,p,members,foe,hit,B:g.TypeBonds};
 }
 
 test('all 18 definitions use 2/5 thresholds and exact 0/100/300 anchors, extrapolating the last slope beyond 300',()=>{
  const {g,B}=setup();assert.equal(g.TypeBondDefs.LIST.length,18);for(const d of g.TypeBondDefs.LIST){assert.deepEqual(Array.from(d.thresholds),[2,5]);for(const nodes of Object.values(d.values))for(const [l,want]of [[0,nodes[0]],[100,nodes[1]],[300,nodes[2]],[400,nodes[2]+(nodes[2]-nodes[1])*.5]])close(g.TypeBondDefs.interpolate(nodes,l),want);}
- assert.equal(g.SquadBonds.layer('types','fire'),0);assert.equal(g.SquadBonds.layer('skill','projectile'),0);assert.equal(B.state('fire').tier,5);
+ assert.equal(g.SquadBonds.layer('types','fire'),0);assert.equal(g.SquadBonds.layer('skill','projectile'),1);assert.equal(B.state('fire').tier,5);
 });
 test('damage basis sums only living deployed same-type physical and special attacks and multiplies by 30 percent',()=>{
  const {g,B,cap,members}=setup('fire',3),expected=g.Squad.actors().reduce((s,p)=>s+p.atk+p.spa,0)*.3;close(B.base('fire'),expected);members[0].dead=true;close(B.base('fire'),(cap.atk+cap.spa+members[1].atk+members[1].spa)*.3);g.Squad.bench(members[1]);close(B.base('fire'),(cap.atk+cap.spa)*.3);assert.equal(B.base('water'),0);
@@ -70,10 +70,10 @@ test('dark can generate standalone DOT without Fire/Ghost/Poison contributors, c
  const s=setup('dark'),{B}=s,e=s.foe();s.Math.random=()=>0;s.hit(e);assert.ok(e.typeBondState.ignite);s.Math.random=()=>.99;e.burn=2;e.burnT=1;e.poison=1;e.poisonT=1;for(let i=0;i<4;i++)s.hit(e);assert.equal(e.typeBondState.amp,4);assert.equal(e.burnT,3);assert.equal(e.poisonT,4);const hp=e.hp;B.enemyTick(e,1);assert.ok(e.hp<hp);
 });
 test('steel reflection uses the bearer defenses while its five-person head/tail bonus is independent of their type',()=>{
- const s=setup('steel'),{B,cap,p,g}=s,e=s.foe();const hp=e.hp;B.contact(p,e);close(hp-e.hp,9);close(B.defense(cap),.9);close(B.damageMultiplier(cap),1.25);assert.equal(B.defense(p),1);
+ const s=setup('steel'),{B,cap,p,g}=s,e=s.foe();const hp=e.hp;B.contact(p,e);close(hp-e.hp,Math.round(3*3*(1+.05*5)));close(B.defense(cap),.9);close(B.damageMultiplier(cap),1.25);assert.equal(B.defense(p),1);
 });
 test('fairy heals the lowest current-HP living partner and executes ordinary foes, with distinct Boss and elite execution damage',()=>{
- const s=setup('fairy'),{B,cap,p,g}=s,e=s.foe();for(const q of g.Squad.actors())q.hp=q.maxHp=1000;p.hp=100;e.hp=1;s.hit(e);close(p.hp,150);
+ const s=setup('fairy'),{B,cap,p}=s,e=s.foe();cap.hp=cap.maxHp=1000;p.maxHp=1000;p.hp=100;e.hp=1;s.hit(e);close(p.hp,150);
  const ordinary=s.foe();ordinary.maxHp=1000;ordinary.hp=100;ordinary.shield=200;s.hit(ordinary);assert.equal(ordinary.dead,true);
  const boss=s.foe();boss.boss=true;boss.maxHp=1000;boss.hp=100;s.hit(boss);assert.equal(boss.hp,85);const elite=s.foe();elite.elite=true;elite.maxHp=1000;elite.hp=100;s.hit(elite);assert.equal(elite.hp,80);
 });

@@ -1,160 +1,1337 @@
-/* Expedition screens deliberately share the existing font, buttons and sprite renderer. */
-.journey-loot-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:18px 0}.journey-loot-value{display:flex;flex-direction:column;gap:10px;padding:18px;border:1px solid #3c6684;border-radius:14px;background:#102a41}.journey-loot-value small{color:#afcfe0;font-size:12px}.journey-loot-value b{font-size:24px;color:#ffe5a0}.journey-loot-companion{text-align:center;padding:20px;border:1px solid #68bab1;border-radius:18px;background:radial-gradient(ellipse at top,#245a6177,#11263e);margin:18px 0}.journey-loot-companion canvas{image-rendering:pixelated}.journey-loot-companion h3{margin:0 0 12px}.journey-loot-companion p{font-size:13px;color:#b8d9df}.journey-loot-companion .journey-full{color:#ffcf96}.journey-actions{flex-wrap:wrap}
-#scr-journey{padding:24px 16px;align-items:center;background:rgba(5,13,30,.92)}
-.journey-box{width:min(1180px,100%);max-height:94dvh;overflow:auto;padding:28px;border:1px solid #315679;background:linear-gradient(155deg,#14263e,#09172c 65%);box-shadow:0 24px 100px #0009;border-radius:24px}
-.journey-head{margin-bottom:20px}.journey-head h2{font-size:clamp(24px,3vw,36px);margin:6px 0 10px}.journey-head p{color:#b1c5dc;line-height:1.6;max-width:740px;margin:0}.journey-eyebrow{font:700 11px system-ui;letter-spacing:3px;color:#80ddff}
-.journey-meta{display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:12px 16px;background:#071327;border:1px solid #27496b;border-radius:12px;margin-bottom:18px;font-size:14px}.journey-gold{color:#ffe08a}.journey-meta>span:last-child{color:#9db4d0;margin-left:auto}
-.journey-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:20px}.journey-route{max-height:52dvh;overflow:auto;padding:4px 8px 12px 2px;scrollbar-color:#446f96 #0a182a}.journey-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
-.journey-event{min-height:88px;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:1px solid #2b4662;border-radius:12px;padding:8px 2px;background:#17263a;color:#7c94ad;font-family:inherit;cursor:default}.journey-event>small{position:absolute;top:5px;left:7px;font-size:10px;color:#c7dcf0}.journey-event>b{font:24px system-ui}.journey-event>span{font-size:11px;line-height:1.3;overflow-wrap:anywhere}.journey-event:disabled{opacity:.52}.journey-event.shop>b{color:#f6d584}.journey-event.elite>b{color:#c7a3ff}.journey-event.rest>b{color:#7ddeb4}.journey-event.boss{background:#341b33;border-color:#79405e}.journey-event.boss>b{color:#ffa1b0}
-.journey-event.reachable{opacity:1;border:2px solid #67cfff;background:#183e5a;color:#e4f8ff;cursor:pointer;box-shadow:0 0 16px #43b6ff1f;transition:transform .12s,background .12s}.journey-event.reachable:hover,.journey-event.reachable:focus-visible{background:#245774;transform:translateY(-2px);outline:2px solid #c8f1ff;outline-offset:2px}.journey-event.current{opacity:1;background:#1a5259;border-color:#94e6d4}.journey-event.visited{opacity:.85;border-color:#6bb5af}.journey-event.visited:after{content:'✓';position:absolute;right:4px;top:3px;color:#9be6dc}
-.journey-formation{border:1px solid #294967;border-radius:16px;background:#0a182be0;padding:16px;max-height:58dvh;overflow:auto}.journey-formation h3{font-size:16px;margin:0 0 8px}.journey-formation h4{border-top:1px solid #3c4a61;padding-top:14px;color:#a9bad1}.journey-member{position:relative;display:flex;gap:8px;align-items:center;background:#14283f;border:1px solid #28496a;border-radius:12px;padding:8px;margin:10px 0;min-width:0}.journey-member.captain{border-color:#a28a52;flex-wrap:wrap}.journey-member.captain>small{margin-left:auto;color:#e7d49d}.journey-member canvas{flex-shrink:0;width:52px;height:52px;image-rendering:pixelated}.journey-member-text{flex:1;min-width:0}.journey-member-text>b{display:block;color:#def4ff;font-size:13px}.journey-member-text>small{display:block;color:#a9bfd8;font-size:10px}.journey-tags{display:flex;gap:4px;flex-wrap:wrap;margin:6px 0}.journey-tags>span{font-size:9px;border:1px solid #396080;padding:2px 5px;border-radius:5px;background:#102137;color:#aec9df}.journey-tags>span:nth-child(2){border-color:#686142;color:#e0d4a0}.journey-tags>span:nth-child(3){border-color:#65517c;color:#d7bee9}.journey-talent{font-size:10px;line-height:1.5;color:#8fd4cc;margin:5px 0}.journey-order{display:flex;flex-direction:column;gap:4px}.journey-order .btn{min-width:26px;padding:3px 6px;font-size:12px}.journey-member.fainted canvas{filter:grayscale(1)}
-.journey-actions{display:flex;gap:12px;justify-content:center;margin:22px 0 0}.journey-notice{padding:12px 16px;background:#123b3b;border:1px solid #33736d;border-radius:10px;color:#ade5d3;font-size:13px;line-height:1.5}.journey-captain{text-align:center}.journey-captain canvas{margin:auto;image-rendering:pixelated}.journey-captain h3{margin:0 0 20px;font-size:24px}.journey-select{display:flex;align-items:center;justify-content:center;gap:12px;font-size:14px}.journey-select select{font:inherit;color:#e2f3ff;background:#10243c;border:1px solid #537da1;border-radius:10px;padding:10px;max-width:70%}.journey-gens{display:flex;gap:12px;justify-content:center;margin:24px auto 12px;flex-wrap:wrap}.journey-gens>span{border:1px solid #537da1;color:#bde7ff;background:#193653;padding:12px 20px;border-radius:10px}
-.journey-goods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;align-content:start}.journey-product{border:2px solid #6f7784;border-radius:14px;background:#102239;padding:12px;display:flex;flex-direction:column;align-items:center;text-align:center;min-width:0}.journey-product.iv-blue{border-color:#5897f5}.journey-product.iv-purple{border-color:#b17aeb}.journey-product.iv-orange{border-color:#f4a94f}.journey-product.iv-red{border-color:#fa6275;box-shadow:0 0 16px #f85a6925}.journey-product.iv-white{border-color:#d8e2ed}.journey-product.item{border-color:#baa66b}.journey-product-art{height:100px;display:flex;align-items:center;justify-content:center}.journey-product-art canvas{image-rendering:pixelated}.journey-product h3{font-size:15px;margin:8px 0}.journey-product>small{font-size:10px;color:#a7bfd5}.journey-product>p{font-size:11px;line-height:1.6;flex:1;color:#adc1d7}.journey-product .btn{font-size:12px;width:100%;padding:10px 6px;margin-top:auto;min-width:0}.journey-shop-controls{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.journey-shop-controls .btn{font-size:12px}.journey-goods>.note{grid-column:1/-1}
-#journey-status{position:fixed;z-index:7;top:78px;left:50%;transform:translateX(-50%);max-width:75vw;padding:7px 14px;border:1px solid #65cfff70;background:#08192ee6;box-shadow:0 5px 25px #0005;border-radius:20px;color:#d5f3ff;font:600 12px system-ui;pointer-events:none;text-align:center}#journey-status[hidden]{display:none}
-@media(max-width:760px){#scr-journey{padding:8px}.journey-box{padding:18px 12px;border-radius:16px;max-height:96dvh}.journey-layout{grid-template-columns:1fr}.journey-formation{max-height:38dvh}.journey-route{max-height:45dvh}.journey-grid{gap:5px}.journey-event{min-height:75px;border-radius:8px}.journey-event>span{font-size:9px}.journey-head p{font-size:13px}.journey-meta{font-size:11px;gap:8px}.journey-meta>span:last-child{margin-left:0}.journey-goods{gap:7px}.journey-product{padding:8px 5px}.journey-product-art{height:75px}.journey-product-art canvas{width:72px;height:72px}.journey-product h3{font-size:12px}.journey-product .btn{font-size:10px}.journey-select{flex-wrap:wrap}#journey-status{top:82px;max-width:90vw;width:max-content;font-size:10px;padding:5px 10px}}
-@media(max-height:500px) and (min-width:600px){.journey-layout{grid-template-columns:minmax(0,1fr) 260px}.journey-formation,.journey-route{max-height:45dvh}.journey-head h2{font-size:22px}.journey-box{padding:14px}.journey-event{min-height:65px}}
+/* ==========================================================================
+   PokéSurvivor: Expedition Mode UI — Arknights Tactical × Pokémon Vibrant
+   ========================================================================== */
 
-.journey-layout.journey-layout-wide{grid-template-columns:minmax(0,1fr)}.journey-squad-link{margin-left:auto;font-size:12px;white-space:nowrap}
-#scr-squad{padding:16px 12px;background:rgba(5,20,35,.86);backdrop-filter:blur(5px)}.squad-box{width:min(1240px,100%);max-height:96dvh;overflow:auto;padding:20px 24px;border:1px solid #56899c;border-radius:24px;background:linear-gradient(145deg,#17475bd9,#102c43f5 75%);box-shadow:0 24px 100px #0008}
-.squad-header{display:grid;grid-template-columns:52px 1fr auto;align-items:center;gap:15px;margin-bottom:14px}.squad-header>div:first-of-type{text-align:center}.squad-header .journey-eyebrow{color:#8ce8dc;letter-spacing:2px}.squad-header h2{margin:4px 0;font-size:30px;color:#d1f59c;text-shadow:0 3px #102233}.squad-back-btn{width:46px;height:46px;padding:2px!important;line-height:1;font-size:28px;background:linear-gradient(#ff8587,#bd4858);border-color:#ffc4b8}.squad-wallet{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;max-width:330px}.squad-wallet>span{padding:8px 12px;border:1px solid #527a93;border-radius:20px;background:#102e47;color:#d8eff6;font-size:12px}.squad-wallet>span:first-child{color:#ffe59c}.squad-mode{display:flex;gap:12px;flex-wrap:wrap;align-items:center;font-size:12px;color:#b1d6df;margin:8px 0 16px}.squad-mode>b{color:#e4f6ef}.squad-mode>span{margin-left:auto}
-.squad-formation-surface{display:grid;grid-template-columns:minmax(0,1fr) 240px;grid-template-areas:'board bonds' 'warehouse finish';gap:16px}.squad-field-panel{grid-area:board}.squad-field-panel,.squad-bonds,.squad-warehouse{padding:15px;border:2px solid #497f91;border-radius:21px;background:#103c5077;box-shadow:inset 0 0 30px #062c4133}.squad-field-panel>h3,.squad-bonds>h3,.squad-warehouse>h3{margin:0 0 14px;color:#e5fff4;font-size:18px;text-align:center;letter-spacing:1px;text-shadow:0 2px #092637}.squad-battle-grid{position:relative;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,138px);gap:10px 8px;padding-top:3px}.squad-snake-path{position:absolute;width:100%;height:100%;inset:0;pointer-events:none;color:#6edce0;opacity:.65}.squad-field-slot{position:relative;min-width:0;display:flex;align-items:center;justify-content:center;border:2px solid transparent;border-radius:18px}.squad-slot-number{position:absolute;top:1px;left:5px;font-size:10px;color:#72a8ba}.squad-field-slot.locked{opacity:.35}
-.squad-unit{position:relative;min-width:0;max-width:150px;width:100%;text-align:center}.squad-pick{border:0;background:transparent;box-shadow:none;display:flex;flex-direction:column;align-items:center;gap:3px;padding:0 4px;margin:0;width:100%;min-height:0;color:#e5f5f4;font:inherit;cursor:pointer}.squad-unit-art{position:relative;width:94px;height:94px;border-radius:50%;display:grid;place-items:center;border:3px solid color-mix(in srgb,var(--unit-color) 75%,#e3fcff);background:radial-gradient(circle at 30% 20%,color-mix(in srgb,var(--unit-color) 65%,#f1fcff),color-mix(in srgb,var(--unit-color) 44%,#143649));box-shadow:0 5px 12px #00172566;transition:outline-color .12s;outline:3px solid transparent;outline-offset:3px}.squad-unit-art canvas{width:94px;height:94px;image-rendering:pixelated}.squad-unit-art:after{content:'';position:absolute;bottom:-2px;left:8%;width:84%;height:7px;border:2px solid #173648;border-radius:12px;background:linear-gradient(to right,#a4f468 0 var(--hp),#17334a var(--hp) 100%)}.squad-unit.captain .squad-unit-art{outline-color:#ffd47b;border-color:#ffdf8c;box-shadow:0 0 24px #ffe17c33}.squad-pick.selected .squad-unit-art{outline-color:#fff2a5}.squad-pick:focus-visible{outline:0}.squad-pick:focus-visible .squad-unit-art,.squad-pick:hover .squad-unit-art{outline-color:#c4ffef}.squad-unit-name{font-size:12px;line-height:1.4;overflow-wrap:anywhere;margin-top:4px}.squad-pick>small{font-size:10px;color:#b4d3d7}.squad-unit.fainted canvas{filter:grayscale(1);opacity:.65}.squad-vacancy{width:92px;height:92px;border:2px dashed #83adba;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:#18425566;color:#96bdc9}.squad-vacancy>b{font-size:30px;line-height:1}.squad-vacancy>small{font-size:10px}.squad-drag-handle{position:absolute;right:2px;top:0;z-index:2;display:grid;place-items:center;width:28px;height:28px;border:1px solid #80c7cc;border-radius:10px;background:#174859;color:#e0ffff;font:24px/1 system-ui;cursor:grab;touch-action:none;user-select:none}
-.squad-bonds{grid-area:bonds;max-height:350px;overflow:auto;background:#12374cb3}.squad-bond-tabs{display:flex;gap:4px;margin-bottom:12px}.squad-bond-tab{flex:1;border:1px solid #477e92;border-radius:7px;background:#173b52;color:#a6cedb;padding:6px 2px;font:inherit;font-size:11px;cursor:pointer}.squad-bond-tab.on{background:#407e89;color:#f0fff7;border-color:#9ae5d8}.squad-bond-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:7px 0;padding:8px 10px;background:#1b496077;border:1px solid #446e86;border-radius:10px;font-size:12px}.squad-bond-row>b{color:#d1e9e7}.squad-bond-row>span{color:#f6e59e;border-radius:6px;padding:2px 7px;background:#102e42}.squad-bonds h4{margin:15px 0 9px;font-size:12px;color:#9cdccc}.squad-support-line{margin:5px 0;color:#c6e9da;font-size:11px}.squad-bonds .note{font-size:11px;color:#9bbed0}
-.squad-warehouse{grid-area:warehouse;display:flex;align-items:center;gap:16px;min-height:134px;padding:12px 14px}.squad-warehouse>h3{flex:0 0 84px;font-size:16px;margin:0;line-height:1.7}.squad-warehouse-strip{display:flex;flex:1;min-width:0;gap:10px;overflow-x:auto;padding:7px 5px 10px;scrollbar-color:#538f9f #0e3548;touch-action:pan-x}.squad-warehouse-strip .squad-unit{flex:0 0 106px;padding:6px 2px;border:2px solid #6b9dac;border-radius:13px;background:#24546b99}.squad-warehouse-strip .squad-unit-art{width:68px;height:68px;border-width:2px}.squad-warehouse-strip canvas{width:70px;height:70px}.squad-warehouse-strip .squad-unit-name{font-size:10px}.squad-warehouse-strip .squad-drag-handle{top:-6px;right:-5px;width:22px;height:22px;font-size:19px}.squad-bench-empty{flex:0 0 100px;min-height:108px;display:grid;place-items:center;text-align:center;padding:10px;border:2px dashed #5d94a7;border-radius:14px;color:#86b4c3;font-size:11px;line-height:1.7}.squad-finish{grid-area:finish;display:flex;align-items:center;justify-content:center}.squad-finish .btn{width:100%;min-height:74px;border-radius:19px;color:#093d41;background:linear-gradient(#9dffe0,#38d9d2);border-color:#bcffe5;box-shadow:0 0 22px #56ebc944;font-size:21px}.squad-help{font-size:11px;color:#a2c7d0;margin:12px 0 0;line-height:1.7}
-.squad-drag-active{user-select:none;cursor:grabbing}.squad-unit.dragging{opacity:.25}.drop-target{outline:3px solid #98ffe0!important;outline-offset:2px;background-color:#4cba9855!important}.squad-drag-ghost{position:fixed!important;z-index:200!important;pointer-events:none!important;opacity:.9!important;transform:rotate(-4deg);filter:drop-shadow(0 12px 12px #001b35aa)}
-.squad-modal{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:16px;background:#030e24b8;backdrop-filter:blur(4px)}.squad-modal.hidden{display:none}.squad-detail{width:min(640px,96vw);max-height:90dvh;overflow:auto;padding:22px;border:2px solid #659eae;border-radius:20px;background:linear-gradient(145deg,#183f55,#0b2036);box-shadow:0 20px 80px #0009;scrollbar-color:#608ea5 #102c43}.squad-detail-closebar{display:flex;justify-content:flex-end;position:sticky;top:0;z-index:2}.squad-detail-closebar .btn{font-size:20px;padding:3px 11px}.squad-hero{display:flex;align-items:center;gap:15px}.squad-hero>canvas{flex-shrink:0;width:136px;height:136px;image-rendering:pixelated}.squad-hero h3{font-size:26px;color:#e8fff2;margin:6px 0;overflow-wrap:anywhere}.squad-hero p{font-size:12px;color:#b9d6df;margin:6px 0}.squad-status{color:#8ce3db;font-size:12px}.squad-detail>.journey-tags{margin:12px 0;gap:6px}.squad-detail>.journey-tags>span{font-size:11px;padding:4px 7px}.squad-talent{padding:12px 14px;background:#154744;border:1px solid #448a7d;border-radius:10px;margin-top:16px}.squad-talent h4{margin:0 0 8px;color:#bcf2e1;font-size:13px}.squad-talent p{font-size:13px;color:#d6ede7;line-height:1.7;margin:0}.squad-talent small{display:block;color:#99c9be;font-size:11px;line-height:1.6;margin-top:6px}.squad-section-title{font-size:14px;color:#c4e5e8;margin:22px 0 12px}.squad-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.squad-stat{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 8px;padding:11px;background:#173a51;border:1px solid #355e75;border-radius:9px}.squad-stat>span{font-size:12px;color:#bfd6de}.squad-stat>b{font-size:18px;color:#ffe5a3;font-variant-numeric:tabular-nums}.squad-stat>small{grid-column:1/-1;color:#a2c8d9;font-size:10px;line-height:1.6;overflow-wrap:anywhere}.squad-skill{border:1px solid #4c7489;border-radius:10px;padding:12px;margin:9px 0;background:#123147}.squad-skill-heading{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between;font-size:13px}.squad-pp{color:#9de8ed;font-size:11px}.squad-skill>p{font-size:12px;line-height:1.7;color:#bfd9df}.squad-skill>small{font-size:11px;color:#9bcfce}.squad-open{top:calc(46% + 78px);font-size:22px;border-color:#71d3ee;background:linear-gradient(145deg,#28667a,#153349)}
-@media(max-width:900px){.squad-formation-surface{grid-template-columns:minmax(0,1fr) 190px}.squad-box{padding:16px}.squad-unit-art{width:74px;height:74px}.squad-unit-art canvas{width:76px;height:76px}.squad-vacancy{width:72px;height:72px}.squad-battle-grid{grid-template-rows:repeat(2,118px)}.squad-unit-name{font-size:11px}.squad-bonds{max-height:315px;padding:12px}.squad-wallet{max-width:230px}.squad-wallet>span{font-size:10px;padding:7px 9px}.squad-header h2{font-size:26px}}
-@media(max-width:660px){#scr-squad{padding:7px}.squad-box{padding:13px 10px;border-radius:17px}.squad-header{grid-template-columns:38px minmax(0,1fr);gap:7px}.squad-header h2{font-size:25px}.squad-header .journey-eyebrow{font-size:10px}.squad-back-btn{width:36px;height:36px;font-size:22px}.squad-wallet{grid-column:1/-1;max-width:none;justify-content:flex-end}.squad-mode{font-size:10px;margin-bottom:10px;gap:6px}.squad-mode>span{margin-left:0}.squad-formation-surface{grid-template-columns:1fr;grid-template-areas:'board' 'warehouse' 'bonds' 'finish';gap:11px}.squad-field-panel{padding:10px 5px}.squad-field-panel>h3,.squad-bonds>h3{font-size:16px;margin-bottom:9px}.squad-battle-grid{grid-template-rows:repeat(2,105px);gap:5px 0}.squad-unit-art{width:55px;height:55px;border-width:2px;outline-width:2px;outline-offset:2px}.squad-unit-art canvas{width:58px;height:58px}.squad-vacancy{width:51px;height:51px}.squad-unit-name{font-size:9px}.squad-pick>small{font-size:8px}.squad-slot-number{font-size:8px;left:1px;top:0}.squad-drag-handle{width:20px;height:20px;right:-1px;top:-3px;font-size:17px}.squad-unit-art:after{height:5px;border-width:1px}.squad-vacancy>b{font-size:23px}.squad-vacancy>small{font-size:8px}.squad-warehouse{padding:9px;gap:8px}.squad-warehouse>h3{flex-basis:52px;font-size:12px}.squad-warehouse-strip .squad-unit{flex-basis:86px}.squad-bonds{max-height:220px}.squad-bond-rows{display:flex;flex-wrap:wrap;gap:5px}.squad-bond-row{margin:0;padding:5px 7px;font-size:10px}.squad-support-line{display:inline-block;margin-right:13px}.squad-finish .btn{min-height:56px;font-size:20px}.squad-detail{padding:15px;max-height:94dvh}.squad-hero>canvas{width:108px;height:108px}.squad-hero h3{font-size:23px}.squad-stat{padding:9px}.squad-stat>span{font-size:11px}.squad-stat>b{font-size:16px}.squad-open{top:calc(46% + 67px);padding:9px 7px}.journey-squad-link{margin-left:0}}
-@media(max-width:350px){.squad-unit-art{width:45px;height:45px}.squad-unit-art canvas{width:49px;height:49px}.squad-vacancy{width:43px;height:43px}.squad-unit-name{font-size:8px}.squad-battle-grid{grid-template-rows:repeat(2,95px)}.squad-header h2{font-size:22px}.squad-hero>canvas{width:92px;height:92px}}
+:root {
+  /* Tactical Base Palette */
+  --pk-exp-bg: #070d1a;
+  --pk-exp-bg-trans: rgba(7, 13, 26, 0.88);
+  --pk-exp-panel: rgba(14, 26, 48, 0.78);
+  --pk-exp-panel-card: rgba(18, 34, 64, 0.85);
+  --pk-exp-border: rgba(86, 156, 214, 0.28);
+  --pk-exp-border-bright: #68c3ff;
+  --pk-exp-glow: rgba(56, 189, 248, 0.18);
 
-/* Names and all three tag groups stay visible without opening the details dialog. */
-.squad-bond-preview{flex-basis:100%;font-size:10px;line-height:1.6;color:#b5d4e1;overflow-wrap:anywhere}.squad-bond-preview summary{cursor:pointer;color:#ffe1a6}.squad-bond-preview p{margin:5px 0;font-variant-numeric:tabular-nums}
-.squad-bond-row{flex-wrap:wrap}.squad-bond-row.active{border-color:#82dcb8;background:#28645966}.squad-bond-stack{font-size:10px;color:#a1d4db;flex-basis:100%}.squad-bond-effect{flex-basis:100%;font-size:10px;line-height:1.6;margin:0;color:#b9d8e4}.squad-bond-row>b{flex:1;min-width:0}.squad-bond-row>span{flex:none}
-.squad-warehouse-label{flex:0 0 100px;min-width:0;text-align:center}.squad-warehouse-label h3{margin:0 0 10px;font-size:14px;line-height:1.5;color:#e5fff4;overflow-wrap:anywhere}.squad-release-slot{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:92px;padding:8px;border:2px dashed #c28791;border-radius:15px;background:#54334377;color:#ffd1ce;text-shadow:none}.squad-release-mark{font:28px/1 system-ui}.squad-release-slot b{font-size:13px}.squad-release-slot small{font-size:10px}.squad-release-slot.drop-target{outline-color:#ffbcb9!important;background:#9e4c5f99!important}
-@media(max-width:660px){.squad-warehouse-label{flex-basis:68px}.squad-warehouse-label h3{font-size:11px}.squad-release-slot{padding:6px 3px;min-height:86px}.squad-release-slot b{font-size:12px}.squad-release-slot small{font-size:9px}}
-.squad-formation-surface,.squad-field-panel,.squad-bonds,.squad-warehouse,.squad-finish{min-width:0}.squad-formation-surface{width:100%}
-.squad-battle-grid{grid-template-rows:repeat(2,minmax(220px,auto));align-items:start}.squad-field-slot{height:100%;align-items:flex-start}.squad-pick>.journey-tags{justify-content:center;gap:3px;margin:3px 0;max-width:100%}.squad-pick>.journey-tags>span{font-size:8px;padding:2px 4px;line-height:1.4;overflow-wrap:anywhere}.squad-card-moves{font-size:10px;color:#ffe3a5;line-height:1.5;overflow-wrap:anywhere}.squad-release{margin-top:20px;color:#ffc4b9;border-color:#aa6767;background:#56363f}.squad-bonds{max-height:500px}.squad-warehouse-strip .squad-unit{flex-basis:130px}.squad-warehouse-strip .journey-tags>span{font-size:7px}.squad-warehouse-strip .squad-card-moves{font-size:9px}
-@media(max-width:900px){.squad-battle-grid{grid-template-rows:repeat(2,minmax(220px,auto))}}
-@media(max-width:660px){.squad-battle-grid{grid-template-rows:repeat(2,minmax(205px,auto))}.squad-pick{padding:0 2px}.squad-pick>.journey-tags{gap:2px}.squad-pick>.journey-tags>span{padding:1px 2px;font-size:7px}.squad-card-moves{font-size:8px}.squad-warehouse-strip .squad-unit{flex-basis:110px}.journey-loot-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.journey-loot-value{padding:12px}.journey-loot-value small{overflow-wrap:anywhere}}
+  /* Pokémon Vibrant Accents */
+  --pk-vibrant-gold: #ffcc00;
+  --pk-vibrant-gold-rgb: 255, 204, 0;
+  --pk-vibrant-amber: #ff9f1a;
+  --pk-vibrant-cyan: #00d2d3;
+  --pk-vibrant-blue: #2e86de;
+  --pk-vibrant-emerald: #10ac84;
+  --pk-vibrant-green: #2ed573;
+  --pk-vibrant-rose: #ff4757;
+  --pk-vibrant-purple: #9b59b6;
+  --pk-vibrant-crimson: #ee5253;
 
-/* Expedition iteration: readable typography, responsive information and damage ledger. */
-.journey-box,.squad-box{font-size:15px;line-height:1.65}
-.journey-product h3{font-size:21px;line-height:1.4;margin:10px 0}
-.journey-product p,.journey-shop-move{font-size:15px;line-height:1.7;white-space:normal;overflow-wrap:anywhere}
-.journey-product .btn,.journey-shop-controls .btn{font-size:16px;min-height:46px;white-space:normal}
-.journey-goods{gap:20px}.journey-product{padding:20px;display:flex;flex-direction:column;gap:10px;min-width:0}
-.journey-tags>span,.squad-pick>.journey-tags>span,.squad-warehouse-strip .journey-tags>span{font-size:11px;padding:3px 5px;line-height:1.6}
-.squad-card-moves,.squad-warehouse-strip .squad-card-moves{font-size:13px;line-height:1.6}
-.squad-pick strong{font-size:16px}.squad-pick small{font-size:12px}
-.squad-bond-effect,.squad-bond-preview,.squad-bond-stack{font-size:13px;line-height:1.8}
-.squad-bond-row{padding:12px;gap:8px}.squad-bonds{max-height:560px}.squad-battle-grid{grid-template-rows:repeat(2,minmax(255px,auto))}
-.squad-detail{font-size:15px}.squad-detail p,.squad-skill small,.squad-stats small{font-size:13px;line-height:1.7}
-.journey-training{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:16px;margin:20px 0}
-.journey-training .btn{white-space:normal;text-align:left;padding:18px;font-size:16px;line-height:1.6}
-.journey-training .btn small{display:block;font-size:13px;color:#c5dce7;font-weight:normal;margin-top:10px}
-.journey-event.training{border-color:#bb9df0}
-.expedition-damage{position:fixed;right:12px;top:124px;z-index:22;width:200px;max-height:45vh;overflow:auto;padding:12px;border:1px solid #78b9ce66;border-radius:12px;background:#102b3dd9;color:#e5f5ff;font-size:12px;line-height:1.6;text-shadow:none;pointer-events:auto}
-.expedition-damage[hidden]{display:none}.expedition-damage h3,#over-damage h3{font-size:15px;margin:0 0 8px}
-.expedition-damage-row{display:flex;justify-content:space-between;align-items:start;gap:12px;margin:5px 0}.expedition-damage-row span{overflow-wrap:anywhere;min-width:0}.expedition-damage-row b{font-variant-numeric:tabular-nums;color:#ffe7a8;white-space:nowrap}
-#over-damage{text-align:left;padding:16px;margin:16px 0;border:1px solid #7bafbd77;border-radius:12px;font-size:14px}
-@media(max-width:660px){.journey-box,.squad-box{font-size:14px}.journey-product{padding:14px}.journey-product h3{font-size:19px}.journey-product p{font-size:14px}.squad-bond-effect,.squad-bond-preview,.squad-bond-stack{font-size:12px}.squad-card-moves{font-size:12px}.squad-battle-grid{grid-template-rows:repeat(2,minmax(240px,auto))}.expedition-damage{right:7px;top:120px;width:145px;max-height:23vh;font-size:10px;padding:8px}.expedition-damage h3{font-size:12px}.squad-warehouse-strip .squad-unit{flex-basis:135px}}
-.squad-talent p,.journey-shop-trait{white-space:pre-line;overflow-wrap:anywhere;line-height:1.75}.journey-shop-trait{padding:10px 12px;background:#29495188;border:1px solid #76a6ae66;border-radius:9px;font-size:13px!important;color:#cdebe7}.squad-talent{border:1px solid #85bdb577;padding:14px;border-radius:12px}.squad-talent p{font-size:14px}.squad-talent small{font-size:12px;color:#b0c6d1}
-.journey-product .journey-shop-trait{white-space:pre-line;flex:initial;text-align:left;width:100%;box-sizing:border-box}
-@media(max-width:900px){.journey-goods{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:660px){.journey-goods{grid-template-columns:minmax(0,1fr)}.journey-product{padding:18px}.journey-product .btn{max-width:100%}}
-/* Quality owns the border; type colors remain in tag badges and portrait backgrounds. */
-.journey-product.quality-1{border-color:#d8e2ed}.journey-product.quality-2{border-color:#66cf91}.journey-product.quality-3{border-color:#5897f5}.journey-product.quality-4{border-color:#b17aeb}.journey-product.quality-5{border-color:#ffd166;box-shadow:0 0 14px #ffd16622}
-.squad-unit .squad-unit-art,.squad-unit.captain .squad-unit-art,.squad-warehouse-strip .squad-unit{border-color:var(--quality-color,#d8e2ed)}
-.squad-quality-factors{padding:10px 12px;border:1px solid #6a8d9b;border-radius:8px;color:#ffe5a0;line-height:1.8}.squad-assault-status{color:#a7e5ef;line-height:1.8}
-/* Reusable damage meter: stable controls and portraits, scrolling rows only. */
-.expedition-damage.damage-meter{width:264px;padding:0;overflow:hidden;max-height:46dvh;display:flex;flex-direction:column;background:linear-gradient(145deg,#15394cf2,#0a1e31f2);box-shadow:0 8px 28px #0005}
-.expedition-damage.damage-meter[hidden]{display:none}.damage-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid #78b9ce33;flex-shrink:0}.damage-meter .damage-head h3{font-size:14px;margin:0;line-height:1.5;color:#dcf4ff}
-.damage-fold{display:grid;place-items:center;flex-shrink:0;width:32px;height:30px;padding:0;border:1px solid #689caf;border-radius:7px;background:#244c62;color:#def7ff;font:700 20px system-ui;cursor:pointer}.damage-fold:focus-visible,.damage-tabs button:focus-visible{outline:2px solid #ffe299;outline-offset:2px}
-.damage-body{min-height:0;display:flex;flex-direction:column}.damage-body[hidden]{display:none}.damage-tabs{display:flex;gap:6px;padding:10px 12px 4px;flex-shrink:0}.damage-tabs button{flex:1;min-width:0;padding:7px 4px;border:1px solid #44697f;border-radius:7px;background:#112d41;color:#aec8da;font:inherit;line-height:1.3;cursor:pointer}.damage-tabs button[aria-pressed=true]{background:#315f79;border-color:#8dd9ed;color:#fff2c9}
-.damage-total{margin:0!important;padding:5px 12px 9px;color:#a9c5d3;font-size:11px!important;line-height:1.5;flex-shrink:0}.damage-list{overflow:auto;min-height:0;max-height:32dvh;padding:0 10px 8px;scrollbar-color:#4c798a #102637;overscroll-behavior:contain}
-.damage-meter .expedition-damage-row{display:grid;grid-template-columns:44px minmax(0,1fr);gap:9px;align-items:center;margin:0 0 6px;padding:7px;border:1px solid #49718555;border-radius:9px;background:#102c40aa}.damage-portrait{width:42px;height:42px;display:grid;place-items:center;overflow:hidden;flex-shrink:0;border:1px solid #9acddd66;border-radius:10px;background:#24495d;color:#fff;font-size:18px;font-weight:bold;text-shadow:0 1px 3px #000}.damage-portrait canvas{width:42px;height:42px;image-rendering:pixelated}.damage-info{min-width:0}.damage-meter .damage-name{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;line-height:1.45;color:#e2f1f6}.damage-numbers{display:flex;justify-content:space-between;align-items:center;gap:6px;line-height:1.6}.damage-meter .damage-value{font-size:12px;color:#ffdf96;font-variant-numeric:tabular-nums}.damage-share{font-size:10px;color:#b1cad8;font-variant-numeric:tabular-nums}.damage-track{height:7px;overflow:hidden;border-radius:4px;background:#061827;box-shadow:inset 0 0 0 1px #7bafbd22}.damage-bar{display:block;height:100%;border-radius:inherit;transition:width .18s linear}.damage-empty{color:#aac6d6;font-size:12px;padding:8px;text-align:center}
-.expedition-damage.damage-collapsed{width:124px;max-height:none}.damage-collapsed .damage-head{border-bottom:0;padding:8px}.damage-collapsed .damage-head h3{font-size:12px}.damage-collapsed .damage-fold{width:28px;height:28px}
-#over-damage.damage-meter,.journey-loot-damage.damage-meter{padding:0;overflow:hidden;margin:16px 0;border:1px solid #5f8a9c;border-radius:12px;background:#102a3ddd;text-align:left}.journey-loot-damage .damage-list,#over-damage .damage-list{max-height:320px}.journey-loot-damage .damage-tabs,#over-damage .damage-tabs{max-width:380px}.journey-loot-damage .damage-head h3,#over-damage .damage-head h3{font-size:16px}
-@media(max-width:660px){.expedition-damage.damage-meter{width:184px;right:7px;top:120px;max-height:27dvh}.expedition-damage .damage-head{padding:6px 8px}.expedition-damage .damage-head h3{font-size:12px}.expedition-damage .damage-tabs{padding:6px 7px 3px;gap:4px}.expedition-damage .damage-tabs button{font-size:10px;padding:5px 3px}.expedition-damage .damage-total{font-size:9px!important;padding:2px 8px 5px}.expedition-damage .damage-list{padding:0 6px 5px;max-height:17dvh}.expedition-damage .expedition-damage-row{grid-template-columns:32px minmax(0,1fr);gap:6px;padding:5px;margin-bottom:4px}.expedition-damage .damage-portrait,.expedition-damage .damage-portrait canvas{width:30px;height:30px}.expedition-damage .damage-name{font-size:10px}.expedition-damage .damage-value{font-size:10px}.expedition-damage .damage-share{font-size:9px}.expedition-damage .damage-track{height:5px}.expedition-damage.damage-collapsed{width:122px}.journey-loot-damage .damage-list,#over-damage .damage-list{max-height:260px}}
-@media(max-height:500px){.expedition-damage.damage-meter{top:90px;max-height:calc(100dvh - 190px)}.expedition-damage .damage-list{max-height:calc(100dvh - 280px)}}
-.journey-loot-preview{width:min(100%,420px);margin:12px auto 16px}
-.journey-loot-preview .journey-tags{justify-content:center}
-.journey-loot-preview .journey-loot-rank,.journey-loot-preview .journey-loot-move{color:#ffe5a0;font-size:14px;line-height:1.6;margin:8px 0}
-.journey-loot-preview .journey-shop-trait{text-align:left;margin:10px 0 0}
+  /* Typography Colors */
+  --pk-text-main: #f0f6fc;
+  --pk-text-sub: #9ab3cf;
+  --pk-text-muted: #627d98;
+  --pk-text-bright: #ffffff;
+}
 
-.journey-prep-actions{justify-content:flex-start;margin:0 0 16px}
-body:has(#scr-journey:not(.hidden) .journey-prep) :is(#topbar,#credits-line){display:none}
-.journey-prep{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:14px}
-.journey-prep-card{min-width:0;padding:16px;border:1px solid #396182;border-radius:14px;background:#122a40}
-.journey-prep-card:last-child{grid-column:1/-1}
-.journey-prep-card h3{margin:0 0 12px;color:#dcf4ff;font-size:17px}
-.journey-prep-card h4{margin:0;color:#fff2ce}
-.journey-prep-card .journey-select{justify-content:flex-start;flex-wrap:wrap}
-.journey-prep-hero{display:flex;align-items:center;gap:12px;margin:8px 0}
-.journey-prep-hero canvas{flex:none;width:76px;height:76px;image-rendering:pixelated}
-.journey-prep-facts{display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 10px;margin:8px 0;font-size:13px}
-.journey-prep dt{color:#aacada}
-.journey-prep dd{margin:0;overflow-wrap:anywhere}
-.journey-prep-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin:0;text-align:center}
-.journey-prep-stats div{padding:6px 3px;border-radius:7px;background:#1c3b55;font-size:12px}
-.journey-prep-stats dd{color:#ffe3a1;font-variant-numeric:tabular-nums}
-.journey-prep-items{border-top:1px solid #396182;padding:8px 0}
-.journey-prep-items summary{cursor:pointer;color:#e1f3fa}
-.journey-prep-items[data-item-status=disabled] summary{color:#ffbfb0}
-.journey-prep-item-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:6px;max-height:184px;overflow:auto;margin:8px 0 0;padding:0;list-style:none}
-.journey-prep-item-list li{padding:6px 8px;background:#1a354c;border-radius:6px;font-size:12px}
-.journey-prep-item-list small{display:block;color:#a3c5d9}
-.journey-prep-regions{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
-.journey-prep-regions span{padding:3px 10px;border:1px solid #537da1;border-radius:20px;background:#193653;color:#bedfff;font-size:12px}
-.journey-prep-filter{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
-.journey-prep-filter input,.journey-prep-filter select{min-width:0;padding:7px 10px;border:1px solid #537da1;border-radius:8px;background:#10243c;color:#e2f3ff;font:inherit}
-.journey-prep-filter input{flex:1;min-width:min(100%,180px)}
-.journey-prep-candidates{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:8px}
-.journey-prep-mon{display:flex;align-items:center;gap:8px;padding:8px;border:1px solid #47708f;border-radius:9px;background:#132237;overflow-wrap:anywhere}
-.journey-prep-mon canvas{flex:none;width:40px;height:40px;image-rendering:pixelated}
-.journey-prep-mon h4,.journey-prep-mon p{font-size:12px;margin:0;line-height:1.55}
-.journey-prep-mon small{color:#a5c5d7;font-size:11px}
-.journey-prep-pagination{display:flex;justify-content:center;align-items:center;gap:12px;margin-top:12px;font-size:12px}
-@media(max-width:660px){.journey-prep{grid-template-columns:minmax(0,1fr)}.journey-prep-card{padding:12px}.journey-prep-candidates{grid-template-columns:repeat(auto-fit,minmax(136px,1fr))}}
+/* --------------------------------------------------------------------------
+   Container & Screen Surface
+   -------------------------------------------------------------------------- */
+#scr-journey {
+  padding: 16px;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at 50% 20%, rgba(20, 48, 92, 0.45), rgba(3, 8, 18, 0.96) 80%);
+  backdrop-filter: blur(10px);
+  z-index: 35;
+}
 
-.squad-formation-surface:has(> .squad-release-slot){grid-template-areas:'release release' 'board bonds' 'warehouse finish'}
-.squad-formation-surface > .squad-release-slot{grid-area:release;position:sticky;top:0;z-index:5;flex-direction:row;gap:10px;min-height:46px;padding:8px 12px;background:#4c2c3d}
-.squad-formation-surface > .squad-release-slot.drop-target{background:#913c51!important}
-#journey-status[data-pressure=chase]{border-color:#efbb58;color:#ffe5a4}
-#journey-status[data-pressure=enraged]{border-color:#ff8279;color:#ffc9bb}
-.journey-event-economy{font:normal 10px/1.4 system-ui;color:#e2d5a9;text-align:center}
-.journey-event.wild>b{color:#7ddeb4}
-.journey-odds{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 20px}
-.journey-odds span{padding:6px 12px;border:1px solid #527497;border-radius:20px;color:#d6e5fa;font-variant-numeric:tabular-nums}
-.journey-odds .quality-1{border-color:#d8e2ed}.journey-odds .quality-2{border-color:#66cf91}.journey-odds .quality-3{border-color:#5897f5}.journey-odds .quality-4{border-color:#b17aeb}.journey-odds .quality-5{border-color:#ffd166}
-.journey-empty{display:grid;place-content:center;min-height:160px;color:#a6bed0}
-#mod-tabs{flex-wrap:wrap}#mod-tabs .field{max-width:170px;min-width:90px}
-.dps-record{border:1px solid #3c6684;border-radius:8px;padding:12px;margin:10px 0;text-align:left}
-.dps-record summary{cursor:pointer;color:#ffe5a0}.dps-record p{font-size:12px;line-height:1.6}
-.dps-record pre{max-height:300px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:11px;background:#071327;padding:10px}
-.pokemon-training-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:20px 0}
-.pokemon-training-card{display:flex;flex-direction:column;align-items:center;gap:8px;white-space:normal!important;text-align:center;min-width:0}
-.pokemon-training-card canvas{width:76px;height:76px;image-rendering:pixelated}
-.pokemon-training-card .journey-tags{justify-content:center}.pokemon-training-card small{font-size:13px}
-.pokemon-training-step{grid-column:1/-1;line-height:1.7;color:#e1eefb}
-.journey-eggs{padding:12px 16px;margin:16px 0;border:1px solid #7f9caa;border-radius:12px;background:#17364a}
-.journey-eggs h3{font-size:17px;margin:0 0 8px}.journey-eggs p{font-size:13px;margin:6px 0}
-.journey-emblem-choices{padding:18px;margin:20px 0;border:1px solid #c8a95e;border-radius:14px;background:#40361f}
-.journey-emblem-choices .btn{margin:5px}
-.squad-battle-grid{grid-auto-rows:minmax(240px,auto)}
-.journey-goods{grid-template-columns:repeat(5,minmax(0,1fr))}
-@media(max-width:1000px){.journey-goods{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:520px){.journey-goods{grid-template-columns:minmax(0,1fr)}}
-@media(max-width:660px){.journey-event-economy{font-size:9px}.journey-odds{gap:5px}.journey-odds span{padding:4px 7px;font-size:12px}}
-@media(max-width:660px){.squad-formation-surface:has(> .squad-release-slot){grid-template-areas:'release' 'board' 'warehouse' 'bonds' 'finish'}}
-/* Brief battle outcome presentation, timed in real seconds at every simulation speed. */
-.expedition-battle-result{position:fixed;inset:0;z-index:180;display:grid;place-items:center;padding:20px;background:radial-gradient(ellipse at center,#08162422,#030b1855);cursor:default;touch-action:none;user-select:none}
-.expedition-battle-result-strip{width:min(100%,1100px);display:flex;flex-direction:column;align-items:center;gap:15px;padding:32px 15px;text-align:center;color:#d6edff;border-block:2px solid #84c8f288;background:linear-gradient(90deg,#081a3200,#081a32ef 18%,#081a32ef 82%,#081a3200);animation:battle-result-enter .18s ease-out}
-.expedition-battle-result-strip small{font:600 clamp(12px,2vw,18px)/1.5 system-ui;letter-spacing:3px;color:#b6d6ec}
-.expedition-battle-result-title{font:900 clamp(32px,7vw,84px)/1.25 system-ui;letter-spacing:clamp(1px,.6vw,8px);text-shadow:0 3px 0 #071222,0 0 25px #75caff66;overflow-wrap:anywhere}
-.expedition-battle-result-strip>span{font:500 clamp(12px,2vw,17px)/1.5 system-ui;color:#b3c8dc}
-.expedition-battle-result[data-cleared=true] .expedition-battle-result-strip{border-color:#ffdc8da6;color:#ffe6a1;background:linear-gradient(90deg,#271c1000,#271c10ed 18%,#271c10ed 82%,#271c1000)}
-.expedition-battle-result[data-cleared=true] .expedition-battle-result-title{text-shadow:0 3px 0 #281409,0 0 28px #ffc95277}
-@keyframes battle-result-enter{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
-@media(prefers-reduced-motion:reduce){.expedition-battle-result-strip{animation:none}}
-.journey-xp-jar{padding:12px 16px;margin:12px 0;border:1px solid #649dad;border-radius:12px;background:#153e4b;color:#d1f5f4;font:14px/1.65 system-ui;overflow-wrap:anywhere}
+.journey-box {
+  position: relative;
+  width: min(1260px, 98vw);
+  max-height: 94dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px 28px;
+  border: 1px solid var(--pk-exp-border);
+  background:
+    linear-gradient(135deg, rgba(20, 38, 70, 0.85) 0%, rgba(8, 16, 32, 0.94) 100%),
+    repeating-linear-gradient(45deg, transparent, transparent 18px, rgba(255,255,255,0.012) 18px, rgba(255,255,255,0.012) 36px);
+  border-radius: 4px;
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.7),
+    0 0 0 1px rgba(100, 180, 255, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+/* Tactical Corner Brackets */
+.journey-box::before,
+.journey-box::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  z-index: 2;
+}
+.journey-box::before {
+  top: 4px;
+  left: 4px;
+  border-top: 2px solid var(--pk-vibrant-cyan);
+  border-left: 2px solid var(--pk-vibrant-cyan);
+}
+.journey-box::after {
+  bottom: 4px;
+  right: 4px;
+  border-bottom: 2px solid var(--pk-vibrant-gold);
+  border-right: 2px solid var(--pk-vibrant-gold);
+}
+
+/* --------------------------------------------------------------------------
+   Header & Tactical HUD Bar
+   -------------------------------------------------------------------------- */
+.journey-head {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(86, 156, 214, 0.22);
+}
+
+.journey-head::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 120px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--pk-vibrant-cyan), transparent);
+}
+
+.journey-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Pixelify', monospace, system-ui;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 3.5px;
+  color: var(--pk-vibrant-cyan);
+  text-transform: uppercase;
+}
+
+.journey-eyebrow::before {
+  content: '//';
+  color: var(--pk-vibrant-gold);
+}
+
+.journey-head h2 {
+  font-family: 'Pixelify', system-ui, sans-serif;
+  font-size: clamp(24px, 2.8vw, 34px);
+  margin: 4px 0 6px;
+  color: var(--pk-text-bright);
+  letter-spacing: 0.5px;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+.journey-head p {
+  color: var(--pk-text-sub);
+  line-height: 1.5;
+  font-size: 13.5px;
+  margin: 0;
+  max-width: 820px;
+}
+
+/* --------------------------------------------------------------------------
+   Tactical Top Meta Bar (Resource & Progress HUD)
+   -------------------------------------------------------------------------- */
+.journey-meta {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px 16px;
+  background: rgba(10, 20, 40, 0.85);
+  border: 1px solid rgba(80, 150, 220, 0.3);
+  border-left: 4px solid var(--pk-vibrant-blue);
+  border-radius: 4px;
+  margin-bottom: 20px;
+  font-size: 13.5px;
+  box-shadow: inset 0 0 20px rgba(0, 100, 200, 0.1);
+}
+
+.journey-meta > b,
+.journey-meta > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.journey-meta .journey-cycle-badge {
+  padding: 2px 8px;
+  background: rgba(46, 134, 222, 0.25);
+  border: 1px solid rgba(46, 134, 222, 0.6);
+  border-radius: 2px;
+  color: #70b8ff;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 1px;
+}
+
+.journey-meta .journey-day-badge {
+  padding: 2px 8px;
+  background: rgba(16, 172, 132, 0.25);
+  border: 1px solid rgba(16, 172, 132, 0.6);
+  border-radius: 2px;
+  color: var(--pk-vibrant-green);
+  font-weight: 700;
+  font-size: 12px;
+}
+
+.journey-gold {
+  color: var(--pk-vibrant-gold) !important;
+  font-weight: 700;
+  font-size: 15px;
+  text-shadow: 0 0 10px rgba(255, 204, 0, 0.35);
+}
+
+.journey-squad-link {
+  margin-left: auto;
+  font-size: 13px !important;
+  padding: 7px 16px !important;
+  background: linear-gradient(135deg, rgba(0, 210, 211, 0.25), rgba(46, 134, 222, 0.35)) !important;
+  border: 1px solid var(--pk-vibrant-cyan) !important;
+  color: #e6fbff !important;
+  border-radius: 3px !important;
+  box-shadow: 0 0 12px rgba(0, 210, 211, 0.25);
+  transition: all 0.15s ease;
+}
+
+.journey-squad-link:hover {
+  background: linear-gradient(135deg, rgba(0, 210, 211, 0.45), rgba(46, 134, 222, 0.55)) !important;
+  box-shadow: 0 0 18px rgba(0, 210, 211, 0.45);
+  transform: translateY(-1px);
+}
+
+/* Notice Bar */
+.journey-notice {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: rgba(16, 172, 132, 0.18);
+  border: 1px solid rgba(46, 213, 115, 0.4);
+  border-left: 4px solid var(--pk-vibrant-green);
+  border-radius: 3px;
+  color: #bbf7d0;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+.journey-notice::before {
+  content: '▶';
+  color: var(--pk-vibrant-green);
+  font-size: 10px;
+}
+
+/* --------------------------------------------------------------------------
+   Setup Screen: Tactical Captain Briefing
+   -------------------------------------------------------------------------- */
+.journey-setup-surface {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  gap: 24px;
+  margin: 14px 0 20px;
+}
+
+.journey-captain-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 20px;
+  background: linear-gradient(180deg, rgba(20, 36, 68, 0.7), rgba(10, 18, 36, 0.9));
+  border: 1px solid rgba(100, 180, 255, 0.35);
+  border-radius: 6px;
+  box-shadow: inset 0 0 30px rgba(0, 140, 255, 0.1);
+}
+
+.journey-captain-card::before {
+  content: 'FLAGSHIP // CAPTAIN';
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  font-size: 9px;
+  letter-spacing: 2px;
+  color: var(--pk-vibrant-cyan);
+  font-weight: 700;
+}
+
+.journey-captain-stage {
+  position: relative;
+  width: 170px;
+  height: 170px;
+  display: grid;
+  place-items: center;
+  margin: 20px 0 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 210, 211, 0.22) 0%, rgba(15, 30, 60, 0.8) 70%);
+  border: 2px dashed rgba(100, 200, 255, 0.4);
+  box-shadow: 0 0 25px rgba(0, 210, 211, 0.2);
+}
+
+.journey-captain-stage canvas {
+  image-rendering: pixelated;
+  transform: scale(1.15);
+  filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
+}
+
+.journey-captain-name {
+  font-family: 'Pixelify', system-ui;
+  font-size: 24px;
+  color: var(--pk-vibrant-gold);
+  margin: 4px 0 8px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.6);
+}
+
+.journey-captain-meta {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.journey-captain-meta span {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.3);
+}
+
+.journey-select-wrapper {
+  width: 100%;
+  margin-top: auto;
+}
+
+.journey-select {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--pk-text-sub);
+}
+
+.journey-select select {
+  font: inherit;
+  color: #f0f6fc;
+  background: rgba(10, 22, 44, 0.95);
+  border: 1px solid var(--pk-exp-border-bright);
+  border-radius: 4px;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.journey-select select:focus {
+  border-color: var(--pk-vibrant-cyan);
+  box-shadow: 0 0 10px rgba(0, 210, 211, 0.3);
+}
+
+.journey-dispatch-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  background: rgba(12, 22, 42, 0.6);
+  border: 1px solid rgba(86, 156, 214, 0.2);
+  border-radius: 6px;
+}
+
+.journey-briefing-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #e0f2fe;
+  margin: 0 0 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.journey-briefing-title::before {
+  content: '';
+  width: 4px;
+  height: 16px;
+  background: var(--pk-vibrant-gold);
+}
+
+.journey-briefing-text {
+  font-size: 13px;
+  color: var(--pk-text-sub);
+  line-height: 1.7;
+}
+
+.journey-gens {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+
+.journey-gen-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid rgba(86, 156, 214, 0.45);
+  color: #dbeafe;
+  background: linear-gradient(135deg, rgba(30, 58, 98, 0.6), rgba(15, 30, 54, 0.8));
+  padding: 10px 18px;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.journey-gen-chip::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--pk-vibrant-cyan), var(--pk-vibrant-gold));
+}
+
+/* --------------------------------------------------------------------------
+   Tactical Route Map (Arknights Operation Node Chart)
+   -------------------------------------------------------------------------- */
+.journey-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+}
+
+.journey-layout.journey-layout-wide {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.journey-route {
+  position: relative;
+  max-height: 56dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 12px 16px 6px;
+  scrollbar-color: rgba(68, 111, 150, 0.6) rgba(10, 24, 42, 0.5);
+  background: rgba(6, 14, 28, 0.4);
+  border: 1px solid rgba(80, 140, 200, 0.15);
+  border-radius: 6px;
+}
+
+.journey-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.journey-event {
+  position: relative;
+  min-height: 94px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid rgba(60, 96, 136, 0.35);
+  border-radius: 4px;
+  padding: 10px 4px 8px;
+  background: linear-gradient(180deg, rgba(22, 38, 64, 0.5), rgba(12, 22, 40, 0.8));
+  color: #8da4be;
+  font-family: inherit;
+  cursor: default;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+}
+
+/* Day Number Mini Pill */
+.journey-event > small {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #7f9bb9;
+  letter-spacing: 0.5px;
+  font-family: monospace;
+}
+
+.journey-event > b {
+  font-size: 26px;
+  line-height: 1;
+  transition: transform 0.18s;
+}
+
+.journey-event > span {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.3;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+/* Event Types Colors */
+.journey-event.shop > b { color: var(--pk-vibrant-gold); text-shadow: 0 0 10px rgba(255, 204, 0, 0.4); }
+.journey-event.elite > b { color: #d094ff; text-shadow: 0 0 10px rgba(186, 120, 255, 0.4); }
+.journey-event.rest > b { color: var(--pk-vibrant-green); text-shadow: 0 0 10px rgba(46, 213, 115, 0.4); }
+.journey-event.boss {
+  background: linear-gradient(180deg, rgba(68, 22, 44, 0.7), rgba(30, 8, 20, 0.9));
+  border-color: rgba(238, 82, 83, 0.5);
+}
+.journey-event.boss > b { color: var(--pk-vibrant-rose); text-shadow: 0 0 12px rgba(255, 71, 87, 0.5); }
+
+/* Reachable Node — Pulsing & Vibrant */
+.journey-event.reachable {
+  opacity: 1;
+  border: 1.5px solid var(--pk-exp-border-bright);
+  background: linear-gradient(180deg, rgba(28, 64, 110, 0.75), rgba(14, 34, 66, 0.9));
+  color: #e2f6ff;
+  cursor: pointer;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.2), inset 0 0 12px rgba(56, 189, 248, 0.1);
+}
+
+.journey-event.reachable::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 12px 12px 0;
+  border-color: transparent var(--pk-vibrant-cyan) transparent transparent;
+}
+
+.journey-event.reachable:hover,
+.journey-event.reachable:focus-visible {
+  background: linear-gradient(180deg, rgba(38, 88, 148, 0.9), rgba(20, 48, 90, 0.95));
+  border-color: #a8e5ff;
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 6px 20px rgba(56, 189, 248, 0.35);
+  outline: none;
+}
+
+.journey-event.reachable:hover > b {
+  transform: scale(1.15);
+}
+
+/* Current Position */
+.journey-event.current {
+  opacity: 1;
+  background: linear-gradient(180deg, rgba(16, 110, 110, 0.8), rgba(8, 55, 60, 0.95));
+  border-color: var(--pk-vibrant-cyan);
+  box-shadow: 0 0 20px rgba(0, 210, 211, 0.4);
+}
+
+/* Visited Node */
+.journey-event.visited {
+  opacity: 0.65;
+  border-color: rgba(100, 180, 170, 0.3);
+  filter: grayscale(0.2);
+}
+.journey-event.visited::after {
+  content: '✓';
+  position: absolute;
+  right: 5px;
+  top: 3px;
+  font-size: 11px;
+  color: var(--pk-vibrant-green);
+  font-weight: 700;
+}
+
+/* --------------------------------------------------------------------------
+   Shop Screen: Tactical Supply Depot
+   -------------------------------------------------------------------------- */
+.journey-goods {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+
+.journey-product {
+  position: relative;
+  border: 1px solid rgba(110, 140, 180, 0.3);
+  border-radius: 6px;
+  background: linear-gradient(180deg, rgba(20, 36, 64, 0.8), rgba(10, 20, 38, 0.95));
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 0;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+  transition: transform 0.15s, border-color 0.15s;
+  overflow: hidden;
+}
+
+.journey-product:hover {
+  transform: translateY(-2px);
+  border-color: rgba(100, 180, 255, 0.5);
+}
+
+/* IV Tier Glow Borders */
+.journey-product.iv-blue { border-color: #3b82f6; box-shadow: 0 0 14px rgba(59, 130, 246, 0.2); }
+.journey-product.iv-purple { border-color: #a855f7; box-shadow: 0 0 16px rgba(168, 85, 247, 0.25); }
+.journey-product.iv-orange { border-color: #f97316; box-shadow: 0 0 18px rgba(249, 115, 22, 0.28); }
+.journey-product.iv-red { border-color: #ef4444; box-shadow: 0 0 22px rgba(239, 68, 68, 0.35); }
+.journey-product.iv-white { border-color: #cbd5e1; }
+.journey-product.item { border-color: var(--pk-vibrant-gold); box-shadow: 0 0 14px rgba(255, 204, 0, 0.2); }
+
+.journey-product-art {
+  height: 104px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%);
+  margin-bottom: 8px;
+}
+
+.journey-product-art canvas {
+  image-rendering: pixelated;
+  transform: scale(1.1);
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
+}
+
+.journey-product h3 {
+  font-size: 16px;
+  color: #f8fafc;
+  margin: 6px 0 4px;
+  letter-spacing: 0.5px;
+}
+
+.journey-product > small {
+  font-size: 11px;
+  color: var(--pk-vibrant-gold);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.journey-product > p {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--pk-text-sub);
+  flex: 1;
+  margin: 6px 0 12px;
+}
+
+.journey-product .btn {
+  width: 100%;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: 700;
+  margin-top: auto;
+  border-radius: 4px;
+}
+
+.journey-shop-controls {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(86, 156, 214, 0.2);
+}
+
+.journey-shop-controls .btn {
+  font-size: 13px;
+  padding: 10px 18px;
+}
+
+/* --------------------------------------------------------------------------
+   Loot & Victory Screen: Mission Debriefing
+   -------------------------------------------------------------------------- */
+.journey-loot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+
+.journey-loot-value {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  border: 1px solid rgba(86, 156, 214, 0.3);
+  border-radius: 6px;
+  background: linear-gradient(145deg, rgba(18, 38, 70, 0.7), rgba(8, 18, 36, 0.9));
+  box-shadow: inset 0 0 14px rgba(0, 120, 255, 0.08);
+  position: relative;
+  overflow: hidden;
+}
+
+.journey-loot-value::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: var(--pk-vibrant-cyan);
+}
+
+.journey-loot-value small {
+  color: var(--pk-text-sub);
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.journey-loot-value b {
+  font-size: 26px;
+  color: var(--pk-vibrant-gold);
+  font-family: 'Pixelify', monospace, system-ui;
+  text-shadow: 0 0 10px rgba(255, 204, 0, 0.3);
+}
+
+.journey-loot-companion {
+  text-align: center;
+  padding: 24px 20px;
+  border: 1px solid rgba(0, 210, 211, 0.4);
+  border-radius: 8px;
+  background: radial-gradient(ellipse at top, rgba(0, 210, 211, 0.2), rgba(10, 24, 48, 0.95));
+  margin: 20px 0;
+  box-shadow: 0 0 30px rgba(0, 210, 211, 0.15);
+}
+
+.journey-loot-companion canvas {
+  image-rendering: pixelated;
+  transform: scale(1.2);
+  margin-bottom: 8px;
+}
+
+.journey-loot-companion h3 {
+  font-size: 22px;
+  color: #f0fdf4;
+  margin: 6px 0 8px;
+}
+
+.journey-loot-companion p {
+  font-size: 13px;
+  color: #bae6fd;
+}
+
+/* --------------------------------------------------------------------------
+   Tactical Action Buttons Bar
+   -------------------------------------------------------------------------- */
+.journey-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  align-items: center;
+  margin: 24px 0 4px;
+  flex-wrap: wrap;
+}
+
+.journey-actions .btn {
+  padding: 12px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+  transition: all 0.15s ease;
+}
+
+.journey-actions .btn.gold {
+  background: linear-gradient(180deg, #ffe27a, var(--pk-vibrant-gold));
+  color: #2b1800;
+  box-shadow: 0 4px 16px rgba(255, 204, 0, 0.3);
+}
+
+.journey-actions .btn.gold:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(255, 204, 0, 0.45);
+}
+
+/* --------------------------------------------------------------------------
+   HUD Status Pill during Combat
+   -------------------------------------------------------------------------- */
+#journey-status {
+  position: fixed;
+  z-index: 25;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 85vw;
+  padding: 8px 18px;
+  border: 1px solid rgba(100, 200, 255, 0.4);
+  background: rgba(6, 16, 32, 0.9);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 12px rgba(0, 210, 211, 0.2);
+  border-radius: 20px;
+  color: #e0f2fe;
+  font: 600 13px system-ui, sans-serif;
+  pointer-events: none;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+#journey-status[hidden] {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Squad Formation Page (#scr-squad) Harmonization
+   -------------------------------------------------------------------------- */
+#scr-squad {
+  padding: 16px 12px;
+  background: rgba(4, 12, 24, 0.88);
+  backdrop-filter: blur(8px);
+}
+
+.squad-box {
+  width: min(1280px, 98vw);
+  max-height: 96dvh;
+  overflow: auto;
+  padding: 22px 26px;
+  border: 1px solid rgba(86, 156, 214, 0.3);
+  border-radius: 6px;
+  background: linear-gradient(145deg, rgba(16, 34, 62, 0.9), rgba(8, 18, 36, 0.96) 75%);
+  box-shadow: 0 24px 100px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+}
+
+.squad-header {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(86, 156, 214, 0.22);
+}
+
+.squad-header h2 {
+  margin: 4px 0;
+  font-size: 28px;
+  color: var(--pk-vibrant-gold);
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+
+.squad-back-btn {
+  width: 44px;
+  height: 44px;
+  padding: 0 !important;
+  display: grid;
+  place-items: center;
+  font-size: 24px !important;
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.6), rgba(185, 28, 28, 0.8)) !important;
+  border: 1px solid #fca5a5 !important;
+  border-radius: 4px !important;
+}
+
+.squad-wallet {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.squad-wallet > span {
+  padding: 8px 14px;
+  border: 1px solid rgba(86, 156, 214, 0.35);
+  border-radius: 4px;
+  background: rgba(10, 22, 44, 0.85);
+  color: #e2f6ff;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.squad-wallet > span:first-child {
+  color: var(--pk-vibrant-gold);
+}
+
+.squad-mode {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  font-size: 13px;
+  color: var(--pk-text-sub);
+  margin: 6px 0 16px;
+  padding: 6px 12px;
+  background: rgba(12, 24, 46, 0.5);
+  border-left: 3px solid var(--pk-vibrant-cyan);
+}
+
+.squad-formation-surface {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  grid-template-areas: 'board bonds' 'warehouse finish';
+  gap: 16px;
+  width: 100%;
+}
+
+.squad-field-panel { grid-area: board; }
+.squad-bonds { grid-area: bonds; }
+.squad-warehouse { grid-area: warehouse; }
+.squad-finish { grid-area: finish; }
+
+.squad-field-panel,
+.squad-bonds,
+.squad-warehouse {
+  padding: 16px;
+  border: 1px solid rgba(86, 156, 214, 0.3);
+  border-radius: 6px;
+  background: rgba(12, 26, 50, 0.65);
+  box-shadow: inset 0 0 25px rgba(0, 60, 120, 0.15);
+}
+
+.squad-field-panel > h3,
+.squad-bonds > h3,
+.squad-warehouse > h3 {
+  margin: 0 0 14px;
+  color: #e0f2fe;
+  font-size: 17px;
+  text-align: center;
+  letter-spacing: 1px;
+}
+
+.squad-battle-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(210px, auto));
+  gap: 10px 8px;
+  align-items: start;
+}
+
+.squad-snake-path {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  inset: 0;
+  pointer-events: none;
+  color: var(--pk-vibrant-cyan);
+  opacity: 0.55;
+}
+
+.squad-field-slot {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  border: 1.5px dashed rgba(86, 156, 214, 0.35);
+  border-radius: 8px;
+  background: rgba(10, 20, 38, 0.4);
+  padding: 4px;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.squad-field-slot.locked {
+  opacity: 0.35;
+  border-style: solid;
+  border-color: rgba(60, 80, 100, 0.3);
+}
+
+.squad-slot-number {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 10px;
+  font-family: monospace;
+  color: var(--pk-vibrant-cyan);
+  font-weight: 700;
+}
+
+.squad-unit {
+  position: relative;
+  min-width: 0;
+  max-width: 150px;
+  width: 100%;
+  text-align: center;
+}
+
+.squad-pick {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 0 4px;
+  margin: 0;
+  width: 100%;
+  color: var(--pk-text-main);
+  font: inherit;
+  cursor: pointer;
+}
+
+.squad-unit-art {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 3px solid color-mix(in srgb, var(--unit-color, #38bdf8) 75%, #e3fcff);
+  background: radial-gradient(circle at 35% 25%, color-mix(in srgb, var(--unit-color, #38bdf8) 55%, #fff), color-mix(in srgb, var(--unit-color, #38bdf8) 35%, #0b1e32));
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+  transition: all 0.15s ease;
+  outline: 3px solid transparent;
+  outline-offset: 3px;
+}
+
+.squad-unit-art canvas {
+  width: 90px;
+  height: 90px;
+  image-rendering: pixelated;
+}
+
+.squad-unit-art::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 10%;
+  width: 80%;
+  height: 6px;
+  border: 1.5px solid #0f2438;
+  border-radius: 8px;
+  background: linear-gradient(to right, #2ed573 0 var(--hp), #1a3248 var(--hp) 100%);
+}
+
+.squad-unit.captain .squad-unit-art {
+  outline-color: var(--pk-vibrant-gold);
+  border-color: #ffe680;
+  box-shadow: 0 0 20px rgba(255, 204, 0, 0.4);
+}
+
+.squad-pick.selected .squad-unit-art {
+  outline-color: #ffffff;
+  transform: scale(1.05);
+}
+
+.squad-pick:hover .squad-unit-art {
+  outline-color: var(--pk-vibrant-cyan);
+}
+
+.squad-unit-name {
+  font-size: 13px;
+  line-height: 1.3;
+  margin-top: 5px;
+  color: #f1f5f9;
+  overflow-wrap: anywhere;
+}
+
+.squad-card-moves {
+  font-size: 10px;
+  color: var(--pk-vibrant-gold);
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.squad-vacancy {
+  width: 86px;
+  height: 86px;
+  border: 2px dashed rgba(100, 180, 220, 0.4);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: rgba(14, 28, 50, 0.35);
+  color: #7ba3bc;
+}
+
+.squad-vacancy > b { font-size: 26px; line-height: 1; }
+.squad-vacancy > small { font-size: 10px; }
+
+.squad-drag-handle {
+  position: absolute;
+  right: 2px;
+  top: 0;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 1px solid rgba(100, 200, 240, 0.5);
+  border-radius: 6px;
+  background: rgba(18, 48, 78, 0.9);
+  color: #d1f4ff;
+  font: 20px/1 system-ui;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+/* Bonds Sidebar */
+.squad-bonds {
+  max-height: 520px;
+  overflow-y: auto;
+  background: rgba(10, 22, 44, 0.8);
+}
+
+.squad-bond-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.squad-bond-tab {
+  flex: 1;
+  border: 1px solid rgba(86, 156, 214, 0.35);
+  border-radius: 4px;
+  background: rgba(14, 30, 56, 0.8);
+  color: #a0c4de;
+  padding: 6px 2px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.squad-bond-tab.on {
+  background: linear-gradient(135deg, rgba(0, 210, 211, 0.35), rgba(46, 134, 222, 0.45));
+  color: #ffffff;
+  border-color: var(--pk-vibrant-cyan);
+  font-weight: 700;
+}
+
+.squad-bond-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 6px 0;
+  padding: 8px 10px;
+  background: rgba(16, 32, 60, 0.65);
+  border: 1px solid rgba(70, 120, 170, 0.3);
+  border-radius: 4px;
+  font-size: 12px;
+  flex-wrap: wrap;
+}
+
+.squad-bond-row.active {
+  border-color: var(--pk-vibrant-green);
+  background: rgba(16, 172, 132, 0.2);
+}
+
+.squad-bond-row > b { color: #e2f6ff; }
+.squad-bond-row > span {
+  color: var(--pk-vibrant-gold);
+  border-radius: 4px;
+  padding: 2px 7px;
+  background: rgba(6, 14, 28, 0.7);
+  font-weight: 700;
+}
+
+/* Warehouse */
+.squad-warehouse {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 136px;
+  padding: 12px 16px;
+}
+
+.squad-warehouse-label {
+  flex: 0 0 100px;
+  text-align: center;
+}
+
+.squad-warehouse-label h3 {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: #e2f6ff;
+}
+
+.squad-release-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-height: 84px;
+  padding: 6px;
+  border: 1.5px dashed rgba(239, 68, 68, 0.6);
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.12);
+  color: #fca5a5;
+  cursor: pointer;
+}
+
+.squad-warehouse-strip {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 8px 4px;
+}
+
+.squad-warehouse-strip .squad-unit {
+  flex: 0 0 120px;
+  padding: 8px 4px;
+  border: 1px solid rgba(86, 156, 214, 0.35);
+  border-radius: 6px;
+  background: rgba(18, 38, 70, 0.75);
+}
+
+.squad-warehouse-strip .squad-unit-art {
+  width: 66px;
+  height: 66px;
+}
+
+.squad-warehouse-strip canvas {
+  width: 66px;
+  height: 66px;
+}
+
+.squad-finish .btn {
+  width: 100%;
+  min-height: 72px;
+  border-radius: 6px;
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--pk-vibrant-gold), var(--pk-vibrant-amber)) !important;
+  color: #1e1200 !important;
+  box-shadow: 0 4px 20px rgba(255, 204, 0, 0.35) !important;
+}
+
+/* Detail Modal */
+.squad-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(3, 8, 18, 0.85);
+  backdrop-filter: blur(8px);
+}
+
+.squad-detail {
+  width: min(680px, 96vw);
+  max-height: 90dvh;
+  overflow-y: auto;
+  padding: 24px;
+  border: 1px solid rgba(100, 180, 255, 0.4);
+  border-radius: 8px;
+  background: linear-gradient(145deg, rgba(16, 36, 68, 0.95), rgba(8, 18, 38, 0.98));
+  box-shadow: 0 24px 80px rgba(0,0,0,0.8);
+}
+
+.squad-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.squad-stat {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 8px;
+  padding: 10px 12px;
+  background: rgba(14, 28, 54, 0.7);
+  border: 1px solid rgba(70, 120, 170, 0.3);
+  border-radius: 4px;
+}
+
+.squad-stat > span { font-size: 12px; color: var(--pk-text-sub); }
+.squad-stat > b { font-size: 17px; color: var(--pk-vibrant-gold); font-family: monospace; }
+.squad-stat > small { grid-column: 1 / -1; color: #8da4be; font-size: 10px; }
+
+/* --------------------------------------------------------------------------
+   Tags & Badges
+   -------------------------------------------------------------------------- */
+.journey-tags {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin: 6px 0;
+}
+
+.journey-tags > span {
+  font-size: 9.5px;
+  font-weight: 600;
+  border: 1px solid rgba(86, 156, 214, 0.4);
+  padding: 2px 6px;
+  border-radius: 3px;
+  background: rgba(14, 30, 56, 0.85);
+  color: #bfdbfe;
+}
+.journey-tags > span:nth-child(2) {
+  border-color: rgba(255, 204, 0, 0.4);
+  color: #fef08a;
+}
+.journey-tags > span:nth-child(3) {
+  border-color: rgba(168, 85, 247, 0.4);
+  color: #e9d5ff;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile & Responsive Adaptations
+   -------------------------------------------------------------------------- */
+@media (max-width: 860px) {
+  .journey-setup-surface {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .journey-captain-stage {
+    width: 140px;
+    height: 140px;
+  }
+  .journey-goods {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 660px) {
+  #scr-journey {
+    padding: 8px;
+  }
+  .journey-box {
+    padding: 16px 12px;
+    border-radius: 4px;
+    max-height: 96dvh;
+  }
+  .journey-head h2 {
+    font-size: 22px;
+  }
+  .journey-grid {
+    gap: 6px;
+  }
+  .journey-event {
+    min-height: 78px;
+    padding: 6px 2px;
+  }
+  .journey-event > b {
+    font-size: 20px;
+  }
+  .journey-goods {
+    grid-template-columns: 1fr;
+  }
+  .journey-meta {
+    font-size: 11px;
+    gap: 6px;
+  }
+  .squad-formation-surface {
+    grid-template-columns: 1fr;
+    grid-template-areas: 'board' 'warehouse' 'bonds' 'finish';
+  }
+  .squad-battle-grid {
+    grid-template-rows: repeat(2, minmax(170px, auto));
+  }
+}
