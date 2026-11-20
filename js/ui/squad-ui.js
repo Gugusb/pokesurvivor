@@ -3,7 +3,8 @@ G.SquadUI=(()=>{
   const $=id=>document.getElementById(id),T=s=>G.T(s),L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
   const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;};
   let selected=null,editable=false,done=null,last=0,stats=[],moves=[],health=null,drag=null,bondMode='types',bondRevision=-1;
-  let rankQueue=[],rankTimer=0,rankOverlay=null,rankFocus=null;
+  let rankQueue=[],rankTimer=0,rankOverlay=null,rankFocus=null,scrollState={board:0,warehouse:0};
+  function rememberScroll(){const list=$('squad-list');if(!list)return;scrollState.board=list.querySelector('.squad-battle-scroll')?.scrollTop??scrollState.board;scrollState.warehouse=list.querySelector('.squad-warehouse-strip')?.scrollTop??scrollState.warehouse;}
   function clearRankUps(){clearTimeout(rankTimer);rankQueue=[];rankOverlay?.remove();rankOverlay=null;rankFocus=null;}
   function rankUp(before,after){rankQueue.push({before:{...before},after:{...after}});if(!rankOverlay)showNextRankUp();}
   function showNextRankUp(){
@@ -29,13 +30,13 @@ G.SquadUI=(()=>{
   function button(text,fn,cls='btn'){const b=node('button',cls,text);b.type='button';b.onclick=fn;return b;}
   function portrait(p,size){const canvas=node('canvas');canvas.width=canvas.height=size;const view=G.UI.sprite(canvas,p.spriteDex||p.dex,{scale:3,hero:true,shiny:!!p.shiny,lively:false,anim:'Walk'});if(p.dead){view.a.play('Faint',{hold:true});canvas.style.filter='grayscale(1)';}canvas.setAttribute('aria-hidden','true');return canvas;}
   function init(){const b=$('squad-open');b.innerHTML=G.Icons.html('friends',24)+'<kbd>T</kbd>';b.title=b.ariaLabel=L('Ver equipo','View squad','查看小队');b.onclick=()=>G.Game.toggleSquad();}
-  function show(options={}){editable=!!options.editable;done=options.onClose||null;selected=null;render();G.UI.show('scr-squad');$('squad-close').focus();last=performance.now();}
+  function show(options={}){scrollState={board:0,warehouse:0};editable=!!options.editable;done=options.onClose||null;selected=null;render();G.UI.show('scr-squad');$('squad-close').focus();last=performance.now();}
   const detailsOpen=()=>!!$('squad-member-dialog')&&!$('squad-member-dialog').classList.contains('hidden');
   function closeDetails(focus=true){if(!detailsOpen())return;$('squad-member-dialog').classList.add('hidden');if(focus&&selected)$('squad-list').querySelector('[data-squad-select="'+id(selected)+'"]')?.focus();}
   function back(){if(detailsOpen())closeDetails();else close();}
   function close(){if(!isOpen())return;drag?.destroy();drag=null;closeDetails(false);G.UI.hide('scr-squad');const cb=done;done=null;cb?.();}
   function render(){
-    drag?.destroy();$('squad-member-dialog')?.remove();const root=$('squad-content');root.replaceChildren();
+    rememberScroll();drag?.destroy();$('squad-member-dialog')?.remove();const root=$('squad-content');root.replaceChildren();
     const header=node('header','squad-header'),heading=node('div');heading.append(node('small','journey-eyebrow','TEAM FORMATION'),node('h2','',L('Formación del equipo','Squad formation','队伍组建')));
     const closeButton=button('←',close,'btn squad-back-btn');closeButton.id='squad-close';closeButton.setAttribute('aria-label',L('Volver','Back','返回'));
     const wallet=node('div','squad-wallet');wallet.append(node('span','',L('Oro','Gold','局内金币')+' '+G.Expedition.run.gold),node('span','',T('Gemas de habilidad')+' '+(G.DB.save.abilityGems||0)));header.append(closeButton,heading,wallet);root.append(header);
@@ -75,7 +76,7 @@ G.SquadUI=(()=>{
     if(p.isSquadMember&&canEdit()){const grip=node('span','squad-drag-handle','⠿');grip.title=L('Arrastrar','Drag to move','拖动调整位置');grip.setAttribute('aria-label',grip.title);article.append(grip);}return article;
   }
   function renderList(){
-    const list=$('squad-list');list.replaceChildren();
+    rememberScroll();const list=$('squad-list');list.replaceChildren();
     if(canEdit()){
       const release=node('div','squad-release-slot');
       release.id='squad-release-slot';
@@ -85,25 +86,27 @@ G.SquadUI=(()=>{
       list.append(release);
     }
     const board=node('section','squad-field-panel');board.append(node('h3','',L('Equipo de combate','Battle squad','出战队伍')));
-    const grid=node('div','squad-battle-grid'),capacity=G.Squad.capacity,columns=Math.min(capacity,innerWidth<=760?2:innerWidth<1100?3:capacity>15?4:3),rows=Math.ceil(capacity/columns);grid.style.setProperty('--squad-columns',columns);grid.style.setProperty('--squad-rows',rows);grid.style.setProperty('--squad-art',Math.max(30,Math.min(52,(Math.min(830,innerHeight*.94)-380)/rows-30))+'px');grid.dataset.rows=rows;grid.dataset.crowded=rows>=4;
+    const viewport=node('div','squad-battle-scroll');viewport.setAttribute('role','region');viewport.setAttribute('aria-label',L('Formación desplazable','Scrollable formation','可滚动出战队列'));viewport.tabIndex=0;
+    const grid=node('div','squad-battle-grid'),capacity=G.Squad.capacity,columns=Math.min(capacity,innerWidth<=760?2:innerWidth<1100?3:5),rows=Math.ceil(capacity/columns);grid.style.setProperty('--squad-columns',columns);grid.style.setProperty('--squad-rows',rows);grid.dataset.rows=rows;
+    const line=document.createElementNS('http://www.w3.org/2000/svg','svg');line.setAttribute('viewBox','0 0 '+(columns*160)+' '+(rows*260));line.setAttribute('preserveAspectRatio','none');line.setAttribute('class','squad-snake-path');line.setAttribute('aria-hidden','true');let path='M80 130';for(let row=0;row<rows;row++){const end=row%2?80:(columns-.5)*160;path+=' H'+end;if(row<rows-1)path+=' V'+((row+1)*260+130);}line.innerHTML='<path d="'+path+'" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="3 13" stroke-linecap="round"/>';grid.append(line);
     const formation=G.Squad.formation;
     for(let n=0;n<G.Squad.capacity;n++){
       const locked=n>=G.Squad.capacity,slot=node('div','squad-field-slot'+(locked?' locked':''));slot.style.gridRow=String(Math.floor(n/columns)+1);slot.style.gridColumn=String(Math.floor(n/columns)%2?columns-n%columns:n%columns+1);slot.dataset.squadDrop=n===0||locked?'locked':'slot:'+(n-1);slot.dataset.slot=n;
       const p=n===0?leader():formation[n-1];if(p)slot.append(unit(p));else{const empty=node('div','squad-vacancy');empty.append(node('b','',locked?'◇':'+'),node('small','',locked?L('Cerrado','Locked','未解锁'):L('Plaza libre','Open slot','空位')));slot.append(empty);}
       slot.append(node('small','squad-slot-number',String(n+1)));grid.append(slot);
     }
-    board.append(grid);list.append(board);
+    viewport.append(grid);board.append(viewport);list.append(board);viewport.scrollTop=scrollState.board;
     const bonds=node('aside','squad-bonds');bonds.id='squad-bonds';list.append(bonds);renderBonds();
     const warehouse=node('section','squad-warehouse');
     const label=node('div','squad-warehouse-label');label.append(node('h3','',L('Reserva de compañeros','Companion reserves','候补仓库')+' '+G.Squad.reserves().length+' / '+G.Squad.RESERVE_LIMIT));
     warehouse.append(label);
     const strip=node('div','squad-warehouse-strip'),reserve=G.Squad.reserves();strip.dataset.squadDrop='bench';strip.style.setProperty('--reserve-rows',G.Squad.RESERVE_LIMIT);
-    for(let i=0;i<G.Squad.RESERVE_LIMIT;i++){const slot=node('div','squad-reserve-slot');slot.dataset.squadDrop='bench';slot.dataset.reserveSlot=i;if(reserve[i])slot.append(unit(reserve[i],true));else slot.append(node('div','squad-bench-empty','+ '+L('Reserva','Reserve','候补空位')));strip.append(slot);}warehouse.append(strip);list.append(warehouse);
+    for(let i=0;i<G.Squad.RESERVE_LIMIT;i++){const slot=node('div','squad-reserve-slot');slot.dataset.squadDrop='bench';slot.dataset.reserveSlot=i;if(reserve[i])slot.append(unit(reserve[i],true));else slot.append(node('div','squad-bench-empty','+ '+L('Reserva','Reserve','候补空位')));strip.append(slot);}warehouse.append(strip);list.append(warehouse);strip.scrollTop=scrollState.warehouse;
     const finish=node('div','squad-finish');finish.append(button(canEdit()?L('Formación lista','Formation ready','完成编队'):L('Volver al combate','Return to battle','返回战斗'),close,'btn gold'));list.append(finish);
   }
   function renderBonds(){
     G.SquadBonds?.refresh();bondRevision=G.SquadBonds?.revision??-1;
-    const box=$('squad-bonds');box.replaceChildren();box.append(node('h3','',L('Etiquetas del equipo','Squad tags','小队标签')));
+    const box=$('squad-bonds'),previous=box.dataset.mode===bondMode?(box.querySelector('.squad-bond-rows')?.scrollTop||0):0;box.dataset.mode=bondMode;box.replaceChildren();box.append(node('h3','',L('Etiquetas del equipo','Squad tags','小队标签')));
     const tabs=node('div','squad-bond-tabs');for(const [key,name]of [['types',L('Tipo','Type','属性')],['eggs',L('Especie','Species','蛋组')],['skill',L('Oficio','Class','职业')],['talents',L('Potenciales','Talents','潜能')]]){const b=button(name,()=>{bondMode=key;renderBonds();},'squad-bond-tab'+(bondMode===key?' on':''));tabs.append(b);}box.append(tabs);if(bondMode==='talents'){box.append(G.TrainerTalentsUI.ownedPanel(G.Expedition.run));return;}
     G.SquadBonds?.refresh();const labels=new Map();
     for(const p of G.Squad.actors()){const t=G.Squad.tags(p),values=bondMode==='types'?t.types.map(id=>[id,T(G.U.TYPE_NAME[id])]):bondMode==='eggs'?t.eggs.map(id=>[id,G.ExpeditionTerms.egg(id)]):p.moves.map(m=>[G.SquadBonds.group(m.kind),G.Expedition.skillLabel(m.kind)]);for(const [id,name]of values)labels.set(id,name);}
@@ -116,8 +119,9 @@ G.SquadUI=(()=>{
         const labels={mark:['Marca','Mark','印记增伤'],dot:['Daño continuo','Damage over time','持续伤害系数'],blast:['Explosión','Burst','爆发伤害系数'],slow:['Ralentización','Slow','减速'],heal:['Curación','Healing','恢复比例'],chain:['Rayo','Lightning','闪电链系数'],speed:['Velocidad','Speed','移速提升'],freeze:['Congelación','Freeze','冻结时长'],crit:['Crítico','Critical damage','暴伤提升'],spikes:['Esquirlas','Shards','冰刺数'],knock:['Empuje','Knockback','击退提升'],interval:['Intervalo','Interval','护盾间隔'],shields:['Escudos','Shields','护盾上限'],quake:['Terremoto','Quake','地震系数'],pulse:['Ráfaga','Gust','风压系数'],aura:['Viento continuo','Continuous wind','持续风压系数'],vulnerability:['Marca','Mark','每层易伤'],cluster:['Enjambre','Swarm','每层继承比例'],inherit:['Herencia','Inheritance','牺牲继承比例'],impact:['Impacto','Impact','悬岩系数'],drain:['Drenaje','Drain','当前生命流失'],damage:['Daño','Damage','伤害提升'],size:['Tamaño','Size','范围提升'],meteor:['Meteoros','Meteors','龙星群系数'],chance:['Probabilidad','Chance','触发几率'],reflect:['Reflejo','Reflection','双防反伤系数'],reduction:['Reducción','Reduction','每名成员减伤'],threshold:['Umbral','Threshold','处决生命线'],execute:['Ejecución','Execution','额外处决伤害']};
         const second={fire:['blast'],grass:['heal'],electric:['speed'],ice:['crit','spikes'],fighting:['heal'],poison:['blast'],ground:['quake'],flying:['aura'],bug:['inherit'],ghost:['blast'],dragon:['meteor'],steel:['reduction','damage'],fairy:['threshold','execute']};
         for(const key of Object.keys(isType.values)){if(!s.tier||s.tier<5&&second[id]?.includes(key))continue;let current=G.TypeBonds.value(id,key);if(['spikes','shields'].includes(key))current=Math.max(1,Math.floor(current));if(key==='interval')current=Math.max(.25,current);if(key==='threshold')current=Math.min(.95,current);if(['slow','chance'].includes(key))current=Math.min(1,current);const unit=['freeze','interval'].includes(key)?'s':['spikes','shields'].includes(key)?'':'%',factor=unit==='%'?100:1,fmt=n=>Number((n*factor).toFixed(2))+unit;detail.append(node('p','',L(...labels[key])+' · '+fmt(current)));}row.append(detail);
-      }const extra=[...row.children].slice(3);if(extra.length){for(const e of extra)e.remove();const inspect=button('i',()=>showBondDetail(name,extra),'squad-bond-info');inspect.setAttribute('aria-label',L('Detalles de ','Details: ','查看羁绊：')+name);row.append(inspect);}rows.append(row);
+      }const extra=[...row.children].slice(3);if(extra.length){const inspect=button('i',()=>showBondDetail(name,extra),'squad-bond-info');inspect.setAttribute('aria-label',L('Detalles de ','Details: ','查看羁绊：')+name);row.append(inspect);}rows.append(row);
     }box.append(rows,node('p','note',L('Cada especie cuenta una vez por etiqueta.','Each species counts once per tag.','同名伙伴对同一羁绊只计一次生效数。')));
+    rows.scrollTop=previous;
     if(G.SquadTraits){const counts={stacking:0,economic:0,terminal:0,support:0};for(const p of G.Squad.deployed())if(!p.dead)counts[G.SquadTraits.def(p).category]++;const overview=node('div','squad-trait-summary');overview.setAttribute('aria-label',L('Rasgos','Traits','特性概况'));for(const [key,title]of [['stacking',L('Acum.','Stacks','叠层')],['economic',L('Econ.','Econ.','经济')],['terminal',L('Final','Final','终端')],['support',L('Apoyo','Support','辅助')]])overview.append(node('span','',title+' '+counts[key]));box.append(overview);return;}
     box.append(node('h4','',L('Apoyo activo','Active support','当前支援')));let found=false;for(const [key,label]of [['atk',L('Ataques','Attacks','基础双攻')],['hp',L('Vida','HP','基础生命')],['agility',L('Agilidad','Agility','基础敏捷')],['stamina',L('Aguante','Stamina','基础耐力')],['regen',L('Vida/s','HP/s','基础生命/秒')]]){const value=G.Squad.growth(leader(),key);if(value){found=true;box.append(node('p','squad-support-line',label+' +'+Number((value*100).toFixed(1))+'%'));}}if(!found)box.append(node('p','note',L('Sin apoyo todavía','No support yet','暂无队员支援')));
   }
