@@ -112,8 +112,8 @@ G.Player = class Player {
   buffFraction(stat) { const b = this.buffs[stat]; return this.buffStacks(b) * b.amount; }
   get attackMultiplier() { return Math.max(0, this.atkMul +
     G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
-  get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)) * (1+this.statGrowth.atk+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
-  get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)) * (1+this.statGrowth.spa+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
+  get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)) * (1+this.statGrowth.atk+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
+  get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)) * (1+this.statGrowth.spa+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier; }
   get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1); }
   get stamina() { return (this.baseStamina+(G.TypeBonds?.baseBonus(this,'stamina')||0)) * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0)); }
   get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
@@ -130,12 +130,12 @@ G.Player = class Player {
   attackFor(move) { return (move?.damageClass === 'special' ? this.spa : this.atk)*(1+(move?.overclock||0)*(G.EconomyConfig?.endless.overclockDamagePerPurchase||0)); }
   defenseFor(source) {
     const kind=source?.kind;
-    if (kind==='contact' || kind==='melee') return Math.max(.1,(this.baseDefense+(G.TypeBonds?.baseBonus(this,'defense')||0))*(1+this.statGrowth.defense+this.buffFraction('def')));
-    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,(this.baseSpDef+(G.TypeBonds?.baseBonus(this,'spdef')||0))*(1+this.statGrowth.spdef+this.buffFraction('def')));
+    if (kind==='contact' || kind==='melee') return Math.max(.1,(this.baseDefense+(G.TypeBonds?.baseBonus(this,'defense')||0))*(1+this.statGrowth.defense+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1));
+    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,(this.baseSpDef+(G.TypeBonds?.baseBonus(this,'spdef')||0))*(1+this.statGrowth.spdef+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1));
     return 1;
   }
   get spd() {
-    const s = (this.baseSpd+(G.TypeBonds?.baseBonus(this,'spd')||0)) * (1+this.statGrowth.spd+this.buffFraction('spd')) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
+    const s = (this.baseSpd+(G.TypeBonds?.baseBonus(this,'spd')||0)) * (1+this.statGrowth.spd+this.buffFraction('spd')+(G.TrainerTalents?.speedPct(this)||0)) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
       (1 + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
@@ -261,13 +261,13 @@ G.Player = class Player {
     const anim = { melee: 'Attack', beam: 'Shoot', projectile: 'Shoot', nova: 'Attack',
                    aura: 'Charge', buff: 'Charge', orbit: 'Charge', boomerang: 'Shoot', chain: 'Shoot',
                    mine: 'Charge', meteor: 'Charge', turret: 'Charge', dash: 'Attack', trail: 'Walk', cone: 'Shoot' }[m.kind] || 'Attack';
-    G.Audio.sfx('shot', { kind: m.kind, type: m.type });
+    G.Audio.sfx('shot', { kind: m.kind, type: m.type });G.TrainerTalents?.onCast(this,m);
     if (m.kind === 'trail'||!this.isSquadMember&&!this.isPrimaryMove(m)) return;
     // No reinicies una animación que va por la mitad: se vería a tirones.
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
     const meta = G.Sprites.animMeta(this.spriteDex, anim);
     const len = meta ? meta.d.reduce((a, b) => a + b, 0) / 60 : 0.4;
-    const cd = Math.max(0.12, m.cd * this.cdMul * (G.Specialization?.stats(m).cooldown||1) * this.agilityCooldownFor(m) * (G.Items?.cooldownFactor(this)||1) / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
+    const cd = Math.max(0.12, m.cd * this.cdMul * (G.Specialization?.stats(m).cooldown||1) * this.agilityCooldownFor(m) * (G.Items?.cooldownFactor(this)||1) / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1)/(G.TrainerTalents?.rate(this)||1));
     this.anim.play(anim, { speed: Math.max(1, len / (cd * 0.9)) });
     this.attackFace = 0.35;
   }
@@ -304,7 +304,7 @@ G.Player = class Player {
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1)*(['environment','weather'].includes(source.kind)?Math.pow(.9,G.Items.count(this,'safetygoggles')):1);
-    let finalDamage=d*(G.TypeBonds?.defense(this)||1);
+    let finalDamage=d*(G.TypeBonds?.defense(this)||1)*(G.TrainerTalents?.incoming(this,source)||1);finalDamage=G.TrainerTalents?.absorb(this,finalDamage)??finalDamage;
     finalDamage=G.SquadTraits?.absorb(this,finalDamage)??finalDamage;if(!(finalDamage>0)){this.invuln=.45;return false;}
     if (G.FailureProtection?.avoidLethal(this,finalDamage)) return false;
     const hpLost=Math.min(this.hp,finalDamage);
@@ -331,6 +331,7 @@ G.Player = class Player {
       G.FX.ring(this.x,this.y,6,70,'#ff9a3d',.5,4);
     }
 
+    if(this.hp<=0)G.TrainerTalents?.rescueCaptain(this);
     if (this.hp <= 0) {
       this.hp = 0; this.dead = true;
       this.anim.play('Faint', { hold: true });
@@ -535,6 +536,7 @@ G.Player = class Player {
   }
 
   draw(ctx) {
+    const talentScale=G.TrainerTalents?.visualScale(this)||1;ctx.save();if(talentScale!==1){ctx.translate(this.x,this.y);ctx.scale(talentScale,talentScale);ctx.translate(-this.x,-this.y);}
     // Halo del tipo del movimiento activo, en el suelo.
     const m = this.activeMove();
     if (m && !this.dead) {
@@ -605,5 +607,6 @@ G.Player = class Player {
       }
       ctx.restore();
     }
+    ctx.restore();
   }
 };

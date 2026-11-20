@@ -99,7 +99,7 @@ G.SquadUI=(()=>{
   function renderBonds(){
     G.SquadBonds?.refresh();bondRevision=G.SquadBonds?.revision??-1;
     const box=$('squad-bonds');box.replaceChildren();box.append(node('h3','',L('Etiquetas del equipo','Squad tags','小队标签')));
-    const tabs=node('div','squad-bond-tabs');for(const [key,name]of [['types',L('Tipo','Type','属性')],['eggs',L('Especie','Species','蛋组')],['skill',L('Oficio','Class','职业')]]){const b=button(name,()=>{bondMode=key;renderBonds();},'squad-bond-tab'+(bondMode===key?' on':''));tabs.append(b);}box.append(tabs);
+    const tabs=node('div','squad-bond-tabs');for(const [key,name]of [['types',L('Tipo','Type','属性')],['eggs',L('Especie','Species','蛋组')],['skill',L('Oficio','Class','职业')],['talents',L('Potenciales','Talents','潜能')]]){const b=button(name,()=>{bondMode=key;renderBonds();},'squad-bond-tab'+(bondMode===key?' on':''));tabs.append(b);}box.append(tabs);if(bondMode==='talents'){box.append(G.TrainerTalentsUI.ownedPanel(G.Expedition.run));return;}
     G.SquadBonds?.refresh();const labels=new Map();
     for(const p of G.Squad.actors()){const t=G.Squad.tags(p),values=bondMode==='types'?t.types.map(id=>[id,T(G.U.TYPE_NAME[id])]):bondMode==='eggs'?t.eggs.map(id=>[id,G.ExpeditionTerms.egg(id)]):p.moves.map(m=>[G.SquadBonds.group(m.kind),G.Expedition.skillLabel(m.kind)]);for(const [id,name]of values)labels.set(id,name);}
 
@@ -154,5 +154,5 @@ G.SquadUI=(()=>{
     const launcher=$('squad-open');if(launcher)launcher.classList.toggle('hidden',!G.Expedition?.active||G.Game.state!=='playing');
     if(isOpen()&&performance.now()-last>300){last=performance.now();if(G.SquadBonds&&bondRevision!==G.SquadBonds.revision)renderBonds();if(detailsOpen())refreshDetails();}
   }
-  return {init,show,close,back,detailsOpen,closeDetails,isOpen,tick,statRows,rankUp,clearRankUps,get editable(){return canEdit();}};
+  return {init,show,refresh:render,close,back,detailsOpen,closeDetails,isOpen,tick,statRows,rankUp,clearRankUps,get editable(){return canEdit();}};
 })();

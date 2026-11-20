@@ -25,6 +25,7 @@ G.Squad = (() => {
       const value=actors().includes(p)?(bonus.hp||0)*p.baseHp:0,delta=value-(p.squadHpBonus||0);
       p.maxHp=Math.max(1,p.maxHp+delta);if(!p.dead)p.hp=Math.min(p.maxHp,Math.max(1,p.hp+delta));p.squadHpBonus=value;
     }
+    G.TrainerTalents?.sync();
   }
   class Member extends G.Player{
     constructor(dex,rank=1,moveId=null){
@@ -79,7 +80,7 @@ G.Squad = (() => {
     if(!p.isSquadMember&&G.Mega?.active(p))G.Mega.finish(p);
     const dex=G.U.pick(choices),mon=G.DEX_BY[dex],fraction=p.hp/p.maxHp,iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[dex]?.iv),s=G.MonProgression.stats(dex,iv);
     p.mon=mon;p.dex=p.spriteDex=p.ivDex=dex;p.baseHp=s.hp;p.baseAtk=s.atk;p.baseSpa=s.spa;p.baseDefense=s.defense;p.baseSpDef=s.spdef;p.baseSpd=s.spd;p.baseAgility=s.agility;p.baseStamina=s.stamina;
-    p.squadHpBonus=0;p.qualityHpFactor=p.isSquadMember?(G.ExpeditionQuality?.factors(p).hp||1):1;p.maxHp=s.hp*(1+p.statGrowth.hp)*p.qualityHpFactor;p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
+    p.squadHpBonus=0;p.talentHpBonus=0;p.qualityHpFactor=p.isSquadMember?(G.ExpeditionQuality?.factors(p).hp||1):1;p.maxHp=s.hp*(1+p.statGrowth.hp)*p.qualityHpFactor;p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
     if(!p.isSquadMember){p.monStage=dex;p.evolutionPath=G.MonProgression.pathFor(dex);p.ability=G.Abilities.equipped(G.DB.save,dex)||null;G.Mega?.init(p,G.DB.save);}
     G.Sprites.preload([dex]);
   }
@@ -125,7 +126,7 @@ G.Squad = (() => {
     if(!captain)return;G.ExpeditionGrowth?.sync();refresh();const delta=leaderPos?Math.hypot(captain.x-leaderPos.x,captain.y-leaderPos.y):0,moving=delta>.01;
     leaderPos={x:captain.x,y:captain.y};still=moving?0:still+dt;
     if(moving&&gathering){trail=[{...leaderPos}];gathering=false;for(const p of roster)p.idleTarget=null;}
-    if(still>.22)gathering=true;
+    if(still>(G.TrainerTalents?.gatherDelay()??.22))gathering=true;
     const last=trail[0],d=Math.hypot(captain.x-last.x,captain.y-last.y);
     if(d>500){trail=Array.from({length:120},()=>({x:captain.x,y:captain.y}));}
     else if(d>=3){const steps=Math.ceil(d/3);for(let n=1;n<=steps;n++)trail.unshift({x:last.x+(captain.x-last.x)*n/steps,y:last.y+(captain.y-last.y)*n/steps});trail.length=Math.min(trail.length,1200);}
@@ -177,5 +178,5 @@ G.Squad = (() => {
   function tags(p){return {types:p.mon.types,eggs:G.EGG_GROUPS[p.dex]||[15],skill:G.SquadBonds.group(p.moves[0]?.kind)};}
   function talent(p){if(G.SquadTraits){const d=G.SquadTraits.def(p);return {...d,name:G.SquadTraits.local(d.name),description:G.SquadTraits.description(p)};}const [key,value,name]=support[p.mon.types[0]]||support.normal;return {key,value:value*p.rank,name};}
   return {refresh,begin,reset,recruit,canRecruit,release,consume,promote,RESERVE_LIMIT,buffTargets,consolidate,reorder,place,bench,swap,reserves,upgrade,syncTrainer,tick,recover,deployed,actors,growth,tags,talent,support,Member,rankMove,
-    get active(){return !!captain;},get roster(){return roster;},get formation(){return formation.slice();},get shopLevel(){return level;},get capacity(){return capacity();}};
+    get gathering(){return gathering;},get active(){return !!captain;},get roster(){return roster;},get formation(){return formation.slice();},get shopLevel(){return level;},get capacity(){return capacity();}};
 })();

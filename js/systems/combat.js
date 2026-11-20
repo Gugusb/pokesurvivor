@@ -33,7 +33,7 @@ G.Combat = (() => {
     for(const m of [...primary,...pl.moves.filter(m=>!primary.includes(m))])tickMove(dt,pl,m,now);
   }
 
-  const rateFor=(pl,m)=>G.Abilities.cooldownRate(pl,m)/(G.SquadTraits?.cooldown(pl)||1)*(G.Mega?G.Mega.cooldownRate(pl,m):1)/(pl.agilityCooldownFor?.(m)||pl.agilityCooldown||1)/(G.Items?.cooldownFactor(pl)||1)/(G.Specialization?.stats(m).cooldown||1);
+  const rateFor=(pl,m)=>(G.TrainerTalents?.rate(pl)||1)*G.Abilities.cooldownRate(pl,m)/(G.SquadTraits?.cooldown(pl)||1)*(G.Mega?G.Mega.cooldownRate(pl,m):1)/(pl.agilityCooldownFor?.(m)||pl.agilityCooldown||1)/(G.Items?.cooldownFactor(pl)||1)/(G.Specialization?.stats(m).cooldown||1);
   function tickMove(dt, pl, m, now) {
     const cooldownRate = rateFor(pl,m);
     m.t -= dt * cooldownRate;
@@ -57,7 +57,7 @@ G.Combat = (() => {
     }
     if (m.t > 0||!wanted) return;
     // Los ataques que necesitan blanco esperan a tenerlo (no gastes animación al aire).
-    const manual=G.Targeting?.manual(pl),preview=G.SquadBonds?.move(pl,G.Specialization?.move(pl,m)||m)||m,traitPreview=G.TypeBonds?.move(pl,preview)||preview,finalPreview=G.SquadTraits?.move(pl,traitPreview)||traitPreview,castReach=G.SquadAssault?.controls(pl)?finalPreview.radius||reach(finalPreview):reach(finalPreview),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
+    const manual=G.Targeting?.manual(pl),preview=G.SquadBonds?.move(pl,G.Specialization?.move(pl,m)||m)||m,traitPreview=G.TypeBonds?.move(pl,preview)||preview,squadPreview=G.SquadTraits?.move(pl,traitPreview)||traitPreview,finalPreview=G.TrainerTalents?.move(pl,squadPreview)||squadPreview,castReach=G.SquadAssault?.controls(pl)?finalPreview.radius||reach(finalPreview):reach(finalPreview),target=manual&&m.kind==='chain'?G.Targeting.forward(pl,castReach):pl.target;
     if (needsTarget(m) && !(manual&&m.kind!=='chain') && !(target && G.U.dist(pl.x, pl.y, target.x, target.y) <= castReach+(G.SquadAssault?.controls(pl)&&m.kind==='melee'?target.r||0:0))) {
       m.t = 0.05;
       return;
@@ -91,7 +91,7 @@ G.Combat = (() => {
     if(G.SquadBonds)m=G.SquadBonds.move(pl,m);
     if(G.TypeBonds)m=G.TypeBonds.move(pl,m);
     if(G.SquadTraits)m=G.SquadTraits.move(pl,m);
-    m = G.Abilities.move(pl, m);
+    m = G.Abilities.move(pl, m);m=G.TrainerTalents?.move(pl,m)||m;
     switch (m.kind) {
       case 'projectile': fireProjectiles(pl, m); break;
       case 'melee':      melee(pl, m); break;
@@ -587,7 +587,7 @@ G.Combat = (() => {
     if(G.SquadBonds)m=G.SquadBonds.move(pl,m);
     if(G.TypeBonds)m=G.TypeBonds.move(pl,m);
     if(G.SquadTraits)m=G.SquadTraits.move(pl,m);
-    m = G.Abilities.move(pl, m);
+    m = G.Abilities.move(pl, m);m=G.TrainerTalents?.move(pl,m)||m;
     const col = (m.bondColor||G.U.TYPE_COLOR[m.type]);
     const want=Math.max(1,m.count|0),mid=m.orbitKey||m.id,conf=G.EconomyConfig.classBonds.orbit;
     const mine=p=>p.orb&&p.owner===pl&&p.mid===mid;
@@ -645,7 +645,7 @@ G.Combat = (() => {
   }
 
   // Golpe crítico (Mejoras → Golpe Crítico): x1,5 de daño, número naranja y grande.
-  const isCrit = (pl,m) => {const chance=Math.min(1,(pl.critChance||0)+(G.Items?.critBonus(pl)||0)+(G.Specialization?.stats(m).crit||0));return !ghost&&chance>0&&Math.random()<chance;};
+  const isCrit = (pl,m) => {const chance=Math.min(1,(pl.critChance||0)+(G.TrainerTalents?.crit(pl)||0)+(G.Items?.critBonus(pl)||0)+(G.Specialization?.stats(m).crit||0));return !ghost&&chance>0&&Math.random()<chance;};
   const critMul=(pl,m,e)=>G.Abilities.critMultiplier(pl)+(G.Items?.critDamage(pl)||0)+(G.Specialization?.stats(m).critDamage||0)+(e?G.TypeBonds?.critBonus(pl,e)||0:0);
   function hit(pl, e, dmg, col, dx, dy, knock, m) {
     const k = typeK(m.type, e, pl);

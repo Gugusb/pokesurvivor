@@ -9,13 +9,14 @@ G.SquadBonds=(()=>{
   const key=(category,id)=>category+':'+(category==='skill'?group(id):id);
   function reset(){layers=Object.create(null);signature='';counts=new Map();revision++;}
   function refresh(){
-    const emblems=G.Expedition?.run?.emblems||{},team=G.Squad?.active?G.Squad.actors():[],next=JSON.stringify(emblems)+team.map(p=>p.mon.name+':'+p.mon.types.join(',')+':'+(G.EGG_GROUPS[p.dex]||[15]).join(',')+':'+p.moves.map(m=>group(m.kind)).join(',')).join('|');
+    const emblems=G.Expedition?.run?.emblems||{},team=G.Squad?.active?G.Squad.actors():[],next=JSON.stringify(emblems)+String(G.TrainerTalents?.sum('captainOmniTag')||0)+team.map(p=>p.mon.name+':'+p.mon.types.join(',')+':'+(G.EGG_GROUPS[p.dex]||[15]).join(',')+':'+p.moves.map(m=>group(m.kind)).join(',')).join('|');
     if(next===signature)return;signature=next;revision++;const names=new Map();
     for(const p of team){const tags={types:p.mon.types,eggs:G.EGG_GROUPS[p.dex]||[15],skill:p.moves.map(m=>group(m.kind))};
       for(const category of Object.keys(tags))for(const id of new Set(tags[category])){const k=key(category,id);if(!names.has(k))names.set(k,new Set());names.get(k).add(p.mon.name);}
     }
     counts=new Map([...names].map(([k,n])=>[k,n.size]));
     for(const [id,n]of Object.entries(emblems)){const k=key('types',id);counts.set(k,(counts.get(k)||0)+n);}
+    const omni=G.TrainerTalents?.sum('captainOmniTag')||0;if(omni)for(const [k,n]of counts)if(n>0)counts.set(k,n+omni);
   }
   function count(category,id){return counts.get(key(category,id))||0;}
   function layer(category,id){return layers[key(category,id)]??(category==='eggs'?1:0);}

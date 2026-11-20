@@ -1,0 +1,1358 @@
+{
+  "version": "1.0.0",
+  "tiers": {
+    "silver": {
+      "name": {
+        "zh": "精灵球级",
+        "en": "Poké Ball",
+        "es": "Poké Ball"
+      },
+      "color": "#dfe8f4",
+      "badge": "ball_poke"
+    },
+    "great": {
+      "name": {
+        "zh": "超级球级",
+        "en": "Great Ball",
+        "es": "Super Ball"
+      },
+      "color": "#68baff",
+      "badge": "ball_great"
+    },
+    "ultra": {
+      "name": {
+        "zh": "高级球级",
+        "en": "Ultra Ball",
+        "es": "Ultra Ball"
+      },
+      "color": "#ffd568",
+      "badge": "ball_ultra"
+    },
+    "master": {
+      "name": {
+        "zh": "大师球级",
+        "en": "Master Ball",
+        "es": "Master Ball"
+      },
+      "color": "#d79bff",
+      "badge": "ball_master"
+    }
+  },
+  "levelDropOdds": {
+    "2": {
+      "silver": 90,
+      "great": 10,
+      "ultra": 0,
+      "master": 0
+    },
+    "3": {
+      "silver": 80,
+      "great": 20,
+      "ultra": 0,
+      "master": 0
+    },
+    "4": {
+      "silver": 15,
+      "great": 80,
+      "ultra": 5,
+      "master": 0
+    },
+    "5": {
+      "silver": 0,
+      "great": 85,
+      "ultra": 15,
+      "master": 0
+    },
+    "6": {
+      "silver": 0,
+      "great": 75,
+      "ultra": 25,
+      "master": 0
+    },
+    "7": {
+      "silver": 0,
+      "great": 20,
+      "ultra": 75,
+      "master": 5
+    },
+    "8": {
+      "silver": 0,
+      "great": 0,
+      "ultra": 80,
+      "master": 20
+    },
+    "9": {
+      "silver": 0,
+      "great": 0,
+      "ultra": 15,
+      "master": 85
+    },
+    "10": {
+      "silver": 0,
+      "great": 0,
+      "ultra": 0,
+      "master": 100
+    }
+  },
+  "talents": [
+    {
+      "id": "silver_pokeball_pack",
+      "tier": "silver",
+      "category": "ECONOMY",
+      "name": {
+        "zh": "红白球补给",
+        "en": "Pokéball Supply",
+        "es": "Pokéball Supply"
+      },
+      "desc": {
+        "zh": "立即获得 1G 金币与 2 张免费商店刷新券。",
+        "en": "Gain 1 gold and 2 free shop refreshes.",
+        "es": "Gana 1 de oro y 2 renovaciones de tienda gratis."
+      },
+      "effects": {
+        "freeRefreshes": 2,
+        "instantGold": 1
+      }
+    },
+    {
+      "id": "silver_basic_training",
+      "tier": "silver",
+      "category": "COMBAT",
+      "name": {
+        "zh": "基础体能特训",
+        "en": "Basic Conditioning",
+        "es": "Basic Conditioning"
+      },
+      "desc": {
+        "zh": "全体出战成员基础攻击力 +8%，移动速度 +10%。",
+        "en": "Deployed partners gain 8% base Attack and Sp. Atk, and 10% movement speed.",
+        "es": "Los miembros desplegados ganan un 8% de Ataque y At. Esp. base y un 10% de velocidad."
+      },
+      "effects": {
+        "atkPct": 0.08,
+        "moveSpeedPct": 0.1
+      }
+    },
+    {
+      "id": "silver_exp_share",
+      "tier": "silver",
+      "category": "ECONOMY",
+      "name": {
+        "zh": "学习装置",
+        "en": "Exp. Share",
+        "es": "Exp. Share"
+      },
+      "desc": {
+        "zh": "每次战斗获胜后，额外获得 +1 训练家经验与 +15 宝可梦经验罐储存。",
+        "en": "Each battle victory grants +1 trainer XP and +15 XP to the reserve jar.",
+        "es": "Cada victoria concede 1 EXP de entrenador y 15 EXP al tarro de reserva."
+      },
+      "effects": {
+        "bonusTrainerXp": 1,
+        "bonusReserveXp": 15
+      }
+    },
+    {
+      "id": "silver_potion_kit",
+      "tier": "silver",
+      "category": "COMBAT",
+      "name": {
+        "zh": "应急伤药箱",
+        "en": "Field Medic Kit",
+        "es": "Field Medic Kit"
+      },
+      "desc": {
+        "zh": "立即恢复 20 点小队生命，并提升 10 点小队生命上限。",
+        "en": "Raise maximum squad HP by 10 and restore 20 squad HP.",
+        "es": "Aumenta la vida máxima del equipo en 10 y recupera 20 de vida de equipo."
+      },
+      "effects": {
+        "healSquadHp": 20,
+        "maxSquadHpBonus": 10
+      }
+    },
+    {
+      "id": "silver_scout_whistle",
+      "tier": "silver",
+      "category": "BONDS",
+      "name": {
+        "zh": "集结哨",
+        "en": "Rallying Whistle",
+        "es": "Rallying Whistle"
+      },
+      "desc": {
+        "zh": "战斗中队员脱战聚拢时间由 0.22s 缩短至 0.10s，聚拢期间所受伤害降低 25%。",
+        "en": "Gather after 0.10s; gathering companions take 25% less damage.",
+        "es": "El equipo se reúne tras 0,10 s; los compañeros que se reúnen reciben un 25% menos de daño."
+      },
+      "effects": {
+        "gatherDelay": 0.1,
+        "gatherDmgReduction": 0.25
+      }
+    },
+    {
+      "id": "silver_savings_plan",
+      "tier": "silver",
+      "category": "ECONOMY",
+      "name": {
+        "zh": "定期储蓄",
+        "en": "Savings Plan",
+        "es": "Savings Plan"
+      },
+      "desc": {
+        "zh": "基础利息结算阈值由每 10G+1 降低为每 8G+1（上限仍为 5G）。",
+        "en": "Earn 1 interest per 8 gold instead of 10; the cap stays unchanged.",
+        "es": "Gana 1 de interés por cada 8 de oro en lugar de 10; el límite no cambia."
+      },
+      "effects": {
+        "interestDivisor": 8
+      }
+    },
+    {
+      "id": "silver_iron_defense",
+      "tier": "silver",
+      "category": "COMBAT",
+      "name": {
+        "zh": "铁壁展开",
+        "en": "Vanguard Shell",
+        "es": "Vanguard Shell"
+      },
+      "desc": {
+        "zh": "每次进入战斗时，前排队员获得相当于自身最大生命 20% 的临时护盾，持续 12 秒。",
+        "en": "The first two deployed companions start each battle with a 20% max-HP shield lasting 12s.",
+        "es": "Los dos primeros compañeros desplegados empiezan cada combate con un escudo del 20% de su vida máxima durante 12 s."
+      },
+      "effects": {
+        "combatStartShieldPct": 0.2,
+        "durationSec": 12
+      }
+    },
+    {
+      "id": "gold_crest_normal",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "一般之徽章",
+        "en": "Normal Crest",
+        "es": "Normal · Medalla"
+      },
+      "desc": {
+        "zh": "一般属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Normal bond count +1; receive a 1-star Normal partner (held if reserves are full).",
+        "es": "Normal: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "normal": 1
+        },
+        "grantTypeMon": "normal"
+      },
+      "tagType": "normal"
+    },
+    {
+      "id": "gold_crest_fire",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "火之徽章",
+        "en": "Fire Crest",
+        "es": "Fuego · Medalla"
+      },
+      "desc": {
+        "zh": "火属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Fire bond count +1; receive a 1-star Fire partner (held if reserves are full).",
+        "es": "Fuego: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "fire": 1
+        },
+        "grantTypeMon": "fire"
+      },
+      "tagType": "fire"
+    },
+    {
+      "id": "gold_crest_water",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "水之徽章",
+        "en": "Water Crest",
+        "es": "Agua · Medalla"
+      },
+      "desc": {
+        "zh": "水属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Water bond count +1; receive a 1-star Water partner (held if reserves are full).",
+        "es": "Agua: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "water": 1
+        },
+        "grantTypeMon": "water"
+      },
+      "tagType": "water"
+    },
+    {
+      "id": "gold_crest_grass",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "草之徽章",
+        "en": "Grass Crest",
+        "es": "Planta · Medalla"
+      },
+      "desc": {
+        "zh": "草属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Grass bond count +1; receive a 1-star Grass partner (held if reserves are full).",
+        "es": "Planta: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "grass": 1
+        },
+        "grantTypeMon": "grass"
+      },
+      "tagType": "grass"
+    },
+    {
+      "id": "gold_crest_electric",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "电之徽章",
+        "en": "Electric Crest",
+        "es": "Eléctrico · Medalla"
+      },
+      "desc": {
+        "zh": "电属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Electric bond count +1; receive a 1-star Electric partner (held if reserves are full).",
+        "es": "Eléctrico: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "electric": 1
+        },
+        "grantTypeMon": "electric"
+      },
+      "tagType": "electric"
+    },
+    {
+      "id": "gold_crest_ice",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "冰之徽章",
+        "en": "Ice Crest",
+        "es": "Hielo · Medalla"
+      },
+      "desc": {
+        "zh": "冰属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Ice bond count +1; receive a 1-star Ice partner (held if reserves are full).",
+        "es": "Hielo: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "ice": 1
+        },
+        "grantTypeMon": "ice"
+      },
+      "tagType": "ice"
+    },
+    {
+      "id": "gold_crest_fighting",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "格斗之徽章",
+        "en": "Fighting Crest",
+        "es": "Lucha · Medalla"
+      },
+      "desc": {
+        "zh": "格斗属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Fighting bond count +1; receive a 1-star Fighting partner (held if reserves are full).",
+        "es": "Lucha: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "fighting": 1
+        },
+        "grantTypeMon": "fighting"
+      },
+      "tagType": "fighting"
+    },
+    {
+      "id": "gold_crest_poison",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "毒之徽章",
+        "en": "Poison Crest",
+        "es": "Veneno · Medalla"
+      },
+      "desc": {
+        "zh": "毒属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Poison bond count +1; receive a 1-star Poison partner (held if reserves are full).",
+        "es": "Veneno: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "poison": 1
+        },
+        "grantTypeMon": "poison"
+      },
+      "tagType": "poison"
+    },
+    {
+      "id": "gold_crest_ground",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "地面之徽章",
+        "en": "Ground Crest",
+        "es": "Tierra · Medalla"
+      },
+      "desc": {
+        "zh": "地面属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Ground bond count +1; receive a 1-star Ground partner (held if reserves are full).",
+        "es": "Tierra: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "ground": 1
+        },
+        "grantTypeMon": "ground"
+      },
+      "tagType": "ground"
+    },
+    {
+      "id": "gold_crest_flying",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "飞行之徽章",
+        "en": "Flying Crest",
+        "es": "Volador · Medalla"
+      },
+      "desc": {
+        "zh": "飞行属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Flying bond count +1; receive a 1-star Flying partner (held if reserves are full).",
+        "es": "Volador: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "flying": 1
+        },
+        "grantTypeMon": "flying"
+      },
+      "tagType": "flying"
+    },
+    {
+      "id": "gold_crest_psychic",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "超能之徽章",
+        "en": "Psychic Crest",
+        "es": "Psíquico · Medalla"
+      },
+      "desc": {
+        "zh": "超能属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Psychic bond count +1; receive a 1-star Psychic partner (held if reserves are full).",
+        "es": "Psíquico: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "psychic": 1
+        },
+        "grantTypeMon": "psychic"
+      },
+      "tagType": "psychic"
+    },
+    {
+      "id": "gold_crest_bug",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "虫之徽章",
+        "en": "Bug Crest",
+        "es": "Bicho · Medalla"
+      },
+      "desc": {
+        "zh": "虫属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Bug bond count +1; receive a 1-star Bug partner (held if reserves are full).",
+        "es": "Bicho: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "bug": 1
+        },
+        "grantTypeMon": "bug"
+      },
+      "tagType": "bug"
+    },
+    {
+      "id": "gold_crest_rock",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "岩石之徽章",
+        "en": "Rock Crest",
+        "es": "Roca · Medalla"
+      },
+      "desc": {
+        "zh": "岩石属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Rock bond count +1; receive a 1-star Rock partner (held if reserves are full).",
+        "es": "Roca: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "rock": 1
+        },
+        "grantTypeMon": "rock"
+      },
+      "tagType": "rock"
+    },
+    {
+      "id": "gold_crest_ghost",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "幽灵之徽章",
+        "en": "Ghost Crest",
+        "es": "Fantasma · Medalla"
+      },
+      "desc": {
+        "zh": "幽灵属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Ghost bond count +1; receive a 1-star Ghost partner (held if reserves are full).",
+        "es": "Fantasma: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "ghost": 1
+        },
+        "grantTypeMon": "ghost"
+      },
+      "tagType": "ghost"
+    },
+    {
+      "id": "gold_crest_dragon",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "龙之徽章",
+        "en": "Dragon Crest",
+        "es": "Dragón · Medalla"
+      },
+      "desc": {
+        "zh": "龙属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Dragon bond count +1; receive a 1-star Dragon partner (held if reserves are full).",
+        "es": "Dragón: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "dragon": 1
+        },
+        "grantTypeMon": "dragon"
+      },
+      "tagType": "dragon"
+    },
+    {
+      "id": "gold_crest_dark",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "恶之徽章",
+        "en": "Dark Crest",
+        "es": "Siniestro · Medalla"
+      },
+      "desc": {
+        "zh": "恶属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Dark bond count +1; receive a 1-star Dark partner (held if reserves are full).",
+        "es": "Siniestro: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "dark": 1
+        },
+        "grantTypeMon": "dark"
+      },
+      "tagType": "dark"
+    },
+    {
+      "id": "gold_crest_steel",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "钢之徽章",
+        "en": "Steel Crest",
+        "es": "Acero · Medalla"
+      },
+      "desc": {
+        "zh": "钢属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Steel bond count +1; receive a 1-star Steel partner (held if reserves are full).",
+        "es": "Acero: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "steel": 1
+        },
+        "grantTypeMon": "steel"
+      },
+      "tagType": "steel"
+    },
+    {
+      "id": "gold_crest_fairy",
+      "tier": "great",
+      "category": "BONDS",
+      "name": {
+        "zh": "妖精之徽章",
+        "en": "Fairy Crest",
+        "es": "Hada · Medalla"
+      },
+      "desc": {
+        "zh": "妖精属性羁绊计数+1，并获得1只该属性一星伙伴（满仓保留待领）。",
+        "en": "Fairy bond count +1; receive a 1-star Fairy partner (held if reserves are full).",
+        "es": "Hada: vínculo +1 y un compañero de 1 estrella."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "fairy": 1
+        },
+        "grantTypeMon": "fairy"
+      },
+      "tagType": "fairy"
+    },
+    {
+      "id": "gold_eviolite",
+      "tier": "great",
+      "category": "COMBAT",
+      "name": {
+        "zh": "进化奇石",
+        "en": "Eviolite Ward",
+        "es": "Eviolite Ward"
+      },
+      "desc": {
+        "zh": "队伍中未达到最终形态的宝可梦，受到伤害降低 25%，造成伤害提升 20%。",
+        "en": "Pokémon with a further evolution deal 20% more damage and take 25% less.",
+        "es": "Los Pokémon que aún pueden evolucionar infligen un 20% más de daño y reciben un 25% menos."
+      },
+      "effects": {
+        "nfeDmgReduction": 0.25,
+        "nfeDmgBonus": 0.2
+      }
+    },
+    {
+      "id": "gold_shop_vip",
+      "tier": "great",
+      "category": "ECONOMY",
+      "name": {
+        "zh": "友好商店 VIP",
+        "en": "PokéMart VIP",
+        "es": "PokéMart VIP"
+      },
+      "desc": {
+        "zh": "商店刷新费用永久降低 1G（最低 1G），且每次进店首个宝可梦享受 5 折。",
+        "en": "Paid shop refreshes cost 1 less gold (minimum 1). First paid recruit each visit is half price.",
+        "es": "Renovar la tienda cuesta 1 de oro menos, mínimo 1. La primera compra de cada visita cuesta la mitad."
+      },
+      "effects": {
+        "refreshCostDiscount": 1,
+        "firstSlotDiscountPct": 0.5
+      }
+    },
+    {
+      "id": "gold_blaze_instinct",
+      "tier": "great",
+      "category": "COMBAT",
+      "name": {
+        "zh": "逆境本能",
+        "en": "Pinch Instinct",
+        "es": "Pinch Instinct"
+      },
+      "desc": {
+        "zh": "小队生命低于 50% 时，全员攻击速度与暴击率提升 30%，击杀敌人小额回复小队生命。",
+        "en": "Below half squad HP: cast rate and critical chance +30%; each kill restores 0.2 squad HP.",
+        "es": "Con menos de la mitad de vida de equipo: frecuencia de ataques y probabilidad crítica +30%; cada baja recupera 0,2 de vida de equipo."
+      },
+      "effects": {
+        "lowHpThreshold": 0.5,
+        "atkSpdPct": 0.3,
+        "critPct": 0.3,
+        "killHealSquadHp": 0.2
+      }
+    },
+    {
+      "id": "gold_captain_link",
+      "tier": "great",
+      "category": "CAPTAIN",
+      "name": {
+        "zh": "连携主将",
+        "en": "Coordinated Lead",
+        "es": "Coordinated Lead"
+      },
+      "desc": {
+        "zh": "队长每次释放招式，为距离最近的 2 名队友缩减该招式 15% 的冷却时间。",
+        "en": "Captain casts reduce move cooldowns of the two closest allies by 15% of base cooldown.",
+        "es": "Cada ataque del capitán reduce los tiempos de recarga de los dos aliados más cercanos en un 15% de la recarga base."
+      },
+      "effects": {
+        "captainCastCdrAllyPct": 0.15,
+        "targets": 2
+      }
+    },
+    {
+      "id": "gold_devon_investment",
+      "tier": "great",
+      "category": "ECONOMY",
+      "name": {
+        "zh": "得文公司风险投资",
+        "en": "Devon Venture",
+        "es": "Devon Venture"
+      },
+      "desc": {
+        "zh": "立即失去当前 50% 的金币；接下来连续 4 天每场战斗结算额外获得 1G。",
+        "en": "Lose half your current gold. Battle victories during the next 4 days grant +1 gold.",
+        "es": "Pierde la mitad del oro actual. Las victorias durante los próximos 4 días conceden 1 de oro adicional."
+      },
+      "effects": {
+        "instantGoldCostPct": 0.5,
+        "wageBonus": 1,
+        "remainingDays": 4
+      }
+    },
+    {
+      "id": "gold_dual_screen",
+      "tier": "great",
+      "category": "COMBAT",
+      "name": {
+        "zh": "双墙守卫（反射壁/光墙）",
+        "en": "Screen Synergy",
+        "es": "Screen Synergy"
+      },
+      "desc": {
+        "zh": "队伍受到的接触碰撞伤害与预警爆炸伤害固定削减 20%。",
+        "en": "Contact and ranged/explosion damage taken is reduced by 20%.",
+        "es": "Reduce un 20% el daño recibido por contacto, ataques a distancia y explosiones."
+      },
+      "effects": {
+        "contactDmgReduction": 0.2,
+        "projectileDmgReduction": 0.2
+      }
+    },
+    {
+      "id": "ultra_crown_normal",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "一般之王冠",
+        "en": "Normal Crown",
+        "es": "Normal · Corona"
+      },
+      "desc": {
+        "zh": "一般属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Normal bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Normal: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "normal": 2
+        },
+        "typePulseOnHit": "normal",
+        "pulsePct": 0.4
+      },
+      "tagType": "normal"
+    },
+    {
+      "id": "ultra_crown_fire",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "火之王冠",
+        "en": "Fire Crown",
+        "es": "Fuego · Corona"
+      },
+      "desc": {
+        "zh": "火属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Fire bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Fuego: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "fire": 2
+        },
+        "typePulseOnHit": "fire",
+        "pulsePct": 0.4
+      },
+      "tagType": "fire"
+    },
+    {
+      "id": "ultra_crown_water",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "水之王冠",
+        "en": "Water Crown",
+        "es": "Agua · Corona"
+      },
+      "desc": {
+        "zh": "水属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Water bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Agua: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "water": 2
+        },
+        "typePulseOnHit": "water",
+        "pulsePct": 0.4
+      },
+      "tagType": "water"
+    },
+    {
+      "id": "ultra_crown_grass",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "草之王冠",
+        "en": "Grass Crown",
+        "es": "Planta · Corona"
+      },
+      "desc": {
+        "zh": "草属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Grass bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Planta: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "grass": 2
+        },
+        "typePulseOnHit": "grass",
+        "pulsePct": 0.4
+      },
+      "tagType": "grass"
+    },
+    {
+      "id": "ultra_crown_electric",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "电之王冠",
+        "en": "Electric Crown",
+        "es": "Eléctrico · Corona"
+      },
+      "desc": {
+        "zh": "电属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Electric bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Eléctrico: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "electric": 2
+        },
+        "typePulseOnHit": "electric",
+        "pulsePct": 0.4
+      },
+      "tagType": "electric"
+    },
+    {
+      "id": "ultra_crown_ice",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "冰之王冠",
+        "en": "Ice Crown",
+        "es": "Hielo · Corona"
+      },
+      "desc": {
+        "zh": "冰属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Ice bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Hielo: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "ice": 2
+        },
+        "typePulseOnHit": "ice",
+        "pulsePct": 0.4
+      },
+      "tagType": "ice"
+    },
+    {
+      "id": "ultra_crown_fighting",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "格斗之王冠",
+        "en": "Fighting Crown",
+        "es": "Lucha · Corona"
+      },
+      "desc": {
+        "zh": "格斗属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Fighting bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Lucha: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "fighting": 2
+        },
+        "typePulseOnHit": "fighting",
+        "pulsePct": 0.4
+      },
+      "tagType": "fighting"
+    },
+    {
+      "id": "ultra_crown_poison",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "毒之王冠",
+        "en": "Poison Crown",
+        "es": "Veneno · Corona"
+      },
+      "desc": {
+        "zh": "毒属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Poison bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Veneno: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "poison": 2
+        },
+        "typePulseOnHit": "poison",
+        "pulsePct": 0.4
+      },
+      "tagType": "poison"
+    },
+    {
+      "id": "ultra_crown_ground",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "地面之王冠",
+        "en": "Ground Crown",
+        "es": "Tierra · Corona"
+      },
+      "desc": {
+        "zh": "地面属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Ground bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Tierra: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "ground": 2
+        },
+        "typePulseOnHit": "ground",
+        "pulsePct": 0.4
+      },
+      "tagType": "ground"
+    },
+    {
+      "id": "ultra_crown_flying",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "飞行之王冠",
+        "en": "Flying Crown",
+        "es": "Volador · Corona"
+      },
+      "desc": {
+        "zh": "飞行属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Flying bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Volador: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "flying": 2
+        },
+        "typePulseOnHit": "flying",
+        "pulsePct": 0.4
+      },
+      "tagType": "flying"
+    },
+    {
+      "id": "ultra_crown_psychic",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "超能之王冠",
+        "en": "Psychic Crown",
+        "es": "Psíquico · Corona"
+      },
+      "desc": {
+        "zh": "超能属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Psychic bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Psíquico: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "psychic": 2
+        },
+        "typePulseOnHit": "psychic",
+        "pulsePct": 0.4
+      },
+      "tagType": "psychic"
+    },
+    {
+      "id": "ultra_crown_bug",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "虫之王冠",
+        "en": "Bug Crown",
+        "es": "Bicho · Corona"
+      },
+      "desc": {
+        "zh": "虫属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Bug bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Bicho: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "bug": 2
+        },
+        "typePulseOnHit": "bug",
+        "pulsePct": 0.4
+      },
+      "tagType": "bug"
+    },
+    {
+      "id": "ultra_crown_rock",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "岩石之王冠",
+        "en": "Rock Crown",
+        "es": "Roca · Corona"
+      },
+      "desc": {
+        "zh": "岩石属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Rock bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Roca: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "rock": 2
+        },
+        "typePulseOnHit": "rock",
+        "pulsePct": 0.4
+      },
+      "tagType": "rock"
+    },
+    {
+      "id": "ultra_crown_ghost",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "幽灵之王冠",
+        "en": "Ghost Crown",
+        "es": "Fantasma · Corona"
+      },
+      "desc": {
+        "zh": "幽灵属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Ghost bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Fantasma: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "ghost": 2
+        },
+        "typePulseOnHit": "ghost",
+        "pulsePct": 0.4
+      },
+      "tagType": "ghost"
+    },
+    {
+      "id": "ultra_crown_dragon",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "龙之王冠",
+        "en": "Dragon Crown",
+        "es": "Dragón · Corona"
+      },
+      "desc": {
+        "zh": "龙属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Dragon bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Dragón: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "dragon": 2
+        },
+        "typePulseOnHit": "dragon",
+        "pulsePct": 0.4
+      },
+      "tagType": "dragon"
+    },
+    {
+      "id": "ultra_crown_dark",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "恶之王冠",
+        "en": "Dark Crown",
+        "es": "Siniestro · Corona"
+      },
+      "desc": {
+        "zh": "恶属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Dark bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Siniestro: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "dark": 2
+        },
+        "typePulseOnHit": "dark",
+        "pulsePct": 0.4
+      },
+      "tagType": "dark"
+    },
+    {
+      "id": "ultra_crown_steel",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "钢之王冠",
+        "en": "Steel Crown",
+        "es": "Acero · Corona"
+      },
+      "desc": {
+        "zh": "钢属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Steel bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Acero: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "steel": 2
+        },
+        "typePulseOnHit": "steel",
+        "pulsePct": 0.4
+      },
+      "tagType": "steel"
+    },
+    {
+      "id": "ultra_crown_fairy",
+      "tier": "ultra",
+      "category": "BONDS",
+      "name": {
+        "zh": "妖精之王冠",
+        "en": "Fairy Crown",
+        "es": "Hada · Corona"
+      },
+      "desc": {
+        "zh": "妖精属性羁绊计数+2；该属性成员造成克制伤害时，触发40%伤害的范围脉冲。",
+        "en": "Fairy bond count +2; matching partners trigger a 40%-damage area pulse on super-effective hits.",
+        "es": "Hada: vínculo +2 y pulso de daño del 40% en golpes supereficaces."
+      },
+      "effects": {
+        "typeBondOffset": {
+          "fairy": 2
+        },
+        "typePulseOnHit": "fairy",
+        "pulsePct": 0.4
+      },
+      "tagType": "fairy"
+    },
+    {
+      "id": "ultra_fourth_move",
+      "tier": "ultra",
+      "category": "CAPTAIN",
+      "name": {
+        "zh": "超越极限",
+        "en": "Beyond Limits",
+        "es": "Beyond Limits"
+      },
+      "desc": {
+        "zh": "从队长招式池自选1个3级招式；技能槽已满时，自选替换一个槽位。",
+        "en": "Choose a level-3 captain move from its pool. Replace a slot if all four are occupied.",
+        "es": "Elige un movimiento de nivel 3 del repertorio del capitán. Si los cuatro espacios están ocupados, reemplaza uno."
+      },
+      "effects": {
+        "unlockCaptainFourthMove": true,
+        "promptMoveDraft": true
+      }
+    },
+    {
+      "id": "ultra_dual_ability",
+      "tier": "ultra",
+      "category": "CAPTAIN",
+      "name": {
+        "zh": "特性觉醒",
+        "en": "Trait Awakening",
+        "es": "Trait Awakening"
+      },
+      "desc": {
+        "zh": "队长的初始特性数值效果提升 100%，且额外获得其物种的隐藏特性。",
+        "en": "Not available in this version.",
+        "es": "No disponible en esta versión."
+      },
+      "effects": {
+        "doubleCaptainTrait": true,
+        "unlockHiddenTrait": true
+      },
+      "enabled": false
+    },
+    {
+      "id": "ultra_bench_reserves",
+      "tier": "ultra",
+      "category": "ECONOMY",
+      "name": {
+        "zh": "战备战术扩容",
+        "en": "Tactical Reserves",
+        "es": "Tactical Reserves"
+      },
+      "desc": {
+        "zh": "候补仓库上限扩充（4 -> 6）；候补席的宝可梦亦可提供 40% 的支援特性加成。",
+        "en": "Not available in this version.",
+        "es": "No disponible en esta versión."
+      },
+      "effects": {
+        "reserveCapBonus": 2,
+        "benchSupportRatio": 0.4
+      },
+      "enabled": false
+    },
+    {
+      "id": "ultra_overclock_all",
+      "tier": "ultra",
+      "category": "COMBAT",
+      "name": {
+        "zh": "全员突破驱动",
+        "en": "Overclock Matrix",
+        "es": "Overclock Matrix"
+      },
+      "desc": {
+        "zh": "3星队员的招式额外提升1级（沿用末级成长档），其超武施放及维持不消耗PP。",
+        "en": "Three-star companions gain one extra move level using the last level-up improvement. Their ultimate moves cost no PP.",
+        "es": "Los compañeros de tres estrellas ganan un nivel de movimiento adicional repitiendo la última mejora. Sus movimientos definitivos no gastan PP."
+      },
+      "effects": {
+        "maxStarSkillLevelBonus": 1,
+        "freeSuperMovePP": true
+      }
+    },
+    {
+      "id": "ultra_reroll_master",
+      "tier": "ultra",
+      "category": "ECONOMY",
+      "name": {
+        "zh": "战术大师",
+        "en": "Tactical Genius",
+        "es": "Tactical Genius"
+      },
+      "desc": {
+        "zh": "立即获得 3 次重掷机会；每次刷新商店有 20% 概率刷出高一阶的宝可梦商品。",
+        "en": "Gain 3 talent rerolls. Refreshed shop slots have a 20% chance to offer one higher quality.",
+        "es": "Gana 3 cambios de talentos. Cada espacio renovado de la tienda tiene un 20% de probabilidad de ofrecer una calidad superior."
+      },
+      "effects": {
+        "grantRerolls": 3,
+        "upgradeShopSlotChance": 0.2
+      }
+    },
+    {
+      "id": "master_dynamax_ace",
+      "tier": "master",
+      "category": "CAPTAIN",
+      "name": {
+        "zh": "极巨化王牌",
+        "en": "Dynamax Ace",
+        "es": "Dynamax Ace"
+      },
+      "desc": {
+        "zh": "战斗开始时队长体型放大 60%，基础生命与双防提升 150%，攻击判定范围翻倍并免疫击退。",
+        "en": "Captain: size +60%, base HP and defenses +150%, attack areas ×2, and knockback immunity.",
+        "es": "Capitán: tamaño +60%, vida y defensas base +150%, áreas de ataque ×2 e inmunidad al retroceso."
+      },
+      "effects": {
+        "scaleMult": 1.6,
+        "hpMult": 2.5,
+        "defMult": 2.5,
+        "hitRadiusMult": 2,
+        "immuneKnockback": true
+      }
+    },
+    {
+      "id": "master_omni_bond",
+      "tier": "master",
+      "category": "BONDS",
+      "name": {
+        "zh": "全属性共鸣（百搭同盟）",
+        "en": "Prismatic Prism",
+        "es": "Prismatic Prism"
+      },
+      "desc": {
+        "zh": "队长获得【全能标签】，自动计入当前队伍中所有已点亮羁绊（每种羁绊计数均 +1）。",
+        "en": "The captain adds +1 count to every represented squad bond.",
+        "es": "El capitán suma 1 al recuento de cada vínculo presente en el equipo."
+      },
+      "effects": {
+        "captainOmniTag": true
+      }
+    },
+    {
+      "id": "master_sacred_ash",
+      "tier": "master",
+      "category": "COMBAT",
+      "name": {
+        "zh": "圣灰奇迹",
+        "en": "Sacred Ash",
+        "es": "Sacred Ash"
+      },
+      "desc": {
+        "zh": "致命保护：当小队生命或队长生命归零时，免死并爆发全场净化闪光消灭所有非BOSS敌人，恢复 40 小队生命（整局限 1 次）。",
+        "en": "Once per expedition: survive lethal captain or squad damage, restore 40 squad HP and clear non-Boss foes.",
+        "es": "Una vez por expedición: evita una derrota mortal del capitán o del equipo, recupera 40 de vida de equipo y elimina enemigos que no sean jefes."
+      },
+      "effects": {
+        "cheatDeathSquadHp": 40,
+        "wipeMinions": true,
+        "charges": 1
+      },
+      "unique": true
+    },
+    {
+      "id": "master_infinite_pp",
+      "tier": "master",
+      "category": "COMBAT",
+      "name": {
+        "zh": "无限活力矩阵",
+        "en": "Infinite Power",
+        "es": "Infinite Power"
+      },
+      "desc": {
+        "zh": "全体队员招式冷却缩减 35%，技能施放不再受 PP 限制，进入常态超武狂轰模式。",
+        "en": "Companions gain 35% cooldown reduction and ignore PP costs.",
+        "es": "Los compañeros reducen sus recargas un 35% e ignoran el coste de PP."
+      },
+      "effects": {
+        "cdrPct": 0.35,
+        "ignorePPRequirement": true
+      }
+    },
+    {
+      "id": "master_silph_syndicate",
+      "tier": "master",
+      "category": "ECONOMY",
+      "name": {
+        "zh": "西尔佛全资收购",
+        "en": "Silph Monopoly",
+        "es": "Silph Monopoly"
+      },
+      "desc": {
+        "zh": "立即获得 1G 金币；利息上限突破至 12G；商店每次刷新必定出现至少 1 张 5 费传说宝可梦。",
+        "en": "Gain 1 gold. Interest cap becomes 12. Every shop roll guarantees a quality-5 offer when available.",
+        "es": "Gana 1 de oro. El límite de interés pasa a 12. Cada renovación garantiza una oferta de calidad 5 del repertorio disponible."
+      },
+      "effects": {
+        "instantGold": 1,
+        "maxInterest": 12,
+        "guaranteedTier5Slot": true
+      }
+    }
+  ],
+  "defaultRerolls": 2,
+  "frontlineCount": 2,
+  "crownPulseRadius": 96
+}

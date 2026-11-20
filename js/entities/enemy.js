@@ -126,7 +126,7 @@
       const damageContext={contributions:[...(bond?.contributions||[]),...(terminal?.contributions||[])],execute:!!(bond?.execute||terminal?.execute),executionSource:terminal?.execute?terminal.executionSource:'fairy'};
       if(G.TypeBonds)knock*=G.TypeBonds.knock(attacker,attack);
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
-      if (!this.remote && attacker&&!attack.typeBondFraction) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass);
+      if (!this.remote && attacker&&!attack.typeBondFraction&&!attack.talentPulse) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass)*(G.TrainerTalents?.outgoing(attacker)||1);
       if (!this.remote && attack.damageClass) {
         const defense=attack.damageClass==='special'?this.spdef:this.defense;
         amount /= defense || 1;
@@ -153,7 +153,7 @@
       hpDamage = Math.round(hpDamage);
       if (!hpDamage) {
         G.ExpeditionDamage?.record(attacker,attack,shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',shieldDamage);
-        if(bond)G.TypeBonds.afterHit(attacker,this,attack,shieldDamage,bond);
+        if(bond)G.TypeBonds.afterHit(attacker,this,attack,shieldDamage,bond);G.TrainerTalents?.pulse(attacker,this,attack,shieldDamage);
         G.FX.dmgText(this.x, this.y - this.bodyH - 4, Math.round(shieldDamage), '#9fd8ff'); this.flash = 0.05;
         if(shieldDamage>0)G.Audio.sfx('hit',{kind:attack.kind,type:attack.type});
         return shieldDamage;
@@ -161,12 +161,12 @@
       if (G.BossCombat&&!attack.typeBondFraction) hpDamage = G.BossCombat.damage(this,hpDamage);
       if (!(hpDamage > 0)) return shieldDamage;
       G.ExpeditionDamage?.record(attacker,attack,Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage);
-      this.hp -= hpDamage;
+      const actualDealt=Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage;this.hp -= hpDamage;
       if (attacker) this.lastAttacker = attacker;
       this.lastTypeBondAttack=attack;
       if(bond)G.TypeBonds.afterHit(attacker,this,attack,hpDamage+shieldDamage,bond);
       if (attacker) {G.Abilities.onHit(attacker, this, attack);G.Items?.onHit(attacker,this,attack);G.Specialization?.onHit(attacker,this,attack,hpDamage);}
-      G.Judgment.noteDmg(hpDamage, this);
+      G.TrainerTalents?.pulse(attacker,this,attack,actualDealt);G.Judgment.noteDmg(hpDamage, this);
       this.showHurt(hpDamage, color, dirX, dirY, eff, attack);
       if (knock > 0 && !this.boss) {
         const [nx, ny] = G.U.norm(dirX, dirY);
@@ -224,7 +224,7 @@
         if (this.shiny) { G.FX.burst(this.x, cy, '#ffe9a0', 30, 220); G.FX.ring(this.x, this.y, this.r, this.r * 7, '#9ae6ff', 0.7, 5); }
         return;
       }
-      G.Expedition?.killed(this);
+      G.Expedition?.killed(this);G.TrainerTalents?.onKill(this.lastAttacker);
       G.Abilities.onKill(this.lastAttacker, this.id);
       if (G.Mega) G.Mega.onKill(this.lastAttacker, this.id);
       if(G.ZMoves)G.ZMoves.onKill(this);

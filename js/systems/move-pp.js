@@ -13,6 +13,7 @@ G.MovePP = (() => {
     s.limit=cap+extra;s.current=Math.min(s.limit,s.current);return s;
   }
   function consume(p,m){
+    if(G.TrainerTalents?.noPP(p,m))return true;
     const s=state(p,m),q=G.Specialization?.stats(m)||{free:0,phase:false,double:false};
     if(p.ppPotionReady&&!p.remote&&p.moves.includes(m)){s.current=Math.min(s.limit,s.current+p.ppPotionReady);p.ppPotionReady=0;}
     if(G.BreakItems?.useFree(p,m)){s.plan=null;return true;}
@@ -29,7 +30,8 @@ G.MovePP = (() => {
   }
   // Maintenance costs are not fresh casts: no potion, free-cast roll or cast event.
   function spend(p,m,n=1){
-    if(!Number.isSafeInteger(n)||n<1)return false;const s=state(p,m),regular=Math.min(n,Math.floor(s.current+1e-8));
+    if(!Number.isSafeInteger(n)||n<1)return false;if(G.TrainerTalents?.noPP(p,m))return true;
+    const s=state(p,m),regular=Math.min(n,Math.floor(s.current+1e-8));
     if(regular+Math.floor(p.tempPP||0)<n)return false;
     s.current=Math.max(0,s.current-regular);p.tempPP=Math.max(0,(p.tempPP||0)-(n-regular));return true;
   }
