@@ -10,7 +10,7 @@ G.Expedition = (() => {
   const genNames=['Kanto','Johto','Hoenn','Sinnoh','Teselia','Kalos','Alola','Galar','Paldea'];
   const summary=()=>run?R.progress({day:run.day,arceus:run.arceus,cashout:run.cashout}):null;
   function header(title,sub){
-    const box=$('journey-content');box.replaceChildren();box.classList.remove('battle-loot-box');const head=node('header','journey-head');head.append(node('small','journey-eyebrow',L('EXPEDICIÓN','EXPEDITION','小队远征')),node('h2','',title),node('p','',sub));box.append(head);if(run&&run.phase!=='shop')box.append(progressPanel());return box;
+    const box=$('journey-content');box.replaceChildren();box.classList.remove('battle-loot-box','training-room');const head=node('header','journey-head');head.append(node('small','journey-eyebrow',L('EXPEDICIÓN','EXPEDITION','小队远征')),node('h2','',title),node('p','',sub));box.append(head);if(run&&run.phase!=='shop')box.append(progressPanel());return box;
   }
   function progressPanel(){
     const panel=node('section','expedition-progress');panel.setAttribute('translate','no');if(!run)return panel;
@@ -293,7 +293,7 @@ G.Expedition = (() => {
       const family=G.MonProgression.rootFor(o.dex),owned=[run.captain,...G.Squad.roster].filter(p=>G.MonProgression.rootFor(p.dex)===family),merge=G.Squad.roster.some(p=>G.MonProgression.rootFor(p.dex)===family&&p.rank===(o.rank||1)&&p.rank<3);
       if(!o.sold&&owned.length){card.classList.add('journey-owned');card.dataset.owned='true';card.dataset.merge=String(merge);card.append(node('strong','journey-owned-badge',merge?L('¡Ascenso disponible!','Ready to merge!','可合成升星'):L('Ya está en el equipo','Already in your squad','队伍已有')));}
       const content=node('div','journey-product-art');
-      {const mon=G.DEX_BY[o.dex],rank=o.rank||1,move=G.Moves.instance(o.moveId,rank===1?2:5);if(rank===3)G.Moves.evolve(move);content.append(portrait(mon,100));card.append(content,node('small','',L('Compañero','Companion','队员邀请')+' · '+(G.ExpeditionQuality?.label(mon)||'')+' · '+'★'.repeat(rank)),node('h3','',T(mon.name)));const dummy={mon,dex:mon.dex,rank,moves:[move]};if(G.SquadTraits){const trait=node('p','journey-shop-trait',G.SquadTraits.description(dummy));trait.setAttribute('translate','no');card.append(trait);}card.append(tags(dummy),node('p','journey-shop-move',T(move.name)+' · '+(rank===3?L('Definitivo','Ultimate','超武'):'Lv.'+move.lvl)));}
+      {const mon=G.DEX_BY[o.dex],rank=o.rank||1,move=G.Moves.instance(o.moveId,[0,1,3,5][rank]);content.append(portrait(mon,100));card.append(content,node('small','',L('Compañero','Companion','队员邀请')+' · '+(G.ExpeditionQuality?.label(mon)||'')+' · '+'★'.repeat(rank)),node('h3','',T(mon.name)));const dummy={mon,dex:mon.dex,rank,moves:[move]};if(G.SquadTraits){const trait=node('p','journey-shop-trait',G.SquadTraits.description(dummy));trait.setAttribute('translate','no');card.append(trait);}card.append(tags(dummy),node('p','journey-shop-move',T(move.name)+' · '+(move.evolved?L('Definitivo','Ultimate','超武'):'Lv.'+move.lvl)));}
       const b=button(o.sold?L('Invitado / adquirido','Recruited / acquired','已邀请／购入'):cost+' '+L('oro','gold','金币'),()=>buy(i),'btn gold');b.dataset.buy=i;b.disabled=o.sold||run.gold<cost;card.append(node('small','',L('En reserva','In pool','池内剩余')+' '+run.unitPool.stock.get(G.MonProgression.rootFor(o.dex))),b);if(run.traitRecruitTickets>0){const t=button(L('Invitación dirigida','Directed recruit ticket','使用定向招募券')+' · '+run.traitRecruitTickets,()=>buy(i,true),'btn');t.dataset.recruitTicket=i;t.disabled=!!o.sold;card.append(t);}goods.append(card);
     });
     const row=G.Economy.levelRow(lv),xp=G.EconomyConfig.buyXp;
@@ -314,7 +314,7 @@ G.Expedition = (() => {
     G.UI.toast(run.gold+' G · '+L('Interés al ganar','Interest on victory','战后利息')+' +'+G.Economy.interest(run.gold)+' G');run.extraStart=JSON.parse(JSON.stringify(G.Game.loot||{}));
     run.pendingSpawns=[];G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Pickups.clear();G.Hazards.clear();G.Path.clear();
     G.World.setBiome(Math.floor((run.day-1)/5));G.Squad.recover();
-    G.ExpeditionDamage?.beginBattle(run.day);G.TypeBonds?.beginStage();G.SquadTraits?.beginBattle();G.TrainerTalents?.beginBattle(run);G.ExpeditionRecorder?.beginBattle(run);
+    G.ExpeditionDamage?.beginBattle(run.day);G.TypeBonds?.beginStage();G.SquadTraits?.beginBattle();G.TrainerTalents?.beginBattle(run);G.SquadSupport?.beginBattle();G.ExpeditionRecorder?.beginBattle(run);
     for(const p of G.Squad.actors())G.Abilities.resetStage(p,run.day);
     if(kind==='boss')run.spawned=spawn(true)?1:0;
     G.UI.hideAll();G.Touch.reset();G.Game.expeditionResume();G.Audio.sfx('confirm');
@@ -481,7 +481,7 @@ G.Expedition = (() => {
   function lootCompanionPreview(card,mon){
     const rank=1;
     const moveId=G.FIXED_SKILLS?.[mon.dex]||G.Moves.startFor(mon);
-    const move=G.Moves.instance(moveId,2);
+    const move=G.Moves.instance(moveId,1);
     const candidate={mon,dex:mon.dex,rank,moves:[move]};
     const preview=node('div','journey-loot-preview');
     const quality=G.ExpeditionQuality?.label(mon);

@@ -1,47 +1,37 @@
-/* One free choice per skill-training event, including endless overclock. */
+/* One action per visit. Drafts stay fixed while backing out; validate payment/materials first. */
 G.ExpeditionTraining=(()=>{
-  const prices=()=>Object.fromEntries(Object.entries(G.EconomyConfig.skillTraining.actions).map(([id,tier])=>[id,G.EconomyConfig.skillTraining.tiers[tier]]));
-  const L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
-  const names=()=>({up:L('Mejorar movimiento','Strengthen captain move','队长技能强化'),learn:L('Aprender movimiento','Learn captain move','队长新技能学习'),replace:L('Cambiar compañero','Replace companion move','队员技能更换'),specialize:L('Especializar','Skill specialization','技能专精'),link:L('Vincular','Skill link','技能联结'),breakthrough:L('Movimiento definitivo','Skill breakthrough','技能突破'),overclock:L('Sobrecargar movimiento','Skill overclock','技能超限')});
-  const unlocked=(kind,run=G.Expedition?.run)=>kind==='overclock'?(run?.cycle>=G.EconomyConfig.endless.unlockCycle):!['specialize','link','breakthrough'].includes(kind)||!!G.CardPacks.normalize(G.DB.save).taken['training:'+kind];
-  function choices(kind,run){
-    const p=run.captain,label=m=>G.T(m.name)+' · '+(m.evolved?L('Definitivo','Ultimate','超武'):'Lv.'+m.lvl);
-    if(kind==='overclock')return p.moves.filter(m=>m.kind!=='buff').map(m=>({title:label(m)+' · '+L('Daño','Damage','技能伤害')+' +'+(G.EconomyConfig.endless.overclockDamagePerPurchase*100)+'%',desc:L('Aumento permanente durante esta expedición.','Permanent for this expedition.','本局持续生效，可重复修炼。'),apply:()=>{m.overclock=(m.overclock||0)+1;return true;}}));
-    if(kind==='up')return p.moves.filter(m=>G.Moves.nextUpText(m)).map(m=>({title:label(m),desc:G.T(G.Moves.nextUpText(m)),apply:()=>G.Moves.levelUp(m)}));
-    if(kind==='learn')return p.slots.length>=p.maxMoves?[]:G.Moves.poolFor(p.mon).filter(id=>!p.hasMove(id)&&!p.banned?.has(id)).map(id=>({title:G.T(G.Moves.BY_ID[id].name),desc:G.T(G.Moves.BY_ID[id].desc),apply:()=>{if(p.slots.length>=p.maxMoves||p.hasMove(id))return false;p.addMove(id);return true;}}));
-    if(kind==='replace')return G.Squad.roster.flatMap(a=>G.Moves.poolFor(a.mon).filter(id=>id!==a.moves[0]?.id).map(id=>({owner:a,title:G.T(a.mon.name)+' → '+G.T(G.Moves.BY_ID[id].name),desc:G.T(G.Moves.BY_ID[id].desc),apply:()=>{if(!G.Squad.roster.includes(a))return false;G.Projectiles.clearOrbs(a);G.Combat.clearFields(a);for(const s of [...G.Projectiles.all()])if(s.owner===a)G.Projectiles.remove(s);a.moves=[];a.slots=[];a.addMove(id);a.active=0;a.moveId=id;G.Squad.rankMove(a);G.Squad.refresh();return true;}})));
-    if(kind==='breakthrough')return p.moves.filter(m=>!m.evolved&&m.lvl>=m.def.maxLvl&&G.Moves.EVO[m.id]).map(m=>({title:label(m),desc:G.T(G.Moves.evoInfo(m,{})?.text||m.def.desc),apply:()=>G.Moves.evolve(m)}));
-    if(kind==='specialize')return G.Specialization.eligible(p).flatMap(m=>G.Specialization.offers(m).map(id=>({title:label(m)+' · '+G.T(G.Specialization.BY[id].name),desc:G.T(G.Specialization.BY[id].desc),apply:()=>{const previous=p.specTokens;p.specTokens++;const ok=G.Specialization.apply(p,m,id);if(!ok)p.specTokens=previous;return ok;}})));
-    if(kind==='link'){
-      const b=p.bondOptions();if(!b)return [];
-      const pairs=b.group?b.loose.map(m=>[m]):b.loose.flatMap((m,i)=>b.loose.slice(i+1).map(n=>[m,n]));
-      return pairs.map(ms=>({title:[...(b.group||[]),...ms].map(label).join(' + '),desc:L('Comparte una ranura.','Share one skill slot.','合并到同一技能槽，技能同时释放。'),apply:()=>{if(!p.bondOptions())return false;const previous=p.bonds;p.bonds++;p.fuse(ms,b.group);p.bonds=previous;return true;}}));
-    }
-    return [];
-  }
-  function price(kind,run){return kind==='overclock'?G.Economy.overclockCost(run):prices()[kind];}
-  function purchase(kind,choice,run){if(run.phase!=='training'||run.trainingUsed||!Object.hasOwn(names(),kind)||!unlocked(kind,run)||!choice?.apply())return false;if(kind==='overclock')run.skillOverclockCount++;run.trainingUsed=true;return true;}
-  function open(run,done){
-    const root=document.getElementById('journey-content');run.trainingUsed=false;const cached=new Map();
-    const node=(tag,text,cls)=>{const e=document.createElement(tag);e.textContent=text||'';e.className=cls||'';return e;};
-    const button=(name,fn)=>{const b=node('button',name,'btn');b.type='button';b.onclick=fn;return b;};
-    function render(kind,target){
-      root.replaceChildren();root.append(node('h2',L('Dojo de movimientos','Skill training','技能修炼')),node('p',L('Elige un entrenamiento gratuito por visita; sobrecarga disponible desde el cuarto ciclo.','Choose one free training per visit; overclock unlocks in cycle four.','所有修炼免费，每次事件选择一项；第4轮起可选技能超限。离开获得训练家经验。'),'note'),node('b',L('Oro','Gold','局内金币')+' '+run.gold));
-      const list=node('div','','journey-training');root.append(list);
-      if(!kind){for(const [key,name]of Object.entries(names())){const enabled=unlocked(key,run),b=button(name+' · '+L('Gratis','Free','免费')+(enabled?'':key==='overclock'?L(' · ciclo 4',' · cycle 4',' · 第4轮解锁'):L(' · bloqueado',' · locked',' · 需长征之路权限卡')),()=>render(key));b.dataset.training=key;b.disabled=!enabled||run.trainingUsed;list.append(b);}}
-      else if(kind==='replace'&&!target){
-        for(const a of G.Squad.roster)list.append(button(G.T(a.mon.name)+' · '+'★'.repeat(a.rank)+' · '+G.T(a.moves[0].name),()=>render(kind,a)));
-        if(!G.Squad.roster.length)list.append(node('p',L('No hay compañeros.','No companions recruited.','尚未招募队员。')));
-        list.append(button(L('Volver','Back','返回修炼项目'),()=>render()));
-      }else{
-        if(!cached.has(kind))cached.set(kind,choices(kind,run));const options=cached.get(kind);
-        root.insertBefore(node('h3',names()[kind]+' · '+L('Gratis','Free','免费')),list);
-        for(const c of options.filter(c=>!target||c.owner===target)){const b=button(c.title,()=>{if(purchase(kind,c,run))done();});b.dataset.trainingChoice=kind;b.append(node('small',c.desc));list.append(b);}
-        if(!options.length)list.append(node('p',L('No hay objetivos válidos.','No eligible targets.','当前没有符合条件的目标。')));
-        list.append(button(L('Volver','Back','返回修炼项目'),()=>render()));
-      }
-      root.append(button(L('Continuar ruta','Continue route','离开修炼'),done));G.UI.show('scr-journey');
-    }render();
-  }
-  return {get PRICES(){return prices();},choices,unlocked,price,purchase,open};
+ const L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es,drafts=new WeakMap();
+ const names=()=>({up:L('Mejorar capitán','Captain move training','队长技能强化'),learn:L('Aprender movimiento','Learn captain move','队长新技能学习'),replace:L('Cambiar movimiento','Replace companion move','队员技能更换'),specialize:L('Especializar','Skill specialization','技能专精'),link:L('Vincular','Skill link','技能联结'),breakthrough:L('Movimiento definitivo','Skill breakthrough','技能突破'),overclock:L('Sobrecargar','Skill overclock','技能超限')});
+ const unlocked=(kind,run=G.Expedition?.run)=>kind==='overclock'?run?.cycle>=G.EconomyConfig.endless.unlockCycle:!['specialize','link','breakthrough'].includes(kind)||!!G.CardPacks.normalize(G.DB.save).taken['training:'+kind];
+ const owned=run=>[run.captain,...G.Squad.roster];
+ const valid=(run,p,m)=>owned(run).includes(p)&&p.moves.includes(m);
+ const label=m=>G.T(m.name)+' · '+(m.evolved?L('Definitivo','Ultimate','超武'):'Lv.'+m.lvl);
+ function draft(run){let d=drafts.get(run);if(!d||d.day!==run.day){d={day:run.day,replacements:new WeakMap(),specs:new WeakMap()};drafts.set(run,d);}return d;}
+ function replaceOffers(run,p,rng=Math.random){const d=draft(run),old=p.moves[0];let a=d.replacements.get(p);if(!a||a.source!==old){const pool=G.Moves.poolFor(p.mon).filter(id=>id!==old.id&&!p.banned?.has(id)),ids=[];while(ids.length<3&&pool.length)ids.push(pool.splice(Math.min(pool.length-1,Math.floor(rng()*pool.length)),1)[0]);a={source:old,ids};d.replacements.set(p,a);}return a.ids;}
+ function specOffers(run,m){const d=draft(run);if(!d.specs.has(m))d.specs.set(m,G.Specialization.offers(m));return d.specs.get(m);}
+ function specializationCost(m){return Math.ceil(5*1.5**G.Specialization.ids(m).length);}
+ function materials(run,p,m){if(!valid(run,p,m)||m.evolved||m.lvl<m.def.maxLvl)return [];const type=m.kind==='buff'?'normal':m.type;return G.Squad.roster.filter(q=>q!==p&&q.rank===3&&q.mon.types.includes(type));}
+ function replace(run,p,old,id){
+  if(!valid(run,p,old)||!replaceOffers(run,p).includes(id))return false;
+  const m=G.Moves.instance(id,Math.min(old.lvl,G.Moves.BY_ID[id].maxLvl));
+  while(m.lvl<old.lvl){const last=m.def.ups.at(-1);m.def={...m.def,maxLvl:m.def.maxLvl+1,ups:[...m.def.ups,last]};G.Moves.levelUp(m);}
+  if(old.talentExtraLevels)m.talentExtraLevels=old.talentExtraLevels;if(old.overclock)m.overclock=old.overclock;
+  G.Projectiles.clearOrbs(p);G.Combat.clearFields(p);for(const shot of [...G.Projectiles.all()])if(shot.owner===p)G.Projectiles.remove(shot);
+  p.moves=[m];p.slots=[[m]];p.active=0;p.moveId=id;G.MovePP.restore(p,[m]);G.SquadTraits?.assign(p);G.Squad.refresh();return true;
+ }
+ function choices(kind,run){
+  const p=run.captain;
+  if(kind==='up')return p.moves.filter(m=>m.lvl<5).map(m=>{const target=m.lvl<3?3:5;return {owner:p,move:m,title:label(m)+' → Lv.'+target,desc:L('Entrena directamente al siguiente hito.','Train straight to the next level milestone.','一次直接提升至下一档技能等级。'),targetLevel:target,apply:()=>{if(!valid(run,p,m)||m.lvl>=target)return false;while(m.lvl<target)G.Moves.levelUp(m);return true;}};});
+  if(kind==='learn')return p.slots.length>=p.maxMoves?[]:G.Moves.poolFor(p.mon).filter(id=>!p.hasMove(id)&&!p.banned?.has(id)).map(id=>({owner:p,moveId:id,title:G.T(G.Moves.BY_ID[id].name),desc:G.T(G.Moves.BY_ID[id].desc),apply:()=>{if(p!==run.captain||p.slots.length>=p.maxMoves||p.hasMove(id))return false;p.addMove(id);return true;}}));
+  if(kind==='replace')return G.Squad.roster.flatMap(a=>{const old=a.moves[0];return replaceOffers(run,a).map(id=>({owner:a,move:old,moveId:id,title:G.T(G.Moves.BY_ID[id].name)+' · Lv.'+old.lvl,desc:G.T(G.Moves.BY_ID[id].desc),apply:()=>replace(run,a,old,id)}));});
+  if(kind==='breakthrough')return owned(run).flatMap(a=>a.moves.filter(m=>!m.evolved&&m.lvl>=m.def.maxLvl&&(G.Moves.EVO[m.id]||m.kind==='buff')).map(m=>({owner:a,move:m,title:label(m),desc:m.kind==='buff'?L('Duplica el máximo de acumulaciones.','Double the maximum buff stacks.','突破后最大增益层数翻倍。'):G.T(G.Moves.evoInfo(m,{})?.text||m.def.desc),apply:material=>{if(!materials(run,a,m).includes(material))return false;if(m.kind==='buff'){m.stacks*=2;m.evolved=true;m.squadUltimate=true;}else if(!G.Moves.evolve(m))return false;G.Squad.consume(material);G.MovePP.restore(a,[m]);return true;}})));
+  if(kind==='specialize')return owned(run).flatMap(a=>G.Specialization.eligible(a).filter(m=>m.lvl>=5).flatMap(m=>specOffers(run,m).map(id=>({owner:a,move:m,specId:id,title:G.T(G.Specialization.BY[id].name),desc:G.T(G.Specialization.BY[id].desc),apply:()=>{if(!valid(run,a,m)||!G.Specialization.eligible(a).includes(m))return false;const tokens=a.specTokens;a.specTokens++;const ok=G.Specialization.apply(a,m,id);if(!ok)a.specTokens=tokens;return ok;}}))));
+  if(kind==='link'){const b=p.bondOptions();if(!b)return [];const pairs=b.group?b.loose.map(m=>[m]):b.loose.flatMap((m,i)=>b.loose.slice(i+1).map(n=>[m,n]));return pairs.map(ms=>({owner:p,move:ms[0],title:[...(b.group||[]),...ms].map(label).join(' + '),desc:L('Comparte una ranura.','Share one skill slot.','合并到同一技能槽，技能同时释放。'),apply:()=>{if(!p.bondOptions()||ms.some(m=>!p.moves.includes(m)))return false;const previous=p.bonds;p.bonds++;p.fuse(ms,b.group);p.bonds=previous;return true;}}));}
+  if(kind==='overclock')return p.moves.filter(m=>m.kind!=='buff').map(m=>({owner:p,move:m,title:label(m),desc:L('Daño +','Damage +','技能伤害 +')+G.EconomyConfig.endless.overclockDamagePerPurchase*100+'%',apply:()=>{if(!valid(run,p,m))return false;m.overclock=(m.overclock||0)+1;return true;}}));
+  return [];
+ }
+ function price(kind,run,choice){return kind==='specialize'&&choice?.move?specializationCost(choice.move):0;}
+ function purchase(kind,choice,run,material){if(run.phase!=='training'||run.trainingUsed||!Object.hasOwn(names(),kind)||!unlocked(kind,run)||!choice?.apply)return false;const cost=price(kind,run,choice);if(run.gold<cost||!choice.apply(material))return false;run.gold-=cost;if(kind==='overclock')run.skillOverclockCount++;run.trainingUsed=true;G.Squad.refresh();return true;}
+ function open(run,done){run.trainingUsed=false;drafts.delete(run);G.ExpeditionTrainingUI.open(run,done);}
+ return {get PRICES(){return {up:0,learn:0,replace:0,specialize:5,link:0,breakthrough:0,overclock:0};},names,choices,unlocked,price,purchase,open,owned,materials,replaceOffers,specializationCost};
 })();

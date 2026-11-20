@@ -35,6 +35,7 @@ G.SquadTraitDefs=(()=>{
   const BY=Object.fromEntries(LIST.map(d=>[d.id,d])),weights=[0,1,1.2,1.5,2,2.5];
   const roots=[...new Set(G.DEX.map(m=>G.MonProgression.rootFor(m.dex)))].sort((a,b)=>(Math.imul(a,2654435761)>>>0)-(Math.imul(b,2654435761)>>>0));
   const ROOTS=Object.fromEntries(roots.map((root,i)=>[root,LIST[i%LIST.length].id]));
+  const SUPPORT={id:'support-healer',category:'support',base:.02,name:{zh:'治愈共鸣',en:'Healing resonance',es:'Resonancia curativa'}};LIST.push(SUPPORT);BY[SUPPORT.id]=SUPPORT;
   const forDex=dex=>BY[ROOTS[G.MonProgression.rootFor(dex)]];
   return {LIST,BY,ROOTS,weights,forDex};
 })();

@@ -261,7 +261,7 @@ G.Player = class Player {
     const anim = { melee: 'Attack', beam: 'Shoot', projectile: 'Shoot', nova: 'Attack',
                    aura: 'Charge', buff: 'Charge', orbit: 'Charge', boomerang: 'Shoot', chain: 'Shoot',
                    mine: 'Charge', meteor: 'Charge', turret: 'Charge', dash: 'Attack', trail: 'Walk', cone: 'Shoot' }[m.kind] || 'Attack';
-    G.Audio.sfx('shot', { kind: m.kind, type: m.type });G.TrainerTalents?.onCast(this,m);
+    G.Audio.sfx('shot', { kind: m.kind, type: m.type });G.TrainerTalents?.onCast(this,m);G.SquadSupport?.cast(this,m);
     if (m.kind === 'trail'||!this.isSquadMember&&!this.isPrimaryMove(m)) return;
     // No reinicies una animación que va por la mitad: se vería a tirones.
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
@@ -304,7 +304,7 @@ G.Player = class Player {
     // estar encima de los enemigos para pegar (iban muy por detrás).
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1)*(['environment','weather'].includes(source.kind)?Math.pow(.9,G.Items.count(this,'safetygoggles')):1);
-    let finalDamage=d*(G.TypeBonds?.defense(this)||1)*(G.TrainerTalents?.incoming(this,source)||1);finalDamage=G.TrainerTalents?.absorb(this,finalDamage)??finalDamage;
+    let finalDamage=d*(G.TypeBonds?.defense(this)||1)*(G.TrainerTalents?.incoming(this,source)||1)*(G.SquadSupport?.reduction(this)||1);finalDamage=G.TrainerTalents?.absorb(this,finalDamage)??finalDamage;
     finalDamage=G.SquadTraits?.absorb(this,finalDamage)??finalDamage;if(!(finalDamage>0)){this.invuln=.45;return false;}
     if (G.FailureProtection?.avoidLethal(this,finalDamage)) return false;
     const hpLost=Math.min(this.hp,finalDamage);

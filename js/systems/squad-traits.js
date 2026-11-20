@@ -4,7 +4,7 @@ G.SquadTraits=(()=>{
   const run=()=>G.Expedition?.run,team=()=>G.Squad?.active?G.Squad.deployed().filter(p=>!p.dead&&p.hp>0):[];
   const local=v=>v?.[G.I18n.lang]||v?.en||v;
   const L=(es,en,zh)=>local({es,en,zh});
-  const def=p=>G.SquadTraitDefs.BY[p?.squadTrait]||G.SquadTraitDefs.forDex(p?.dex);
+  const def=p=>p?.moves?.some(m=>m.kind==='buff')&&!p.squadCaptain?G.SquadTraitDefs.BY['support-healer']:G.SquadTraitDefs.BY[p?.squadTrait]||G.SquadTraitDefs.forDex(p?.dex);
   function state(p){let s=records.get(p);if(!s)records.set(p,s={counts:{},shield:0});return s;}
   const weight=p=>Math.max(1,Math.min(3,p?.rank||1))*(G.SquadTraitDefs.weights[Math.max(1,Math.min(5,(G.ExpeditionQuality?G.ExpeditionQuality.quality(p):p?.mon?.rarity)||1))]||1);
   function activeTags(p,scope='all'){
@@ -16,7 +16,7 @@ G.SquadTraits=(()=>{
     return out;
   }
   const layers=p=>activeTags(p).reduce((n,[c,id])=>n+G.SquadBonds.layer(c,id),0);
-  function assign(p){if(!p.squadTrait)p.squadTrait=G.SquadTraitDefs.forDex(p.dex).id;return def(p);}
+  function assign(p){const id=p.moves?.some(m=>m.kind==='buff')?'support-healer':p.squadTrait==='support-healer'?G.SquadTraitDefs.forDex(p.dex).id:p.squadTrait||G.SquadTraitDefs.forDex(p.dex).id;if(id!==p.squadTrait){p.squadTrait=id;records.delete(p);}return def(p);}
   function reset(){records=new WeakMap();days=new Set();shops=new Set();battles=new Set();released=new WeakSet();merged=new WeakSet();carry=0;}
   function gold(n){const r=run();if(!r||!Number.isFinite(n)||n<=0)return;const value=Math.round((carry+n)*1e6)/1e6,whole=Math.floor(value+1e-9);carry=value-whole;r.gold+=whole;}
   function trigger(p,event,basis=run()?.gold){
@@ -57,7 +57,8 @@ G.SquadTraits=(()=>{
     const events={kill:L('enemigos derrotados','enemies defeated','击败敌人'),hit:L('60 impactos propios','60 own skill hits','自身招式累计命中60次'),critical:L('10 críticos propios','10 own critical hits','自身累计暴击10次'),hurt:L('3 golpes recibidos','3 actual hits received','自身实际承受3次攻击'),day:L('cada fin de día','each day end','每天自然结束'),clear:L('limpieza completa','clearing a battle','战斗限时全歼'),release:L('al liberar otros compañeros','releasing other companions','放生其他伙伴'),elite:L('superar una etapa élite','completing an elite event','精英事件通关'),merge:L('fusionar el equipo','a squad rank merge','队伍合成升阶'),boss:L('vencer al jefe del ciclo','defeating a cycle Boss','击败周期BOSS'),shop:L('visitar una tienda','visiting a shop','访问商店')};
     const scopes={all:L('todos sus vínculos activos','all own active bonds','自身全部已激活羁绊'),first:L('su primer tipo activo','own active primary-type bond','自身首属性已激活羁绊'),skill:L('su oficio activo','own active class bonds','自身职业已激活羁绊')};
     let text='';
-    if(d.category==='stacking')text=events[d.event]+(d.event==='release'?' ×2':'')+' → '+scopes[d.scope]+' +'+Number((d.base*factor).toFixed(3))+L(' capas',' stacks','层');
+    if(d.category==='support')text=L('Al usar un movimiento: cura aliados cercanos por ','On cast: heal nearby allies for ','释放招式时，治疗周围友方：自身最大生命×')+Number((d.base*factor*100).toFixed(2))+'%';
+    else if(d.category==='stacking')text=events[d.event]+(d.event==='release'?' ×2':'')+' → '+scopes[d.scope]+' +'+Number((d.base*factor).toFixed(3))+L(' capas',' stacks','层');
     else if(d.category==='economic')text=d.id==='recruit-bargain'?L('Reclutamiento −','Recruitment discount ','招募价格降低')+Math.min(50,8*factor)+'%':events[d.event]+(d.event==='kill'?' ×15':'')+' → '+(d.id==='daily-interest'?(5*factor)+'%':Number((d.base*factor).toFixed(3)))+L(' oro',' gold','局内金币')+(d.id==='elite-supplier'?' +'+r+L(' renovaciones',' refreshes','次免费刷新'):d.id==='boss-recruiter'?' +'+r+L(' invitaciones dirigidas',' directed recruit tickets','张定向招募券'):'');
     else{const fuel=layers(p)*factor,parts=[];if(d.power)parts.push(L('Daño','Damage','独立增伤')+' +'+Number((fuel*d.power*100).toFixed(2))+'%');if(d.haste)parts.push(L('Recarga','Cooldown','冷却缩减')+' −'+Number((Math.min(.4,fuel*d.haste)*100).toFixed(2))+'%');if(d.execute)parts.push(L('Umbral','Execution line','普通敌人斩杀线')+' '+Number((Math.min(.5,fuel*d.execute)*100).toFixed(2))+'%');if(d.size)parts.push(L('Alcance','Range','范围')+' +'+Number((Math.min(3,fuel*d.size)*100).toFixed(2))+'%');if(d.shield)parts.push(L('Barrera inicial','Starting shield','开战白盾')+' '+Number((fuel*d.shield*100).toFixed(2))+'% '+L('PS base','base HP','基础生命'));text=parts.join(' · ');}
     if(d.category==='terminal'){
@@ -66,7 +67,7 @@ G.SquadTraits=(()=>{
       const caps=d.haste?L(' (máx. 40%)',' (cap 40%)','（上限40%）'):d.size?L(' (máx. +300%)',' (cap +300%)','（上限+300%）'):d.execute?L(' (máx. 50%; élites/jefes: daño adicional bajo el umbral)',' (cap 50%; elites/Bosses: extra damage below the line)','（上限50%；精英/BOSS在血线内改为增伤）'):'';
       text=L('Por capa propia activa × peso: ','Per own active stack × weight: ','自身已激活羁绊每层×总权重：')+rules.join(' + ')+caps+'\n'+L('Ahora: ','Current: ','当前：')+text;
     }
-    const category={stacking:L('Acumulación','Stacking','叠层'),economic:L('Economía','Economy','经济'),terminal:L('Terminal','Terminal','终端')}[d.category];
+    const category={support:L('Apoyo','Support','辅助'),stacking:L('Acumulación','Stacking','叠层'),economic:L('Economía','Economy','经济'),terminal:L('Terminal','Terminal','终端')}[d.category];
     return name+' ['+category+'] · '+L('Rango','Rank','阶级')+' '+r+' · '+L('Calidad','Quality','品质')+' '+(G.ExpeditionQuality?G.ExpeditionQuality.quality(p):p.mon?.rarity||1)+' · ×'+factor+'\n'+text;
   }
   function draw(ctx){for(const p of team()){const value=shield(p);if(value<=0)continue;ctx.save();ctx.strokeStyle='#e4f6ff';ctx.lineWidth=2;ctx.globalAlpha=.65;ctx.beginPath();ctx.ellipse(p.x,p.y-p.bodyH*.4,p.r+9,p.bodyH*.6+8,0,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;ctx.font='bold 10px sans-serif';ctx.textAlign='center';ctx.fillStyle='#effaff';ctx.fillText('◈ '+Math.ceil(value),p.x,p.y-p.bodyH-20);ctx.restore();}}

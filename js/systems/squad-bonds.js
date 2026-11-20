@@ -1,10 +1,10 @@
 /* Run-only class counts and stacks. Physical kinds retain their original cast logic. */
 G.SquadBonds=(()=>{
   const GROUPS={projectile:'projectile',boomerang:'projectile',cone:'projectile',melee:'melee',dash:'melee',beam:'beam',chain:'chain',meteor:'area',trail:'area',area:'area',buff:'buff',nova:'bloom',aura:'bloom',bloom:'bloom',orbit:'orbit',mine:'summon',turret:'summon',summon:'summon'};
-  const KINDS=['projectile','melee','beam','chain','area','bloom','orbit','summon'],ALL_KINDS=[...KINDS,'buff'];
+  const KINDS=['projectile','melee','beam','chain','area','bloom','orbit','summon','buff'],ALL_KINDS=[...KINDS];
   const group=id=>GROUPS[id]||id,cfg=()=>G.EconomyConfig.classBonds;
   const L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
-  function label(id){return ({projectile:L('Proyectil','Projectile','投射物'),melee:L('Cuerpo a cuerpo','Melee','近战'),beam:L('Rayo','Beam','能量柱'),chain:L('Cadena','Chain','连锁'),area:L('Ataque de área','Area strike','区域打击'),bloom:L('Floración','Bloom','绽放'),orbit:L('Órbita','Orbit','环绕'),summon:L('Invocación','Summon','召唤'),buff:L('Amplificación','Amplification','增幅')})[group(id)]||id;}
+  function label(id){return ({projectile:L('Proyectil','Projectile','投射物'),melee:L('Cuerpo a cuerpo','Melee','近战'),beam:L('Rayo','Beam','能量柱'),chain:L('Cadena','Chain','连锁'),area:L('Ataque de área','Area strike','区域打击'),bloom:L('Floración','Bloom','绽放'),orbit:L('Órbita','Orbit','环绕'),summon:L('Invocación','Summon','召唤'),buff:L('Apoyo','Support','辅助')})[group(id)]||id;}
   let layers=Object.create(null),signature='',counts=new Map(),revision=0;
   const key=(category,id)=>category+':'+(category==='skill'?group(id):id);
   function reset(){layers=Object.create(null);signature='';counts=new Map();revision++;}
@@ -31,7 +31,7 @@ G.SquadBonds=(()=>{
     const v=cfg()[group(id)]?.[stat];if(!Array.isArray(v))return v||0;const [a,b,c]=cfg().layerNodes;
     return n<=b?v[0]+(v[1]-v[0])*(n-a)/(b-a):n<=c?v[1]+(v[2]-v[1])*(n-b)/(c-b):v[2]+(v[2]-v[1])*(n-c)/(c-b)*cfg().after500SlopeFactor;
   }
-  function state(kind){kind=group(kind);const n=count('skill',kind),l=layer('skill',kind);return {kind,count:n,layers:l,tier:!KINDS.includes(kind)?0:n>=cfg().thresholds[1]?7:n>=cfg().thresholds[0]?3:0,scale:scale(l)};}
+  function state(kind){kind=group(kind);const n=count('skill',kind),l=layer('skill',kind);return {kind,count:n,layers:l,tier:!KINDS.includes(kind)?0:n>=(kind==='buff'?cfg().buff.thresholds[1]:cfg().thresholds[1])?(kind==='buff'?5:7):n>=3?3:0,scale:scale(l)};}
   const applies=(p,m)=>!!p?.isSquadMember&&G.Squad?.active&&G.Squad.deployed().includes(p)&&!m?.zMove;
   function stats(p,m){return applies(p,m)?state(m?.kind):{count:0,layers:0,tier:0,scale:0};}
   function crowd(p){const c=cfg().melee;return Math.min(c.maxCrowd,G.EnemyMgr.queryCircle(p.x,p.y,c.crowdRadius).filter(e=>!e.dead).length);}
@@ -40,7 +40,7 @@ G.SquadBonds=(()=>{
   const sustain=()=>1;
   function damage(v,kind,k){v.dmg*=k;v.bondDamageContributions=[...(v.bondDamageContributions||[]),[kind,k]];}
   function move(p,m){
-    if(m.bondApplied||!applies(p,m))return m;const b=stats(p,m);if(!b.tier)return m;
+    if(m.bondApplied||!applies(p,m))return m;const b=stats(p,m);if(!b.tier||b.kind==='buff')return m;
     const v={...m,bondApplied:true,bondScale:b.scale,bondTier:b.tier,bondKind:b.kind};
     if(b.tier===7){v.bondPalette='class:'+b.kind;v.bondColor=cfg().visuals[b.kind][2];}
     if(b.kind==='projectile'&&b.tier===7)v.bondPierceGrowth=cfg().projectile.pierceGrowth;
@@ -75,6 +75,7 @@ G.SquadBonds=(()=>{
   }
   function description(kind){
     const b=state(kind),k=b.kind,c=cfg(),sep=G.I18n.lang==='zh'?'。':'. ',pct=n=>Number((n*100).toFixed(2))+'%',num=n=>Number(n.toFixed(2));
+    if(k==='buff')return L('3 aliados: reducción de daño del equipo ','3 allies: squad damage reduction ','3人激活：全队减伤 ')+pct(value('buff','reduction'))+sep+L('5 aliados: cada apoyo gana una venda cada 5s; cura al aliado con menos del 50% de vida por el 10% de la vida máxima total de apoyos.','5 allies: each support gains a bandage every 5s; heal an ally below half HP for 10% of support total max HP.','5人激活：辅助队员每5秒获得绷带；友方生命低于50%时，消耗绷带治疗辅助队员最大生命总和的10%。');
     if(!KINDS.includes(k))return L('Sin efecto activo todavía.','No active effect yet.','暂不激活羁绊效果。');
     if(!b.tier)return L('Se activa con 3 especies.','Activates with 3 species.','3名不同宝可梦激活。');
     const base={

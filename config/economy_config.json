@@ -596,7 +596,22 @@
     "thresholds": [
       3,
       7
-    ]
+    ],
+    "buff": {
+      "thresholds": [
+        3,
+        5
+      ],
+      "reduction": [
+        0.05,
+        0.1,
+        0.15
+      ],
+      "castHealBase": 0.02,
+      "healRadius": 140,
+      "bandageInterval": 5,
+      "bandageHeal": 0.1
+    }
   },
   "battleTiming": {
     "eliteSeconds": 60,

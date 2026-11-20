@@ -1,6 +1,6 @@
 /* Deterministic family allocation. Legends are pinned; balance marginal type/kind counts. */
 const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm'),root=path.resolve(__dirname,'..'),s={G:{}};vm.createContext(s);
-for(const f of ['js/data/pokedex.js','js/data/evolutions.js','js/systems/progression-mon.js','js/data/moves.js','js/data/fixed-skills.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),s,{filename:f});
+for(const f of ['js/data/pokedex.js','js/data/evolutions.js','js/systems/progression-mon.js','js/data/moves.js','js/data/fixed-skills.js','js/data/support-skills.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),s,{filename:f});
 const g=s.G,features=[...new Set(g.DEX.flatMap(m=>[...m.types.map(t=>'type:'+t),'kind:'+g.Moves.BY_ID[g.FIXED_SKILLS[m.dex]].kind]))].sort(),groups=new Map();
 for(const m of g.DEX){const r=g.MonProgression.rootFor(m.dex);if(!groups.has(r))groups.set(r,{root:r,members:[],v:Array(features.length).fill(0),pinned:false});const a=groups.get(r);a.members.push(m);a.pinned||=m.leg;for(const f of [...m.types.map(t=>'type:'+t),'kind:'+g.Moves.BY_ID[g.FIXED_SKILLS[m.dex]].kind])a.v[features.indexOf(f)]++;}
 const all=[...groups.values()],total=features.map((_,i)=>all.reduce((n,a)=>n+a.v[i],0)),counts=Array.from({length:5},()=>Array(features.length).fill(0)),sizes=Array(5).fill(0),targets=Array.from({length:5},(_,q)=>Math.floor(g.DEX.length/5)+(q>=5-g.DEX.length%5?1:0));
