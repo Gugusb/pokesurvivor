@@ -34,7 +34,7 @@ G.Pickups = (() => {
   function all() { return list; }
 
   function push(o) {
-    if(o.kind==='bomb'||o.kind==='magnet')return;
+    if(o.kind==='bomb'||o.kind==='magnet'||o.kind==='heal'&&G.Expedition?.active)return;
     // En cooperativo sólo el anfitrión crea objetos (las copias llegan por la red).
     if (G.Coop.active && !G.Coop.isHost) return;
     o.id = nextId++;
@@ -58,7 +58,7 @@ G.Pickups = (() => {
 
   /** Copia de un objeto del anfitrión. */
   function addRemote(id, kind, x, y, value) {
-    if(kind==='bomb'||kind==='magnet')return;
+    if(kind==='bomb'||kind==='magnet'||kind==='heal'&&G.Expedition?.active)return;
     if (list.some(p => p.id === id)) return;
     const o = orb(kind, x, y, value);
     o.id = id;
@@ -99,7 +99,7 @@ G.Pickups = (() => {
 
   /** Suelta un objeto suelto: 'heal' | 'magnet' | 'bomb' | 'coin'. */
   function drop(kind, x, y, value = 0) {
-    if(kind==='bomb'||kind==='magnet')return null;
+    if(kind==='bomb'||kind==='magnet'||kind==='heal'&&G.Expedition?.active)return null;
     if(G.Expedition?.active&&!G.EconomyConfig?.combatGoldDrops&&['coin','treasure'].includes(kind))return null;
     const o=orb(kind,x,y,value);push(o);return o;
   }

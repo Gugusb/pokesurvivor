@@ -60,7 +60,7 @@ G.UI = (() => {
 
   // ---------------- sonido de la interfaz ----------------
 
-  const CLICKABLE = '.btn, .menu-item, .tab, .chip, .card, .cell:not(.locked), .answer, .gen-tab';
+  const CLICKABLE = 'button, summary, input[type=button], input[type=submit], [role=button], .btn, .menu-item, .tab, .chip, .card, .cell:not(.locked), .answer, .gen-tab';
   let lastHover = null;
 
   function wireSounds() {

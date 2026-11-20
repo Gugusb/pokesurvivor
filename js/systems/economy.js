@@ -1,7 +1,7 @@
 /* Run-local economy. Combat drops are credited once, after pickup collection. */
 G.Economy=(()=>{
   const config=()=>G.EconomyConfig;
-  const events={battle:'NORMAL_BATTLE',elite:'ELITE_BATTLE',boss:'BOSS_BATTLE',shop:'SHOP',training:'SKILL_TRAINING','pokemon-training':'POKEMON_TRAINING',wild:'WILD_EXPEDITION'};
+  const events={battle:'NORMAL_BATTLE',elite:'ELITE_BATTLE',boss:'BOSS_BATTLE',shop:'SHOP',training:'SKILL_TRAINING','pokemon-training':'POKEMON_TRAINING',wild:'WILD_EXPEDITION',rest:'REST'};
   const levelRow=level=>config().levels.find(row=>row.level===level);
   const maxLevel=s=>s.cycle>=config().endless.unlockCycle?config().levels.at(-1).level:config().levels.at(-2).level;
   const interest=(gold,s=G.Expedition?.run)=>Math.max(0,Math.min(G.TrainerTalents?.maxInterest(s)??config().interest.maxInterest,Math.floor(gold/(G.TrainerTalents?.interestDivisor(s)||config().interest.divisor))));

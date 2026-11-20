@@ -35,22 +35,22 @@ G.PokemonTraining=(()=>{
   function button(text,fn){const b=node('button',text,'btn');b.type='button';b.onclick=fn;return b;}
   function card(p,fn){
     const b=button('',fn),rank=p.isSquadMember?p.rank:p.trainerRank||1;
-    b.classList.add('pokemon-training-card');b.dataset.labUnit=p.isSquadMember?p.squadId:'captain';
+    b.classList.add('pokemon-training-card');b.dataset.quality=G.ExpeditionQuality.quality(p);b.style.setProperty('--quality',G.ExpeditionQuality.color(p));b.dataset.labUnit=p.isSquadMember?p.squadId:'captain';
     const portrait=G.UI.spriteCanvas(p.spriteDex||p.dex,76,76,{portrait:true,hero:true,lively:false});
     b.append(portrait,node('b',G.T(p.mon.name)),node('small','★'.repeat(rank)+' · '+(G.ExpeditionQuality?.label(p)||'')),G.Expedition.tags(p));
     return b;
   }
   function open(run,done){
     if(run.labDay!==run.day){run.labDay=run.day;run.labChoice=null;}
-    const root=document.getElementById('journey-content');let notice='';
+    let notice='';
     function render(mode,target,eggMate,skillMate){
-      root.replaceChildren();root.append(node('h2',L('Sala de entrenamiento Pokémon','Pokémon training room','宝可梦训练室')),node('p',L('Elige entrenamiento o incubación; los ascensos pueden repetirse con materiales.','Choose training or incubation; breakthroughs can repeat while you have materials.','特训与孵蛋各为一次选择；突破可重复，每次消耗两名不同的同星队员。全程免费。'),'note'));
+      const scene=G.ExpeditionEventUI.room(run,L('Sala de entrenamiento Pokémon','Pokémon training room','宝可梦训练室'),'star',L('Entrena, incuba o asciende con materiales.','Train, incubate or use materials to rank up.','特训与孵蛋择一；选升星后可消耗材料重复突破。全程免费。')),root=scene.main;
       if(notice)root.append(node('p',notice,'journey-notice'));
       const list=node('div','','pokemon-training-list');root.append(list);
       if(!mode){
         const special=button(L('Entrenamiento especial','Special training','进行特训')+' · +'+xp(run)+' XP',()=>{if(train(run))done();});special.dataset.labAction='train';special.disabled=!available(run,'train');
         const egg=button(L('Incubar un huevo','Incubate an egg','参与孵蛋')+' · '+cfg().eggDays+L(' días',' days',' 天'),()=>render('egg'));egg.dataset.labAction='egg';egg.disabled=!available(run,'egg');
-        const up=button(L('Ascenso Pokémon','Pokémon breakthrough','宝可梦突破')+(unlocked()?'':L(' · paquete La larga marcha',' · Long March Pack required',' · 需长征之路卡包权限')),()=>render('breakthrough'));up.dataset.labAction='breakthrough';up.disabled=!unlocked()||!available(run,'breakthrough');list.append(special,egg,up);
+        const up=button(L('Ascenso Pokémon','Pokémon breakthrough','宝可梦突破')+(unlocked()?'':L(' · paquete La larga marcha',' · Long March Pack required',' · 需长征之路卡包权限')),()=>render('breakthrough'));up.dataset.labAction='breakthrough';up.disabled=!unlocked()||!available(run,'breakthrough');for(const [b,image]of [[special,'star'],[egg,'heart'],[up,'megaStone']]){b.classList.add('training-option');b.prepend(G.ExpeditionEventUI.icon(image,34));}list.append(special,egg,up);
       }else if(mode==='egg'){
         root.insertBefore(node('h3',L('Elige un progenitor','Choose a parent','选择亲本（队长或队员）')),list);
         for(const p of owned(run))list.append(card(p,()=>{if(incubate(run,p))done();}));

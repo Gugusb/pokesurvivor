@@ -57,7 +57,8 @@
     "SHOP": 0,
     "SKILL_TRAINING": 2,
     "WILD_EXPEDITION": 1,
-    "POKEMON_TRAINING": 0
+    "POKEMON_TRAINING": 0,
+    "REST": 0
   },
   "buyXp": {
     "goldCost": 4,
@@ -639,5 +640,9 @@
   },
   "earlyCompanionBattles": 3,
   "eliteClearBonusXp": 2,
-  "clearCompanionChance": 0.2
+  "clearCompanionChance": 0.2,
+  "rest": {
+    "healFraction": 0.5,
+    "trainerXp": 3
+  }
 }
