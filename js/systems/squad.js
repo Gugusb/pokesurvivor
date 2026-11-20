@@ -2,6 +2,8 @@
 G.Squad = (() => {
   let captain=null,roster=[],trail=[],formation=[],level=1,nextId=1,bonus={},still=0,leaderPos=null,gathering=false;
   const RESERVE_LIMIT=4;
+  const starSnapshot=p=>({dex:p.dex,spriteDex:p.spriteDex,shiny:!!p.shiny,rank:p.isSquadMember?p.rank:p.trainerRank||1,name:p.mon.name});
+  const showRankUp=(before,p)=>G.SquadUI?.rankUp?.(before,starSnapshot(p));
   const support={
     fire:['atk',.03,'Apoyo ardiente'],fighting:['atk',.03,'Espíritu de lucha'],dark:['atk',.03,'Emboscada'],dragon:['atk',.03,'Fuerza dracónica'],
     water:['regen',.001,'Marea vital'],grass:['regen',.001,'Brote vital'],fairy:['regen',.001,'Bendición'],
@@ -61,7 +63,7 @@ G.Squad = (() => {
   }
   function resetFollow(){still=0;gathering=false;leaderPos=captain?{x:captain.x,y:captain.y}:null;for(const p of roster)p.idleTarget=null;}
   function begin(p){G.TypeBonds?.reset();captain=p;roster=[];trail=[{x:p.x,y:p.y}];level=1;formation=Array(G.ExpeditionRules.capacity(level)-1).fill(null);bonus={};nextId=1;p.squadCaptain=true;resetFollow();G.SquadBonds?.reset();G.ExpeditionGrowth?.reset();G.ExpeditionDamage?.reset();G.SquadTraits?.reset();G.ExpeditionGrowth?.sync();refresh();}
-  function reset(){G.TypeBonds?.reset();captain=null;roster=[];trail=[];formation=[];bonus={};resetFollow();G.SquadBonds?.reset();G.SquadTraits?.reset();}
+  function reset(){G.SquadUI?.clearRankUps?.();G.TypeBonds?.reset();captain=null;roster=[];trail=[];formation=[];bonus={};resetFollow();G.SquadBonds?.reset();G.SquadTraits?.reset();}
   function rankMove(p){
     G.Projectiles.clearOrbs(p);
     const m=p.moves[0],target=p.rank===1?2:p.rank===2?5:m.def.maxLvl;
@@ -85,8 +87,8 @@ G.Squad = (() => {
     let merged=true;while(merged){merged=false;
       for(let i=0;i<roster.length&&!merged;i++)for(let j=i+1;j<roster.length;j++){
         const a=roster[i],b=roster[j];if(G.MonProgression.rootFor(a.dex)!==G.MonProgression.rootFor(b.dex)||a.rank!==b.rank||a.rank>=3)continue;
-        const ai=formation.indexOf(a),bi=formation.indexOf(b);if(bi>=0){formation[bi]=ai<0?a:null;if(ai<0){a.x=b.x;a.y=b.y;}}
-        a.poolCopies=(a.poolCopies??2**(a.rank-1))+(b.poolCopies??2**(b.rank-1));a.rank++;a.dead=a.dead&&b.dead;a.hp=a.dead?0:Math.max(a.hp,b.hp,1);G.Projectiles.clearOrbs(b);roster.splice(j,1);evolve(a);rankMove(a);refresh();G.SquadTraits?.merge(a,b);merged=true;break;
+        const before=starSnapshot(a),ai=formation.indexOf(a),bi=formation.indexOf(b);if(bi>=0){formation[bi]=ai<0?a:null;if(ai<0){a.x=b.x;a.y=b.y;}}
+        a.poolCopies=(a.poolCopies??2**(a.rank-1))+(b.poolCopies??2**(b.rank-1));a.rank++;a.dead=a.dead&&b.dead;a.hp=a.dead?0:Math.max(a.hp,b.hp,1);G.Projectiles.clearOrbs(b);roster.splice(j,1);evolve(a);rankMove(a);refresh();G.SquadTraits?.merge(a,b);showRankUp(before,a);merged=true;break;
       }
     }
     refresh();
@@ -99,12 +101,12 @@ G.Squad = (() => {
   function remove(p,sell){const i=roster.indexOf(p);if(i<0)return false;const r=G.Expedition?.run;if(r?.unitPool){if(sell)r.gold+=r.unitPool.sellValue(p);r.unitPool.returnCopies(p.dex,p.poolCopies??r.unitPool.copies(p.rank));}if(sell)G.SquadTraits?.release(p);const slot=formation.indexOf(p);if(slot>=0)formation[slot]=null;for(const shot of [...G.Projectiles.all()])if(shot.owner===p)G.Projectiles.remove(shot);G.Combat?.clearFields(p);roster.splice(i,1);refresh();return true;}
   const release=p=>remove(p,true);
   const consume=p=>remove(p,false);
-  function promote(p,material){if(!roster.includes(p)||p.rank>=G.EconomyConfig.compatibility.maxRank)return false;p.rank++;evolve(p);rankMove(p);refresh();G.SquadTraits?.merge(p,material);consolidate();return true;}
+  function promote(p,material){if(!roster.includes(p)||p.rank>=G.EconomyConfig.compatibility.maxRank)return false;const before=starSnapshot(p);p.rank++;evolve(p);rankMove(p);refresh();G.SquadTraits?.merge(p,material);showRankUp(before,p);consolidate();return true;}
   function reorder(index,dir){const j=index+dir;if(j<0||j>=roster.length)return false;[roster[index],roster[j]]=[roster[j],roster[index]];formation=Array.from({length:capacity()-1},(_,i)=>roster[i]||null);refresh();return true;}
   function syncTrainer(){
     const r=G.Expedition?.run;if(r?.trainerLevel)level=r.trainerLevel;
     while(formation.length<capacity()-1)formation.push(reserves()[0]||null);
-    if(r?.trainerLevel&&captain){const target=G.EconomyConfig.captainEvolutionLevels.filter(l=>level>=l).length;captain.trainerRank||=1;while(captain.trainerRank<target){captain.trainerRank++;evolve(captain);}}
+    if(r?.trainerLevel&&captain){const target=G.EconomyConfig.captainEvolutionLevels.filter(l=>level>=l).length;captain.trainerRank||=1;while(captain.trainerRank<target){const before=starSnapshot(captain);captain.trainerRank++;evolve(captain);showRankUp(before,captain);}}
     refresh();
   }
   function upgrade(){const r=G.Expedition?.run;if(r?.trainerLevel){if(!G.Economy.buyXp(r))return false;syncTrainer();return true;}if(level>=G.ExpeditionRules.MAX_SHOP)return false;level++;formation.push(reserves()[0]||null);refresh();return true;}

@@ -73,17 +73,31 @@ G.SquadBonds=(()=>{
     if(i>=0)factors[i]=['projectile',factors[i][1]*damageK];else factors.push(['projectile',damageK]);p.bondDamageContributions=factors;
   }
   function description(kind){
-    const note=L(' Valores a 0/200/500 capas; después crecen a media pendiente.',' Values at 0/200/500 stacks; growth continues at half slope afterward.','数值对应0/200/500层；500层后按末段一半增速继续成长。');
-    return ({
-      projectile:L('3: agilidad y aguante +50/100/150%. 6: cada perforación multiplica tamaño y daño por 1,2 (tamaño: máximo ×6, radio 128).','3: agility and stamina +50/100/150%. 6: each penetration multiplies size and damage by 1.2 (size capped at ×6, radius 128).','3：结算敏捷、耐力+50/100/150%。6：每次穿透后体积与伤害×1.2，尺寸最多初始6倍、半径上限128，伤害继续成长。')+note,
-      melee:L('3: alcance +50/100/150%. 6: cada enemigo a 180 aporta 10% agilidad y 2% robo de vida, máximo 10.','3: splash range +50/100/150%. 6: each enemy within 180 grants 10% agility and 2% lifesteal, up to 10.','3：溅射范围+50/100/150%。6：180范围内每名敌人提供10%敏捷、2%吸血，最多计10名。')+note,
-      beam:L('3: rayos más largos. 6: canaliza con PP.','3: longer beams. 6: channel by spending PP.','3：能量柱更长。6：持续消耗PP维持光柱。'),
-      chain:L('3: más saltos. 6: saltos retardados, breve pausa y más agilidad.','3: more jumps. 6: delayed jumps, a brief stagger and more agility.','3：连锁数量提高。6：敏捷提高，延迟连锁使目标短暂停顿，可同时释放新连锁。'),
-      area:L('3: agilidad y aguante +80/150/250%. 6: aviso más largo, área crece hasta ×3 y colocación ×2.','3: agility and stamina +80/150/250%. 6: longer windup, splash grows to ×3, placement range ×2.','3：结算敏捷、耐力+80/150/250%。6：陨石前摇×2，轨迹预警1秒；范围逐渐增至3倍，落点范围×2。')+note,
-      bloom:L('3: daño +20/100/150%. 6: alcance +200%, 25% de aturdir 1 s (jefes: 0,5 s).','3: damage +20/100/150%. 6: splash range +200%, 25% chance to stun for 1 s (Bosses: 0.5 s).','3：伤害+20/100/150%。6：溅射范围+200%，25%概率眩晕1秒，BOSS减半。')+note,
-      orbit:L('3: radio +100%, daño +50/100/150%. 6: cada recarga repone un anillo; busca desde el lanzador al 110% del radio orbital; dispara recto a través del terreno y causa ×1,2 de daño orbital al primer enemigo.','3: orbit radius +100%, damage +50/100/150%. 6: each cooldown refills a full ring; searches from the caster within 110% of orbit radius and fires straight through terrain, hitting the first enemy for ×1.2 orbit damage.','3：环绕半径+100%，伤害+50/100/150%。6：每次冷却结束补满一圈；以施法者为中心，在环绕半径110%内索敌；直线发射、无视地形、0穿透，首个命中敌人受到1.2倍环绕伤害，不享受投射物职业加成。')+note,
-      summon:L('3: duración +50/100/150%, límite +100/200/300%. 6: torreta +2 blancos, cadencia ×3 y daño +20/50/100%; mina radio ×3, daño +100/200/300% y aturde 2 s (jefes: 1 s).','3: lifetime +50/100/150%, capacity +100/200/300%. 6: turrets +2 targets, fire rate ×3, damage +20/50/100%; mines radius ×3, damage +100/200/300%, stun 2 s (Bosses: 1 s).','3：持续时间+50/100/150%，数量上限+100/200/300%。6：炮台目标+2、射速×3、伤害+20/50/100%；地雷范围×3、伤害+100/200/300%，眩晕2秒，BOSS减半。')+note
-    })[group(kind)]||L('Amplificación: sin efecto activo todavía.','Amplification: no active bond effect yet.','增幅：暂不激活羁绊效果。');
+    const b=state(kind),k=b.kind,c=cfg(),sep=G.I18n.lang==='zh'?'。':'. ',pct=n=>Number((n*100).toFixed(2))+'%',num=n=>Number(n.toFixed(2));
+    if(!KINDS.includes(k))return L('Sin efecto activo todavía.','No active effect yet.','暂不激活羁绊效果。');
+    if(!b.tier)return L('Se activa con 3 especies.','Activates with 3 species.','3名不同宝可梦激活。');
+    const base={
+      projectile:()=>L('Agilidad +','Agility +','结算敏捷+')+pct(value(k,'agility'))+L(', aguante +',', stamina +','，结算耐力+')+pct(value(k,'stamina')),
+      melee:()=>L('Alcance de impacto +','Splash range +','溅射范围+')+pct(value(k,'range')),
+      beam:()=>L('Longitud del rayo +','Beam length +','能量柱长度+')+pct(.35*b.scale),
+      chain:()=>L('Saltos adicionales +','Additional jumps +','连锁数量+')+Math.max(1,Math.floor(2*b.scale)),
+      area:()=>L('Agilidad +','Agility +','结算敏捷+')+pct(value(k,'agility'))+L(', aguante +',', stamina +','，结算耐力+')+pct(value(k,'stamina')),
+      bloom:()=>L('Daño +','Damage +','技能伤害+')+pct(value(k,'damage')),
+      orbit:()=>L('Radio +','Orbit radius +','环绕半径+')+pct(c.orbit.radiusBonus)+L(', daño +',', damage +','，伤害+')+pct(value(k,'damage')),
+      summon:()=>L('Duración +','Lifetime +','持续时间+')+pct(value(k,'life'))+L(', límite +',', capacity +','，数量上限+')+pct(value(k,'quantity'))
+    }[k]();
+    if(b.tier<6)return base+sep+L('El segundo efecto requiere 6 especies.','The second effect requires 6 species.','6名不同宝可梦解锁二级效果。');
+    const extra={
+      projectile:()=>L('Tras perforar: tamaño y daño +','After penetration: size and damage +','每次穿透后体积与伤害+')+pct(c.projectile.pierceGrowth),
+      melee:()=>L('Cada enemigo cercano: agilidad +','Per nearby enemy: agility +','周围每名敌人：敏捷+')+pct(c.melee.agilityPerEnemy)+L(', robo de vida +',', lifesteal +','，吸血率+')+pct(c.melee.lifestealPerEnemy)+L('; máximo ','; up to ','；最多')+c.melee.maxCrowd+L(' enemigos.',' enemies.','名敌人。'),
+      beam:()=>L('Mantén el rayo gastando PP.','Sustain the beam by spending PP.','持续消耗PP维持光柱。'),
+      chain:()=>L('Agilidad +','Agility +','敏捷+')+pct(.3*b.scale)+L('; saltos retardados que detienen al blanco brevemente.','; delayed jumps briefly stagger targets.','；延迟连锁使目标短暂停顿，可同时释放新连锁。'),
+      area:()=>L('Aviso ×','Windup ×','陨石前摇×')+c.area.windupMultiplier+L(', crecimiento hasta ×',', splash grows to ×','，溅射范围成长至×')+c.area.maxRadiusMultiplier+L(', colocación ×',', placement ×','，落点范围×')+c.area.placementMultiplier,
+      bloom:()=>L('Alcance +','Splash range +','溅射范围+')+pct(c.bloom.rangeBonus)+L('; aturdir: ','; stun chance: ','；眩晕概率')+pct(c.bloom.stunChance)+' · '+c.bloom.stunSeconds+L(' s, jefes ',' s, Bosses ','秒，BOSS ')+num(c.bloom.stunSeconds*c.bossStunFactor)+L(' s.',' s.','秒。'),
+      orbit:()=>L('Repone un anillo por recarga; busca al ','Refills a full ring each cooldown; searches within ','每次冷却补满一圈，索敌半径为环绕半径的')+pct(c.orbit.launchRangeMultiplier)+L('; dispara a través del terreno, primer impacto ×','; shoots through terrain, first hit ×','；无视地形直线发射，首个敌人受到×')+c.orbit.launchDamage+L(' de daño orbital.',' orbit damage.','环绕伤害，命中即消失。'),
+      summon:()=>L('Torreta: blancos +','Turret: targets +','炮台：目标+')+c.summon.turretTargetsBonus+L(', cadencia ×',', fire rate ×','，射速×')+c.summon.fireRateMultiplier+L(', daño +',', damage +','，伤害+')+pct(value(k,'turretDamage'))+L('; mina: radio +','; mine: radius +','；地雷：范围+')+pct(c.summon.mineRadiusBonus)+L(', daño +',', damage +','，伤害+')+pct(value(k,'mineDamage'))+L(', aturde ',', stun ','，眩晕')+c.summon.mineStunSeconds+L(' s (jefes ',' s (Bosses ','秒（BOSS ')+num(c.summon.mineStunSeconds*c.bossStunFactor)+L(' s).',' s).','秒）。')
+    }[k]();
+    return base+'。'+extra;
   }
   return {KINDS,ALL_KINDS,group,label,reset,refresh,count,layer,setLayer,addLayer,state,stats,scale,value,crowd,agility,stamina,sustain,move,afterHit,onPierce,description,palette:id=>cfg().visuals[id.replace('class:','')],get revision(){return revision;}};
 })();

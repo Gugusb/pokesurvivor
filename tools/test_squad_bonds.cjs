@@ -71,7 +71,7 @@ test('summon lifetime and caps scale; turrets lock three distinct targets and fi
 });
 
 test('enhanced mines explode at triple radius and stun Bosses for one second',()=>{
- const s=setup('mine'),g=s.G,e=enemy(s,0);e.boss=true;cast(s);const f=g.Combat._fields()[0];e.x=f.x;e.y=f.y;close(f.r,s.m.radius*3);close(f.dmg,s.m.dmg*s.p.attackFor(s.m)*2);g.Combat.updateFields(.36);close(e.classStunT,1);assert.equal(e.calls.length,1);
+ const s=setup('mine'),g=s.G,e=enemy(s,0);e.boss=true;s.m.count=1;cast(s);const f=g.Combat._fields()[0];e.x=f.x;e.y=f.y;close(f.r,s.m.radius*3);close(f.dmg,s.m.dmg*s.p.attackFor(s.m)*2);g.Combat.updateFields(.36);close(e.classStunT,1);assert.equal(e.calls.length,1);
 });
 
 test('beam channel and delayed chain keep established effects and PP consumption',()=>{

@@ -3,12 +3,28 @@ G.SquadUI=(()=>{
   const $=id=>document.getElementById(id),T=s=>G.T(s),L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
   const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;};
   let selected=null,editable=false,done=null,last=0,stats=[],moves=[],health=null,drag=null,bondMode='types',bondRevision=-1;
+  let rankQueue=[],rankTimer=0,rankOverlay=null,rankFocus=null;
+  function clearRankUps(){clearTimeout(rankTimer);rankQueue=[];rankOverlay?.remove();rankOverlay=null;rankFocus=null;}
+  function rankUp(before,after){rankQueue.push({before:{...before},after:{...after}});if(!rankOverlay)showNextRankUp();}
+  function showNextRankUp(){
+    clearTimeout(rankTimer);rankOverlay?.remove();rankOverlay=null;
+    if(!rankQueue.length){const focus=rankFocus?.isConnected?rankFocus:$('journey-upgrade')||$('squad-close');focus?.focus({preventScroll:true});rankFocus=null;return;}
+    const {before,after}=rankQueue.shift();if(!rankFocus)rankFocus=document.activeElement;
+    const overlay=node('div','squad-rankup');overlay.id='squad-rankup';overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label',L('¡Ascenso!','Star up!','升星成功'));overlay.setAttribute('translate','no');overlay.dataset.rank=after.rank;overlay.dataset.dex=after.dex;
+    const card=node('section','squad-rankup-card');card.append(node('small','',L('UN NUEVO PASO','A NEW MILESTONE','伙伴成长时刻')),node('h2','',L('¡Ascenso!','Star up!','升星成功')));
+    const art=node('div','squad-rankup-art'),oldArt=node('div','rankup-before'),newArt=node('div','rankup-after');
+    oldArt.append(portrait(before,150));newArt.append(portrait(after,150));art.append(node('i','rankup-ring'),oldArt,newArt);
+    card.append(art,node('strong','rankup-stars','★'.repeat(after.rank)),node('b','rankup-name',T(after.name)),node('p','',T(before.name)+' '+('★'.repeat(before.rank))+' → '+T(after.name)+' '+('★'.repeat(after.rank))));
+    const skip=button(L('Continuar','Continue','继续'),showNextRankUp,'btn gold');skip.dataset.sfx='none';card.append(skip);overlay.append(card);document.body.append(overlay);rankOverlay=overlay;G.Audio.sfx('levelup');skip.focus({preventScroll:true});
+    overlay.onkeydown=e=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();showNextRankUp();}else if(e.key==='Tab'){e.preventDefault();skip.focus();}};
+    rankTimer=setTimeout(showNextRankUp,1800);
+  }
   const isOpen=()=>G.UI.isOpen('scr-squad');
   const leader=()=>G.Expedition.run?.captain;
   const all=()=>[leader(),...G.Squad.roster].filter(Boolean);
   const id=p=>p.isSquadMember?String(p.squadId):'captain';
   const deployed=p=>G.Squad.actors().includes(p);
-  const canEdit=()=>editable&&['route','shop','loot'].includes(G.Expedition.phase);
+  const canEdit=()=>editable&&['route','shop','loot','wild'].includes(G.Expedition.phase);
   function status(p){return p===leader()?L('Capitán','Captain','队长'):!deployed(p)?L('Suplente','Reserve','候补'):p.dead?L('Caído · rasgo inactivo','Fainted · trait inactive','已倒下 · 特性暂停'):L('En formación','Deployed','已上阵');}
   function button(text,fn,cls='btn'){const b=node('button',cls,text);b.type='button';b.onclick=fn;return b;}
   function portrait(p,size){const canvas=node('canvas');canvas.width=canvas.height=size;const view=G.UI.sprite(canvas,p.spriteDex||p.dex,{scale:3,hero:true,shiny:!!p.shiny,lively:false,anim:'Walk'});if(p.dead){view.a.play('Faint',{hold:true});canvas.style.filter='grayscale(1)';}canvas.setAttribute('aria-hidden','true');return canvas;}
@@ -23,6 +39,7 @@ G.SquadUI=(()=>{
     const header=node('header','squad-header'),heading=node('div');heading.append(node('small','journey-eyebrow','TEAM FORMATION'),node('h2','',L('Formación del equipo','Squad formation','队伍组建')));
     const closeButton=button('←',close,'btn squad-back-btn');closeButton.id='squad-close';closeButton.setAttribute('aria-label',L('Volver','Back','返回'));
     const wallet=node('div','squad-wallet');wallet.append(node('span','',L('Oro','Gold','局内金币')+' '+G.Expedition.run.gold),node('span','',T('Gemas de habilidad')+' '+(G.DB.save.abilityGems||0)));header.append(closeButton,heading,wallet);root.append(header);
+    root.append(G.Expedition.progressPanel());
     const bar=node('div','squad-mode');bar.append(node('b','',(G.Squad.deployed().length+1)+' / '+G.Squad.capacity+' · '+L('Plazas','Squad limit','编队上限')),node('span','',canEdit()?L('Arrastra para organizar · toca para ver detalles','Drag to arrange · select for details','拖拽调整编队 · 点击查看详情'):L('Combate en pausa · consulta del equipo','Combat paused · squad inspection','战斗已暂停 · 查看小队')));root.append(bar);
     const list=node('div','squad-formation-surface');list.id='squad-list';root.append(list);renderList();
     drag=G.ReorderGrid.bind(list,{enabled:()=>canEdit()&&!detailsOpen(),onDrop:(key,drop)=>{
@@ -90,9 +107,10 @@ G.SquadUI=(()=>{
       const count=G.SquadBonds?.count(bondMode,id)||0,isType=bondMode==='types'&&G.TypeBondDefs?.BY[id],designed=isType||bondMode==='skill'&&G.SquadBonds?.KINDS.includes(id),s=isType?G.TypeBonds.state(id):designed?G.SquadBonds.state(id):null,row=node('div','squad-bond-row'+(s?.tier?' active':''));row.dataset.bond=id;
       row.append(node('b','',name),node('span','',count+(designed?' / '+(isType?(count<2?2:5):(count<3?3:6)):'')),node('small','squad-bond-stack',L('Capas','Stacks','羁绊层数')+' '+(G.SquadBonds?.layer(bondMode,id)??0)));
       if(designed||bondMode==='skill')row.append(node('p','squad-bond-effect',isType?(isType.description[G.I18n.lang]||isType.description.en):G.SquadBonds.description(id)));
-      if(isType){const detail=node('details','squad-bond-preview');detail.append(node('summary','',L('Vista de capas','Stack preview','层数成长预览')));
+      if(isType){const detail=node('div','squad-bond-current');detail.append(node('b','',L('Valores actuales','Current values','当前结算')));
         const labels={mark:['Marca','Mark','印记增伤'],dot:['Daño continuo','Damage over time','持续伤害系数'],blast:['Explosión','Burst','爆发伤害系数'],slow:['Ralentización','Slow','减速'],heal:['Curación','Healing','恢复比例'],chain:['Rayo','Lightning','闪电链系数'],speed:['Velocidad','Speed','移速提升'],freeze:['Congelación','Freeze','冻结时长'],crit:['Crítico','Critical damage','暴伤提升'],spikes:['Esquirlas','Shards','冰刺数'],knock:['Empuje','Knockback','击退提升'],interval:['Intervalo','Interval','护盾间隔'],shields:['Escudos','Shields','护盾上限'],quake:['Terremoto','Quake','地震系数'],pulse:['Ráfaga','Gust','风压系数'],aura:['Viento continuo','Continuous wind','持续风压系数'],vulnerability:['Marca','Mark','每层易伤'],cluster:['Enjambre','Swarm','每层继承比例'],inherit:['Herencia','Inheritance','牺牲继承比例'],impact:['Impacto','Impact','悬岩系数'],drain:['Drenaje','Drain','当前生命流失'],damage:['Daño','Damage','伤害提升'],size:['Tamaño','Size','范围提升'],meteor:['Meteoros','Meteors','龙星群系数'],chance:['Probabilidad','Chance','触发几率'],reflect:['Reflejo','Reflection','双防反伤系数'],reduction:['Reducción','Reduction','每名成员减伤'],threshold:['Umbral','Threshold','处决生命线'],execute:['Ejecución','Execution','额外处决伤害']};
-        for(const [key,values]of Object.entries(isType.values)){const unit=['freeze','interval'].includes(key)?'s':['spikes','shields'].includes(key)?'':'%',factor=unit==='%'?100:1,fmt=n=>Number((n*factor).toFixed(2))+unit;detail.append(node('p','',L(...labels[key])+' · 0 / 100 / 300: '+values.map(fmt).join(' / ')));}row.append(detail);
+        const second={fire:['blast'],grass:['heal'],electric:['speed'],ice:['crit','spikes'],fighting:['heal'],poison:['blast'],ground:['quake'],flying:['aura'],bug:['inherit'],ghost:['blast'],dragon:['meteor'],steel:['reduction','damage'],fairy:['threshold','execute']};
+        for(const key of Object.keys(isType.values)){if(!s.tier||s.tier<5&&second[id]?.includes(key))continue;let current=G.TypeBonds.value(id,key);if(['spikes','shields'].includes(key))current=Math.max(1,Math.floor(current));if(key==='interval')current=Math.max(.25,current);if(key==='threshold')current=Math.min(.95,current);if(['slow','chance'].includes(key))current=Math.min(1,current);const unit=['freeze','interval'].includes(key)?'s':['spikes','shields'].includes(key)?'':'%',factor=unit==='%'?100:1,fmt=n=>Number((n*factor).toFixed(2))+unit;detail.append(node('p','',L(...labels[key])+' · '+fmt(current)));}row.append(detail);
       }rows.append(row);
     }box.append(rows,node('p','note',L('Cada especie cuenta una vez por etiqueta.','Each species counts once per tag.','同名伙伴对同一羁绊只计一次生效数。')));
     if(G.SquadTraits){const counts={stacking:0,economic:0,terminal:0};for(const p of G.Squad.deployed())if(!p.dead)counts[G.SquadTraits.def(p).category]++;box.append(node('h4','',L('Motor de rasgos','Trait engine','特性概况')),node('p','note',L('Acumulación / economía / terminal','Stacking / economy / terminal','叠层 / 经济 / 终端')+' · '+[counts.stacking,counts.economic,counts.terminal].join(' / ')));return;}
@@ -136,5 +154,5 @@ G.SquadUI=(()=>{
     const launcher=$('squad-open');if(launcher)launcher.classList.toggle('hidden',!G.Expedition?.active||G.Game.state!=='playing');
     if(isOpen()&&performance.now()-last>300){last=performance.now();if(G.SquadBonds&&bondRevision!==G.SquadBonds.revision)renderBonds();if(detailsOpen())refreshDetails();}
   }
-  return {init,show,close,back,detailsOpen,closeDetails,isOpen,tick,statRows,get editable(){return canEdit();}};
+  return {init,show,close,back,detailsOpen,closeDetails,isOpen,tick,statRows,rankUp,clearRankUps,get editable(){return canEdit();}};
 })();
