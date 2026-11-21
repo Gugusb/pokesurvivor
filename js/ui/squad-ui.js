@@ -39,7 +39,7 @@ G.SquadUI=(()=>{
     rememberScroll();drag?.destroy();$('squad-member-dialog')?.remove();const root=$('squad-content');root.replaceChildren();
     const header=node('header','squad-header'),heading=node('div');heading.append(node('small','journey-eyebrow','TEAM FORMATION'),node('h2','',L('Formación del equipo','Squad formation','队伍组建')));
     const closeButton=button('←',close,'btn squad-back-btn');closeButton.id='squad-close';closeButton.setAttribute('aria-label',L('Volver','Back','返回'));
-    const wallet=node('div','squad-wallet');wallet.append(node('span','',L('Oro','Gold','局内金币')+' '+G.Expedition.run.gold),node('span','',T('Gemas de habilidad')+' '+(G.DB.save.abilityGems||0)));header.append(closeButton,heading,wallet);root.append(header);
+    const wallet=node('div','squad-wallet');wallet.append(node('span','',L('Oro','Gold','局内金币')+' '+G.Economy.formatGold(G.Expedition.run.gold)),node('span','',T('Gemas de habilidad')+' '+(G.DB.save.abilityGems||0)));header.append(closeButton,heading,wallet);root.append(header);
     root.append(G.Expedition.progressPanel());
     const bar=node('div','squad-mode');bar.append(node('b','',(G.Squad.deployed().length+1)+' / '+G.Squad.capacity+' · '+L('Plazas','Squad limit','编队上限')),node('span','',canEdit()?L('Arrastra para organizar · toca para ver detalles','Drag to arrange · select for details','拖拽调整编队 · 点击查看详情'):L('Combate en pausa · consulta del equipo','Combat paused · squad inspection','战斗已暂停 · 查看小队')));root.append(bar);
     const list=node('div','squad-formation-surface');list.id='squad-list';root.append(list);renderList();

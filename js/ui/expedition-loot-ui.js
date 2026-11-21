@@ -26,13 +26,13 @@ G.ExpeditionLootUI=(()=>{
   function xpProgress(card,label,level,current,next,color){const text=node('small','loot-xp-caption',label+' Lv.'+level+' · '+fmt(current)+' / '+(next?fmt(next):'MAX'));const track=node('div','loot-xp-track'),fill=node('span');fill.style.width=(next?Math.min(1,current/next):1)*100+'%';fill.style.background=color;track.append(fill);card.append(text,track);}
   function earnings(s){
     const report=s.settlement||{},box=section(L('Recompensas','Battle earnings','本场收益'),'loot-earnings'),grid=node('div','loot-earnings-grid');
-    const card=(key,title,image,value)=>{const e=node('article','loot-earning');e.dataset.earning=key;const head=node('div','loot-earning-title');head.append(icon(image,22),node('span','',title));e.append(head,node('b','loot-earning-value','+'+fmt(value)));grid.append(e);return e;};
+    const card=(key,title,image,value)=>{const e=node('article','loot-earning');e.dataset.earning=key;const head=node('div','loot-earning-title');head.append(icon(image,22),node('span','',title));e.append(head,node('b','loot-earning-value','+'+(key==='gold'?G.Economy.formatGold(value):fmt(value))));grid.append(e);return e;};
     const gold=card('gold',L('Oro','Gold','金币'),'coin',report.totalGoldGained||0),formula=node('p','loot-gold-formula');
     const investment=report.investmentReturn||0;
     const terms=[[L('Salario','Wage','工资'),(report.baseWage||0)],[L('Inversión','Investment','投资'),investment],[L('Interés','Interest','利息'),report.interest||0],[L('Racha','Streak','连胜'),report.streakBonus],[L('Revancha','Comeback','逆境'),report.comebackBounty],[L('Élite','Elite bonus','精英奖励'),report.eliteFlawlessBonus],[L('Monedas','Drops','掉落'),report.inWaveDrops],[L('Rasgos','Traits','特性'),report.traitGold]];
-    formula.textContent=terms.filter(([,n],i)=>n||i===0||i===2).map(([name,n])=>name+' '+fmt(n)).join(' + ')+' = '+fmt(report.totalGoldGained||0)+' G';gold.append(formula);
+    formula.textContent=terms.filter(([,n],i)=>n||i===0||i===2).map(([name,n])=>name+' '+G.Economy.formatGold(n)).join(' + ')+' = '+G.Economy.formatGold(report.totalGoldGained||0)+' G';gold.append(formula);
     const divisor=G.TrainerTalents?.interestDivisor(s)||G.EconomyConfig.interest.divisor,cap=G.TrainerTalents?.maxInterest(s)||G.EconomyConfig.interest.maxInterest;
-    gold.append(node('small','loot-interest-rule',L('Interés: ','Interest: ','利息：')+'⌊'+fmt(s.lockedGoldAtBattleStart)+'G ÷ '+divisor+'⌋ · '+L('máx. ','cap ','上限 ')+cap+'G'));
+    gold.append(node('small','loot-interest-rule',L('Interés: ','Interest: ','利息：')+'⌊'+G.Economy.formatGold(s.lockedGoldAtBattleStart)+'G ÷ '+divisor+'⌋ · '+L('máx. ','cap ','上限 ')+cap+'G'));
     const raw=(s.loot.xp||0)+(s.loot.xpBig||0),xp=card('pokemon',L('EXP Pokémon','Pokémon XP','宝可梦经验'),'star',s.pokemonXpGained??raw);
     xp.append(node('p','loot-resource-detail',L('Recogida ','Collected ','拾取 ')+fmt(Math.max(0,raw-(s.xpJarSpent||0)))+' · '+L('Retirada ','Jar withdrawal ','罐中提取 ')+fmt(s.xpJarSpent)+(s.traitBattleRewards?.mon_xp?' · '+L('Rasgos ','Traits ','特性 ')+fmt(s.traitBattleRewards.mon_xp):'')));
     xp.append(node('small','loot-resource-detail',L('Guardada ','Jar deposit ','存罐 ')+fmt(s.xpJarStored)+' · '+L('Reserva ','Balance ','余量 ')+fmt(s.xpJar)));

@@ -1,6 +1,8 @@
 /* Run-local economy. Combat drops are credited once, after pickup collection. */
 G.Economy=(()=>{
   const config=()=>G.EconomyConfig;
+  // Display whole spendable gold without changing fractional accounting.
+  const formatGold=value=>Math.floor(Number(value)||0).toLocaleString(G.I18n?.lang==='zh'?'zh-CN':G.I18n?.lang||'en');
   const events={battle:'NORMAL_BATTLE',elite:'ELITE_BATTLE',boss:'BOSS_BATTLE',shop:'SHOP',training:'SKILL_TRAINING','pokemon-training':'POKEMON_TRAINING',wild:'WILD_EXPEDITION',rest:'REST'};
   const levelRow=level=>config().levels.find(row=>row.level===level);
   const maxLevel=s=>s.cycle>=config().endless.unlockCycle?config().levels.at(-1).level:config().levels.at(-2).level;
@@ -41,5 +43,5 @@ G.Economy=(()=>{
     report.baseXp=config().freeXpByEvent[eventType]||0;report.clearXpBonus=eventType==='ELITE_BATTLE'&&input.victory&&input.cleared===true?config().eliteClearBonusXp:0;report.xpGained=report.baseXp+report.clearXpBonus+(combat&&input.victory?(G.TrainerTalents?.battleReward(s)||0):0);report.leveledUpTo=addXp(s,report.xpGained);if(combat&&input.victory){report.traitXp=s.traitBattleRewards?.exp||0;report.xpGained+=report.traitXp;}return report;
   }
   function settleDay(s,input){if(s.settledDays.has(s.day))return s.settlement;s.settledDays.add(s.day);return s.settlement=settle(s,input);}
-  return {config,events,create,levelRow,maxLevel,interest,capacity,refreshCost,licenseCost,overclockCost,addXp,buyXp,buyLicense,buyPopCap,overclock,settle,settleDay};
+  return {config,formatGold,events,create,levelRow,maxLevel,interest,capacity,refreshCost,licenseCost,overclockCost,addXp,buyXp,buyLicense,buyPopCap,overclock,settle,settleDay};
 })();
