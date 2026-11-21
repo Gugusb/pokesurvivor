@@ -5,8 +5,8 @@ G.Expedition = (() => {
   const BATTLE_RESULT_MS=1500;
   const T=s=>G.T(s),L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
   const $=id=>document.getElementById(id),node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e;};
-  const eventName=k=>({battle:L('Combate','Battle','战斗'),elite:L('Combate de élite','Elite battle','精英战斗'),shop:L('Tienda Pokémon','Pokémon shop','宝可梦商店'),training:L('Dojo de movimientos','Skill training','技能修炼'),'pokemon-training':L('Sala Pokémon','Pokémon training room','宝可梦训练室'),wild:L('Exploración silvestre','Wild expedition','野外探险'),rest:L('Descanso','Rest stop','休整'),boss:L('Combate de jefe','Boss battle','BOSS战'),start:L('Partida','Start','出发')})[k];
-  const eventIcon=k=>({battle:'⚔',elite:'✦',shop:'▣',training:'✎','pokemon-training':'★',wild:'❧',rest:'❧',boss:'♛',start:'⚑'})[k];
+  const eventName=k=>({battle:L('Combate','Battle','战斗'),elite:L('Combate de élite','Elite battle','精英战斗'),shop:L('Tienda Pokémon','Pokémon shop','宝可梦商店'),'item-shop':L('Tienda de objetos','Supply shop','道具商店'),peddler:L('Mercader errante','Wandering merchant','流浪商人'),training:L('Dojo de movimientos','Skill training','技能修炼'),'pokemon-training':L('Sala Pokémon','Pokémon training room','宝可梦训练室'),wild:L('Exploración silvestre','Wild expedition','野外探险'),rest:L('Descanso','Rest stop','休整'),boss:L('Combate de jefe','Boss battle','BOSS战'),start:L('Partida','Start','出发')})[k];
+  const eventIcon=k=>({battle:'⚔',elite:'✦',shop:'▣','item-shop':'▧',peddler:'♧',training:'✎','pokemon-training':'★',wild:'❧',rest:'❧',boss:'♛',start:'⚑'})[k];
   const genNames=['Kanto','Johto','Hoenn','Sinnoh','Teselia','Kalos','Alola','Galar','Paldea'];
   const summary=()=>run?{...R.progress({day:run.day,arceus:run.arceus,cashout:run.cashout}),squadHp:run.squadHp,leagueTier:run.leagueTier??1}:null;
   function header(title,sub){
@@ -25,7 +25,7 @@ G.Expedition = (() => {
       if(key==='trainer'&&cap)block.append(node('small','',L('Límite del ciclo','Cycle level cap','已达当前周期等级上限')));
       panel.append(block);
     }
-    const hp=node('div','expedition-squad-hp');hp.dataset.squadHp=run.squadHp;hp.textContent=L('Vida del equipo','Squad HP','小队生命')+' '+Number(run.squadHp.toFixed(1))+' / '+(G.TrainerTalents?.maxHp(run)||G.EconomyConfig.initial.squadHp);panel.append(hp);if(run.phase!=='combat'){const capHp=node('div','expedition-captain-hp'),track=node('span'),fill=node('i');fill.style.width=Math.max(0,p.hp/p.maxHp)*100+'%';track.append(fill);capHp.append(node('b','',L('Capitán','Captain','队长生命')+' '+Math.ceil(p.hp)+' / '+Math.ceil(p.maxHp)),track);panel.append(capHp);}if(G.TrainerTalentsUI)panel.append(G.TrainerTalentsUI.hud(run));return panel;
+    const hp=node('div','expedition-squad-hp');hp.dataset.squadHp=run.squadHp;hp.textContent=L('Vida del equipo','Squad HP','小队生命')+' '+Number(run.squadHp.toFixed(1))+' / '+(G.TrainerTalents?.maxHp(run)||G.EconomyConfig.initial.squadHp);if(run.squadShield>0)hp.append(node('span','squad-shield',' ◈ '+run.squadShield));panel.append(hp);if(run.phase!=='combat'){const capHp=node('div','expedition-captain-hp'),track=node('span'),fill=node('i');fill.style.width=Math.max(0,p.hp/p.maxHp)*100+'%';track.append(fill);capHp.append(node('b','',L('Capitán','Captain','队长生命')+' '+Math.ceil(p.hp)+' / '+Math.ceil(p.maxHp)),track);panel.append(capHp);}if(G.TrainerTalentsUI)panel.append(G.TrainerTalentsUI.hud(run));return panel;
   }
   function button(text,fn,cls='btn'){const b=node('button',cls,text);b.type='button';b.onclick=fn;return b;}
   function portrait(p,size=72){return G.UI.spriteCanvas(p.spriteDex||p.dex,size,size,{scale:2,shiny:!!p.shiny,hero:true,lively:true});}
@@ -196,7 +196,7 @@ G.Expedition = (() => {
   function begin(captain){
     clearBattleResult();
     const gens=draft?.gens||R.generations(captain.mon),leagueTier=G.LeagueRank?.view(G.DB.save).tier||1;run={...G.Economy.create(),captain,gens,pool:R.pool(gens),day:0,row:0,col:3,cycle:1,map:R.matrix(1,Math.random,leagueTier),leagueTier,phase:'route',xpJar:0,xpJarStored:0,xpJarSpent:0,arceus:false,cashout:false,history:[],kills:0,battlesCompleted:0};
-    offer=[];run.shopLocked=false;run.emblems={};G.Squad.begin(captain);G.TrainerTalents?.begin(run);run.unitPool=new G.UnitPool(run.pool);G.Squad.syncTrainer();G.ExpeditionRecorder?.beginRun();draft=null;note='';showRoute();G.ExpeditionSave?.begin();
+    G.ExpeditionSupplies?.begin(run);run.map=R.matrix(1,Math.random,leagueTier,run.permanentPerks?.events);offer=[];run.shopLocked=false;run.emblems={};G.Squad.begin(captain);G.TrainerTalents?.begin(run);run.unitPool=new G.UnitPool(run.pool);G.Squad.syncTrainer();G.ExpeditionRecorder?.beginRun();draft=null;note='';showRoute();G.ExpeditionSave?.begin();
   }
   function showRoute(){
     if(!run)return;run.phase='route';G.Game.expeditionPause();renderRoute();if(run.pendingTalentPicks?.length)G.TrainerTalentsUI?.showPickModal(renderRoute);
@@ -207,13 +207,13 @@ G.Expedition = (() => {
     const dashboard=node('div','route-dashboard'),left=node('aside','route-sidebar route-resources'),main=node('main','route-main'),right=node('aside','route-sidebar route-status');
     left.setAttribute('aria-label',L('Recursos y equipo','Resources and squad','资源与小队'));right.setAttribute('aria-label',L('Progreso de la expedición','Expedition progress','远征进度'));
     const wallet=node('section','route-wallet'),walletTitle=node('span','',L('Oro disponible','Available gold','可用金币'));wallet.append(G.ExpeditionEventUI.icon('coin',30),walletTitle,node('b','journey-gold',G.Economy.formatGold(run.gold)),node('small','','G'));left.append(wallet,squadShortcut(),box.querySelector('.expedition-progress'),xpJarPanel());
-    const info=node('section','route-overview'),day=node('div','route-day-number');day.append(node('small','',L('Día','Day','远征天数')),node('b','',String(run.day)),node('span','',L('Ciclo ','Cycle ','第 ')+run.cycle+(G.I18n.lang==='zh'?' 周期':'')));info.append(day,node('div','route-boss-countdown',L('BOSS en ','BOSS in ','距BOSS ')+(G.EconomyConfig.cycleLengthDays-run.row)+L(' días',' days',' 天')),node('small','route-generations',run.gens.map(g=>T(genNames[g-1])).join(' · ')));right.append(info);
+    const info=node('section','route-overview'),day=node('div','route-day-number');day.append(node('small','',L('Día','Day','远征天数')),node('b','',String(run.day)),node('span','',L('Ciclo ','Cycle ','第 ')+run.cycle+(G.I18n.lang==='zh'?' 周期':'')));info.append(day,node('div','route-boss-countdown',L('BOSS en ','BOSS in ','距BOSS ')+(G.EconomyConfig.cycleLengthDays-run.row)+L(' días',' days',' 天')),node('small','route-generations',run.gens.map(g=>T(genNames[g-1])).join(' · ')));const scout=G.ExpeditionSupplies?.scoutPanel(run);if(scout)info.append(scout);right.append(info);
     const report=node('section','route-recent');report.append(node('h3','',L('Último combate','Last battle','上场战况')));
     if(run.battlesCompleted){report.append(node('b',run.battleCleared?'route-clear':'',run.battleCleared?L('Todos derrotados','All enemies defeated','全歼敌人'):L('Supervivencia lograda','Survived successfully','成功生存')));const stats=node('div','route-battle-stats');stats.append(node('span','',L('Bajas ','Defeated ','击败 ')+(run.kills||0)),node('span','',Math.ceil(run.elapsed||0)+'s'),node('span',(run.squadDamage?.applied||0)?'route-hp-loss':'',L('Vida perdida ','HP lost ','小队损失 ')+(run.squadDamage?.applied||0)));report.append(stats);}else report.append(node('p','route-empty',L('La aventura acaba de empezar.','Your adventure has just begun.','旅途刚刚开始，伙伴们准备就绪。')));
     if(note)report.append(node('p','journey-notice',note));right.append(report);
     if(G.LeagueRank?.allows('pokemon-training')??true){const eggs=G.PokemonTraining?.eggPanel(run,renderRoute);if(eggs)right.append(eggs);else{const empty=node('section','journey-eggs route-eggs-empty');empty.append(node('h3','',L('Incubación','Incubation','孵蛋进度')),G.ExpeditionEventUI.icon('luckyegg',30),node('p','route-empty',L('No hay huevos en incubación.','No eggs incubating.','暂无孵化中的蛋')));right.append(empty);}}
     const today=node('section','route-day-focus'),todayTitle=node('div','route-day-heading');todayTitle.append(node('h3','',L('Elige el próximo día','Choose the next day','下一天，去哪里？')),node('small','',L('Una visita, una decisión','One stop, one choice','选择一张卡牌，推进一天行程')));today.append(todayTitle);const choices=node('div','route-day-options');
-    for(const row of run.map)for(const cell of row)if(R.reachable(run.row,run.col,cell.row,cell.col)){const c=button('',()=>choose(cell.row,cell.col),'route-choice '+cell.kind);c.dataset.dayChoice=cell.kind;c.style.setProperty('--event-color',({battle:'#8ed6ed',elite:'#bda4ff',boss:'#ff8b9b',shop:'#f4d38e',rest:'#88dfb0',wild:'#80dce0',training:'#a8baff','pokemon-training':'#eeb8e3'})[cell.kind]);const image=({battle:'star',elite:'gem',boss:'bossChest',shop:'coin',rest:'heart',wild:'ball',training:'book','pokemon-training':'cards'})[cell.kind];c.append(node('small','route-day-stamp',L('Día ','Day ','第')+cell.day+(G.I18n.lang==='zh'?'天':'')),G.ExpeditionEventUI.icon(image,42),node('b','',eventName(cell.kind)),node('p','',({battle:L('Sobrevive o derrota a todos','Survive or defeat all foes','坚持生存，或全歼敌人'),elite:L('Desafío élite · EXP 2+2','Elite challenge · XP 2+2','精英挑战 · 经验2+2'),boss:L('Decisión del ciclo','End-of-cycle showdown','周期决战 · 坚守或击败'),shop:L('Recluta y prepara el equipo','Recruit and prepare','招募伙伴，调整阵容'),rest:L('Duerme o ejercítate','Sleep or exercise','睡觉回血，或锻炼升级'),wild:L('Invita nuevos compañeros','Invite new companions','免费邀请野生伙伴'),training:L('Entrena tus movimientos','Train your moves','强化、换招、专精与突破'),'pokemon-training':L('Entrena, incuba o asciende','Train, hatch or rank up','特训、孵蛋与伙伴升星')})[cell.kind]),node('span','route-card-go',L('Elegir →','Choose →','选择行程 →')));choices.append(c);}today.append(choices);main.append(today);
+    for(const row of run.map)for(const cell of row)if(R.reachable(run.row,run.col,cell.row,cell.col)){const c=button('',()=>choose(cell.row,cell.col),'route-choice '+cell.kind);c.dataset.dayChoice=cell.kind;c.style.setProperty('--event-color',({battle:'#8ed6ed',elite:'#bda4ff',boss:'#ff8b9b',shop:'#f4d38e','item-shop':'#e6b3ee',peddler:'#f4b38e',rest:'#88dfb0',wild:'#80dce0',training:'#a8baff','pokemon-training':'#eeb8e3'})[cell.kind]);const image=({battle:'star',elite:'gem',boss:'bossChest',shop:'coin','item-shop':'bag',peddler:'coin',rest:'heart',wild:'ball',training:'book','pokemon-training':'cards'})[cell.kind];c.append(node('small','route-day-stamp',L('Día ','Day ','第')+cell.day+(G.I18n.lang==='zh'?'天':'')),G.ExpeditionEventUI.icon(image,42),node('b','',eventName(cell.kind)),node('p','',({battle:L('Sobrevive o derrota a todos','Survive or defeat all foes','坚持生存，或全歼敌人'),elite:L('Desafío élite · EXP 2+2','Elite challenge · XP 2+2','精英挑战 · 经验2+2'),boss:L('Decisión del ciclo','End-of-cycle showdown','周期决战 · 坚守或击败'),shop:L('Recluta y prepara el equipo','Recruit and prepare','招募伙伴，调整阵容'),'item-shop':L('Suministros para el viaje','Supplies for the journey','选购道具，为远征补给'),peddler:L('Elige un servicio de reclutamiento','Choose a recruitment service','先选服务，再查看伙伴'),rest:L('Duerme o ejercítate','Sleep or exercise','睡觉回血，或锻炼升级'),wild:L('Invita nuevos compañeros','Invite new companions','免费邀请野生伙伴'),training:L('Entrena tus movimientos','Train your moves','强化、换招、专精与突破'),'pokemon-training':L('Entrena, incuba o asciende','Train, hatch or rank up','特训、孵蛋与伙伴升星')})[cell.kind]),node('span','route-card-go',L('Elegir →','Choose →','选择行程 →')));choices.append(c);}today.append(choices);main.append(today);
     const layout=node('section','journey-layout journey-layout-wide'),route=node('div','journey-route'),grid=node('div','journey-grid');const mapHeading=node('div','route-map-heading');mapHeading.append(node('h3','',L('Mapa de ruta','Route map','日程地图')),node('small','',L('Desplázate para explorar','Scroll to explore','滚动查看完整路线')));route.tabIndex=0;route.setAttribute('aria-label',L('Mapa de ruta desplazable','Scrollable route map','可滚动日程地图'));layout.append(mapHeading);grid.setAttribute('role','group');grid.setAttribute('aria-label',L('Itinerario','Schedule','事件日程'));
     for(const row of run.map)for(const cell of row){
       const allowed=R.reachable(run.row,run.col,cell.row,cell.col),current=cell.row===run.row&&cell.col===run.col,visited=run.history.some(h=>h.day===cell.day&&h.col===cell.col);
@@ -239,11 +239,13 @@ G.Expedition = (() => {
     return G.ExpeditionTerms.talent(t.name)+' · '+L('Todo el equipo','Whole squad','全队')+' '+effect+' +'+Number((t.value*100).toFixed(1))+'%';
   }
   function squadShortcut(){return button(L('Ver equipo','View squad','查看小队')+' · '+(G.Squad.deployed().length+1)+' / '+G.Squad.capacity,()=>G.Game.toggleSquad(),'btn small journey-squad-link');}
-  function refreshScreen(){if(run?.phase==='shop')renderShop();else if(run?.phase==='route')renderRoute();else if(run?.phase==='loot')renderLoot();else if(run?.phase==='wild')renderWild();}
+  function openMarket(kind){run.phase=kind;G.Game.expeditionPause();G.ExpeditionMarketUI.open(run,()=>{G.ExpeditionSupplies.leave(run);finishStage();});}
+  function refreshScreen(){if(['item-shop','peddler'].includes(run?.phase))openMarket(run.phase);else if(run?.phase==='shop')renderShop();else if(run?.phase==='route')renderRoute();else if(run?.phase==='loot')renderLoot();else if(run?.phase==='wild')renderWild();}
   function choose(row,col){
     if(!run||run.phase!=='route'||!R.reachable(run.row,run.col,row,col))return false;
     G.LeagueRank?.filterMap(run);G.ExpeditionSave?.beforeEvent({row,col});const cell=run.map[row][col];run.row=row;run.col=col;run.day=cell.day;run.totalDay=cell.day;run.dayInCycle=cell.row;run.history.push({day:run.day,col,kind:cell.kind});note='';run.eventKind=cell.kind;
     if(cell.kind==='shop')openShop();
+    else if(['item-shop','peddler'].includes(cell.kind))openMarket(cell.kind);
     else if(cell.kind==='training'){run.phase='training';G.ExpeditionTraining.open(run,()=>finishStage());}
     else if(cell.kind==='pokemon-training'){run.phase='pokemon-training';G.PokemonTraining.open(run,()=>{if(run.labChoice==='train'){run.phase='upgrades';G.UI.hideAll();G.Game.expeditionResume();}else finishStage();});}
     else if(cell.kind==='rest')openRest();
@@ -299,7 +301,7 @@ G.Expedition = (() => {
   }
   function upgrade(){if(!run||!G.Economy.buyXp(run))return false;G.Squad.syncTrainer();renderShop();if(!$('squad-rankup')&&!G.TrainerTalentsUI?.busy)$('journey-upgrade').focus({preventScroll:true});$('journey-shop-progress').classList.add('xp-purchased');G.UI.toast(L('Experiencia de entrenador','Trainer XP','训练家经验')+' +'+G.EconomyConfig.buyXp.xpGain+' · Lv.'+run.trainerLevel);return true;}
   function toggleShopLock(){if(run?.phase!=='shop')return false;run.shopLocked=!run.shopLocked;renderShop();return true;}
-  function refreshShop(){if(run?.phase!=='shop')return false;const cost=G.Economy.refreshCost(run);if(G.TrainerTalentsUI?.busy)return false;if(run.shopFreeRefreshes>0)run.shopFreeRefreshes--;else if(run.talentFreeRefreshes>0)run.talentFreeRefreshes--;else if(run.traitFreeRefresh>0)run.traitFreeRefresh--;else{if(run.gold<cost)return false;run.gold-=cost;}run.shopLocked=false;run.rankRefreshCount=(run.rankRefreshCount||0)+1;rollShop(true,true);renderShop();return true;}
+  function refreshShop(){if(run?.phase!=='shop')return false;const cost=G.Economy.refreshCost(run);if(G.TrainerTalentsUI?.busy)return false;if(run.shopFreeRefreshes>0)run.shopFreeRefreshes--;else if(run.talentFreeRefreshes>0)run.talentFreeRefreshes--;else if(run.traitFreeRefresh>0)run.traitFreeRefresh--;else{if(run.gold<cost)return false;run.gold-=cost;}run.shopLocked=false;run.rankRefreshCount=(run.rankRefreshCount||0)+1;G.ExpeditionSupplies?.refreshed(run);rollShop(true,true);renderShop();return true;}
   function renderShop(){
     const lv=G.Squad.shopLevel,box=header(L('Tienda Pokémon','Pokémon shop','宝可梦商店'),L('Invita compañeros y amplía tu formación. Los objetos se consiguen en combate.','Invite companions and expand your formation. Earn items through battle.','邀请伙伴、扩充编队。道具通过战斗获得。'));
     const info=node('div','journey-meta');info.append(node('b','journey-gold',L('Oro','Gold','局内金币')+' '+G.Economy.formatGold(run.gold)),node('b','',L('Entrenador','Trainer','训练家')+' Lv.'+lv),node('span','',L('Plazas','Squad limit','编队上限')+' '+G.Squad.capacity));info.append(squadShortcut());box.append(info);
@@ -326,7 +328,7 @@ G.Expedition = (() => {
     goods.append(node('p','note',L('Cinco invitaciones, sin objetos. Bloquear conserva todo al volver; renovar desbloquea la tienda.','Five invitations, no item sales. Lock to preserve all slots on your next visit; refreshing unlocks the shop.','固定5格宝可梦邀请，不出售道具。锁定保留整店至下次访问，手动刷新会解除锁定。')));layout.append(goods);box.append(layout);G.UI.show('scr-journey');if(run.pendingTalentPicks?.length)G.TrainerTalentsUI?.showPickModal(renderShop);
   }
   function startBattle(kind){
-    run.phase='combat';run.kind=kind;run.elapsed=0;run.spawned=0;run.acc=0;run.kills=0;run.wave=R.wave(run.day,kind);run.bossDead=false;run.waveType=Math.random()<.5?G.U.pick([...new Set(run.pool.flatMap(p=>p.types))]):null;
+    run.phase='combat';run.squadHealing={};run.kind=kind;run.elapsed=0;run.spawned=0;run.acc=0;run.kills=0;run.wave=R.wave(run.day,kind);run.bossDead=false;run.waveType=Math.random()<.5?G.U.pick([...new Set(run.pool.flatMap(p=>p.types))]):null;
     run.appeared=new Set();run.xpJarStored=0;run.xpJarSpent=0;run.pokemonXpGained=0;run.battleCleared=false;
     run.bossEmblemChoices=null;run.bossEmblemClaimed=false;run.companion=null;run.companionOffer=null;run.companionResolved=false;run.loot={};run.goldStart=run.gold;run.lockedGoldAtBattleStart=run.gold;run.inWaveCoinDrops=0;run.settlement=null;run.traitBattleRewards={};
     run.extraStart=JSON.parse(JSON.stringify(G.Game.loot||{}));
@@ -339,7 +341,7 @@ G.Expedition = (() => {
   }
   function spawn(boss=false){
     const cap=run.captain,wave=run.wave,candidates=R.encounterCandidates(run.pool,run.day,boss);
-    const same=Math.random()<.85,typed=!boss&&run.waveType?candidates.filter(p=>p.types.includes(run.waveType)===same):null,mon=boss&&run.day===60?G.DEX_BY[493]:G.U.pick(typed?.length?typed:candidates.length?candidates:run.pool);
+    const same=Math.random()<.85,typed=!boss&&run.waveType?candidates.filter(p=>p.types.includes(run.waveType)===same):null,mon=boss&&G.ExpeditionSupplies?G.DEX_BY[G.ExpeditionSupplies.bossDex(run,run.day)]:boss&&run.day===60?G.DEX_BY[493]:G.U.pick(typed?.length?typed:candidates.length?candidates:run.pool);
     let x=cap.x,y=cap.y,free=false;for(let i=0;i<24;i++){const a=Math.random()*Math.PI*2,d=100+Math.sqrt(Math.random())*Math.max(180,G.Camera.outerRadius());x=cap.x+Math.cos(a)*d;y=cap.y+Math.sin(a)*d;if(G.World.isFree(x,y,20)){free=true;break;}}if(!free){
       // A deterministic search keeps random misses from delaying the finite wave.
       for(let radius=100;radius<=Math.max(180,G.Camera.outerRadius())+180&&!free;radius+=40)for(let j=0;j<32;j++){
@@ -347,7 +349,7 @@ G.Expedition = (() => {
         if(G.World.isFree(px,py,20)){x=px;y=py;free=true;break;}
       }
     }if(!free)return null;
-    const behavior=boss?'chase':G.Enemies.behaviorOf(mon),def={dex:mon.dex,name:mon.name,hp:boss?350+run.day*24:12+(mon.baseStats?.hp||60)*.2,spd:boss?55:48+(mon.baseStats?.spe||60)*.15,dmg:boss?14:4+Math.min(8,mon.rarity),xp:boss?80:10+Math.floor(run.day/2),behavior,shotDmg:boss?14:5,shotCd:3.5,range:200};
+    const behavior=boss?'chase':G.Enemies.behaviorOf(mon),def={dex:mon.dex,name:mon.name,hp:boss?3*(350+run.day*24):12+(mon.baseStats?.hp||60)*.2,spd:boss?55:48+(mon.baseStats?.spe||60)*.15,dmg:boss?14:4+Math.min(8,mon.rarity),xp:boss?80:10+Math.floor(run.day/2),behavior,shotDmg:boss?14:5,shotCd:3.5,range:200};
     const e=new G.Enemy(def,x,y,{hp:wave.hp*(boss?1.6:1),spd:wave.speed,dmg:wave.dmg},boss);e.expedition=true;e.expeditionArceus=boss&&run.day===60;
     if(run.kind==='elite'&&!boss)e.makeElite();if(!boss&&Math.random()<G.Difficulty.eliteChance())e.makeElite();
     if(G.Sprites.hasShiny(mon.dex)&&Math.random()<G.Spawner.SHINY_RATE)e.makeShiny();
@@ -422,7 +424,7 @@ G.Expedition = (() => {
   }
   function battleCompanion(){
     const early=run.battlesCompleted<=G.EconomyConfig.earlyCompanionBattles;
-    if(!early&&(!run.battleCleared||Math.random()>=(G.LeagueRank?.rules(run).companionChance??G.EconomyConfig.clearCompanionChance)))return;
+    if(!early&&(!run.battleCleared||Math.random()>=Math.min(1,(G.LeagueRank?.rules(run).companionChance??G.EconomyConfig.clearCompanionChance)+(G.ExpeditionSupplies?.inviteBonus(run)||0))))return;
     const level=run.trainerLevel,owned=new Set([run.captain,...G.Squad.roster].map(p=>G.MonProgression.rootFor(p.dex)));
     if(early)run.companionOffer=run.unitPool.draw(level,Math.random,p=>!owned.has(G.MonProgression.rootFor(p.dex)))||run.unitPool.draw(level);
     if(!run.companionOffer){const dex=R.lootCompanion(run.appeared||new Set(),run.pool,level);if(dex)run.companionOffer={kind:'mon',dex:R.formForRank(dex,1),rank:1,cost:R.monCost(G.DEX_BY[dex]),reserved:false,poolCopies:0};}
@@ -432,7 +434,7 @@ G.Expedition = (() => {
     if(run.phase!=='combat')return;
     G.ExpeditionGrowth?.endBattle();
     const damage=R.squadDamage([...G.EnemyMgr.all(),...(run.pendingSpawns||[]).map(w=>w.enemy)],R.cycleOf(run.day));
-    damage.before=run.squadHp;run.squadHp=Math.max(0,run.squadHp-damage.applied);damage.after=run.squadHp;run.squadDamage=damage;
+    G.ExpeditionSupplies?.absorb(run,damage);damage.before=run.squadHp;run.squadHp=Math.max(0,run.squadHp-damage.applied);damage.after=run.squadHp;run.squadDamage=damage;
     if(run.squadHp<=0&&G.TrainerTalents?.rescue(run)){damage.after=run.squadHp;damage.rescued=true;}
     if(run.squadHp<=0){G.ExpeditionRecorder?.finish('defeat');run.phase='squad-defeat';run.pendingSpawns=[];G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Hazards.clear();G.Game.expeditionDefeat();return;}
     run.battleCleared=cleared;G.ExpeditionRecorder?.finish(cleared?'cleared':'survived');run.battlesCompleted++;battleCompanion();
@@ -440,7 +442,7 @@ G.Expedition = (() => {
     run.remainingHpRatio=Math.max(0,run.captain.hp/run.captain.maxHp);
     G.SquadTraits?.finishBattle(cleared);if(run.day===G.EconomyConfig.cycleLengthDays*G.EconomyConfig.clearCycleThreshold&&run.kind==='boss'){run.arceus=true;run.cashout=true;}run.phase='battle-result';run.pendingSpawns=[];
     G.EnemyMgr.update(0,G.Squad.actors());
-    bankGroundXp();
+    bankGroundXp();G.ExpeditionSupplies?.battleEnd(run,cleared);
     note=cleared?L('¡Todos derrotados!','All foes defeated!','全歼奖励！'):L('Etapa superada','Stage survived','成功度过波次');
     G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Hazards.clear();
     const rewards=G.EconomyConfig.compatibility,itemCount=run.kind==='elite'?rewards.eliteVictoryItems:cleared&&run.kind==='battle'?rewards.normalClearItems:0;
@@ -473,15 +475,15 @@ G.Expedition = (() => {
     let stored=0;for(const p of [...(G.Pickups.all?.()||[])])if(p.kind==='xp'||p.kind==='xpBig'){
       G.Pickups.removeId(p.id);const amount=Number(p.value);if(Number.isFinite(amount)&&amount>0)stored+=amount;
     }
-    run.xpJar=(run.xpJar||0)+stored;run.xpJarStored=(run.xpJarStored||0)+stored;return stored;
+    const added=G.ExpeditionSupplies?G.ExpeditionSupplies.deposit(run,stored):stored;if(!G.ExpeditionSupplies)run.xpJar=(run.xpJar||0)+stored;run.xpJarStored=(run.xpJarStored||0)+added;return added;
   }
   function takeStoredXp(amount){
     if(run?.phase!=='combat'||!Number.isFinite(amount)||amount<=0)return 0;
-    const bonus=Math.min(run.xpJar||0,amount);run.xpJar=Math.max(0,(run.xpJar||0)-bonus);run.xpJarSpent=(run.xpJarSpent||0)+bonus;return bonus;
+    const bonus=Math.min(run.xpJar||0,amount*(G.ExpeditionSupplies?.extraction(run)||1));run.xpJar=Math.max(0,(run.xpJar||0)-bonus);run.xpJarSpent=(run.xpJarSpent||0)+bonus;return bonus;
   }
   function xpJarPanel(){
     const panel=node('p','journey-xp-jar');panel.dataset.xpJar=run.xpJar||0;
-    panel.textContent=L('Reserva de experiencia','Experience jar','经验罐')+' · '+Math.round(run.xpJar||0).toLocaleString()+' XP · '+L('Recoge XP en combate para retirar la misma cantidad.','Collect XP in battle to withdraw an equal amount.','战斗中拾取经验时，额外提取等量储备。');return panel;
+    const cap=G.ExpeditionSupplies.jarMax(run),ratio=G.ExpeditionSupplies.extraction(run);panel.append(node('b','',L('Reserva de experiencia','Experience jar','经验罐')+' · '+Math.round(run.xpJar||0).toLocaleString()+' / '+cap),node('small','',L('Retirada por XP: ','Withdrawal per XP: ','拾取经验额外提取 ×')+Number(ratio.toFixed(2))));const track=node('span','expedition-xp-track'),fill=node('span');fill.style.width=Math.min(1,(run.xpJar||0)/cap)*100+'%';track.append(fill);panel.append(track);return panel;
   }
   function recordPickup(p){
     if(!run||!['combat','rewards'].includes(run.phase))return;
@@ -528,16 +530,16 @@ G.Expedition = (() => {
   function recordPokemonXp(p,amount){if(run&&run.captain===p&&['combat','rewards'].includes(run.phase)&&Number.isFinite(amount)&&amount>0)run.pokemonXpGained=(run.pokemonXpGained||0)+amount;}
   function depart(){if(run?.phase!=='upgrades')return;finishStage(note);}
   function finishStage(message=''){
-    if(!run)return;if(run.traitNeedsUpgrades){run.traitNeedsUpgrades=false;note=message||note;run.phase='upgrades';G.UI.hideAll();G.Game.expeditionResume();return;}if(!run.settledDays.has(run.day)){G.Economy.settleDay(run,{eventType:run.eventKind});G.Squad.syncTrainer();}G.SquadTraits?.dayEnd();G.Game.scoreEvent();G.TypeBonds?.beginStage();G.Squad.recover();note=message;if(run.settlement?.investmentReturn)note+=' '+L('Retorno de inversión +','Investment repayment +','投资回收 +')+G.Economy.formatGold(run.settlement.investmentReturn)+' G';
+    if(!run)return;if(run.traitNeedsUpgrades){run.traitNeedsUpgrades=false;note=message||note;run.phase='upgrades';G.UI.hideAll();G.Game.expeditionResume();return;}if(!run.settledDays.has(run.day)){G.Economy.settleDay(run,{eventType:run.eventKind});G.Squad.syncTrainer();}G.ExpeditionSupplies?.eventEnd(run);if(run.traitNeedsUpgrades){finishStage(message);return;}G.SquadTraits?.dayEnd();G.Game.scoreEvent();G.TypeBonds?.beginStage();G.Squad.recover();note=message;if(run.settlement?.investmentReturn)note+=' '+L('Retorno de inversión +','Investment repayment +','投资回收 +')+G.Economy.formatGold(run.settlement.investmentReturn)+' G';
     const hatched=G.PokemonTraining?.hatch(run)||0;if(hatched&&(G.LeagueRank?.allows('pokemon-training')??true))note+=' '+L('Huevos eclosionados: ','Hatched companions: ','孵化伙伴：')+hatched;
-    if(run.day%G.EconomyConfig.cycleLengthDays===0&&run.day>0){run.cycle++;G.Economy.addXp(run,0);G.Squad.syncTrainer();run.map=R.matrix(run.cycle,Math.random,run.leagueTier);run.row=0;run.history=[{day:run.day,col:run.col}];note+=' '+L('Un nuevo ciclo: los rivales se han fortalecido.','A new cycle: foes have grown much stronger.','新的周期开始了，对手变得更强了。');}
+    if(run.day%G.EconomyConfig.cycleLengthDays===0&&run.day>0){run.cycle++;G.Economy.addXp(run,0);G.Squad.syncTrainer();run.map=R.matrix(run.cycle,Math.random,run.leagueTier,run.permanentPerks?.events);run.row=0;run.history=[{day:run.day,col:run.col}];note+=' '+L('Un nuevo ciclo: los rivales se han fortalecido.','A new cycle: foes have grown much stronger.','新的周期开始了，对手变得更强了。');}
     if(run.day===G.EconomyConfig.cycleLengthDays*G.EconomyConfig.clearCycleThreshold&&run.cashout){G.Game.expeditionVictory();return;}
     if(run.freeShopPending){run.freeShopPending=false;openShop(true);}else showRoute();G.ExpeditionSave?.auto();
   }
   function continueAfterVictory(){if(!run)return;run.cashout=false;G.Server?.heartbeat?.().catch(()=>{});if(run.freeShopPending){run.freeShopPending=false;openShop(true);}else showRoute();}
   function reset(){G.TrainerTalentsUI?.reset();clearBattleResult();G.ExpeditionRecorder?.reset();run=null;G.Squad.reset();G.ExpeditionSave?.reset();const el=$('journey-status');if(el)el.hidden=true;const xp=$('expedition-progress-hud');if(xp)xp.hidden=true;}
   function hud(){
-    const xp=$('expedition-progress-hud');if(xp){xp.hidden=run?.phase!=='combat'||G.Game.state!=='playing';if(!xp.hidden){const p=run.captain,key=[run.trainerLevel,run.trainerXp,p.level,p.xp,p.xpNext,run.cycle,run.squadHp,run.trainerTalents?.length,run.talentGifts?.length].join(':');if(xp.dataset.state!==key){xp.dataset.state=key;xp.replaceChildren(progressPanel());}}}
+    const xp=$('expedition-progress-hud');if(xp){xp.hidden=run?.phase!=='combat'||G.Game.state!=='playing';if(!xp.hidden){const p=run.captain,key=[run.trainerLevel,run.trainerXp,p.level,p.xp,p.xpNext,run.cycle,run.squadHp,run.squadShield,run.trainerTalents?.length,run.talentGifts?.length].join(':');if(xp.dataset.state!==key){xp.dataset.state=key;xp.replaceChildren(progressPanel());}}}
     const el=$('journey-status');if(!el)return;el.hidden=run?.phase!=='combat'||G.Game.state!=='playing';if(el.hidden||performance.now()-lastHud<150)return;lastHud=performance.now();
     const pressure=battlePressure(),seconds=Math.max(0,Math.ceil(run.wave.duration-run.elapsed));
     let objective=seconds+'s';
@@ -547,7 +549,7 @@ G.Expedition = (() => {
     el.dataset.pressure=pressure||'';
     el.textContent=L('Día','Day','第')+' '+run.day+(G.I18n.lang==='zh'?' 天':'')+' · '+L('Ciclo','Cycle','周期')+' '+R.cycleOf(run.day)+' · '+G.Economy.formatGold(run.gold)+' '+L('oro','gold','局内金币')+' · '+objective+' · '+(G.Squad.deployed().filter(p=>!p.dead).length+1)+'/'+G.Squad.capacity+((run.xpJar||0)>0?' · '+L('Reserva XP ','XP jar ','经验罐 ')+Math.round(run.xpJar):'');
   }
-  function restoreData(saved,goods){run=saved;run.leagueTier??=G.LeagueRank?.view(G.DB.save).tier||1;G.LeagueRank?.filterMap(run);if(!(G.LeagueRank?.allows('types',run)??true))run.bossEmblemChoices=null;if(!(G.LeagueRank?.allows(run.phase,run)??true)){run.phase='rest';run.eventKind='rest';}offer=goods||[];draft=null;note='';clearBattleResult();}
+  function restoreData(saved,goods){run=saved;G.ExpeditionSupplies?.restore(run);run.leagueTier??=G.LeagueRank?.view(G.DB.save).tier||1;G.LeagueRank?.filterMap(run);if(!(G.LeagueRank?.allows('types',run)??true))run.bossEmblemChoices=null;if(!(G.LeagueRank?.allows(run.phase,run)??true)){run.phase='rest';run.eventKind='rest';}offer=goods||[];draft=null;note='';clearBattleResult();}
   function restoreView(){G.Game.expeditionPause();if(run.phase==='training')G.ExpeditionTraining.open(run,()=>finishStage(),true);else if(run.phase==='pokemon-training')G.PokemonTraining.open(run,()=>{if(run.labChoice==='train'){run.phase='upgrades';G.UI.hideAll();G.Game.expeditionResume();}else finishStage();});else if(run.phase==='rest')openRest();else refreshScreen();if(run.pendingTalentPicks?.length)G.TrainerTalentsUI.showPickModal(()=>restoreView());}
   return {restoreData,restoreView,skillLabel:kind=>G.SquadBonds.label(kind),tags,talentText,progressPanel,refreshScreen,restChoice,recordPokemonXp,recordPickup,bankGroundXp,takeStoredXp,showLoot,claimCompanion,setup,begin,reset,choose,buy,refreshShop,toggleShopLock,upgrade,tick,tickPresentation,killed,depart,continueAfterVictory,hud,summary,showRoute,
     drawWarnings,drawEnemyPointers,get active(){return !!run;},get inCombat(){return run?.phase==='combat';},get phase(){return run?.phase;},get run(){return run;},get offers(){return offer;}};

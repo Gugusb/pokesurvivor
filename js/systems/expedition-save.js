@@ -1,6 +1,6 @@
 /* Account-isolated local checkpoints. Combat saves restart the selected event. */
 G.ExpeditionSave=(()=>{
- const FORMAT=1,MAX_BYTES=2e6,stable=new Set(['route','shop','wild','rest','training','pokemon-training','loot']);
+ const FORMAT=1,MAX_BYTES=2e6,stable=new Set(['route','shop','item-shop','peddler','wild','rest','training','pokemon-training','loot']);
  const L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
  let point=null,restoring=false,busy=false,lastError='';
  const owner=()=>G.DB.loggedIn?(G.DB.mode+':'+(G.DB.fb?.uid||G.DB.user||'guest')):null;

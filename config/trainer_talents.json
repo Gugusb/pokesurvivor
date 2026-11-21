@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tiers": {
     "silver": {
       "name": {
@@ -112,6 +112,17 @@
       "effects": {
         "freeRefreshes": 2,
         "instantGold": 1
+      },
+      "enhanced": {
+        "effects": {
+          "freeRefreshes": 4,
+          "instantGold": 2
+        },
+        "desc": {
+          "zh": "获得4次免费刷新和2金币。",
+          "en": "Gain 4 free shop refreshes and 2 gold.",
+          "es": "Obtén 4 renovaciones gratis y 2 de oro."
+        }
       }
     },
     {
@@ -131,6 +142,17 @@
       "effects": {
         "atkPct": 0.08,
         "moveSpeedPct": 0.1
+      },
+      "enhanced": {
+        "effects": {
+          "atkPct": 0.16,
+          "moveSpeedPct": 0.2
+        },
+        "desc": {
+          "zh": "全队双攻+16%，移速+20%。",
+          "en": "Team attacks +16%, movement speed +20%.",
+          "es": "Ataques del equipo +16%, velocidad +20%."
+        }
       }
     },
     {
@@ -150,6 +172,17 @@
       "effects": {
         "bonusTrainerXp": 1,
         "bonusReserveXp": 15
+      },
+      "enhanced": {
+        "effects": {
+          "bonusTrainerXp": 2,
+          "bonusReserveXp": 30
+        },
+        "desc": {
+          "zh": "战斗胜利额外获得2训练家经验，经验罐填充30点。",
+          "en": "Battle wins grant 2 extra trainer XP and deposit 30 jar XP.",
+          "es": "Al ganar, +2 EXP de entrenador y 30 EXP para la reserva."
+        }
       }
     },
     {
@@ -169,6 +202,17 @@
       "effects": {
         "healSquadHp": 20,
         "maxSquadHpBonus": 10
+      },
+      "enhanced": {
+        "effects": {
+          "healSquadHp": 40,
+          "maxSquadHpBonus": 20
+        },
+        "desc": {
+          "zh": "小队生命上限+20，立即恢复40点。",
+          "en": "Squad maximum HP +20; restore 40 HP immediately.",
+          "es": "PS máximos del equipo +20; recupera 40 PS."
+        }
       }
     },
     {
@@ -188,6 +232,17 @@
       "effects": {
         "gatherDelay": 0.1,
         "gatherDmgReduction": 0.25
+      },
+      "enhanced": {
+        "effects": {
+          "gatherDelay": 0.05,
+          "gatherDmgReduction": 0.5
+        },
+        "desc": {
+          "zh": "归队响应缩至0.05秒，归队期间减伤50%。",
+          "en": "Gather response 0.05s; gathering damage reduction 50%.",
+          "es": "Respuesta al reunir: 0,05 s; reducción de daño 50%."
+        }
       }
     },
     {
@@ -206,6 +261,16 @@
       },
       "effects": {
         "interestDivisor": 8
+      },
+      "enhanced": {
+        "effects": {
+          "interestDivisor": 6
+        },
+        "desc": {
+          "zh": "每6金币产生1金币利息，利息上限不变。",
+          "en": "Earn 1 interest per 6 gold; interest cap stays unchanged.",
+          "es": "Gana 1 de interés por cada 6 de oro; mismo límite."
+        }
       }
     },
     {
@@ -225,6 +290,17 @@
       "effects": {
         "combatStartShieldPct": 0.2,
         "durationSec": 12
+      },
+      "enhanced": {
+        "effects": {
+          "combatStartShieldPct": 0.4,
+          "durationSec": 12
+        },
+        "desc": {
+          "zh": "开战时前两名队员获得40%最大生命护盾，持续12秒。",
+          "en": "First 2 companions gain a 40% maximum-HP shield for 12s.",
+          "es": "Los 2 primeros aliados ganan escudo del 40% de PS durante 12 s."
+        }
       }
     },
     {
@@ -247,7 +323,21 @@
         },
         "grantTypeMon": "normal"
       },
-      "tagType": "normal"
+      "tagType": "normal",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "normal": 2
+          },
+          "grantTypeMon": "normal",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "一般之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Normal Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Normal · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_fire",
@@ -269,7 +359,21 @@
         },
         "grantTypeMon": "fire"
       },
-      "tagType": "fire"
+      "tagType": "fire",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "fire": 2
+          },
+          "grantTypeMon": "fire",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "火之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Fire Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Fuego · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_water",
@@ -291,7 +395,21 @@
         },
         "grantTypeMon": "water"
       },
-      "tagType": "water"
+      "tagType": "water",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "water": 2
+          },
+          "grantTypeMon": "water",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "水之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Water Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Agua · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_grass",
@@ -313,7 +431,21 @@
         },
         "grantTypeMon": "grass"
       },
-      "tagType": "grass"
+      "tagType": "grass",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "grass": 2
+          },
+          "grantTypeMon": "grass",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "草之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Grass Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Planta · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_electric",
@@ -335,7 +467,21 @@
         },
         "grantTypeMon": "electric"
       },
-      "tagType": "electric"
+      "tagType": "electric",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "electric": 2
+          },
+          "grantTypeMon": "electric",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "电之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Electric Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Eléctrico · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_ice",
@@ -357,7 +503,21 @@
         },
         "grantTypeMon": "ice"
       },
-      "tagType": "ice"
+      "tagType": "ice",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "ice": 2
+          },
+          "grantTypeMon": "ice",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "冰之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Ice Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Hielo · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_fighting",
@@ -379,7 +539,21 @@
         },
         "grantTypeMon": "fighting"
       },
-      "tagType": "fighting"
+      "tagType": "fighting",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "fighting": 2
+          },
+          "grantTypeMon": "fighting",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "格斗之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Fighting Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Lucha · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_poison",
@@ -401,7 +575,21 @@
         },
         "grantTypeMon": "poison"
       },
-      "tagType": "poison"
+      "tagType": "poison",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "poison": 2
+          },
+          "grantTypeMon": "poison",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "毒之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Poison Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Veneno · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_ground",
@@ -423,7 +611,21 @@
         },
         "grantTypeMon": "ground"
       },
-      "tagType": "ground"
+      "tagType": "ground",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "ground": 2
+          },
+          "grantTypeMon": "ground",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "地面之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Ground Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Tierra · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_flying",
@@ -445,7 +647,21 @@
         },
         "grantTypeMon": "flying"
       },
-      "tagType": "flying"
+      "tagType": "flying",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "flying": 2
+          },
+          "grantTypeMon": "flying",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "飞行之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Flying Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Volador · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_psychic",
@@ -467,7 +683,21 @@
         },
         "grantTypeMon": "psychic"
       },
-      "tagType": "psychic"
+      "tagType": "psychic",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "psychic": 2
+          },
+          "grantTypeMon": "psychic",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "超能之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Psychic Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Psíquico · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_bug",
@@ -489,7 +719,21 @@
         },
         "grantTypeMon": "bug"
       },
-      "tagType": "bug"
+      "tagType": "bug",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "bug": 2
+          },
+          "grantTypeMon": "bug",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "虫之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Bug Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Bicho · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_rock",
@@ -511,7 +755,21 @@
         },
         "grantTypeMon": "rock"
       },
-      "tagType": "rock"
+      "tagType": "rock",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "rock": 2
+          },
+          "grantTypeMon": "rock",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "岩石之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Rock Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Roca · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_ghost",
@@ -533,7 +791,21 @@
         },
         "grantTypeMon": "ghost"
       },
-      "tagType": "ghost"
+      "tagType": "ghost",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "ghost": 2
+          },
+          "grantTypeMon": "ghost",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "幽灵之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Ghost Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Fantasma · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_dragon",
@@ -555,7 +827,21 @@
         },
         "grantTypeMon": "dragon"
       },
-      "tagType": "dragon"
+      "tagType": "dragon",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "dragon": 2
+          },
+          "grantTypeMon": "dragon",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "龙之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Dragon Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Dragón · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_dark",
@@ -577,7 +863,21 @@
         },
         "grantTypeMon": "dark"
       },
-      "tagType": "dark"
+      "tagType": "dark",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "dark": 2
+          },
+          "grantTypeMon": "dark",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "恶之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Dark Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Siniestro · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_steel",
@@ -599,7 +899,21 @@
         },
         "grantTypeMon": "steel"
       },
-      "tagType": "steel"
+      "tagType": "steel",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "steel": 2
+          },
+          "grantTypeMon": "steel",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "钢之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Steel Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Acero · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_crest_fairy",
@@ -621,7 +935,21 @@
         },
         "grantTypeMon": "fairy"
       },
-      "tagType": "fairy"
+      "tagType": "fairy",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "fairy": 2
+          },
+          "grantTypeMon": "fairy",
+          "grantTypeMonCount": 2
+        },
+        "desc": {
+          "zh": "妖精之徽章：对应属性计数+2，并获得2只对应属性的一星伙伴（仓库满时保留）。",
+          "en": "Fairy Crest: type count +2; receive 2 one-star Pokémon of that type (held if full).",
+          "es": "Hada · Medalla: cuenta de tipo +2; recibe 2 Pokémon de 1 estrella de ese tipo (se conservan si no caben)."
+        }
+      }
     },
     {
       "id": "gold_eviolite",
@@ -640,6 +968,17 @@
       "effects": {
         "nfeDmgReduction": 0.25,
         "nfeDmgBonus": 0.2
+      },
+      "enhanced": {
+        "effects": {
+          "nfeDmgReduction": 0.5,
+          "nfeDmgBonus": 0.4
+        },
+        "desc": {
+          "zh": "未到最终形态的宝可梦减伤50%，伤害+40%。",
+          "en": "Not fully evolved: damage reduction 50%, damage +40%.",
+          "es": "Sin evolución final: daño recibido −50%, daño causado +40%."
+        }
       }
     },
     {
@@ -659,6 +998,17 @@
       "effects": {
         "refreshCostDiscount": 1,
         "firstSlotDiscountPct": 0.5
+      },
+      "enhanced": {
+        "effects": {
+          "refreshCostDiscount": 2,
+          "firstSlotDiscountPct": 0.75
+        },
+        "desc": {
+          "zh": "刷新费减2金币（最低1），每店首购享25%原价。",
+          "en": "Refresh cost −2 (minimum 1); first purchase in each shop costs 25%.",
+          "es": "Renovar cuesta 2 menos (mín. 1); primera compra al 25% del precio."
+        }
       }
     },
     {
@@ -671,7 +1021,7 @@
         "es": "Pinch Instinct"
       },
       "desc": {
-        "zh": "小队生命低于 50% 时，全员攻击速度与暴击率提升 30%，击杀敌人小额回复小队生命。",
+        "zh": "小队生命低于 50% 时，全员攻击速度与暴击率提升 30%，每次击杀恢复0.2小队生命，最多回到50%。",
         "en": "Below half squad HP: cast rate and critical chance +30%; each kill restores 0.2 squad HP.",
         "es": "Con menos de la mitad de vida de equipo: frecuencia de ataques y probabilidad crítica +30%; cada baja recupera 0,2 de vida de equipo."
       },
@@ -680,6 +1030,19 @@
         "atkSpdPct": 0.3,
         "critPct": 0.3,
         "killHealSquadHp": 0.2
+      },
+      "enhanced": {
+        "effects": {
+          "lowHpThreshold": 0.5,
+          "atkSpdPct": 0.6,
+          "critPct": 0.6,
+          "killHealSquadHp": 0.4
+        },
+        "desc": {
+          "zh": "小队生命低于50%时，攻速和暴击率+60%；每次击杀恢复0.4小队生命，最多回到50%。",
+          "en": "Below 50% squad HP: attack speed and crit chance +60%; kills restore 0.4 squad HP, up to 50%.",
+          "es": "Con menos del 50% de PS: velocidad de ataque y crítico +60%; cada baja cura 0,4 PS, hasta el 50%."
+        }
       }
     },
     {
@@ -699,6 +1062,17 @@
       "effects": {
         "captainCastCdrAllyPct": 0.15,
         "targets": 2
+      },
+      "enhanced": {
+        "effects": {
+          "captainCastCdrAllyPct": 0.3,
+          "targets": 3
+        },
+        "desc": {
+          "zh": "队长施法时，最近3名队员的技能冷却推进30%。",
+          "en": "Captain casts advance cooldowns of the nearest 3 companions by 30%.",
+          "es": "Al lanzar el capitán, avanza un 30% las recargas de los 3 aliados más cercanos."
+        }
       }
     },
     {
@@ -719,6 +1093,18 @@
         "instantGoldCostPct": 0.5,
         "investmentDays": 20,
         "investmentReturn": 1.5
+      },
+      "enhanced": {
+        "effects": {
+          "instantGoldCostPct": 1,
+          "investmentDays": 20,
+          "investmentReturn": 1.5
+        },
+        "desc": {
+          "zh": "投入当前全部金币，接下来20天逐日返还，共回收本金150%。",
+          "en": "Invest all current gold; recover 150% of the principal over the next 20 days.",
+          "es": "Invierte todo el oro actual; recupera el 150% del capital en los próximos 20 días."
+        }
       }
     },
     {
@@ -738,6 +1124,17 @@
       "effects": {
         "contactDmgReduction": 0.2,
         "projectileDmgReduction": 0.2
+      },
+      "enhanced": {
+        "effects": {
+          "contactDmgReduction": 0.4,
+          "projectileDmgReduction": 0.4
+        },
+        "desc": {
+          "zh": "全队接触与远程伤害减免40%。",
+          "en": "Team contact and ranged damage reduction 40%.",
+          "es": "Daño de contacto y a distancia recibido por el equipo −40%."
+        }
       }
     },
     {
@@ -761,7 +1158,21 @@
         "typePulseOnHit": "normal",
         "pulsePct": 0.4
       },
-      "tagType": "normal"
+      "tagType": "normal",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "normal": 4
+          },
+          "typePulseOnHit": "normal",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "一般之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Normal Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Normal · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_fire",
@@ -784,7 +1195,21 @@
         "typePulseOnHit": "fire",
         "pulsePct": 0.4
       },
-      "tagType": "fire"
+      "tagType": "fire",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "fire": 4
+          },
+          "typePulseOnHit": "fire",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "火之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Fire Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Fuego · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_water",
@@ -807,7 +1232,21 @@
         "typePulseOnHit": "water",
         "pulsePct": 0.4
       },
-      "tagType": "water"
+      "tagType": "water",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "water": 4
+          },
+          "typePulseOnHit": "water",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "水之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Water Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Agua · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_grass",
@@ -830,7 +1269,21 @@
         "typePulseOnHit": "grass",
         "pulsePct": 0.4
       },
-      "tagType": "grass"
+      "tagType": "grass",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "grass": 4
+          },
+          "typePulseOnHit": "grass",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "草之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Grass Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Planta · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_electric",
@@ -853,7 +1306,21 @@
         "typePulseOnHit": "electric",
         "pulsePct": 0.4
       },
-      "tagType": "electric"
+      "tagType": "electric",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "electric": 4
+          },
+          "typePulseOnHit": "electric",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "电之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Electric Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Eléctrico · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_ice",
@@ -876,7 +1343,21 @@
         "typePulseOnHit": "ice",
         "pulsePct": 0.4
       },
-      "tagType": "ice"
+      "tagType": "ice",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "ice": 4
+          },
+          "typePulseOnHit": "ice",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "冰之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Ice Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Hielo · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_fighting",
@@ -899,7 +1380,21 @@
         "typePulseOnHit": "fighting",
         "pulsePct": 0.4
       },
-      "tagType": "fighting"
+      "tagType": "fighting",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "fighting": 4
+          },
+          "typePulseOnHit": "fighting",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "格斗之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Fighting Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Lucha · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_poison",
@@ -922,7 +1417,21 @@
         "typePulseOnHit": "poison",
         "pulsePct": 0.4
       },
-      "tagType": "poison"
+      "tagType": "poison",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "poison": 4
+          },
+          "typePulseOnHit": "poison",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "毒之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Poison Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Veneno · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_ground",
@@ -945,7 +1454,21 @@
         "typePulseOnHit": "ground",
         "pulsePct": 0.4
       },
-      "tagType": "ground"
+      "tagType": "ground",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "ground": 4
+          },
+          "typePulseOnHit": "ground",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "地面之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Ground Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Tierra · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_flying",
@@ -968,7 +1491,21 @@
         "typePulseOnHit": "flying",
         "pulsePct": 0.4
       },
-      "tagType": "flying"
+      "tagType": "flying",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "flying": 4
+          },
+          "typePulseOnHit": "flying",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "飞行之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Flying Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Volador · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_psychic",
@@ -991,7 +1528,21 @@
         "typePulseOnHit": "psychic",
         "pulsePct": 0.4
       },
-      "tagType": "psychic"
+      "tagType": "psychic",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "psychic": 4
+          },
+          "typePulseOnHit": "psychic",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "超能之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Psychic Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Psíquico · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_bug",
@@ -1014,7 +1565,21 @@
         "typePulseOnHit": "bug",
         "pulsePct": 0.4
       },
-      "tagType": "bug"
+      "tagType": "bug",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "bug": 4
+          },
+          "typePulseOnHit": "bug",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "虫之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Bug Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Bicho · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_rock",
@@ -1037,7 +1602,21 @@
         "typePulseOnHit": "rock",
         "pulsePct": 0.4
       },
-      "tagType": "rock"
+      "tagType": "rock",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "rock": 4
+          },
+          "typePulseOnHit": "rock",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "岩石之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Rock Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Roca · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_ghost",
@@ -1060,7 +1639,21 @@
         "typePulseOnHit": "ghost",
         "pulsePct": 0.4
       },
-      "tagType": "ghost"
+      "tagType": "ghost",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "ghost": 4
+          },
+          "typePulseOnHit": "ghost",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "幽灵之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Ghost Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Fantasma · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_dragon",
@@ -1083,7 +1676,21 @@
         "typePulseOnHit": "dragon",
         "pulsePct": 0.4
       },
-      "tagType": "dragon"
+      "tagType": "dragon",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "dragon": 4
+          },
+          "typePulseOnHit": "dragon",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "龙之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Dragon Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Dragón · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_dark",
@@ -1106,7 +1713,21 @@
         "typePulseOnHit": "dark",
         "pulsePct": 0.4
       },
-      "tagType": "dark"
+      "tagType": "dark",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "dark": 4
+          },
+          "typePulseOnHit": "dark",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "恶之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Dark Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Siniestro · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_steel",
@@ -1129,7 +1750,21 @@
         "typePulseOnHit": "steel",
         "pulsePct": 0.4
       },
-      "tagType": "steel"
+      "tagType": "steel",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "steel": 4
+          },
+          "typePulseOnHit": "steel",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "钢之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Steel Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Acero · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_crown_fairy",
@@ -1152,7 +1787,21 @@
         "typePulseOnHit": "fairy",
         "pulsePct": 0.4
       },
-      "tagType": "fairy"
+      "tagType": "fairy",
+      "enhanced": {
+        "effects": {
+          "typeBondOffset": {
+            "fairy": 4
+          },
+          "typePulseOnHit": "fairy",
+          "pulsePct": 0.8
+        },
+        "desc": {
+          "zh": "妖精之王冠：对应属性计数+4；克制命中的独立脉冲造成80%伤害。",
+          "en": "Fairy Crown: type count +4; super-effective hits emit an independent 80%-damage pulse.",
+          "es": "Hada · Corona: cuenta de tipo +4; impactos supereficaces emiten un pulso independiente del 80% de daño."
+        }
+      }
     },
     {
       "id": "ultra_fourth_move",
@@ -1171,6 +1820,18 @@
       "effects": {
         "unlockCaptainFourthMove": true,
         "promptMoveDraft": true
+      },
+      "enhanced": {
+        "effects": {
+          "unlockCaptainFourthMove": true,
+          "promptMoveDraft": true,
+          "draftMoveLevel": 5
+        },
+        "desc": {
+          "zh": "从队长招式池选择一个5级新技能，满槽时替换一个技能槽。",
+          "en": "Choose a level-5 captain move; replace a slot if full.",
+          "es": "Elige un movimiento de capitán de nivel 5; sustituye una ranura si está lleno."
+        }
       }
     },
     {
@@ -1230,6 +1891,17 @@
       "effects": {
         "maxStarSkillLevelBonus": 1,
         "freeSuperMovePP": true
+      },
+      "enhanced": {
+        "effects": {
+          "maxStarSkillLevelBonus": 2,
+          "freeSuperMovePP": true
+        },
+        "desc": {
+          "zh": "三星队员的技能上限与等级再+2，超武不消耗PP。",
+          "en": "Three-star companions gain 2 extra skill levels and cap; super moves cost no PP.",
+          "es": "Aliados de 3 estrellas: nivel y límite de movimientos +2; supermovimientos sin coste de PP."
+        }
       }
     },
     {
@@ -1249,6 +1921,17 @@
       "effects": {
         "grantRerolls": 3,
         "upgradeShopSlotChance": 0.2
+      },
+      "enhanced": {
+        "effects": {
+          "grantRerolls": 6,
+          "upgradeShopSlotChance": 0.4
+        },
+        "desc": {
+          "zh": "获得6次潜能重掷；商店每格有40%概率提高一档品质。",
+          "en": "Gain 6 talent rerolls; each shop slot has a 40% chance to improve quality by one.",
+          "es": "Obtén 6 renovaciones de talentos; cada oferta tiene 40% de subir una calidad."
+        }
       }
     },
     {
@@ -1271,6 +1954,20 @@
         "defMult": 2.5,
         "hitRadiusMult": 2,
         "immuneKnockback": true
+      },
+      "enhanced": {
+        "effects": {
+          "scaleMult": 2.2,
+          "hpMult": 4,
+          "defMult": 4,
+          "hitRadiusMult": 3,
+          "immuneKnockback": true
+        },
+        "desc": {
+          "zh": "队长体型×2.2，生命与双防×4，招式范围×3，免疫击退。",
+          "en": "Captain size ×2.2, HP and defenses ×4, move radius ×3; immune to knockback.",
+          "es": "Capitán: tamaño ×2,2, PS y defensas ×4, alcance ×3; inmune al retroceso."
+        }
       }
     },
     {
@@ -1289,6 +1986,16 @@
       },
       "effects": {
         "captainOmniTag": true
+      },
+      "enhanced": {
+        "effects": {
+          "captainOmniTag": 2
+        },
+        "desc": {
+          "zh": "队伍已有的每条羁绊计数+2；不生成原本不存在的标签。",
+          "en": "Every represented bond gains +2 count; absent tags remain absent.",
+          "es": "Cada vínculo presente suma 2 miembros; no crea etiquetas ausentes."
+        }
       }
     },
     {
@@ -1310,7 +2017,21 @@
         "wipeMinions": true,
         "charges": 1
       },
-      "unique": true
+      "unique": true,
+      "enhanced": {
+        "effects": {
+          "cheatDeathSquadHp": 80,
+          "wipeMinions": true,
+          "charges": 1,
+          "captainRevivePct": 0.8,
+          "rescueInvuln": 4
+        },
+        "desc": {
+          "zh": "本局首次致命伤时，小队恢复80生命，队长恢复80%生命并无敌4秒，清除非BOSS敌人。",
+          "en": "Once per run on lethal damage: restore 80 squad HP, revive captain at 80% HP with 4s invulnerability, remove non-Boss foes.",
+          "es": "Una vez por expedición ante daño letal: cura 80 PS de equipo, revive al capitán al 80% con 4 s de invulnerabilidad y elimina enemigos no jefes."
+        }
+      }
     },
     {
       "id": "master_infinite_pp",
@@ -1329,6 +2050,17 @@
       "effects": {
         "cdrPct": 0.35,
         "ignorePPRequirement": true
+      },
+      "enhanced": {
+        "effects": {
+          "cdrPct": 0.7,
+          "ignorePPRequirement": true
+        },
+        "desc": {
+          "zh": "队员技能冷却缩减70%，技能不需要PP；队长沿用原PP规则。",
+          "en": "Companion cooldowns −70% and no PP required; captain keeps normal PP rules.",
+          "es": "Recargas de aliados −70% y sin PP; el capitán mantiene sus reglas."
+        }
       }
     },
     {
@@ -1349,6 +2081,19 @@
         "instantGold": 1,
         "maxInterest": 12,
         "guaranteedTier5Slot": true
+      },
+      "enhanced": {
+        "effects": {
+          "instantGold": 2,
+          "maxInterest": 19,
+          "guaranteedTier5Slot": true,
+          "guaranteedTier5Slots": 2
+        },
+        "desc": {
+          "zh": "立即获得2金币，利息上限19；商店保底2只最高品质宝可梦。",
+          "en": "Gain 2 gold, interest cap 19; shops guarantee 2 highest-quality Pokémon.",
+          "es": "Gana 2 de oro, límite de interés 19; las tiendas garantizan 2 Pokémon de máxima calidad."
+        }
       }
     }
   ],

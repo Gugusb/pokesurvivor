@@ -22,16 +22,16 @@ G.Items = (() => {
   const count=(p,id)=>BY[id]?Math.max(0,p?.specialItems?.[id]||0):0;
   const icon=id=>BY[id]?.icon||id;
   function gain(p,id){
-    if(!p||!BY[id])return false;
+    if(!p||!BY[id]||G.ExpeditionSupplies&&!G.ExpeditionSupplies.canGain(p,id))return false;
     if(BY[id].unlock&&!p.remote&&G.CardPacks&&!G.CardPacks.enabled(G.DB.save,id))return false;
     p.specialItems ||= {};
     if(id==='masterytm')p.specTokens=(p.specTokens||0)+1;
     else if(id==='linker')p.bonds=(p.bonds||0)+1;
     else p.specialItems[id]=count(p,id)+1;
-    return true;
+    G.ExpeditionSupplies?.gained(p,id);return true;
   }
   function remove(p,id){if(!count(p,id))return false;if(--p.specialItems[id]===0)delete p.specialItems[id];return true;}
-  const permitted=i=>!i.unlock||!!G.DB?.save&&G.CardPacks?.enabled(G.DB.save,i.id);
+  const permitted=i=>!!i&&(!i.expeditionOnly||G.Expedition?.active&&(G.ExpeditionSupplies?.canGain(G.Expedition.run.captain,i.id)??true))&&(!i.unlock||!!G.DB?.save&&G.CardPacks?.enabled(G.DB.save,i.id));
   function roll(){return G.U.pick(LIST.filter(i=>!i.boss&&permitted(i))).id;}
   function rewardChoices(rng=Math.random,rift=true,bonus=0){
     const out=[];

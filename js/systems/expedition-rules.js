@@ -3,9 +3,9 @@ G.ExpeditionRules = (() => {
   const DAYS=20, COLS=7, MAX_SHOP=6, FINAL_CHASE=20;
   const days=()=>G.EconomyConfig?.cycleLengthDays||DAYS;
   const weights=[['battle',10],['elite',2],['shop',5],['rest',5],['training',3]];
-  function roll(rng=Math.random,tier=4){const table=(G.EconomyConfig?Object.entries(G.EconomyConfig.eventWeights):weights).filter(([id])=>G.LeagueRank?.allows(id,tier)??true);let n=rng()*table.reduce((n,[,w])=>n+w,0);for(const [id,w]of table){n-=w;if(n<0)return id;}return table[0][0];}
-  function matrix(cycle=1,rng=Math.random,tier=4){
-    return Array.from({length:days()+1},(_,r)=>Array.from({length:COLS},(_,c)=>({kind:r===0?'start':r===days()?'boss':roll(rng,tier),row:r,col:c,day:(cycle-1)*days()+r})));
+  function roll(rng=Math.random,tier=4,events={}){const base=G.EconomyConfig?Object.entries(G.EconomyConfig.eventWeights):weights,shop=base.find(([id])=>id==='shop')?.[1]||0,item=events['item-shop']?shop*.2:0,peddler=events.peddler?shop*.1:0;const table=base.map(([id,w])=>[id,id==='shop'?w-item-peddler:w]).concat([['item-shop',item],['peddler',peddler]]).filter(([id,w])=>w>0&&(G.LeagueRank?.allows(id,tier)??true));let n=rng()*table.reduce((n,[,w])=>n+w,0);for(const [id,w]of table){n-=w;if(n<0)return id;}return table[0][0];}
+  function matrix(cycle=1,rng=Math.random,tier=4,events={}){
+    return Array.from({length:days()+1},(_,r)=>Array.from({length:COLS},(_,c)=>({kind:r===0?'start':r===days()?'boss':roll(rng,tier,events),row:r,col:c,day:(cycle-1)*days()+r})));
   }
   const reachable=(row,col,r,c)=>r===row+1&&c>=0&&c<COLS&&Math.abs(c-col)<=1;
   const cycleOf=day=>Math.floor(Math.max(0,day-1)/days())+1;

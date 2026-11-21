@@ -9,7 +9,7 @@ G.CardPacks=(()=>{
   {key:'stamina',icon:'boot',name:{es:'Aguante',en:'Stamina',zh:'耐力成长'},desc:{es:'+5% de aguante base',en:'+5% base stamina',zh:'+5%基础耐力'}},
   {key:'retention',icon:'gem',name:{es:'Conservación PP',en:'PP Retention',zh:'PP留存率'},desc:{es:'+3% de no gastar PP',en:'+3% chance to spend no PP',zh:'施放时不消耗PP的概率 +3个百分点'}}
  ].map(u=>({...u,id:'skill:'+u.key,kind:'skill',max:6}));
- const items=[...G.STARTER_ITEMS,...(G.BREAKTHROUGH_ITEMS||[])];
+ const items=[...G.STARTER_ITEMS,...(G.BREAKTHROUGH_ITEMS||[]),...(G.ExpeditionCards?.ITEMS||[])];
  const itemCard=u=>({id:'item:'+u.id,kind:'item',key:u.id,max:1,name:u.name,desc:u.desc,icon:u.icon,boss:!!u.boss});
  const legacy={id:'stat:cd',kind:'stat',key:'cd',max:8,name:G.Upgrades.BY.cd.name,desc:G.Upgrades.BY.cd.unit,icon:'clock'};
  const packs=[
@@ -18,16 +18,12 @@ G.CardPacks=(()=>{
  ];
  packs.push({id:'long-march',price:5000,name:{es:'La larga marcha',en:'Long March Pack',zh:'长征之路卡包'},cards:[
   ['specialize','Especialización','Skill specialization','技能专精'],['link','Vínculo','Skill link','技能联结'],['breakthrough','Superación','Skill breakthrough','技能突破'],['pokemon-breakthrough','Ascenso Pokémon','Pokémon breakthrough','宝可梦突破']
- ].map(([key,es,en,zh])=>({id:'training:'+key,kind:'training',key,max:1,name:{es,en,zh},desc:key==='pokemon-breakthrough'?{es:'Desbloquea ascensos con dos compañeros del mismo rango en la sala Pokémon.',en:'Unlock Pokémon training-room breakthroughs using two same-star companions.',zh:'永久解锁宝可梦训练室中的突破：消耗两名同星、分别匹配蛋组与技能标签的队员。'}:{es:'Permiso permanente para una opción gratuita del dojo de expedición.',en:'Permanently unlock a free expedition skill-training option.',zh:'永久解锁技能修炼中的对应免费选项。'},icon:'cards'}))});
- packs.find(p=>p.id==='long-march').cards.push(...[
-  ['type','Bayas de tipo','Type fruits','属性果实','Desbloquea bayas de daño por tipo.','Unlock Pokémon type damage fruits.','解锁属性果实升级选项。'],
-  ['skill','Bayas técnicas','Skill fruits','技能果实','Desbloquea bayas de daño y apoyo por oficio.','Unlock skill damage and support-effect fruits.','解锁技能果实升级选项。'],
-  ['slot','Mejora de puestos','Slot upgrades','槽位改造','Desbloquea mejoras de puestos del equipo.','Unlock squad slot upgrades.','解锁槽位改造升级选项。'],
-  ['hormone','Bayas hormona','Hormone fruits','激素果实','Desbloquea PP temporales para el próximo combate.','Unlock temporary PP for the next battle.','解锁激素果实升级选项。']
- ].map(([key,es,en,zh,de,den,dzh])=>({id:'fruit:'+key,kind:'expedition',key,max:1,name:{es,en,zh},desc:{es:de,en:den,zh:dzh},icon:key==='slot'?'cards':'berry'})));
+ ].map(([key,es,en,zh])=>({id:'training:'+key,kind:'training',key,max:1,name:{es,en,zh},desc:key==='pokemon-breakthrough'?{es:'Desbloquea ascensos con dos compañeros del mismo rango en la sala Pokémon.',en:'Unlock Pokémon training-room breakthroughs using two same-star companions.',zh:'永久解锁宝可梦训练室中的突破：消耗两名同星、分别匹配蛋组与技能标签的队员。'}:{es:'Permiso permanente para la opción correspondiente del dojo de expedición.',en:'Permanently unlock the corresponding expedition skill-training option.',zh:'永久解锁技能修炼中的对应选项。'},icon:'cards'}))});
+ const legacyFruits=['type','skill','slot'].map(key=>({id:'fruit:'+key,kind:'expedition',key,max:1,name:{en:'Legacy '+key+' fruits',zh:'旧果实权限'},desc:{en:'Preserved category permission',zh:'保留原整类权限'},icon:'berry'}));
+ packs.find(p=>p.id==='long-march').cards.push(...(G.ExpeditionCards?.FRUITS||[]),...(G.ExpeditionCards?.PERKS||[]),...(G.ExpeditionCards?.EVENTS||[]),...(G.ExpeditionCards?.ITEMS||[]).map(itemCard));
  const speedCards=[1.5,2,3].map(value=>({id:'speed:'+value,kind:'speed',key:value,max:1,name:{es:'Velocidad '+value+'×',en:value+'× Speed',zh:value+'倍速权限'},desc:{es:'Desbloquea esta velocidad de juego',en:'Unlocks this game speed',zh:'解锁此游戏速度，可在操作设置中选择'},icon:'clock'}));
  packs[0].cards.push(...speedCards.slice(0,2));packs[1].cards.push(speedCards[2]);
- const cards=packs.flatMap(p=>p.cards),BY=Object.assign(Object.create(null),Object.fromEntries([...cards,legacy].map(c=>[c.id,c])));
+ const cards=packs.flatMap(p=>p.cards),BY=Object.assign(Object.create(null),Object.fromEntries([...cards,legacy,...legacyFruits].map(c=>[c.id,c])));
  const packBy=Object.assign(Object.create(null),Object.fromEntries(packs.map(p=>[p.id,p])));
  const available=(s,p,c)=>Math.max(0,c.max-(p.taken[c.id]||0))*(c.kind==='z'&&G.ZAccess?.allowed(s,c.key)?0:1);
  const clone=x=>JSON.parse(JSON.stringify(x));
@@ -40,7 +36,8 @@ G.CardPacks=(()=>{
    }
    s.pupg={};s.upgrades={};s.pupgDone=true;const p=s.cardPack;
    p.refundDue=Math.max(0,Number(p.refundDue)||0);const credit=Math.min(p.refundDue,Math.max(0,1e8-(s.coins||0)));s.coins=(s.coins||0)+credit;p.refundDue-=credit;
-   const taken={};for(const c of [...cards,legacy])taken[c.id]=Math.max(0,Math.min(c.max,Math.floor(+p.taken?.[c.id]||0)));p.taken=taken;
+   const sourceTaken={...p.taken};for(const c of G.ExpeditionCards?.FRUITS||[])for(const kind of ['type','skill','slot'])if(sourceTaken['fruit:'+kind]&&c.id.startsWith('fruit:'+kind+':'))sourceTaken[c.id]=1;
+   const taken={};for(const c of [...cards,legacy,...legacyFruits])taken[c.id]=Math.max(0,Math.min(c.max,Math.floor(+sourceTaken?.[c.id]||0)));p.taken=taken;
    p.tokens=Object.fromEntries(packs.map(pack=>[pack.id,Math.max(0,Math.min(1e6,Math.floor(+p.tokens?.[pack.id]||0)))]));
    if(p.skillMigrated!==1){const bonus=taken['stat:cd']*.03,levels=Math.min(6,Math.floor((bonus+1e-9)/.05));taken['skill:agility']=levels;p.legacyAgility=Math.max(0,bonus-levels*.05);p.skillMigrated=1;}
    p.legacyAgility=Math.max(0,Math.min(.24,Number(p.legacyAgility)||0));
@@ -52,7 +49,7 @@ G.CardPacks=(()=>{
    const offer=p.pending;
    if(offer){
     offer.pack ||= 'beginner';offer.id ||= offerId(offer);const pack=packBy[offer.pack];
-    if(!pack||!Number.isSafeInteger(offer.seq)||offer.seq<1||offer.seq>p.seq||!Array.isArray(offer.options)||!offer.options.length||offer.options.length>3||offer.options.some(id=>!BY[id]||!(pack.cards.includes(BY[id])||offer.pack==='beginner'&&id===legacy.id)))p.pending=null;
+    if(!pack||!Number.isSafeInteger(offer.seq)||offer.seq<1||offer.seq>p.seq||!Array.isArray(offer.options)||!offer.options.length||offer.options.length>3||offer.options.some(id=>!BY[id]||!(pack.cards.includes(BY[id])||offer.pack==='long-march'&&legacyFruits.includes(BY[id])||offer.pack==='beginner'&&id===legacy.id)))p.pending=null;
     else if(p.closed[offerId(offer)])p.pending=null;
     else if(offer.options.some(id=>!available(s,p,BY[id]))){
      // A duplicate acquisition may unlock a paid offer between drawing and claiming.
@@ -77,7 +74,7 @@ G.CardPacks=(()=>{
  function apply(s,data){switch(data.action){case 'draw':return data.count===10?drawMany(s,Math.random,data.pack||'beginner',data.token===true):draw(s,Math.random,data.pack||'beginner',data.token===true);case 'choose':if(data.offerId&&data.offerId!==s.cardPack?.pending?.id)throw Error('Invalid pack choice');return choose(s,data.seq,data.index);case 'toggle':return toggle(s,data.id);case 'theme':return equip(s,data.id);default:throw Error('Invalid pack action');}}
  function settlement(current={},base={},next={}){
    const offers=p=>new Map([...(Object.entries(p.closed||{}).filter(([,m])=>m&&m.pack)),...[p.pending,...p.waiting||[]].filter(Boolean).map(o=>[offerId(o),o])]);
-   const known=offers(current),prior=offers(base),correction={coins:0,gems:0,tickets:0,tokens:{}},duplicates={},overflow=new Set(),room=Object.fromEntries([...cards,legacy].map(c=>[c.id,Math.max(0,c.max-(current.taken?.[c.id]||0))]));
+   const known=offers(current),prior=offers(base),correction={coins:0,gems:0,tickets:0,tokens:{}},duplicates={},overflow=new Set(),room=Object.fromEntries([...cards,legacy,...legacyFruits].map(c=>[c.id,Math.max(0,c.max-(current.taken?.[c.id]||0))]));
    const refund=m=>{if(m.token)correction.tokens[m.pack]=(correction.tokens[m.pack]||0)+1;else correction.coins+=packBy[m.pack]?.price||0;};
    const unaward=m=>{if(BY[m.card]?.kind==='tickets')correction.tickets-=100;if(BY[m.card]?.kind==='gems')correction.gems-=20;};
    for(const [id,m]of offers(next))if(!prior.has(id)&&known.has(id))refund(m);
@@ -89,7 +86,7 @@ G.CardPacks=(()=>{
  }
  function reconcile(current={},base={},next={}){
    const out=clone(current),equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b),{correction,duplicates,overflow}=settlement(current,base,next);out.taken||={};out.tokens||={};out.disabled||={};
-   for(const c of [...cards,legacy])out.taken[c.id]=Math.max(0,Math.min(c.max,(current.taken?.[c.id]||0)+Math.max(0,(next.taken?.[c.id]||0)-(base.taken?.[c.id]||0)-(duplicates[c.id]||0))));
+   for(const c of [...cards,legacy,...legacyFruits])out.taken[c.id]=Math.max(0,Math.min(c.max,(current.taken?.[c.id]||0)+Math.max(0,(next.taken?.[c.id]||0)-(base.taken?.[c.id]||0)-(duplicates[c.id]||0))));
    out.legacyAgility=Math.min(.24,(current.legacyAgility||0)+.03*Math.max(0,out.taken[legacy.id]-(current.taken?.[legacy.id]||0)));
    for(const pack of packs)out.tokens[pack.id]=Math.max(0,Math.min(1e6,(current.tokens?.[pack.id]||0)+(next.tokens?.[pack.id]||0)-(base.tokens?.[pack.id]||0)+(correction.tokens[pack.id]||0)));
    for(const item of items)if(next.disabled?.[item.id]!==base.disabled?.[item.id])out.disabled[item.id]=!!next.disabled?.[item.id];
@@ -108,5 +105,5 @@ G.CardPacks=(()=>{
  const allowedSpeeds=s=>[1,...speedCards.filter(c=>normalize(s).taken[c.id]>0).map(c=>c.key)];
  function grantToken(s,id,n=1){const p=normalize(s);if(!packBy[id]||!Number.isSafeInteger(n)||n<1)return false;p.tokens[id]=Math.min(1e6,p.tokens[id]+n);return true;}
  function rollBoss(rift=false,rng=Math.random){return rng()<(rift?.2:.1)?(rng()<.75?'beginner':'breakthrough'):null;}
- return {settlement,resume,apply,reconcile,drawMany,speedAllowed,allowedSpeeds,grantToken,rollBoss,PRICE,packs,packBy,skills,items,cards,BY,themes,local,normalize,levels,remaining,draw,choose,toggle,equip,enabled};
+ return {settlement,resume,apply,reconcile,drawMany,speedAllowed,allowedSpeeds,grantToken,rollBoss,legacyFruits,PRICE,packs,packBy,skills,items,cards,BY,themes,local,normalize,levels,remaining,draw,choose,toggle,equip,enabled};
 })();

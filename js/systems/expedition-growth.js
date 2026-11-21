@@ -33,12 +33,14 @@ G.ExpeditionGrowth=(()=>{
   function levelCards(){
     if(!fruits())fruits(true);
     const card=(kind,title,desc,tag=L('Todo el equipo','Whole squad','全队'))=>({w:1,category:'stat',type:'stat',key:'fruit:'+kind,icon:kind==='slot'?'cards':'berry',color:'#d7acdc',title,desc,tag,apply:()=>fruitReward(kind)});
-    const cards=[card('crit',L('Baya Crítica','Crit Fruit','暴击果实'),L('Equipo: crítico +1%.','Team crit chance +1%.','全队暴击率+1%')),card('critDamage',L('Baya Potente','Crit Damage Fruit','爆伤果实'),L('Equipo: daño crítico +2%.','Team crit damage +2%.','全队暴击伤害+2%'))];
-    const unlocked=kind=>(G.LeagueRank?.allows('advancedFruits')??true)&&!!G.DB?.save&&!!G.CardPacks?.normalize(G.DB.save).taken['fruit:'+kind];
+    const taken=G.DB?.save?G.CardPacks.normalize(G.DB.save).taken:{};
+    const cards=[card('crit',L('Baya Crítica','Crit Fruit','暴击果实'),L('Equipo: crítico +1%.','Team crit chance +1%.','全队暴击率+1%')),card('critDamage',L('Baya Potente','Crit Damage Fruit','爆伤果实'),L('Equipo: daño crítico +2%.','Team crit damage +2%.','全队暴击伤害+2%'))].filter(c=>taken[c.key]);
+    const targets=kind=>kind==='type'?Object.keys(G.U.TYPE_NAME).filter(k=>taken['fruit:type:'+k]||taken['fruit:type']):kind==='skill'?G.SquadBonds.KINDS.filter(k=>taken['fruit:skill:'+k]||taken['fruit:skill']):Array.from({length:Math.max(0,G.Squad.capacity-1)},(_,i)=>i+2).filter(k=>taken['fruit:slot:'+k]||taken['fruit:slot']);
+    const unlocked=kind=>(G.LeagueRank?.allows('advancedFruits')??true)&&(kind==='hormone'?taken['fruit:hormone']:targets(kind).length>0);
     const biased=(pool,present)=>G.U.pick(pool.flatMap(k=>present.has(k)?[k,k,k]:[k]));
     for(const kind of ['type','skill','slot'])if(unlocked(kind)){
       const c=card(kind,L('Mejora','Upgrade','成长'),'');c.materialize=()=>{
-        const target=kind==='type'?biased(Object.keys(G.U.TYPE_NAME),new Set(people().flatMap(p=>p.mon.types))):kind==='skill'?biased(G.SquadBonds.KINDS,new Set(people().flatMap(p=>p.moves.map(m=>G.SquadBonds.group(m.kind))))):G.U.pick(Array.from({length:Math.max(0,G.Squad.capacity-1)},(_,i)=>i+2));
+        const target=kind==='type'?biased(targets(kind),new Set(people().flatMap(p=>p.mon.types))):kind==='skill'?biased(targets(kind),new Set(people().flatMap(p=>p.moves.map(m=>G.SquadBonds.group(m.kind))))):G.U.pick(targets(kind));
         const label=kind==='type'?G.T(G.U.TYPE_NAME[target]):kind==='skill'?G.SquadBonds.label(target):String(target);
         const title=kind==='type'?L('Baya de Tipo','Type Fruit','属性果实'):kind==='skill'?L('Baya Técnica','Skill Fruit','技能果实'):L('Mejora de Puesto','Slot Upgrade','槽位改造');
         const desc=kind==='type'?L(label+': daño +1%.',label+' Pokémon damage +1%.',label+'属性宝可梦伤害+1%'):kind==='skill'?target==='buff'?L('Apoyo: efecto +1%.','Support skill effect +1%.','辅助技能效果+1%'):L(label+': daño +1%.',label+' skill damage +1%.',label+'技能伤害+1%'):L('Puesto '+label+': atributos +1%.','Slot '+label+': all stats +1%.',label+'号位全属性+1%');

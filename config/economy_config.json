@@ -323,8 +323,8 @@
     "maxRank": 3,
     "shopSellsItems": false,
     "enableMega": false,
-    "normalClearItems": 1,
-    "eliteVictoryItems": 2,
+    "normalClearItems": 0,
+    "eliteVictoryItems": 1,
     "unitStatMultipliers": {
       "ad": [
         [
@@ -507,7 +507,9 @@
       "launchSpeed": 420,
       "launchDamage": 1.2,
       "flightSeconds": 1.5,
-      "launchRangeMultiplier": 1.1
+      "launchRangeMultiplier": 1.5,
+      "launchPierce": 2,
+      "curveSeconds": 0.22
     },
     "summon": {
       "life": [

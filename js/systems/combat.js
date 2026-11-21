@@ -608,7 +608,7 @@ G.Combat = (() => {
       Object.assign(p,payload(m));p.dmg=m.dmg*(pl.attackFor?pl.attackFor(m):pl.atk);p.orad=m.radius;p.ospeed=m.speed;p.rehit=rehit;p.r=m.size;p.color=col;p.vis=G.VFX.forMove(m);
       if(m.bondLaunch&&!isGhost){
         const target=G.Projectiles.nearest(launchTargets,p.x,p.y,Infinity);
-        if(target){const a=Math.atan2(target.y-p.y,target.x-p.x);Object.assign(p,{orb:false,bondOrbitShot:true,ignoreTerrain:true,homing:0,vx:Math.cos(a)*conf.launchSpeed,vy:Math.sin(a)*conf.launchSpeed,t:0,life:conf.flightSeconds,pierce:0,hits:new Set(),phits:new Set(),dmg:p.dmg*conf.launchDamage,bondDamageContributions:[...(p.bondDamageContributions||[]),['orbit',conf.launchDamage]]});}
+        if(target){const a=Math.atan2(target.y-p.y,target.x-p.x),tangent=p.oa+Math.sign(p.ospeed||1)*Math.PI/2,offset=Math.atan2(Math.sin(tangent-a),Math.cos(tangent-a));Object.assign(p,{orb:false,bondOrbitShot:true,curveAim:a,curveOffset:offset,curveSeconds:conf.curveSeconds,curveSpeed:conf.launchSpeed,ignoreTerrain:true,homing:0,vx:Math.cos(a)*conf.launchSpeed,vy:Math.sin(a)*conf.launchSpeed,t:0,life:conf.flightSeconds,pierce:conf.launchPierce,hits:new Set(),phits:new Set(),dmg:p.dmg*conf.launchDamage,bondDamageContributions:[...(p.bondDamageContributions||[]),['orbit',conf.launchDamage]]});}
       }
     }
 
@@ -773,7 +773,8 @@ G.Combat = (() => {
 
         const owner=p.owner||pl;
         const raw = G.ZMoves ? G.ZMoves.projectileDamage(p,e) : p.dmg;
-        if(raw<=0){if(p.bondOrbitShot){G.Projectiles.remove(p);break;}continue;}
+        if(p.bondOrbitShot)p.pierce=Math.max(0,G.EconomyConfig.classBonds.orbit.launchPierce-(p.hits.size-1));
+        if(raw<=0){if(p.bondOrbitShot&&p.pierce===0){G.Projectiles.remove(p);break;}continue;}
         const crit=G.TypeBonds?.forceCrit(owner,e)||isCrit(owner,p.specMove);
         const k = (p.mtype ? typeK(p.mtype, e, owner) : 1) * (crit ? critMul(owner,p.specMove,e) : 1);
         const dealt = e.hurt(raw * k, p.color, p.vx || (e.x - owner.x), p.vy || (e.y - owner.y), p.knock,
@@ -786,7 +787,6 @@ G.Combat = (() => {
         if (p.slow) e.applySlow(p.slow);
         G.SquadBonds?.afterHit(owner,e,p.specMove||{kind:p.moveKind},dealt);
 
-        if(p.bondOrbitShot){G.Projectiles.remove(p);break;}
         if (!p.orb) {
           if (p.pierce > 0) { G.SquadBonds?.onPierce(p);p.pierce--; }
           else {

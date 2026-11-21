@@ -34,6 +34,7 @@ for (const f of [
   "js/data/items.js",
   "js/data/starter-items.js",
   "js/data/breakthrough-items.js",
+  "js/data/expedition-cards.js",
   "js/systems/card-packs.js",
   "js/systems/save-sync.js",
   "js/core/db.js",

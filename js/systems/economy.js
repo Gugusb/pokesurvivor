@@ -3,7 +3,7 @@ G.Economy=(()=>{
   const config=()=>G.EconomyConfig;
   // Display whole spendable gold without changing fractional accounting.
   const formatGold=value=>Math.floor(Number(value)||0).toLocaleString(G.I18n?.lang==='zh'?'zh-CN':G.I18n?.lang||'en');
-  const events={battle:'NORMAL_BATTLE',elite:'ELITE_BATTLE',boss:'BOSS_BATTLE',shop:'SHOP',training:'SKILL_TRAINING','pokemon-training':'POKEMON_TRAINING',wild:'WILD_EXPEDITION',rest:'REST'};
+  const events={battle:'NORMAL_BATTLE',elite:'ELITE_BATTLE',boss:'BOSS_BATTLE',shop:'SHOP','item-shop':'SHOP',peddler:'SHOP',training:'SKILL_TRAINING','pokemon-training':'POKEMON_TRAINING',wild:'WILD_EXPEDITION',rest:'REST'};
   const levelRow=level=>config().levels.find(row=>row.level===level);
   const maxLevel=s=>s.cycle>=config().endless.unlockCycle?config().levels.at(-1).level:config().levels.at(-2).level;
   const interest=(gold,s=G.Expedition?.run)=>Math.max(0,Math.min(G.TrainerTalents?.maxInterest(s)??config().interest.maxInterest,Math.floor(gold/(G.TrainerTalents?.interestDivisor(s)||config().interest.divisor))));

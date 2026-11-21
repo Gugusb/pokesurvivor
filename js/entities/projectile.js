@@ -94,8 +94,10 @@ G.Projectiles = (() => {
         p.trailT = (p.trailT || 0) - dt;
         if (p.trailT <= 0) { p.trailT = 0.04; G.FX.trail(p.vis.trail, p.vis.pal, p.x, p.y - G.LIFT, p.vx, p.vy); }
       }
-      p.x += p.vx * dt;
-      p.y += p.vy * dt;
+      if(p.bondOrbitShot&&p.curveSeconds>0){
+        // Integrate the decaying turn in small deterministic slices; no target tracking.
+        const steps=Math.max(1,Math.ceil(dt/.008)),h=dt/steps;for(let j=0;j<steps;j++){const age=p.t-dt+(j+.5)*h,a=p.curveAim+p.curveOffset*Math.exp(-age/p.curveSeconds);p.x+=Math.cos(a)*p.curveSpeed*h;p.y+=Math.sin(a)*p.curveSpeed*h;}const a=p.curveAim+p.curveOffset*Math.exp(-p.t/p.curveSeconds);p.vx=Math.cos(a)*p.curveSpeed;p.vy=Math.sin(a)*p.curveSpeed;
+      }else{p.x += p.vx * dt;p.y += p.vy * dt;}
 
       // Fuera de la vista con margen generoso -> se descarta.
       if (!p.bondOrbitShot && !G.Camera.sees(p.x, p.y, 260)) { remove(p); continue; }

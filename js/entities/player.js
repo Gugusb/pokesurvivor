@@ -153,7 +153,7 @@ G.Player = class Player {
     const healed = rate > 0 ? (missing+flat/rate)*-Math.expm1(-rate*dt) : flat*dt;
     if (healed > 0) this.hp = Math.min(this.maxHp,this.hp+healed);
   }
-  get effectiveXpMul() { return this.xpMul * G.Abilities.xpFactor(this) * (1+.06*(G.Items?.count(this,'luckyegg')||0)) * (G.FailureProtection?.xpFactor(this)||1); }
+  get effectiveXpMul() { return (G.ExpeditionSupplies?.xpFactor(this)||1)*this.xpMul * G.Abilities.xpFactor(this) * (1+.06*(G.Items?.count(this,'luckyegg')||0)) * (G.FailureProtection?.xpFactor(this)||1); }
 
   get coinMul(){return this.baseCoinMul*(1+.1*(G.Items?.count(this,'amuletcoin')||0));}
 

@@ -426,7 +426,7 @@ G.World = (() => {
       for (let i = 0; i < n; i++) G.Pickups.drop('coin', p.x + G.U.rand(-14, 14), p.y + G.U.rand(-10, 10), 3);
       if(Math.random()<.5)G.Pickups.drop('heal',p.x,p.y);
       G.Pickups.dropXp(p.x, p.y, 20);
-      if (Math.random() < 0.08) G.Pickups.drop('item', p.x, p.y - 12, G.Items.roll());
+      if (!G.Expedition?.active && Math.random() < 0.08) G.Pickups.drop('item', p.x, p.y - 12, G.Items.roll());
       return;
     }
     if (p.type === 'bigchest') {
@@ -438,7 +438,7 @@ G.World = (() => {
       const tk = G.U.randInt(1, 3);
       for (let i = 0; i < tk; i++) G.Pickups.drop('ticket', p.x + G.U.rand(-16, 16), p.y + G.U.rand(-10, 10), 1);
       if (Math.random() < 0.15) G.Pickups.drop('ticket10', p.x, p.y - 10, 1);
-      if (Math.random() < 0.5) G.Pickups.drop('item', p.x + 14, p.y - 14, G.Items.roll());
+      if (!G.Expedition?.active && Math.random() < 0.5) G.Pickups.drop('item', p.x + 14, p.y - 14, G.Items.roll());
       G.Pickups.dropXp(p.x, p.y, G.Game.levelXp());
       G.Progress.event('chest');
       return;

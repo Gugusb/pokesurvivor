@@ -84,8 +84,8 @@ G.Game = (() => {
     if(G.SquadUI?.isOpen()){G.SquadUI.close();return;}
     if(!pl||pl.dead||!G.Expedition?.active||!['playing','journey','paused'].includes(state)||G.Expedition?.phase==='battle-result'||G.ZMoves?.busy(pl)||G.SettingsUI?.isOpen)return;
     const previous=state;state='squad';G.Touch.reset();
-    G.SquadUI.show({editable:['route','shop','loot','wild'].includes(G.Expedition.phase),onClose:()=>{
-      const expeditionMenu=G.Expedition?.active&&['route','shop','loot','wild'].includes(G.Expedition.phase);
+    G.SquadUI.show({editable:['route','shop','item-shop','peddler','loot','wild'].includes(G.Expedition.phase),onClose:()=>{
+      const expeditionMenu=G.Expedition?.active&&['route','shop','item-shop','peddler','loot','wild'].includes(G.Expedition.phase);
       state=expeditionMenu?'journey':previous;G.Touch.reset();
       if(expeditionMenu||previous==='journey')G.Expedition.refreshScreen();else if(previous==='paused')G.UI.show('scr-pause');
     }});

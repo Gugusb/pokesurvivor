@@ -546,7 +546,7 @@
     }
 
     bossStart(id, pl) {
-      const ai = this.ai, f = ai.fury ? 0.8 : 1, type = this.atkType;
+      const ai = this.ai, windFactor=this.expedition?.5:1, f = (ai.fury ? 0.8 : 1)*windFactor, type = this.atkType;
       const col = G.U.TYPE_COLOR[type] || '#ff7a9e';
       const ang = Math.atan2(pl.y - this.y, pl.x - this.x);
       const c = ai.cast = { id, t: 0, wind: 0.6 * f, after: 0.35, ang };
@@ -573,18 +573,18 @@
           for (let i = 0; i < n; i++) {
             const a = i ? Math.random() * 6.2832 : 0, d = i ? G.U.rand(40, 120) : 0;
             this.hazard({ kind: 'zone', x: pl.x + Math.cos(a) * d, y: pl.y + Math.sin(a) * d * 0.8, r: 50,
-                            delay: 1.05 + i * 0.12, dmg: this.shotDmg() * 1.15, type, color: col });
+                            delay: 1.05*windFactor + i * 0.12, dmg: this.shotDmg() * 1.15, type, color: col });
           }
-          c.wind = 0.5; this.anim.play('Shoot');
+          c.wind = 0.5*windFactor; this.anim.play('Shoot');
           break;
         }
         case 'beam': {     // rayos en abanico
           const n = ai.fury ? 5 : 3, sp = ai.fury ? 0.42 : 0.5;
           for (let i = 0; i < n; i++) {
             this.hazard({ kind: 'beam', x: this.x, y: this.y, angle: ang + (i - (n - 1) / 2) * sp, len: 400, w: 26,
-                            delay: 1.0, dmg: this.shotDmg() * 1.2, type, color: col });
+                            delay: 1.0*windFactor, dmg: this.shotDmg() * 1.2, type, color: col });
           }
-          c.wind = 1.0; c.after = 0.25; this.anim.play('Charge', { speed: 1.1 });
+          c.wind = 1.0*windFactor; c.after = 0.25; this.anim.play('Charge', { speed: 1.1 });
           break;
         }
         case 'volley':     // abanico de disparos

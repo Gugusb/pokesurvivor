@@ -1,0 +1,38 @@
+/* Permanent expedition cards and run-only supplies. Shared with account normalization. */
+G.ExpeditionCards=(()=>{
+  const ES={"Crit Fruit": "Baya Crítica", "Crit Damage Fruit": "Baya Potente", "Hormone Fruit": "Baya Hormona", "Unlock team crit chance +1%.": "Desbloquea crítico del equipo +1%.", "Unlock team crit damage +2%.": "Desbloquea daño crítico del equipo +2%.", "Unlock next-battle team reserve PP +10.": "Desbloquea PP temporales del equipo +10 para el siguiente combate.", "Travel Purse": "Bolsa de viaje", "Start with +1 gold.": "Comienza con 1 de oro adicional.", "Boss Intel": "Información del jefe", "Reveal the cycle Boss’s types.": "Muestra los tipos del jefe del ciclo.", "Squad Shield": "Escudo del equipo", "Start with +2 squad shield.": "Comienza con 2 de escudo de equipo adicionales.", "Squad Vitality": "Vitalidad del equipo", "Squad maximum HP +2.": "PS máximos del equipo +2.", "Departure Training": "Entrenamiento de partida", "Starting Pokémon level +1.": "Nivel inicial de Pokémon +1.", "Victory Rations": "Raciones de victoria", "Full clear: restore 1 squad HP.": "Al eliminar a todos: recupera 1 PS del equipo.", "Larger XP Jar": "Reserva ampliada", "XP jar capacity +10%.": "Capacidad de reserva de EXP +10%.", "XP Extraction": "Extracción de EXP", "XP jar withdrawal amount +5%.": "Cantidad extraída de la reserva +5%.", "Companion Affinity": "Afinidad de compañeros", "Full-clear invitation chance +1%.": "Probabilidad de invitación al eliminar a todos +1%.", "Camp Kit": "Botiquín de campamento", "After battle, restore 25% of captain missing HP.": "Tras el combate, cura el 25% de los PS perdidos del capitán.", "Inspiration Seal": "Sello de inspiración", "Enhance the next selected talent, then consume.": "Mejora el próximo talento elegido y se consume.", "Study Charm": "Amuleto de estudio", "Pokémon XP gain +5%; stacks.": "EXP de Pokémon +5%; acumulable.", "Jar Refill Kit": "Recarga de reserva", "Full clear: fill 10% of jar capacity.": "Al eliminar a todos: llena el 10% de la capacidad de reserva.", "Rebate Card": "Tarjeta de reembolso", "Every 5 refreshes after acquisition, gain 1 gold.": "Cada 5 renovaciones desde su adquisición, gana 1 de oro.", "Field Notes": "Notas de campo", "After a wild expedition, gain 1 trainer XP.": "Tras una exploración silvestre, gana 1 EXP de entrenador.", "Supply Shop": "Tienda de objetos", "Unlock supply-shop events.": "Desbloquea eventos de tienda de objetos.", "Wandering Merchant": "Mercader errante", "Unlock wandering-merchant events.": "Desbloquea eventos de mercader errante."};
+  const name=(zh,en,es=ES[en]||en)=>({zh,en,es});
+  const typeEs={normal:'Normal',fire:'Fuego',water:'Agua',grass:'Planta',electric:'Eléctrico',ice:'Hielo',fighting:'Lucha',poison:'Veneno',ground:'Tierra',flying:'Volador',psychic:'Psíquico',bug:'Bicho',rock:'Roca',ghost:'Fantasma',dragon:'Dragón',dark:'Siniestro',steel:'Acero',fairy:'Hada'},skillEs={projectile:'Proyectil',melee:'Cuerpo a cuerpo',beam:'Rayo',chain:'Cadena',area:'Área',bloom:'Floración',orbit:'Órbita',summon:'Invocación',buff:'Apoyo'};
+  const TYPES=[['normal','一般','Normal'],['fire','火','Fire'],['water','水','Water'],['grass','草','Grass'],['electric','电','Electric'],['ice','冰','Ice'],['fighting','格斗','Fighting'],['poison','毒','Poison'],['ground','地面','Ground'],['flying','飞行','Flying'],['psychic','超能','Psychic'],['bug','虫','Bug'],['rock','岩石','Rock'],['ghost','幽灵','Ghost'],['dragon','龙','Dragon'],['dark','恶','Dark'],['steel','钢','Steel'],['fairy','妖精','Fairy']];
+  const SKILLS=[['projectile','投射物','Projectile'],['melee','近战','Melee'],['beam','能量柱','Beam'],['chain','连锁','Chain'],['area','区域打击','Area Strike'],['bloom','绽放','Bloom'],['orbit','环绕','Orbit'],['summon','召唤','Summon'],['buff','辅助','Support']];
+  const permission=(id,key,label,desc,icon='berry')=>({id,kind:'expedition',key,max:1,name:label,desc,icon});
+  const FRUITS=[permission('fruit:crit','crit',name('暴击果实','Crit Fruit'),name('解锁全队暴击率+1%选项。','Unlock team crit chance +1%.')),permission('fruit:critDamage','critDamage',name('爆伤果实','Crit Damage Fruit'),name('解锁全队暴击伤害+2%选项。','Unlock team crit damage +2%.')),
+    ...TYPES.map(([key,zh,en])=>permission('fruit:type:'+key,'type:'+key,name(zh+'属性果实',en+' Fruit','Baya '+typeEs[key]),name('解锁'+zh+'属性宝可梦伤害+1%选项。','Unlock '+en+' Pokémon damage +1%.','Desbloquea daño de Pokémon '+typeEs[key]+' +1%.'))),
+    ...SKILLS.map(([key,zh,en])=>permission('fruit:skill:'+key,'skill:'+key,name(zh+'技能果实',en+' Skill Fruit','Baya '+skillEs[key]),name('解锁'+zh+'技能'+(key==='buff'?'效果':'伤害')+'+1%选项。','Unlock '+en+' skill '+(key==='buff'?'effect':'damage')+' +1%.','Desbloquea '+(key==='buff'?'efecto':'daño')+' de '+skillEs[key]+' +1%.'))),
+    ...Array.from({length:9},(_,i)=>permission('fruit:slot:'+(i+2),'slot:'+(i+2),name((i+2)+'号位改造','Slot '+(i+2)+' Upgrade','Mejora de puesto '+(i+2)),name('解锁'+(i+2)+'号位全属性+1%选项。','Unlock slot '+(i+2)+' all stats +1%.','Desbloquea atributos del puesto '+(i+2)+' +1%.'),'cards')),
+    permission('fruit:hormone','hormone',name('激素果实','Hormone Fruit'),name('解锁下场全队临时PP+10选项。','Unlock next-battle team reserve PP +10.'))];
+  const PERKS=[
+    ['startGold',3,'行路盘缠','Travel Purse','开局金币+1。','Start with +1 gold.','coin'],
+    ['bossScout',1,'首领情报','Boss Intel','显示本周期关底BOSS属性。','Reveal the cycle Boss’s types.','bossChest'],
+    ['startShield',10,'小队护盾','Squad Shield','开局小队护盾+2。','Start with +2 squad shield.','gem'],
+    ['maxHp',10,'生命扩容','Squad Vitality','小队生命上限+2。','Squad maximum HP +2.','heart'],
+    ['startLevel',5,'出发特训','Departure Training','开局宝可梦等级+1。','Starting Pokémon level +1.','star'],
+    ['clearHeal',1,'凯旋补给','Victory Rations','全歼战后恢复1小队生命。','Full clear: restore 1 squad HP.','heart'],
+    ['jarCapacity',20,'经验罐扩容','Larger XP Jar','经验罐上限+10%。','XP jar capacity +10%.','berry'],
+    ['jarExtraction',10,'经验提取','XP Extraction','经验罐提取量+5%。','XP jar withdrawal amount +5%.','book'],
+    ['inviteChance',10,'伙伴亲和','Companion Affinity','全歼后的邀请概率+1%。','Full-clear invitation chance +1%.','ball']
+  ].map(([key,max,zh,en,dzh,den,icon])=>({id:'expedition:'+key,kind:'expedition',key,max,name:name(zh,en),desc:name(dzh,den),icon}));
+  const ITEMS=[
+    ['campkit','急救背包','Camp Kit','战后恢复队长25%已损生命。','After battle, restore 25% of captain missing HP.',false,'heart'],
+    ['talentseal','灵感印章','Inspiration Seal','强化下一张选中的潜能，随后消耗。','Enhance the next selected talent, then consume.',false,'medal3'],
+    ['studycharm','学习护符','Study Charm','宝可梦经验获取+5%，可叠加。','Pokémon XP gain +5%; stacks.',true,'book'],
+    ['jarpump','经验补给器','Jar Refill Kit','全歼后填充10%经验罐上限。','Full clear: fill 10% of jar capacity.',false,'berry'],
+    ['shopstamp','返利卡','Rebate Card','获得后每刷新5次，返还1金币。','Every 5 refreshes after acquisition, gain 1 gold.',false,'coin'],
+    ['trailguide','野外笔记','Field Notes','野外探索结束时训练家经验+1。','After a wild expedition, gain 1 trainer XP.',false,'book']
+  ].map(([id,zh,en,dzh,den,infinite,icon])=>({id,name:name(zh,en),desc:name(dzh,den),icon,infinite,expeditionOnly:true}));
+  const EVENTS=[permission('event:item-shop','item-shop',name('道具商店','Supply Shop'),name('解锁道具商店事件。','Unlock supply-shop events.'),'bag'),permission('event:peddler','peddler',name('流浪商人','Wandering Merchant'),name('解锁流浪商人事件。','Unlock wandering-merchant events.'),'coin')];
+  return {TYPES,SKILLS,FRUITS,PERKS,ITEMS,EVENTS};
+})();
+if(G.Items){
+  for(const d of G.ExpeditionCards.ITEMS){const it={id:d.id,name:d.name.es,desc:d.desc.es,unlock:true,icon:d.icon,infinite:d.infinite,expeditionOnly:true};G.Items.LIST.push(it);G.Items.BY[it.id]=it;G.I18n.add({[d.name.es]:d.name.en,[d.desc.es]:d.desc.en});G.I18n.addChinese({[d.name.es]:d.name.zh,[d.desc.es]:d.desc.zh});}
+}

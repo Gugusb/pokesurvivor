@@ -51,14 +51,15 @@ test('bloom buffs both physical kinds and stuns elites fully, Bosses for half du
 });
 
 test('tier-seven orbit replenishes a full ring only on cooldown casts, independently of earlier shots',()=>{
- const s=setup('orbit'),g=s.G;g.MovePP.tick=()=>{};const e=enemy(s,80);const pp=g.MovePP.state(s.p,s.m),want=g.SquadBonds.move(s.p,s.m).count;cast(s);const first=g.Projectiles.all().filter(p=>p.bondOrbitShot);assert.equal(first.length,want);close(pp.current,pp.max-1);for(const p of first){assert.equal(p.orb,false);assert.equal(p.moveKind,'orbit');assert.equal(p.specMove.kind,'orbit');assert.equal(p.homing,0);assert.equal(p.pierce,0);close(p.dmg,s.m.dmg*s.p.attackFor(s.m)*1.5*1.2);}
+ const s=setup('orbit'),g=s.G;g.MovePP.tick=()=>{};const e=enemy(s,80);const pp=g.MovePP.state(s.p,s.m),want=g.SquadBonds.move(s.p,s.m).count;cast(s);const first=g.Projectiles.all().filter(p=>p.bondOrbitShot);assert.equal(first.length,want);close(pp.current,pp.max-1);for(const p of first){assert.equal(p.orb,false);assert.equal(p.moveKind,'orbit');assert.equal(p.specMove.kind,'orbit');assert.equal(p.homing,0);assert.equal(p.pierce,2);close(p.dmg,s.m.dmg*s.p.attackFor(s.m)*1.5*1.2);}
  g.Combat.tick(.001,s.p,.001);assert.equal(g.Projectiles.count,want);s.m.t=0;g.Combat.tick(.001,s.p,1);assert.equal(g.Projectiles.count,2*want);assert.ok(first.every(p=>g.Projectiles.all().includes(p)));close(pp.current,pp.max-2);
  for(const p of [...g.Projectiles.all()])g.Projectiles.remove(p);g.Combat.tick(.001,s.p,1.001);assert.equal(g.Projectiles.count,0);s.m.t=0;g.Combat.tick(.001,s.p,2);assert.equal(g.Projectiles.count,want);
 });
 
-test('orbit volleys fly straight through terrain and hit only the first enemy at 1.2 times orbit damage',()=>{
- const s=setup('orbit'),g=s.G;const e=enemy(s,80);cast(s);const p=g.Projectiles.all()[0];for(const q of [...g.Projectiles.all()])if(q!==p)g.Projectiles.remove(q);const damage=p.dmg;p.x=p.px=0;p.y=p.py=0;p.vx=100;p.vy=0;e.x=60;const second=enemy(s,30);g.World.projectileBlock=()=>{throw Error('terrain query');};g.World.propsInCircle=()=>{throw Error('prop query');};g.Camera.sees=()=>false;
- g.Projectiles.update(.6,s.cap,s.enemies);assert.ok(g.Projectiles.all().includes(p));close(p.y,0);g.Combat.resolve(.6,s.cap,1);assert.equal(g.Projectiles.count,0);assert.equal(e.calls.length,0);assert.equal(second.calls.length,1);close(second.calls[0].n,damage);const attack=second.calls[0].args.at(-1);assert.equal(attack.kind,'orbit');assert.ok(attack.bondDamageContributions.every(([kind])=>kind==='orbit'));
+test('orbit volleys curve along the original tangent, flatten their turn, and hit at most three distinct foes through terrain',()=>{
+ const s=setup('orbit'),g=s.G;enemy(s,80);cast(s);const p=g.Projectiles.all()[0];for(const q of [...g.Projectiles.all()])if(q!==p)g.Projectiles.remove(q);const damage=p.dmg;g.World.projectileBlock=()=>{throw Error('terrain query');};g.World.propsInCircle=()=>{throw Error('prop query');};g.Camera.sees=()=>false;
+ const offset=Math.abs(p.curveOffset);g.Projectiles.update(.05,s.cap,s.enemies);assert.ok(g.Projectiles.all().includes(p));assert.ok(Math.abs(Math.atan2(Math.sin(Math.atan2(p.vy,p.vx)-p.curveAim),Math.cos(Math.atan2(p.vy,p.vx)-p.curveAim)))<=offset);const early=Math.atan2(p.vy,p.vx);g.Projectiles.update(.4,s.cap,s.enemies);assert.notEqual(Math.atan2(p.vy,p.vx),early);
+ s.enemies.length=0;const foes=[20,40,60,80].map(x=>enemy(s,x));p.x=100;p.px=0;p.y=p.py=0;g.Combat.resolve(.01,s.cap,1);assert.equal(g.Projectiles.count,0);for(const e of foes.slice(0,3)){assert.equal(e.calls.length,1);close(e.calls[0].n,damage);assert.equal(e.calls[0].args.at(-1).kind,'orbit');}assert.equal(foes[3].calls.length,0);
 });
 
 test('launched orbit shots survive PP exhaustion and clearOrbs while attached orbits still follow normal cleanup',()=>{
@@ -85,7 +86,7 @@ test('class damage attribution conserves actual damage across member and bond ro
 });
 
 test('boomerang penetration growth has bounded collision and art while preserving repeated damage scaling',()=>{
- const s=setup('boomerang'),g=s.G;enemy(s,60);cast(s);const p=g.Projectiles.all()[0],base=p.dmg,r=p.r,art=p.visualScale||(r>=8?1.5:1);
+ const s=setup('boomerang'),g=s.G;enemy(s,60);enemy(s,90);enemy(s,110);cast(s);const p=g.Projectiles.all()[0],base=p.dmg,r=p.r,art=p.visualScale||(r>=8?1.5:1);
  for(let i=0;i<80;i++){g.SquadBonds.onPierce(p);p.pierce--;}
  assert.ok(p.r<=Math.min(r*6,128));assert.ok(p.visualScale<=art*6);assert.ok(Number.isFinite(p.dmg));close(p.dmg/(base*1.2**80),1);
  const radius=p.r,scale=p.visualScale;g.SquadBonds.onPierce(p);close(p.r,radius);close(p.visualScale,scale);
@@ -100,12 +101,12 @@ test('expiring a double-cast orbit copy does not delete shots already launched f
  const s=setup('orbit'),g=s.G;enemy(s,80);s.m.specializations=['t9'];s.m.cd=.05;cast(s);g.Combat.updateFields(.001);const shots=g.Projectiles.all().filter(p=>p.bondOrbitShot&&p.mid!==s.m.id);assert.ok(shots.length>0);const f=g.Combat._fields().find(f=>f.kind==='orbitcopy');g.Combat.updateFields(f.life+.01);assert.ok(shots.every(p=>g.Projectiles.all().includes(p)));
 });
 
-test('orbit shots end on first enemy contact even with foreign pierce or zero damage',()=>{
- for(const zero of [false,true]){const s=setup('orbit'),g=s.G,e=enemy(s,30);enemy(s,60);cast(s);const p=g.Projectiles.all()[0];for(const q of [...g.Projectiles.all()])if(q!==p)g.Projectiles.remove(q);p.x=80;p.px=0;p.y=p.py=0;p.pierce=999;if(zero)g.ZMoves={projectileDamage:()=>0};g.Combat.resolve(.01,s.cap,1);assert.equal(g.Projectiles.count,0);assert.equal(e.calls.length,zero?0:1);assert.equal(s.enemies[1].calls.length,0);}
+test('orbit shots keep exactly two pierces even with foreign bonuses or zero damage',()=>{
+ for(const zero of [false,true]){const s=setup('orbit'),g=s.G,e=enemy(s,30);enemy(s,60);enemy(s,90);enemy(s,110);cast(s);const p=g.Projectiles.all()[0];for(const q of [...g.Projectiles.all()])if(q!==p)g.Projectiles.remove(q);p.x=120;p.px=0;p.y=p.py=0;p.pierce=999;if(zero)g.ZMoves={projectileDamage:()=>0};g.Combat.resolve(.01,s.cap,1);assert.equal(g.Projectiles.count,0);assert.equal(e.calls.length,zero?0:1);assert.equal(s.enemies[1].calls.length,zero?0:1);assert.equal(s.enemies[2].calls.length,zero?0:1);assert.equal(s.enemies[3].calls.length,0);}
 });
 
-test('orbit acquisition is centered on the caster and limited to 110 percent of the settled orbit radius',()=>{
- const s=setup('orbit'),g=s.G,m=g.SquadBonds.move(s.p,s.m),e=enemy(s,s.p.x+m.radius*1.11,s.p.y);cast(s);const ring=g.Projectiles.all().filter(p=>p.orb);assert.equal(ring.length,m.count);assert.equal(g.Projectiles.all().some(p=>p.bondOrbitShot),false);e.x=s.p.x+m.radius*1.09;g.Combat.tick(.001,s.p,.001);assert.equal(g.Projectiles.all().filter(p=>p.bondOrbitShot).length,m.count);
+test('orbit acquisition is centered on the caster and limited to 150 percent of the settled orbit radius',()=>{
+ const s=setup('orbit'),g=s.G,m=g.SquadBonds.move(s.p,s.m),e=enemy(s,s.p.x+m.radius*1.51,s.p.y);cast(s);const ring=g.Projectiles.all().filter(p=>p.orb);assert.equal(ring.length,m.count);assert.equal(g.Projectiles.all().some(p=>p.bondOrbitShot),false);e.x=s.p.x+m.radius*1.49;g.Combat.tick(.001,s.p,.001);assert.equal(g.Projectiles.all().filter(p=>p.bondOrbitShot).length,m.count);
 });
 
 test('tier-seven trail placement retries blocked candidates and lands beyond the full-grown splash radius',()=>{
