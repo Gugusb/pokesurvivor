@@ -34,6 +34,14 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.47 — 2026-11-21
+
+- 修复用户反馈小米15 Pro无法安装单机APK的问题。检查alpha.45/46最终APK确认：自定义ZipDex重打包将aapt2原本STORED的resources.arsc重新压为DEFLATED；Android11+在target>=30时会拒绝这种APK，签名验证通过不代表可安装。ZipDex现保留未压缩条目的存储方式、尺寸及CRC，随后再执行4字节对齐与签名，不下调target或要求手机关闭安全校验。
+- 同时发现Windows版aapt2将部分素材路径写为反斜杠。重打包阶段统一为正斜杠，保证Android AssetManager可按web/index.html及网页相对路径读取；这是安装成功后打开离线游戏的必要修正。
+- 新增tools/check_android_apk.cjs，检查最终签名APK的ZIP结构、资源表未压缩且4字节对齐、STORED条目对齐、Android路径规范及离线HTML/JS入口；构建自动执行，失败不报告成功。旧alpha.46真实成品可稳定复现resources.arsc压缩校验失败。沿用同一测试包名和签名，versionCode升为47，保留本机测试赠送和存档规则。
+- 本轮仅修复Android打包与版本公告，不改战斗数值；保留工作区未完成标题界面及用户设计文档，独立快照构建，无生产部署。标准构建指纹e55446679f，导出57件道具并顺序生成SEO。最终APK资源表STORED/偏移1572且4字节对齐，全部ZIP条目CRC、素材路径和HTML/JS入口通过；zipalign检查与v2/v3签名验证通过，证书与alpha.46相同，SHA-256为0ef437fb7e0280aad8c14f0407b3e953122dddf53d6a1b14685411f77a9985b6。从最终APK提取的网页实际完成自动本地账号、测试资源、十连、重载保持消费和远征启动，无外部请求及G暴露。本机缺少硬件虚拟化加速，Android15软件模拟器未能进入可安装状态，已关闭测试进程；未声称模拟器或小米实机安装成功，仍需用户设备验证。
+
+
 ### v0.43.0-alpha.46 — 2026-11-21
 
 - 按用户最新规则，逆境本能移除击杀回血。战斗结束后先计算剩余敌人造成的小队伤害，仍存活且小队生命严格低于当前生命上限30%时恢复5点；恰好30%不触发，0生命不复活，恢复后允许超过30%。普通/精英/BOSS生存与全歼均可触发，每场仅一次，先于全歼永久补给恢复结算。
