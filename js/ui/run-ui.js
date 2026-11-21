@@ -119,7 +119,7 @@ G.RunUI = (() => {
     $('victory-title').textContent=G.T(waiting?'El equipo ha cumplido el objetivo de supervivencia.':'¡Has ganado esta partida!');
     for(const id of ['victory-unlock','victory-question','victory-bonus'])$(id).classList.toggle('hidden',waiting);
     $('victory-question').textContent=G.Expedition?.active?(G.I18n.lang==='zh'?'阿尔宙斯已被击败！现在收获战果，还是继续下一段远征？':G.I18n.lang==='en'?'Arceus has been defeated! Collect your rewards now or continue the expedition?':'¡Arceus ha sido derrotado! ¿Cobrar ahora o continuar la expedición?'):G.T(bonus?'¿Terminar ahora con el doble de monedas o seguir sobreviviendo hasta el jefe más poderoso?':'¿Terminar ahora o seguir sobreviviendo hasta el jefe más poderoso?');
-    $('victory-unlock').textContent=stars<8?G.I18n.f('Ya puedes desafiar la dificultad {x}★.',stars+1):G.T('¡Has superado las ocho dificultades!');
+    $('victory-unlock').textContent=G.Expedition?.active?(G.I18n.lang==='zh'?'本局最终结算时评定联盟段位':G.I18n.lang==='en'?'League rank is evaluated at final settlement.':'La Liga evalúa el rango al finalizar la expedición.'):stars<8?G.I18n.f('Ya puedes desafiar la dificultad {x}★.',stars+1):G.T('¡Has superado las ocho dificultades!');
     $('victory-bonus').textContent=G.T(bonus?'Recoge el doble de monedas o guarda esta recompensa para otra victoria.':'Puedes recoger tus monedas o continuar la aventura.');
     $('victory-team').classList.toggle('hidden',!team);
     $('victory-team').textContent=G.T('En grupo decide el anfitrión. Cada jugador cobra según su propia oportunidad disponible.');
@@ -152,6 +152,7 @@ G.RunUI = (() => {
   }
   function showOver(r, onBack) {
     lootResult=r;updateLoot(r.loot||{});
+    G.LeagueRankUI?.showResult(r.leagueResult);
     const quip=G.FishQuips.pick(r);
     $('over-fish').dataset.quip=quip.id;
     $('over-fish-title').textContent=G.I18n.lang==='en'?'Dafeiyu’s little musings':G.T('Las pequeñas charlas de Dafeiyu');
@@ -160,11 +161,12 @@ G.RunUI = (() => {
     groupInvite.textContent=G.T('Grupo de juego')+' · '+G.Community.groupId;
     groupInvite.hidden=!G.Community.shouldInviteAtEnd();
     $('over-title').textContent = r.victory ? 'Dificultad superada' : r.completed ? G.T('Objetivo de supervivencia cumplido') : r.dead ? 'Has caído…' : 'Run terminada';
+    if(r.expedition&&!r.dead)$('over-title').textContent=G.I18n.lang==='zh'?(r.completed?'远征成功结算':'远征结束'):G.I18n.lang==='en'?(r.completed?'Expedition cleared':'Expedition ended'):(r.completed?'Expedición completada':'Expedición finalizada');
     if(G.Expedition?.run?.phase==='squad-defeat')$('over-title').textContent=G.I18n.lang==='zh'?'小队生命耗尽':G.I18n.lang==='en'?'Squad HP exhausted':'Vida del equipo agotada';
     if(G.ExpeditionDamage){let damage=document.getElementById('over-damage');if(!damage){damage=document.createElement('section');damage.id='over-damage';$('over-stats').insertAdjacentElement('afterend',damage);}damage.hidden=!r.damage?.length;if(r.damage?.length)G.ExpeditionDamage.render(damage,{run:r.damage,battle:r.damageBattle||[],day:r.damageBattleDay||0},'result');}
     $('over-stats').innerHTML = `
       ${r.expedition ? `<div><span>${G.I18n.lang==='zh'?'远征天数':G.I18n.lang==='en'?'Expedition days':'Días de expedición'}</span><b>${r.expedition.day}</b></div>`:''}
-      ${r.difficulty ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : r.completed ? G.T('Objetivo cumplido, sin registrar') : G.T('Sin superar')}</b></div>` : ''}
+      ${r.difficulty && !r.expedition ? `<div><span>Dificultad</span><b>${r.difficulty}★ · ${r.victory ? G.T('Victoria') : r.completed ? G.T('Objetivo cumplido, sin registrar') : G.T('Sin superar')}</b></div>` : ''}
       ${r.progressExcluded ? `<p class="note" style="grid-column:1/-1">${G.T('Esta aventura no cuenta para las medallas.')}</p>` : ''}
       ${r.score?`<div class="run-score-result" style="grid-column:1/-1"><span>${G.T('Puntuación de aventura')}</span><b class="gold">${r.score.total.toLocaleString()}</b><small>${G.T('Derrotas')} ${r.score.kills.toLocaleString()} · ${G.T('Supervivencia')} ${r.score.survival.toLocaleString()} · ${G.T('Eventos')} ${r.score.events.toLocaleString()} · ×${r.score.multiplier}</small></div>`:''}
       <div><span>Tiempo</span><b>${G.U.mmss(r.time)}</b></div>

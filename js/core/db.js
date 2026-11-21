@@ -93,6 +93,7 @@ G.DB = (() => {
       activeEquipped: {}, megaEquipped: {},       // one matching stone per base species
       zStones: {}, zEquipped: {}, zAccess:{}, zDuplicates:{}, zAccessMigrated:true,
       difficulty: { selected: 1, cleared: {}, cashouts:{} },
+      leagueRank: {v:1,results:{}},
       difficultyRecords: {},  // dex -> stars -> { best: seconds, won }
       failureProtection: {},
       offline: { seen: 0, carry: 0, rates: null },
@@ -142,6 +143,7 @@ G.DB = (() => {
     if (G.ZAccess) G.ZAccess.normalize(s);
     if (G.ZMoves) G.ZMoves.normalize(s);
     if (G.Difficulty) G.Difficulty.normalize(s);
+    G.LeagueRank?.normalize(s);
     if (G.FailureProtection) G.FailureProtection.normalize(s);
     if (G.Offline) G.Offline.normalize(s);
     if (!s.megaStones || typeof s.megaStones !== 'object' || Array.isArray(s.megaStones)) s.megaStones = {};
@@ -228,6 +230,7 @@ G.DB = (() => {
     const r = JSON.parse(JSON.stringify(newer));
     if (G.ZAccess) Object.assign(r,G.ZAccess.merge(newer,older));
     if (G.Difficulty) Object.assign(r, G.Difficulty.merge(newer, older));
+    if(G.LeagueRank)Object.assign(r,G.LeagueRank.merge(newer,older));
     if (G.FailureProtection) Object.assign(r,G.FailureProtection.merge(newer,older));
     if(G.Difficulty)r.coins=Math.max(0,(r.coins||0)+G.Difficulty.cashoutTotal(r)-G.Difficulty.cashoutTotal(newer));
     if (G.Offline) {

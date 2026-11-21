@@ -61,7 +61,7 @@ G.ExpeditionLootUI=(()=>{
     const buttons=node('div','loot-companion-actions');if(!s.companionResolved){const receive=button(G.Squad.canRecruit(s.companion)?L('Recibir','Receive','领取伙伴'):L('Organizar','Arrange reserves','整理后领取'),actions.onClaim,'btn gold small');receive.id='journey-claim';buttons.append(receive,button(L('Dejar ir','Let go','放生'),actions.onRelease,'btn small'));}else buttons.append(node('b','loot-received','✓ '+L('Recibido','Received','已领取')));identity.append(buttons);
     const move=G.Moves.instance(G.FIXED_SKILLS?.[mon.dex]||G.Moves.startFor(mon),1),candidate={mon,dex:mon.dex,rank:1,moves:[move]};details.append(G.Expedition.tags(candidate));
     const skill=node('div','loot-mon-skill');skill.append(icon('move:'+move.id,28));const skillText=node('div');skillText.append(node('b','',T(move.name)+' · Lv.'+move.lvl),node('small','',G.Moves.classLabel(move)),node('p','',T(move.desc)));skill.append(skillText);details.append(skill);
-    details.append(node('p','loot-mon-trait',G.Expedition.talentText(candidate)));card.append(identity,details);box.append(card);return box;
+    if(G.LeagueRank?.allows('traits')??true)details.append(node('p','loot-mon-trait',G.Expedition.talentText(candidate)));card.append(identity,details);box.append(card);return box;
   }
   function render(box,s,actions){
     const layout=node('div','battle-loot-layout'),main=node('main','battle-loot-main'),side=node('aside','battle-loot-side'),clear=!!s.battleCleared;

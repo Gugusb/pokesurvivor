@@ -205,10 +205,13 @@ G.Server = (() => {
         difficulty: { ...remote.difficulty, selected: s.difficulty.selected },
         offline: remote.offline,
         failureProtection: remote.failureProtection||{},
+        leagueRank:remote.leagueRank||{v:1,results:{}},
         ...(remote.cardPack&&G.CardPacks?.reconcile?{cardPack:G.CardPacks.reconcile(remote.cardPack,prior?.cardPack,s.cardPack)}:{}),
       });
     }
     if(value.runId&&value.runId===displayRun&&value.runLoot)G.Game?.recordServerLoot?.(value.runLoot,value.hatchAcceleration);
+    if(value.leagueResult)G.LeagueRankUI?.updateResult(value.leagueResult);
+    G.LeagueRankUI?.refreshBadges();
     remember();
     G.UI?.refreshCoins?.();
   }

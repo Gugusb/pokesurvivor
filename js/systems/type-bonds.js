@@ -2,9 +2,9 @@
 G.TypeBonds=(()=>{
   let time=0,nextCast=1,fields=[],earth=0,earthTime=0,windTime=0,dragonKills=0,psychicUntil=0,rockUntil=0;
   let records=new WeakMap(),bug={stacks:0,ascended:false,bonus:{},inherited:{}},hpOwner=null,hpAdded=0;
-  const active=()=>!!G.Squad?.active,team=()=>active()?G.Squad.actors():[],alive=()=>team().filter(p=>!p.dead);
+  const active=()=>!!G.Squad?.active&&(G.LeagueRank?.allows('types')??true),team=()=>active()?G.Squad.actors():[],alive=()=>team().filter(p=>!p.dead);
   const captain=()=>team()[0],has=(p,type)=>!!p?.mon?.types.includes(type),belongs=(p,type)=>active()&&team().includes(p)&&has(p,type);
-  function state(type){const count=G.SquadBonds?.count('types',type)||0,level=G.SquadBonds?.layer('types',type)||0;return {count,level,tier:count>=5?5:count>=2?2:0};}
+  function state(type){if(!active())return {count:0,level:0,tier:0};const count=G.SquadBonds?.count('types',type)||0,level=G.SquadBonds?.layer('types',type)||0;return {count,level,tier:count>=5?5:count>=2?2:0};}
   const value=(type,key)=>G.TypeBondDefs.interpolate(G.TypeBondDefs.BY[type].values[key],state(type).level);
   const ready=(p,type,tier=2)=>belongs(p,type)&&state(type).tier>=tier;
   const source=type=>alive().find(p=>has(p,type));
@@ -183,7 +183,7 @@ G.TypeBonds=(()=>{
     ctx.save();ctx.font='bold 9px monospace';ctx.fillStyle='#fff';ctx.textAlign='left';icons.forEach(([type,n],i)=>{const x=e.x-icons.length*10+i*20,y=e.y-e.bodyH-43;G.Icons.draw(ctx,'type:'+type,x,y,12);if(n)ctx.fillText(String(n),x+10,y+12);});ctx.restore();
   }
   function snapshot(){return {time,nextCast,earth,earthTime,windTime,dragonKills,psychicUntil,rockUntil,bug,hpAdded};}
-  function restore(s){if(!s)return;({time,nextCast,earth,earthTime,windTime,dragonKills,psychicUntil,rockUntil,bug,hpAdded}=s);hpOwner=captain();fields=[];pulses=[];records=new WeakMap();}
+  function restore(s){if(!s)return;({time,nextCast,earth,earthTime,windTime,dragonKills,psychicUntil,rockUntil,bug,hpAdded}=s);hpOwner=G.Squad.actors()[0];if(!active()){if(hpOwner&&hpAdded){const ratio=hpOwner.hp/hpOwner.maxHp;hpOwner.maxHp=Math.max(1,hpOwner.maxHp-hpAdded);hpOwner.hp=hpOwner.dead?0:hpOwner.maxHp*ratio;}hpAdded=0;bug={stacks:0,ascended:false,bonus:{},inherited:{}};}fields=[];pulses=[];records=new WeakMap();}
   return {snapshot,restore,state,value,base,reset,beginStage,baseBonus,agility,speed,regen,defense,damageMultiplier,move,cast,beforeHit,afterHit,forceCrit,critBonus,knock,onDamage,block,contact,enemySpeed,enemyRate,enemyTick,death,tick,
     drawGround,drawAir,drawEnemy,immobile:e=>active()&&(es(e).root>0||es(e).fear?.left>0),get fields(){return fields;},get shields(){return earth;},get cluster(){return bug.stacks;},get ascended(){return bug.ascended;},get clock(){return time;}};
 })();

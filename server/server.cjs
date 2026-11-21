@@ -328,8 +328,10 @@ function createApp(opts = {}) {
       for(const key of G.Difficulty.SCORE_KEYS)if(!Number.isSafeInteger(b.scoreCounts[key])||b.scoreCounts[key]<0||!stale&&b.scoreCounts[key]<previous[key]||b.scoreCounts[key]>2e6)throw fail(400,'Invalid score counters');
       counts=G.Difficulty.scoreCounts(Object.fromEntries(G.Difficulty.SCORE_KEYS.map(k=>[k,Math.max(previous[k],b.scoreCounts[k])])));
     }else counts={...previous,normal:previous.normal+Math.max(0,(b.kills||0)-previousKills)};
-    const expedition=r.mode==='q'?G.ExpeditionRules.progress(b.expedition,JSON.parse(r.expedition||'{}')):null;
-    if(expedition?.arceus&&counts.boss<3)throw fail(400,'Invalid expedition victory');
+    const previousExpedition=JSON.parse(r.expedition||'{}');
+    const expedition=r.mode==='q'?{...G.ExpeditionRules.progress(b.expedition,previousExpedition),squadHp:b.expedition?.squadHp??null,leagueTier:previousExpedition.leagueTier??G.LeagueRank.view(saved(u.uid).save).tier}:null;
+    if(expedition&&expedition.squadHp!==null&&(!Number.isFinite(expedition.squadHp)||expedition.squadHp<0||expedition.squadHp>10000))throw fail(400,'Invalid squad HP');
+    if(expedition?.arceus&&counts.boss<3&&counts.events<60)throw fail(400,'Invalid expedition victory');
     if(r.mode==='q'&&(!b.expedition||!Number.isSafeInteger(b.expedition.day)||b.expedition.day<0||b.expedition.day>10000))throw fail(400,'Invalid expedition progress');
     const totalKills=counts.normal+counts.elite+counts.boss+counts.rift;
     if((b.kills!==undefined&&(!Number.isSafeInteger(b.kills)||b.kills<0||!stale&&b.kills!==totalKills))||totalKills>256+t*160||counts.boss+counts.rift>20+Math.floor(t/30)||counts.events>(r.mode==='q'?2+expedition.day:2+Math.floor(t/60)))throw fail(400,'Invalid score counters');
@@ -371,6 +373,7 @@ function createApp(opts = {}) {
       }
       rewards.seen={boss:r.counts.boss,rift:r.counts.rift};
       if (end) {
+        if(r.mode==='q')rewards.league=G.LeagueRank.settle(s,r.expedition,{id:r.id,clean:!r.dirty,alive:b.alive===true&&b.failed!==true,at:now()});
         if(!r.dirty)rewards.hatches=services.accelerate(u.uid,r.t,r.started);
         exec("UPDATE runs SET ended=1 WHERE id=?", r.id);
         if(!r.dirty&&r.mode==='s'&&r.t>=1){
@@ -401,7 +404,7 @@ function createApp(opts = {}) {
       score(u.uid, s);
       G.Offline.stamp(s, now());
       const value = save(u.uid, s);
-      if (end) return {...value,won,runId:r.id,runLoot:rewards.packs,hatchAcceleration:rewards.hatches||[]};
+      if (end) return {...value,won,runId:r.id,runLoot:rewards.packs,hatchAcceleration:rewards.hatches||[],leagueResult:rewards.league};
       const progress = {offline:s.offline,packTokens:G.CardPacks.normalize(s).tokens};
       if(beforeProtection!==JSON.stringify(s.failureProtection))progress.failureProtection=s.failureProtection;
       if (beforeDifficulty !== JSON.stringify(s.difficulty))
@@ -662,6 +665,7 @@ function createApp(opts = {}) {
           r?.id || null,
         );
         exec('UPDATE runs SET speed=?,speed_owner=? WHERE id=?',initialSpeed,speedOwner,id);
+        if(b.mode==='q')exec('UPDATE runs SET expedition=? WHERE id=?',JSON.stringify({day:0,arceus:false,cashout:false,leagueTier:G.LeagueRank.view(s).tier}),id);
       });
       return json(res, 200, { id });
     }
@@ -672,7 +676,7 @@ function createApp(opts = {}) {
         u.uid,
       );
       if (route === "/run/end" && old?.ended)
-        {const rewards=JSON.parse(old.run_rewards||'{}');return json(res,200,{...saved(u.uid),alreadyEnded:true,runId:b.id,runLoot:rewards.packs||{},hatchAcceleration:rewards.hatches||[]});}
+        {const rewards=JSON.parse(old.run_rewards||'{}');return json(res,200,{...saved(u.uid),alreadyEnded:true,runId:b.id,runLoot:rewards.packs||{},hatchAcceleration:rewards.hatches||[],leagueResult:rewards.league});}
       return json(res, 200, runUpdate(u, b, route === "/run/end"));
     }
     if (route === "/presence") {

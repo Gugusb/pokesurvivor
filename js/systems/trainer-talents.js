@@ -5,7 +5,8 @@ G.TrainerTalents=(()=>{
  const catalogue=()=>{if(dataRef!==cfg()){dataRef=cfg();cards=dataRef?.talents.filter(d=>d.enabled!==false)||[];ids=new Map(cards.map(d=>[d.id,d]));}return cards;},by=id=>{catalogue();return ids.get(id);};
  let shields=new WeakMap();
  function ensure(s){if(!s)return null;s.trainerTalents||=[];s.pendingTalentPicks||=[];s.talentRerolls??=cfg()?.defaultRerolls??2;s.talentGifts||=[];s.emblems||={};s.talentSequence??=0;return s;}
- const entries=(s=run())=>ensure(s)?.trainerTalents.map(t=>({instance:t,def:by(t.id)})).filter(t=>t.def)||[];
+ const permitted=(d,s=run())=>!!d&&(!d.effects.typeBondOffset||(G.LeagueRank?.allows('types',s)??true));
+ const entries=(s=run())=>ensure(s)?.trainerTalents.map(t=>({instance:t,def:by(t.id)})).filter(t=>permitted(t.def,s))||[];
  function aggregate(s){if(!s)return {sums:{},ids:new Set()};ensure(s);let a=aggregates.get(s);if(!a||a.length!==s.trainerTalents.length){a={length:s.trainerTalents.length,sums:{},ids:new Set()};for(const {def}of entries(s)){a.ids.add(def.id);for(const [key,v]of Object.entries(def.effects))if(typeof v==='number'||v===true)a.sums[key]=(a.sums[key]||0)+Number(v);}aggregates.set(s,a);}return a;}
  const sum=(key,s=run())=>aggregate(s).sums[key]||0;
  const has=(id,s=run())=>aggregate(s).ids.has(id);
@@ -18,7 +19,7 @@ G.TrainerTalents=(()=>{
   s.pendingTalentPicks.push({targetLevel:level,tier,serial:++s.talentSequence,seen:[],offers:null});
  }
  function begin(s){ensure(s);shields=new WeakMap();s.talentGifts=[];}
- function eligible(s,p){return catalogue().filter(d=>d.tier===p.tier&&!p.seen.includes(d.id)&&!(d.unique&&has(d.id,s)));}
+ function eligible(s,p){return catalogue().filter(d=>permitted(d,s)&&d.tier===p.tier&&!p.seen.includes(d.id)&&!(d.unique&&has(d.id,s)));}
  function affinity(d,s){
   const cap=s.captain,types=new Map();for(const p of G.Squad?.actors?.()||[cap])for(const type of p.mon.types)types.set(type,(types.get(type)||0)+1);
   if(!d.tagType)return 2;return 1+(cap.mon.types.includes(d.tagType)?12:0)+(types.get(d.tagType)||0)*4+(G.SquadBonds?.layer('types',d.tagType)||0)*.04;
@@ -37,7 +38,7 @@ G.TrainerTalents=(()=>{
   for(const categories of [['BONDS','CAPTAIN'],['COMBAT'],['ECONOMY']]){const fresh=available.filter(d=>!out.includes(d)),preferred=fresh.filter(d=>categories.includes(d.category)),card=weighted(preferred.length?preferred:fresh,s,rng);out.push(card);}
   p.offers=out.map(d=>d.id);p.seen.push(...p.offers);return p.offers.map(by);
  }
- function current(s=run()){ensure(s);const p=s?.pendingTalentPicks[0];if(!p)return null;if(!p.offers)deal(s,p);return p;}
+ function current(s=run()){ensure(s);const p=s?.pendingTalentPicks[0];if(!p)return null;if(p.offers?.some(id=>!permitted(by(id),s))){p.seen=p.seen.filter(id=>!p.offers.includes(id));p.offers=null;}if(!p.offers)deal(s,p);return p;}
  function canReroll(s=run()){const p=current(s);return !!p&&s.talentRerolls>0&&eligible(s,p).length>=3;}
  function reroll(s=run(),serial,rng=Math.random){const p=current(s);if(!p||p.serial!==serial||!canReroll(s))return false;const cards=deal(s,p,rng);if(!cards)return false;s.talentRerolls--;return true;}
  function moveChoices(s=run()){const p=s.captain;return G.Moves.poolFor(p.mon).filter(id=>!p.hasMove(id)&&!p.banned?.has(id));}
@@ -109,5 +110,5 @@ G.TrainerTalents=(()=>{
  function rescueCaptain(p){return represented(p)&&!p.isSquadMember&&p.hp<=0&&rescue(run(),p);}
  function draw(ctx){for(const p of G.Squad?.actors?.()||[]){const s=shields.get(p);if(!s||s.hp<=0||run().elapsed>=s.until)continue;ctx.save();ctx.strokeStyle='#b6e9ff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y-p.bodyH*.4,p.r+9,p.bodyH*.6+8,0,0,Math.PI*2);ctx.stroke();ctx.restore();}}
  function tick(){const s=run();if(s)sync(s);}
- return {catalogue,by,local,ensure,begin,onLevelUp,current,deal,eligible,canReroll,reroll,choose,entries,sum,has,maxHp,healSquad,receiveGifts,moveChoices,sync,attackPct,speedPct,rate,crit,outgoing,incoming,gatherDelay,noPP,defFactor,visualScale,move,interestDivisor,maxInterest,refreshDiscount,price,shop,wage,investments,repayInvestments,battleReward,beginBattle,absorb,onCast,onKill,pulse,rescue,rescueCaptain,draw,tick};
+ return {permitted,catalogue,by,local,ensure,begin,onLevelUp,current,deal,eligible,canReroll,reroll,choose,entries,sum,has,maxHp,healSquad,receiveGifts,moveChoices,sync,attackPct,speedPct,rate,crit,outgoing,incoming,gatherDelay,noPP,defFactor,visualScale,move,interestDivisor,maxInterest,refreshDiscount,price,shop,wage,investments,repayInvestments,battleReward,beginBattle,absorb,onCast,onKill,pulse,rescue,rescueCaptain,draw,tick};
 })();

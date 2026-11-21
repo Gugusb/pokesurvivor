@@ -27,6 +27,7 @@ for (const f of [
   "js/systems/progression-mon.js",
   "js/systems/expedition-rules.js",
   "js/systems/difficulty.js",
+  "js/systems/league-rank.js",
   "js/systems/failure-protection.js",
   "js/systems/offline.js",
   "js/data/upgrades.js",
@@ -138,6 +139,7 @@ function sanitize(input, old, name, options={}) {
   const prior=clone(old);G.CardPacks.normalize(prior);if(options.localPacks){s.cardPack.refund=prior.cardPack.refund;s.cardPack.refundDue=prior.cardPack.refundDue;s.cardPack.legacyAgility=Math.min(.24,prior.cardPack.legacyAgility+.03*Math.max(0,(s.cardPack.taken?.["stat:cd"]||0)-(prior.cardPack.taken["stat:cd"]||0)));G.CardPacks.normalize(s);}else s.cardPack=prior.cardPack;s.pupg={};s.upgrades={};
   s.offline = clone(old.offline);
   s.failureProtection = clone(old.failureProtection||{});
+  s.leagueRank=clone(old.leagueRank||{v:1,results:{}});
   Object.assign(s,G.ZAccess.merge(s,old));
   for(const [d,type] of Object.entries(s.zEquipped))
     if(!G.DEX_BY[d] || type!==null && (!G.ZAccess.TYPES.includes(type)||!G.ZAccess.allowed(s,d)))delete s.zEquipped[d];

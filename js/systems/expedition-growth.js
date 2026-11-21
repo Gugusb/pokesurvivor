@@ -34,7 +34,7 @@ G.ExpeditionGrowth=(()=>{
     if(!fruits())fruits(true);
     const card=(kind,title,desc,tag=L('Todo el equipo','Whole squad','全队'))=>({w:1,category:'stat',type:'stat',key:'fruit:'+kind,icon:kind==='slot'?'cards':'berry',color:'#d7acdc',title,desc,tag,apply:()=>fruitReward(kind)});
     const cards=[card('crit',L('Baya Crítica','Crit Fruit','暴击果实'),L('Equipo: crítico +1%.','Team crit chance +1%.','全队暴击率+1%')),card('critDamage',L('Baya Potente','Crit Damage Fruit','爆伤果实'),L('Equipo: daño crítico +2%.','Team crit damage +2%.','全队暴击伤害+2%'))];
-    const unlocked=kind=>!!G.DB?.save&&!!G.CardPacks?.normalize(G.DB.save).taken['fruit:'+kind];
+    const unlocked=kind=>(G.LeagueRank?.allows('advancedFruits')??true)&&!!G.DB?.save&&!!G.CardPacks?.normalize(G.DB.save).taken['fruit:'+kind];
     const biased=(pool,present)=>G.U.pick(pool.flatMap(k=>present.has(k)?[k,k,k]:[k]));
     for(const kind of ['type','skill','slot'])if(unlocked(kind)){
       const c=card(kind,L('Mejora','Upgrade','成长'),'');c.materialize=()=>{

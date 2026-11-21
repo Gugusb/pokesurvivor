@@ -1,6 +1,6 @@
 /* ============ menu.js — menú principal, colección y mejoras ============ */
 G.MenuUI = (() => {
-  G.I18n.add({'Modo invitado: colección temporal; expedición guardada en este navegador.':'Guest mode: temporary collection; expedition saved in this browser.'});G.I18n.addChinese({'Modo invitado: colección temporal; expedición guardada en este navegador.':'游客模式：收藏临时保存；远征存档保留在此浏览器。'});
+  G.I18n.add({'Modo invitado: colección y rango temporales; expedición guardada en este navegador.':'Guest mode: temporary collection and rank; expedition saved in this browser.'});G.I18n.addChinese({'Modo invitado: colección y rango temporales; expedición guardada en este navegador.':'游客模式：收藏和段位临时保存；远征存档保留在此浏览器。'});
   const $ = G.UI.$;
   const GEN_NAMES = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar', 'Paldea'];
   let dexFilter = 'all', dexGen = 1, dexSel;
@@ -46,7 +46,7 @@ G.MenuUI = (() => {
     const shiny = !!s.partnerShiny && G.DB.ownsShiny(mon.dex);
     G.UI.chrome(true);
     G.UI.show('scr-menu');
-    G.ExpeditionSave?.menu();
+    G.ExpeditionSave?.menu();G.LeagueRankUI?.menu();
     G.UI.sprite($('menu-partner'), mon.dex, { lively: true, scale: 4, hero: true, shiny });
     $('menu-partner').style.setProperty('--stage-c', shiny ? '#9ae6ff' : G.U.TYPE_COLOR[mon.types[0]]);
     $('menu-partner').classList.toggle('shiny', shiny);
@@ -82,7 +82,7 @@ G.MenuUI = (() => {
     $('menu-stats').innerHTML =
       `Runs <b style="color:#fff">${st.runs}</b> · Mejor tiempo <b style="color:#fff">${G.U.mmss(st.bestTime)}</b><br>` +
       `Mejor nivel <b style="color:#fff">${st.bestLevel}</b> · Derrotados <b style="color:#fff">${st.totalKills.toLocaleString('es')}</b>` +
-      (G.DB.guest ? '<br><span style="color:#ffb0b8">Modo invitado: colección temporal; expedición guardada en este navegador.</span>' : '');
+      (G.DB.guest ? '<br><span style="color:#ffb0b8">Modo invitado: colección y rango temporales; expedición guardada en este navegador.</span>' : '');
 
     socialLine();
     // Premios de misiones por recoger.

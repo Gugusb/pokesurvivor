@@ -24,7 +24,7 @@ G.SaveSync=(()=>{
    return copy(n);
   }
   const result=walk(current,base||{},next||{});
-  for(const key of ['cardPack','difficultyRecords','offline','failureProtection'])if(current?.[key]!==undefined)result[key]=copy(current[key]);
+  for(const key of ['cardPack','difficultyRecords','offline','failureProtection','leagueRank'])if(current?.[key]!==undefined)result[key]=copy(current[key]);
   if(options.localPacks!==false&&G.CardPacks?.reconcile&&current?.cardPack&&next?.cardPack){
    result.cardPack=G.CardPacks.reconcile(current.cardPack,base?.cardPack,next.cardPack);
    const a=G.CardPacks.settlement(current.cardPack,base?.cardPack,next.cardPack).correction;

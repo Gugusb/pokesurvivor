@@ -3,14 +3,15 @@ G.SquadTraits=(()=>{
  let records=new WeakMap(),battles=new Set(),rests=new Set(),merges=new WeakSet();
  const run=()=>G.Expedition?.run,local=v=>v?.[G.I18n.lang]||v?.en||v;
  const L=(es,en,zh)=>local({es,en,zh});
- const represented=p=>!!p?.isSquadMember&&!!G.Squad?.active&&G.Squad.deployed().includes(p);
- const team=()=>G.Squad?.active?G.Squad.deployed().filter(p=>!p.dead&&p.hp>0):[];
+ const enabled=()=>G.LeagueRank?.allows('traits')??true;
+ const represented=p=>enabled()&&!!p?.isSquadMember&&!!G.Squad?.active&&G.Squad.deployed().includes(p);
+ const team=()=>enabled()&&G.Squad?.active?G.Squad.deployed().filter(p=>!p.dead&&p.hp>0):[];
  const def=p=>G.SquadTraitDefs.BY[p?.squadTraitOverride]||G.SquadTraitDefs.forDex(p?.dex);
  function state(p){let s=records.get(p);if(!s)records.set(p,s={casts:0,kills:0,usedRevives:0,reviveWait:null,cache:null});return s;}
  const weight=p=>G.SquadTraitDefs.weight(p),value=p=>G.SquadTraitDefs.value(p);
  function assign(p){const d=def(p);if(d)p.squadTrait=d.id;return d;}
  function activeTags(p,scope='all'){
-  if(!G.Squad?.active||!G.Squad.actors().includes(p))return [];
+  if(!enabled()||!G.Squad?.active||!G.Squad.actors().includes(p))return [];
   G.SquadBonds.refresh();const out=[],t=G.Squad.tags(p);
   if(scope!=='skill')for(const id of new Set(t.types))if(G.SquadBonds.count('types',id)>=2)out.push(['types',id]);
   if(scope!=='types')for(const id of new Set(p.moves.map(m=>G.SquadBonds.group(m.kind))))if(G.SquadBonds.state(id).tier>0)out.push(['skill',id]);
@@ -30,7 +31,7 @@ G.SquadTraits=(()=>{
   return s.cache=v;
  }
  function factor(p,key){const v=live(p);return 1+v.all+(['atk','spa'].includes(key)?v.atk:['defense','spdef'].includes(key)?v.defense:['agility','stamina'].includes(key)?v.agility:0);}
- function flat(p,key){if(!G.Squad?.active)return 0;const n=p?.traitPermanent?.[key]||0;if(key==='atk'||key==='spa'){const converted=key==='atk'?p.mon.atk:p.mon.spa??p.mon.atk,raw=p.mon.baseStats?.[key];return raw?n*converted/raw:n;}return n;}
+ function flat(p,key){if(!enabled()||!G.Squad?.active)return 0;const n=p?.traitPermanent?.[key]||0;if(key==='atk'||key==='spa'){const converted=key==='atk'?p.mon.atk:p.mon.spa??p.mon.atk,raw=p.mon.baseStats?.[key];return raw?n*converted/raw:n;}return n;}
  const crit=p=>flat(p,'crit');
  const visualScale=p=>1+live(p).all;
  function sync(p){
@@ -78,13 +79,13 @@ G.SquadTraits=(()=>{
   if(run()?.phase!=='combat'||!represented(p)||!p.dead||def(p)?.effect!=='indep_mythical_revive')return;const s=state(p);if(s.reviveWait==null&&s.usedRevives<reviveTotal(p)){s.usedRevives++;s.reviveWait=3;}
  }
  function tick(dt){
-  if(run()?.phase!=='combat'||!(dt>0))return;
+  if(!enabled()||run()?.phase!=='combat'||!(dt>0))return;
   for(const p of G.Squad.deployed()){const s=state(p);if(s.reviveWait==null)continue;if(!p.dead){s.reviveWait=null;continue;}s.reviveWait=Math.max(0,s.reviveWait-dt);if(s.reviveWait<=1e-9){s.reviveWait=null;p.revive(1);G.SquadAssault?.reset(p);sync(p);}}
  }
  function beginBattle(){for(const p of G.Squad.roster){const s=state(p);s.usedRevives=0;s.reviveWait=null;sync(p);}}
  function reset(){records=new WeakMap();battles=new Set();rests=new Set();merges=new WeakSet();}
  function description(p){
-  const d=def(p);if(!d)return '';const n=value(p),lang=G.I18n.lang,zh={
+  if(!enabled())return '';const d=def(p);if(!d)return '';const n=value(p),lang=G.I18n.lang,zh={
    indep_heal_allies:'触发技能时，恢复编队前后宝可梦生命，数值为自身最大生命的'+n+'%',
    indep_bond_type_atk:'自身每有10层已激活的属性羁绊，物攻及特攻提高'+n+'%',
    indep_bond_type_def:'自身每有10层已激活的属性羁绊，物防及特防提高'+n+'%',
@@ -103,7 +104,7 @@ G.SquadTraits=(()=>{
   }
   return text;
  }
- function draw(ctx){if(run()?.phase!=='combat')return;for(const p of G.Squad.deployed()){const s=state(p);if(s.reviveWait==null)continue;ctx.save();ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillStyle='#f6e6ff';ctx.fillText('✦ '+s.reviveWait.toFixed(1)+'s',p.x,p.y-p.bodyH-20);ctx.restore();}}
+ function draw(ctx){if(!enabled()||run()?.phase!=='combat')return;for(const p of G.Squad.deployed()){const s=state(p);if(s.reviveWait==null)continue;ctx.save();ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillStyle='#f6e6ff';ctx.fillText('✦ '+s.reviveWait.toFixed(1)+'s',p.x,p.y-p.bodyH-20);ctx.restore();}}
  function snapshot(actors){return {battles:[...battles],rests:[...rests],states:actors.map(p=>({...state(p),cache:null}))};}
  function restore(saved,actors){records=new WeakMap();battles=new Set(saved?.battles||[]);rests=new Set(saved?.rests||[]);merges=new WeakSet();actors.forEach((p,i)=>records.set(p,{...saved?.states?.[i],cache:null}));}
  const noop=()=>{},neutral=()=>({factor:1,execute:false,contributions:[]});

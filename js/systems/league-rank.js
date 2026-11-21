@@ -1,0 +1,53 @@
+/* Account-wide expedition honors. Only final day-60 clears award progress. */
+G.LeagueRank=(()=>{
+  const TIERS=[
+    ['初阶训练家','Novice Trainer','Entrenador novel','#708090'],
+    ['徽章挑战者','Badge Challenger','Aspirante a medallas','#cd7f32'],
+    ['王牌训练家','Ace Trainer','Entrenador de élite','#c0c0c0'],
+    ['道馆馆主级','Gym Leader Tier','Líder de gimnasio','#ffd700'],
+    ['联盟准天王','Premier Elite','Aspirante al Alto Mando','#9932cc'],
+    ['四天王级','Elite Four Tier','Alto Mando','#e5e4e2'],
+    ['联盟冠军级','Champion Tier','Campeón de la Liga','#ff4500'],
+    ['殿堂大师','Hall of Fame Master','Maestro del Salón de la Fama','#00ffff']
+  ].map(([zh,en,es,color],i)=>({tier:i+1,name:{zh,en,es},color}));
+  const local=x=>x?.[G.I18n?.lang]||x?.en||x;
+  const validId=id=>typeof id==='string'&&/^[\w-]{8,100}$/.test(id);
+  function records(s){
+    const out=Object.create(null),source=s?.leagueRank?.results;
+    if(source&&typeof source==='object'&&!Array.isArray(source))for(const [id,r]of Object.entries(source)){
+      if(!validId(id)||!r||!['stars','protocol'].includes(r.kind)||!Number.isSafeInteger(r.award)||r.award<1||r.award>(r.kind==='stars'?3:1)||!Number.isFinite(r.hp)||r.hp<=0||r.hp>10000)continue;
+      out[id]={kind:r.kind,award:r.award,hp:r.hp,at:Number.isFinite(r.at)?Math.max(0,r.at):0};
+    }
+    return out;
+  }
+  function normalize(s){if(!s)return {v:1,results:{}};s.leagueRank={v:1,results:records(s)};return s.leagueRank;}
+  function view(s){
+    const list=Object.values(records(s)),points=Math.min(21,list.reduce((n,r)=>n+(r.kind==='stars'?r.award:0),0)),tier=Math.min(8,1+Math.floor(points/3)),protocol=tier===8?Math.min(20,list.filter(r=>r.kind==='protocol').length):0;
+    return {tier,stars:tier===8?3:points%3,points,protocol,color:protocol?'#ff007f':TIERS[tier-1].color,name:local(TIERS[tier-1].name),maxed:protocol===20};
+  }
+  function merge(a,b){const result=records(a);for(const [id,r]of Object.entries(records(b)))if(!result[id]||r.at<result[id].at)result[id]=r;return {leagueRank:{v:1,results:result}};}
+  function preview(s,run,options={}){
+    const before=view(s),hp=Number.isFinite(run?.squadHp)?run.squadHp:null,id=options.id||'',duplicate=!!records(s)[id],protocolRun=(run?.leagueTier??before.tier)>=8;
+    const reason=!options.clean?'excluded':options.alive!==true||!(hp>0)?'defeat':!run?.arceus||run.day<60?'incomplete':hp>10000||protocolRun&&before.tier<8?'invalid':before.maxed?'maxed':duplicate?'duplicate':'cleared';
+    const grade=hp>=70?'SSS':hp>=40?'S':'A',kind=protocolRun?'protocol':'stars',award=reason==='cleared'?(kind==='protocol'?1:hp>=70?3:hp>=40?2:1):0;
+    const points=Math.min(21,before.points+(kind==='stars'?award:0)),protocol=kind==='protocol'?Math.min(20,before.protocol+award):before.protocol;
+    const after={...before,points,tier:Math.min(8,1+Math.floor(points/3)),protocol};after.stars=after.tier===8?3:points%3;after.name=local(TIERS[after.tier-1].name);after.color=protocol?'#ff007f':TIERS[after.tier-1].color;after.maxed=protocol===20;
+    const applied=kind==='stars'?points-before.points:protocol-before.protocol;
+    return {id,reason,hp,grade:reason==='cleared'?grade:null,kind,award,applied,before,after,promoted:after.tier>before.tier||after.protocol>before.protocol};
+  }
+  function settle(s,run,options={}){
+    normalize(s);const r=preview(s,run,options);
+    if(!validId(r.id))return {...r,reason:'invalid',award:0,applied:0,after:r.before,promoted:false};
+    if(r.applied>0)s.leagueRank.results[r.id]={kind:r.kind,award:r.award,hp:r.hp,at:options.at??Date.now()};
+    return r;
+  }
+  function rules(input=G.Expedition?.run){const tier=typeof input==='number'?input:input?.leagueTier??view(G.DB?.save).tier;return {tier,skill:true,types:tier>=2,traits:tier>=3,'pokemon-training':tier>=3,training:tier>=4,eggs:tier>=4,eggTags:tier>=3,talents:true,advancedFruits:tier>=4,pityEvery:tier===1?4:tier===2?8:0,companionChance:tier===1?.6:tier===2?.4:null};}
+  const allows=(key,input)=>rules(input)[key]!==false;
+  function filterMap(run){for(const row of run.map||[])for(const c of row)if(!allows(c.kind,run))c.kind='rest';}
+  function pityShop(run,pool,offers,members=G.Squad.roster,rng=Math.random){
+    const n=rules(run).pityEvery;if(!n||!run.rankRefreshCount||run.rankRefreshCount%n)return false;
+    const roots=new Set(members.map(p=>G.MonProgression.rootFor(p.dex)));if(offers.some(o=>o&&!o.sold&&roots.has(G.MonProgression.rootFor(o.dex))))return true;
+    const card=pool.drawOwned(members,rng);if(!card)return false;pool.putBack(offers[0]);offers[0]=card;return true;
+  }
+  return {rules,allows,filterMap,pityShop,TIERS,local,normalize,view,merge,preview,settle};
+})();

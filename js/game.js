@@ -450,6 +450,8 @@ G.Game = (() => {
     const completed=G.Expedition?.active ? !!G.Expedition.summary()?.arceus : !!(G.Difficulty&&challenge&&time>G.Difficulty.WIN&&(challenge.survived||challenge.victory||!coop));
     if(G.Expedition?.active)challenge.expedition=G.Expedition.summary();
     if (G.Difficulty) G.Difficulty.record(save, challenge, time, completed||!pl.dead, ok);
+    const expedition=G.Expedition?.active?G.Expedition.summary():null,leagueOptions={id:protectionRunId,clean:ok&&!!challenge?.eligible&&!coop,alive:!dead&&!pl.dead};
+    const leagueResult=expedition?(G.DB.mode==='server'?{...G.LeagueRank.preview(save,expedition,leagueOptions),pending:true}:G.LeagueRank.settle(save,expedition,leagueOptions)):null;
     const progressExcluded=challenge&&!challenge.victory?(tampered?'debug':!challenge.eligible?'locked':!ok?'validation':null):null;
     const coins=base+victoryBonus;
     const record = score.total > (save.stats.bestScore || 0);
@@ -477,14 +479,14 @@ G.Game = (() => {
     const mark = { t: Math.floor(time), lv: pl.level, kills: pl.kills };
     // Si la partida se ha tocado (ver clean()), no sube al ranking (sin avisar); lo demás, sí.
     const ranked = ok && (!challenge || challenge.eligible) && !coop && !G.Expedition?.active;
-    if(G.DB.mode==='server')G.Server.finish(ok,dead&&pl.dead).catch(()=>{});
+    if(G.DB.mode==='server')G.Server.finish(ok,dead&&pl.dead).catch(()=>G.LeagueRankUI?.pendingResult(leagueResult?.id));
     const sent = ranked && !coop ? G.Ranking.submitSolo(Object.assign(mark, { dex: pl.dex, shiny: pl.shiny }))
                : ranked && wasHost ? G.Ranking.submitGroup(Object.assign(mark, { members: team })) : null;
     if (sent) sent.then(b => { if (b && b.some(p => p !== 'a')) G.DB.commit(true); }).catch(() => {});
 
     G.RunUI.showOver({
       dead, time, level: pl.level, kills: pl.kills, bosses: pl.bosses, coins, record, t1: pl.t1, t10: pl.t10, judge,
-      expedition:G.Expedition?.summary(),damage:G.Expedition?.active?G.ExpeditionDamage?.snapshot():[],damageBattle:G.Expedition?.active?G.ExpeditionDamage?.snapshot('battle'):[],damageBattleDay:G.ExpeditionDamage?.battleDay,loot:runLoot,moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
+      leagueResult,expedition:G.Expedition?.summary(),damage:G.Expedition?.active?G.ExpeditionDamage?.snapshot():[],damageBattle:G.Expedition?.active?G.ExpeditionDamage?.snapshot('battle'):[],damageBattleDay:G.ExpeditionDamage?.battleDay,loot:runLoot,moves: pl.moves, caught: caught.concat(confirmed.map(c => ({ ...c, captured: true }))), difficulty: challenge?.stars, victory: !!challenge?.victory, completed, progressExcluded, rankingExcluded: !ranked, score,
       breakdown: Object.entries(parts).filter(([, v]) => v).map(([k, v]) => `${k} ${v}`).join(' · ') +
                  (pl.coinMul > 1 ? ` · ×${pl.coinMul.toFixed(2)} Fortuna` : '')+
                  (victoryBonus>0?` · ×2 ${G.T('Bonificación de victoria')}`:'')
