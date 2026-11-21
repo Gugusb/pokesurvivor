@@ -54,5 +54,5 @@ G.FailureProtection=(()=>{
     if(!(chance>0)||p.dead||!(p.hp>0)||!Number.isFinite(damage)||damage<p.hp||rng()>=chance)return false;
     p.invuln=Math.max(p.invuln||0,.45);return true;
   }
-  return {MAX,EARLY,RESET,normalize,merge,record,begin,advance,finish,strength,xpFactor,lootBonus,avoidLethal};
+  return {snapshot:p=>states.get(p),restore:(p,s)=>{if(s)states.set(p,s);},MAX,EARLY,RESET,normalize,merge,record,begin,advance,finish,strength,xpFactor,lootBonus,avoidLethal};
 })();

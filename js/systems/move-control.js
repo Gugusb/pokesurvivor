@@ -25,5 +25,7 @@ G.MoveControl = (()=>{
     return true;
   }
   function cast(p,m){const s=state(p);if(s.mode==='click'){s.pending.delete(m);if(m.kind==='orbit')s.leases.add(m);}}
-  return {mode,wants,sustaining,releasing,input,cast};
+  function snapshot(p){const s=state(p);return {mode:s.mode,on:p.slots.map(g=>s.enabled.get(g)!==false),pending:[...s.pending].map(m=>p.moves.indexOf(m)),leases:[...s.leases].map(m=>p.moves.indexOf(m))};}
+  function restore(p,a){if(!a)return;const s=state(p);p.slots.forEach((g,i)=>s.enabled.set(g,a.on[i]));s.pending=new Set(a.pending.map(i=>p.moves[i]).filter(Boolean));s.leases=new Set(a.leases.map(i=>p.moves[i]).filter(Boolean));}
+  return {snapshot,restore,mode,wants,sustaining,releasing,input,cast};
 })();

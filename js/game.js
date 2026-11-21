@@ -186,6 +186,14 @@ G.Game = (() => {
     if(!coop){challenge.mode='q';challenge.expedition={day:0,arceus:false,cashout:false};G.Expedition.begin(pl);}
   }
 
+  function checkpoint(){return {time,pendingLevels,caught,biome,challenge,protectionRunId,banked,runLoot,scoreCounters,runSpeed,speedBonus,tampered,realElapsed:Math.max(0,(performance.now()-runReal)/1000)};}
+  async function restoreCheckpoint(d){
+    G.Expedition.reset();G.BossRewards.reset();G.UI.hideAll();G.UI.chrome(false);G.FX.clear();G.Projectiles.clear();G.Combat.clearFields();G.EnemyMgr.clear();G.Pickups.clear();G.Spawner.reset();G.Rift.reset();G.Judgment.reset();G.Events.reset();G.Weather.reset();G.Path.clear();G.Hazards.clear();
+    const s=d.game;({time,pendingLevels,caught,biome,challenge,protectionRunId,banked,runLoot,scoreCounters,runSpeed,speedBonus,tampered}=s);runReal=performance.now()-s.realElapsed*1000;pl=G.ExpeditionSave.hydrate(d.captain);state='journey';deathT=0;openItem=null;laterItems.length=0;holdBy=[];openMastery=false;victoryBusy=false;hitStopUntil=0;
+    const paid=G.ExpeditionSave.ledger(protectionRunId);banked={...banked,t1:Math.max(banked.t1||0,paid.t1||0),t10:Math.max(banked.t10||0,paid.t10||0)};if(paid.loot){runLoot.gems=Math.max(runLoot.gems||0,paid.loot.gems||0);for(const kind of ['stones','duplicateStones','packs'])for(const [id,n]of Object.entries(paid.loot[kind]||{}))runLoot[kind][id]=Math.max(runLoot[kind][id]||0,n);}
+    G.ExpeditionSave.restoreState(d,pl);if(G.DB.mode==='server'&&d.server)await G.Server.restoreCheckpoint(d.server);G.ExpeditionRecorder?.beginRun();G.Audio.music(G.BIOME_MUSIC[G.World.biome%G.BIOME_MUSIC.length]);
+  }
+  function suspendExpedition(){if(!G.Expedition.active||!G.ExpeditionSave.save())return false;G.Server?.pauseCheckpoint?.();G.SettingsUI.close();G.UI.chrome(true);state='ui';G.Expedition.reset();pl=null;Backdrop.restore();G.MenuUI.open();return true;}
   function expeditionPause(){if(pl)state='journey';}
   function expeditionResume(){if(pl)state='playing';}
   function expeditionGainXp(amount){if(!pl||pl.dead||!G.Expedition?.active||!Number.isFinite(amount)||amount<=0)return false;pendingLevels+=pl.gainXp(amount);return true;}
@@ -199,6 +207,7 @@ G.Game = (() => {
   }
 
   function quitRun() {
+    if(G.Expedition?.active)return suspendExpedition();
     if (G.Coop.active) G.Coop.leave();
     endRun(false);
   }
@@ -239,10 +248,10 @@ G.Game = (() => {
   }
   function runScore(){return G.Difficulty.score(scoreCounts(),time,challenge?.stars);}
   let runLoot={gems:0,stones:{},duplicateStones:{},packs:{},hatchAcceleration:[]};
-  function recordLoot(kind,id,n=1){if(!pl||!Number.isFinite(n)||n<=0)return;if(kind==='gems')runLoot.gems+=n;else if(runLoot[kind]&&typeof runLoot[kind]==='object')runLoot[kind][id]=(runLoot[kind][id]||0)+n;}
+  function recordLoot(kind,id,n=1){if(!pl||!Number.isFinite(n)||n<=0)return;if(kind==='gems')runLoot.gems+=n;else if(runLoot[kind]&&typeof runLoot[kind]==='object')runLoot[kind][id]=(runLoot[kind][id]||0)+n;G.ExpeditionSave?.recordLoot(runLoot);}
   function recordServerLoot(packs,hatches){if(state==='playing')for(const [id,n]of Object.entries(packs))if(n>(runLoot.packs[id]||0))G.UI.toast(G.CardPacks.local(G.CardPacks.packBy[id]?.name||id)+' +'+(n-(runLoot.packs[id]||0)));runLoot.packs={...packs};if(hatches)runLoot.hatchAcceleration=hatches;if(state==='over')G.RunUI?.updateLoot?.(runLoot);}
   function scoreKill(e){scoreCounters[e.legend?'rift':e.boss?'boss':e.elite?'elite':'normal']++;
-    if(e.boss&&G.DB.mode!=='server'){const pack=G.CardPacks?.rollBoss(!!e.legend);if(pack){G.CardPacks.grantToken(G.DB.save,pack);recordLoot('packs',pack);G.DB.commit(true);}}
+    if(e.boss&&G.DB.mode!=='server'&&G.ExpeditionSave?.rewardOnce('boss-pack',scoreCounters.boss+scoreCounters.rift)!==false){const pack=G.CardPacks?.rollBoss(!!e.legend);if(pack){G.CardPacks.grantToken(G.DB.save,pack);recordLoot('packs',pack);G.DB.commit(true);}}
   }
   function scoreEvent(){scoreCounters.events++;}
   function coinPayout(){
@@ -311,7 +320,7 @@ G.Game = (() => {
     const d1 = Math.max(0, pl.t1 - banked.t1), d10 = Math.max(0, pl.t10 - banked.t10);
     if (!d1 && !d10) return;
     sv.tickets.t1 += d1; sv.tickets.t10 += d10;
-    banked = { t1: pl.t1, t10: pl.t10,scoreCounts:scoreCounts() };
+    banked = { t1: Math.max(banked.t1,pl.t1), t10: Math.max(banked.t10,pl.t10),scoreCounts:scoreCounts() };G.ExpeditionSave?.recordBanked(banked,protectionRunId);
     if (save_) G.DB.commit('run');
   }
 
@@ -419,6 +428,7 @@ G.Game = (() => {
 
   function endRun(dead = true, victoryBonus=0) {
     if (state === 'over' || !pl) return;
+    if(G.Expedition?.active)G.ExpeditionSave?.clear();
     if(G.Expedition?.inCombat)G.ExpeditionRecorder?.finish(dead?'defeat':'abandoned');
     G.UI.hide('scr-victory');
     const coop = !!pl.uid;                    // sólo las partidas en grupo le ponen uid
@@ -1092,7 +1102,7 @@ G.Game = (() => {
   })();
 
   return {
-    expeditionPause,expeditionResume,expeditionGainXp,expeditionEnd,expeditionDefeat,expeditionVictory, init, startRun, everyone, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
+    checkpoint,restoreCheckpoint,suspendExpedition,expeditionPause,expeditionResume,expeditionGainXp,expeditionEnd,expeditionDefeat,expeditionVictory, init, startRun, everyone, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
     debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },
@@ -1100,7 +1110,7 @@ G.Game = (() => {
     debugSpeed(k) { if (k > 1) tampered = true; speedK = k; },
     togglePause,toggleBackpack,toggleSquad,get loot(){return runLoot;},
     /** Abandona la partida en curso (p. ej. al cerrar sesión desde Ajustes). */
-    quit() { if (state !== 'ui' && state !== 'over') quitRun(); },
+    quit() { if (state !== 'ui' && state !== 'over') return quitRun();return true; },
     /** Para grabar vídeos: abre las cartas de subir de nivel. */
     debugLevelUp() { tampered = true; pl.level++; pl.xpNext = G.Player.xpFor(pl.level); G.Abilities.onLevel(pl); pendingLevels++; },
     debugItem(id) { if (G.Dev && G.Dev.canUse() && pl && G.Items.BY[id]) { tampered = true; onCollect({id:-1,kind:'item',value:id},pl); } },

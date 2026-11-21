@@ -284,7 +284,7 @@ G.RunUI = (() => {
     G.UI.soundControls($('pause-sound'));
     const bag=$('pause-items');if(bag){const entries=Object.entries(G.Game.player?.specialItems||{});bag.innerHTML='<h3>'+G.T('Objetos especiales')+'</h3>'+entries.map(([id,n])=>'<div>'+G.Icons.html(G.Items.icon(id),24)+' <b>'+G.T(G.Items.BY[id].name)+' ×'+n+'</b><small>'+G.T(G.Items.BY[id].desc)+'</small></div>').join('');}
     $('pause-coop').classList.toggle('hidden', !coop);
-    $('btn-quit').textContent = coop ? 'Salir de la partida' : 'Abandonar run';
+    $('btn-quit').textContent = G.Expedition?.active?(G.I18n.lang==='zh'?'保存并返回主菜单':G.I18n.lang==='en'?'Save and return to menu':'Guardar y salir al menú'):coop ? 'Salir de la partida' : 'Abandonar run';
     const speed = $('btn-run-speed');
     const refresh = () => { speed.textContent = G.T('Velocidad de juego') + ': ' + (G.Game.speed || 1) + '× · V'; };
     refresh(); speed.disabled = coop && !G.Coop.isHost;

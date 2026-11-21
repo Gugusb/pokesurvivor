@@ -1,0 +1,56 @@
+/* Account-isolated local checkpoints. Combat saves restart the selected event. */
+G.ExpeditionSave=(()=>{
+ const FORMAT=1,MAX_BYTES=2e6,stable=new Set(['route','shop','wild','rest','training','pokemon-training','loot']);
+ const L=(es,en,zh)=>G.I18n.lang==='zh'?zh:G.I18n.lang==='en'?en:es;
+ let point=null,restoring=false,busy=false,lastError='';
+ const owner=()=>G.DB.loggedIn?(G.DB.mode+':'+(G.DB.fb?.uid||G.DB.user||'guest')):null;
+ const key=()=> 'ps.expedition.checkpoint.'+encodeURIComponent(owner());
+ const ledgerKey=id=>'ps.expedition.receipts.'+encodeURIComponent(owner())+'.'+id;
+ function stringify(v){return JSON.stringify(v,(k,x)=>x instanceof Set?{$set:[...x]}:x instanceof Map?{$map:[...x]}:x);}
+ function parse(s){return JSON.parse(s,(k,x)=>['__proto__','prototype','constructor'].includes(k)?undefined:x&&typeof x==='object'&&Object.keys(x).length===1&&Array.isArray(x.$set)?new Set(x.$set):x&&typeof x==='object'&&Object.keys(x).length===1&&Array.isArray(x.$map)?new Map(x.$map):x);}
+ function actor(p){const fields={};for(const [k,v]of Object.entries(p))if(!['anim','moves','slots','target','uid','coopHost'].includes(k)&&typeof v!=='function')fields[k]=v;
+  return {fields,moves:p.moves.map(m=>({...m})),slots:p.slots.map(g=>g.map(m=>p.moves.indexOf(m))),pp:G.MovePP.snapshot(p),control:G.MoveControl.snapshot(p),items:G.BreakItems.snapshot(p)};
+ }
+ function hydrate(a,member=false){const d=a.fields,p=member?new G.Squad.Member(d.dex,d.rank,a.moves[0]?.id):new G.Player(G.DEX_BY[d.dex]);Object.assign(p,d);
+  p.moves=a.moves.map(m=>Object.assign(G.Moves.instance(m.id),m));p.slots=a.slots.map(g=>g.map(i=>p.moves[i]));p.target=null;p.anim=new G.Sprites.Animator(p.spriteDex,1,!!p.shiny);if(p.dead)p.anim.play('Faint',{hold:true});G.MovePP.restoreCheckpoint(p,a.pp);G.MoveControl.restore(p,a.control);G.BreakItems.restore(p,a.items);return p;
+ }
+ function validate(s){
+  if(!s||s.format!==FORMAT||s.owner!==owner()||!s.payload||s.payload.length>MAX_BYTES)throw Error(L('Partida guardada incompatible.','Incompatible checkpoint.','存档格式不兼容。'));
+  const d=parse(s.payload);if(!Number.isFinite(d?.game?.time)||d.game.time<0||d.game.time>604800||!Number.isSafeInteger(d.game.pendingLevels)||d.game.pendingLevels<0||!Array.isArray(d?.members))throw Error('Invalid session checkpoint');const people=[d.captain,...(d.members||[])];if(!d.run||!stable.has(d.run.phase)||!Number.isSafeInteger(d.run.day)||d.run.day<0||d.run.day>10000||people.length>256||!Array.isArray(d.run.map)||!d.game?.protectionRunId)throw Error('Invalid checkpoint');
+  for(const a of people){if(!a?.fields||!G.DEX_BY[a.fields.dex]||!Number.isFinite(a.fields.maxHp)||a.fields.maxHp<=0||!Number.isFinite(a.fields.hp)||a.fields.hp<0||a.fields.hp>a.fields.maxHp+1||!Array.isArray(a.moves)||a.moves.length>24||!a.moves.length||a.moves.some(m=>!G.Moves.BY_ID[m.id]||!Number.isFinite(m.lvl)||m.lvl<1||m.lvl>100)||!Array.isArray(a.slots)||a.slots.some(g=>!Array.isArray(g)||g.some(i=>!Number.isInteger(i)||!a.moves[i]))||Object.keys(a.fields).some(k=>!!Object.getOwnPropertyDescriptor(G.Player.prototype,k)))throw Error('Invalid Pokémon checkpoint');}
+  if(!Array.isArray(d.pool)||d.pool.some(id=>!G.DEX_BY[id])||!Array.isArray(d.formation)||d.formation.some(id=>id!=null&&!d.members.some(a=>a.fields.squadId===id)))throw Error('Invalid squad checkpoint');return d;
+ }
+ function capture(target=null){const r=G.Expedition.run;if(!r||!stable.has(r.phase)||G.Coop.active)return null;
+  const people=[r.captain,...G.Squad.roster],savedRun={};for(const [k,v]of Object.entries(r))if(!['captain','pool','unitPool','pendingSpawns'].includes(k)&&typeof v!=='function')savedRun[k]=v;
+  const payload=stringify({run:savedRun,pool:r.pool.map(m=>m.dex),stock:[...r.unitPool.stock],offers:G.Expedition.offers,captain:actor(r.captain),members:G.Squad.roster.map(actor),formation:G.Squad.formation.map(p=>p?.squadId??null),shopLevel:G.Squad.shopLevel,
+   game:G.Game.checkpoint(),server:G.Server?.checkpointRun?.(),world:G.World.snapshot(),bonds:G.SquadBonds.snapshot(),growth:G.ExpeditionGrowth.berries,traits:G.SquadTraits.snapshot(people),types:G.TypeBonds.snapshot(),damage:G.ExpeditionDamage.checkpoint(people),training:G.ExpeditionTraining.snapshot(r,people),failure:G.FailureProtection.snapshot(r.captain),target});
+  if(payload.length>MAX_BYTES)throw Error(L('Partida demasiado grande.','Checkpoint too large.','存档体积过大。'));
+  return {format:FORMAT,owner:owner(),version:G.SettingsUI.version,savedAt:Date.now(),day:target?r.map[target.row][target.col].day:r.day,phase:target?'event-start':r.phase,dex:r.captain.dex,gold:r.gold,squadHp:r.squadHp,payload};
+ }
+ function read(){lastError='';try{const raw=localStorage.getItem(key());if(!raw)return null;const s=JSON.parse(raw);validate(s);return s;}catch(e){lastError=e.message;return null;}}
+ function mark(){try{if(stable.has(G.Expedition?.phase))point=capture();}catch{}}
+ function beforeEvent(target){try{point=capture(target);}catch(e){point=null;G.UI.toast(L('Punto de guardado no disponible.','Checkpoint unavailable for this event.','本次事件的保存节点暂不可用。'),4000);}}
+ function save(automatic=false){if(restoring||!G.Expedition.active||['ui','over'].includes(G.Game.state)||G.Coop.active||busy)return false;
+  try{const r=G.Expedition.run,s=stable.has(r.phase)?capture():point;if(!s)throw Error(L('No hay un punto seguro.','No checkpoint is available yet.','当前还没有可保存的日程节点。'));s.savedAt=Date.now();s.automatic=automatic;validate(s);localStorage.setItem(key(),JSON.stringify(s));if(!automatic)G.UI.toast(L('Expedición guardada · día ','Expedition saved · day ','远征已保存 · 第')+s.day+(G.I18n.lang==='zh'?'天':''));return true;}catch(e){G.UI.toast(L('No se pudo guardar: ','Could not save: ','保存失败：')+e.message,5000);return false;}
+ }
+ function auto(){const r=G.Expedition.run;if(restoring||!r||!stable.has(r.phase)||r.day<1||r.day%5||!r.settledDays.has(r.day)||r.lastAutoSaveDay===r.day)return;r.lastAutoSaveDay=r.day;if(!save(true))r.lastAutoSaveDay=null;}
+ function begin(){point=null;if(!restoring)save(true);}
+ function clear(){try{localStorage.removeItem(key());}catch{}point=null;}
+ function ledger(id=G.Game.checkpoint()?.protectionRunId){try{return JSON.parse(localStorage.getItem(ledgerKey(id))||'{}');}catch{return {};}}
+ function recordLoot(loot){if(!G.Expedition.active)return;try{const id=G.Game.checkpoint().protectionRunId,l=ledger(id);l.loot=loot;localStorage.setItem(ledgerKey(id),JSON.stringify(l));}catch{}}
+ function recordBanked(bank,id){if(!G.Expedition?.active||!owner())return;try{const l=ledger(id);l.t1=Math.max(l.t1||0,bank.t1||0);l.t10=Math.max(l.t10||0,bank.t10||0);localStorage.setItem(ledgerKey(id),JSON.stringify(l));}catch{}}
+ function rewardOnce(kind,number){if(!G.Expedition.active)return true;const id=G.Game.checkpoint().protectionRunId,l=ledger(id),k=kind+':'+number;if(l[k])return false;l[k]=true;try{localStorage.setItem(ledgerKey(id),JSON.stringify(l));}catch{}return true;}
+ function restoreState(d,cap){const r={...d.run,captain:cap,pool:d.pool.map(id=>G.DEX_BY[id])};r.unitPool=new G.UnitPool(r.pool);r.unitPool.stock=new Map(d.stock);r.pendingSpawns=[];G.Expedition.restoreData(r,d.offers);G.Squad.begin(cap);
+  const members=d.members.map(a=>hydrate(a,true)),people=[cap,...members];G.Squad.restore(members,d.formation,d.shopLevel);G.SquadBonds.restore(d.bonds);G.ExpeditionGrowth.restore(d.growth);G.SquadTraits.restore(d.traits,people);G.TypeBonds.restore(d.types);G.ExpeditionDamage.restore(d.damage,people);G.ExpeditionTraining.restore(r,d.training,people);G.FailureProtection.restore(cap,d.failure);G.Squad.refresh();G.World.restore(d.world);G.Camera.x=cap.x;G.Camera.y=cap.y;G.Sprites.preload(people.map(p=>p.spriteDex));return r;
+ }
+ async function resume(){if(busy||!['ui','over'].includes(G.Game.state))return false;const slot=read();if(!slot)return false;busy=restoring=true;
+  try{const d=validate(slot);G.SettingsUI.close();await G.Game.restoreCheckpoint(d);point=slot;if(d.target)G.Expedition.choose(d.target.row,d.target.col);else G.Expedition.restoreView();G.UI.toast(L('Expedición reanudada','Expedition resumed','已继续上次远征'));return true;}
+  catch(e){G.Game.toUI();G.MenuUI.open();G.UI.toast(L('No se pudo continuar: ','Could not resume: ','续玩失败：')+e.message,6000);return false;}finally{busy=restoring=false;}
+ }
+ function menu(){const anchor=document.querySelector('#scr-menu [data-go=play]');if(!anchor)return;document.getElementById('expedition-continue')?.remove();const s=read();if(!s)return;const b=document.createElement('button');b.id='expedition-continue';b.className='menu-item expedition-continue';b.innerHTML=G.Icons.html('clock',26);const text=document.createElement('span');text.textContent=L('Continuar · día ','Continue · day ','继续远征 · 第')+s.day+(G.I18n.lang==='zh'?'天':'');b.append(text);b.onclick=resume;anchor.before(b);}
+ function settings(box){box.replaceChildren();const s=read(),r=G.Expedition.run,active=!!r&&!['ui','over'].includes(G.Game.state),h=document.createElement('h3');h.textContent=L('Expedición local','Local expedition save','本机远征存档');box.append(h);const text=document.createElement('p');text.className='sub';text.textContent=L('Por cuenta, en este navegador. Guardado automático cada cinco días. En combate se guarda el inicio de la etapa.','Per account, in this browser. Autosaves every five days. Combat saves restart the stage.','按账号保存在此浏览器，每5天自动保存。战斗中保存开战节点，续玩会重打本场。');box.append(text);const phases={route:L('Itinerario','Schedule','日程'),shop:L('Tienda','Shop','商店'),wild:L('Exploración','Exploration','野外探索'),rest:L('Descanso','Rest','休息'),training:L('Dojo','Skill training','技能修炼'),'pokemon-training':L('Sala Pokémon','Pokémon training','宝可梦训练室'),loot:L('Botín','Battle rewards','战利品'),'event-start':L('Inicio de etapa','Stage start','关卡开始')};const info=document.createElement('p');info.className='expedition-save-info';info.textContent=s?L('Día ','Day ','第')+s.day+(G.I18n.lang==='zh'?'天':'')+' · '+new Date(s.savedAt).toLocaleString(G.I18n.lang)+' · '+(phases[s.phase]||'')+' · '+s.version:lastError?L('No se puede leer el archivo guardado; se ha conservado.','The checkpoint cannot be read; the stored file was preserved.','存档无法读取，原数据已保留。'):L('Sin partida guardada','No saved expedition','暂无远征存档');box.append(info);
+  for(const [id,label,fn,enabled]of [['checkpoint-save',L('Guardar ahora','Save now','手动保存'),()=>{save();settings(box);},active],['checkpoint-resume',L('Continuar','Continue expedition','继续远征'),resume,!!s&&['ui','over'].includes(G.Game.state)],['checkpoint-exit',L('Guardar y salir al menú','Save and return to menu','保存并返回主菜单'),()=>{if(G.Game.suspendExpedition()){G.SettingsUI.close();menu();}},active]]){const b=document.createElement('button');b.id=id;b.className='btn';b.textContent=label;b.disabled=!enabled;b.onclick=fn;box.append(b);}
+ }
+ addEventListener('pagehide',()=>{if(G.Expedition?.active&&!['ui','over'].includes(G.Game.state))save(true);});
+ return {capture,hydrate,restoreState,mark,beforeEvent,save,auto,begin,clear,read,resume,menu,settings,ledger,recordBanked,recordLoot,rewardOnce,get restoring(){return restoring;},get hasSave(){return !!read();},reset(){point=null;}};
+})();

@@ -477,6 +477,8 @@ G.Server = (() => {
     settleOffline,
     socialAction,
     claimBonus,
+    checkpointRun:()=>run?{id:run.id,start:{...run.start}}:null,pauseCheckpoint:()=>clearInterval(beatTimer),
+    async restoreCheckpoint(saved){if(!user||!saved?.start||saved.start.mode!=='q'||typeof saved.id!=='string'||!/^[\w-]{8,100}$/.test(saved.id)||saved.id!==saved.start.id)throw Error('Invalid saved run');clearInterval(beatTimer);++runGeneration;run={id:saved.id,start:{...saved.start},started:false};displayRun=run.id;runPromise=Promise.resolve(run);await enqueue(()=>ensureStarted(run));await heartbeat();startRun();},
     prepareRun,
     startRun,
     heartbeat,

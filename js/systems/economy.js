@@ -25,6 +25,7 @@ G.Economy=(()=>{
     const eventType=events[input.eventType]||input.eventType;
     const report={baseWage:0,interest:0,streakBonus:0,comebackBounty:0,eliteFlawlessBonus:0,inWaveDrops:0,totalGoldGained:0,xpGained:0,baseXp:0,clearXpBonus:0,leveledUpTo:null,grantFreePostBossShop:false};
     const combat=Object.hasOwn(config().wagesByCycle['1'],eventType);
+    if(!combat||input.victory){report.investmentReturn=G.TrainerTalents?.repayInvestments(s)||0;report.totalGoldGained+=report.investmentReturn;}
     if(combat){
       if(!input.victory)return report;
       report.baseWage=config().wagesByCycle[s.cycle>=config().endless.unlockCycle?'4_plus':String(s.cycle)][eventType];
@@ -34,7 +35,7 @@ G.Economy=(()=>{
         if(eventType==='ELITE_BATTLE')report.eliteFlawlessBonus=config().streak.eliteFlawlessBonus;
       }else{s.flawlessStreak=0;if(input.remainingHpRatio<config().streak.comebackHpThreshold)report.comebackBounty=config().streak.comebackBounty;}
       report.inWaveDrops=config().combatGoldDrops?Math.max(0,Number(input.inWaveCoinDrops)||0):0;
-      report.totalGoldGained=report.baseWage+report.interest+report.streakBonus+report.comebackBounty+report.eliteFlawlessBonus+report.inWaveDrops;s.gold+=report.totalGoldGained;
+      report.totalGoldGained=report.investmentReturn+report.baseWage+report.interest+report.streakBonus+report.comebackBounty+report.eliteFlawlessBonus+report.inWaveDrops;s.gold+=report.totalGoldGained-report.investmentReturn;
       report.grantFreePostBossShop=eventType==='BOSS_BATTLE';report.traitGold=s.traitBattleRewards?.gold||0;report.totalGoldGained+=report.traitGold;
     }
     report.baseXp=config().freeXpByEvent[eventType]||0;report.clearXpBonus=eventType==='ELITE_BATTLE'&&input.victory&&input.cleared===true?config().eliteClearBonusXp:0;report.xpGained=report.baseXp+report.clearXpBonus+(combat&&input.victory?(G.TrainerTalents?.battleReward(s)||0):0);report.leveledUpTo=addXp(s,report.xpGained);if(combat&&input.victory){report.traitXp=s.traitBattleRewards?.exp||0;report.xpGained+=report.traitXp;}return report;

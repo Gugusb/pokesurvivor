@@ -711,14 +711,14 @@
         "es": "Devon Venture"
       },
       "desc": {
-        "zh": "立即失去当前 50% 的金币；接下来连续 4 天每场战斗结算额外获得 1G。",
-        "en": "Lose half your current gold. Battle victories during the next 4 days grant +1 gold.",
-        "es": "Pierde la mitad del oro actual. Las victorias durante los próximos 4 días conceden 1 de oro adicional."
+        "zh": "投入当前50%的金币；从次日起连续20天每天回收，合计收回投入金币的150%。",
+        "en": "Invest 50% of current gold. Receive daily repayments over the next 20 days, totaling 150% of the amount invested.",
+        "es": "Invierte el 50% del oro actual. Recibe pagos diarios durante los próximos 20 días hasta recuperar el 150% de lo invertido."
       },
       "effects": {
         "instantGoldCostPct": 0.5,
-        "wageBonus": 1,
-        "remainingDays": 4
+        "investmentDays": 20,
+        "investmentReturn": 1.5
       }
     },
     {

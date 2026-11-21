@@ -52,7 +52,7 @@ G.TrainerTalents=(()=>{
   if(d.effects.promptMoveDraft&&!applyMove(s,options.moveId,options.slot))return false;
   s.pendingTalentPicks.shift();const inst={id,tier:p.tier,acquiredAtLevel:p.targetLevel,day:s.day,timestamp:Date.now()};s.trainerTalents.push(inst);
   const e=d.effects;if(e.instantGold)s.gold+=e.instantGold;if(e.freeRefreshes)s.talentFreeRefreshes=(s.talentFreeRefreshes||0)+e.freeRefreshes;if(e.grantRerolls)s.talentRerolls+=e.grantRerolls;
-  if(e.instantGoldCostPct)s.gold-=Math.floor(s.gold*e.instantGoldCostPct);if(e.healSquadHp)healSquad(e.healSquadHp,s);
+  if(e.instantGoldCostPct){const cost=Math.floor(s.gold*e.instantGoldCostPct);s.gold-=cost;if(e.investmentReturn){inst.investmentPrincipal=cost;inst.investmentPaid=0;}}if(e.healSquadHp)healSquad(e.healSquadHp,s);
   if(e.typeBondOffset)for(const [type,n]of Object.entries(e.typeBondOffset))s.emblems[type]=(s.emblems[type]||0)+n;
   if(e.grantTypeMon)grantType(s,e.grantTypeMon);sync(s);G.Squad.refresh();return true;
  }
@@ -83,6 +83,9 @@ G.TrainerTalents=(()=>{
   if(has('ultra_reroll_master',s))for(let i=0;i<offers.length;i++){const o=offers[i];if(!o||G.ExpeditionQuality.quality(o.dex)>=5||rng()>=Math.min(1,sum('upgradeShopSlotChance',s)))continue;const better=reserveQuality(s,G.ExpeditionQuality.quality(o.dex)+1,rng);if(better){s.unitPool.putBack(o);offers[i]=better;}}
   if(has('master_silph_syndicate',s)&&!offers.some(o=>o&&G.ExpeditionQuality.quality(o.dex)===5)){const guaranteed=reserveQuality(s,5,rng,true);if(guaranteed){const i=Math.max(0,offers.findIndex(o=>!o));s.unitPool.putBack(offers[i]);offers[i]=guaranteed;}}
  }
+ const roundGold=n=>Math.round(n*1e6)/1e6;
+ function investments(s=run()){return entries(s).filter(t=>t.def.effects.investmentReturn&&Number.isFinite(t.instance.investmentPrincipal)).map(({instance:t,def:d})=>({instance:t,total:roundGold(t.investmentPrincipal*d.effects.investmentReturn),paid:t.investmentPaid||0,days:Math.max(0,Math.min(d.effects.investmentDays,s.day-t.day)),duration:d.effects.investmentDays}));}
+ function repayInvestments(s){let due=0;for(const a of investments(s)){const target=roundGold(a.total*a.days/a.duration),n=Math.max(0,roundGold(target-a.paid));a.instance.investmentPaid=target;due+=n;}due=roundGold(due);s.gold=roundGold(s.gold+due);return due;}
  function wage(s){return entries(s).filter(t=>t.def.effects.wageBonus&&s.day>t.instance.day&&s.day<=t.instance.day+t.def.effects.remainingDays).reduce((n,t)=>n+t.def.effects.wageBonus,0);}
  function battleReward(s){const xp=sum('bonusReserveXp',s);s.xpJar=(s.xpJar||0)+xp;s.xpJarStored=(s.xpJarStored||0)+xp;return sum('bonusTrainerXp',s);}
  function beginBattle(s){shields=new WeakMap();sync(s);if(has('silver_iron_defense',s))for(const p of G.Squad.deployed().slice(0,cfg().frontlineCount))shields.set(p,{hp:p.maxHp*sum('combatStartShieldPct',s),until:s.elapsed+12});}
@@ -106,5 +109,5 @@ G.TrainerTalents=(()=>{
  function rescueCaptain(p){return represented(p)&&!p.isSquadMember&&p.hp<=0&&rescue(run(),p);}
  function draw(ctx){for(const p of G.Squad?.actors?.()||[]){const s=shields.get(p);if(!s||s.hp<=0||run().elapsed>=s.until)continue;ctx.save();ctx.strokeStyle='#b6e9ff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y-p.bodyH*.4,p.r+9,p.bodyH*.6+8,0,0,Math.PI*2);ctx.stroke();ctx.restore();}}
  function tick(){const s=run();if(s)sync(s);}
- return {catalogue,by,local,ensure,begin,onLevelUp,current,deal,eligible,canReroll,reroll,choose,entries,sum,has,maxHp,healSquad,receiveGifts,moveChoices,sync,attackPct,speedPct,rate,crit,outgoing,incoming,gatherDelay,noPP,defFactor,visualScale,move,interestDivisor,maxInterest,refreshDiscount,price,shop,wage,battleReward,beginBattle,absorb,onCast,onKill,pulse,rescue,rescueCaptain,draw,tick};
+ return {catalogue,by,local,ensure,begin,onLevelUp,current,deal,eligible,canReroll,reroll,choose,entries,sum,has,maxHp,healSquad,receiveGifts,moveChoices,sync,attackPct,speedPct,rate,crit,outgoing,incoming,gatherDelay,noPP,defFactor,visualScale,move,interestDivisor,maxInterest,refreshDiscount,price,shop,wage,investments,repayInvestments,battleReward,beginBattle,absorb,onCast,onKill,pulse,rescue,rescueCaptain,draw,tick};
 })();

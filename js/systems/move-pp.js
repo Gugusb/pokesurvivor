@@ -48,5 +48,5 @@ G.MovePP = (() => {
   function restore(p,moves){for(const m of moves||[]){const s=state(p,m);s.current=Math.max(s.current,s.max);}}
   function add(p,moves,n){for(const m of moves||[]){const s=state(p,m);s.current=Math.min(s.limit,s.current+n);}}
   function increaseMax(p,n=1){for(const m of p.moves)state(p,m);p.maxPpBonus=(p.maxPpBonus||0)+n;for(const m of p.moves)state(p,m);}
-  return {baseMax,max,state,consume,spend,tick,restore,add,increaseMax};
+  return {snapshot:p=>p.moves.map(m=>({...state(p,m)})),restoreCheckpoint:(p,saved)=>p.moves.forEach((m,i)=>{if(saved?.[i])Object.assign(state(p,m),saved[i]);}),baseMax,max,state,consume,spend,tick,restore,add,increaseMax};
 })();

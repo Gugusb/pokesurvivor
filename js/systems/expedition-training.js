@@ -32,6 +32,8 @@ G.ExpeditionTraining=(()=>{
  }
  function price(kind,run,choice){return kind==='specialize'&&choice?.move?specializationCost(choice.move):0;}
  function purchase(kind,choice,run,material){if(run.phase!=='training'||run.trainingUsed||!Object.hasOwn(names(),kind)||!unlocked(kind,run)||!choice?.apply)return false;const cost=price(kind,run,choice);if(run.gold<cost||!choice.apply(material))return false;run.gold-=cost;if(kind==='overclock')run.skillOverclockCount++;run.trainingUsed=true;G.Squad.refresh();return true;}
- function open(run,done){run.trainingUsed=false;drafts.delete(run);G.ExpeditionTrainingUI.open(run,done);}
- return {get PRICES(){return {up:0,learn:0,replace:0,specialize:5,link:0,breakthrough:0,overclock:0};},names,choices,unlocked,price,purchase,open,owned,materials,replaceOffers,specializationCost};
+ function open(run,done,resuming=false){if(!resuming){run.trainingUsed=false;drafts.delete(run);}G.ExpeditionTrainingUI.open(run,done);}
+ function snapshot(run,people){const d=draft(run);return people.map(p=>({replace:d.replacements.get(p)?.ids,specs:p.moves.map(m=>d.specs.get(m))}));}
+ function restore(run,saved,people){drafts.delete(run);const d=draft(run);people.forEach((p,i)=>{const a=saved?.[i];if(a?.replace)d.replacements.set(p,{source:p.moves[0],ids:a.replace});p.moves.forEach((m,j)=>{if(a?.specs?.[j])d.specs.set(m,a.specs[j]);});});}
+ return {snapshot,restore,get PRICES(){return {up:0,learn:0,replace:0,specialize:5,link:0,breakthrough:0,overclock:0};},names,choices,unlocked,price,purchase,open,owned,materials,replaceOffers,specializationCost};
 })();

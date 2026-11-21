@@ -104,7 +104,9 @@ G.SquadTraits=(()=>{
   return text;
  }
  function draw(ctx){if(run()?.phase!=='combat')return;for(const p of G.Squad.deployed()){const s=state(p);if(s.reviveWait==null)continue;ctx.save();ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillStyle='#f6e6ff';ctx.fillText('✦ '+s.reviveWait.toFixed(1)+'s',p.x,p.y-p.bodyH-20);ctx.restore();}}
+ function snapshot(actors){return {battles:[...battles],rests:[...rests],states:actors.map(p=>({...state(p),cache:null}))};}
+ function restore(saved,actors){records=new WeakMap();battles=new Set(saved?.battles||[]);rests=new Set(saved?.rests||[]);merges=new WeakSet();actors.forEach((p,i)=>records.set(p,{...saved?.states?.[i],cache:null}));}
  const noop=()=>{},neutral=()=>({factor:1,execute:false,contributions:[]});
- return {assign,reset,def,state,weight,value,local,activeTags,layers,adjacent,factor,flat,crit,visualScale,sync,trigger,cast,kill,hurt,tick,restEnd,buyXp,finishBattle,rankUp,merge,beginBattle,description,draw,reviveTotal,
+ return {snapshot,restore,assign,reset,def,state,weight,value,local,activeTags,layers,adjacent,factor,flat,crit,visualScale,sync,trigger,cast,kill,hurt,tick,restEnd,buyXp,finishBattle,rankUp,merge,beginBattle,description,draw,reviveTotal,
   hit:noop,release:noop,visitShop:noop,dayEnd:noop,beforeHit:neutral,cooldown:()=>1,move:(p,m)=>m,absorb:(p,n)=>n,shield:()=>0,price:base=>base,get coinCarry(){return 0;}};
 })();

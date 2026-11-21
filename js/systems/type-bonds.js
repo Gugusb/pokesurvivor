@@ -182,6 +182,8 @@ G.TypeBonds=(()=>{
     if(s.normal)icons.push(['normal','']);if(s.ignite?.left>0)icons.push(['fire','']);if(s.wet>0)icons.push(['water','']);if(s.shock>0)icons.push(['electric','']);if(s.frost||s.frozen>0)icons.push(['ice',s.frost||'']);if(s.poison?.left>0)icons.push(['poison',s.poison.n]);if(s.fear?.left>0)icons.push(['ghost','']);if(s.psychic)icons.push(['psychic',s.psychic]);if(s.root>0)icons.push(['grass','']);
     ctx.save();ctx.font='bold 9px monospace';ctx.fillStyle='#fff';ctx.textAlign='left';icons.forEach(([type,n],i)=>{const x=e.x-icons.length*10+i*20,y=e.y-e.bodyH-43;G.Icons.draw(ctx,'type:'+type,x,y,12);if(n)ctx.fillText(String(n),x+10,y+12);});ctx.restore();
   }
-  return {state,value,base,reset,beginStage,baseBonus,agility,speed,regen,defense,damageMultiplier,move,cast,beforeHit,afterHit,forceCrit,critBonus,knock,onDamage,block,contact,enemySpeed,enemyRate,enemyTick,death,tick,
+  function snapshot(){return {time,nextCast,earth,earthTime,windTime,dragonKills,psychicUntil,rockUntil,bug,hpAdded};}
+  function restore(s){if(!s)return;({time,nextCast,earth,earthTime,windTime,dragonKills,psychicUntil,rockUntil,bug,hpAdded}=s);hpOwner=captain();fields=[];pulses=[];records=new WeakMap();}
+  return {snapshot,restore,state,value,base,reset,beginStage,baseBonus,agility,speed,regen,defense,damageMultiplier,move,cast,beforeHit,afterHit,forceCrit,critBonus,knock,onDamage,block,contact,enemySpeed,enemyRate,enemyTick,death,tick,
     drawGround,drawAir,drawEnemy,immobile:e=>active()&&(es(e).root>0||es(e).fear?.left>0),get fields(){return fields;},get shields(){return earth;},get cluster(){return bug.stacks;},get ascended(){return bug.ascended;},get clock(){return time;}};
 })();

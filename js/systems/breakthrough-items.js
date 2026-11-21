@@ -20,5 +20,5 @@ G.BreakItems=(()=>{
  function healed(p,overflow){if(!(overflow>0)||p.dead||!n(p,'bigroot'))return;const s=state(p),window=Math.floor(now());if(s.window!==window){s.window=window;s.used=0;}s.overheal=Math.min(100,s.overheal+overflow);const pp=Math.min(Math.floor(s.overheal/10),3*Math.min(3,n(p,'bigroot'))-s.used);if(pp>0){s.overheal-=pp*10;s.used+=pp;p.tempPP=(p.tempPP||0)+pp;}}
  function tick(p){if(p.remote||p.dead)return;if(p.slowT>0&&proc(p,'whiteherb',15)){p.slowT=0;G.MovePP?.add(p,p.activeGroup(),3*Math.min(3,n(p,'whiteherb')));}}
  function active(p){if(!n(p,'terrainextender'))return;const s=state(p);s.terrainUntil=now()+10;s.terrainSlots=new Set();G.FX.ring(p.x,p.y,8,160,'#87dfb1',.4,3);}
- return {onHit,onCast,useFree,onEmpty,afterHurt,switched,healed,tick,active};
+ return {snapshot:p=>({...state(p),terrainSlots:[...(state(p).terrainSlots||[])].map(g=>p.slots.indexOf(g))}),restore:(p,a)=>{if(a)states.set(p,{...a,terrainSlots:new Set((a.terrainSlots||[]).map(i=>p.slots[i]).filter(Boolean))});},onHit,onCast,useFree,onEmpty,afterHurt,switched,healed,tick,active};
 })();

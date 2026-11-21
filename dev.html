@@ -256,6 +256,7 @@
       <button class="gen-tab" data-t="sound">Sonido</button>
       <button class="gen-tab" data-t="gfx">Gráficos</button>
       <button class="gen-tab" data-t="ctl">Controles</button>
+      <button class="gen-tab" data-t="expedition">Guardar expedición</button>
       <button class="gen-tab" data-t="acc">Cuenta</button>
       <button class="gen-tab" data-t="about">Acerca de</button>
       <button class="gen-tab" data-t="dev">Desarrollador</button>
@@ -597,7 +598,8 @@
   </div>
 </section>
 
-<section id="scr-journey" class="scr dim hidden"><div id="journey-content" class="box journey-box"></div></section>
+<section id="scr-journey" class="scr dim hidden">
+  <button class="btn journey-settings-button" id="journey-settings" type="button" aria-label="Ajustes">⚙</button><div id="journey-content" class="box journey-box"></div></section>
 <div id="journey-status" hidden translate="no"></div>
 <div id="expedition-progress-hud" hidden translate="no"></div>
 <section id="scr-squad" class="scr dim hidden"><div id="squad-content" class="box squad-box" translate="no"></div></section>
@@ -703,6 +705,7 @@
 <script defer src="js/ui/expedition-event-ui.js"></script>
 <script defer src="js/ui/button-feedback.js"></script>
 <script defer src="js/systems/expedition-recorder.js"></script>
+<script defer src="js/systems/expedition-save.js"></script>
 <script defer src="js/systems/pokemon-training.js"></script>
 <script defer src="js/systems/gacha.js"></script>
 <script defer src="js/systems/abilities.js"></script>

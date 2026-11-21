@@ -65,5 +65,7 @@ G.ExpeditionDamage=(()=>{
     if(!el){el=node('aside','expedition-damage');el.id='expedition-damage';document.body.append(el);}
     el.hidden=G.Game.state!=='playing';if(el.hidden||performance.now()-last<200)return;last=performance.now();render(el,null,'live');
   }
-  return {reset,beginBattle,record,snapshot,render,tick,get battleDay(){return battleDay;}};
+  function checkpoint(people){return {rows:[...rows],battle:[...battle],serial,battleDay,bindings:people.map(p=>actors.get(p)||null)};}
+  function restore(s,people){reset();if(!s)return;rows=new Map(s.rows);battle=new Map(s.battle);serial=s.serial;battleDay=s.battleDay;people.forEach((p,i)=>{if(s.bindings[i])actors.set(p,s.bindings[i]);});}
+  return {checkpoint,restore,reset,beginBattle,record,snapshot,render,tick,get battleDay(){return battleDay;}};
 })();

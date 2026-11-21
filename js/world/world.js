@@ -618,7 +618,7 @@ G.World = (() => {
   }
 
   return {
-    TS, CW, reset, setBiome, biomeName, liquidKind, liquidEffect, walkable,
+    snapshot:()=>({seed,biome,broken:[...broken]}),restore:s=>{reset(s.seed);setBiome(s.biome,true);for(const k of s.broken||[])broken.add(k);},TS, CW, reset, setBiome, biomeName, liquidKind, liquidEffect, walkable,
     kindAt, isWall, isLiquid, isFree, arenaContains, limitArenaDash, collide, overlapsSolid, projectileBlock, propsInCircle, nearestBreakable,
     damageProp, breakAt, specialsNear, update,
     breakProp(p) { if (!broken.has(p.tx + ',' + p.ty)) destroyProp(p); },

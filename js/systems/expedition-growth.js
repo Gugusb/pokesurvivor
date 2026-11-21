@@ -26,5 +26,5 @@ G.ExpeditionGrowth=(()=>{
   }
   function reset(){berries={};}
   function reward(stat,amount){const keys={hp:['hp'],attacks:['atk','spa'],defenses:['defense','spdef']}[stat];if(!G.Squad?.active||!keys||!Number.isFinite(amount)||amount<=0)return false;for(const key of keys)berries[key]=(berries[key]||0)+amount*.5;sync();return true;}
-  return {KEYS,sync,reset,reward,get berries(){return {...berries};}};
+  return {restore:saved=>{berries={...saved};},KEYS,sync,reset,reward,get berries(){return {...berries};}};
 })();

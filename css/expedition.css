@@ -246,3 +246,5 @@ button:not(:disabled),summary{transition:border-color .13s,background-color .13s
 
 .squad-box .squad-bond-row .squad-bond-current{display:block}.squad-box .squad-bond-row .squad-bond-current p{display:block;width:auto;white-space:normal}
 .squad-box .squad-bonds>.talent-owned{display:flex;flex-direction:column;min-height:0;overflow:hidden}.squad-box .squad-bonds .talent-owned-list{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+
+.journey-settings-button{position:fixed;top:8px;right:10px;width:36px;height:36px;padding:3px;font-size:22px;z-index:2;background:#13324b;border:1px solid #6db0c1}.expedition-save-info{padding:14px;border:1px solid #547e99;border-radius:10px;background:#14334a;color:#cce9ee;line-height:1.7}.settings #set-body>.btn[id^=checkpoint-]{display:block;width:100%;margin:10px 0;padding:12px}.menu-item.expedition-continue{border-color:#80e2c8;background:linear-gradient(120deg,#245a63,#18334e);display:flex;align-items:center;gap:12px;color:#b7ffdf}.investment-progress{display:block;padding:9px;background:#173845;border:1px solid #668c76;border-radius:8px;font-size:13px;line-height:1.6}

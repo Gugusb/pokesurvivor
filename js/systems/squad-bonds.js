@@ -101,5 +101,6 @@ G.SquadBonds=(()=>{
     }[k]();
     return base+'。'+extra;
   }
-  return {KINDS,ALL_KINDS,group,label,reset,refresh,count,layer,setLayer,addLayer,state,stats,scale,value,crowd,agility,stamina,sustain,move,afterHit,onPierce,description,palette:id=>cfg().visuals[id.replace('class:','')],get revision(){return revision;}};
+  function restore(saved){reset();for(const [k,n]of Object.entries(saved||{})){const i=k.indexOf(':');setLayer(k.slice(0,i),k.slice(i+1),n);}refresh();}
+  return {snapshot:()=>({...layers}),restore,KINDS,ALL_KINDS,group,label,reset,refresh,count,layer,setLayer,addLayer,state,stats,scale,value,crowd,agility,stamina,sustain,move,afterHit,onPierce,description,palette:id=>cfg().visuals[id.replace('class:','')],get revision(){return revision;}};
 })();

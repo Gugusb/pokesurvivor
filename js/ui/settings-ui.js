@@ -4,8 +4,8 @@
  * Los ajustes son de este dispositivo (G.Settings / G.Audio en el navegador).
  */
 G.SettingsUI = (() => {
-  G.I18n.add({'Velocidad preferida':'Preferred speed','Desbloquea velocidades en los paquetes.':'Unlock game speeds in card packs.','Unificar ataques enemigos':'Unify enemy attack colors','Muestra los proyectiles y avisos enemigos en rojo.':'Show enemy projectiles and warnings in red.','Botín de la aventura':'Adventure loot','Sin botín adicional':'No additional loot','Incubación acelerada':'Egg hatching accelerated','Tirar ×100 ·':'Pull ×100 ·','Speed not unlocked':'Speed not unlocked'});
-  G.I18n.addChinese({'Velocidad preferida':'偏好游戏速度','Desbloquea velocidades en los paquetes.':'从卡包解锁更多游戏速度。','Unificar ataques enemigos':'统一敌方攻击颜色','Muestra los proyectiles y avisos enemigos en rojo.':'将敌方弹幕和攻击预警统一显示为红色。','Botín de la aventura':'本局战利品','Sin botín adicional':'本局没有额外战利品','Incubación acelerada':'孵蛋加速','Tirar ×100 ·':'抽取 ×100 ·','Speed not unlocked':'尚未解锁此游戏速度'});
+  G.I18n.add({'Guardar expedición':'Expedition save','Velocidad preferida':'Preferred speed','Desbloquea velocidades en los paquetes.':'Unlock game speeds in card packs.','Unificar ataques enemigos':'Unify enemy attack colors','Muestra los proyectiles y avisos enemigos en rojo.':'Show enemy projectiles and warnings in red.','Botín de la aventura':'Adventure loot','Sin botín adicional':'No additional loot','Incubación acelerada':'Egg hatching accelerated','Tirar ×100 ·':'Pull ×100 ·','Speed not unlocked':'Speed not unlocked'});
+  G.I18n.addChinese({'Guardar expedición':'远征存档','Velocidad preferida':'偏好游戏速度','Desbloquea velocidades en los paquetes.':'从卡包解锁更多游戏速度。','Unificar ataques enemigos':'统一敌方攻击颜色','Muestra los proyectiles y avisos enemigos en rojo.':'将敌方弹幕和攻击预警统一显示为红色。','Botín de la aventura':'本局战利品','Sin botín adicional':'本局没有额外战利品','Incubación acelerada':'孵蛋加速','Tirar ×100 ·':'抽取 ×100 ·','Speed not unlocked':'尚未解锁此游戏速度'});
   G.I18n.add({'Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.':'Drag to move, tap an attack to switch, and use the top-right button to pause. Portrait and landscape are supported.'});
   G.I18n.addChinese({'Arrastra para moverte, toca un ataque para cambiarlo y usa el botón superior derecho para pausar. Puedes jugar en vertical u horizontal.':'拖动屏幕移动，点击技能切换攻击，右上角按钮暂停；支持竖屏与横屏游玩。'});
   G.I18n.add({'Apuntado manual':'Manual aiming','Controla la dirección con las flechas o la palanca derecha. Al soltar, conserva la última dirección.':'Aim with arrow keys or the right stick. Release to keep your last direction.','apuntar':'aim','Apuntar':'Aim','Izquierda: moverse · derecha: apuntar':'Left: move · right: aim','Arrastra para moverte · habilidades a la derecha':'Drag to move · skills on the right'});
@@ -14,7 +14,7 @@ G.SettingsUI = (() => {
   G.I18n.addChinese({'Todos los huecos pueden actuar a la vez. El seleccionado es principal; los demás usan la mitad de agilidad y aguante.':'所有技能槽可同时释放。选中槽为主要技能，其余技能按一半敏捷与耐力结算。','Principal':'主','Secundario':'副','Agilidad efectiva':'结算敏捷','Aguante efectivo':'结算耐力'});
   const $ = G.UI.$;
   const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const VERSION = '0.43.0-alpha.39 · 2026-11-21';
+  const VERSION = '0.43.0-alpha.40 · 2026-11-21';
   const REPO = 'https://github.com/Gugusb/pokesurvivor';
   let tab = 'sound';
 
@@ -22,6 +22,7 @@ G.SettingsUI = (() => {
     document.querySelectorAll('#set-tabs .gen-tab').forEach(b => { b.onclick = () => { tab = b.dataset.t; render(); }; });
     G.Settings.on((key) => { if (key === 'zoom' && G.Camera && !(G.Dev && G.Dev.canUse())) G.Camera.setViewMultiplier(1 / G.Settings.get('zoom')); });
     $('set-close').onclick = close;
+    $('journey-settings').onclick=()=>open('expedition');
     $('btn-settings').innerHTML = G.Icons.html('gear', 20);
     $('btn-settings').onclick = () => open();
     $('btn-pause-settings').onclick = () => open('sound');
@@ -119,6 +120,7 @@ G.SettingsUI = (() => {
              <div><kbd>Esc</kbd> o <kbd>P</kbd></div><span>pausa</span>
              <div><kbd>1</kbd>–<kbd>9</kbd></div><span>elegir carta al subir de nivel</span>
            </div>`;
+    } else if(tab==='expedition'){G.ExpeditionSave.settings(box);
     } else if (tab === 'dev') {
       if (G.Dev) G.Dev.renderSettings(box);
       else box.textContent = '';
@@ -198,7 +200,7 @@ G.SettingsUI = (() => {
   /** Cerrar sesión (si estás en una partida, se abandona). */
   function leave() {
     if (G.DB.guest && !confirm('Eres invitado: se perderá todo el progreso. ¿Salir?')) return;
-    if (G.Game.state !== 'ui') G.Game.quit && G.Game.quit();
+    if (G.Game.state !== 'ui' && G.Game.quit?.()===false)return;
     G.Audio.music(null);
     G.DB.logout().then(() => G.Flow.toLogin());
   }
