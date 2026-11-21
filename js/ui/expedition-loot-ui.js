@@ -43,7 +43,7 @@ G.ExpeditionLootUI=(()=>{
   function specials(s,actions){
     const box=section(L('Objetos especiales','Special rewards','特殊战利品'),'loot-specials'),grid=node('div','loot-items');
     const add=(name,image,count,desc)=>{if(!(count>0))return;const e=node('article','loot-item');e.append(icon(image,34));const info=node('div'),head=node('div','loot-item-title');head.append(node('b','',name),node('strong','','×'+fmt(count)));info.append(head,node('p','',desc));e.append(info);grid.append(e);};
-    for(const [key,n]of Object.entries(s.loot))if(key.startsWith('item:')){const id=key.slice(5),it=G.Items.BY[id];add(T(it?.name||id),G.Items.icon(id),n,T(it?.desc||''));}
+    for(const [key,n]of Object.entries(s.loot))if(key.startsWith('item:')){const id=key.slice(5),it=G.Items.BY[id];if(!it)continue;add(T(it.name),G.Items.icon(id),n,T(it?.desc||''));}
     add(L('Vales','Draw tickets','抽奖券'),'ticket',s.loot.ticket,L('Para sorteos de Pokémon.','Used for Pokémon draws.','用于宝可梦抽取。'));
     add(L('Vale de diez','Ten-draw ticket','十连抽奖券'),'ticket10',s.loot.ticket10,L('Permite diez sorteos.','Used for ten draws.','用于一次十连抽取。'));
     add(L('Cofre de jefe','Boss chest','BOSS奖励箱'),'bossChest',s.loot.bossChest,L('Elige su contenido en el siguiente paso de recompensas.','Choose its contents in the following reward flow.','随后按流程选择并领取箱内奖励。'));

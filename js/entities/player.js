@@ -252,12 +252,6 @@ G.Player = class Player {
    * acelera si la recarga es más corta que la animación, para que encadene.
    */
   cast(m) {
-    // Vidasfera: cada ataque cuesta un poco de vida (nunca te deja KO).
-    if (this.hasItem('lifeorb') && m.kind !== 'orbit' && m.kind !== 'trail' && !this.remote) {
-      const before = this.hp;
-      this.hp = Math.max(1, this.hp - Math.max(1, this.maxHp * 0.01) * .2 * G.Items.count(this,'lifeorb') * G.Abilities.damageFactor(this, {kind: 'environment'}));
-      if (this.hp < before) G.Abilities.onDamage(this);
-    }
     const anim = { melee: 'Attack', beam: 'Shoot', projectile: 'Shoot', nova: 'Attack',
                    aura: 'Charge', buff: 'Charge', orbit: 'Charge', boomerang: 'Shoot', chain: 'Shoot',
                    mine: 'Charge', meteor: 'Charge', turret: 'Charge', dash: 'Attack', trail: 'Walk', cone: 'Shoot' }[m.kind] || 'Attack';

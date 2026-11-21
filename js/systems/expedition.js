@@ -330,7 +330,7 @@ G.Expedition = (() => {
     run.extraStart=JSON.parse(JSON.stringify(G.Game.loot||{}));
     run.pendingSpawns=[];G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Pickups.clear();G.Hazards.clear();G.Path.clear();
     G.World.setBiome(Math.floor((run.day-1)/5));G.Squad.recover();
-    G.ExpeditionDamage?.beginBattle(run.day);G.TypeBonds?.beginStage();G.SquadTraits?.beginBattle();G.TrainerTalents?.beginBattle(run);G.SquadSupport?.beginBattle();G.ExpeditionRecorder?.beginBattle(run);
+    G.ExpeditionDamage?.beginBattle(run.day);G.TypeBonds?.beginStage();G.SquadTraits?.beginBattle();G.TrainerTalents?.beginBattle(run);G.SquadSupport?.beginBattle();G.ExpeditionGrowth?.beginBattle();G.ExpeditionRecorder?.beginBattle(run);
     for(const p of G.Squad.actors())G.Abilities.resetStage(p,run.day);
     if(kind==='boss')run.spawned=spawn(true)?1:0;
     G.UI.hideAll();G.Touch.reset();G.Game.expeditionResume();G.Audio.sfx('confirm');
@@ -428,6 +428,7 @@ G.Expedition = (() => {
   }
   function finishBattle(cleared){
     if(run.phase!=='combat')return;
+    G.ExpeditionGrowth?.endBattle();
     const damage=R.squadDamage([...G.EnemyMgr.all(),...(run.pendingSpawns||[]).map(w=>w.enemy)],R.cycleOf(run.day));
     damage.before=run.squadHp;run.squadHp=Math.max(0,run.squadHp-damage.applied);damage.after=run.squadHp;run.squadDamage=damage;
     if(run.squadHp<=0&&G.TrainerTalents?.rescue(run)){damage.after=run.squadHp;damage.rescued=true;}

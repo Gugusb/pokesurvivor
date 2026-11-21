@@ -121,11 +121,11 @@ test('attack and damage bonuses sum in separate buckets; Electric field affects 
   const s=context(),{G}=s,p=s.player(894,'transistor');
   s.load('js/data/items.js');s.load('js/systems/levelup.js');
   p.atkMul=1.4;G.LevelUp.STATS.find(x=>x.id==='atk').apply(p);p.buffs.atk={n:1,t:5,amount:.2};
-  approx(p.atk,p.baseAtk*1.3*1.4);p.equip('lifeorb');approx(p.atk,p.baseAtk*1.3*1.4);
-  approx(G.Abilities.outgoingDamage(p,{kind:'projectile',type:'electric'}),1.16);
-  let e=s.enemy();e.hurt(100,'#fff',0,0,0,null,p,{kind:'projectile',type:'electric'});assert.equal(e.hp,384);
+  approx(p.atk,p.baseAtk*1.3*1.4);assert.equal(G.Items.gain(p,'lifeorb'),false);approx(p.atk,p.baseAtk*1.3*1.4);
+  approx(G.Abilities.outgoingDamage(p,{kind:'projectile',type:'electric'}),1.1);
+  let e=s.enemy();e.hurt(100,'#fff',0,0,0,null,p,{kind:'projectile',type:'electric'});assert.equal(e.hp,390);
   const ally=new G.Player(G.DEX_BY[894]);ally.ability='transistor';s.players.push(ally);
-  approx(G.Abilities.outgoingDamage(p,{type:'electric'}),1.16);
+  approx(G.Abilities.outgoingDamage(p,{type:'electric'}),1.1);
   p.maxHp=p.hp=200;p.hurt(100,'electric',true,{kind:'ranged'});approx(p.hp,90);
   p.dead=ally.dead=true;approx(G.Abilities.fieldDamage('electric'),1);
   p.equip(null);approx(p.damageBonus,0);

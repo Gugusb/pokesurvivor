@@ -25,7 +25,7 @@ G.Squad = (() => {
       const value=actors().includes(p)?(bonus.hp||0)*p.baseHp:0,delta=value-(p.squadHpBonus||0);
       p.maxHp=Math.max(1,p.maxHp+delta);if(!p.dead)p.hp=Math.min(p.maxHp,Math.max(1,p.hp+delta));p.squadHpBonus=value;
     }
-    for(const p of roster){G.SquadTraits?.assign(p);G.SquadTraits?.sync(p);}G.TrainerTalents?.sync();
+    for(const p of roster){G.SquadTraits?.assign(p);G.SquadTraits?.sync(p);}G.TrainerTalents?.sync();G.ExpeditionGrowth?.sync();
   }
   class Member extends G.Player{
     constructor(dex,rank=1,moveId=null){
@@ -119,7 +119,7 @@ G.Squad = (() => {
     const a=roster.indexOf(p),b=roster.indexOf(q);[roster[a],roster[b]]=[roster[b],roster[a]];return true;
   }
   function tick(dt){
-    if(!captain)return;G.ExpeditionGrowth?.sync();refresh();G.SquadSupport?.tick(dt);G.SquadTraits?.tick(dt);const delta=leaderPos?Math.hypot(captain.x-leaderPos.x,captain.y-leaderPos.y):0,moving=delta>.01;
+    if(!captain)return;refresh();G.SquadSupport?.tick(dt);G.SquadTraits?.tick(dt);const delta=leaderPos?Math.hypot(captain.x-leaderPos.x,captain.y-leaderPos.y):0,moving=delta>.01;
     leaderPos={x:captain.x,y:captain.y};still=moving?0:still+dt;
     if(moving&&gathering){trail=[{...leaderPos}];gathering=false;for(const p of roster)p.idleTarget=null;}
     if(still>(G.TrainerTalents?.gatherDelay()??.22))gathering=true;

@@ -46,7 +46,7 @@ G.LevelUp = (() => {
   /** Construye el conjunto de cartas candidatas, con pesos. */
   function candidates(pl) {
     const out = [];
-    if(G.Squad?.active)return TEAM_STATS.filter(s=>s.stat&&(!s.max||(pl.statsTaken[s.id]||0)<s.max)).map(s=>({w:1,category:'stat',type:'stat',key:'stat:'+s.id,icon:s.icon,color:'#8fa3c4',tag:({zh:'全体队员 · 半效果子',en:'All companions · half strength',es:'Compañeros · media potencia'})[G.I18n.lang],title:s.title,desc:teamBerryDesc(s),apply:p=>{G.ExpeditionGrowth.reward(s.stat,s.amount);p.statsTaken[s.id]=(p.statsTaken[s.id]||0)+1;}}));
+    if(G.Squad?.active)return [...TEAM_STATS.filter(s=>s.stat&&(!s.max||(pl.statsTaken[s.id]||0)<s.max)).map(s=>({w:1,category:'stat',type:'stat',key:'stat:'+s.id,icon:s.icon,color:'#8fa3c4',tag:({zh:'全体队员 · 半效果子',en:'All companions · half strength',es:'Compañeros · media potencia'})[G.I18n.lang],title:s.title,desc:teamBerryDesc(s),apply:p=>{G.ExpeditionGrowth.reward(s.stat,s.amount);p.statsTaken[s.id]=(p.statsTaken[s.id]||0)+1;}})),...(G.ExpeditionGrowth?.levelCards()||[])];
 
     // --- movimientos nuevos ---
     if (pl.slots.length < pl.maxMoves) {
@@ -153,6 +153,7 @@ G.LevelUp = (() => {
     }
     if (picked.length) missed.set(pl, eligible && !picked.some(c => c.type === 'up'));
     return picked.map(c=>{
+      if(c.materialize)c=c.materialize();
       if(!G.Difficulty||Math.random()>=G.Difficulty.corruptionChance())return c;
       return {...c,corrupted:true,desc:c.desc+' '+G.T('Contaminada: -10 de vida máxima.'),apply:p=>{
         c.apply(p);const k=G.Mega?.active(p)?G.Mega.HP:1;p.maxHp=Math.max(k,p.maxHp-10*k);p.hp=Math.min(p.hp,p.maxHp);

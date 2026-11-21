@@ -19,6 +19,12 @@ G.CardPacks=(()=>{
  packs.push({id:'long-march',price:5000,name:{es:'La larga marcha',en:'Long March Pack',zh:'长征之路卡包'},cards:[
   ['specialize','Especialización','Skill specialization','技能专精'],['link','Vínculo','Skill link','技能联结'],['breakthrough','Superación','Skill breakthrough','技能突破'],['pokemon-breakthrough','Ascenso Pokémon','Pokémon breakthrough','宝可梦突破']
  ].map(([key,es,en,zh])=>({id:'training:'+key,kind:'training',key,max:1,name:{es,en,zh},desc:key==='pokemon-breakthrough'?{es:'Desbloquea ascensos con dos compañeros del mismo rango en la sala Pokémon.',en:'Unlock Pokémon training-room breakthroughs using two same-star companions.',zh:'永久解锁宝可梦训练室中的突破：消耗两名同星、分别匹配蛋组与技能标签的队员。'}:{es:'Permiso permanente para una opción gratuita del dojo de expedición.',en:'Permanently unlock a free expedition skill-training option.',zh:'永久解锁技能修炼中的对应免费选项。'},icon:'cards'}))});
+ packs.find(p=>p.id==='long-march').cards.push(...[
+  ['type','Bayas de tipo','Type fruits','属性果实','Desbloquea bayas de daño por tipo.','Unlock Pokémon type damage fruits.','解锁属性果实升级选项。'],
+  ['skill','Bayas técnicas','Skill fruits','技能果实','Desbloquea bayas de daño y apoyo por oficio.','Unlock skill damage and support-effect fruits.','解锁技能果实升级选项。'],
+  ['slot','Mejora de puestos','Slot upgrades','槽位改造','Desbloquea mejoras de puestos del equipo.','Unlock squad slot upgrades.','解锁槽位改造升级选项。'],
+  ['hormone','Bayas hormona','Hormone fruits','激素果实','Desbloquea PP temporales para el próximo combate.','Unlock temporary PP for the next battle.','解锁激素果实升级选项。']
+ ].map(([key,es,en,zh,de,den,dzh])=>({id:'fruit:'+key,kind:'expedition',key,max:1,name:{es,en,zh},desc:{es:de,en:den,zh:dzh},icon:key==='slot'?'cards':'berry'})));
  const speedCards=[1.5,2,3].map(value=>({id:'speed:'+value,kind:'speed',key:value,max:1,name:{es:'Velocidad '+value+'×',en:value+'× Speed',zh:value+'倍速权限'},desc:{es:'Desbloquea esta velocidad de juego',en:'Unlocks this game speed',zh:'解锁此游戏速度，可在操作设置中选择'},icon:'clock'}));
  packs[0].cards.push(...speedCards.slice(0,2));packs[1].cards.push(speedCards[2]);
  const cards=packs.flatMap(p=>p.cards),BY=Object.assign(Object.create(null),Object.fromEntries([...cards,legacy].map(c=>[c.id,c])));

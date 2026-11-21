@@ -262,7 +262,7 @@ G.Combat = (() => {
     const col = (m.bondColor||G.U.TYPE_COLOR[m.type]);
     const vis = G.VFX.forMove(m);
     for(const target of targets){
-      target.addBuff(m.stat,m.amount*(squad?.3:1),m.dur,m.stacks|0);
+      target.addBuff(m.stat,m.amount*(squad?.3:1)*(G.ExpeditionGrowth?.buffFactor(pl,m)||1),m.dur,m.stacks|0);
       G.FX.ring(target.x,target.y,target.r*2.4,target.r*1.1,col,.35,2.5);
       for (let i = 0; i < 3; i++) {
         G.FX.sp(vis.buff || 'arrow',vis.pal,target.x+G.U.rand(-target.r*1.4,target.r*1.4),target.y-G.U.rand(0,target.bodyH*.8),{vy:-70,life:.6});
@@ -645,8 +645,8 @@ G.Combat = (() => {
   }
 
   // Golpe crítico (Mejoras → Golpe Crítico): x1,5 de daño, número naranja y grande.
-  const isCrit = (pl,m) => {const chance=Math.min(1,(pl.critChance||0)+(G.SquadTraits?.crit(pl)||0)+(G.TrainerTalents?.crit(pl)||0)+(G.Items?.critBonus(pl)||0)+(G.Specialization?.stats(m).crit||0));return !ghost&&chance>0&&Math.random()<chance;};
-  const critMul=(pl,m,e)=>G.Abilities.critMultiplier(pl)+(G.Items?.critDamage(pl)||0)+(G.Specialization?.stats(m).critDamage||0)+(e?G.TypeBonds?.critBonus(pl,e)||0:0);
+  const isCrit = (pl,m) => {const chance=Math.min(1,(pl.critChance||0)+(G.ExpeditionGrowth?.crit(pl)||0)+(G.SquadTraits?.crit(pl)||0)+(G.TrainerTalents?.crit(pl)||0)+(G.Items?.critBonus(pl)||0)+(G.Specialization?.stats(m).crit||0));return !ghost&&chance>0&&Math.random()<chance;};
+  const critMul=(pl,m,e)=>G.Abilities.critMultiplier(pl)+(G.ExpeditionGrowth?.critDamage(pl)||0)+(G.Items?.critDamage(pl)||0)+(G.Specialization?.stats(m).critDamage||0)+(e?G.TypeBonds?.critBonus(pl,e)||0:0);
   function hit(pl, e, dmg, col, dx, dy, knock, m) {
     const k = typeK(m.type, e, pl);
     const crit = m.zCrit ||G.TypeBonds?.forceCrit(pl,e)|| isCrit(pl,m);

@@ -7,7 +7,6 @@ G.Items = (() => {
     {id:'shellbell',name:'Cascabel Concha',desc:'El daño causado recupera un poco de vida.'},
     {id:'amuletcoin',name:'Moneda Amuleto',desc:'Consigue más monedas al terminar la aventura.'},
     {id:'luckyegg',name:'Huevo Suerte',desc:'Aumenta la experiencia obtenida.'},
-    {id:'lifeorb',name:'Vidasfera',desc:'Aumenta el daño a cambio de un poco de vida al atacar.'},
     {id:'choicescarf',name:'Pañuelo Elección',desc:'Aumenta la velocidad de movimiento.'},
     {id:'rockyhelmet',name:'Casco Dentado',desc:'Devuelve parte del daño al recibir contacto.'},
     {id:'assaultvest',name:'Chaleco Asalto',desc:'Reduce el daño recibido.'},
@@ -45,7 +44,6 @@ G.Items = (() => {
     }
     return out;
   }
-  const damageBonus=p=>.06*count(p,'lifeorb');
   const cooldownFactor=p=>Math.pow(.96,count(p,'quickclaw'))*Math.pow(.98,count(p,'metronomeitem'));
   const ranged=m=>['projectile','beam','boomerang','chain','meteor','nova','cone','turret'].includes(m?.kind);
   function onCast(p,m){
@@ -76,5 +74,5 @@ G.Items = (() => {
   }
   const typeBonus=(p,m)=>G.STARTER_ITEMS?.reduce((n,i)=>n+(i.type&&i.type===m.type?.toLowerCase()||i.effect&&i.effect===m.damageClass?.toLowerCase()?count(p,i.id)*(i.value||.05):0),0)||0;
   const critBonus=p=>.03*count(p,'scopelens'),critDamage=p=>.1*count(p,'zoomlens');
-  return {permitted,typeBonus,critBonus,critDamage,LIST,BY,ACTIVE,count,icon,gain,remove,roll,rewardChoices,damageBonus,cooldownFactor,ranged,onCast,onHit,useActive};
+  return {permitted,typeBonus,critBonus,critDamage,LIST,BY,ACTIVE,count,icon,gain,remove,roll,rewardChoices,cooldownFactor,ranged,onCast,onHit,useActive};
 })();

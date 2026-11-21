@@ -22,7 +22,7 @@ G.MovePP = (() => {
     const free=Math.min(1,(q.free||0)+(p.ppRetention||0));
     if(s.plan==null)s.plan=free&&Math.random()<free?0:base*(q.phase&&Math.random()<.3?2:1);
     if(available()<s.plan){G.BreakItems?.onEmpty(p,m,s.plan-Math.floor(s.current+1e-8));if(available()<s.plan)return false;}
-    const regular=Math.min(s.plan,Math.floor(s.current+1e-8));s.current=Math.max(0,s.current-regular);p.tempPP=Math.max(0,(p.tempPP||0)-(s.plan-regular));s.plan=null;return true;
+    const regular=Math.min(s.plan,Math.floor(s.current+1e-8));s.current=Math.max(0,s.current-regular);if(G.ExpeditionGrowth)G.ExpeditionGrowth.spendTemp(p,s.plan-regular);else p.tempPP=Math.max(0,(p.tempPP||0)-(s.plan-regular));s.plan=null;return true;
   }
   function recover(s,amount){
     if(s.current<s.max){const normal=Math.min(amount,s.max-s.current);s.current+=normal;amount-=normal;}
@@ -33,7 +33,7 @@ G.MovePP = (() => {
     if(!Number.isSafeInteger(n)||n<1)return false;if(G.TrainerTalents?.noPP(p,m))return true;
     const s=state(p,m),regular=Math.min(n,Math.floor(s.current+1e-8));
     if(regular+Math.floor(p.tempPP||0)<n)return false;
-    s.current=Math.max(0,s.current-regular);p.tempPP=Math.max(0,(p.tempPP||0)-(n-regular));return true;
+    s.current=Math.max(0,s.current-regular);if(G.ExpeditionGrowth)G.ExpeditionGrowth.spendTemp(p,n-regular);else p.tempPP=Math.max(0,(p.tempPP||0)-(n-regular));return true;
   }
   function tick(p,dt){
     if(p.dead||p.remote||G.SquadAssault&&!G.SquadAssault.canRecover(p))return;

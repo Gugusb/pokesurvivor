@@ -126,7 +126,7 @@
       const damageContext={contributions:[...(bond?.contributions||[]),...(terminal?.contributions||[])],execute:!!(bond?.execute||terminal?.execute),executionSource:terminal?.execute?terminal.executionSource:'fairy'};
       if(G.TypeBonds)knock*=G.TypeBonds.knock(attacker,attack);
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
-      if (!this.remote && attacker&&!attack.typeBondFraction&&!attack.talentPulse) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass)*(G.TrainerTalents?.outgoing(attacker)||1);
+      if (!this.remote && attacker&&!attack.typeBondFraction&&!attack.talentPulse) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass)*(G.TrainerTalents?.outgoing(attacker)||1)*(G.ExpeditionGrowth?.damageFactor(attacker,attack)||1);
       if (!this.remote && attack.damageClass) {
         const defense=attack.damageClass==='special'?this.spdef:this.defense;
         amount /= defense || 1;
