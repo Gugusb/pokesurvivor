@@ -10,6 +10,7 @@ G.MenuUI = (() => {
     dexFilter === 'shiny' ? !!s.shiny?.[p.dex] : /^\d$/.test(dexFilter) ? p.rarity === +dexFilter : true;
 
   function init() {
+    G.Homepage?.init();
     const ICON = { play: 'ball', dex: 'book', nursery:'ball', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
     document.querySelectorAll('#scr-menu [data-go]').forEach(b => {
       b.insertAdjacentHTML('afterbegin', `<span class="mi-ico">${G.Icons.html(ICON[b.dataset.go], 26)}</span>`);
@@ -98,6 +99,7 @@ G.MenuUI = (() => {
       });
     }
     G.InvitePop.refresh();
+    G.Homepage?.open();
   }
 
   /** Texto bajo "Amigos" y "Jugar": quién está en línea, solicitudes, sala. */

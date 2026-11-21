@@ -13,6 +13,9 @@ const { execFileSync } = require('child_process');
 const ROOT = path.join(__dirname, '..');
 require('./import_trait_rework.cjs');
 const DEV = path.join(ROOT, 'dev.html'), OUT = path.join(ROOT, 'index.html');
+// Build the isolated React homepage before the normal sealed game bundle.
+execFileSync(process.execPath,[path.join(ROOT,'homepage/node_modules/typescript/bin/tsc'),'--noEmit','--project',path.join(ROOT,'homepage/tsconfig.json')],{stdio:'inherit'});
+execFileSync(process.execPath,[path.join(ROOT,'homepage/node_modules/vite/bin/vite.js'),'build'],{cwd:path.join(ROOT,'homepage'),stdio:'inherit'});
 const BEGIN = '<!-- scripts:begin -->', END = '<!-- scripts:end -->';
 
 const dev = fs.readFileSync(DEV, 'utf8');
@@ -56,11 +59,12 @@ if (!EXPOSE) {
     '--unicode-escape-sequence', 'false', '--target', 'browser'], { stdio: 'inherit', shell });
 }
 const min = fs.readFileSync(outJs);
-const hash = crypto.createHash('sha1').update(min).update(fs.readFileSync(path.join(ROOT, 'css/style.css'))).update(fs.readFileSync(path.join(ROOT,'css/expedition.css'))).digest('hex').slice(0, 10);
+const hash = crypto.createHash('sha1').update(min).update(fs.readFileSync(path.join(ROOT, 'css/style.css'))).update(fs.readFileSync(path.join(ROOT,'css/expedition.css'))).update(fs.readFileSync(path.join(ROOT,'js/ui/homepage-lib/homepage.css'))).digest('hex').slice(0, 10);
 
 let html = dev.slice(0, i) + `<script defer src="js/app.min.js?v=${hash}"></script>` + dev.slice(j + END.length);
 html = html.replace(/href="css\/style\.css(?:\?[^"]*)?"/, `href="css/style.css?v=${hash}"`);
 html = html.replace(/href="css\/expedition\.css(?:\?[^"]*)?"/, `href="css/expedition.css?v=${hash}"`);
+html = html.replace(/href="js\/ui\/homepage-lib\/homepage\.css(?:\?[^"]*)?"/, `href="js/ui/homepage-lib/homepage.css?v=${hash}"`);
 html = html.replace(/<meta name="robots" content="noindex">\s*/, '');
 html = html.replace(/[ \t]*<button\b[^>]*data-t="dev"[^>]*>[\s\S]*?<\/button>\r?\n?/g, '');
 // --sin-seo: sin canonical/redes/datos estructurados ni enlaces a las páginas

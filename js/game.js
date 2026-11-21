@@ -780,7 +780,7 @@ G.Game = (() => {
     if (state === 'playing') G.Settings.sample(real);
     fpsAcc += real; fpsN++;
     if (fpsAcc >= 0.5) { fpsShown = Math.round(fpsN / fpsAcc); fpsAcc = 0; fpsN = 0; }
-    G.Expedition?.tickPresentation();
+    G.Expedition?.tickPresentation();G.Homepage?.tick(ts);
     handleKeys();
     const networkDt = step * runSpeed;
     step *= G.ZMoves ? G.ZMoves.timeFactor() : 1;
