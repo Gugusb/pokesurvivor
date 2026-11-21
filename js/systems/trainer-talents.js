@@ -94,7 +94,12 @@ G.TrainerTalents=(()=>{
  function beginBattle(s){shields=new WeakMap();sync(s);if(has('silver_iron_defense',s))for(const p of G.Squad.deployed().slice(0,cfg().frontlineCount))shields.set(p,{hp:p.maxHp*sum('combatStartShieldPct',s),until:s.elapsed+12});}
  function absorb(p,n){const a=shields.get(p);if(!a||!represented(p)||run().elapsed>=a.until)return n;const used=Math.min(n,a.hp);a.hp-=used;return n-used;}
  function onCast(p,m){if(!represented(p)||p.isSquadMember||!has('gold_captain_link'))return;const fraction=sum('captainCastCdrAllyPct'),near=G.Squad.deployed().filter(q=>!q.dead).sort((a,b)=>(a.x-p.x)**2+(a.y-p.y)**2-((b.x-p.x)**2+(b.y-p.y)**2)).slice(0,Math.max(2,sum('targets')));for(const q of near)for(const skill of q.moves)skill.t=Math.max(0,skill.t-skill.cd*q.cdMul*fraction);}
- function onKill(p){const s=run();if(s?.phase==='combat'&&represented(p)&&low(s))healSquad(Math.min(sum('killHealSquadHp'),maxHp(s)*.5-s.squadHp),s,'blaze');}
+ function onKill(){} // Retained for existing combat callbacks; kills no longer heal squad HP.
+ function battleEnd(s=run()){
+  if(!s||s.phase!=='battle-result'||!(s.squadHp>0)||s.captain.dead||s.talentBattleHealDay===s.day)return 0;
+  s.talentBattleHealDay=s.day;const hp=s.squadHp,limit=maxHp(s),amount=entries(s).reduce((n,{def})=>n+(hp<limit*(def.effects.battleHealThreshold||0)?def.effects.battleEndHealSquadHp||0:0),0);
+  return healSquad(amount,s,'blaze');
+ }
  function pulse(p,e,a,dealt){
   if(!represented(p)||a.typeBondSecondary||a.kind==='typebond'||!(dealt>0)||G.Types.mult(a.type,e.types)<=1)return;
   for(const t of entries())if(t.def.effects.typePulseOnHit&&p.mon.types.includes(t.def.effects.typePulseOnHit)){const type=t.def.effects.typePulseOnHit;
@@ -112,5 +117,5 @@ G.TrainerTalents=(()=>{
  function rescueCaptain(p){return represented(p)&&!p.isSquadMember&&p.hp<=0&&rescue(run(),p);}
  function draw(ctx){for(const p of G.Squad?.actors?.()||[]){const s=shields.get(p);if(!s||s.hp<=0||run().elapsed>=s.until)continue;ctx.save();ctx.strokeStyle='#b6e9ff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y-p.bodyH*.4,p.r+9,p.bodyH*.6+8,0,0,Math.PI*2);ctx.stroke();ctx.restore();}}
  function tick(){const s=run();if(s)sync(s);}
- return {definition,choiceDefinition,permitted,catalogue,by,local,ensure,begin,onLevelUp,current,deal,eligible,canReroll,reroll,choose,entries,sum,has,maxHp,healSquad,receiveGifts,moveChoices,sync,attackPct,speedPct,rate,crit,outgoing,incoming,gatherDelay,noPP,defFactor,visualScale,move,interestDivisor,maxInterest,refreshDiscount,price,shop,wage,investments,repayInvestments,battleReward,beginBattle,absorb,onCast,onKill,pulse,rescue,rescueCaptain,draw,tick};
+ return {definition,choiceDefinition,permitted,catalogue,by,local,ensure,begin,onLevelUp,current,deal,eligible,canReroll,reroll,choose,entries,sum,has,maxHp,healSquad,receiveGifts,moveChoices,sync,attackPct,speedPct,rate,crit,outgoing,incoming,gatherDelay,noPP,defFactor,visualScale,move,interestDivisor,maxInterest,refreshDiscount,price,shop,wage,investments,repayInvestments,battleReward,beginBattle,battleEnd,absorb,onCast,onKill,pulse,rescue,rescueCaptain,draw,tick};
 })();

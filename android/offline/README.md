@@ -19,5 +19,5 @@ node tools/build_android_offline.cjs --sdk $env:ANDROID_HOME --java $env:JAVA_HO
 输出、临时测试签名及口令均位于 Git 忽略的 `tools/cache/android-offline/`，不提交凭据或签名私钥。
 脚本只在离线副本中修改登录与初始赠送，不修改正式网页构建，不包含调试模块，不暴露 `G`。
 
-安装文件为 `PokeSurvivor-Next-alpha.45-offline.apk`，旁边提供 SHA-256 校验文件。
+安装文件为 `PokeSurvivor-Next-alpha.46-offline.apk`，旁边提供 SHA-256 校验文件。
 代码与资源继续保留项目 LICENSE、CREDITS 和素材署名。

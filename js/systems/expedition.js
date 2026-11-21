@@ -442,7 +442,7 @@ G.Expedition = (() => {
     run.remainingHpRatio=Math.max(0,run.captain.hp/run.captain.maxHp);
     G.SquadTraits?.finishBattle(cleared);if(run.day===G.EconomyConfig.cycleLengthDays*G.EconomyConfig.clearCycleThreshold&&run.kind==='boss'){run.arceus=true;run.cashout=true;}run.phase='battle-result';run.pendingSpawns=[];
     G.EnemyMgr.update(0,G.Squad.actors());
-    bankGroundXp();G.ExpeditionSupplies?.battleEnd(run,cleared);
+    bankGroundXp();G.TrainerTalents?.battleEnd(run);G.ExpeditionSupplies?.battleEnd(run,cleared);
     note=cleared?L('¡Todos derrotados!','All foes defeated!','全歼奖励！'):L('Etapa superada','Stage survived','成功度过波次');
     G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Hazards.clear();
     const rewards=G.EconomyConfig.compatibility,itemCount=run.kind==='elite'?rewards.eliteVictoryItems:cleared&&run.kind==='battle'?rewards.normalClearItems:0;

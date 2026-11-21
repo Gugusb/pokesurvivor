@@ -1021,27 +1021,29 @@
         "es": "Pinch Instinct"
       },
       "desc": {
-        "zh": "小队生命低于 50% 时，全员攻击速度与暴击率提升 30%，每次击杀恢复0.2小队生命，最多回到50%。",
-        "en": "Below half squad HP: cast rate and critical chance +30%; each kill restores 0.2 squad HP.",
-        "es": "Con menos de la mitad de vida de equipo: frecuencia de ataques y probabilidad crítica +30%; cada baja recupera 0,2 de vida de equipo."
+        "zh": "小队生命低于50%时，全队攻速+30%，暴击率+30个百分点；战后小队生命低于30%时恢复5点。",
+        "en": "Below 50% squad HP: cast rate +30%, crit chance +30 percentage points. After battle, restore 5 squad HP if below 30%.",
+        "es": "Con menos del 50% de PS: frecuencia de ataques +30%, crítico +30 puntos. Tras el combate, recupera 5 PS del equipo si está por debajo del 30%."
       },
       "effects": {
         "lowHpThreshold": 0.5,
         "atkSpdPct": 0.3,
         "critPct": 0.3,
-        "killHealSquadHp": 0.2
+        "battleHealThreshold": 0.3,
+        "battleEndHealSquadHp": 5
       },
       "enhanced": {
         "effects": {
           "lowHpThreshold": 0.5,
           "atkSpdPct": 0.6,
           "critPct": 0.6,
-          "killHealSquadHp": 0.4
+          "battleHealThreshold": 0.3,
+          "battleEndHealSquadHp": 10
         },
         "desc": {
-          "zh": "小队生命低于50%时，攻速和暴击率+60%；每次击杀恢复0.4小队生命，最多回到50%。",
-          "en": "Below 50% squad HP: attack speed and crit chance +60%; kills restore 0.4 squad HP, up to 50%.",
-          "es": "Con menos del 50% de PS: velocidad de ataque y crítico +60%; cada baja cura 0,4 PS, hasta el 50%."
+          "zh": "小队生命低于50%时，全队攻速+60%，暴击率+60个百分点；战后小队生命低于30%时恢复10点。",
+          "en": "Below 50% squad HP: cast rate +60%, crit chance +60 percentage points. After battle, restore 10 squad HP if below 30%.",
+          "es": "Con menos del 50% de PS: frecuencia de ataques +60%, crítico +60 puntos. Tras el combate, recupera 10 PS del equipo si está por debajo del 30%."
         }
       }
     },
