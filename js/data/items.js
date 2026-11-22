@@ -19,7 +19,7 @@ G.Items = (() => {
     {id:'bugnet',name:'Red de Captura',desc:'Aumenta un poco la probabilidad de capturar Pokémon.',boss:true,icon:'ball'}
   ];
   const BY=Object.assign(Object.create(null),Object.fromEntries(LIST.map(i=>[i.id,i])));
-  const count=(p,id)=>BY[id]?Math.max(0,p?.specialItems?.[id]||0):0;
+  const count=(p,id)=>G.LeaderAbilities?.active()&&p===G.Expedition.run.captain&&G.LeaderAbilities.profile().noItems?0:BY[id]?Math.max(0,p?.specialItems?.[id]||0):0;
   const icon=id=>BY[id]?.icon||id;
   function gain(p,id){
     if(!p||!BY[id]||G.ExpeditionSupplies&&!G.ExpeditionSupplies.canGain(p,id))return false;

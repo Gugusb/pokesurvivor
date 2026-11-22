@@ -307,6 +307,7 @@ G.World = (() => {
    * Devuelve true si ha chocado con algo.
    */
   function collide(e) {
+    if(G.LeaderAbilities?.phase(e))return false;
     if (G.Abilities && G.Abilities.has(e, 'levitate')) { G.Abilities.updatePhase(e); return false; }
     const r = e.r;
     let hit = false;

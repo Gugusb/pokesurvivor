@@ -118,6 +118,7 @@
     hurt(amount, color = '#fff', dirX = 0, dirY = 0, knock = 0, eff = null, attacker = null, attack = {}) {
       if (this.dead || !(amount > 0)) return 0;
       const shielded = this.shield > 0;
+      const leaderFactor=G.LeaderAbilities?.outgoing(attacker,this,attack)||1;amount*=leaderFactor;
       const bypass = !!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
       const bond=!this.remote?G.TypeBonds?.beforeHit(attacker,this,attack):null;
@@ -129,7 +130,7 @@
       if (!this.remote && attacker&&!attack.typeBondFraction&&!attack.talentPulse) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass)*(G.TrainerTalents?.outgoing(attacker)||1)*(G.ExpeditionGrowth?.damageFactor(attacker,attack)||1);
       if (!this.remote && attack.damageClass) {
         const defense=attack.damageClass==='special'?this.spdef:this.defense;
-        amount /= defense || 1;
+        amount /= (defense || 1)*(1-(G.LeaderAbilities?.penetration(attacker,this,attack)||0));
       }
       if (!this.remote && this.mega&&!attack.typeBondFraction) amount /= 1.3;
       if(bond?.execute||terminal?.execute)amount=Math.max(amount,this.hp+(this.shield||0)+1);
@@ -152,7 +153,7 @@
       }
       hpDamage = Math.round(hpDamage);
       if (!hpDamage) {
-        G.ExpeditionDamage?.record(attacker,attack,shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',shieldDamage);
+        G.LeaderAbilities?.hit(attacker,this,attack,shieldDamage,eff==='crit',shielded);G.ExpeditionDamage?.record(attacker,attack,shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',shieldDamage);
         if(bond)G.TypeBonds.afterHit(attacker,this,attack,shieldDamage,bond);G.TrainerTalents?.pulse(attacker,this,attack,shieldDamage);
         G.FX.dmgText(this.x, this.y - this.bodyH - 4, Math.round(shieldDamage), '#9fd8ff'); this.flash = 0.05;
         if(shieldDamage>0)G.Audio.sfx('hit',{kind:attack.kind,type:attack.type});
@@ -174,7 +175,7 @@
         this.ky += ny * knock;
       }
       if (G.Coop.isHost) G.Coop.hurtShown(this, hpDamage, color);
-      if (this.hp <= 0) this.die();
+      G.LeaderAbilities?.hit(attacker,this,attack,actualDealt,eff==='crit',shielded);if (this.hp <= 0) this.die();
       return hpDamage + shieldDamage;
     }
 
@@ -194,20 +195,20 @@
       this.slow = Math.max(this.slow, factor);
       this.slowT = Math.max(this.slowT, dur);
     }
-    applyBurn(stacks = 1, owner = null) {
+    applyBurn(stacks = 1, owner = null, generated = false) {
       if (this.remote) { G.Coop.status(this, 'b', stacks); return; }
-      this.burn = Math.min(8, this.burn + stacks); this.burnT = 3;
+      const before=this.burn;this.burn = Math.min(8, this.burn + stacks);G.LeaderAbilities?.statusApplied(this,'burn',owner,this.burn-before,generated); this.burnT = 3;
       if (owner) this.burnOwner = owner;
     }
-    applyPoison(stacks = 1, owner = null) {
+    applyPoison(stacks = 1, owner = null, generated = false) {
       if (this.remote) { G.Coop.status(this, 'p', stacks); return; }
-      this.poison = Math.min(8, this.poison + stacks); this.poisonT = 4;
+      const before=this.poison;this.poison = Math.min(8, this.poison + stacks);G.LeaderAbilities?.statusApplied(this,'poison',owner,this.poison-before,generated); this.poisonT = 4;
       if (owner) this.poisonOwner = owner;
     }
 
     die() {
       if (this.dead) return;
-      this.dead = true;
+      this.dead = true;G.LeaderAbilities?.killed(this);
       G.TypeBonds?.death(this);G.SquadTraits?.kill(this.lastAttacker);
       if (G.Rift && G.Rift.noteDefeated) G.Rift.noteDefeated(this);
       this.fade = 0.9;
@@ -318,7 +319,7 @@
       const attackRate = G.Abilities.pressure(this)*(G.TypeBonds?.enemyRate(this)||1);
       if (this.touchCd > 0) this.touchCd -= dt * attackRate;
       G.Abilities.enemyTick(this, dt);
-      G.TypeBonds?.enemyTick(this,dt);
+      G.TypeBonds?.enemyTick(this,dt);G.LeaderAbilities?.enemyTick(this,dt);
       if (this.dead) return;
       this.bob += dt * 6;
 

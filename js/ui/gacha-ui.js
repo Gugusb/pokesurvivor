@@ -113,13 +113,13 @@ G.GachaUI = (() => {
     section.innerHTML = '<h3>' + mon.name + ' · Habilidades</h3><p class="note">Sólo una medalla equipada por Pokémon.</p>';
     for (const medal of G.AbilityDefs.medalsFor(dex)) {
       const owned = !!save.abilityMedals[medal.id];
-      const equipped = save.abilityEquipped[dex] === medal.id;
+      const equipped = medal.leader?owned:save.abilityEquipped[dex] === medal.id;
       const row = document.createElement('div');
       row.className = 'ability-medal-row' + (owned ? '' : ' locked');
       row.innerHTML = '<div><b>' + G.Icons.html('medal3', 18) + ' ' + medal.name + '</b><p class="note">' + medal.desc + '</p></div>';
       const btn = document.createElement('button');
       btn.className = 'btn small' + (equipped ? ' gold' : '');
-      btn.textContent = !owned ? 'Sin medalla' : equipped ? 'Equipada' : 'Equipar';
+      btn.textContent = medal.leader?(owned?G.T('Disponible'):G.T('Sin medalla')):!owned ? 'Sin medalla' : equipped ? 'Equipada' : 'Equipar';
       btn.disabled = !owned || equipped;
       btn.setAttribute('aria-label', G.T('Equipar') + ' ' + mon.name + ' ' + G.T(medal.name));
       btn.onclick = () => {
@@ -137,7 +137,7 @@ G.GachaUI = (() => {
       G.Abilities.equip(save, dex, null); G.DB.commit(true);
       const replacement = renderEquipment(parent, dex); section.replaceWith(replacement);
     };
-    section.appendChild(off); parent.appendChild(section);
+    section.appendChild(off);const leaderCard=G.LeaderAbilitiesUI?.card(dex,1);if(leaderCard)section.append(leaderCard);parent.appendChild(section);
     return section;
   }
 

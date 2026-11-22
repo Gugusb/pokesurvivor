@@ -8,7 +8,7 @@ G.Economy=(()=>{
   const maxLevel=s=>s.cycle>=config().endless.unlockCycle?config().levels.at(-1).level:config().levels.at(-2).level;
   const interest=(gold,s=G.Expedition?.run)=>Math.max(0,Math.min(G.TrainerTalents?.maxInterest(s)??config().interest.maxInterest,Math.floor(gold/(G.TrainerTalents?.interestDivisor(s)||config().interest.divisor))));
   const capacity=s=>levelRow(s.trainerLevel).squadCap+(s.extraPopPurchases||0)+(s.hasPopCapItem?1:0);
-  const refreshCost=s=>Math.max(1,(s.cycle>=config().endless.unlockCycle+1?config().shop.endlessCycle5PlusRefreshCost:config().shop.baseRefreshCost)-(G.TrainerTalents?.refreshDiscount(s)||0));
+  const refreshCost=s=>(G.LeaderAbilities?.refreshCost||((v)=>v))(Math.max(1,(s.cycle>=config().endless.unlockCycle+1?config().shop.endlessCycle5PlusRefreshCost:config().shop.baseRefreshCost)-(G.TrainerTalents?.refreshDiscount(s)||0)));
   const licenseCost=s=>config().endless.extraPopLicenseBaseCost+config().endless.extraPopLicenseStepCost*s.extraPopPurchases;
   const overclockCost=s=>config().endless.skillOverclockBaseCost+config().endless.skillOverclockStepCost*s.skillOverclockCount;
   function create(){return {...config().initial,cycle:1,extraPopPurchases:0,flawlessStreak:0,skillOverclockCount:0,settledDays:new Set()};}

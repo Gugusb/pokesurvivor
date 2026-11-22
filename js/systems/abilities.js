@@ -46,7 +46,7 @@ G.Abilities = (() => {
   }
   const weatherActive = kind => !!(G.Weather.current && G.Weather.current.kind === kind && !weatherSuppressed());
   const debuffImmune = p => has(p, 'hydration') && weatherActive('rain');
-  const slowImmune = p => debuffImmune(p) || has(p, 'naturalcure') && state(p).naturalReady;
+  const slowImmune = p => G.LeaderAbilities?.slowImmune(p) || debuffImmune(p) || has(p, 'naturalcure') && state(p).naturalReady;
   const xpFactor = p => has(p, 'slowstart') ? 0.7 : 1;
   const levelChoices = p => has(p, 'slowstart') && Math.random() < 0.5 ? 2 : 1;
   const projectileSpeed = p => has(p, 'victorystar') ? 1.3 : 1;

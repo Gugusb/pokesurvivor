@@ -9,11 +9,11 @@ G.ZMoves = (() => {
   const CAPS = {projectile:1.1,melee:1.1,beam:1.1,orbit:1.05,chain:1,dash:1.1,meteor:1.1,boomerang:1.1,nova:.95,aura:1,mine:1.1,turret:1.15,trail:1.05,cone:1.1};
   const TYPES = Object.keys(G.U.TYPE_COLOR);
   const state = p => p.zState || (p.zState = { type: null, phase: 'ready', charges:1, rewards:new Set(), cooldown: 0, elapsed: 0, casts: [], guard: 0 });
-  const hasStone = p => !!(p && p.zState && TYPES.includes(p.zState.type));
+  const hasStone = p => !G.Expedition?.active && !!(p && p.zState && TYPES.includes(p.zState.type));
   const selecting = p => hasStone(p) && state(p).phase === 'choose' && !p.dead;
   const busy = p => hasStone(p) && !p.dead && ['choose', 'cast'].includes(state(p).phase);
   const dashing = p => busy(p) && state(p).casts.some(e => e.m.kind === 'dash' && e.t < 0.5);
-  const immune = p => busy(p) || !!(p && p.zState && state(p).guard > 0);
+  const immune = p => !G.Expedition?.active && (busy(p) || !!(p && p.zState && state(p).guard > 0));
   const cooldownFor = p => !p.remote && G.Dev?.zShortCooldown ? 2 : COOLDOWN;
   const all = () => G.Game ? G.Game.everyone().filter(p => p && !p.dead) : [];
   const enemies = () => G.EnemyMgr.all().filter(e => !e.dead);
@@ -479,6 +479,7 @@ G.ZMoves = (() => {
     return granted;
   }
   function onKill(e){
+    if(G.Expedition?.active)return;
     if(G.Coop.active&&!G.Coop.isHost)return;
     if(e.boss){grantTeamCharge('boss:'+e.id);return;}
     const chance=e.elite?.05:(G.MonProgression?.captureChance(e)||.002);

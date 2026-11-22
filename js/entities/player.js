@@ -112,14 +112,14 @@ G.Player = class Player {
   buffFraction(stat) { const b = this.buffs[stat]; return this.buffStacks(b) * b.amount; }
   get attackMultiplier() { return Math.max(0, this.atkMul +
     G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
-  get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)+(G.SquadTraits?.flat(this,'atk')||0)) * (1+this.statGrowth.atk+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'atk')||1); }
-  get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)+(G.SquadTraits?.flat(this,'spa')||0)) * (1+this.statGrowth.spa+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'spa')||1); }
-  get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)+(G.SquadTraits?.flat(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1)*(G.SquadTraits?.factor(this,'agility')||1); }
-  get stamina() { return (this.baseStamina+(G.TypeBonds?.baseBonus(this,'stamina')||0)+(G.SquadTraits?.flat(this,'stamina')||0)) * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0))*(G.SquadTraits?.factor(this,'stamina')||1); }
+  get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)+(G.SquadTraits?.flat(this,'atk')||0)) * (1+this.statGrowth.atk+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'atk')||1)*(G.LeaderAbilities?.factor(this,'atk')||1); }
+  get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)+(G.SquadTraits?.flat(this,'spa')||0)) * (1+this.statGrowth.spa+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'spa')||1)*(G.LeaderAbilities?.factor(this,'spa')||1); }
+  get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)+(G.SquadTraits?.flat(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1)*(G.SquadTraits?.factor(this,'agility')||1)*(G.LeaderAbilities?.factor(this,'agility')||1); }
+  get stamina() { return (this.baseStamina+(G.TypeBonds?.baseBonus(this,'stamina')||0)+(G.SquadTraits?.flat(this,'stamina')||0)) * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0))*(G.SquadTraits?.factor(this,'stamina')||1)*(G.LeaderAbilities?.factor(this,'stamina')||1); }
   get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
   get ppInterval() { return G.MonProgression ? G.MonProgression.ppInterval(this.stamina) : 1; }
   isPrimaryMove(m) { const group=this.slots.find(g=>g.some(x=>x===m||x.id===m?.id));return !group||group===this.activeGroup(); }
-  agilityFor(m) { return this.agility*(this.isPrimaryMove(m)?1:.5); }
+  agilityFor(m) { return this.agility*(this.isPrimaryMove(m)?1:.5)*(G.LeaderAbilities?.agility(this,m)||1); }
   staminaFor(m) { return this.stamina*(this.isPrimaryMove(m)?1:.5); }
   agilityCooldownFor(m) { return G.MonProgression?G.MonProgression.cooldownFactor(this.agilityFor(m)):this.agilityCooldown; }
   ppIntervalFor(m,primary=this.isPrimaryMove(m)) { return G.MonProgression?G.MonProgression.ppInterval(this.stamina*(primary?1:.5)):this.ppInterval; }
@@ -130,8 +130,8 @@ G.Player = class Player {
   attackFor(move) { return (move?.damageClass === 'special' ? this.spa : this.atk)*(1+(move?.overclock||0)*(G.EconomyConfig?.endless.overclockDamagePerPurchase||0)); }
   defenseFor(source) {
     const kind=source?.kind;
-    if (kind==='contact' || kind==='melee') return Math.max(.1,(this.baseDefense+(G.TypeBonds?.baseBonus(this,'defense')||0)+(G.SquadTraits?.flat(this,'defense')||0))*(1+this.statGrowth.defense+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1)*(G.SquadTraits?.factor(this,'defense')||1));
-    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,(this.baseSpDef+(G.TypeBonds?.baseBonus(this,'spdef')||0)+(G.SquadTraits?.flat(this,'spdef')||0))*(1+this.statGrowth.spdef+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1)*(G.SquadTraits?.factor(this,'spdef')||1));
+    if (kind==='contact' || kind==='melee') return Math.max(.1,(this.baseDefense+(G.TypeBonds?.baseBonus(this,'defense')||0)+(G.SquadTraits?.flat(this,'defense')||0))*(1+this.statGrowth.defense+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1)*(G.SquadTraits?.factor(this,'defense')||1)*(G.LeaderAbilities?.factor(this,'defense')||1));
+    if (kind==='ranged' || kind==='projectile' || kind==='beam') return Math.max(.1,(this.baseSpDef+(G.TypeBonds?.baseBonus(this,'spdef')||0)+(G.SquadTraits?.flat(this,'spdef')||0))*(1+this.statGrowth.spdef+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1)*(G.SquadTraits?.factor(this,'spdef')||1)*(G.LeaderAbilities?.factor(this,'spdef')||1));
     return 1;
   }
   get spd() {
@@ -140,7 +140,7 @@ G.Player = class Player {
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return s * (G.Abilities.slowImmune(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
-      (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1)*(G.TypeBonds?.speed(this)||1)*(G.SquadTraits?.factor(this,'spd')||1);
+      (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1)*(G.TypeBonds?.speed(this)||1)*(G.SquadTraits?.factor(this,'spd')||1)*(G.LeaderAbilities?.factor(this,'spd')||1);
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0)); }
   get flatRegen() { return this.regenFlat + this.baseHp*this.regenBase + this.maxHp*.003*(G.Items?.count(this,'leftovers')||0)+this.baseHp*(G.Squad?.growth(this,'regen')||0)+(G.TypeBonds?.regen(this)||0); }
@@ -150,10 +150,10 @@ G.Player = class Player {
     if (this.dead || !(dt > 0) || this.hp >= this.maxHp) return;
     const missing = this.maxHp-this.hp, rate = this.missingHpRegen, flat = this.flatRegen;
     // Integrate missing-HP healing continuously so frame rate cannot change its yield.
-    const healed = rate > 0 ? (missing+flat/rate)*-Math.expm1(-rate*dt) : flat*dt;
-    if (healed > 0) this.hp = Math.min(this.maxHp,this.hp+healed);
+    const leaderRegen=G.LeaderAbilities?.regen(this)??1;const healed = leaderRegen*(rate > 0 ? (missing+flat/rate)*-Math.expm1(-rate*dt) : flat*dt);
+    if (healed > 0) {this.hp = Math.min(this.maxHp,this.hp+healed);G.LeaderAbilities?.healEvent(this,healed);}
   }
-  get effectiveXpMul() { return (G.ExpeditionSupplies?.xpFactor(this)||1)*this.xpMul * G.Abilities.xpFactor(this) * (1+.06*(G.Items?.count(this,'luckyegg')||0)) * (G.FailureProtection?.xpFactor(this)||1); }
+  get effectiveXpMul() { return (G.ExpeditionSupplies?.xpFactor(this)||1)*this.xpMul * (G.LeaderAbilities?.xp(this)||1) * G.Abilities.xpFactor(this) * (1+.06*(G.Items?.count(this,'luckyegg')||0)) * (G.FailureProtection?.xpFactor(this)||1); }
 
   get coinMul(){return this.baseCoinMul*(1+.1*(G.Items?.count(this,'amuletcoin')||0));}
 
@@ -255,7 +255,7 @@ G.Player = class Player {
     const anim = { melee: 'Attack', beam: 'Shoot', projectile: 'Shoot', nova: 'Attack',
                    aura: 'Charge', buff: 'Charge', orbit: 'Charge', boomerang: 'Shoot', chain: 'Shoot',
                    mine: 'Charge', meteor: 'Charge', turret: 'Charge', dash: 'Attack', trail: 'Walk', cone: 'Shoot' }[m.kind] || 'Attack';
-    G.Audio.sfx('shot', { kind: m.kind, type: m.type });G.TrainerTalents?.onCast(this,m);G.SquadSupport?.cast(this,m);
+    G.LeaderAbilities?.onCast(this,m);G.Audio.sfx('shot', { kind: m.kind, type: m.type });G.TrainerTalents?.onCast(this,m);G.SquadSupport?.cast(this,m);
     if (m.kind === 'trail'||!this.isSquadMember&&!this.isPrimaryMove(m)) return;
     // No reinicies una animación que va por la mitad: se vería a tirones.
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
@@ -285,6 +285,7 @@ G.Player = class Player {
     if (G.Dev && G.Dev.invincible) return false;
     if (type === 'electric' && G.Abilities.has(this, 'voltabsorb')) { this.heal(this.maxHp * 0.25); return false; }
     if (this.invuln > 0 || this.dashGuardT > 0) return false;
+    if(G.LeaderAbilities&&!G.LeaderAbilities.beforeHurt(this,type,source))return false;
     if (!G.Abilities.beforeHurt(this, source)) return false;
     if(G.TypeBonds?.block(this,source)){this.invuln=.45;return false;}
     let eff = null;
@@ -299,7 +300,7 @@ G.Player = class Player {
     const close = this.activeGroup().some(m => m.kind === 'melee') ? 0.75 : 1;
     const d = (pure ? Math.max(1, amount) : Math.max(1, amount / this.defenseFor(source) * (1 - this.reduction) * close)) * G.Abilities.damageFactor(this, source, type) * (G.Mega ? G.Mega.defense(this) : 1)*(['environment','weather'].includes(source.kind)?Math.pow(.9,G.Items.count(this,'safetygoggles')):1);
     let finalDamage=d*(G.TypeBonds?.defense(this)||1)*(G.TrainerTalents?.incoming(this,source)||1)*(G.SquadSupport?.reduction(this)||1);finalDamage=G.TrainerTalents?.absorb(this,finalDamage)??finalDamage;
-    finalDamage=G.SquadTraits?.absorb(this,finalDamage)??finalDamage;if(!(finalDamage>0)){this.invuln=.45;return false;}
+    finalDamage=G.LeaderAbilities?.incoming(this,finalDamage,type,source)??finalDamage;finalDamage=G.SquadTraits?.absorb(this,finalDamage)??finalDamage;if(!(finalDamage>0)){this.invuln=.45;return false;}
     if (G.FailureProtection?.avoidLethal(this,finalDamage)) return false;
     const hpLost=Math.min(this.hp,finalDamage);
     this.hp -= finalDamage;G.TypeBonds?.onDamage(this,hpLost);
@@ -307,7 +308,7 @@ G.Player = class Player {
     G.Abilities.onDamage(this);
     G.Abilities.afterHurt(this, source, type);
     if(d>0&&G.Difficulty)G.Difficulty.onHurt(this);
-    this.invuln = 0.45;
+    this.invuln = 0.45*(source.kind==='contact'?(G.LeaderAbilities?.profile()?.contactIFrames||1):1);
     G.BreakItems?.afterHurt(this,source);
     this.flash = 0.14;
     G.Audio.sfx('hurt');
@@ -317,7 +318,7 @@ G.Player = class Player {
     }
     G.FX.dmgText(this.x, this.y - this.bodyH - 4, '-' + Math.max(1,Math.round(finalDamage)), eff === 'super' ? '#ff3048' : eff === 'weak' ? '#c9a0a8' : '#ff6b7a', eff === 'super');
     G.FX.burst(this.x, this.y - this.bodyH * 0.5, '#ff5f6d', 6, 90);
-    if (this.hp <= 0) G.Abilities.saveLethal(this);
+    G.LeaderAbilities?.hurt(this,hpLost,type,source);if (this.hp <= 0) {G.LeaderAbilities?.rescue(this);G.Abilities.saveLethal(this);}
     // Cada Banda Focus evita un golpe mortal y se consume.
     if(this.hp<=0&&this.hasItem('focussash')){
       G.Items.remove(this,'focussash');this.hp=1;this.invuln=1.2;
@@ -340,12 +341,12 @@ G.Player = class Player {
     const before = this.hp;
     G.BreakItems?.healed(this,Math.max(0,this.hp+amount-this.maxHp));
     this.hp = Math.min(this.maxHp, this.hp + amount);
-    const got = Math.round(this.hp - before);
+    G.LeaderAbilities?.healEvent(this,Math.max(0,this.hp-before));const got = Math.round(this.hp - before);
     if (got >= 1) G.FX.dmgText(this.x, this.y - this.bodyH - 6, '+' + got, '#5fe08a');
   }
 
   applyAttackDebuff(amount, duration) {
-    if (G.Abilities.has(this, 'defiant') || G.Abilities.debuffImmune(this) || !(amount > 0) || !(duration > 0)) return false;
+    if (G.LeaderAbilities?.active()&&G.LeaderAbilities.profile().attackDebuffImmune || G.Abilities.has(this, 'defiant') || G.Abilities.debuffImmune(this) || !(amount > 0) || !(duration > 0)) return false;
     this.attackDebuff = Math.max(this.attackDebuff, Math.min(1, amount));
     this.attackDebuffT = Math.max(this.attackDebuffT, duration); return true;
   }

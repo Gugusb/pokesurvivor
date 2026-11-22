@@ -73,7 +73,7 @@ G.AbilityDefs = (() => {
   })));
   const BY_ID = Object.fromEntries(LIST.map(m => [m.id, m]));
   const SPECIES = Object.keys(byDex).map(Number);
-  function medalsFor(dex) { return LIST.filter(m => m.dex === dex); }
+  function medalsFor(dex) { return G.LeaderAbilitiesConfig&&G.LeaderMedals?G.LeaderMedals.medalsFor(dex):LIST.filter(m => m.dex === dex); }
   function owns(save, dex, ability) {
     return !!(save && save.abilityMedals && Object.prototype.hasOwnProperty.call(save.abilityMedals, dex + '-' + ability));
   }

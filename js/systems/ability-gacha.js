@@ -38,8 +38,8 @@ G.AbilityGacha = (() => {
         isNew = !save.abilityMedals[medal.id];
         if (isNew) {
           save.abilityMedals[medal.id] = { at: Date.now(), from: 'ability-gacha' };
-          if (save.abilityEquipped[mon.dex] === undefined) save.abilityEquipped[mon.dex] = medal.id;
-        } else refund = 300;
+          if (!medal.leader && save.abilityEquipped[mon.dex] === undefined) save.abilityEquipped[mon.dex] = medal.id;
+        } else refund = medal.leader ? G.Gacha.REFUND[rarity] : 300;
       } else {
         shiny = G.Sprites.hasShiny(mon.dex) && Math.random() < G.Gacha.SHINY_RATE;
         if (shiny && save.shiny[mon.dex]) {

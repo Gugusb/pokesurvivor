@@ -722,7 +722,7 @@ G.Game = (() => {
     if (state !== 'playing' || !pl) return;
     if (G.Input.tap('keyv') && !document.activeElement?.closest('input,textarea,select,[contenteditable]')) cycleSpeed();
     if ((G.Input.tap('keyz') || G.Input.tap('keyf')) && !document.activeElement?.closest('input, textarea, select, [contenteditable]')) {
-      if (G.ZMoves && G.ZMoves.hasStone(pl)) G.ZMoves.arm(pl); else if (G.Input.tap('keyf') && G.Mega) G.Mega.activate(pl);
+      if (G.Input.tap('keyz')&&G.LeaderAbilities?.active())G.LeaderAbilities.activate(pl);else if (G.ZMoves && G.ZMoves.hasStone(pl)) G.ZMoves.arm(pl); else if (G.Input.tap('keyf') && G.Mega) G.Mega.activate(pl);
     }
     if((G.Input.tap('digit0')||G.Input.tap('numpad0'))&&!document.activeElement?.closest('input,textarea,select,[contenteditable]'))G.Items.useActive(pl);
     for (let i = 0; i < 4; i++) {
@@ -936,7 +936,7 @@ G.Game = (() => {
     G.World.drawGround(ctx, cam);G.Expedition?.drawWarnings(ctx);
     G.World.drawLiquid(ctx, cam, t);
     G.Hazards.draw(ctx);
-    G.Combat.drawGroundFields(ctx);
+    G.Combat.drawGroundFields(ctx);G.LeaderAbilities?.draw(ctx);
     G.TypeBonds?.drawGround(ctx);
     if (G.ZMoves) G.ZMoves.drawGround(ctx);
     G.Pickups.draw(ctx);

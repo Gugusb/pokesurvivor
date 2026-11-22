@@ -426,7 +426,7 @@
   function poolFor(mon) {
     const ids = new Set(POOL.normal);
     for (const t of mon.types) for (const id of (POOL[t] || [])) ids.add(id);
-    return [...ids];
+    return G.LeaderAbilities?.learnPool(mon,[...ids])||[...ids];
   }
 
   /**

@@ -25,7 +25,7 @@ G.Squad = (() => {
       const value=actors().includes(p)?(bonus.hp||0)*p.baseHp:0,delta=value-(p.squadHpBonus||0);
       p.maxHp=Math.max(1,p.maxHp+delta);if(!p.dead)p.hp=Math.min(p.maxHp,Math.max(1,p.hp+delta));p.squadHpBonus=value;
     }
-    for(const p of roster){G.SquadTraits?.assign(p);G.SquadTraits?.sync(p);}G.TrainerTalents?.sync();G.ExpeditionGrowth?.sync();
+    for(const p of roster){G.SquadTraits?.assign(p);G.SquadTraits?.sync(p);}G.TrainerTalents?.sync();G.ExpeditionGrowth?.sync();for(const p of [captain,...roster].filter(Boolean))G.LeaderAbilities?.sync(p);
   }
   class Member extends G.Player{
     constructor(dex,rank=1,moveId=null){
@@ -35,7 +35,7 @@ G.Squad = (() => {
       this.poolCopies=(G.EconomyConfig?.compatibility.mergeCopies||2)**(rank-1);
       this.megaState=null;this.zState=null;this.x=captain?.x||0;this.y=captain?.y||0;this.permanentGrowth={...(perks.statGrowth||{})};
       const ids=G.Moves.poolFor(this.mon);this.addMove(moveId&&ids.includes(moveId)?moveId:(G.FIXED_SKILLS?.[dex]||G.Moves.startFor(this.mon)));
-      this.moveId=this.moves[0].id;G.SquadTraits?.assign(this);rankMove(this);G.ExpeditionQuality?.sync(this);this.invuln=1;
+      const legal=G.LeaderAbilities?.legalFixed(this.mon,this.moves[0].id);if(legal&&legal!==this.moves[0].id){this.moves=[];this.slots=[];this.addMove(legal);}this.moveId=this.moves[0].id;G.SquadTraits?.assign(this);rankMove(this);G.ExpeditionQuality?.sync(this);this.invuln=1;
     }
     get atk(){return super.atk*(G.ExpeditionQuality?.factors(this).ad||1);}
     get spa(){return super.spa*(G.ExpeditionQuality?.factors(this).ad||1);}
@@ -76,8 +76,8 @@ G.Squad = (() => {
     if(!p.isSquadMember&&G.Mega?.active(p))G.Mega.finish(p);
     const dex=G.U.pick(choices),mon=G.DEX_BY[dex],fraction=p.hp/p.maxHp,iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[dex]?.iv),s=G.MonProgression.stats(dex,iv);
     p.mon=mon;p.dex=p.spriteDex=p.ivDex=dex;p.baseHp=s.hp;p.baseAtk=s.atk;p.baseSpa=s.spa;p.baseDefense=s.defense;p.baseSpDef=s.spdef;p.baseSpd=s.spd;p.baseAgility=s.agility;p.baseStamina=s.stamina;
-    p.squadHpBonus=0;p.talentHpBonus=0;p.traitHpFactor=1;p.qualityHpFactor=p.isSquadMember?(G.ExpeditionQuality?.factors(p).hp||1):1;p.maxHp=s.hp*(1+p.statGrowth.hp)*p.qualityHpFactor;p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
-    if(!p.isSquadMember){p.monStage=dex;p.evolutionPath=G.MonProgression.pathFor(dex);p.ability=G.Abilities.equipped(G.DB.save,dex)||null;G.Mega?.init(p,G.DB.save);}
+    p.leaderHpFactor=1;p.squadHpBonus=0;p.talentHpBonus=0;p.traitHpFactor=1;p.qualityHpFactor=p.isSquadMember?(G.ExpeditionQuality?.factors(p).hp||1):1;p.maxHp=s.hp*(1+p.statGrowth.hp)*p.qualityHpFactor;p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
+    if(!p.isSquadMember){p.monStage=dex;p.evolutionPath=G.MonProgression.pathFor(dex);p.ability=G.LeaderAbilities?.active()?null:G.Abilities.equipped(G.DB.save,dex)||null;G.Mega?.init(p,G.DB.save);}
     G.Sprites.preload([dex]);
   }
   function consolidate(){
@@ -94,7 +94,7 @@ G.Squad = (() => {
     dex=G.ExpeditionRules.formForRank(dex,rank);if(!canRecruit(dex,rank))return null;
     const p=new Member(dex,rank,moveId);if(options.poolCopies!=null)p.poolCopies=options.poolCopies;p.level=captain.level;roster.push(p);G.ExpeditionGrowth?.sync(p);const slot=formation.indexOf(null);if(slot>=0)formation[slot]=p;consolidate();G.Sprites.preload([dex]);return p;
   }
-  function canRecruit(dex,rank=1){dex=G.ExpeditionRules.formForRank(dex,rank);return !!captain&&Number.isInteger(rank)&&rank>=1&&rank<=3&&!!G.DEX_BY[dex]&&!!G.SPRITE_META[dex]&&(formation.includes(null)||reserves().length<RESERVE_LIMIT||rank<3&&roster.some(p=>G.MonProgression.rootFor(p.dex)===G.MonProgression.rootFor(dex)&&p.rank===rank));}
+  function canRecruit(dex,rank=1){dex=G.ExpeditionRules.formForRank(dex,rank);return !!captain&&(!G.LeaderAbilities?.active()||!!G.LeaderAbilities.legalFixed(G.DEX_BY[dex],G.FIXED_SKILLS?.[dex]||G.Moves.startFor(G.DEX_BY[dex])))&&Number.isInteger(rank)&&rank>=1&&rank<=3&&!!G.DEX_BY[dex]&&!!G.SPRITE_META[dex]&&(formation.includes(null)||reserves().length<RESERVE_LIMIT||rank<3&&roster.some(p=>G.MonProgression.rootFor(p.dex)===G.MonProgression.rootFor(dex)&&p.rank===rank));}
   function remove(p,sell){const i=roster.indexOf(p);if(i<0)return false;const r=G.Expedition?.run;if(r?.unitPool){if(sell)r.gold+=r.unitPool.sellValue(p);r.unitPool.returnCopies(p.dex,p.poolCopies??r.unitPool.copies(p.rank));}if(sell)G.SquadTraits?.release(p);const slot=formation.indexOf(p);if(slot>=0)formation[slot]=null;for(const shot of [...G.Projectiles.all()])if(shot.owner===p)G.Projectiles.remove(shot);G.Combat?.clearFields(p);roster.splice(i,1);refresh();return true;}
   const release=p=>remove(p,true);
   const consume=p=>remove(p,false);
@@ -119,7 +119,7 @@ G.Squad = (() => {
     const a=roster.indexOf(p),b=roster.indexOf(q);[roster[a],roster[b]]=[roster[b],roster[a]];return true;
   }
   function tick(dt){
-    if(!captain)return;refresh();G.SquadSupport?.tick(dt);G.SquadTraits?.tick(dt);const delta=leaderPos?Math.hypot(captain.x-leaderPos.x,captain.y-leaderPos.y):0,moving=delta>.01;
+    if(!captain)return;refresh();G.LeaderAbilities?.tick(dt);G.SquadSupport?.tick(dt);G.SquadTraits?.tick(dt);const delta=leaderPos?Math.hypot(captain.x-leaderPos.x,captain.y-leaderPos.y):0,moving=delta>.01;
     leaderPos={x:captain.x,y:captain.y};still=moving?0:still+dt;
     if(moving&&gathering){trail=[{...leaderPos}];gathering=false;for(const p of roster)p.idleTarget=null;}
     if(still>(G.TrainerTalents?.gatherDelay()??.22))gathering=true;

@@ -24,6 +24,7 @@ for (const f of [
   "js/systems/equipment.js",
   "js/systems/nursery-rules.js",
   "js/data/abilities.js",
+  "js/data/leader-medals.js",
   "js/systems/progression-mon.js",
   "js/systems/expedition-rules.js",
   "js/systems/difficulty.js",
@@ -43,6 +44,8 @@ for (const f of [
     filename: f,
   });
 }
+ctx.G.LeaderAbilitiesConfig=JSON.parse(fs.readFileSync(path.join(ROOT,"config/leader_abilities_gen1.json"),"utf8"));
+ctx.G.LeaderMedals.install();
 const G = ctx.G,
   clone = (x) => JSON.parse(JSON.stringify(x));
 function fresh(name) {

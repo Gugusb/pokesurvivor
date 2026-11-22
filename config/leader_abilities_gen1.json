@@ -1,0 +1,3961 @@
+{
+  "version": 1,
+  "generation": 1,
+  "families": [
+    {
+      "root": 1,
+      "members": [
+        1,
+        2,
+        3
+      ],
+      "id": "leader_toxic_domain",
+      "name": {
+        "zh": "毒沼领域",
+        "en": "Toxic Domain",
+        "es": "Toxic Domain"
+      },
+      "source": {
+        "base": "队长及队员持有的“光环”技能伤害半径提高 80%，伤害跳字频率提高 50%（跳字间隔缩短），踏入光环范围内的敌人移动速度降低 25%；",
+        "active": "全队光环累计对敌人造成 30 次伤害跳字后，光环范围瞬间引发一次【花粉毒爆】：对范围内所有敌人附加 3 层中毒，并按命中敌人数为全队回复已损失生命的 15%。",
+        "cost": "**代价**：所有队长及队员的移动速度（`spd`）降低 30%，且队伍无法学习或刷新出任何位移冲刺（`dash`）招式。",
+        "advances": [
+          "*   **Lv.5 妙蛙草**：光环内的敌人受到的中毒伤害跳字频率加倍。",
+          "*   **Lv.8 妙蛙花**：毒爆触发时，永久在原地留下一片持续 10 秒的花粉领域，使队长的生命回复速率（`regen`）翻倍。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "auraHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "toxicBloom",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "aura": {
+            "radius": 1.5,
+            "tickRate": 1.25
+          }
+        },
+        "auraSlow": 0.25
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.2
+        },
+        "ban": [
+          "dash"
+        ]
+      },
+      "five": {
+        "poisonRate": 1.5
+      },
+      "eight": {
+        "pollen": true
+      }
+    },
+    {
+      "root": 4,
+      "members": [
+        4,
+        5,
+        6
+      ],
+      "id": "leader_blazing_cone",
+      "name": {
+        "zh": "燎原烈风",
+        "en": "Blazing Flare Cone",
+        "es": "Blazing Flare Cone"
+      },
+      "source": {
+        "base": "队长及队员释放“扇形”技能的攻击范围提高 100%，结算敏捷提高 30%，击退效果提高 50%；",
+        "active": "小队每释放五次“扇形”技能，下次释放扇形技能额外获得 200% 的攻击范围且伤害提高 50%。",
+        "cost": "**代价**：所有队长及队员受到的克制伤害提高 50%。",
+        "advances": [
+          "*   **Lv.5 火恐龙**：扇形技能命中处于灼伤状态的敌人时，暴击率提升 25%。",
+          "*   **Lv.8 喷火龙**：第五次爆发的巨型扇形招式附带全屏推土机式击退，被推向场边的敌人额外承受一次猛烈爆炸。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "coneCast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "giantCone",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "cone": {
+            "range": 1.7,
+            "agility": 1.3,
+            "knock": 1.5
+          }
+        }
+      },
+      "cost": {
+        "weakDamage": 1.35
+      },
+      "five": {
+        "burnCrit": 0.2
+      },
+      "eight": {
+        "wallExplosion": true
+      }
+    },
+    {
+      "root": 7,
+      "members": [
+        7,
+        8,
+        9
+      ],
+      "id": "leader_torrential_beam",
+      "name": {
+        "zh": "激流重炮",
+        "en": "Torrential Artillery",
+        "es": "Torrential Artillery"
+      },
+      "source": {
+        "base": "队长及队员释放“能量柱”技能的判定宽度与射程提高 60%，每贯穿一名敌人，后续造成的伤害递增 10%（最多递增 50%），击退效果提高 80%；",
+        "active": "小队每释放四次“能量柱”技能，下次释放能量柱技能将变为三道并排喷射的【巨浪洪流】，全图贯穿且暴击率提高 100%。",
+        "cost": "**代价**：所有队长及队员释放能量柱技能时额外消耗 1 点 PP，且全队耐力（PP 恢复速度）降低 35%。",
+        "advances": [
+          "*   **Lv.5 卡咪龟**：释放能量柱期间，施法者自身获得 40% 物理与特殊防御提升。",
+          "*   **Lv.8 水箭龟**：巨浪洪流命中首领（BOSS）或精英怪时，使其陷入 3 秒硬直破甲状态，受到的全队伤害提高 30%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "beamCast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "tripleBeam",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "beam": {
+            "range": 1.6,
+            "width": 1.6,
+            "knock": 1.8
+          }
+        },
+        "beamRamp": 0.08
+      },
+      "cost": {
+        "extraPP": {
+          "beam": 1
+        },
+        "stats": {
+          "stamina": -0.2
+        }
+      },
+      "five": {
+        "beamDefense": 0.35
+      },
+      "eight": {
+        "beamVulnerable": 0.2
+      }
+    },
+    {
+      "root": 172,
+      "members": [
+        172,
+        25,
+        26
+      ],
+      "id": "leader_overcharge_chain",
+      "name": {
+        "zh": "超载电弧",
+        "en": "Overcharged Arc",
+        "es": "Overcharged Arc"
+      },
+      "source": {
+        "base": "队长及队员释放“连锁”技能的最大弹跳次数 +2，弹跳搜索半径提高 60%，电弧每次成功弹跳使该段伤害递增 15%；",
+        "active": "小队每释放五次“连锁”技能，下次连锁技能在完成所有弹跳后，将在最后一名目标身上引爆一次【高压过载】：以其为中心产生一次全屏大范围雷暴冲击，并使波及的敌人陷入 2 秒减速 60%；",
+        "cost": "**代价**：所有队长及队员的物理防御（`defense`）降低 40%，且受到近战接触伤害时受击无敌帧缩短 50%。",
+        "advances": [
+          "*   **Lv.5 皮卡丘**：连锁技能每次产生暴击，立即为施法者返还 1 点 PP。",
+          "*   **Lv.8 雷丘**：高压过载引爆的范围雷暴伤害提升 100%，且必然引雷命中全场血量最高的敌人。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "chainCast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "overcharge",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "chain": {
+            "count": 2,
+            "range": 1.4
+          }
+        },
+        "chainRamp": 0.1
+      },
+      "cost": {
+        "stats": {
+          "defense": -0.25
+        },
+        "contactIFrames": 0.75
+      },
+      "five": {
+        "critPP": 0.25
+      },
+      "eight": {
+        "overchargeFocus": true
+      }
+    },
+    {
+      "root": 10,
+      "members": [
+        10,
+        11,
+        12
+      ],
+      "id": "leader_compound_scales",
+      "name": {
+        "zh": "三色鳞粉",
+        "en": "Tri-Color Scales",
+        "es": "Tri-Color Scales"
+      },
+      "source": {
+        "base": "队长及队员释放“全向辐射”技能的弹丸数量增加 50%（`count * 1.5`），弹道飞行速度降低 30%（使鳞粉弹幕在场地上滞留更久），命中的敌人附加 1 层中毒与 1.5 秒减速（`slow`）；",
+        "active": "小队每释放五次“全向辐射”技能，下次释放时将触发【三色复眼蝶风】：在身周喷散一圈持续 3 秒不熄灭的彩虹悬浮鳞粉，触碰的敌人陷入 2 秒深度睡眠定身（无法行动且受击伤害提高 30%）。",
+        "cost": "**代价**：所有队长及队员的基础物理防御（`defense`）降低 50%，且受到火属性与岩石属性攻击伤害提高 50%。",
+        "advances": [
+          "*   **Lv.5 铁甲蛹（硬化之茧）**：原地站立不动超过 1 秒时，获得 80% 物理与特殊防御，但移动时立刻解除。",
+          "*   **Lv.8 巴大蝶（复眼扩散）**：所有异常状态（中毒/减速/定身）的持续时间延长 50%，处于异常状态的敌人死亡时在原地爆裂出一小圈扩散鳞粉。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "novaCast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "sleepPollen",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "nova": {
+            "countFactor": 1.35,
+            "speed": 0.8,
+            "poison": 1,
+            "slow": 0.2
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "defense": -0.3
+        },
+        "incomingTypes": {
+          "fire": 1.3,
+          "rock": 1.3
+        }
+      },
+      "five": {
+        "stationaryDefense": 0.6
+      },
+      "eight": {
+        "statusDuration": 1.4,
+        "statusDeathPollen": true
+      }
+    },
+    {
+      "root": 13,
+      "members": [
+        13,
+        14,
+        15
+      ],
+      "id": "leader_fell_stinger",
+      "name": {
+        "zh": "致命蜂刺",
+        "en": "Fell Stinger Focus",
+        "es": "Fell Stinger Focus"
+      },
+      "source": {
+        "base": "队长及队员释放“近战”技能的基础暴击率提升 25%，暴击伤害倍率提升至 2.0 倍；近战招式命中敌人时，必定附加 1 层中毒；",
+        "active": "全队的近战招式累计造成 6 次暴击后，下次近战招式变为【致命双针蜂刺】：瞬间进行两次连环穿刺，对生命值低于 30% 的普通敌人直接触发处决斩杀（精英/BOSS则造成 150% 额外真实伤害）；若成功完成斩杀，立即重置所有招式的当前冷却时间。",
+        "cost": "**代价**：所有队长及队员的最大生命值（`maxHp`）降低 35%，且无法装备任何能量柱（`beam`）和光环（`aura`）技能。",
+        "advances": [
+          "*   **Lv.5 铁壳蛹（毒腺蓄积）**：近战暴击时，将本次暴击伤害的 20% 转化为持续 4 秒的中毒 DOT。",
+          "*   **Lv.8 大针蜂（适应力狙击）**：近战攻击的判定距离延长 50%，且斩杀生命线提升至 40%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "meleeCrit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "twinSting",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "melee": {
+            "crit": 0.25,
+            "critMul": 2,
+            "poison": 1
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.2
+        },
+        "ban": [
+          "beam",
+          "aura"
+        ]
+      },
+      "five": {
+        "critVenom": 0.15
+      },
+      "eight": {
+        "moves": {
+          "melee": {
+            "range": 1.4
+          }
+        },
+        "executeThreshold": 0.35
+      }
+    },
+    {
+      "root": 16,
+      "members": [
+        16,
+        17,
+        18
+      ],
+      "id": "leader_cyclone_boomerang",
+      "name": {
+        "zh": "气流回旋",
+        "en": "Cyclone Boomerang",
+        "es": "Cyclone Boomerang"
+      },
+      "source": {
+        "base": "队长及队员释放“回旋镖”技能的飞行射程提高 60%，回程时的飞行速度提高 100%（迅速收回）；回程击中敌人时造成 150% 的二段撕裂伤害，并附带将敌人向施法者方向强制“风力拉扯吸附”的效果；",
+        "active": "小队每释放四次“回旋镖”技能，下次释放时会掷出两枚巨型【暴风对流刃】：去程与回程在交汇点产生旋风吸附力场，撕扯沿途所有敌方弹幕与敌人，且贯穿所有阻碍。",
+        "cost": "**代价**：全队在地面站立不动时，受到的所有伤害提高 40%（必须保持高速机动飞行，滞空停步受到惩罚）。",
+        "advances": [
+          "*   **Lv.5 比比鸟（顺风疾行）**：回旋镖处于飞行状态中时，全队移动速度（`spd`）提高 35%。",
+          "*   **Lv.8 大比鸟（两马赫超音速）**：回旋镖对处于被击退状态的敌人必定暴击，且大比鸟自身永久免疫减速（`slow`）。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "boomerangCast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "stormBlades",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "boomerang": {
+            "life": 1.5
+          }
+        },
+        "returnDamage": 1.5,
+        "returnPull": true
+      },
+      "cost": {
+        "stationaryIncoming": 1.3
+      },
+      "five": {
+        "flyingSpeed": 0.25
+      },
+      "eight": {
+        "knockCrit": true,
+        "slowImmune": true
+      }
+    },
+    {
+      "root": 19,
+      "members": [
+        19,
+        20
+      ],
+      "id": "leader_guts_fang",
+      "name": {
+        "zh": "绝境门牙",
+        "en": "Guts & Super Fang",
+        "es": "Guts & Super Fang"
+      },
+      "source": {
+        "base": "队长及队员的生命值每损失 10%，全队的攻击力（`atk`）与敏捷（`agility`，缩短CD）提高 8%（血量降至 20% 时，攻击与敏捷各 +64%）；",
+        "active": "队长受到单次超过最大生命 25% 的重创时，全队立即进入 4 秒【愤怒门牙狂暴】：近战与投射物招式附带目标当前生命 15% 的百分比伤害，且期间近战命中附带 10% 吸血；",
+        "cost": "**代价**：全队的生命自然回复（`regen`）锁定为 0（无法随时间自然回血），且在生命值高于 85% 时造成的伤害降低 25%。",
+        "advances": [
+          "*   **Lv.5 拉达（强行撕咬）**：对生命值高于 80% 的健康敌人，首次命中必定暴击且撕裂其 30% 护甲。",
+          "*   **Lv.8 霸主拉达（绝处逢生）**：受到致死攻击时，强制触发 2.5 秒锁血不死状态（每场战斗限 1 次），期间造成的伤害提高 100%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "heavyHurt",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "furyFang",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "missingHealthPower": 0.6
+      },
+      "cost": {
+        "noRegen": true,
+        "healthyDamage": 0.85
+      },
+      "five": {
+        "firstHealthyCrit": true
+      },
+      "eight": {
+        "deathGuard": 2
+      }
+    },
+    {
+      "root": 21,
+      "members": [
+        21,
+        22
+      ],
+      "id": "leader_drill_peck_dash",
+      "name": {
+        "zh": "钻孔穿刺",
+        "en": "Drill Peck Dash",
+        "es": "Drill Peck Dash"
+      },
+      "source": {
+        "base": "队长及队员释放“冲刺”技能的突进距离提升 80%，冲刺判定宽度扩大 50%，突进期间造成的伤害提高 60%；",
+        "active": "小队通过冲刺位移累计贯穿 8 名敌人后，全队下次释放冲刺时将化为【极速钻孔穿刺】：以 300% 速度贯穿全屏直线，并在穿刺路径上留下一道持续 3 秒的锋利风刃气流，对踏入气流的敌人造成持续撕裂伤害并降低其 50% 移动速度；",
+        "cost": "**代价**：所有远程招式（`projectile` 与 `beam`）的射程缩短 40%，且冲刺结束后的 0.5 秒内，施法者受到的接触伤害提高 30%。",
+        "advances": [
+          "*   **Lv.5 烈雀（领地凶暴）**：冲刺成功斩杀敌人时，立即重置冲刺招式的冷却时间（连续空中突进）。",
+          "*   **Lv.8 大嘴雀（长喙破障）**：钻孔穿刺直接无视并粉碎敌人的护盾（`shield`），对首领（BOSS）造成额外 80% 破甲贯通伤害。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "dashHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "drillWind",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "dash": {
+            "range": 1.6,
+            "width": 1.4,
+            "damage": 1.4
+          }
+        }
+      },
+      "cost": {
+        "moves": {
+          "projectile": {
+            "range": 0.75
+          },
+          "beam": {
+            "range": 0.75
+          }
+        },
+        "dashAfterIncoming": 1.2
+      },
+      "five": {
+        "dashKillReset": 0.35
+      },
+      "eight": {
+        "drillBreak": true
+      }
+    },
+    {
+      "root": 23,
+      "members": [
+        23,
+        24
+      ],
+      "id": "leader_coil_mine",
+      "name": {
+        "zh": "毒沼盘绕",
+        "en": "Coil & Toxic Snare",
+        "es": "Coil & Toxic Snare"
+      },
+      "source": {
+        "base": "队长及队员释放“地面陷阱/轨迹”技能的陷阱存在时间延长 100%，陷阱触发范围扩大 50%；敌人踩中陷阱时，受到持续 2 秒的【紧束缠绕】（移动速度降低 70% 且无法释放敌方弹幕）；",
+        "active": "场上每有 5 个陷阱被敌人触发引爆，所有陷阱爆炸点同时向四周喷射出一圈【腐蚀毒液】：消除沿途敌方弹幕，并使命中的敌人受到的物理伤害提高 40%；",
+        "cost": "**代价**：全队的移动速度（`spd`）降低 20%，且所有直接弹道招式（`projectile`）的伤害降低 35%。",
+        "advances": [
+          "*   **Lv.5 阿柏蛇（蛇纹威吓）**：受到敌人接触攻击时，攻击者陷入 1.5 秒恐惧（`fear`），原地僵直无法行动。",
+          "*   **Lv.8 阿柏怪（致命蜕皮）**：受到致死伤害时，立即在原地蜕下一具蛇蜕并进入 1.5 秒无敌（每场战斗限 1 次），蛇蜕爆炸引爆全屏剧毒。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "mineTrigger",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "acidSerpents",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "mine": {
+            "life": 1.7,
+            "radius": 1.3
+          },
+          "trail": {
+            "life": 1.7
+          }
+        },
+        "trapSilence": 2
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.15
+        },
+        "moves": {
+          "projectile": {
+            "damage": 0.8
+          }
+        }
+      },
+      "five": {
+        "contactFear": 1
+      },
+      "eight": {
+        "deathGuard": 1.5,
+        "shedNova": true
+      }
+    },
+    {
+      "root": 27,
+      "members": [
+        27,
+        28
+      ],
+      "id": "leader_sand_slash_cleave",
+      "name": {
+        "zh": "裂地坚爪",
+        "en": "Sand Cleave Claws",
+        "es": "Sand Cleave Claws"
+      },
+      "source": {
+        "base": "队长及队员释放“近战”技能时，附带向前方扇形飞溅 3 枚穿透碎石；全队物理防御（`defense`）的 25% 直接转化为近战招式的暴击伤害加成；",
+        "active": "小队累计完成 8 次近战暴击后，下次近战招式将化为【穿山裂地斩】：在地面撕裂出一条巨型沙石裂缝，将沿途所有敌人聚拢击飞，并强制施加 3 秒破甲（敌人物理防御降低 50%）；",
+        "cost": "**代价**：全队无法装备任何特殊攻击招式（`spa` 技能在商店和卡包中被屏蔽），且特殊防御（`spdef`）降低 35%。",
+        "advances": [
+          "*   **Lv.5 穿山鼠（沙隐步法）**：在沙暴天气中或释放近战招式后 1 秒内，全队移动速度提高 30%。",
+          "*   **Lv.8 穿山王（荆棘硬甲）**：受到接触伤害时，反弹 100% 物理伤害给攻击者，且近战招式暴击率永久额外提高 15%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "meleeCrit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "earthSplit",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "meleeStones": 3,
+        "defCritConversion": 0.08
+      },
+      "cost": {
+        "banSpecial": true,
+        "stats": {
+          "spdef": -0.25
+        }
+      },
+      "five": {
+        "meleeSpeed": 0.2
+      },
+      "eight": {
+        "contactReflect": 0.5,
+        "moves": {
+          "melee": {
+            "crit": 0.15
+          }
+        }
+      }
+    },
+    {
+      "root": 29,
+      "members": [
+        29,
+        30,
+        31
+      ],
+      "id": "leader_maternal_orbit",
+      "name": {
+        "zh": "母皇阵线",
+        "en": "Maternal Bulwark Orbit",
+        "es": "Maternal Bulwark Orbit"
+      },
+      "source": {
+        "base": "队长及队员拥有的“护体法球”技能数量上限 +2，法球旋转半径扩大 40%，旋转速度提升 30%；法球每撞击一次敌人，为施法者恢复 0.5% 最大生命值；",
+        "active": "全队护体法球累计命中敌人 20 次后，所有法球瞬间发生【母性共振爆鸣】：法球向外极速扩张，形成一道全队共享的【大地护甲壁障】（全队获得相当于各自最大生命 20% 的白盾 `absorb`，持续 5 秒）；",
+        "cost": "**代价**：全队所有招式的自然冷却时间延长 30%，且队员如果与队长距离过远（脱离阵型），队员造成的伤害降低 40%。",
+        "advances": [
+          "*   **Lv.5 尼多娜（毒针倒刺）**：法球撞击敌人必定附加 1 层中毒，中毒敌人攻击全队时伤害降低 20%。",
+          "*   **Lv.8 尼多后（大地母皇）**：全队白盾存在期间，所有护体法球获得 100% 伤害加成，且暴击率提升至 50%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "orbitHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "motherBarrier",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "orbit": {
+            "count": 1,
+            "radius": 1.3,
+            "speed": 1.2
+          }
+        },
+        "orbitHeal": 0.002
+      },
+      "cost": {
+        "cooldown": 1.15,
+        "farDamage": 0.8
+      },
+      "five": {
+        "moves": {
+          "orbit": {
+            "poison": 1
+          }
+        },
+        "poisonIncoming": 0.85
+      },
+      "eight": {
+        "shieldOrbit": 1.5
+      }
+    },
+    {
+      "root": 32,
+      "members": [
+        32,
+        33,
+        34
+      ],
+      "id": "leader_sheer_force_tyrant",
+      "name": {
+        "zh": "强行暴君",
+        "en": "Sheer Force Tyrant",
+        "es": "Sheer Force Tyrant"
+      },
+      "source": {
+        "base": "队长及队员释放的所有招式**强行移除所有附带的减速、中毒、灼伤等异常负面效果**，但全队招式造成的最终伤害**直接提高 50%**，且对拥有护盾（`shield`）的敌人造成的伤害提高 100%；",
+        "active": "小队每击败 12 名敌人，全员进入 3 秒【暴君狂怒】：下一次释放的“投射物”技能发射的弹丸数量翻倍（`count * 2`），且所有弹丸附带全屏完全贯穿；",
+        "cost": "**代价**：全队无法施加任何控制或持续伤害，且每次释放招式时，自身承受相当于该招式基础消耗 2% 最大生命值的反噬震荡。",
+        "advances": [
+          "*   **Lv.5 尼多力诺（角撞穿心）**：对生命值高于 70% 的高血量敌人，投射物伤害额外提升 35%。",
+          "*   **Lv.8 尼多王（大地暴君）**：投射物击碎敌方护盾时，立即引发一次全场地震冲击波，击退周围所有杂兵。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "kill",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "tyrantBarrage",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "damage": 1.35,
+        "shieldDamage": 1.6,
+        "sheerForce": true
+      },
+      "cost": {
+        "selfCostPP": 0.005
+      },
+      "five": {
+        "healthyProjectile": 1.2
+      },
+      "eight": {
+        "shieldQuake": true
+      }
+    },
+    {
+      "root": 37,
+      "members": [
+        37,
+        38
+      ],
+      "id": "leader_ninetales_flame",
+      "name": {
+        "zh": "九尾狐火",
+        "en": "Ninetales Ghostflame",
+        "es": "Ninetales Ghostflame"
+      },
+      "source": {
+        "base": "队长及队员释放天降流星类招式（`meteor`）的落点阴影预警时间缩短 50%（急速坠落砸击），爆炸判定半径扩大 60%；被命中的敌人必定附加 2 层灼伤（`burn`）；",
+        "active": "全队每次让敌人身上叠加满 8 层灼伤，立即引爆其身上的全部火焰，化作三朵【九尾幽冥狐火】在战场上自动追踪距离最近的敌人，并在命中时将其引爆点燃；",
+        "cost": "**代价**：全队在雨天（`rain`）或受到水属性攻击时，受击伤害提高 60%；且全队的基础物理攻击（`atk`）降低 50%。",
+        "advances": [
+          "*   **Lv.5 六尾（引火共鸣）**：场上每存在一名处于灼伤状态的敌人，全队特殊攻击（`spa`）提升 2%（最高叠加至 +30%）。",
+          "*   **Lv.8 九尾（日照降临）**：常驻激活晴天天气（`sun`），战场上所有火属性招式冷却缩减 25%，且狐火追踪速度翻倍。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "burnStack",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "foxFire",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "meteor": {
+            "radius": 1.4,
+            "windup": 0.5,
+            "burn": 2
+          }
+        }
+      },
+      "cost": {
+        "incomingTypes": {
+          "water": 1.4
+        },
+        "stats": {
+          "atk": -0.3
+        }
+      },
+      "five": {
+        "burnSpa": 0.015
+      },
+      "eight": {
+        "weather": "sun",
+        "foxSpeed": 2
+      }
+    },
+    {
+      "root": 41,
+      "members": [
+        41,
+        42,
+        169
+      ],
+      "id": "leader_echo_vampiric",
+      "name": {
+        "zh": "回声吸血",
+        "en": "Echo & Leeching Fangs",
+        "es": "Echo & Leeching Fangs"
+      },
+      "source": {
+        "base": "队长及队员释放“投射物”技能的弹丸命中竞技场边界或地形障碍物时，**发生 2 次 100% 弹性折射反弹**，折射后的弹丸飞行速度提高 50%；投射物造成伤害的 8% 转化为全队的生命恢复；",
+        "active": "小队每造成 15 次投射物弹跳折射命中，全队立刻发出一阵【全屏超音波共鸣】：强制消除全场敌方弹幕，并使全场所有敌人陷入 3 秒【混乱】（失去索敌目标并在原地盲目打转）；",
+        "cost": "**代价**：全队的最大生命值（`maxHp`）降低 30%，且在强光晴天（`sun`）天气下，所有招式的暴击率降低 50%。",
+        "advances": [
+          "*   **Lv.5 大嘴蝠（狂暴吸血）**：吸血转化率从 8% 提升至 15%，且过量吸血转化为全队临时白盾（`absorb`）。",
+          "*   **Lv.8 叉字蝠（四翼超音速）**：移动速度提高 40%，且在高速移动时释放投射物完全不产生停步硬直。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "bounceHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "ultrasound",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "ricochet": 2,
+        "projectileLeech": 0.02
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.2
+        },
+        "sunCritPenalty": 0.2
+      },
+      "five": {
+        "projectileLeech": 0.015,
+        "overhealShield": 0.2
+      },
+      "eight": {
+        "stats": {
+          "spd": 0.3
+        },
+        "castWhileMoving": true
+      }
+    },
+    {
+      "root": 43,
+      "members": [
+        43,
+        44,
+        45,
+        182
+      ],
+      "id": "leader_petal_dance_frenzy",
+      "name": {
+        "zh": "花瓣狂舞",
+        "en": "Petal Dance Frenzy",
+        "es": "Petal Dance Frenzy"
+      },
+      "source": {
+        "base": "队长及队员的“护体法球”招式附带花瓣飞旋效果，法球旋转期间每秒向外飞射出 2 枚旋转飞花；全队在晴天（`sun`）天气下，移动速度与结算敏捷各提升 40%；",
+        "active": "小队累计击败 15 名敌人后，全员开启 5 秒【狂暴花瓣舞】：所有护体法球的伤害提升 100%，法球旋转半径扩大至全屏，切割所有触碰到的敌人；花瓣舞结束后，全队陷入 1.5 秒疲惫减速 30%；",
+        "cost": "**代价**：受到冰属性与火属性攻击伤害提高 50%，且在雨天（`rain`）或雪天（`snow`）天气下，全队的招式冷却时间延长 30%。",
+        "advances": [
+          "*   **Lv.5 臭臭花（甜气诱敌）**：身周持续散发甜甜香气，使周围敌人的移动速度降低 20%，受击防御降低 20%。",
+          "*   **Lv.8 霸王花/美丽花（日光花冠）**：释放花瓣舞时不再陷入疲惫减速，且花瓣舞期间全队每秒恢复 3% 最大生命。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "kill",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "petalDance",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "orbitPetals": 2,
+        "sunStats": 0.3
+      },
+      "cost": {
+        "incomingTypes": {
+          "ice": 1.3,
+          "fire": 1.3
+        },
+        "wetCooldown": 1.2
+      },
+      "five": {
+        "sweetAura": true
+      },
+      "eight": {
+        "petalHeal": 0.02
+      }
+    },
+    {
+      "root": 46,
+      "members": [
+        46,
+        47
+      ],
+      "id": "leader_parasitic_spore",
+      "name": {
+        "zh": "真菌寄生",
+        "en": "Parasitic Spores",
+        "es": "Parasitic Spores"
+      },
+      "source": {
+        "base": "队长及队员释放“地面陷阱”技能时，陷阱形态转化为【寄生蘑菇】；敌人踩中蘑菇时，不会产生常规爆炸，而是立刻被【真菌寄生】：每秒损失 3% 最大生命的毒伤，且死于寄生的敌人会在原地**分裂长出 2 朵新的寄生蘑菇**；",
+        "active": "场上同时存在的寄生蘑菇累计达到 8 朵时，所有蘑菇同时释放【纯度 100% 催眠孢子云】：使全场所有非首领敌人陷入 2.5 秒深度睡眠沉睡（无法行动与攻击）；",
+        "cost": "**代价**：火属性伤害承受提高 **100%**（4倍极度弱火），且全队的冲刺与位移速度降低 35%。",
+        "advances": [
+          "*   **Lv.5 派拉斯（菌丝滋养）**：踩中蘑菇的敌人受到的所有伤害提升 30%，敌人死于寄生时为全队恢复 5% 已损失生命。",
+          "*   **Lv.8 派拉斯特（完全寄生主宰）**：寄生蘑菇不再被单次踩碎，每个蘑菇可持续触发 3 次寄生感染。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "spore",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "sleepSpores",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "parasiticMines": true
+      },
+      "cost": {
+        "incomingTypes": {
+          "fire": 1.6
+        },
+        "moves": {
+          "dash": {
+            "speed": 0.8
+          }
+        }
+      },
+      "five": {
+        "parasiteVulnerable": 0.2,
+        "parasiteHeal": 0.03
+      },
+      "eight": {
+        "mushroomUses": 3
+      }
+    },
+    {
+      "root": 48,
+      "members": [
+        48,
+        49
+      ],
+      "id": "leader_quiver_beam",
+      "name": {
+        "zh": "蝶舞极光",
+        "en": "Quiver Dance Aurora",
+        "es": "Quiver Dance Aurora"
+      },
+      "source": {
+        "base": "队长及队员持有的“属性增益”技能效果提升 50%，增益持续时间延长 100%；全队身上每拥有 1 层有效增益，所有能量柱技能的判定宽度与伤害提升 15%；",
+        "active": "小队累计获得 6 层增益叠加后，全员进入【终极蝶舞光华】：能量柱招式变为【幻象极光】：射程贯穿全屏且自带全自动 45 度扇形扫射，扫射期间消除穿过的所有敌方弹幕并使敌人陷入 2 秒混乱；",
+        "cost": "**代价**：全队在没有任何增益处于激活状态时，所有招式伤害降低 40%（断 Buff 战力大幅跳水）。",
+        "advances": [
+          "*   **Lv.5 毛球（雷达复眼）**：增益招式的冷却时间缩短 30%，释放增益时立即向周围释放一圈微型致盲闪光。",
+          "*   **Lv.8 摩鲁蛾（奇迹蝶舞）**：蝶舞光华期间，全队受到的所有特殊攻击伤害降低 50%，且暴击率提升至 100%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "buffCast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "butterflyBeam",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "buff": {
+            "amount": 1.4,
+            "life": 1.6
+          }
+        },
+        "buffBeam": 0.08
+      },
+      "cost": {
+        "unbuffedDamage": 0.8
+      },
+      "five": {
+        "moves": {
+          "buff": {
+            "cd": 0.8
+          }
+        }
+      },
+      "eight": {
+        "butterflyCrit": 0.5,
+        "butterflyDefense": 0.7
+      }
+    },
+    {
+      "root": 50,
+      "members": [
+        50,
+        51
+      ],
+      "id": "leader_dig_burrow_quake",
+      "name": {
+        "zh": "遁地突袭",
+        "en": "Dig & Burrow Quake",
+        "es": "Dig & Burrow Quake"
+      },
+      "source": {
+        "base": "队长及队员的移动速度（`spd`）提高 25%；队长在连续移动 3 秒后，自动触发【遁地潜伏】：身体半沉入地下，获得 1.5 秒完全免疫接触与弹幕伤害（无敌帧 `invuln`）；",
+        "active": "【遁地潜伏】结束破土而出的瞬间，在原地引发一次【大地裂缝塌陷】（`nova` 机制）：对周围所有敌人造成相当于队长物理攻击 250% 的破土冲击，并将周围杂兵强力吸扯进塌陷坑中；",
+        "cost": "**代价**：队长及队员的最大生命值（`maxHp`）降低 40%（脆弱的地下生物），且在非潜伏状态下，受到的所有地面与水属性伤害提高 50%。",
+        "advances": [
+          "*   **Lv.5 地鼠（沙穴缠足）**：破土塌陷坑会留下一片持续 3 秒的流沙领域，踏入的敌人移动速度降低 60%。",
+          "*   **Lv.8 三地鼠（三首连环突袭）**：破土冲击连续触发三次，并在破土后使全队的攻击力在 3 秒内提升 50%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "distance",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "burrow",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stats": {
+          "spd": 0.2
+        },
+        "burrowCycle": true
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.25
+        },
+        "incomingTypes": {
+          "ground": 1.3,
+          "water": 1.3
+        }
+      },
+      "five": {
+        "quicksand": true
+      },
+      "eight": {
+        "burrowTriple": true
+      }
+    },
+    {
+      "root": 52,
+      "members": [
+        52,
+        53,
+        863
+      ],
+      "id": "leader_pay_day_syndicate",
+      "name": {
+        "zh": "金运财阀",
+        "en": "Pay Day Syndicate",
+        "es": "Pay Day Syndicate"
+      },
+      "source": {
+        "base": "队长及队员击败敌人时局内金币（`gold`）掉落概率提升 100%；小队持有的 1 级招式与副槽位招式冷却缩减 35%（`cooldownRate * 1.35`）；",
+        "active": "全队手头每保留 20 枚局内金币，全队所有招式伤害获得 +3% 独立增伤（`outgoingDamage` 乘区，无上限）；波次战斗胜利结算时，额外获得当前存款 5% 的金币利息；",
+        "cost": "**代价**：若当前手头金币低于 30 枚，全队物理防御与特殊防御降低 30%（`defense` 与 `spdef` 乘 0.7），且商店刷新费用由 10 金币上调至 15 金币。",
+        "advances": [
+          "*   **Lv.5 猫老大（聚宝奇谋）**：击杀精英怪（elite）时，额外掉落 1 个随机携带道具（`G.Items`）。",
+          "*   **Lv.8 喵头目（钢铁财团）**：存款达到 150 金币以上时，战斗开局全队获得相当于存款总额的白盾（`absorb` 护盾）。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "kill",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "payDay",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "smallMoveRate": 1.25,
+        "bankDamage": 0.03
+      },
+      "cost": {
+        "poorDefense": 0.8,
+        "shopRefreshFactor": 1.5
+      },
+      "five": {
+        "eliteItem": 1
+      },
+      "eight": {
+        "bankShield": true
+      }
+    },
+    {
+      "root": 54,
+      "members": [
+        54,
+        55
+      ],
+      "id": "leader_headache_burst",
+      "name": {
+        "zh": "剧痛念力",
+        "en": "Headache Psychokinesis",
+        "es": "Headache Psychokinesis"
+      },
+      "source": {
+        "base": "队长及队员释放“全向爆发”技能的判定半径扩大 80%，伤害提高 40%；",
+        "active": "队长每累计受到相当于自身最大生命 25% 的伤害（受击痛苦蓄积），全队立刻向全图触发一次【超能头痛失控】：向四周释放一圈高穿透念力冲击，并将全场敌人定身 1.5 秒（直接施加 `classStunT = 1.5`）；",
+        "cost": "**代价**：队长处于满血（100% 生命）状态时，“全向爆发”技能的冷却时间延长 100%（必须保持残血受创方可发挥威力）。",
+        "advances": [
+          "*   **Lv.5 哥达鸭（头痛化解）**：触发头痛失控时，为全队恢复 10% 已损失生命。",
+          "*   **Lv.8 精神狂澜**：头痛失控造成的念力冲击对首领（BOSS）造成额外 100% 破甲伤害，且头痛蓄积阈值降低至 20%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "hurtAmount",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "headache",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "nova": {
+            "radius": 1.5,
+            "damage": 1.3
+          }
+        }
+      },
+      "cost": {
+        "fullHpNovaCooldown": 1.5
+      },
+      "five": {
+        "headacheHeal": 0.08
+      },
+      "eight": {
+        "headacheBoss": 1.5
+      }
+    },
+    {
+      "root": 56,
+      "members": [
+        56,
+        57,
+        979
+      ],
+      "id": "leader_rage_fist",
+      "name": {
+        "zh": "狂怒之拳",
+        "en": "Rage Fist Fury",
+        "es": "Rage Fist Fury"
+      },
+      "source": {
+        "base": "队长及队员每承受一次伤害，全队的近战伤害永久提高 2%（本场战斗内可无限叠加），且受击时使当前主槽招式立即恢复 1 点 PP；",
+        "active": "全队累计承受 10 次伤害后，全员进入 4 秒【狂怒出窍】：近战招式攻击判定变为 360° 全向旋风斩，且期间近战命中必定暴击（`forceCrit`）；",
+        "cost": "**代价**：所有队长及队员的物理与特殊防御固定降低 35%，且全队生命自然回复速率锁定为 0（无法随时间自动回血）。",
+        "advances": [
+          "*   **Lv.5 火爆猴（不服输）**：狂怒出窍期间，全队移动速度提高 40%，且免疫减速。",
+          "*   **Lv.8 弃世猴（升天怨念）**：受击叠伤的单次增幅从 2% 提升至 4%，且狂怒出窍结束后自身获得 2 秒受击无敌帧（`invuln`）。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "hurtCount",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "rageFists",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "hurtMelee": 0.015
+      },
+      "cost": {
+        "stats": {
+          "defense": -0.2,
+          "spdef": -0.2
+        },
+        "noRegen": true
+      },
+      "five": {
+        "rageSpeed": 0.3
+      },
+      "eight": {
+        "hurtMelee": 0.01,
+        "rageGuard": 1
+      }
+    },
+    {
+      "root": 58,
+      "members": [
+        58,
+        59
+      ],
+      "id": "leader_extreme_speed",
+      "name": {
+        "zh": "神速威吓",
+        "en": "Extreme Speed & Intimidate",
+        "es": "Extreme Speed & Intimidate"
+      },
+      "source": {
+        "base": "队长及队员释放“冲刺”技能的位移速度提高 100%，冷却时间缩短 30%；全队的移动速度（`spd`）每超出 100 世界单位，冲刺招式的最终伤害提高 10%；",
+        "active": "小队累计完成三次冲刺后，下次冲刺突进时伴随一声【猛犬威吓咆哮】：使全屏敌人受到 2 秒 50% 减速（`applySlow(0.5, 2)`），且受波及敌人的攻击伤害降低 40%；",
+        "cost": "**代价**：全队无法装备任何持续光环（`aura`）与召唤炮台（`turret`）招式，且停步静止状态下全队暴击率降低至 0%（必须保持奔袭）。",
+        "advances": [
+          "*   **Lv.5 卡蒂狗（忠诚守护）**：冲刺突进期间，施法者替周围 150 码内的队友吸收所有弹幕。",
+          "*   **Lv.8 风速狗（神速炽焰）**：冲刺路径上点燃一片持续 2 秒的烈焰轨迹，踏入的敌人受到 3 层灼伤（`applyBurn(3)`）。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "dashCast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "roarRush",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "dash": {
+            "speed": 1.7,
+            "cd": 0.8
+          }
+        },
+        "speedDash": 0.05
+      },
+      "cost": {
+        "ban": [
+          "aura",
+          "turret"
+        ],
+        "stationaryCritOff": true
+      },
+      "five": {
+        "dashIntercept": true
+      },
+      "eight": {
+        "dashFlames": true
+      }
+    },
+    {
+      "root": 60,
+      "members": [
+        60,
+        61,
+        62,
+        186
+      ],
+      "id": "leader_swift_swim_punch",
+      "name": {
+        "zh": "悠游水流拳",
+        "en": "Swift Swim Barrage",
+        "es": "Swift Swim Barrage"
+      },
+      "source": {
+        "base": "雨天（`rain`）天气下，全队移动速度提升 35%，近战招式冷却缩减 30%；近战命中时有 25% 概率触发一次额外的二次连环重击；",
+        "active": "全队近战招式累计命中敌人 15 次后，全场立刻降下一次暴雨并触发【螺旋催眠拳】：使周围 250 码内的所有敌人陷入 2 秒定身（`classStunT = 2`），且破除其 30% 护盾；",
+        "cost": "**代价**：在晴天（`sun`）天气下，全队移动速度降低 25%，且近战招式冷却时间延长 40%（极其依赖雨水湿润）。",
+        "advances": [
+          "*   **Lv.5 蚊香君（潮湿粘液）**：受到敌人接触攻击时，攻击者强制被附加 2 秒 50% 减速。",
+          "*   **Lv.8 蚊香泳士/蚊香蛙皇（降雨蛙鸣）**：战斗开局自动召唤持续 20 秒的强降雨天气，且雨天期间近战攻击必定附加击退效果。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "meleeHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "hypnosisRain",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "rainMelee": true,
+        "meleeEcho": 0.2
+      },
+      "cost": {
+        "sunSlow": 0.15,
+        "sunCooldown": 1.25
+      },
+      "five": {
+        "contactSlow": 0.4
+      },
+      "eight": {
+        "openingWeather": "rain"
+      }
+    },
+    {
+      "root": 63,
+      "members": [
+        63,
+        64,
+        65
+      ],
+      "id": "leader_teleport_beam",
+      "name": {
+        "zh": "折跃念力",
+        "en": "Teleport Psi-Beam",
+        "es": "Teleport Psi-Beam"
+      },
+      "source": {
+        "base": "队长及队员释放“能量柱”技能的判定长度提升 100%（全屏超远距离贯穿），特殊攻击（`spa`）提高 35%；小队完全免疫所有地面陷阱、岩浆与天气造成的间接伤害；",
+        "active": "全队释放能量柱累计命中敌人 30 次后，全员进入【超能时空折跃】：下一次释放能量柱时，施法者瞬间向前位移 200 码（无敌突进 `dash`），并在原起点与落点之间留下双重贯穿光束，使沿途敌人定身 1.5 秒（`classStunT = 1.5`）；",
+        "cost": "**代价**：全队最大生命值（`maxHp`）降低 50%，且物理防御（`defense`）降低 50%（极度脆弱的玻璃大炮）。",
+        "advances": [
+          "*   **Lv.5 勇基拉（弯曲汤匙）**：能量柱每贯穿一名敌人，暴击率提升 10%（最高提升 50%）。",
+          "*   **Lv.8 胡地（超级脑力超频）**：受到的单次接触伤害若超过当前生命的 50%，强制触发 0.8 秒无敌瞬移拉开距离（每场战斗限 2 次）。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "beamHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "warpBeam",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "beam": {
+            "range": 1.8
+          }
+        },
+        "stats": {
+          "spa": 0.25
+        },
+        "groundImmune": true
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.3,
+          "defense": -0.25
+        }
+      },
+      "five": {
+        "beamCritRamp": 0.06
+      },
+      "eight": {
+        "emergencyWarp": 2
+      }
+    },
+    {
+      "root": 66,
+      "members": [
+        66,
+        67,
+        68
+      ],
+      "id": "leader_no_guard_fist",
+      "name": {
+        "zh": "无防守旋风拳",
+        "en": "No Guard Whirlwind",
+        "es": "No Guard Whirlwind"
+      },
+      "source": {
+        "base": "队长及队员释放“近战”技能的伤害判定角度扩大至 360° 全身旋风击，全队基础物理攻击（`atk`）提升 40%，近战击中敌人时的击退力度（`knock`）提升 100%；",
+        "active": "小队每释放五次近战技能，下一次释放的近战招式将在 1 秒内连续追加挥出 4 次连环轰拳，前 3 拳强制击退并破除敌人 50% 护盾，第 4 拳必定暴击（`forceCrit`）；",
+        "cost": "**代价**：全队受到的所有敌方伤害提高 40%（放弃防守、换取极致进攻），且全队无法装备任何能量柱（`beam`）招式。",
+        "advances": [
+          "*   **Lv.5 豪力（健美肌肉）**：释放近战攻击的瞬间，自身获得 0.2 秒 50% 硬减伤（`reduction`）。",
+          "*   **Lv.8 怪力（四臂狂攻）**：四手连拳追加的轰拳次数从 4 次提升至 6 次，且期间自身处于霸体状态不被击退。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "meleeCast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "fourFists",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stats": {
+          "atk": 0.25
+        },
+        "moves": {
+          "melee": {
+            "arc": 6.283,
+            "knock": 1.6
+          }
+        }
+      },
+      "cost": {
+        "incoming": 1.25,
+        "ban": [
+          "beam"
+        ]
+      },
+      "five": {
+        "castGuard": 0.3
+      },
+      "eight": {
+        "extraFists": 2
+      }
+    },
+    {
+      "root": 69,
+      "members": [
+        69,
+        70,
+        71
+      ],
+      "id": "leader_acid_devour",
+      "name": {
+        "zh": "强酸捕食",
+        "en": "Acid Spray & Devour",
+        "es": "Acid Spray & Devour"
+      },
+      "source": {
+        "base": "队长及队员释放“扇形”技能的喷射角度收窄 30%，但喷射射程延长 80%，命中敌人时剥夺其 40% 物理与特殊防御（强酸腐蚀）；",
+        "active": "小队累计击败 10 名处于破防状态的敌人后，大食花在全队周围引发一次【巨口吞噬】：对身周 200 码内的所有非首领敌人造成相当于其已损失生命 30% 的斩杀真实伤害，并为全队回复造成总伤害 15% 的生命值；",
+        "cost": "**代价**：全队移动速度（`spd`）降低 25%，且对未处于破防状态的健康敌人造成的初始伤害降低 30%。",
+        "advances": [
+          "*   **Lv.5 口呆花（腐蚀水洼）**：被强酸喷射命中的敌人，死后在地面留下一摊持续 3 秒的强酸腐蚀水洼（`trail`），踩入的敌人受到 2 秒 40% 减速。",
+          "*   **Lv.8 大食花（暴食掠夺）**：巨口吞噬斩杀敌人时，立即为施法者恢复 2 点 PP。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "debuffKill",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "devour",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "cone": {
+            "arcFactor": 0.7,
+            "range": 1.5
+          }
+        },
+        "acidDefense": 0.25
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.2
+        },
+        "freshEnemyDamage": 0.85
+      },
+      "five": {
+        "acidPuddle": true
+      },
+      "eight": {
+        "devourPP": 2
+      }
+    },
+    {
+      "root": 72,
+      "members": [
+        72,
+        73
+      ],
+      "id": "leader_tentacle_barrier",
+      "name": {
+        "zh": "深海触壁",
+        "en": "Deep Sea Tentacle Barrier",
+        "es": "Deep Sea Tentacle Barrier"
+      },
+      "source": {
+        "base": "队长及队员的“护体法球”数量上限 +3（模拟触手丛生），全队特殊防御（`spdef`）的 30% 直接转化为护体法球的伤害加成；触手命中敌人时有 50% 概率施加 1 层中毒；",
+        "active": "全队护体法球累计击中敌人 25 次后，所有法球瞬间收拢并在身周形成一道【剧毒水幕屏障】：全队获得相当于自身特防数值 100% 的白盾（`absorb`），并将触碰水幕的敌人击退 150 码；",
+        "cost": "**代价**：全队的基础物理防御（`defense`）降低 40%，受到电属性攻击伤害提高 50%。",
+        "advances": [
+          "*   **Lv.5 玛瑙水母（水弹反溅）**：剧毒水幕屏障破碎时，向四周飞溅 8 枚剧毒水弹，使命中的敌人减速 40%。",
+          "*   **Lv.8 毒刺水母（深海主宰）**：在雨天（`rain`）天气下，白盾上限翻倍，且护体触手法球的旋转速度提高 50%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "orbitHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "toxicCurtain",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "orbit": {
+            "count": 1,
+            "poisonChance": 0.5
+          }
+        },
+        "spdefOrbit": 0.08
+      },
+      "cost": {
+        "stats": {
+          "defense": -0.25
+        },
+        "incomingTypes": {
+          "electric": 1.35
+        }
+      },
+      "five": {
+        "shieldShards": 8
+      },
+      "eight": {
+        "rainOrbits": true
+      }
+    },
+    {
+      "root": 74,
+      "members": [
+        74,
+        75,
+        76
+      ],
+      "id": "leader_sturdy_explosion",
+      "name": {
+        "zh": "坚石绝爆",
+        "en": "Sturdy & Mega Explosion",
+        "es": "Sturdy & Mega Explosion"
+      },
+      "source": {
+        "base": "队长及队员释放“全向爆发”技能的判定范围扩大 60%，击退效果提高 100%；全队物理防御（`defense`）提升 40%；",
+        "active": "小队每释放五次“全向爆发”技能，下次释放附带全场震荡，击碎命中所敌人的全部护盾（`shield = 0`）；队长受到致死攻击时，必定保留 1 点生命（结实免死），并在原地瞬间引发一次全屏【落石大自爆】（每场战斗限 1 次）；",
+        "cost": "**代价**：全队移动速度（`spd`）降低 30%，且受到水属性与草属性攻击伤害提高 **100%**（原版4倍致命弱点）。",
+        "advances": [
+          "*   **Lv.5 隆隆石（岩石滚动）**：释放冲刺或被击退后，在 2 秒内自身处于霸体状态并提升 50% 物理碰撞伤害。",
+          "*   **Lv.8 隆隆岩（坚如磐石）**：绝境大自爆触发后，为队长提供 3 秒完全无敌帧（`invuln`）以供脱险反击。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "novaCast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "rockDetonation",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stats": {
+          "defense": 0.3
+        },
+        "moves": {
+          "nova": {
+            "radius": 1.4,
+            "knock": 1.6
+          }
+        },
+        "deathNova": true
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.2
+        },
+        "incomingTypes": {
+          "water": 1.6,
+          "grass": 1.6
+        }
+      },
+      "five": {
+        "dashArmor": true
+      },
+      "eight": {
+        "deathGuard": 2.5
+      }
+    },
+    {
+      "root": 77,
+      "members": [
+        77,
+        78
+      ],
+      "id": "leader_flame_trail_run",
+      "name": {
+        "zh": "炽热蹄痕",
+        "en": "Blazing Trail Gallop",
+        "es": "Blazing Trail Gallop"
+      },
+      "source": {
+        "base": "队长及队员移动速度（`spd`）提高 35%；小队成员奔跑时在身后留下一道持续 4 秒的烈焰蹄痕（`trail`），踏入火痕的敌人每秒受到火属性灼烧伤害并附加 1 层灼伤（`applyBurn(1)`）；",
+        "active": "小队累计连续奔跑移动达到 1500 世界坐标距离后，全员进入 3 秒【狂飙火蹄】：移速额外提高 50%，所过之处留下的烈焰轨迹宽度扩大 200% 且造成伤害翻倍；",
+        "cost": "**代价**：全队在停步静止超过 0.5 秒时，受到的所有伤害提高 50%（不能停下，必须保持高速移动奔腾）。",
+        "advances": [
+          "*   **Lv.5 烈焰马（跃火奔袭）**：冲刺（`dash`）冷却缩减 40%，冲刺突进期间在路径上留下的烈焰持续时间翻倍。",
+          "*   **Lv.8 独角天马（炽炎神速）**：烈焰蹄痕使触碰的敌人陷入 40% 减速（`applySlow(0.4, 2)`），且处于烈焰路径上的队友获得 20% 移速加成。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "distance",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "flameGallop",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stats": {
+          "spd": 0.3
+        },
+        "movingTrail": "fire"
+      },
+      "cost": {
+        "stationaryIncoming": 1.35
+      },
+      "five": {
+        "moves": {
+          "dash": {
+            "cd": 0.75
+          }
+        },
+        "longDashTrail": true
+      },
+      "eight": {
+        "trailTeamSpeed": 0.15,
+        "fireTrailSlow": 0.3
+      }
+    },
+    {
+      "root": 79,
+      "members": [
+        79,
+        80,
+        199
+      ],
+      "id": "leader_delayed_reflexes",
+      "name": {
+        "zh": "迟钝滞后",
+        "en": "Delayed Reflexes",
+        "es": "Delayed Reflexes"
+      },
+      "source": {
+        "base": "小队受到的一切即时伤害降低 50%，但被减免的这 50% 伤害会转化为【迟钝痛觉池】，在接下来的 5 秒内以真实伤害均匀跳字扣除；",
+        "active": "小队受到痛觉跳字累计 15 次后，全队触发一次【迟钝大爆发】：痛觉池中剩余的全部伤害直接清空归零（不扣除！），并根据清空的伤害量转化为等额的念力冲击波扩散全屏，使全场敌人定身 1.5 秒（`classStunT = 1.5`）；",
+        "cost": "**代价**：全队的移动速度（`spd`）降低 35%，且所有招式的冷却时间（`agility`）延长 25%。",
+        "advances": [
+          "*   **Lv.5 呆壳兽（铁壳坚守）**：痛觉池存在期间，自身物理防御（`defense`）提高 50%。",
+          "*   **Lv.8 呆呆王（王者念力）**：迟钝大爆发清空痛觉时，为全队恢复该痛觉数值 50% 的生命值。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "painTick",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "painRelease",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "delayedDamage": 0.4
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.25
+        },
+        "cooldown": 1.15
+      },
+      "five": {
+        "painDefense": 0.4
+      },
+      "eight": {
+        "painReleaseHeal": 0.35
+      }
+    },
+    {
+      "root": 81,
+      "members": [
+        81,
+        82,
+        462
+      ],
+      "id": "leader_magnetic_overload",
+      "name": {
+        "zh": "极磁风暴",
+        "en": "Magnetic Overload Orbit",
+        "es": "Magnetic Overload Orbit"
+      },
+      "source": {
+        "base": "全队拾取范围扩大 300%（全屏自动吸取经验水晶与金币）；护体法球（`orbit`）数量上限 +2，法球旋转半径每增加 10 码，伤害提升 5%；",
+        "active": "全队累计吸取 30 个经验水晶或金币后，所有护体法球瞬间引爆成一次【超极磁暴】：将全场所有杂兵强力吸附拉扯到队长身周，并使其陷入 2 秒 50% 减速（`applySlow(0.5, 2)`）；",
+        "cost": "**代价**：受到地面属性攻击伤害提高 **100%**（原版 4 倍致命弱地），且全队冲刺技能冷却时间延长 40%。",
+        "advances": [
+          "*   **Lv.5 三合一磁怪（三角电弧）**：护体法球之间产生三角电弧连线，穿过电弧连线的敌人受到持续电属性伤害。",
+          "*   **Lv.8 自爆磁怪（超重力磁场）**：超极磁暴触发时，额外消除全场所有敌方投射物弹幕，并给予全队 3 秒免疫接触伤害护盾。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "pickup",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "magnetStorm",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "magnet": 2.5,
+        "moves": {
+          "orbit": {
+            "count": 1
+          }
+        },
+        "orbitRadiusDamage": 0.025
+      },
+      "cost": {
+        "incomingTypes": {
+          "ground": 1.6
+        },
+        "moves": {
+          "dash": {
+            "cd": 1.25
+          }
+        }
+      },
+      "five": {
+        "magnetLinks": true
+      },
+      "eight": {
+        "magnetGuard": 2
+      }
+    },
+    {
+      "root": 83,
+      "members": [
+        83,
+        865
+      ],
+      "id": "leader_leek_crit_master",
+      "name": {
+        "zh": "大葱一闪",
+        "en": "Leek Crit Slash",
+        "es": "Leek Crit Slash"
+      },
+      "source": {
+        "base": "队长及队员释放近战招式的基础暴击率提升 40%，近战判定长度扩大 60%（长柄大葱远近双打）；近战暴击时附带 100% 强力击退（`knock`）；",
+        "active": "小队近战累计暴击 6 次后，下次近战招式化为【寻道一闪】：对正前方打出一记全屏宽幅金色斩击，暴击伤害倍率提升至 3.0 倍，且必然击碎目标身上的全部护盾（`shield = 0`）；",
+        "cost": "**代价**：全队在未能触发暴击时的普通攻击伤害降低 40%（未暴击伤害衰减严重），且全队最大生命值（`maxHp`）降低 25%。",
+        "advances": [
+          "*   **Lv.5 大葱鸭（大葱格挡）**：正面受到敌人近战伤害时，有 50% 概率格挡减免 80% 伤害，并立刻向攻击者反击一记近战横扫。",
+          "*   **Lv.8 葱游兵（流星突刺）**：【寻道一闪】命中首领（BOSS）时，使其陷入 3 秒破甲易伤 40% 状态。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "meleeCrit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "meteorThrust",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "melee": {
+            "crit": 0.35,
+            "range": 1.4
+          }
+        }
+      },
+      "cost": {
+        "nonCritDamage": 0.8,
+        "stats": {
+          "hp": -0.15
+        }
+      },
+      "five": {
+        "frontParry": true
+      },
+      "eight": {
+        "thrustVulnerable": 0.25
+      }
+    },
+    {
+      "root": 84,
+      "members": [
+        84,
+        85
+      ],
+      "id": "leader_tri_head_barrage",
+      "name": {
+        "zh": "三首齐射",
+        "en": "Tri-Head Barrage",
+        "es": "Tri-Head Barrage"
+      },
+      "source": {
+        "base": "所有“投射物”技能的基础弹丸发射数量固定 +2（三首齐射），发射角度呈微小锥形散射；全队移速（`spd`）每比基准值高 10%，投射物飞行速度提高 15%；",
+        "active": "小队释放投射物技能累计命中敌人 30 次后，下次投射物招式进入【三首狂鸣弹幕】：全员同时向瞄准方向倾泻 3 轮连续齐射，且射击期间移动速度提升 40% 且完全无射击移速惩罚；",
+        "cost": "**代价**：全队特殊防御（`spdef`）降低 40%，且受到控制（减速/定身）效果的持续时间延长 50%。",
+        "advances": [
+          "*   **Lv.5 嘟嘟（早起警觉）**：受到伤害后 1 秒内移动速度提升 40%，冲刺冷却缩减 30%。",
+          "*   **Lv.8 嘟嘟利（三位一体）**：投射物弹幕如果三颗弹丸命中同一敌人，第三颗弹丸必定造成 200% 真实伤害。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "projectileHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "tripleVolley",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "projectile": {
+            "count": 1
+          }
+        },
+        "speedProjectile": 0.1
+      },
+      "cost": {
+        "stats": {
+          "spdef": -0.25
+        },
+        "statusPenalty": 1.3
+      },
+      "five": {
+        "hurtSpeed": 0.3
+      },
+      "eight": {
+        "thirdHitTrue": true
+      }
+    },
+    {
+      "root": 86,
+      "members": [
+        86,
+        87
+      ],
+      "id": "leader_aurora_ice_beam",
+      "name": {
+        "zh": "厚脂极光",
+        "en": "Thick Fat & Aurora Beam",
+        "es": "Thick Fat & Aurora Beam"
+      },
+      "source": {
+        "base": "小队受到火属性与冰属性伤害硬减免 50%（厚脂肪）；释放“能量柱”招式判定的维持时间延长 50%，被光束持续照射超过 0.8 秒的敌人陷入 2 秒冻结定身（`freezeT = 2`）；",
+        "active": "全队能量柱技能累计冻结 6 名敌人后，下次释放能量柱转化为【极地极光束】：射程贯穿全屏且宽度增加 100%，所过之处在地面留下一道持续 4 秒的寒冰路径，踩入的敌人移速降低 60%（`applySlow(0.6, 2)`）；",
+        "cost": "**代价**：在晴天（`sun`）天气下，全队受到的所有伤害提高 40%，且能量柱冷却时间延长 30%。",
+        "advances": [
+          "*   **Lv.5 白海狮（降雪共鸣）**：战斗开局召唤持续 15 秒的雪天（`snow`），雪天中全队特殊防御（`spdef`）提升 40%。",
+          "*   **Lv.8 绝对零度**：能量柱暴击时，对处于冻结状态的非首领普通敌人直接触发破冰斩杀。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "freeze",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "polarBeam",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "incomingTypes": {
+          "fire": 0.6,
+          "ice": 0.6
+        },
+        "beamFreeze": 0.8
+      },
+      "cost": {
+        "sunIncoming": 1.25,
+        "moves": {
+          "beam": {
+            "cd": 1.15
+          }
+        }
+      },
+      "five": {
+        "openingWeather": "snow"
+      },
+      "eight": {
+        "frozenExecute": 0.2
+      }
+    },
+    {
+      "root": 88,
+      "members": [
+        88,
+        89
+      ],
+      "id": "leader_stench_toxic_pool",
+      "name": {
+        "zh": "恶臭剧毒泥",
+        "en": "Stench & Sludge Pool",
+        "es": "Stench & Sludge Pool"
+      },
+      "source": {
+        "base": "全队身周常驻 120 码恶臭毒沼（`aura`），敌人踏入不仅被施加 1 层中毒（`applyPoison(1)`），且攻击力降低 25%；击败敌人时会在原地生成一滩持续 5 秒的黏泥水洼（`trail`）；",
+        "active": "场上敌人身上的中毒总层数累计达到 20 层时，所有带毒敌人身上同时触发一次【毒爆喷涌】：消耗一层中毒，造成一次相当于该敌人最大生命 8% 的毒爆冲击，并使其陷入 1.5 秒定身（`classStunT = 1.5`）；",
+        "cost": "**代价**：全队移动速度（`spd`）降低 35%，且无法装备任何位移冲刺（`dash`）招式。",
+        "advances": [
+          "*   **Lv.5 臭臭泥（黏着护体）**：受到接触伤害时，使攻击者被黏泥减速 50% 持续 3 秒，并为全队吸收该次伤害的 30% 转化为白盾（`absorb`）。",
+          "*   **Lv.8 毒手大恶臭**：毒泥水洼存在期间，踩在上面的队员伤害提升 30%，且毒爆触发阈值降低至 15 层。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "poisonStack",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "toxicEruption",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "toxicAura": 120
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.25
+        },
+        "ban": [
+          "dash"
+        ]
+      },
+      "five": {
+        "contactSlime": true
+      },
+      "eight": {
+        "puddleBuff": 0.2
+      }
+    },
+    {
+      "root": 90,
+      "members": [
+        90,
+        91
+      ],
+      "id": "leader_skill_link_smash",
+      "name": {
+        "zh": "连续破壳刺",
+        "en": "Skill Link & Shell Smash",
+        "es": "Skill Link & Shell Smash"
+      },
+      "source": {
+        "base": "所有多段判定投射物招式（如 2~5 段连击）固定触发最大上限段数（满段 5 连击）；全队基础物理防御提升 60%；",
+        "active": "小队累计完成 20 段投射物连击命中后，全员进入 5 秒【破壳爆发】：全队物理防御降低 50%，但攻击（`atk`）、特殊攻击（`spa`）提升 80%，移动速度提升 40%，投射物冷却时间缩短 50%；",
+        "cost": "**代价**：破壳爆发结束后，全队陷入 2 秒力竭虚弱（受击伤害提高 50%）。",
+        "advances": [
+          "*   **Lv.5 刺甲贝（硬壳反刺）**：常态下受到接触伤害时，向四周弹射 6 枚冰锥反击。",
+          "*   **Lv.8 连续终结**：破壳期间，每次多段连击的最后一击必定暴击，且贯穿敌方护盾（`shield`）。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "projectileHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "shellSmash",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "projectile": {
+            "count": 1
+          }
+        },
+        "stats": {
+          "defense": 0.4
+        }
+      },
+      "cost": {
+        "postZWeakness": 1.3
+      },
+      "five": {
+        "iceCounter": 6
+      },
+      "eight": {
+        "lastHitCrit": true
+      }
+    },
+    {
+      "root": 92,
+      "members": [
+        92,
+        93,
+        94
+      ],
+      "id": "leader_shadow_ethereal",
+      "name": {
+        "zh": "幽冥虚体",
+        "en": "Shadow & Ethereal Form",
+        "es": "Shadow & Ethereal Form"
+      },
+      "source": {
+        "base": "全队获得【穿墙漂浮】：可自由穿过障碍物与竞技场地标；受到远程弹幕伤害降低 35%；投射物技能弹丸可无视障碍物直接穿墙飞行；",
+        "active": "小队投射物技能累计命中穿透 15 名敌人后，下次投射物招式变为【超级巨型暗影球】：飞行速度极慢但体型扩大 200%，沿途持续吸附卷入普通杂兵，并在达到射程终点时剧烈爆炸，使波及敌人陷入 2 秒定身（`classStunT = 2`）；",
+        "cost": "**代价**：全队最大生命值（`maxHp`）降低 40%，且物理防御（`defense`）降低 50%（纯幽灵身躯极度惧怕近战物理轰击）。",
+        "advances": [
+          "*   **Lv.5 鬼斯通（黑夜诅咒）**：暗影球命中带有异常状态的敌人时，伤害提高 50%。",
+          "*   **Lv.8 耿鬼（潜影突袭）**：击杀敌人后，耿鬼自身进入 1 秒完全虚化无敌（`invuln`），下次攻击必定暴击。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "projectileHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "shadowBall",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "phaseTerrain": true,
+        "projectileTerrain": true,
+        "rangedIncoming": 0.8
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.25,
+          "defense": -0.3
+        }
+      },
+      "five": {
+        "statusDamage": 1.25
+      },
+      "eight": {
+        "killGuard": 0.3
+      }
+    },
+    {
+      "root": 95,
+      "members": [
+        95,
+        208
+      ],
+      "id": "leader_rock_colossus_crush",
+      "name": {
+        "zh": "岩崩巨碾",
+        "en": "Rock Colossus Sweep",
+        "es": "Rock Colossus Sweep"
+      },
+      "source": {
+        "base": "全队物理防御（`defense`）提升 80%；近战招式攻击判定范围扩大 100%，近战伤害额外附加全队物理防御总和 30% 的数值加成；近战命中造成超强击退（`knock`）；",
+        "active": "小队释放近战招式累计击退敌人 15 次后，下次近战招式变为【巨尾横扫碾压】：全屏 180 度广角横扫，将被击中的所有敌人狠狠拍击撞向竞技场边缘，撞墙敌人承受 150% 额外物理粉碎震荡；",
+        "cost": "**代价**：全队移动速度（`spd`）降低 35%，冲刺距离缩短 50%，且受到特殊攻击（`spa`）伤害提高 50%。",
+        "advances": [
+          "*   **Lv.5 大钢蛇（结实钢骨）**：受到单次超过最大生命 30% 的伤害时，强制将其削减至 30%，并向身周发射一圈钢铁碎屑。",
+          "*   **Lv.8 泰坦之躯**：大岩蛇近战横扫时，能够直接将沿途的敌方弹幕全部击碎消除。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "knock",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "titanTail",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stats": {
+          "defense": 0.5
+        },
+        "moves": {
+          "melee": {
+            "range": 1.6
+          }
+        },
+        "defMelee": 0.12
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.25
+        },
+        "moves": {
+          "dash": {
+            "range": 0.7
+          }
+        },
+        "specialIncoming": 1.3
+      },
+      "five": {
+        "hitCap": 0.3
+      },
+      "eight": {
+        "meleeIntercept": true
+      }
+    },
+    {
+      "root": 96,
+      "members": [
+        96,
+        97
+      ],
+      "id": "leader_hypno_pendulum",
+      "name": {
+        "zh": "摄魂摆锤",
+        "en": "Hypnotic Pendulum",
+        "es": "Hypnotic Pendulum"
+      },
+      "source": {
+        "base": "全队“光环”（`aura`）技能半径扩大 80%；踏入光环范围内的敌人移动速度降低 30%（`applySlow(0.3, 1)`）；光环内敌人每停留 2 秒，陷入 1.5 秒定身（`classStunT = 1.5`）；",
+        "active": "光环累计定身敌人 12 次后，全屏触发一次【摄魂食梦】：对所有处于定身状态的敌人造成相当于其已损失生命 30% 的真实伤害，并将总伤害的 25% 转化为全队的生命恢复；",
+        "cost": "**代价**：全队的移动速度（`spd`）降低 30%，且受到幽灵与恶属性攻击伤害提高 50%。",
+        "advances": [
+          "*   **Lv.5 催眠貘（预知梦境）**：敌人陷入定身时，其受到的全队伤害提高 25%。",
+          "*   **Lv.8 引梦貘人（噩梦回响）**：食梦斩杀敌人时，使周围敌人额外陷入 2 秒 50% 减速，并为队长返还 2 点 PP。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "stun",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "dreamFeast",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "aura": {
+            "radius": 1.5
+          }
+        },
+        "dreamAura": true
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.2
+        },
+        "incomingTypes": {
+          "ghost": 1.35,
+          "dark": 1.35
+        }
+      },
+      "five": {
+        "stunVulnerable": 0.2
+      },
+      "eight": {
+        "dreamPP": 2
+      }
+    },
+    {
+      "root": 98,
+      "members": [
+        98,
+        99
+      ],
+      "id": "leader_hyper_cutter_guillotine",
+      "name": {
+        "zh": "巨钳断头台",
+        "en": "Hyper Cutter Guillotine",
+        "es": "Hyper Cutter Guillotine"
+      },
+      "source": {
+        "base": "全队基础物理攻击（`atk`）提升 50%；物理攻击力不受任何外部负面削弱；近战招式命中时破除目标 30% 护盾（`shield`）；",
+        "active": "小队累计完成 8 次近战命中后，下次近战招式化为【巨钳断头台】：施法者向前发动一次极具爆发力的大钳横剪，对普通敌人直接触发处决斩杀（生命低于 35% 时直接秒杀），对首领（BOSS）造成 200% 破甲暴击真实伤害；",
+        "cost": "**代价**：全队所有招式的冷却时间（`agility`）延长 35%，且无法装备任何能量柱（`beam`）和全向爆发（`nova`）技能。",
+        "advances": [
+          "*   **Lv.5 大钳蟹（硬壳防护）**：近战攻击命中时，为施法者赋予相当于伤害量 10% 的白盾（`absorb`）。",
+          "*   **Lv.8 巨钳蟹（蟹钳大暴走）**：断头台成功完成斩杀时，全队在 3 秒内攻击速度提高 50%，且暴击率提升至 100%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "meleeHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "guillotine",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stats": {
+          "atk": 0.3
+        },
+        "attackDebuffImmune": true,
+        "meleeShield": 0.2
+      },
+      "cost": {
+        "cooldown": 1.2,
+        "ban": [
+          "beam",
+          "nova"
+        ]
+      },
+      "five": {
+        "meleeShieldGain": 0.025
+      },
+      "eight": {
+        "executionFury": true
+      }
+    },
+    {
+      "root": 100,
+      "members": [
+        100,
+        101
+      ],
+      "id": "leader_electro_overdrive_dash",
+      "name": {
+        "zh": "极速雷爆",
+        "en": "Electro Overdrive Dash",
+        "es": "Electro Overdrive Dash"
+      },
+      "source": {
+        "base": "全队移动速度（`spd`）提高 50%（全游最快跑速之一）；冲刺技能冷却缩减 40%；在冲刺突进期间，对沿途碰撞的敌人造成基于移速加成的雷电冲击；",
+        "active": "小队累计完成 4 次冲刺位移后，下一次冲刺将在终点引发一次【过载电荷大爆炸】（`nova` 机制）：消除周围所有敌方弹幕，震退杂兵并附加 2 秒 50% 减速（`applySlow(0.5, 2)`）；队长受到致死攻击时触发名刀免死（`avoidLethal`，保留 1 点生命），并立刻在原地引发一次全屏电磁大爆炸（每场战斗限 1 次）；",
+        "cost": "**代价**：全队最大生命值（`maxHp`）降低 35%，且在静止不移动时，每秒损失自身 1% 当前生命。",
+        "advances": [
+          "*   **Lv.5 霹雳电球（静电护体）**：冲刺突进期间获得受击无敌帧（`invuln`）。",
+          "*   **Lv.8 顽皮雷弹（音速雷暴）**：移动速度额外提升 25%，过载电荷大爆炸对首领（BOSS）造成额外 80% 破盾伤害。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "dashCast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "overload",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stats": {
+          "spd": 0.35
+        },
+        "moves": {
+          "dash": {
+            "cd": 0.75
+          }
+        },
+        "dashLightning": true,
+        "deathNova": true
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.25
+        },
+        "stationaryDrain": 0.005
+      },
+      "five": {
+        "dashInvuln": true
+      },
+      "eight": {
+        "stats": {
+          "spd": 0.15
+        },
+        "overloadShield": true
+      }
+    },
+    {
+      "root": 102,
+      "members": [
+        102,
+        103
+      ],
+      "id": "leader_barrage_harvest",
+      "name": {
+        "zh": "投掷丰收",
+        "en": "Barrage & Harvest Meteor",
+        "es": "Barrage & Harvest Meteor"
+      },
+      "source": {
+        "base": "释放天降流星类技能（`meteor`）时，同时坠落的果实弹丸数量 +3；流星砸地后有 30% 概率在地面掉落一颗【治愈树果】，小队成员拾取后立即恢复 8% 已损失生命并恢复 1 点 PP；",
+        "active": "小队累计拾取 5 颗治愈树果后，全队开启 4 秒【丰收狂欢】：所有天降流星技能无冷却连续轰炸，爆炸范围扩大 50%，被砸中的敌人陷入 1 秒定身（`classStunT = 1`）；",
+        "cost": "**代价**：全队受到虫属性攻击伤害提高 **100%**（原版 4 倍致命弱虫），且全队冲刺技能冷却延长 50%。",
+        "advances": [
+          "*   **Lv.5 蛋蛋（心电感应）**：治愈树果会在地面维持 15 秒不消失，拾取树果时移速短时间提高 30%。",
+          "*   **Lv.8 椰蛋树（晴空巨树）**：在晴天（`sun`）天气下，流星坠落数量翻倍，且树果掉落概率提升至 60%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "fruitPickup",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "harvest",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "meteor": {
+            "count": 1
+          }
+        },
+        "fruitChance": 0.3
+      },
+      "cost": {
+        "incomingTypes": {
+          "bug": 1.6
+        },
+        "moves": {
+          "dash": {
+            "cd": 1.3
+          }
+        }
+      },
+      "five": {
+        "fruitSpeed": 0.2
+      },
+      "eight": {
+        "sunHarvest": true
+      }
+    },
+    {
+      "root": 104,
+      "members": [
+        104,
+        105
+      ],
+      "id": "leader_bonemerang_retaliation",
+      "name": {
+        "zh": "回力骨棒",
+        "en": "Bonemerang Retaliation",
+        "es": "Bonemerang Retaliation"
+      },
+      "source": {
+        "base": "全队释放“回旋镖”技能的判定宽度扩大 80%，去程击退敌人，回程时将沿途敌人拉扯聚拢；全队受到伤害时，全队攻击力（`atk`）临时提升 20%（持续 3 秒，最多叠 3 层）；",
+        "active": "全队回旋镖累计造成 12 次双段全命中后，下次释放回旋镖化为【破军回力重骨】：掷出一柄巨型骨棒，全屏穿透并粉碎接触到的一切敌方弹幕，命中首领（BOSS）时使其陷入 3 秒破甲易伤 35%；",
+        "cost": "**代价**：全队特殊攻击（`spa`）降低 50%（纯物理骨棒专精），且全队耐力恢复速度降低 30%。",
+        "advances": [
+          "*   **Lv.5 卡拉卡拉（粗骨头）**：近战与回旋镖招式的暴击伤害倍率提升至 2.2 倍。",
+          "*   **Lv.8 嘎啦嘎啦（坚韧之魂）：释放回旋镖期间获得霸体不被击退，且骨棒回程时造成 200% 暴击真实伤害。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "boomerangReturn",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "boneCyclone",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "boomerang": {
+            "width": 1.5
+          }
+        },
+        "returnPull": true,
+        "hurtAttack": 0.1
+      },
+      "cost": {
+        "stats": {
+          "spa": -0.3,
+          "stamina": -0.2
+        }
+      },
+      "five": {
+        "moves": {
+          "melee": {
+            "critMul": 2
+          },
+          "boomerang": {
+            "critMul": 2
+          }
+        }
+      },
+      "eight": {
+        "boneGuard": true,
+        "returnCrit": true
+      }
+    },
+    {
+      "root": 108,
+      "members": [
+        108,
+        463
+      ],
+      "id": "leader_own_tempo_tongue",
+      "name": {
+        "zh": "巨舌缠缚",
+        "en": "Own Tempo Tongue Cleave",
+        "es": "Own Tempo Tongue Cleave"
+      },
+      "source": {
+        "base": "全队完全免疫减速与定身负面控制（我行我素）；近战招式的攻击判定距离延长 120%（超长巨舌鞭挞），命中敌人时施加 2 秒 40% 减速（`applySlow(0.4, 2)`）；",
+        "active": "小队近战命中累计 15 次后，下次近战招式变为【巨舌横扫卷裹】：打出全屏 120 度扇形巨舌狂甩，将被抽中的所有敌人聚拢到施法者身前，并强制附带 2 秒定身（`classStunT = 2`）；",
+        "cost": "**代价**：全队移动速度（`spd`）降低 25%，且全队所有招式的基础冷却时间延长 20%。",
+        "advances": [
+          "*   **Lv.5 大舌头（麻痹舌涎）**：巨舌命中敌人时，有 30% 概率直接追加 1 秒定身。",
+          "*   **Lv.8 大舌舔（大胃王厚皮）**：最大生命值提升 30%，受到单次伤害时反弹 50% 物理震荡给周围敌人。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "meleeHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "tongueSweep",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "slowImmune": true,
+        "moves": {
+          "melee": {
+            "range": 1.8,
+            "slow": 0.3
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.2
+        },
+        "cooldown": 1.15
+      },
+      "five": {
+        "tongueStun": 0.2
+      },
+      "eight": {
+        "stats": {
+          "hp": 0.2
+        },
+        "contactReflect": 0.25
+      }
+    },
+    {
+      "root": 109,
+      "members": [
+        109,
+        110
+      ],
+      "id": "leader_neutralizing_gas",
+      "name": {
+        "zh": "化学气体",
+        "en": "Neutralizing Gas Cloud",
+        "es": "Neutralizing Gas Cloud"
+      },
+      "source": {
+        "base": "全队身周常驻 150 码【化学变化气体】光环：处于气体内的敌人无法触发任何精英词缀技能（如瞬移、无敌盾、召唤反弹等被彻底压制无效化），且移动速度降低 30%；",
+        "active": "光环内敌人受到毒伤跳字累计 20 次后，所有气体瞬间化为【高压瓦斯殉爆】：对全场带毒敌人造成一次基于其当前生命 12% 的毒性引爆，消除沿途所有敌方弹幕；",
+        "cost": "**代价**：全队自身受到的所有持续伤害（灼伤、中毒）提升 50%，且全队特殊攻击招式冷却时间延长 25%。",
+        "advances": [
+          "*   **Lv.5 瓦斯弹（漂浮规避）**：全队免疫所有地面陷阱与地形伤害。",
+          "*   **Lv.8 双弹瓦斯（双核反应）**：瓦斯殉爆触发两次，且在爆炸中心留下一片持续 4 秒的完全净化烟幕（队友身处烟幕中处于无敌帧 `invuln`）。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "poisonHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "gasDetonation",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "gasAura": 150
+      },
+      "cost": {
+        "dotIncoming": 1.3,
+        "specialCooldown": 1.15
+      },
+      "five": {
+        "groundImmune": true
+      },
+      "eight": {
+        "gasDouble": true,
+        "gasGuard": 2
+      }
+    },
+    {
+      "root": 111,
+      "members": [
+        111,
+        112,
+        464
+      ],
+      "id": "leader_solid_rock_charge",
+      "name": {
+        "zh": "坚硬岩铠",
+        "en": "Solid Rock Charge",
+        "es": "Solid Rock Charge"
+      },
+      "source": {
+        "base": "小队受到的所有相克属性克制伤害硬减免 40%（坚硬岩石）；释放冲刺技能时，施法者处于完全霸体并获得 50% 硬减伤（`reduction`），对撞击到的敌人造成巨额物理伤害与击退；",
+        "active": "小队释放近战或冲刺招式累计击退敌人 10 次后，下次冲刺变为【超甲重炮冲撞】：全屏直线推土机式贯穿，撞碎沿途所有敌方投射物，并将命中的敌人顶飞至地图边缘，撞墙造成 200% 粉碎暴击伤害；",
+        "cost": "**代价**：全队移动速度（`spd`）降低 35%，冲刺技能冷却时间延长 40%，且受到水属性与草属性伤害提高 **80%**。",
+        "advances": [
+          "*   **Lv.5 钻角犀兽（避雷针）**：受到电属性攻击时完全免疫，并将伤害转化为全队攻击力提升 20%（持续 5 秒）。",
+          "*   **Lv.8 超甲狂犀（岩石重炮）**：冲刺撞击终点额外向前方扇形喷射 4 枚高爆岩石炮弹，对首领（BOSS）造成破甲 50%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "knock",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "rockRush",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "weakReduction": 0.25,
+        "dashGuard": 0.35
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.25
+        },
+        "moves": {
+          "dash": {
+            "cd": 1.25
+          }
+        },
+        "incomingTypes": {
+          "water": 1.5,
+          "grass": 1.5
+        }
+      },
+      "five": {
+        "immune": [
+          "electric"
+        ],
+        "lightningRodAttack": 0.15
+      },
+      "eight": {
+        "rockCannon": 4
+      }
+    },
+    {
+      "root": 114,
+      "members": [
+        114,
+        465
+      ],
+      "id": "leader_regenerator_whip",
+      "name": {
+        "zh": "再生藤蔓",
+        "en": "Regenerator Vine Bind",
+        "es": "Regenerator Vine Bind"
+      },
+      "source": {
+        "base": "全队自然生命回复速率（`regen`）提升 100%；近战抽打与藤蔓招式命中敌人时，汲取造成伤害 12% 转化为生命恢复；",
+        "active": "小队累计通过吸血或再生恢复相当于队长最大生命 50% 的血量后，全队施放一次【全屏荆棘蔓延】：从地面破土出无数藤蔓，将全场所有敌人向队伍中心强力拉扯 150 码，并使全体敌人陷入 2 秒定身（`classStunT = 2`）；",
+        "cost": "**代价**：全队移动速度（`spd`）降低 25%，且受到火属性与冰属性伤害提高 50%。",
+        "advances": [
+          "*   **Lv.5 蔓藤怪（叶绿素）**：在晴天（`sun`）天气下，生命回复速率与攻击速度均额外提升 50%。",
+          "*   **Lv.8 巨蔓藤（不灭再生）**：脱离战斗或持续 2 秒未受击时，生命回复速度提升 300%，且全队物理防御提升 40%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "heal",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "thornField",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "regenRate": 1.75,
+        "meleeLeech": 0.04
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.2
+        },
+        "incomingTypes": {
+          "fire": 1.35,
+          "ice": 1.35
+        }
+      },
+      "five": {
+        "sunRegen": 1.5,
+        "sunStats": 0.2
+      },
+      "eight": {
+        "safeRegen": 2,
+        "safeDefense": 0.3
+      }
+    },
+    {
+      "root": 115,
+      "members": [
+        115
+      ],
+      "id": "leader_parental_bond",
+      "name": {
+        "zh": "亲子爱连击",
+        "en": "Parental Bond Echo",
+        "es": "Parental Bond Echo"
+      },
+      "source": {
+        "base": "队长及队员释放的**所有招式（包括近战、投射物、光束、全向爆发等）必定自动触发第二段【小袋兽回响】**：第二击在 0.15 秒后在原位置同向打出，造成原招式 35% 的伤害，并独立计算暴击与命中；",
+        "active": "小队全员累计触发小袋兽回响命中达到 24 次后，全队进入 4 秒【亲子狂暴齐心】：回响造成的伤害提升至 70%（总伤害直接达到原招式 1.7 倍），且全员移动速度提升 30%；",
+        "cost": "**代价**：全队主招式的第一击基础伤害降低 25%（小幅分散伤害给回响，单次爆发需要依赖双段命中），且全队受到近战接触伤害提高 30%。",
+        "advances": [
+          "*   **Lv.5 育儿袋护佑**：小袋兽回响命中敌人时，为施法者回复 0.5% 最大生命。",
+          "*   **Lv.8 羁绊断头拳**：回响第二击如果触发暴击，直接附加 1 秒定身（`classStunT = 1`）并击退目标。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "echoHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "parentFury",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "echo": 0.35
+      },
+      "cost": {
+        "firstDamage": 0.9,
+        "physicalIncoming": 1.2
+      },
+      "five": {
+        "echoHeal": 0.002
+      },
+      "eight": {
+        "echoStun": 0.5
+      }
+    },
+    {
+      "root": 116,
+      "members": [
+        116,
+        117,
+        230
+      ],
+      "id": "leader_sniper_draco_meteor",
+      "name": {
+        "zh": "狙击龙卷",
+        "en": "Sniper & Dragon Vortex",
+        "es": "Sniper & Dragon Vortex"
+      },
+      "source": {
+        "base": "全队暴击伤害倍率从 1.5 倍直接提升至 **2.25 倍**（狙击手特性）；投射物与流星招式的暴击率提升 25%；",
+        "active": "小队投射物或流星技能累计暴击 8 次后，全屏中心降下一道巨型【深海龙卷涡流】：强力将全场敌人吸扯至涡流中心并造成持续撕裂伤害，涡流消散时引发一次必定暴击的龙卷大爆鸣；",
+        "cost": "**代价**：全队在未能暴击时的基础招式伤害降低 35%，且全队最大生命值（`maxHp`）降低 25%。",
+        "advances": [
+          "*   **Lv.5 海刺龙（毒刺护身）**：受到近战攻击时，攻击者陷入 2 层中毒并被击退。",
+          "*   **Lv.8 刺龙王（悠游疾风）**：在雨天（`rain`）天气下，暴击率额外提升 25%，且暴击命中时立即返还 1 点 PP。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "crit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "dragonVortex",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "critMultiplier": 2.25,
+        "moves": {
+          "projectile": {
+            "crit": 0.25
+          },
+          "meteor": {
+            "crit": 0.25
+          }
+        }
+      },
+      "cost": {
+        "nonCritDamage": 0.85,
+        "stats": {
+          "hp": -0.15
+        }
+      },
+      "five": {
+        "contactPoison": 2
+      },
+      "eight": {
+        "rainCrit": 0.2,
+        "critPP": 0.25
+      }
+    },
+    {
+      "root": 118,
+      "members": [
+        118,
+        119
+      ],
+      "id": "leader_lightning_rod_horn",
+      "name": {
+        "zh": "避雷金角",
+        "en": "Lightning Rod Drill Horn",
+        "es": "Lightning Rod Drill Horn"
+      },
+      "source": {
+        "base": "全队受到电属性攻击伤害完全免疫（避雷针），并将吸收的电能转化为全队敏捷（`agility`，招式冷却缩减）提高 30%（持续 5 秒）；冲刺突进与近战角击对敌人护盾（`shield`）造成的伤害提高 100%；",
+        "active": "小队释放角击冲刺累计击碎 5 个敌方护盾后，下次冲刺化为【金角神圣钻刺】：以 250% 速度贯穿直线全场，沿途粉碎所有敌方弹幕，并对命中的敌人施加 2 秒定身（`classStunT = 2`）；",
+        "cost": "**代价**：全队基础特殊防御（`spdef`）降低 40%，且在脱离水流环境（非雨天）时受到草属性攻击伤害提高 50%。",
+        "advances": [
+          "*   **Lv.5 角金鱼（轻快摆尾）**：冲刺位移结束后，施法者获得 1 秒移动速度提升 50%。",
+          "*   **Lv.8 金鱼王（一击必杀钻）**：角击冲刺对生命值低于 25% 的非首领敌人直接触发贯穿秒杀。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "shieldBreak",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "goldenDrill",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "immune": [
+          "electric"
+        ],
+        "rodAgility": 0.25,
+        "shieldDamage": 1.6
+      },
+      "cost": {
+        "stats": {
+          "spdef": -0.25
+        },
+        "dryGrassIncoming": 1.35
+      },
+      "five": {
+        "dashEndSpeed": 0.35
+      },
+      "eight": {
+        "dashExecute": 0.2
+      }
+    },
+    {
+      "root": 120,
+      "members": [
+        120,
+        121
+      ],
+      "id": "leader_analytic_gem_orbit",
+      "name": {
+        "zh": "核心解析",
+        "en": "Analytic Core Orbit",
+        "es": "Analytic Core Orbit"
+      },
+      "source": {
+        "base": "护体法球（`orbit`）旋转时能够直接消解碰撞到的敌方常规投射物弹幕；对处于施法或攻击前摇中的敌人造成的伤害提高 40%（分析 Analytic 特性）；",
+        "active": "全队护体法球累计消解 15 枚敌方弹幕后，海星核心红宝石过载爆鸣，全队瞬间向八个方位齐射【八极全向光束】（`beam` 机制）：贯穿全屏并造成水/超能复合高爆真实伤害，波及的敌人陷入 2 秒 50% 减速（`applySlow(0.5, 2)`）；",
+        "cost": "**代价**：全队最大生命值（`maxHp`）降低 35%，且物理防御（`defense`）降低 40%。",
+        "advances": [
+          "*   **Lv.5 海星星（自然回复）**：波次战斗结束时，全队自动清除所有残留负面状态并回复 20% 生命。",
+          "*   **Lv.8 宝石海星（超能核心）**：八极全向光束判定宽度增加 50%，且暴击率提升至 100%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "intercept",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "eightBeams",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "orbitIntercept": true,
+        "castingDamage": 1.3
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.2,
+          "defense": -0.25
+        }
+      },
+      "five": {
+        "endHeal": 0.15,
+        "endCleanse": true
+      },
+      "eight": {
+        "eightBeamsCrit": true
+      }
+    },
+    {
+      "root": 122,
+      "members": [
+        439,
+        122,
+        866
+      ],
+      "id": "leader_filter_light_screen",
+      "name": {
+        "zh": "反射晶壁",
+        "en": "Filter & Light Screen Bulwark",
+        "es": "Filter & Light Screen Bulwark"
+      },
+      "source": {
+        "base": "全队受到的所有非克制直接伤害硬减免 25%（过滤 Filter 特性）；全队身周展开一道半径 160 码的【光之壁障】（`aura`），敌方投射物穿过壁障时飞行速度降低 60% 且伤害衰减 40%；",
+        "active": "光之壁障累计阻挡或减缓 20 枚敌方弹幕后，壁障瞬间晶体化反弹【镜面反射狂潮】：将壁障内的所有敌方弹幕转化为友方追踪光弹反弹回敌人身上，并将周围杂兵击退 200 码；",
+        "cost": "**代价**：全队基础物理攻击与特殊攻击（`atk` / `spa`）降低 25%（进攻性较弱），且招式冷却时间延长 20%。",
+        "advances": [
+          "*   **Lv.5 魔墙偶（隔音屏障）**：全队完全免疫所有声波类招式伤害与全场吼叫震荡。",
+          "*   **Lv.8 踏冰人偶（戏法冰踏）**：全队队员在壁障内获得每秒 3% 最大生命白盾（`absorb`），且步履如冰踏般免疫减速。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "intercept",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "mirrorWave",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "neutralReduction": 0.2,
+        "screenAura": 160
+      },
+      "cost": {
+        "stats": {
+          "atk": -0.15,
+          "spa": -0.15
+        },
+        "cooldown": 1.1
+      },
+      "five": {
+        "soundImmune": true
+      },
+      "eight": {
+        "screenShieldRegen": 0.015,
+        "slowImmune": true
+      }
+    },
+    {
+      "root": 123,
+      "members": [
+        123,
+        212,
+        900
+      ],
+      "id": "leader_technician_scythe",
+      "name": {
+        "zh": "技师连斩",
+        "en": "Technician Scythe Flurry",
+        "es": "Technician Scythe Flurry"
+      },
+      "source": {
+        "base": "小队持有的基础威力低于等于中等强度的招式（技师特化招式），伤害直接提升 **60%**（技师 Technician 特性）；近战招式冷却缩减 35%；",
+        "active": "小队近战连续命中同一目标 6 次后，施法者立即施展一次【绝影十字斩】：瞬间造成 3 次极速连环斩击，附带 100% 暴击且撕碎敌人 40% 物理防御，并使其定身 1 秒（`classStunT = 1`）；",
+        "cost": "**代价**：巨钳螳螂受到火属性伤害提高 **100%**（4倍极度弱火），且全队无法装备任何全向爆发（`nova`）招式。",
+        "advances": [
+          "*   **Lv.5 飞天螳螂（剑舞疾影）**：释放近战攻击后 1 秒内，全队移动速度提升 30%。",
+          "*   **Lv.8 巨钳螳螂/劈斧螳螂（子弹铁拳）**：近战攻击判定附带 0.1 秒接触霸体，且绝影十字斩额外发射 2 道裂地刀气。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "repeatMelee",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "crossSlash",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "technician": 1.35,
+        "moves": {
+          "melee": {
+            "cd": 0.8
+          }
+        }
+      },
+      "cost": {
+        "incomingTypes": {
+          "fire": 1.6
+        },
+        "ban": [
+          "nova"
+        ]
+      },
+      "five": {
+        "meleeSpeed": 0.25
+      },
+      "eight": {
+        "bladeWaves": 2
+      }
+    },
+    {
+      "root": 124,
+      "members": [
+        238,
+        124
+      ],
+      "id": "leader_lovely_kiss_frost",
+      "name": {
+        "zh": "恶魔霜吻",
+        "en": "Lovely Kiss & Frostbite",
+        "es": "Lovely Kiss & Frostbite"
+      },
+      "source": {
+        "base": "全队释放“扇形”技能时，喷吐出大面积冰晶风暴，射程扩大 50%，命中敌人时强制施加 2 秒 50% 减速（`applySlow(0.5, 2)`）；",
+        "active": "小队通过冰风累计使敌人减速命中 15 次后，下次释放扇形招式化为【恶魔霜吻极寒】：全场前方扇形区域瞬间绝对零度结冰，所有被波及的非首领敌人直接陷入 2.5 秒冻结定身（`freezeT = 2.5`）；冻结解除时产生破冰脆裂，造成其最大生命 15% 的真实伤害；",
+        "cost": "**代价**：全队物理防御（`defense`）降低 50%，受到火属性与恶属性攻击伤害提高 50%。",
+        "advances": [
+          "*   **Lv.5 迷唇娃（干劲步伐）**：全队完全免疫减速，在雪天（`snow`）天气下移动速度提高 35%。",
+          "*   **Lv.8 迷唇姐（干燥皮肤）**：受到水属性攻击时不但不受伤，反而恢复相当于该伤害 100% 的生命值。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "coneHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "frostKiss",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "cone": {
+            "range": 1.4,
+            "slow": 0.4
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "defense": -0.3
+        },
+        "incomingTypes": {
+          "fire": 1.35,
+          "dark": 1.35
+        }
+      },
+      "five": {
+        "slowImmune": true,
+        "snowSpeed": 0.25
+      },
+      "eight": {
+        "immune": [
+          "water"
+        ],
+        "waterHeal": 0.5
+      }
+    },
+    {
+      "root": 125,
+      "members": [
+        239,
+        125,
+        466
+      ],
+      "id": "leader_motor_drive_fist",
+      "name": {
+        "zh": "电气引擎拳",
+        "en": "Motor Drive Lightning Punch",
+        "es": "Motor Drive Lightning Punch"
+      },
+      "source": {
+        "base": "全队完全免疫电属性伤害；每当全队释放电属性招式或吸收电能时，全队移动速度与招式冷却缩减各提升 8%（持续 5 秒，最高叠加 5 层，敏捷与移速 +40%）；",
+        "active": "小队累计完成 15 次近战或电弧命中后，施法者双拳过载进入【雷神引擎大爆发】：双拳向正前方发动超高速百裂雷光拳，并在拳锋前端持续轰出连锁电弧贯穿全场，使被电击的敌人陷入 1.5 秒定身（`classStunT = 1.5`）；",
+        "cost": "**代价**：受到地面属性攻击伤害提高 60%，且全队耐力恢复速度降低 30%。",
+        "advances": [
+          "*   **Lv.5 电击兽（静电麻痹）**：受到接触伤害时，有 40% 概率使攻击者陷入 1.5 秒定身。",
+          "*   **Lv.8 电击魔兽（双尾电缆）**：百裂雷光拳命中暴击时，对全场所有敌人产生一次全屏引雷，消除所有敌方弹幕。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "electricHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "thunderFists",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "immune": [
+          "electric"
+        ],
+        "electricEngine": 0.06
+      },
+      "cost": {
+        "incomingTypes": {
+          "ground": 1.4
+        },
+        "stats": {
+          "stamina": -0.2
+        }
+      },
+      "five": {
+        "contactStun": 0.3
+      },
+      "eight": {
+        "thunderFistsGlobal": true
+      }
+    },
+    {
+      "root": 126,
+      "members": [
+        240,
+        126,
+        467
+      ],
+      "id": "leader_flame_body_artillery",
+      "name": {
+        "zh": "炎体加农炮",
+        "en": "Flame Cannon Artillery",
+        "es": "Flame Cannon Artillery"
+      },
+      "source": {
+        "base": "全队释放投射物与天降流星招式的爆炸判定半径扩大 70%，造成的所有火属性伤害提升 40%；命中的敌人必定叠加 2 层灼伤（`applyBurn(2)`）；",
+        "active": "全队累计造成 20 次灼伤跳字后，鸭嘴炎兽手臂炮口蓄能轰出一记【大字爆炎加农炮】：在目标地点砸出一枚巨大的“大”字型持续烈焰火阵，火阵存在 5 秒，每秒喷涌烈焰，将踏入的敌人强力击退并造成巨额火属性爆炸；",
+        "cost": "**代价**：全队在雨天（`rain`）天气下造成的伤害降低 40%，且全队基础移动速度降低 25%。",
+        "advances": [
+          "*   **Lv.5 鸭嘴火兽（火焰之躯）**：受到接触伤害时，攻击者必定被施加 3 层灼伤。",
+          "*   **Lv.8 鸭嘴炎兽（迫击炮臂）**：大字爆炎火阵中的队友获得 30% 伤害加成，且火阵消散时向外发射 8 枚追踪火弹。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "burnHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "fireCannon",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "projectile": {
+            "radius": 1.5,
+            "burn": 2
+          },
+          "meteor": {
+            "radius": 1.5,
+            "burn": 2
+          }
+        },
+        "fireDamage": 1.3
+      },
+      "cost": {
+        "rainDamage": 0.75,
+        "stats": {
+          "spd": -0.2
+        }
+      },
+      "five": {
+        "contactBurn": 3
+      },
+      "eight": {
+        "fireFormation": true
+      }
+    },
+    {
+      "root": 127,
+      "members": [
+        127
+      ],
+      "id": "leader_moxie_vice_grip",
+      "name": {
+        "zh": "自信头冠夹",
+        "en": "Moxie Vice Grip",
+        "es": "Moxie Vice Grip"
+      },
+      "source": {
+        "base": "每当小队击杀一名敌人，全队物理攻击力（`atk`）永久提升 1.5%（自信过度 Moxie，单场战斗最高叠 30 层即 +45% 攻击力）；近战击退效果提升 80%；",
+        "active": "小队累计击败 10 名敌人后，下次近战招式变为【大地巨夹投掷】：双角巨夹猛力夹起正前方距离最近的一名精英或普通敌人，将其猛烈砸向地图中央，落地引发大地震荡并对落点周围敌人造成 200% 范围物理粉碎并附带 2 秒定身（`classStunT = 2`）；",
+        "cost": "**代价**：全队特殊防御（`spdef`）降低 50%，受到火、飞行与岩石属性伤害提高 40%。",
+        "advances": [
+          "*   **Lv.5 凯罗斯（破格强袭）**：近战攻击无视敌人的一切伤害减免与防御增益。",
+          "*   **Lv.8 怪力巨夹（飞空横剪）**：巨夹投掷成功斩杀目标时，全队在 4 秒内暴击率提升 100%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "kill",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "titanThrow",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "killAttack": 0.01,
+        "moves": {
+          "melee": {
+            "knock": 1.6
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "spdef": -0.3
+        },
+        "incomingTypes": {
+          "fire": 1.25,
+          "flying": 1.25,
+          "rock": 1.25
+        }
+      },
+      "five": {
+        "ignoreDefenseBuffs": true
+      },
+      "eight": {
+        "throwCrit": true
+      }
+    },
+    {
+      "root": 128,
+      "members": [
+        128
+      ],
+      "id": "leader_anger_point_rampage",
+      "name": {
+        "zh": "愤怒狂冲",
+        "en": "Anger Point Rampage",
+        "es": "Anger Point Rampage"
+      },
+      "source": {
+        "base": "全队释放“冲刺”技能的位移距离延长 80%，突进造成的碰撞伤害提高 60%；小队受到暴击伤害或单次受创超过最大生命 20% 时，立即触发【愤怒之穴 Anger Point】：在接下来的 5 秒内，全队物理攻击力提升 100%，且所有招式必定暴击（暴击率 100%）；",
+        "active": "小队累计完成 4 次冲刺撞击后，下次冲刺化为【狂怒牛群践踏】：向正前方化作三道狂暴公牛幻影全屏冲锋，沿途踏碎所有敌方投射物弹幕，并将被撞击的敌人击退至竞技场边界并定身 1.5 秒（`classStunT = 1.5`）；",
+        "cost": "**代价**：全队自身受到的所有碰撞与近战伤害提高 40%（莽夫对撞代价），且冲刺结束后自身有 0.3 秒停步喘息硬直。",
+        "advances": [
+          "*   **Lv.5 威吓甩尾**：释放冲刺时，身周三条尾巴挥舞，降低身周敌人 30% 攻击力持续 3 秒。",
+          "*   **Lv.8 舍身狂奔**：冲刺期间自身处于完全无敌状态（`invuln`），且狂怒践踏对首领（BOSS）造成额外 100% 破甲伤害。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "dashHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "stampede",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "moves": {
+          "dash": {
+            "range": 1.6,
+            "damage": 1.4
+          }
+        },
+        "heavyFury": true
+      },
+      "cost": {
+        "physicalIncoming": 1.3,
+        "dashRecovery": 0.2
+      },
+      "five": {
+        "dashIntimidate": 0.25
+      },
+      "eight": {
+        "dashInvuln": true,
+        "stampedeBoss": 1.5
+      }
+    },
+    {
+      "root": 129,
+      "members": [
+        129,
+        130
+      ],
+      "id": "leader_splash_dragon_dance",
+      "name": {
+        "zh": "跃鲤狂龙",
+        "en": "Splash to Dragon Dance",
+        "es": "Splash to Dragon Dance"
+      },
+      "source": {
+        "base": "鲤鱼王形态下自身无法装备任何伤害招式，仅拥有【水花跃起】（短距离跳跃并获得 1 秒无敌帧），但使队员获取的经验值提高 50%；进化为暴鲤龙后，全队物理攻击力（`atk`）永久提升 60%，近战与水流招式判定范围扩大 80%；",
+        "active": "暴鲤龙击败敌人累计达到 15 名后，触发【龙之舞龙啸狂澜】：全场敌人被威吓减攻 40% 且减速 50%（`applySlow(0.5, 3)`），全队在接下来的 5 秒内移动速度与攻击力各提升 50%；",
+        "cost": "**代价**：受到电属性攻击伤害提高 **100%**（原版 4 倍致命弱电），且暴鲤龙形态下全队特殊防御降低 35%。",
+        "advances": [
+          "*   **Lv.5 龙之怒火**：暴鲤龙每次暴击使周围引发一次水流震荡。",
+          "*   **Lv.8 自信过剩**：击杀精英怪（elite）时，全队招式冷却立即重置。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "kill",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "dragonRoar",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "magikarpGrowth": 1.5,
+        "gyaradosAttack": 0.4
+      },
+      "cost": {
+        "incomingTypes": {
+          "electric": 1.6
+        },
+        "gyaradosSpdef": 0.8
+      },
+      "five": {
+        "gyaradosCritWave": true
+      },
+      "eight": {
+        "eliteReset": true
+      }
+    },
+    {
+      "root": 131,
+      "members": [
+        131
+      ],
+      "id": "leader_water_absorb_hymn",
+      "name": {
+        "zh": "乘风圣咏",
+        "en": "Water Absorb & Perish Hymn",
+        "es": "Water Absorb & Perish Hymn"
+      },
+      "source": {
+        "base": "受到水属性与冰属性伤害完全免疫，并将伤害数值的 50% 转化为全队的生命恢复；全队身周常驻 200 码【治愈水幕】光环（`aura`），光环内队友受到伤害降低 25% 且每秒恢复 2% 最大生命；",
+        "active": "光环累计为全队吸收或减免 300 点伤害后，拉普拉斯吟唱出【海之圣咏】：消除全场敌方弹幕，并使全场所有非首领敌人陷入 2 秒冻结定身（`freezeT = 2`）；",
+        "cost": "**代价**：全队移动速度（`spd`）降低 30%，冲刺技能冷却时间延长 40%。",
+        "advances": [
+          "*   **Lv.5 储水外壳**：受到暴击时，立即为全队生成相当于各自最大生命 20% 的白盾（`absorb`）。",
+          "*   **Lv.8 绝对零度**：能量柱技能对处于冻结状态的敌人造成 250% 暴击真实伤害。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "absorb",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "seaHymn",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "immune": [
+          "water",
+          "ice"
+        ],
+        "absorbedHeal": 0.15,
+        "waterCurtain": 200
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.25
+        },
+        "moves": {
+          "dash": {
+            "cd": 1.25
+          }
+        }
+      },
+      "five": {
+        "heavyShield": 0.15
+      },
+      "eight": {
+        "frozenBeam": 1.6
+      }
+    },
+    {
+      "root": 132,
+      "members": [
+        132
+      ],
+      "id": "leader_imposter_mirror",
+      "name": {
+        "zh": "变身幻象",
+        "en": "Imposter Mirror Projection",
+        "es": "Imposter Mirror Projection"
+      },
+      "source": {
+        "base": "百变怪在战斗开局自动【变身变相】：完全复制当前队伍中物理攻击或特殊攻击最高队友的全部属性与招式形态；且百变怪释放该复制招式时冷却缩减 25%；",
+        "active": "全队累计释放 10 次招式后，百变怪与被复制的目标队友之间建立【量子纠缠谐振】：接下来的 4 秒内，被复制队友释放招式时，百变怪无需消耗 PP 且零冷却立即同步复制释放一次！",
+        "cost": "**代价**：百变怪自身基础最大生命值（`maxHp`）降低 40%（黏胶身躯抗性较低），且无法装备任何携带道具（`G.Items`）。",
+        "advances": [
+          "*   **Lv.5 柔软身躯**：受到接触伤害时，有 50% 概率让攻击者陷入 1 秒定身（`classStunT = 1`）。",
+          "*   **Lv.8 梦幻变相**：双重复制释放的技能暴击率直接提升 50%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "cast",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "quantumEcho",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "dittoCopy": true
+      },
+      "cost": {
+        "captainHp": 0.7,
+        "noItems": true
+      },
+      "five": {
+        "contactStun": 0.35
+      },
+      "eight": {
+        "quantumCrit": 0.3
+      }
+    },
+    {
+      "root": 133,
+      "members": [
+        133,
+        134,
+        135,
+        136,
+        196,
+        197,
+        470,
+        471,
+        700
+      ],
+      "id": "leader_adaptability_evolution",
+      "name": {
+        "zh": "九彩适应力",
+        "en": "Adaptability Prism Evolution",
+        "es": "Adaptability Prism Evolution"
+      },
+      "source": {
+        "base": "全队所有与其自身属性匹配的本系招式（STAB），伤害加成倍率从原本的 1.2 倍直接提升至 **1.8 倍**（适应力 Adaptability 极致）；全队每拥有一个不同属性的队员，全队属性抗性提升 5%；",
+        "active": "小队释放本系招式累计命中敌人 15 次后，全队触发【九彩棱镜共鸣】：根据队长当前进化的属性释放一次全屏元素新星（火引发全屏灼伤、水引发全屏减速、电引发全屏定身等），消除所有敌方弹幕；",
+        "cost": "**代价**：全队释放非本系（与自身属性不一致）的招式时，伤害降低 50% 且冷却时间延长 30%（惩罚杂色招式，强制专精纯色本系）。",
+        "advances": [
+          "*   **Lv.5 危险预知**：受到克制属性攻击前 0.5 秒获得预警，并获得 30% 伤害减免。",
+          "*   **Lv.8 究极九彩共鸣**：九彩棱镜共鸣触发后，全队在 4 秒内暴击率提升 40%，且所有技能冷却时间缩短 50%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "stabHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "prismNova",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stabDamage": 1.5,
+        "typeResist": 0.025
+      },
+      "cost": {
+        "nonStabDamage": 0.65,
+        "nonStabCooldown": 1.2
+      },
+      "five": {
+        "weakReduction": 0.2
+      },
+      "eight": {
+        "prismFury": true
+      }
+    },
+    {
+      "root": 137,
+      "members": [
+        137,
+        233,
+        474
+      ],
+      "id": "leader_download_code_burst",
+      "name": {
+        "zh": "代码下载",
+        "en": "Download & Data Glitch",
+        "es": "Download & Data Glitch"
+      },
+      "source": {
+        "base": "战斗开局与波次进行中，系统自动【下载分析 Download】：若场上敌人平均物理防御高于特殊防御，全队特殊攻击（`spa`）提升 50%；反之若敌人特殊防御较高，全队物理攻击（`atk`）提升 50%；",
+        "active": "全队累计击败 12 名敌人后，释放一次【代码乱流数据溢出】：全屏敌人的行动速度与弹幕速度强制放慢 60%（代码掉帧），持续 3 秒，且期间受到全队攻击的暴击率提升至 100%；",
+        "cost": "**代价**：全队受到格斗属性攻击伤害提高 60%，且全队耐力恢复速度降低 25%。",
+        "advances": [
+          "*   **Lv.5 追踪修正**：投射物招式增加 2 次自动索敌弹跳转向。",
+          "*   **Lv.8 适应力超频**：【代码乱流】期间，释放激光柱（`beam`）不消耗任何 PP。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "kill",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "dataOverflow",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "download": 0.35
+      },
+      "cost": {
+        "incomingTypes": {
+          "fighting": 1.4
+        },
+        "stats": {
+          "stamina": -0.15
+        }
+      },
+      "five": {
+        "homingTurns": 2
+      },
+      "eight": {
+        "dataFreeBeam": true
+      }
+    },
+    {
+      "root": 138,
+      "members": [
+        138,
+        139
+      ],
+      "id": "leader_shell_armor_spikes",
+      "name": {
+        "zh": "多刺硬壳",
+        "en": "Shell Armor & Spike Barrage",
+        "es": "Shell Armor & Spike Barrage"
+      },
+      "source": {
+        "base": "全队受到的所有敌人攻击**绝对无法暴击**（硬壳盔甲 Shell Armor）；投射物招式发射的尖刺弹丸数量 +2；敌人踏入地面陷阱时，受到额外 50% 物理穿刺伤害；",
+        "active": "小队释放投射物或陷阱命中敌人累计 18 次后，多刺菊石兽向四周 360 度无死角狂暴齐射【远古万刺加农】：发射 24 枚高穿透尖刺，穿透所有障碍与敌人，并使被命中的敌人陷入 2 秒 50% 减速（`applySlow(0.5, 2)`）；",
+        "cost": "**代价**：全队移动速度降低 30%，受到草属性攻击伤害提高 **100%**（原版 4 倍致命弱草）。",
+        "advances": [
+          "*   **Lv.5 菊石兽（碎裂反刺）**：受到接触伤害时，向攻击者发射 4 枚追踪反击骨刺。",
+          "*   **Lv.8 多刺菊石兽（破壳尖刺）**：万刺加农命中首领（BOSS）时，使其护盾直接清零（`shield = 0`）。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "rangedHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "ancientSpikes",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "hitCap": 0.35,
+        "moves": {
+          "projectile": {
+            "count": 1
+          }
+        },
+        "mineDamage": 1.3
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.2
+        },
+        "incomingTypes": {
+          "grass": 1.6
+        }
+      },
+      "five": {
+        "counterSpikes": 4
+      },
+      "eight": {
+        "spikesShieldBreak": true
+      }
+    },
+    {
+      "root": 140,
+      "members": [
+        140,
+        141
+      ],
+      "id": "leader_battle_armor_scythe",
+      "name": {
+        "zh": "战斗利镰",
+        "en": "Battle Armor & Sickle Slice",
+        "es": "Battle Armor & Sickle Slice"
+      },
+      "source": {
+        "base": "全队近战招式命中时，吸取造成伤害 15% 转化为自身生命恢复；近战招式暴击率提高 25%；",
+        "active": "小队累计完成 10 次近战暴击后，施法者施展一次【远古镰刃轮舞】：以施法者为中心展开高速双镰旋风，持续 2 秒切割身周所有敌人，期间自身处于完全无敌帧（`invuln`），并将被卷入杂兵强力击飞；",
+        "cost": "**代价**：全队在雨天（`rain`）之外的环境中，招式冷却时间延长 25%，且受到草属性伤害提高 **100%**。",
+        "advances": [
+          "*   **Lv.5 化石盔（坚硬甲壳）**：生命低于 30% 时，物理防御提升 100%。",
+          "*   **Lv.8 镰刀盔（悠游利刃）**：在雨天天气下，移动速度提高 40%，且近战吸血转化率提升至 30%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "meleeCrit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "scytheDance",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "meleeLeech": 0.05,
+        "moves": {
+          "melee": {
+            "crit": 0.25
+          }
+        }
+      },
+      "cost": {
+        "dryCooldown": 1.15,
+        "incomingTypes": {
+          "grass": 1.6
+        }
+      },
+      "five": {
+        "lowDefense": 1
+      },
+      "eight": {
+        "rainLeech": 0.05,
+        "rainSpeed": 0.3
+      }
+    },
+    {
+      "root": 142,
+      "members": [
+        142
+      ],
+      "id": "leader_pressure_rock_fall",
+      "name": {
+        "zh": "远古天威",
+        "en": "Pressure & Ancient Rock Slide",
+        "es": "Pressure & Ancient Rock Slide"
+      },
+      "source": {
+        "base": "全队移动速度提高 40%，全队处于完全浮空状态（免疫地面陷阱与减速泥泞）；敌人在全队身周 200 码内施法时，其招式前摇与冷却时间延长 50%（压迫感 Pressure）；",
+        "active": "小队释放天降流星或冲刺命中累计 12 次后，化石翼龙引动全屏【远古巨石天崩】：全图随机砸下 8 块巨型陨石，巨石砸地时产生大范围冲击波，将周围敌人定身 1.5 秒（`classStunT = 1.5`）；",
+        "cost": "**代价**：全队最大生命值（`maxHp`）降低 35%，受到冰、水、电、钢、岩石五大弱点属性伤害提高 40%。",
+        "advances": [
+          "*   **Lv.5 坚硬脑袋**：释放舍身冲撞类招式时，完全不承受反作用力伤害。",
+          "*   **Lv.8 极速空霸**：流星砸击暴击时，在原地留下一道阻挡敌方弹幕的巨岩掩体（持续 3 秒）。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "areaHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "ancientMeteors",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stats": {
+          "spd": 0.3
+        },
+        "groundImmune": true,
+        "pressure": 0.35
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.25
+        },
+        "incomingTypes": {
+          "ice": 1.25,
+          "water": 1.25,
+          "electric": 1.25,
+          "steel": 1.25,
+          "rock": 1.25
+        }
+      },
+      "five": {
+        "recoilImmune": true
+      },
+      "eight": {
+        "meteorCover": true
+      }
+    },
+    {
+      "root": 143,
+      "members": [
+        446,
+        143
+      ],
+      "id": "leader_thick_fat_belly_drum",
+      "name": {
+        "zh": "贪吃腹鼓",
+        "en": "Gluttony & Belly Drum Bulk",
+        "es": "Gluttony & Belly Drum Bulk"
+      },
+      "source": {
+        "base": "全队基础最大生命值（`maxHp`）提升 **100%**（血量翻倍）；小队受到火属性与冰属性伤害硬减免 50%（厚脂肪）；",
+        "active": "小队每损失相当于原基础最大生命的 50% 血量（无论是受创还是主动扣血），全队自动敲响【极意腹鼓】：消耗当前 20% 生命，并在接下来 6 秒内全队物理攻击力（`atk`）暴增 **150%**，下一次“全向爆发”招式变为【真·泰山压顶】，砸击全屏并使全场杂兵陷入 2 秒定身（`classStunT = 2`）；",
+        "cost": "**代价**：全队移动速度（`spd`）降低 40%，且受到格斗属性攻击伤害提高 60%。",
+        "advances": [
+          "*   **Lv.5 小卡比兽（贪吃拾荒）**：敌人死后掉落生命饭团的概率提升 50%，拾取时立即恢复 10% 最大生命。",
+          "*   **Lv.8 卡比兽（睡觉觉醒）**：受到致死攻击时强制保留 1 点生命并进入 2 秒打鼾沉睡（无敌并瞬间回满 50% 生命，每场限 1 次）。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "hurtAmount",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "bellyDrum",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stats": {
+          "hp": 0.6
+        },
+        "incomingTypes": {
+          "fire": 0.65,
+          "ice": 0.65
+        }
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.25
+        },
+        "incomingTypes": {
+          "fighting": 1.4
+        }
+      },
+      "five": {
+        "rice": true
+      },
+      "eight": {
+        "deathHeal": 0.4
+      }
+    },
+    {
+      "root": 144,
+      "members": [
+        144
+      ],
+      "id": "leader_pressure_blizzard",
+      "name": {
+        "zh": "极霜神域",
+        "en": "Glacial Divine Domain",
+        "es": "Glacial Divine Domain"
+      },
+      "source": {
+        "base": "急冻鸟入场常驻激活全图雪天（`snow`）；全队身周展开半径 220 码【极霜寒域】（`aura`），踏入寒域的敌人移动速度降低 45%（`applySlow(0.45, 1)`）；",
+        "active": "寒域内敌人受到冰属性跳字累计 20 次后，急冻鸟展开冰羽引爆【心之眼·绝对暴风雪】：消除全场所有敌方弹幕，对全场所有敌人造成巨额冰属性暴风雪摧毁，并使所有敌人陷入 2.5 秒绝对冻结定身（`freezeT = 2.5`）；冻结期间全队对其攻击必定暴击；",
+        "cost": "**代价**：全队受到岩石属性攻击伤害提高 **100%**（原版 4 倍致命弱岩），且全队冲刺技能冷却时间延长 40%。",
+        "advances": [
+          "*   **Lv.5 极寒神羽**：被冻结的敌人受到的所有伤害提高 35%。",
+          "*   **Lv.8 霜天主宰**：绝对暴风雪暴击击杀敌人时，使全队恢复 10% 已损失生命并延长冻结时间 1 秒。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "iceHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "blizzard",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "weather": "snow",
+        "iceAura": 220
+      },
+      "cost": {
+        "incomingTypes": {
+          "rock": 1.6
+        },
+        "moves": {
+          "dash": {
+            "cd": 1.25
+          }
+        }
+      },
+      "five": {
+        "frozenVulnerable": 0.2
+      },
+      "eight": {
+        "blizzardHeal": 0.05
+      }
+    },
+    {
+      "root": 145,
+      "members": [
+        145
+      ],
+      "id": "leader_thunderous_tempest",
+      "name": {
+        "zh": "雷霆天罚",
+        "en": "Thunderous Divine Tempest",
+        "es": "Thunderous Divine Tempest"
+      },
+      "source": {
+        "base": "闪电鸟入场常驻激活全图雨天（`rain`）；雨天中全队电属性招式暴击率提高 30%，且所有落雷必定索敌命中距离队伍最近的敌人；",
+        "active": "小队电属性招式累计命中敌人 20 次后，闪电鸟引动全屏【九天雷暴轰顶】：全场随机降下 12 道强力天雷，击碎沿途所有敌方护盾（`shield = 0`），并使触电敌人陷入 2 秒定身（`classStunT = 2`）；",
+        "cost": "**代价**：受到冰属性与岩石属性攻击伤害提高 50%，且全队基础物理防御降低 35%。",
+        "advances": [
+          "*   **Lv.5 静电神域**：受到近战攻击时，攻击者立刻被一道天雷反击轰飞 150 码。",
+          "*   **Lv.8 雷霆万钧**：九天雷暴期间，全队所有招式冷却缩减 50%，且移动速度提升 40%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "electricHit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "thunderstorm",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "weather": "rain",
+        "electricCrit": 0.25
+      },
+      "cost": {
+        "incomingTypes": {
+          "ice": 1.35,
+          "rock": 1.35
+        },
+        "stats": {
+          "defense": -0.2
+        }
+      },
+      "five": {
+        "contactLightning": true
+      },
+      "eight": {
+        "stormFury": true
+      }
+    },
+    {
+      "root": 146,
+      "members": [
+        146
+      ],
+      "id": "leader_flame_rebirth",
+      "name": {
+        "zh": "涅槃不死火",
+        "en": "Phoenix Flame & Rebirth",
+        "es": "Phoenix Flame & Rebirth"
+      },
+      "source": {
+        "base": "火焰鸟入场常驻激活全图晴天（`sun`）；全队移动时脚下生出烈焰轨迹（`trail`），烈焰中的敌人每秒受到火属性灼烧并附加 2 层灼伤（`applyBurn(2)`）；",
+        "active": "全场敌方身上累计叠加 30 层灼伤后，火焰鸟在天际点燃【焚天热风暴】：全图所有灼伤敌人身上的火焰剧烈爆燃，消除所有敌方弹幕；当队伍中任何成员受到致死伤害时，强制触发【真·涅槃重生】（保留 1 点生命，获得 3 秒无敌 `invuln`，并引爆一次全屏不死火恢复全队 40% 生命，每场限 1 次）；",
+        "cost": "**代价**：受到岩石属性攻击伤害提高 **100%**（原版 4 倍致命弱岩），且在雨天（`rain`）中全队伤害降低 50%。",
+        "advances": [
+          "*   **Lv.5 火焰之躯**：受到接触伤害时，对攻击者附加 3 层灼伤并使其移动速度降低 40%。",
+          "*   **Lv.8 太阳神鸟**：晴天期间，全队造成的灼伤跳字伤害翻倍，且涅槃触发后全队在 5 秒内暴击率提升 100%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "burnStack",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "phoenixStorm",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "weather": "sun",
+        "movingTrail": "fire",
+        "phoenixRescue": true
+      },
+      "cost": {
+        "incomingTypes": {
+          "rock": 1.6
+        },
+        "rainDamage": 0.75
+      },
+      "five": {
+        "contactBurn": 3
+      },
+      "eight": {
+        "burnDamage": 1.5,
+        "phoenixCrit": true
+      }
+    },
+    {
+      "root": 147,
+      "members": [
+        147,
+        148,
+        149
+      ],
+      "id": "leader_multiscale_dragonite",
+      "name": {
+        "zh": "多重鳞片逆鳞",
+        "en": "Multiscale & Outrage Fury",
+        "es": "Multiscale & Outrage Fury"
+      },
+      "source": {
+        "base": "全队在生命值处于 100% 满血时，**受到的所有伤害硬减免 60%**（多重鳞片 Multiscale）；冲刺与近战招式的判定范围扩大 70%；",
+        "active": "小队近战或冲刺累计造成 12 次暴击后，全员进入 5 秒【极意逆鳞龙狂】：全队攻击力（`atk`）与特殊攻击（`spa`）提升 80%，移动速度提升 50%，招式攻击附带强力龙威击退，期间免疫任何减速与定身；逆鳞结束后，全队陷入 1 秒虚弱减速 20%；",
+        "cost": "**代价**：全队受到冰属性攻击伤害提高 **100%**（原版 4 倍致命弱冰），且全队无法装备任何地面陷阱（`mine`）招式。",
+        "advances": [
+          "*   **Lv.5 哈克龙（神奇鳞片）**：处于负面状态时，物理与特殊防御提升 50%。",
+          "*   **Lv.8 快龙（神速破空）**：逆鳞期间释放冲刺技能具有完全受击无敌帧（`invuln`），且冲刺对首领（BOSS）造成 100% 破甲暴击。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "meleeCrit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "outrage",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "fullHpReduction": 0.45,
+        "moves": {
+          "dash": {
+            "range": 1.5
+          },
+          "melee": {
+            "range": 1.5
+          }
+        }
+      },
+      "cost": {
+        "incomingTypes": {
+          "ice": 1.6
+        },
+        "ban": [
+          "mine"
+        ]
+      },
+      "five": {
+        "statusDefense": 0.4
+      },
+      "eight": {
+        "outrageInvuln": true
+      }
+    },
+    {
+      "root": 150,
+      "members": [
+        150
+      ],
+      "id": "leader_psystrike_overlord",
+      "name": {
+        "zh": "精神利刃主宰",
+        "en": "Psystrike Overlord",
+        "es": "Psystrike Overlord"
+      },
+      "source": {
+        "base": "超梦释放的超能属性招式**直接无视敌人 50% 物理与特殊防御**（精神击破机制：以特殊形态计算物理薄弱处）；全队特殊攻击（`spa`）提升 50%；",
+        "active": "小队释放招式累计命中敌人 20 次后，超梦施展【全域念力静止】：全场所有非首领敌人被精神念力悬浮定身 2 秒（`classStunT = 2`），期间全场敌方发射的弹幕全部悬停冻结；定身结束时，超梦引爆所有悬停弹幕转化为反弹灵能炸弹！",
+        "cost": "**代价**：超梦作为孤高的人造最强神兽，队伍中其他队员造成的伤害降低 25%（神力压制全场，单核超梦主C），且超梦受到的恶属性与幽灵属性伤害提高 50%。",
+        "advances": [
+          "*   **Lv.5 压迫感**：全屏敌人移动速度常驻降低 20%，敌方招式冷却时间延长 30%。",
+          "*   **Lv.8 自我再生·精神超频**：超梦生命低于 30% 时瞬间恢复 50% 最大生命（每场限 1 次），且念力静止期间超梦暴击率提升至 100%。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "hit",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "psychicStop",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "stats": {
+          "spa": 0.25
+        },
+        "psychicPenetration": 0.25
+      },
+      "cost": {
+        "allyDamage": 0.85,
+        "captainIncomingTypes": {
+          "dark": 1.4,
+          "ghost": 1.4
+        }
+      },
+      "five": {
+        "globalPressure": 0.2
+      },
+      "eight": {
+        "deathHeal": 0.4,
+        "psychicStopCrit": true
+      }
+    },
+    {
+      "root": 151,
+      "members": [
+        151
+      ],
+      "id": "leader_origin_gene_omni",
+      "name": {
+        "zh": "万物始源",
+        "en": "Origin Gene Omni-Mastery",
+        "es": "Origin Gene Omni-Mastery"
+      },
+      "source": {
+        "base": "梦幻作为宝可梦始祖，**在远征商店与招式升级中可刷出全游戏所有 18 种属性与 15 种类型的全部招式**，不受任何属性词条屏蔽；全队招式冷却时间缩减 35%（`agility * 1.35`）；全队释放招式时消耗的 PP 减少 1 点；",
+        "active": "小队累计释放 6 种不同属性的招式后，全队触发【创世始源光环】：在全队身周形成一道持续 5 秒的七彩始源领域，领域内全队完全免疫所有直接接触与弹幕伤害（绝对无敌帧 `invuln`），且全队所有招式在此 5 秒内冷却时间归零（无冷却连续释放！）；",
+        "cost": "**代价**：全队基础最大生命值降低 30%，且小队若单场战斗只装备单一属性招式，造成的伤害降低 40%（强制鼓励多属性全能构筑）。",
+        "advances": [
+          "*   **Lv.5 同步特性**：当全队受到减速、定身或灼伤时，全场所有敌人同时被施加相同的负面状态。",
+          "*   **Lv.8 始源超能新星**：创世始源光环结束时，向全屏释放一次涵盖 18 种属性的始源新星爆炸，消灭所有普通杂兵。"
+        ],
+        "note": "Original proposal retained for traceability; runtime data and generated descriptions take precedence."
+      },
+      "charge": {
+        "event": "distinctType",
+        "targetSeconds": 60
+      },
+      "active": {
+        "kind": "genesis",
+        "duration": 5,
+        "powerBudgetSeconds": 10
+      },
+      "base": {
+        "allMoves": true,
+        "stats": {
+          "agility": 0.3
+        },
+        "ppDiscount": 1
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.2
+        },
+        "singleTypeDamage": 0.75
+      },
+      "five": {
+        "synchronize": true
+      },
+      "eight": {
+        "genesisNova": true
+      }
+    }
+  ],
+  "limits": {
+    "shieldHp": 0.4,
+    "healHpPerSecond": 0.03,
+    "procInterval": 0.25,
+    "activeCastInterval": 0.15,
+    "maxFields": 64,
+    "maxExtraProjectiles": 240
+  }
+}

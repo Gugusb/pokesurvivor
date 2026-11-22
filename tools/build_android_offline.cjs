@@ -13,6 +13,7 @@ function web(){
  const files=[...block.matchAll(/src="(js\/[^"?]+\.js)"/g)].map(m=>m[1]).filter(f=>f!=='js/ui/developer.js');
  let joined=files.map(f=>{
   let src=fs.readFileSync(path.join(ROOT,f),'utf8');
+  if(f==='js/core/leader-abilities-config.js')src='G.LeaderAbilitiesConfig='+fs.readFileSync(path.join(ROOT,'config/leader_abilities_gen1.json'),'utf8')+';G.LeaderAbilitiesReady=Promise.resolve(G.LeaderAbilitiesConfig);';
   if(f==='js/core/economy-config.js'||f==='js/core/trainer-talents-config.js'){const economy=f.includes('economy-'),key=economy?'Economy':'TrainerTalents';src='G.'+key+'Config='+fs.readFileSync(path.join(ROOT,economy?'config/economy_config.json':'config/trainer_talents.json'),'utf8')+';G.'+key+'Ready=Promise.resolve(G.'+key+'Config);';}
   if(f==='js/core/db.js'){
    const anchor='readyP = (async () => {';if(!src.includes(anchor))throw Error('Offline DB patch anchor changed');

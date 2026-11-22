@@ -266,10 +266,11 @@ G.HUD = (() => {
     const hasMega = hasZ || !!(pl.megaState && pl.megaState.id);
     const activeItem=!hasMega&&G.Items?.ACTIVE[pl.activeItem];
     const hasEquipment=hasMega||!!activeItem;
-    const totalW = (n + Number(hasEquipment)) * S + (n - 1 + Number(hasEquipment)) * GAP;
+    const hasLeader=G.LeaderAbilities?.active();const totalW = (n + Number(hasEquipment)+Number(hasLeader)) * S + (n - 1 + Number(hasEquipment)+Number(hasLeader)) * GAP;
     let sx = mobile?mobile.item.x:(w - totalW) / 2;
     // Por encima de la barra de inicio del iPhone (allí los toques a veces no llegan).
     const sy = mobile?mobile.item.y:h-S-18;
+    if(hasLeader){const lx=mobile?mobile.item.x-S-GAP:sx,ly=mobile?Math.max(12,mobile.item.y-S-GAP):sy;G.LeaderAbilitiesUI.hud(ctx,pl,lx,ly,S);if(!mobile)sx+=S+GAP;}
     if (hasZ) {
       const zs=G.ZMoves.state(pl),ready=zs.phase==='ready'&&zs.charges>0,choosing=zs.phase==='choose',casting=zs.phase==='cast';
       roundRect(ctx,sx,sy,S,S,12);ctx.fillStyle='rgba(40,30,10,.95)';ctx.fill();

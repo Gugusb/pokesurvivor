@@ -41,7 +41,7 @@
     G.I18n.startDom();
     // Espera a la fuente pixel para que la UI no salte al cargarla.
     const ready = document.fonts && document.fonts.load ? document.fonts.load('16px Pixelify') : Promise.resolve();
-    ready.catch(() => {}).then(() => G.Flow.boot());
+    Promise.all([ready.catch(() => {}),G.LeaderAbilitiesReady]).then(() => {G.LeaderMedals.install();G.Flow.boot();}).catch(e=>{console.error(e);document.getElementById('boot').textContent='队长特性数据加载失败 / Leader ability data unavailable. 请刷新页面 / Please reload.';});
   }
   if (document.readyState === 'loading') addEventListener('DOMContentLoaded', boot);
   else boot();

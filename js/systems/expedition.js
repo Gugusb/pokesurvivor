@@ -55,7 +55,8 @@ G.Expedition = (() => {
     const ability=G.Abilities.equipped(save,mon.dex);
     const medal=G.AbilityDefs.BY_ID[save.abilityEquipped?.[mon.dex]];
     add(L('Habilidad equipada','Equipped ability','已装备特性'),ability&&medal?T(medal.name):L('Ninguna','None','未装备'));
-    const z=save.zEquipped?.[mon.dex],mega=save.megaEquipped?.[mon.dex];
+    const leaderDef=G.LeaderAbilities?.definition(mon.dex);if(leaderDef){const dd=facts.lastElementChild;if(dd)dd.textContent=leaderDef.name[G.I18n.lang]||leaderDef.name.en;}
+    const z=null,mega=save.megaEquipped?.[mon.dex];
     const active=G.Items.ACTIVE[G.Equipment.active(save,mon.dex)];
     const carried=z?T(G.U.TYPE_NAME[z])+' · '+L('Cristal Z','Z-Crystal','Z纯晶'):G.Mega.owns(save,mega)?G.Mega.label(mega):active?T(active.name):L('Ninguno','None','未携带');
     add(L('Equipo inicial','Starting equipment','起始携带'),carried);
@@ -71,7 +72,7 @@ G.Expedition = (() => {
       const cell=node('div');cell.append(node('dt','',name),node('dd','',G.PlayerStats.fmt(stats[key])));
       numbers.append(cell);
     }
-    section.append(label,hero,facts,node('p','note',L('Atributos base con valores individuales','Base stats with individual values','含个体修正的基础属性')),numbers);
+    const abilityCard=G.LeaderAbilitiesUI?.card(mon.dex,1);section.append(label,hero,facts,node('p','note',L('Atributos base con valores individuales','Base stats with individual values','含个体修正的基础属性')),numbers);if(abilityCard){const details=node('details','leader-prep-details');details.append(node('summary','',L('Ver habilidad del capitán','View captain ability','查看队长五段特性')));details.append(abilityCard);section.append(details);}
     return {section,select};
   }
   function prepItems(){
@@ -196,7 +197,7 @@ G.Expedition = (() => {
   function begin(captain){
     clearBattleResult();
     const gens=draft?.gens||R.generations(captain.mon),leagueTier=G.LeagueRank?.view(G.DB.save).tier||1;run={...G.Economy.create(),captain,gens,pool:R.pool(gens),day:0,row:0,col:3,cycle:1,map:R.matrix(1,Math.random,leagueTier),leagueTier,phase:'route',xpJar:0,xpJarStored:0,xpJarSpent:0,arceus:false,cashout:false,history:[],kills:0,battlesCompleted:0};
-    G.ExpeditionSupplies?.begin(run);run.map=R.matrix(1,Math.random,leagueTier,run.permanentPerks?.events);offer=[];run.shopLocked=false;run.emblems={};G.Squad.begin(captain);G.TrainerTalents?.begin(run);run.unitPool=new G.UnitPool(run.pool);G.Squad.syncTrainer();G.ExpeditionRecorder?.beginRun();draft=null;note='';showRoute();G.ExpeditionSave?.begin();
+    G.ExpeditionSupplies?.begin(run);run.map=R.matrix(1,Math.random,leagueTier,run.permanentPerks?.events);offer=[];run.shopLocked=false;run.emblems={};G.Squad.begin(captain);G.TrainerTalents?.begin(run);run.unitPool=new G.UnitPool(run.pool);G.Squad.syncTrainer();G.LeaderAbilities?.begin(run);G.ExpeditionRecorder?.beginRun();draft=null;note='';showRoute();G.ExpeditionSave?.begin();
   }
   function showRoute(){
     if(!run)return;run.phase='route';G.Game.expeditionPause();renderRoute();if(run.pendingTalentPicks?.length)G.TrainerTalentsUI?.showPickModal(renderRoute);
@@ -334,7 +335,7 @@ G.Expedition = (() => {
     run.extraStart=JSON.parse(JSON.stringify(G.Game.loot||{}));
     run.pendingSpawns=[];G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Pickups.clear();G.Hazards.clear();G.Path.clear();
     G.World.setBiome(Math.floor((run.day-1)/5));G.Squad.recover();
-    G.ExpeditionDamage?.beginBattle(run.day);G.TypeBonds?.beginStage();G.SquadTraits?.beginBattle();G.TrainerTalents?.beginBattle(run);G.SquadSupport?.beginBattle();G.ExpeditionGrowth?.beginBattle();G.ExpeditionRecorder?.beginBattle(run);
+    G.ExpeditionDamage?.beginBattle(run.day);G.TypeBonds?.beginStage();G.SquadTraits?.beginBattle();G.TrainerTalents?.beginBattle(run);G.SquadSupport?.beginBattle();G.LeaderAbilities?.beginBattle();G.ExpeditionGrowth?.beginBattle();G.ExpeditionRecorder?.beginBattle(run);
     for(const p of G.Squad.actors())G.Abilities.resetStage(p,run.day);
     if(kind==='boss')run.spawned=spawn(true)?1:0;
     G.UI.hideAll();G.Touch.reset();G.Game.expeditionResume();G.Audio.sfx('confirm');
@@ -432,7 +433,7 @@ G.Expedition = (() => {
   }
   function finishBattle(cleared){
     if(run.phase!=='combat')return;
-    G.ExpeditionGrowth?.endBattle();
+    G.LeaderAbilities?.finishBattle();G.ExpeditionGrowth?.endBattle();
     const damage=R.squadDamage([...G.EnemyMgr.all(),...(run.pendingSpawns||[]).map(w=>w.enemy)],R.cycleOf(run.day));
     G.ExpeditionSupplies?.absorb(run,damage);damage.before=run.squadHp;run.squadHp=Math.max(0,run.squadHp-damage.applied);damage.after=run.squadHp;run.squadDamage=damage;
     if(run.squadHp<=0&&G.TrainerTalents?.rescue(run)){damage.after=run.squadHp;damage.rescued=true;}
@@ -445,7 +446,7 @@ G.Expedition = (() => {
     bankGroundXp();G.TrainerTalents?.battleEnd(run);G.ExpeditionSupplies?.battleEnd(run,cleared);
     note=cleared?L('¡Todos derrotados!','All foes defeated!','全歼奖励！'):L('Etapa superada','Stage survived','成功度过波次');
     G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Hazards.clear();
-    const rewards=G.EconomyConfig.compatibility,itemCount=run.kind==='elite'?rewards.eliteVictoryItems:cleared&&run.kind==='battle'?rewards.normalClearItems:0;
+    const rewards=G.EconomyConfig.compatibility,itemCount=run.kind==='elite'?rewards.eliteVictoryItems+(G.LeaderAbilities?.extraEliteItems()||0):cleared&&run.kind==='battle'?rewards.normalClearItems:0;
     for(let i=0;i<itemCount;i++)G.Pickups.drop('item',run.captain.x,run.captain.y,G.Items.roll());
     showBattleResult(cleared);
   }
@@ -488,7 +489,7 @@ G.Expedition = (() => {
   function recordPickup(p){
     if(!run||!['combat','rewards'].includes(run.phase))return;
     if(!G.EconomyConfig.combatGoldDrops&&['coin','treasure'].includes(p.kind))return;
-    if(p.kind==='coin'||p.kind==='treasure')run.inWaveCoinDrops+=Math.max(0,Number(p.value)||0);
+    G.LeaderAbilities?.pickup();if(p.kind==='coin'||p.kind==='treasure')run.inWaveCoinDrops+=Math.max(0,Number(p.value)||0);
     const k=p.kind,key=k==='item'?'item:'+p.value:k;
     if(['xp','xpBig','coin','treasure'].includes(k))run.loot[key]=(run.loot[key]||0)+Number(p.value||0);
     else if(['ticket','ticket10','item','bossChest'].includes(k))run.loot[key]=(run.loot[key]||0)+1;
@@ -549,7 +550,7 @@ G.Expedition = (() => {
     el.dataset.pressure=pressure||'';
     el.textContent=L('Día','Day','第')+' '+run.day+(G.I18n.lang==='zh'?' 天':'')+' · '+L('Ciclo','Cycle','周期')+' '+R.cycleOf(run.day)+' · '+G.Economy.formatGold(run.gold)+' '+L('oro','gold','局内金币')+' · '+objective+' · '+(G.Squad.deployed().filter(p=>!p.dead).length+1)+'/'+G.Squad.capacity+((run.xpJar||0)>0?' · '+L('Reserva XP ','XP jar ','经验罐 ')+Math.round(run.xpJar):'');
   }
-  function restoreData(saved,goods){run=saved;G.ExpeditionSupplies?.restore(run);run.leagueTier??=G.LeagueRank?.view(G.DB.save).tier||1;G.LeagueRank?.filterMap(run);if(!(G.LeagueRank?.allows('types',run)??true))run.bossEmblemChoices=null;if(!(G.LeagueRank?.allows(run.phase,run)??true)){run.phase='rest';run.eventKind='rest';}offer=goods||[];draft=null;note='';clearBattleResult();}
+  function restoreData(saved,goods){run=saved;G.LeaderAbilities?.restore?.();G.ExpeditionSupplies?.restore(run);run.leagueTier??=G.LeagueRank?.view(G.DB.save).tier||1;G.LeagueRank?.filterMap(run);if(!(G.LeagueRank?.allows('types',run)??true))run.bossEmblemChoices=null;if(!(G.LeagueRank?.allows(run.phase,run)??true)){run.phase='rest';run.eventKind='rest';}offer=goods||[];draft=null;note='';clearBattleResult();}
   function restoreView(){G.Game.expeditionPause();if(run.phase==='training')G.ExpeditionTraining.open(run,()=>finishStage(),true);else if(run.phase==='pokemon-training')G.PokemonTraining.open(run,()=>{if(run.labChoice==='train'){run.phase='upgrades';G.UI.hideAll();G.Game.expeditionResume();}else finishStage();});else if(run.phase==='rest')openRest();else refreshScreen();if(run.pendingTalentPicks?.length)G.TrainerTalentsUI.showPickModal(()=>restoreView());}
   return {restoreData,restoreView,skillLabel:kind=>G.SquadBonds.label(kind),tags,talentText,progressPanel,refreshScreen,restChoice,recordPokemonXp,recordPickup,bankGroundXp,takeStoredXp,showLoot,claimCompanion,setup,begin,reset,choose,buy,refreshShop,toggleShopLock,upgrade,tick,tickPresentation,killed,depart,continueAfterVictory,hud,summary,showRoute,
     drawWarnings,drawEnemyPointers,get active(){return !!run;},get inCombat(){return run?.phase==='combat';},get phase(){return run?.phase;},get run(){return run;},get offers(){return offer;}};
