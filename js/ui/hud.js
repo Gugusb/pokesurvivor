@@ -14,15 +14,49 @@ G.HUD = (() => {
     ctx.closePath();
   }
 
-  function bar(ctx, x, y, w, h, frac, col, bg = 'rgba(0,0,0,.55)') {
-    roundRect(ctx, x, y, w, h, h / 2); ctx.fillStyle = bg; ctx.fill();
+  function bar(ctx, x, y, w, h, frac, col, bg = 'rgba(5,11,24,.78)') {
+    const r = Math.min(h / 2, 6);
+    roundRect(ctx, x, y, w, h, r);
+    ctx.fillStyle = bg;
+    ctx.fill();
+    ctx.lineWidth = 1;
+    ctx.strokeStyle = 'rgba(164,206,255,0.22)';
+    ctx.stroke();
     if (frac > 0) {
+      const fw = Math.max(2, w * G.U.clamp(frac, 0, 1));
       ctx.save();
-      roundRect(ctx, x, y, w, h, h / 2); ctx.clip();
+      roundRect(ctx, x, y, w, h, r);
+      ctx.clip();
       ctx.fillStyle = col;
-      ctx.fillRect(x, y, w * G.U.clamp(frac, 0, 1), h);
+      ctx.fillRect(x, y, fw, h);
+      // Glossy upper highlight on filled bar for 3D cylindrical depth
+      ctx.fillStyle = 'rgba(255,255,255,0.26)';
+      ctx.fillRect(x, y, fw, Math.max(1, h * 0.42));
       ctx.restore();
     }
+  }
+
+  function panel3D(ctx, x, y, w, h, r, topCol, botCol, borderCol, lipCol) {
+    if (lipCol) {
+      roundRect(ctx, x, y + 3, w, h, r);
+      ctx.fillStyle = lipCol;
+      ctx.fill();
+    }
+    const g = ctx.createLinearGradient(x, y, x, y + h);
+    g.addColorStop(0, topCol);
+    g.addColorStop(1, botCol);
+    roundRect(ctx, x, y, w, h, r);
+    ctx.fillStyle = g;
+    ctx.fill();
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = borderCol;
+    ctx.stroke();
+    ctx.save();
+    roundRect(ctx, x + 1, y + 1, w - 2, Math.max(2, h * 0.4), Math.max(1, r - 1));
+    ctx.clip();
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fillRect(x + 1, y + 1, w - 2, 2);
+    ctx.restore();
   }
 
   function draw(ctx, w, h, pl, st) {
@@ -33,29 +67,44 @@ G.HUD = (() => {
 
     // ---------- barra de experiencia (borde superior) ----------
     const xpF = pl.xp / pl.xpNext;
-    ctx.fillStyle = 'rgba(0,0,0,.5)';
-    ctx.fillRect(0, 0, w, 7);
+    ctx.fillStyle = 'rgba(4,9,22,.78)';
+    ctx.fillRect(0, 0, w, 8);
+    const xpW = w * G.U.clamp(xpF, 0, 1);
     const g = ctx.createLinearGradient(0, 0, w, 0);
-    g.addColorStop(0, '#4fd1ff'); g.addColorStop(1, '#a98bff');
+    g.addColorStop(0, '#38bdf8'); g.addColorStop(0.55, '#6366f1'); g.addColorStop(1, '#c084fc');
     ctx.fillStyle = g;
-    ctx.fillRect(0, 0, w * G.U.clamp(xpF, 0, 1), 7);
+    ctx.fillRect(0, 0, xpW, 8);
+    ctx.fillStyle = 'rgba(255,255,255,0.32)';
+    ctx.fillRect(0, 0, xpW, 2);
+    ctx.fillStyle = 'rgba(180,220,255,0.22)';
+    ctx.fillRect(0, 8, w, 1);
 
-    // ---------- vida + nivel ----------
-    const px = 16, py = 20;
-    ctx.font = F(800, 13);
-    ctx.fillStyle = '#eaf2ff';
+    // ---------- vida + nivel (3D Captain Module) ----------
+    const px = 14, py = 18;
+    const capName = pl.megaForm ? G.MegaPreview.label(G.MegaPreview.BY_ID[pl.megaForm]) + (G.Mega && G.Mega.active(pl) ? ' · Mega ' + Math.ceil(pl.megaState.left) + 's' : ' · ' + G.T('Vista previa de recursos')) : pl.mon.name;
+    ctx.font = F(800, 12);
+    const modW = Math.max(232, ctx.measureText(capName).width + 20);
+    panel3D(ctx, px - 4, py - 4, modW, 42, 11, 'rgba(24,46,88,0.88)', 'rgba(10,20,44,0.92)', 'rgba(148,198,255,0.35)', 'rgba(3,7,18,0.7)');
+
+    ctx.font = F(800, 12);
+    ctx.fillStyle = '#f2f7ff';
     ctx.textAlign = 'left';
-    ctx.fillText(pl.megaForm ? G.MegaPreview.label(G.MegaPreview.BY_ID[pl.megaForm]) + (G.Mega && G.Mega.active(pl) ? ' · Mega ' + Math.ceil(pl.megaState.left) + 's' : ' · ' + G.T('Vista previa de recursos')) : pl.mon.name, px, py + 10);
+    ctx.fillText(capName, px + 4, py + 10);
 
-    ctx.font = F(700, 11);
-    ctx.fillStyle = '#ffcb3d';
-    ctx.fillText('Nv. ' + pl.level, px, py + 26);
-
-    bar(ctx, px + 48, py + 17, 168, 11, pl.hp / pl.maxHp, '#ff5f6d');
-    ctx.font = F(700, 10);
-    ctx.fillStyle = 'rgba(255,255,255,.95)';
+    // Level pill
+    roundRect(ctx, px + 3, py + 16, 44, 15, 7);
+    ctx.fillStyle = 'rgba(255,212,71,0.18)'; ctx.fill();
+    ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255,212,71,0.55)'; ctx.stroke();
+    ctx.font = F(800, 10);
+    ctx.fillStyle = '#ffd447';
     ctx.textAlign = 'center';
-    ctx.fillText(Math.ceil(pl.hp) + ' / ' + Math.ceil(pl.maxHp), px + 48 + 84, py + 26);
+    ctx.fillText('Lv.' + pl.level, px + 25, py + 27);
+
+    bar(ctx, px + 52, py + 17, 168, 12, pl.hp / pl.maxHp, '#ff5468');
+    ctx.font = F(800, 10);
+    ctx.fillStyle = 'rgba(255,255,255,.97)';
+    ctx.textAlign = 'center';
+    ctx.fillText(Math.ceil(pl.hp) + ' / ' + Math.ceil(pl.maxHp), px + 52 + 84, py + 26);
 
     // buffs activos
     const COL = { atk: '#ff6b4d', spd: '#7fe0ff', def: '#b0b8c8', regen: '#5fe08a' };
@@ -67,37 +116,43 @@ G.HUD = (() => {
       if (b.n <= 0) continue;
       ctx.font = F(800, 9);
       const txt = LBL[k] + ' ×' + pl.buffStacks(b);
-      const tw = ctx.measureText(txt).width + 12;
-      roundRect(ctx, bx, py + 34, tw, 15, 7);
-      ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fill();
+      const tw = ctx.measureText(txt).width + 14;
+      roundRect(ctx, bx, py + 43, tw, 16, 8);
+      ctx.fillStyle = 'rgba(9,19,40,.84)'; ctx.fill();
+      ctx.lineWidth = 1; ctx.strokeStyle = COL[k]; ctx.stroke();
       ctx.fillStyle = COL[k];
-      ctx.fillText(txt, bx + 6, py + 45);
+      ctx.fillText(txt, bx + 7, py + 54);
       bx += tw + 5;
     }
 
     ctx.font = F(700, 10); ctx.fillStyle = '#e8c5ff';
-    ctx.fillText(G.Abilities.status(pl), px, py + 70);
+    ctx.fillText(G.Abilities.status(pl), px, py + 76);
 
     // ---------- reloj / bioma / kills ----------
+    const subTxt = G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' ' + (G.Expedition?.active?G.T('Pokémonedas'):'MONEDAS');
+    ctx.font = F(600, 10);
+    const clkW = Math.max(210, Math.min(w - 40, ctx.measureText(subTxt).width + 32));
+    panel3D(ctx, w / 2 - clkW / 2, 10, clkW, 56, 13, 'rgba(20,39,76,0.88)', 'rgba(9,18,40,0.92)', 'rgba(148,198,255,0.32)', 'rgba(3,7,18,0.65)');
+
     ctx.textAlign = 'center';
-    ctx.font = F(800, 26);
-    ctx.fillStyle = 'rgba(255,255,255,.95)';
-    ctx.fillText(G.U.mmss(st.time), w / 2, 42);
+    ctx.font = F(800, 24);
+    ctx.fillStyle = '#f8fbff';
+    ctx.fillText(G.U.mmss(st.time), w / 2, 44);
     if (G.Difficulty) {
       ctx.font = F(700, 10); ctx.fillStyle = '#ffd46b';
-      ctx.fillText(G.T('Dificultad') + ' ' + (st.difficulty || G.Difficulty.current) + '★ · ' + (G.Game.speed || 1) + '×', w / 2, 16);
+      ctx.fillText(G.T('Dificultad') + ' ' + (st.difficulty || G.Difficulty.current) + '★ · ' + (G.Game.speed || 1) + '×', w / 2, 22);
     }
     ctx.font = F(600, 10);
-    ctx.fillStyle = '#8fa3c4';
-    ctx.fillText(G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' ' + (G.Expedition?.active?G.T('Pokémonedas'):'MONEDAS'), w / 2, 58);
+    ctx.fillStyle = '#9db9de';
+    ctx.fillText(subTxt, w / 2, 59);
 
     // Live score stays clear of the health bar, boss bar and touch controls.
     if(G.Game.runScore){
-      const score=G.Game.runScore();ctx.textAlign='right';ctx.font=F(800,12);
+      const score=G.Game.runScore();ctx.font=F(800,11);
       const label=G.T('Puntuación estimada')+' '+score.total.toLocaleString();
-      const width=ctx.measureText(label).width+16;
-      roundRect(ctx,w-width-12,98,width,24,8);ctx.fillStyle='rgba(15,24,52,.8)';ctx.fill();
-      ctx.fillStyle='#ffe19b';ctx.fillText(label,w-20,114);
+      const width=ctx.measureText(label).width+20;
+      panel3D(ctx,w-width-12,96,width,25,10,'rgba(24,45,84,0.88)','rgba(11,22,46,0.94)','rgba(255,212,71,0.42)','rgba(3,7,18,0.65)');
+      ctx.textAlign='right';ctx.fillStyle='#ffe19b';ctx.fillText(label,w-22,112);
     }
 
     // ---------- clima (arriba a la derecha) ----------
@@ -106,13 +161,12 @@ G.HUD = (() => {
       ctx.font = F(800, 11);
       ctx.textAlign = 'left';
       const txt = wx.name.toUpperCase() + ' · ' + Math.ceil(wx.left) + 's' + (G.Weather.suppressed ? ' · ' + G.T('Clima anulado') : '');
-      const tw = ctx.measureText(txt).width + 40;
-      const x0 = w - tw - 16 - (touch ? 56 : 0), y0 = 14;
-      roundRect(ctx, x0, y0, tw, 26, 9);
-      ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fill();
-      G.Icons.draw(ctx, wx.icon, x0 + 6, y0 + 3, 20);
+      const tw = ctx.measureText(txt).width + 42;
+      const x0 = w - tw - 14 - (touch ? 56 : 0), y0 = 14;
+      panel3D(ctx, x0, y0, tw, 28, 10, 'rgba(20,39,76,0.88)', 'rgba(9,19,42,0.94)', 'rgba(155,205,255,0.34)', 'rgba(3,7,18,0.65)');
+      G.Icons.draw(ctx, wx.icon, x0 + 7, y0 + 4, 20);
       ctx.fillStyle = wx.color;
-      ctx.fillText(txt, x0 + 32, y0 + 17);
+      ctx.fillText(txt, x0 + 33, y0 + 18);
     }
 
     // ---------- barra del jefe ----------
@@ -120,10 +174,11 @@ G.HUD = (() => {
     if (boss) {
       ctx.textAlign='center';
       const bw = Math.min(420, w - 80);
-      bar(ctx, (w - bw) / 2, 70, bw, 12, boss.hp / boss.maxHp, '#ffcb3d');
+      panel3D(ctx, (w - bw) / 2 - 4, 69, bw + 8, 18, 9, 'rgba(46,20,32,0.88)', 'rgba(22,9,18,0.94)', 'rgba(255,203,61,0.55)', 'rgba(3,7,18,0.7)');
+      bar(ctx, (w - bw) / 2, 72, bw, 12, boss.hp / boss.maxHp, '#ffcb3d');
       ctx.font = F(800, 10);
       ctx.fillStyle = '#20160a';
-      ctx.fillText((boss.name+(boss.bossGuard?.resistance>.1?' · '+G.T('Guardia furiosa'):'')).toUpperCase(), w / 2, 80);
+      ctx.fillText((boss.name+(boss.bossGuard?.resistance>.1?' · '+G.T('Guardia furiosa'):'')).toUpperCase(), w / 2, 82);
     }
 
     // ---------- aviso ----------
@@ -154,15 +209,16 @@ G.HUD = (() => {
       const pw = pl.power, txt = pw.def.name.toUpperCase() + ' ' + Math.ceil(pw.t) + 's';
       ctx.font = F(800, 9);
       ctx.textAlign = 'left';
-      const tw = ctx.measureText(txt).width + 12;
-      roundRect(ctx, bx, py + 34, tw, 15, 7);
-      ctx.fillStyle = 'rgba(0,0,0,.6)'; ctx.fill();
+      const tw = ctx.measureText(txt).width + 14;
+      roundRect(ctx, bx, py + 43, tw, 16, 8);
+      ctx.fillStyle = 'rgba(9,19,40,.84)'; ctx.fill();
+      ctx.lineWidth = 1; ctx.strokeStyle = pw.def.color; ctx.stroke();
       ctx.fillStyle = pw.def.color;
-      ctx.fillText(txt, bx + 6, py + 45);
+      ctx.fillText(txt, bx + 7, py + 54);
       bx += tw + 5;
     }
 
-    if (G.Coop.active) drawCoop(ctx, w, h, pl, px, py + (bx > px ? 56 : 40));
+    if (G.Coop.active) drawCoop(ctx, w, h, pl, px, py + (G.Abilities.status(pl) ? 84 : bx > px ? 65 : 46));
 
     // Grieta: flecha grande que late en el borde si no se ve, y si se ve, una
     // flecha que bota encima; en la arena, cuenta atrás.
@@ -273,8 +329,8 @@ G.HUD = (() => {
     if(hasLeader){const lx=mobile?mobile.item.x-S-GAP:sx,ly=mobile?Math.max(12,mobile.item.y-S-GAP):sy;G.LeaderAbilitiesUI.hud(ctx,pl,lx,ly,S);if(!mobile)sx+=S+GAP;}
     if (hasZ) {
       const zs=G.ZMoves.state(pl),ready=zs.phase==='ready'&&zs.charges>0,choosing=zs.phase==='choose',casting=zs.phase==='cast';
-      roundRect(ctx,sx,sy,S,S,12);ctx.fillStyle='rgba(40,30,10,.95)';ctx.fill();
-      ctx.strokeStyle=ready||choosing?'#fff0a0':'#a7a2b8';ctx.lineWidth=choosing?4:2;ctx.stroke();
+      panel3D(ctx,sx,sy,S,S,13,'rgba(64,46,16,.95)','rgba(28,18,6,.96)',ready||choosing?'#fff0a0':'#a7a2b8','rgba(10,6,2,0.85)');
+      if(choosing){ctx.lineWidth=3.5;ctx.strokeStyle='#fff3a1';roundRect(ctx,sx,sy,S,S,13);ctx.stroke();}
       G.ZMoves.drawStone(ctx,sx+13,sy+3,28,zs.type);
       ctx.font=F(800,9);ctx.fillStyle='#fff';ctx.textAlign='center';
       ctx.fillText(choosing?G.T('Elegir Z'):casting?'Z…':zs.phase==='cooldown'?Math.ceil(zs.cooldown)+'s':zs.charges+'/3',sx+S/2,sy+44);
@@ -283,8 +339,8 @@ G.HUD = (() => {
       G.Touch.addButton(sx,sy,S,S,()=>G.ZMoves.arm(pl),GAP/2);sx+=S+GAP;
     } else if (hasMega) {
       const ms = pl.megaState, running = G.Mega.active(pl), ready = !running && G.Mega.eligible(pl) && ms.energy >= G.Mega.CAP;
-      roundRect(ctx, sx, sy, S, S, 12); ctx.fillStyle = 'rgba(36,16,55,.95)'; ctx.fill();
-      ctx.strokeStyle = ready ? '#fff2a0' : '#dc8cff'; ctx.lineWidth = ready ? 3 : 1.5; ctx.stroke();
+      panel3D(ctx,sx,sy,S,S,13,'rgba(58,28,88,.95)','rgba(26,12,44,.96)',ready?'#fff2a0':'#dc8cff','rgba(10,4,18,0.85)');
+      if(ready){ctx.lineWidth=2.5;ctx.strokeStyle='#fff2a0';roundRect(ctx,sx,sy,S,S,13);ctx.stroke();}
       G.Icons.draw(ctx, 'megaStone', sx + 12, sy + 5, 30);
       ctx.font = F(800, 9); ctx.fillStyle = '#fff'; ctx.textAlign = 'center';
       ctx.fillText(running ? Math.ceil(ms.left) + 's' : ready ? G.T('Lista') : Math.floor(ms.energy / G.Mega.CAP * 100) + '%', sx + S / 2, sy + 44);
@@ -295,7 +351,7 @@ G.HUD = (() => {
     }
     if(activeItem){
       const ix=sx,iy=sy;
-      roundRect(ctx,ix,iy,S,S,12);ctx.fillStyle='rgba(20,35,45,.9)';ctx.fill();ctx.lineWidth=1.5;ctx.strokeStyle=pl.activeItemCd<=0?'#9ef5c1':'#63708b';ctx.stroke();
+      panel3D(ctx,ix,iy,S,S,13,'rgba(28,54,70,.94)','rgba(12,26,38,.96)',pl.activeItemCd<=0?'#9ef5c1':'#63708b','rgba(4,10,18,0.85)');
       ctx.font=F(700,9);ctx.textAlign='center';ctx.fillStyle='#c6efda';if(!touch)ctx.fillText(G.T(activeItem.name),ix+S/2,iy-6);
       G.Icons.draw(ctx,activeItem.icon,ix+11,iy+5,32);ctx.font=F(800,9);ctx.textAlign='center';ctx.fillStyle='#d8f4ff';
       ctx.fillText(pl.activeItemCd>0?Math.ceil(pl.activeItemCd)+'s':G.T(pl.ppPotionReady?'PP preparados':'Lista'),ix+S/2,iy+S-7);
@@ -324,14 +380,21 @@ G.HUD = (() => {
       G.Touch.addButton(x,y,S,S,()=>{if(m&&G.Game.state==='playing'){G.MoveControl?G.MoveControl.input(pl,i):pl.setActive(i);G.Audio.sfx('click');}},touch?3:GAP/2+3);
       const col = m ? G.U.TYPE_COLOR[m.type] : '#4a5468';
 
-      // fondo
-      roundRect(ctx, x, y, S, S, 12);
-      ctx.fillStyle = on ? 'rgba(20,30,50,.95)' : 'rgba(10,16,28,.8)';
-      ctx.fill();
-      ctx.lineWidth = on ? 2.5 : fused || (m && m.evolved) ? 2 : 1.2;
-      // Vínculo: borde rosa. Evolucionado: dorado.
-      ctx.strokeStyle = fused ? BOND : m && m.evolved ? '#ffd23f' : on ? col : 'rgba(140,170,210,.22)';
-      ctx.stroke();
+      // 3D beveled cartridge keycap
+      const rim = fused ? BOND : m && m.evolved ? '#ffd23f' : on ? col : 'rgba(148,188,235,.32)';
+      panel3D(
+        ctx, x, y, S, S, 13,
+        on ? 'rgba(34,58,104,.96)' : 'rgba(18,32,62,.88)',
+        on ? 'rgba(15,28,58,.98)' : 'rgba(8,15,32,.92)',
+        rim,
+        on ? 'rgba(4,9,24,.9)' : 'rgba(4,8,18,.72)'
+      );
+      if (on || fused || (m && m.evolved)) {
+        ctx.lineWidth = on ? 2.4 : 1.8;
+        ctx.strokeStyle = rim;
+        roundRect(ctx, x, y, S, S, 13);
+        ctx.stroke();
+      }
 
       if(hasZ && G.ZMoves.busy(pl)){
         const compatible=G.ZMoves.eligible(pl,i).length>0;

@@ -1134,3 +1134,12 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 - 必要验证：7项队长机制测试（包含74种Z真实战斗接口执行），旧特性及隔离账号服务94项通过；隔离数据库本地网页验证准备、键盘Z、战斗结算和续玩，充能0.35和小队HP20均保留。
 - 数值为首轮试玩配置；静态估算不是实际DPS结论。控制暂用现有定身接口表达睡眠/混乱；领域、轨迹及大范围攻击使用现有战斗几何，未新增敌人暴击系统。治疗/盾/百分比首领伤害受统一安全上限约束，调度最短0.15秒。部分进阶采用现有接口的近似表现，后续需按实际构筑继续调参及细化视觉。
 - 构建：标准 build、export_data、Python 3.12+ SEO；不包含工作区中另行开发的标题/3D界面，不合并已弃用界面分支。
+
+## v0.43.0-alpha.51 — 2026-11-23
+
+- 基于 `v0.43.0-alpha.50` 重设计全套前端 UI，保持全部交互流程、DOM 锚点、数据属性及多语言键兼容：
+  - `css/style.css`：建立统一的现代宝可梦立体质感设计令牌（玻璃陶瓷多层面板、顶部高光与底部压边阴影、宝可梦红/联盟金/洛托姆青配色、实体 3D 按压按钮、内凹输入框与标签栏），优化中文及多语言可读排版；主菜单指令区改为双栏 3D 图标卡片矩阵并完善竖屏/横屏手机适配；图鉴、卡包、抽奖、任务、成就、孵蛋屋、战斗背包及结算卡片统一升级。
+  - `css/expedition.css`、`css/leader-abilities.css`、`css/league-rank.css`、`css/trainer-talents.css`：统一战前准备、五段队长特性档案、联盟训练家卡、三选一日程卡牌与 21×7 立体棋盘、商店/集市/修炼室、小队编队与升星演化弹窗、战后结算与伤害统计浮窗、训练家潜能球卡的立体质感与响应式边界。
+  - `js/ui/hud.js`、`js/ui/leader-abilities-ui.js`：将局内 Canvas HUD 的经验条、队长生命模块、顶部计时与 Boss 血条、天气/评分胶囊以及底部技能槽/Z 槽升级为 3D 倒角键帽与立体进度条，并确保协同队友血条不与状态栏重叠。
+- 验证：运行 `node --test tools/test_abilities.cjs tools/test_leader_abilities.cjs tools/test_character_profiles.cjs tools/test_league_rank.cjs tools/test_release_mode.cjs`（配合服务依赖 `NODE_PATH`），96/96 通过；运行 `node tools/build.js`（`app.min.js?v=66864c5dba`）与 `node tools/export_data.js`；使用 Playwright + 隔离内存服务端完成桌面（1280×800）、手机竖屏（390×844）及手机横屏（844×390）实际渲染与截图检查，页面异常为零。
+- 限制：当前运行环境未安装 Python 3.12+（`py -3.14` 不可用），未能在本机重新执行 `tools/make_seo_pages.py`；静态 SEO 派生页需在安装 Python 3.12+ 后再生成同步。

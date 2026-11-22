@@ -50,10 +50,14 @@ G.LeaderAbilitiesUI=(()=>{
  function hud(ctx,p,x,y,size){
   if(!G.LeaderAbilities.active())return false;
   const d=G.LeaderAbilities.definition(p.dex),s=G.LeaderAbilities.state(),unlocked=G.LeaderMedals.unlocked(p.dex),ready=unlocked&&s.charge>=1&&!(s.zUntil>s.time);
-  ctx.save();ctx.fillStyle='#122b43';ctx.strokeStyle=ready?'#ffe293':'#74adce';ctx.lineWidth=ready?3:1.5;ctx.beginPath();ctx.roundRect(x,y,size,size,12);ctx.fill();ctx.stroke();
-  ctx.fillStyle=ready?'#fff1bb':'#9ebcd3';ctx.textAlign='center';ctx.font='bold '+Math.round(size*.42)+'px sans-serif';ctx.fillText('Z',x+size/2,y+size*.52);
+  ctx.save();
+  ctx.fillStyle='rgba(4,9,22,0.85)';ctx.beginPath();ctx.roundRect(x,y+3,size,size,13);ctx.fill();
+  const g=ctx.createLinearGradient(x,y,x,y+size);g.addColorStop(0,ready?'#3f3518':'#1d3d61');g.addColorStop(1,ready?'#1f1809':'#0c1e36');
+  ctx.fillStyle=g;ctx.strokeStyle=ready?'#ffe48f':'#74adce';ctx.lineWidth=ready?2.5:1.5;ctx.beginPath();ctx.roundRect(x,y,size,size,13);ctx.fill();ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,0.16)';ctx.fillRect(x+4,y+2,size-8,2);
+  ctx.fillStyle=ready?'#fff3b8':'#a8cce4';ctx.textAlign='center';ctx.font='bold '+Math.round(size*.42)+'px sans-serif';ctx.fillText('Z',x+size/2,y+size*.52);
   ctx.font='bold 10px sans-serif';ctx.fillText(unlocked?Math.floor(s.charge*100)+'%':L('勋章','Medal'),x+size/2,y+size-9);
-  ctx.fillStyle='#294256';ctx.fillRect(x+5,y+size-5,size-10,3);ctx.fillStyle='#ffe19c';ctx.fillRect(x+5,y+size-5,(size-10)*s.charge,3);ctx.restore();
+  ctx.fillStyle='#193048';ctx.fillRect(x+5,y+size-5,size-10,3);ctx.fillStyle='#ffe19c';ctx.fillRect(x+5,y+size-5,(size-10)*s.charge,3);ctx.restore();
   G.Touch.addButton(x,y,size,size,()=>{if(unlocked)G.LeaderAbilities.activate(p);else G.UI.toast(L('获得该进化链任意特性勋章即可解锁主动Z。','Obtain any ability medal in this evolution family to unlock manual Z.'));},3);return true;
  }
  return {card,hud,lines,words,zText,chargeWords};
