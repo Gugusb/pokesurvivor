@@ -39,6 +39,13 @@ test('charge requires matching ordinary actions; manual cast consumes one, no au
  assert.equal(L.activate(),true);assert.equal(s.charge,0);assert.equal(s.zCasts,1);assert.equal(L.activate(),false);
  L.finishBattle();s.charge=.42;L.beginBattle();assert.equal(s.charge,.42);G.Expedition.run.phase='route';L.tick(100);assert.equal(s.charge,.42);
 });
+test('Charmander amplifies and labels cone, without applying the effect to ordinary projectiles',()=>{
+ const s=setup(4),{G,p}=s;s.load('js/ui/leader-abilities-ui.js');
+ const cone={kind:'cone',life:2,knock:10},projectile={kind:'projectile',life:2,knock:10};
+ assert.equal(G.LeaderAbilities.move(p,cone).life,3.4);assert.equal(G.LeaderAbilities.move(p,cone).knock,15);assert.equal(G.LeaderAbilities.agility(p,cone),1.3);
+ assert.equal(G.LeaderAbilities.move(p,projectile).life,2);assert.equal(G.LeaderAbilities.move(p,projectile).knock,10);assert.equal(G.LeaderAbilities.agility(p,projectile),1);
+ assert.equal(G.LeaderAbilitiesUI.kindLabel('cone'),'扇形');assert.ok(G.LeaderAbilitiesUI.lines(G.LeaderAbilities.definition(4).base).every(x=>x.startsWith('扇形')));
+});
 test('HP modifiers preserve wounds through repeated refreshes and never touch strategic squad HP',()=>{
  const {G,p}=setup(143);p.hp=p.maxHp*.2;const max=p.maxHp,hp=p.hp;
  for(let i=0;i<100;i++)G.LeaderAbilities.sync(p);assert.equal(p.maxHp,max);assert.equal(p.hp,hp);assert.equal(G.Expedition.run.squadHp,20);

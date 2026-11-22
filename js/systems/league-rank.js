@@ -41,7 +41,7 @@ G.LeagueRank=(()=>{
     if(r.applied>0)s.leagueRank.results[r.id]={kind:r.kind,award:r.award,hp:r.hp,at:options.at??Date.now()};
     return r;
   }
-  function rules(input=G.Expedition?.run){const tier=typeof input==='number'?input:input?.leagueTier??view(G.DB?.save).tier;return {tier,skill:true,types:tier>=2,traits:tier>=3,'pokemon-training':tier>=3,training:tier>=4,eggs:tier>=4,eggTags:tier>=3,talents:true,advancedFruits:tier>=4,pityEvery:tier===1?4:tier===2?8:0,companionChance:tier===1?.6:tier===2?.4:null};}
+  function rules(input=G.Expedition?.run){const tier=typeof input==='number'?input:input?.leagueTier??view(G.DB?.save).tier;return {tier,skill:true,types:tier>=2,traits:tier>=3,'pokemon-training':tier>=3,training:true,eggs:tier>=4,eggTags:tier>=3,talents:true,advancedFruits:tier>=4,pityEvery:tier===1?4:tier===2?8:0,companionChance:tier===1?.6:tier===2?.4:null};}
   const allows=(key,input)=>rules(input)[key]!==false;
   function filterMap(run){for(const row of run.map||[])for(const c of row)if(!allows(c.kind,run))c.kind='rest';}
   function pityShop(run,pool,offers,members=G.Squad.roster,rng=Math.random){

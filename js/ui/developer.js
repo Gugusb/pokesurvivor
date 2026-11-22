@@ -4,7 +4,6 @@ G.Dev = (() => {
   try { enabled = localStorage.getItem('ps.dev.enabled') === 'true'; } catch (e) { /* sin persistencia */ }
   let god = false, panel, launcher;
   let viewMultiplier = 1.5;
-  let zTestMove = 'ember', zShortCooldown = false;
   let bondTestKind='projectile',bondTestCategory='skill';
   try {
     const stored = Number(localStorage.getItem('ps.dev.view'));
@@ -37,7 +36,7 @@ G.Dev = (() => {
   function setEnabled(on) {
     enabled = !!on;
     if (enabled && G.Game) G.Game.debugMark();
-    if (!enabled) { god = false; zShortCooldown = false; if (G.AbilityGacha.clearDebug) G.AbilityGacha.clearDebug(); if (G.MegaPreview) G.MegaPreview.restore(G.Game.player); }
+    if (!enabled) { god = false; if (G.AbilityGacha.clearDebug) G.AbilityGacha.clearDebug(); }
     if (G.Camera.setViewMultiplier) G.Camera.setViewMultiplier(canUse() ? viewMultiplier : 1 / (G.Settings?.get('zoom') || 1));
     try { localStorage.setItem('ps.dev.enabled', String(enabled)); } catch (e) { /* nada */ }
     refresh();
@@ -60,13 +59,6 @@ G.Dev = (() => {
     launcher.classList.toggle('hidden', !enabled);
     if (!enabled) panel.classList.add('hidden');
   }
-  function setZCooldown(on) {
-    if(!canUse())return false;
-    zShortCooldown=!!on;G.Game.debugMark();
-    const p=G.Game.player;
-    if(zShortCooldown&&p?.zState?.phase==='cooldown')p.zState.cooldown=Math.min(2,p.zState.cooldown);
-    return true;
-  }
   function requireRun() {
     const p = G.Game.player;
     if (!p || G.Game.state === 'ui' || G.Game.state === 'over') { G.UI.toast('请先开始一局游戏'); return null; }
@@ -81,6 +73,51 @@ G.Dev = (() => {
     if (G.UI.isOpen('scr-gacha') && !G.GachaUI.open_) G.GachaUI.refresh();
     if (panel) renderPanel();
   }
+
+  function unlockAllPokemon(){
+    if(!canUse())return false;G.Game.debugMark();
+    for(const mon of G.DEX)if(!G.DB.save.owned[mon.dex])G.DB.grant(mon.dex,'dev');return true;
+  }
+  function unlockAllCards(){
+    if(!canUse()||!G.CardPacks)return false;G.Game.debugMark();const save=G.DB.save,pack=G.CardPacks.normalize(save);
+    for(const c of G.CardPacks.cards){const missing=Math.max(0,c.max-(pack.taken[c.id]||0));pack.taken[c.id]=c.max;
+      if(c.kind==='z')G.ZAccess?.unlock(save,c.key,'dev');
+      if(c.kind==='tickets')save.tickets.t1=Math.min(1e7,save.tickets.t1+missing*100);
+      if(c.kind==='gems')save.abilityGems=Math.min(1e8,save.abilityGems+missing*20);
+    }
+    // Existing paid offers are handled by the normal replacement/refund path.
+    G.CardPacks.normalize(save);return true;
+  }
+  function expeditionAction(id,value){
+    if(!canUse())return false;const r=G.Expedition?.run;if(!r||!requireRun()){G.UI.toast('请先进入远征');return false;}
+    const leader=G.LeaderAbilities;
+    if(['leader-charge','leader-cast','leader-reset'].includes(id)&&!leader?.active()){G.UI.toast('当前队长没有已实装的家族特性');return false;}
+    if(id==='trainer-level'&&(!Number.isSafeInteger(value)||value<1||value>G.Economy.maxLevel(r)))return false;
+    if(id==='squad-health'&&(!Number.isFinite(value)||value<1||value>G.TrainerTalents.maxHp(r)))return false;
+    if(['wave-end','test-enemies','leader-cast'].includes(id)&&r.phase!=='combat'){G.UI.toast('此项目需在战斗中测试');return false;}
+    G.Game.debugMark();
+    switch(id){
+      case 'leader-charge':{const d=G.LeaderMedals.medalsFor(r.captain.dex).find(m=>m.leader);G.DB.save.abilityMedals[d.id]||={at:Date.now(),from:'dev'};leader.state().charge=1;break;}
+      case 'leader-cast':return leader.activate();
+      case 'leader-reset':leader.state().charge=0;break;
+      case 'trainer-level':r.trainerLevel=value;r.trainerXp=0;G.Squad.syncTrainer();break;
+      case 'squad-health':r.squadHp=value;break;
+      case 'jar-fill':G.ExpeditionSupplies.deposit(r,G.ExpeditionSupplies.jarMax(r));break;
+      case 'wave-end':r.elapsed=r.wave.duration;G.Expedition.tick(0);break;
+      case 'test-enemies':{const p=r.captain;for(let i=0;i<8;i++){const a=i*Math.PI/4,e=new G.Enemy({dex:1,hp:1000000,spd:0,dmg:0,xp:0,behavior:'chase'},p.x+Math.cos(a)*140,p.y+Math.sin(a)*140,{hp:1,spd:1,dmg:1});G.EnemyMgr.add(e);}G.EnemyMgr.rebuildGrid();break;}
+      default:return false;
+    }
+    G.Expedition.refreshScreen?.();return true;
+  }
+  function recentPanel(){
+    const r=G.Expedition?.run;if(!r)return '<h4>近期远征测试</h4><p class="note">进入远征后可测试队长特性、5／8级进阶、小队生命、经验罐及战后结算。</p>';
+    const d=G.LeaderAbilities?.definition(r.captain.dex),hp=G.TrainerTalents.maxHp(r);
+    return '<h4>近期远征测试</h4><p class="note">第'+r.day+'天 · '+r.phase+' · 训练家Lv.'+r.trainerLevel+' · 小队生命 '+Math.ceil(r.squadHp)+'/'+hp+'</p>'+
+      (d?'<p>队长特性：'+(d.name.zh||d.name.en)+' · 主动Z充能 '+Math.floor(G.LeaderAbilities.state().charge*100)+'%</p><div class="row wrap"><button class="btn small" data-dev="leader-charge">解锁家族勋章并充满主动Z</button><button class="btn small" data-dev="leader-cast">施放队长主动Z</button><button class="btn small" data-dev="leader-reset">清空主动Z充能</button></div>':'')+
+      '<label>训练家等级 <input id="dev-trainer-level" type="number" min="1" max="'+G.Economy.maxLevel(r)+'" value="'+r.trainerLevel+'"></label><button class="btn small" data-dev="trainer-level">设置等级（5／8级测试进阶）</button>'+
+      '<label>小队生命 <input id="dev-squad-health" type="number" min="1" max="'+hp+'" value="'+Math.ceil(r.squadHp)+'"></label><div class="row wrap"><button class="btn small" data-dev="squad-health">设置小队生命</button><button class="btn small" data-dev="jar-fill">填满经验罐</button><button class="btn small" data-dev="test-enemies">生成8只无伤害测试靶</button><button class="btn small" data-dev="wave-end">本场时间到（保留存活敌人扣血）</button></div><p class="note">等级调整可能进化队长，降低等级不回退形态。测试靶也计入存活敌人扣血。</p>';
+  }
+
   function renderPanel() {
     const save = G.DB.save;
     const scroll = panel.scrollTop;
@@ -89,32 +126,19 @@ G.Dev = (() => {
       '<label for="dev-view">视野范围：<output id="dev-view-value">' + viewMultiplier.toFixed(2) + '×</output></label>' +
       '<input id="dev-view" type="range" min="1" max="2" step="0.05" value="' + viewMultiplier + '">' +
       '<p class="note">向右拉可看得更远，默认 1.5×；关闭开发者模式后恢复设置中的视野。</p>' +
-      (G.Squad?.active&&G.SquadBonds?'<h4>小队羁绊层数</h4><label>类别 <select id="dev-bond-category"><option value="skill"'+(bondTestCategory==='skill'?' selected':'')+'>职业羁绊</option><option value="types"'+(bondTestCategory==='types'?' selected':'')+'>属性羁绊</option></select></label><label>羁绊 <select id="dev-bond-kind">'+(bondTestCategory==='types'?G.TypeBondDefs.LIST.map(d=>d.id):G.SquadBonds.KINDS).map(k=>'<option value="'+k+'"'+(k===bondTestKind?' selected':'')+'>'+(bondTestCategory==='types'?G.T(G.U.TYPE_NAME[k]):G.Expedition.skillLabel(k))+' · '+G.SquadBonds.layer(bondTestCategory,k)+'层</option>').join('')+'</select></label><label>层数 <input id="dev-bond-layer" type="number" min="0" max="10000" step="0.1" value="'+G.SquadBonds.layer(bondTestCategory,bondTestKind)+'"></label><div class="row wrap"><button class="btn small" data-dev="bond-layer">设置本局羁绊层数</button><button class="btn small" data-dev="bond-party">组建同类标签测试队员</button><button class="btn small" data-dev="type-bond-reset">重置本阶段属性状态</button></div><p class="note">组队测试会替换本局队员。属性0层有基础效果，100/300为成长节点；300层后继续增长。</p>':'')+
+      (G.Squad?.active&&G.SquadBonds?'<h4>小队羁绊层数</h4><label>类别 <select id="dev-bond-category"><option value="skill"'+(bondTestCategory==='skill'?' selected':'')+'>职业羁绊</option><option value="types"'+(bondTestCategory==='types'?' selected':'')+'>属性羁绊</option></select></label><label>羁绊 <select id="dev-bond-kind">'+(bondTestCategory==='types'?G.TypeBondDefs.LIST.map(d=>d.id):G.SquadBonds.KINDS).map(k=>'<option value="'+k+'"'+(k===bondTestKind?' selected':'')+'>'+(bondTestCategory==='types'?G.T(G.U.TYPE_NAME[k]):G.Expedition.skillLabel(k))+' · '+G.SquadBonds.layer(bondTestCategory,k)+'层</option>').join('')+'</select></label><label>层数 <input id="dev-bond-layer" type="number" min="0" max="10000" step="0.1" value="'+G.SquadBonds.layer(bondTestCategory,bondTestKind)+'"></label><div class="row wrap"><button class="btn small" data-dev="bond-layer">设置本局羁绊层数</button><button class="btn small" data-dev="bond-party">组建同类标签测试队员</button><button class="btn small" data-dev="type-bond-reset">重置本阶段属性状态</button></div><p class="note">组队测试会替换本局队员。属性与职业分别使用当前配置的层数规则；职业二级为7人，辅助为5人。</p>':'')+
       (G.Squad?.active&&G.SquadTraits?'<h4>远征队员特性</h4><select id="dev-squad-trait">'+G.SquadTraitDefs.LIST.map(d=>'<option value="'+d.id+'">'+G.SquadTraits.description({dex:d.rootDex,rank:1,squadTraitOverride:d.id})+'</option>').join('')+'</select><button class="btn small" data-dev="squad-trait">赋予当前全部队员（仅调试）</button>':'')+
+      recentPanel() +
       '<h4>货币增减</h4><p class="note">输入每次增减的数量。余额最低为 0，立即保存。</p>' +
       currencies.map(c => '<div class="dev-currency"><span>' + c.name + '：' + (save ? balance(c.id) : 0) + '</span>' +
         '<input type="number" id="dev-amount-' + c.id + '" aria-label="' + c.name + '增减数量" min="1" max="1000000000" step="1" value="' + c.step + '">' +
         '<button class="btn small" data-currency="' + c.id + '" data-sign="-1" aria-label="减少' + c.name + '">−</button>' +
         '<button class="btn small" data-currency="' + c.id + '" data-sign="1" aria-label="增加' + c.name + '">＋</button></div>').join('') +
       '<p>勋章：' + Object.keys(save && save.abilityMedals || {}).length + '/' + G.AbilityDefs.LIST.length + '</p>' +
-      '<div class="row wrap"><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="legends">解锁全部五星伙伴</button></div>' +
-      '<label>测试伙伴 <select id="dev-partner">' + G.AbilityDefs.SPECIES.map(d => '<option value="' + d + '">' + G.T(G.DEX_BY[d].name) + '</option>').join('') + '</select></label>' +
+      '<div class="row wrap"><button class="btn small" data-dev="medals">解锁全部勋章</button><button class="btn small" data-dev="all-pokemon">解锁全部宝可梦</button><button class="btn small" data-dev="all-cards">解锁全部卡包内容</button></div>' +
+      '<label>测试伙伴 <select id="dev-partner">' + G.DEX.map(m=>m.dex).map(d => '<option value="' + d + '">' + G.T(G.DEX_BY[d].name) + '</option>').join('') + '</select></label>' +
       '<button class="btn small" data-dev="partner">选择伙伴（局外）</button>' +
-      (G.Difficulty?'<h4>难度与精英测试</h4><label>测试难度 <select id="dev-difficulty">'+Array.from({length:8},(_,i)=>'<option value="'+(i+1)+'"'+(G.Difficulty.current===i+1?' selected':'')+'>'+(i+1)+'★</option>').join('')+'</select></label><div class="row wrap"><button class="btn small" data-dev="difficulty">本局切换难度</button><button class="btn small" data-dev="elite">生成测试精英</button><button class="btn small" data-dev="z-add">Z 充能 +1</button></div>':'')+
-      (G.ZMoves ? '<h4>Z 招式试玩</h4><p class="note">仅用于调试。替换测试招式会清空本局原有技能，并装备同属性 Z 石。</p>' +
-      '<div class="row wrap"><button class="btn small" data-dev="z-grant">Desbloquear Z (colección)</button><button class="btn small" data-dev="z-charge">Z 石立即就绪</button></div>' +
-      '<button class="btn small '+(zShortCooldown?'gold':'')+'" data-dev="z-short-cd">Z 技能冷却固定 2s：'+(zShortCooldown?'开':'关')+'</button>'+
-      '<label>测试 Z 招式 <select id="dev-z-move">'+G.Moves.ALL.filter(m=>G.ZMoves.KINDS.includes(m.kind)).map(m=>'<option value="'+m.id+'"'+(m.id===zTestMove?' selected':'')+'>'+G.T(m.name)+' · '+m.kind+'</option>').join('')+'</select></label>'+
-      '<div class="row wrap"><button class="btn small" data-dev="z-prepare">替换为测试招式</button><button class="btn small" data-dev="z-enemies">生成测试敌群</button><button class="btn small" data-dev="z-boss">生成测试 Boss</button><button class="btn small" data-dev="z-arm">进入 Z 蓄力</button></div>':'') +
-      '<h4>Mega 素材预览</h4><p class="note">此处用于预览 Mega 外观和动画。</p>' +
-      '<label>Mega 形态 <select id="dev-mega">' + G.MegaPreview.LIST.map(f => '<option value="' + f.id + '"' + (f.available ? '' : ' disabled') + '>' + G.MegaPreview.label(f) + (f.available ? (!f.basicComplete ? '（未达基本标准，旧版保留）' : f.completion === 2 ? '（完整级）' : '（基本达标）') : f.completion === 0 && f.reason && f.reason.startsWith('Source animations') ? '（已有部分动画，未达基本标准）' : '（暂无动画素材）') + '</option>').join('') + '</select></label>' +
-      '<label><input id="dev-mega-shiny" type="checkbox">异色（该形态需有异色素材）</label>' +
-      '<div class="row wrap"><button class="btn small" data-dev="mega-partner">选择对应本体（局外）</button><button class="btn small" data-dev="mega-apply">应用 Mega 外观（局内）</button><button class="btn small" data-dev="mega-clear">恢复本体外观</button></div>' +
-      '<p class="note">' + (G.Game.player && G.Game.player.megaForm ? G.MegaPreview.label(G.MegaPreview.BY_ID[G.Game.player.megaForm]) : '当前为本体外观') + '</p>' +
-      '<label>测试动作 <select id="dev-mega-anim"><option value="Idle">待机 Idle</option><option value="Walk">行走 Walk</option><option value="Attack">攻击 Attack</option><option value="Shoot">远程 Shoot</option><option value="Charge">蓄力 Charge</option><option value="Hurt">受伤 Hurt</option><option value="Faint">倒下 Faint</option></select></label><button class="btn small" data-dev="mega-anim">播放测试动作</button>' +
-      '<h4>Mega 进化调试</h4><p class="note">下方工具用于测试 Mega 相关功能。</p>' +
-      '<div class="row wrap"><button class="btn small" data-dev="mega-stone">获得对应进化石</button><button class="btn small" data-dev="mega-equip">装备对应进化石（局外）</button><button class="btn small" data-dev="mega-energy">充满 Mega 能量</button><button class="btn small" data-dev="mega-end">结束 Mega 进化</button><button class="btn small" data-dev="mega-clock">Mega 计时 +30s</button><button class="btn small" data-dev="mega-rift">进入对应 Mega 裂缝</button><button class="btn small" data-dev="mega-drop">下一次 Mega 胜利测试掉石</button><button class="btn small" data-dev="mega-item">测试拾取普通道具</button></div>' +
-      '<p id="dev-mega-state">' + (G.Game.player && G.Game.player.megaState ? 'Mega 能量：' + G.Game.player.megaState.energy.toFixed(1) + '/120；剩余：' + Math.ceil(G.Game.player.megaState.left) + 's' : '本局尚未开始') + '</p>' +
+      (G.Difficulty?'<h4>难度与精英测试</h4><label>测试难度 <select id="dev-difficulty">'+Array.from({length:8},(_,i)=>'<option value="'+(i+1)+'"'+(G.Difficulty.current===i+1?' selected':'')+'>'+(i+1)+'★</option>').join('')+'</select></label><div class="row wrap"><button class="btn small" data-dev="difficulty">本局切换难度</button><button class="btn small" data-dev="elite">生成测试精英</button></div>':'')+
       '<label>指定勋章 <select id="dev-medal">' + G.AbilityDefs.LIST.map(m => '<option value="' + m.id + '">' + G.T(G.DEX_BY[m.dex].name) + ' · ' + G.T(m.name) + '</option>').join('') + '</select></label>' +
       '<div class="row wrap"><button class="btn small" data-dev="force">下次抽出此勋章</button><button class="btn small" data-dev="equip">装备此勋章（局外）</button></div>' +
       '<p>' + G.Abilities.status(G.Game.player) + '</p>' +
@@ -136,16 +160,10 @@ G.Dev = (() => {
       c.step = amount;
       action(() => adjustCurrency(c.id, amount * Number(b.dataset.sign)));
     });
-    if (save && G.AbilityDefs.SPECIES.includes(save.partner)) panel.querySelector('#dev-partner').value = save.partner;
-    const mf = !['ui', 'over'].includes(G.Game.state) && G.Game.player && G.Game.player.megaForm;
-    const first = G.MegaPreview.LIST.find(f => f.available && save && f.dex === save.partner) || G.MegaPreview.LIST.find(f => f.available);
-    panel.querySelector('#dev-mega').value = mf || first && first.id || '';
-    panel.querySelector('#dev-mega-shiny').checked = !!(mf && G.Game.player.anim.shiny);
+    if (save && G.DEX_BY[save.partner]) panel.querySelector('#dev-partner').value = save.partner;
     panel.querySelectorAll('[data-dev]').forEach(b => b.onclick = () => {
       const dex = +panel.querySelector('#dev-partner').value;
       const medalId = panel.querySelector('#dev-medal').value;
-      const mega = G.MegaPreview.BY_ID[panel.querySelector('#dev-mega').value];
-      if(G.ZMoves)zTestMove=panel.querySelector('#dev-z-move').value;
       action(() => {
         const s = G.DB.save;
         switch (b.dataset.dev) {
@@ -153,44 +171,18 @@ G.Dev = (() => {
           case 'bond-layer': if(requireRun()){const kind=panel.querySelector('#dev-bond-kind').value,n=Number(panel.querySelector('#dev-bond-layer').value);if(!G.SquadBonds.setLayer(bondTestCategory,kind,n))G.UI.toast('请输入0至10000的层数（可含小数）');}break;
           case 'type-bond-reset':if(requireRun())G.TypeBonds?.beginStage();break;
           case 'bond-party':{
-            if(!requireRun()||!G.Squad.active)break;while(G.Squad.capacity<7)G.Squad.upgrade();for(const p of [...G.Squad.roster])G.Squad.release(p);
+            if(!requireRun()||!G.Squad.active)break;if(G.Expedition?.run){G.Expedition.run.trainerLevel=Math.max(8,G.Expedition.run.trainerLevel);G.Squad.syncTrainer();}else{for(let i=0;i<10&&G.Squad.capacity<7;i++)if(!G.Squad.upgrade())break;}for(const p of [...G.Squad.roster])G.Squad.release(p);
             const kind=panel.querySelector('#dev-bond-kind').value,seen=new Set();
             for(const mon of G.DEX){if(seen.has(mon.name)||!G.SPRITE_META[mon.dex])continue;const id=bondTestCategory==='types'?(mon.types.includes(kind)?G.Moves.startFor(mon):null):G.Moves.poolFor(mon).find(id=>G.Moves.BY_ID[id].kind===kind);if(!id)continue;seen.add(mon.name);G.Squad.recruit(mon.dex,id);if(seen.size===6)break;}G.Squad.refresh();break;
           }
-          case 'z-grant': for(const d of Object.keys(s.owned))G.ZAccess.unlock(s,d);G.UI.toast(G.T('Permiso Z desbloqueado para tu colección.'));break;
-          case 'z-charge': {const p=requireRun();if(p)G.ZMoves.debugCharge(p);break;}
-          case 'z-short-cd': setZCooldown(!zShortCooldown);break;
           case 'difficulty': if(requireRun())G.Difficulty.debugLevel(+panel.querySelector('#dev-difficulty').value);break;
-          case 'z-add': {const p=requireRun();if(p)G.ZMoves.grantCharge(p,'dev:'+performance.now());break;}
           case 'elite': {const p=requireRun();if(!p)break;
             const e=new G.Enemy({dex:1,hp:200,spd:65,dmg:8,xp:20,behavior:'chase'},p.x+140,p.y,G.Enemies.scale(G.Game.st.time));e.makeElite();G.EnemyMgr.add(e);G.EnemyMgr.rebuildGrid();break;}
-          case 'z-prepare': {
-            const p=requireRun();if(!p)break;
-            if(G.ZMoves.busy(p)||G.Mega.active(p)){G.UI.toast('请等待当前招式或 Mega 进化结束');break;}
-            const m=G.Moves.instance(zTestMove,1);G.ZAccess.unlock(s,p.ivDex||p.dex);G.ZMoves.equip(s,p.ivDex||p.dex,m.type);
-            G.Projectiles.clearOrbs(p);G.Combat.clearFields(p);p.moves=[m];p.slots=[[m]];p.active=0;
-            p.zState=null;G.ZMoves.init(p,s);p.hp=p.maxHp;break;
-          }
-          case 'z-enemies': case 'z-boss': {
-            const p=requireRun();if(!p)break;const boss=b.dataset.dev==='z-boss',n=boss?1:12;
-            for(let i=0;i<n;i++){const a=boss?0:(i<10?-.7+i*.14:Math.PI+i*.1),r=boss?250:100+(i%3)*65;
-              G.EnemyMgr.add(new G.Enemy({dex:boss?150:1,hp:10000000,spd:0,dmg:0,xp:0,behavior:'melee'},p.x+Math.cos(a)*r,p.y+Math.sin(a)*r,{hp:1,spd:1,dmg:1},boss));}
-            G.EnemyMgr.rebuildGrid();break;
-          }
-          case 'z-arm': {const p=requireRun();if(p)G.ZMoves.arm(p);break;}
-          case 'mega-stone': if (mega && G.Mega.BY[mega.id]) G.Mega.award(mega.id); else G.UI.toast('此形态尚未开放正式 Mega 进化'); break;
-          case 'mega-equip':
-            if (G.Game.state !== 'ui') { G.UI.toast('请先返回主菜单'); break; }
-            if (!mega || !G.Mega.equip(s, mega.dex, mega.id)) G.UI.toast('请先获得对应进化石');
-            break;
-          case 'mega-energy': { const p = requireRun(); if (p && !G.Mega.debugCharge(p)) G.UI.toast('请在开局前装备对应进化石'); break; }
-          case 'mega-end': { const p = requireRun(); if (p) G.Mega.finish(p); break; }
-          case 'mega-clock': { const p = requireRun(); if (p) G.Mega.tick(p, 30); break; }
-          case 'mega-rift': if (requireRun() && mega && G.Mega.BY[mega.id]) G.Rift.debugMega(mega.id); break;
-          case 'mega-drop': G.Rift.debugStoneDrop(); break;
-          case 'mega-item': if (requireRun()) G.Game.debugItem('leftovers'); break;
           case 'medals': for (const m of G.AbilityDefs.LIST) s.abilityMedals[m.id] = s.abilityMedals[m.id] || { at: Date.now(), from: 'dev' }; break;
-          case 'legends': for (const d of G.AbilityDefs.SPECIES) G.DB.grant(d, 'dev'); break;
+          case 'all-pokemon': unlockAllPokemon();G.UI.toast('已解锁全部宝可梦');break;
+          case 'all-cards': unlockAllCards();G.UI.toast('全部卡包内容已解锁至上限；开局加成下局生效');break;
+          case 'leader-charge':case 'leader-cast':case 'leader-reset':case 'trainer-level':case 'squad-health':case 'jar-fill':case 'wave-end':case 'test-enemies':
+            expeditionAction(b.dataset.dev,b.dataset.dev==='trainer-level'?Number(panel.querySelector('#dev-trainer-level').value):b.dataset.dev==='squad-health'?Number(panel.querySelector('#dev-squad-health').value):undefined);break;
           case 'force': G.AbilityGacha.debugMedal(medalId); G.UI.toast('下次抽卡将产出指定勋章，仍消耗宝石'); break;
           case 'partner':
             if (G.Game.state !== 'ui') { G.UI.toast('请先返回主菜单'); break; }
@@ -201,21 +193,8 @@ G.Dev = (() => {
             if (G.Game.state !== 'ui') { G.UI.toast('请先返回主菜单'); break; }
             const m = G.AbilityDefs.BY_ID[medalId];
             s.abilityMedals[m.id] = s.abilityMedals[m.id] || { at: Date.now(), from: 'dev' };
-            G.Abilities.equip(s, m.dex, m.id); G.UI.toast('已装备：' + G.T(m.name)); break;
+            if(!m.leader)G.Abilities.equip(s, m.dex, m.id); G.UI.toast((m.leader?'已解锁家族主动Z：':'已装备：') + G.T(m.name)); break;
           }
-          case 'mega-partner': {
-            if (G.Game.state !== 'ui') { G.UI.toast('请先返回主菜单'); break; }
-            if (!mega || !mega.available) break;
-            s.owned[mega.dex] = s.owned[mega.dex] || {at:Date.now(),from:'dev'};
-            s.partner = mega.dex; s.partnerShiny = false; if (!s.starter) s.starter = mega.dex; G.Flow.goMenu(); break;
-          }
-          case 'mega-apply': {
-            const p = requireRun();
-            if (p && !G.MegaPreview.apply(p, mega && mega.id, panel.querySelector('#dev-mega-shiny').checked)) G.UI.toast('请选择与本局伙伴对应且有素材的形态；异色需单独有素材');
-            break;
-          }
-          case 'mega-clear': { const p = requireRun(); if (p) G.MegaPreview.restore(p); break; }
-          case 'mega-anim': { const p = requireRun(); if (p) G.MegaPreview.play(p, panel.querySelector('#dev-mega-anim').value); break; }
           case 'god': god = !god; break;
           case 'weather': if (requireRun()) G.Weather.debugStart(panel.querySelector('#dev-weather').value, 20); break;
           case 'clear-weather': if (requireRun()) G.Weather.clear(); break;
@@ -243,7 +222,6 @@ G.Dev = (() => {
       '<button class="btn ' + (enabled ? 'gold' : '') + '" id="dev-enable">开发者模式：' + (enabled ? '开' : '关') + '</button>';
     box.querySelector('#dev-enable').onclick = () => { setEnabled(!enabled); renderSettings(box); };
   }
-  return { init, canUse, setEnabled, setView, setZCooldown, adjustCurrency, renderSettings,
-    get zShortCooldown() { return canUse() && zShortCooldown; },
+  return { init, canUse, setEnabled, setView, adjustCurrency, unlockAllPokemon, unlockAllCards, expeditionAction, renderSettings,
     get viewMultiplier() { return viewMultiplier; }, get enabled() { return enabled; }, get invincible() { return canUse() && god; } };
 })();

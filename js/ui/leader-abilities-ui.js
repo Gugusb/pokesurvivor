@@ -11,6 +11,7 @@ G.LeaderAbilitiesUI=(()=>{
  };
  const chargeWords={auraHit:'光环命中',coneCast:'扇形施法',beamCast:'能量柱施法',chainCast:'连锁施法',novaCast:'绽放施法',meleeCrit:'近战暴击',boomerangCast:'回旋施法',heavyHurt:'队长受到重击',dashHit:'冲刺命中',mineTrigger:'陷阱触发',orbitHit:'法球命中',kill:'队伍击杀',burnStack:'叠加灼伤',bounceHit:'反弹弹丸命中',spore:'蘑菇感染',buffCast:'辅助施法',distance:'队长移动距离',hurtAmount:'队长实际受伤',hurtCount:'队伍实际受伤次数',dashCast:'冲刺施法',meleeHit:'近战命中',beamHit:'光束命中',meleeCast:'近战施法',debuffKill:'击败破防敌人',painTick:'痛觉池扣血',pickup:'拾取经验',projectileHit:'投射物命中',freeze:'冻结敌人',poisonStack:'叠加中毒',knock:'击退命中',stun:'定身敌人',fruitPickup:'拾取特性治愈果',boomerangReturn:'回旋回程命中',poisonHit:'毒伤持续跳伤',heal:'队伍恢复生命',echoHit:'亲子回响命中',crit:'技能暴击',shieldBreak:'击碎护盾',intercept:'拦截弹幕',repeatMelee:'同一目标连续近战',coneHit:'扇形命中',electricHit:'电招式命中',burnHit:'灼伤持续跳伤',absorb:'护盾／水幕吸收伤害',cast:'队伍施法',stabHit:'本系技能命中',rangedHit:'投射物／陷阱命中',areaHit:'流星／冲刺命中',iceHit:'冰招式命中',hit:'技能命中',distinctType:'使用不同属性招式'};
  const label=k=>L(words[k]||k,k.replace(/([A-Z])/g,' $1').replace(/^./,c=>c.toUpperCase()));
+ const kindLabel=kind=>({projectile:L('投射物','Projectile','Proyectil'),boomerang:L('回旋','Boomerang','Bumerán'),cone:L('扇形','Cone','Abanico'),melee:L('近战','Melee','Cuerpo a cuerpo'),dash:L('位移','Dash','Embestida'),beam:L('能量柱','Beam','Rayo'),chain:L('连锁','Chain','Cadena'),meteor:L('陨石','Meteor','Meteoro'),trail:L('地面轨迹','Trail','Rastro'),buff:L('属性提升','Buff','Atributos'),nova:L('冲击波','Nova','Onda'),aura:L('光环','Aura','Aura'),orbit:L('环绕','Orbit','Órbita'),mine:L('地雷','Mine','Mina'),turret:L('炮台','Turret','Torreta')})[kind]||kind;
  const fmt=n=>Number.isInteger(n)?n:String(Number(n.toFixed(3)));
  function value(k,v){
   if(typeof v==='boolean')return '';
@@ -23,11 +24,11 @@ G.LeaderAbilitiesUI=(()=>{
   for(const [k,v]of Object.entries(part||{})){
    if(k==='stats'){for(const[stat,x]of Object.entries(v))rows.push(label(stat)+' '+(x>=0?'+':'')+fmt(x*100)+'%');continue;}
    if(k==='moves'){for(const[kind,mods]of Object.entries(v))for(const[key,x]of Object.entries(mods)){
-    const kindName=G.SquadBonds?.label(kind)||kind;
+    const kindName=kindLabel(kind);
     rows.push(kindName+' · '+label(key)+' '+(['count','poison','burn'].includes(key)?'+'+x:key==='crit'?'+'+fmt(x*100)+'%':key==='slow'?fmt(x*100)+'%':key==='arc'?fmt(x/Math.PI*180)+'°':'×'+fmt(x)));
    }continue;}
-   if(k==='ban'){rows.push(L('禁止招式：','Unavailable moves: ')+v.map(kind=>G.SquadBonds?.label(kind)||kind).join(' / '));continue;}
-   if(k==='extraPP'){for(const [kind,x]of Object.entries(v))rows.push((G.SquadBonds?.label(kind)||kind)+' PP +'+x);continue;}
+   if(k==='ban'){rows.push(L('禁止招式：','Unavailable moves: ')+v.map(kindLabel).join(' / '));continue;}
+   if(k==='extraPP'){for(const [kind,x]of Object.entries(v))rows.push(kindLabel(kind)+' PP +'+x);continue;}
    if(k==='incomingTypes'||k==='captainIncomingTypes'){for(const[type,x]of Object.entries(v))rows.push((k==='captainIncomingTypes'?L('队长','Captain')+' · ':'')+G.T(G.U.TYPE_NAME?.[type]||type)+' '+L('承伤','incoming')+' ×'+fmt(x));continue;}
    if(k==='immune'){rows.push(L('免疫伤害：','Damage immunity: ')+v.map(type=>G.T(G.U.TYPE_NAME?.[type]||type)).join(' / '));continue;}
    rows.push(label(k)+value(k,v));
@@ -56,5 +57,5 @@ G.LeaderAbilitiesUI=(()=>{
   ctx.fillStyle='#294256';ctx.fillRect(x+5,y+size-5,size-10,3);ctx.fillStyle='#ffe19c';ctx.fillRect(x+5,y+size-5,(size-10)*s.charge,3);ctx.restore();
   G.Touch.addButton(x,y,size,size,()=>{if(unlocked)G.LeaderAbilities.activate(p);else G.UI.toast(L('获得该进化链任意特性勋章即可解锁主动Z。','Obtain any ability medal in this evolution family to unlock manual Z.'));},3);return true;
  }
- return {card,hud,lines,words,zText,chargeWords};
+ return {card,hud,lines,kindLabel,words,zText,chargeWords};
 })();
