@@ -141,6 +141,7 @@ G.LevelUp = (() => {
 
   /** Three distinct cards; never two consecutive displays without an available upgrade. */
   function offer(pl, n = 3+(G.Items?.count(pl,'luckymedal')||0)) {
+    n=Math.max(n,G.LeaderHoenn?.active()&&G.LeaderHoenn.f().choices||3);
     const pool = candidates(pl);
     const picked = [];
     const eligible = pool.some(c => c.type === 'up');

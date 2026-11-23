@@ -118,8 +118,8 @@
     hurt(amount, color = '#fff', dirX = 0, dirY = 0, knock = 0, eff = null, attacker = null, attack = {}) {
       if (this.dead || !(amount > 0)) return 0;
       const shielded = this.shield > 0;
-      const leaderFactor=G.LeaderAbilities?.outgoing(attacker,this,attack)||1;amount*=leaderFactor;
-      const bypass = !!(G.LeaderJohto?.has(attacker)&&G.LeaderJohto.f().infiltrator)||!!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
+      const leaderFactor=G.LeaderAbilities?.outgoing(attacker,this,attack)??1;amount*=leaderFactor;
+      const bypass = !!(G.LeaderHoenn?.has(attacker)&&attack.hoennVenom&&G.LeaderHoenn.f().venomBypass)||!!(G.LeaderJohto?.has(attacker)&&G.LeaderJohto.f().infiltrator)||!!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
       const bond=!this.remote?G.TypeBonds?.beforeHit(attacker,this,attack):null;
       if(bond)amount*=bond.factor;
@@ -128,13 +128,14 @@
       if(G.TypeBonds)knock*=G.TypeBonds.knock(attacker,attack);
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
       if (!this.remote && attacker&&!attack.typeBondFraction&&!attack.talentPulse) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass)*(G.TrainerTalents?.outgoing(attacker)||1)*(G.ExpeditionGrowth?.damageFactor(attacker,attack)||1);
-      if (!this.remote && attack.damageClass) {
+      if (!this.remote && attack.damageClass&&!attack.leaderTrue) {
         const defense=attack.damageClass==='special'?this.spdef:this.defense;
         amount /= (defense || 1)*(1-(G.LeaderAbilities?.penetration(attacker,this,attack)||0));
       }
       if (!this.remote && this.mega&&!attack.typeBondFraction) amount /= 1.3;
       if(bond?.execute||terminal?.execute)amount=Math.max(amount,this.hp+(this.shield||0)+1);
-      const d = Math.max(1, Math.round(amount));
+      if(attack.hoennZ&&(this.boss||this.elite)&&G.LeaderHoenn?.has(attacker))amount=Math.min(amount,G.LeaderAbilities._z.budget(attacker)*.3);
+      if(!(amount>0))return 0;const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
       // quien decide si cae. Aquí sólo se ve (número, destello y animación).
       if (this.remote) {

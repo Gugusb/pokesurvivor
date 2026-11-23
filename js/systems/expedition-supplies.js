@@ -27,13 +27,13 @@ G.ExpeditionSupplies=(()=>{
   const xpFactor=p=>G.Squad?.active&&G.Squad.actors().includes(p)?1+.05*count('studycharm'):1;
   function bossDex(s,day=s.cycle*G.EconomyConfig.cycleLengthDays){s.bossDexByDay||={};if(!s.bossDexByDay[day]){const pool=G.ExpeditionRules.encounterCandidates(s.pool,day,true);s.bossDexByDay[day]=day===60?493:G.U.pick(pool.length?pool:s.pool).dex;}return s.bossDexByDay[day];}
   function scoutPanel(s){if(!perks(s).bossScout)return null;const m=G.DEX_BY[bossDex(s)],e=document.createElement('div');e.className='route-boss-scout';const label=G.I18n.lang==='zh'?'关底BOSS':G.I18n.lang==='en'?'Cycle Boss':'Jefe del ciclo';e.innerHTML='<small>'+label+'</small>'+G.UI.typeChips(m.types);return e;}
-  function itemPrice(s,id){return Math.ceil(10*Math.pow(1.2,s.supplyPurchases?.[id]||0));}
+  function itemPrice(s,id){const base=Math.ceil(10*Math.pow(1.2,s.supplyPurchases?.[id]||0));return G.HoennMarket?.price(base,'item')??base;}
   function prepareItems(s){
     if(s.itemShopOffers)return;restore(s);const available=G.Items.LIST.filter(i=>G.Items.permitted(i)),infinite=available.filter(i=>unlimited(i.id)),once=available.filter(i=>!unlimited(i.id));s.itemShopOffers=[];
     const bag=infinite.slice();for(let i=0;i<4&&infinite.length;i++){const pool=bag.length?bag:infinite,it=G.U.pick(pool);s.itemShopOffers.push({id:it.id,sold:false});if(bag.length)bag.splice(bag.indexOf(it),1);}if(once.length)s.itemShopOffers.push({id:G.U.pick(once).id,sold:false});
   }
   function buyItem(s,index){
-    if(s.phase!=='item-shop'||G.TrainerTalentsUI?.busy)return false;const o=s.itemShopOffers?.[index];if(!o||o.sold||!G.Items.permitted(G.Items.BY[o.id]))return false;const price=itemPrice(s,o.id);if(s.gold<price||!G.Items.gain(s.captain,o.id))return false;s.gold-=price;s.supplyPurchases[o.id]=(s.supplyPurchases[o.id]||0)+1;o.sold=true;return true;
+    if(s.phase!=='item-shop'||G.TrainerTalentsUI?.busy)return false;const o=s.itemShopOffers?.[index];if(!o||o.sold||!G.Items.permitted(G.Items.BY[o.id]))return false;const price=itemPrice(s,o.id);if(!(G.HoennMarket?.canPay(price,'item:'+o.id)??s.gold>=price)||!G.Items.gain(s.captain,o.id))return false;if(G.HoennMarket)G.HoennMarket.pay(price,'item:'+o.id);else s.gold-=price;s.supplyPurchases[o.id]=(s.supplyPurchases[o.id]||0)+1;o.sold=true;if(G.LeaderHoenn?.active()&&G.LeaderHoenn.f().doubleItem&&['choicescarf','assaultvest','quickclaw','leftovers'].includes(o.id))G.Items.gain(s.captain,o.id);return true;
   }
   const premium=s=>s.cycle===1?2:s.cycle===2?3:5;
   function highStar(s,rng){

@@ -9,7 +9,7 @@ G.ExpeditionTraining=(()=>{
  const valid=(run,p,m)=>owned(run).includes(p)&&p.moves.includes(m);
  const label=m=>G.T(m.name)+' · '+(m.evolved?L('Definitivo','Ultimate','超武'):'Lv.'+m.lvl);
  function draft(run){let d=drafts.get(run);if(!d||d.day!==run.day){d={day:run.day,replacements:new WeakMap(),specs:new WeakMap()};drafts.set(run,d);}return d;}
- function replaceOffers(run,p,rng=Math.random){const d=draft(run),old=p.moves[0];let a=d.replacements.get(p);if(!a||a.source!==old){const pool=G.Moves.poolFor(p.mon).filter(id=>id!==old.id&&!p.banned?.has(id)),ids=[];while(ids.length<3&&pool.length)ids.push(pool.splice(Math.min(pool.length-1,Math.floor(rng()*pool.length)),1)[0]);a={source:old,ids};d.replacements.set(p,a);}return a.ids;}
+ function replaceOffers(run,p,rng=Math.random){const d=draft(run),old=p.moves[0];let a=d.replacements.get(p);if(!a||a.source!==old){const pool=G.Moves.poolFor(p.mon).filter(id=>id!==old.id&&!p.banned?.has(id)),ids=[];while(ids.length<(G.LeaderHoenn?.active()&&G.LeaderHoenn.f().choices||3)&&pool.length)ids.push(pool.splice(Math.min(pool.length-1,Math.floor(rng()*pool.length)),1)[0]);a={source:old,ids};d.replacements.set(p,a);}return a.ids;}
  function specOffers(run,m){const d=draft(run);if(!d.specs.has(m))d.specs.set(m,G.Specialization.offers(m));return d.specs.get(m);}
  function replacementSpecs(run,p,id){const d=draft(run);d.sketchSpecs||=new WeakMap();let choices=d.sketchSpecs.get(p);if(!choices)d.sketchSpecs.set(p,choices={});return choices[id]||=(G.Specialization.offers(G.Moves.instance(id,p.moves[0].lvl)));}
  function specializationCost(m){return Math.ceil(5*1.5**G.Specialization.ids(m).length);}

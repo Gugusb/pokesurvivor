@@ -288,17 +288,17 @@ G.Expedition = (() => {
     box.append(goods,squadShortcut(),next);G.UI.show('scr-journey');
   }
   function openShop(free=false){
-    run.phase='shop';G.Game.expeditionPause();run.postBossShop=free;run.talentShopBought=false;run.shopFreeRefreshes=G.EconomyConfig.shop.shopDayFreeRefreshes;G.SquadTraits?.visitShop();rollShop();renderShop();
+    run.phase='shop';G.Game.expeditionPause();run.postBossShop=free;run.talentShopBought=false;run.shopFreeRefreshes=G.EconomyConfig.shop.shopDayFreeRefreshes;G.SquadTraits?.visitShop();rollShop();G.HoennMarket?.enterShop(run,offer);renderShop();
   }
   function rollShop(force=false,manual=false){
     if(run.shopLocked&&!force)return;
     for(const o of offer)run.unitPool.putBack(o);
-    offer=Array.from({length:G.EconomyConfig.shop.unitSlotCount},()=>run.unitPool.draw(run.trainerLevel));G.TrainerTalents?.shop(run,offer);if(manual)G.LeagueRank?.pityShop(run,run.unitPool,offer);
+    offer=Array.from({length:G.EconomyConfig.shop.unitSlotCount},()=>run.unitPool.draw(run.trainerLevel));G.TrainerTalents?.shop(run,offer);if(manual){G.LeagueRank?.pityShop(run,run.unitPool,offer);G.HoennMarket?.rolled(run,offer);}
   }
   function buy(index,ticket=false){
-    if(run?.phase!=='shop'||G.TrainerTalentsUI?.busy)return false;const o=offer[index];if(!o||o.kind!=='mon'||o.sold)return false;const cost=G.TrainerTalents?.price(run,G.SquadTraits?.price(o.cost,o.kind)??o.cost)??o.cost;if(ticket?!(run.traitRecruitTickets>0):run.gold<cost)return false;
+    if(run?.phase!=='shop'||G.TrainerTalentsUI?.busy)return false;const o=offer[index];if(!o||o.kind!=='mon'||o.sold)return false;const cost=G.HoennMarket?.price((G.TrainerTalents?.price(run,G.SquadTraits?.price(o.cost,o.kind)??o.cost)??o.cost),'mon')??o.cost;if(ticket?!(run.traitRecruitTickets>0):!(G.HoennMarket?.canPay(cost,o.hoennToken)??run.gold>=cost))return false;
     if(!G.Squad.recruit(o.dex,o.moveId,o.rank||1)){G.UI.toast(L('La reserva está llena. Libera un compañero.','Reserves are full. Release a companion first.','候补仓库已满，请先放生伙伴。'));return false;}
-    if(ticket)run.traitRecruitTickets--;else{run.gold-=cost;run.talentShopBought=true;}o.sold=true;renderShop();return true;
+    if(ticket)run.traitRecruitTickets--;else{if(G.HoennMarket)G.HoennMarket.pay(cost,o.hoennToken);else run.gold-=cost;run.talentShopBought=true;}o.sold=true;renderShop();return true;
   }
   function upgrade(){if(!run||!G.Economy.buyXp(run))return false;G.Squad.syncTrainer();renderShop();if(!$('squad-rankup')&&!G.TrainerTalentsUI?.busy)$('journey-upgrade').focus({preventScroll:true});$('journey-shop-progress').classList.add('xp-purchased');G.UI.toast(L('Experiencia de entrenador','Trainer XP','训练家经验')+' +'+G.EconomyConfig.buyXp.xpGain+' · Lv.'+run.trainerLevel);return true;}
   function toggleShopLock(){if(run?.phase!=='shop')return false;run.shopLocked=!run.shopLocked;renderShop();return true;}
@@ -309,13 +309,13 @@ G.Expedition = (() => {
     const layout=node('div','journey-layout journey-layout-wide'),goods=node('div','journey-goods');
     offer.forEach((o,i)=>{
       if(!o){goods.append(node('article','journey-product journey-empty',L('Reserva agotada','Pool exhausted','当前费用档位暂无可招募伙伴')));return;}
-      const cost=G.TrainerTalents?.price(run,G.SquadTraits?.price(o.cost,o.kind)??o.cost)??o.cost;
+      const cost=G.HoennMarket?.price((G.TrainerTalents?.price(run,G.SquadTraits?.price(o.cost,o.kind)??o.cost)??o.cost),'mon')??o.cost;
       const card=node('article','journey-product quality-'+(G.ExpeditionQuality?.quality(o.dex)||1));card.dataset.product=i;
       const family=G.MonProgression.rootFor(o.dex),owned=[run.captain,...G.Squad.roster].filter(p=>G.MonProgression.rootFor(p.dex)===family),merge=G.Squad.roster.some(p=>G.MonProgression.rootFor(p.dex)===family&&p.rank===(o.rank||1)&&p.rank<3);
       if(!o.sold&&owned.length){card.classList.add('journey-owned');card.dataset.owned='true';card.dataset.merge=String(merge);card.append(node('strong','journey-owned-badge',merge?L('¡Ascenso disponible!','Ready to merge!','可合成升星'):L('Ya está en el equipo','Already in your squad','队伍已有')));}
       const content=node('div','journey-product-art');
       {const mon=G.DEX_BY[o.dex],rank=o.rank||1,move=G.Moves.instance(o.moveId,[0,1,3,5][rank]);content.append(portrait(mon,100));card.append(content,node('small','',L('Compañero','Companion','队员邀请')+' · '+(G.ExpeditionQuality?.label(mon)||'')+' · '+'★'.repeat(rank)),node('h3','',T(mon.name)));const dummy={mon,dex:mon.dex,rank,moves:[move]};if(G.SquadTraits&&(G.LeagueRank?.allows('traits')??true)){const trait=node('p','journey-shop-trait',G.SquadTraits.description(dummy));trait.setAttribute('translate','no');card.append(trait);}card.append(tags(dummy),node('p','journey-shop-move',T(move.name)+' · '+(move.evolved?L('Definitivo','Ultimate','超武'):'Lv.'+move.lvl)));}
-      const b=button(o.sold?L('Invitado / adquirido','Recruited / acquired','已邀请／购入'):cost+' '+L('oro','gold','金币'),()=>buy(i),'btn gold');b.dataset.buy=i;b.disabled=o.sold||run.gold<cost;card.append(node('small','',L('En reserva','In pool','池内剩余')+' '+run.unitPool.stock.get(G.MonProgression.rootFor(o.dex))),b);if(run.traitRecruitTickets>0){const t=button(L('Invitación dirigida','Directed recruit ticket','使用定向招募券')+' · '+run.traitRecruitTickets,()=>buy(i,true),'btn');t.dataset.recruitTicket=i;t.disabled=!!o.sold;card.append(t);}goods.append(card);
+      const b=button(o.sold?L('Invitado / adquirido','Recruited / acquired','已邀请／购入'):cost+' '+L('oro','gold','金币'),()=>buy(i),'btn gold');b.dataset.buy=i;b.disabled=o.sold||!(G.HoennMarket?.canPay(cost,o.hoennToken)??run.gold>=cost);card.append(node('small','',L('En reserva','In pool','池内剩余')+' '+run.unitPool.stock.get(G.MonProgression.rootFor(o.dex))),b);if(run.traitRecruitTickets>0){const t=button(L('Invitación dirigida','Directed recruit ticket','使用定向招募券')+' · '+run.traitRecruitTickets,()=>buy(i,true),'btn');t.dataset.recruitTicket=i;t.disabled=!!o.sold;card.append(t);}goods.append(card);
     });
     const row=G.Economy.levelRow(lv),xp=G.EconomyConfig.buyXp;
     const odds=node('div','journey-odds');row.odds.forEach((chance,i)=>{const span=node('span','quality-'+(i+1),G.EconomyConfig.unitTiers[i+1].cost+' G · '+chance+'%');odds.append(span);});box.append(odds);
@@ -326,7 +326,7 @@ G.Expedition = (() => {
     if(lv>=G.EconomyConfig.itemTiers.POP_CAP.unlockLevel&&!run.hasPopCapItem){const expand=button(L('Ampliar formación','Expand formation','编队扩容')+' · '+G.EconomyConfig.itemTiers.POP_CAP.price+' G',()=>{if(G.Economy.buyPopCap(run)){G.Squad.syncTrainer();renderShop();}});expand.id='journey-expand';expand.disabled=run.gold<G.EconomyConfig.itemTiers.POP_CAP.price;controls.append(expand);}
     if(run.cycle>=G.EconomyConfig.endless.unlockCycle&&lv===G.EconomyConfig.levels.at(-1).level){const license=button(L('Licencia de entrenador','Trainer license','训练家执照')+' · '+G.Economy.licenseCost(run)+' G',()=>{if(G.Economy.buyLicense(run)){G.Squad.syncTrainer();renderShop();}});license.id='journey-license';license.disabled=run.gold<G.Economy.licenseCost(run);controls.append(license);}
     const toolbar=node('section','journey-shop-toolbar'),progress=progressPanel();progress.id='journey-shop-progress';progress.setAttribute('aria-live','polite');toolbar.append(progress,controls);box.append(toolbar);
-    goods.append(node('p','note',L('Cinco invitaciones, sin objetos. Bloquear conserva todo al volver; renovar desbloquea la tienda.','Five invitations, no item sales. Lock to preserve all slots on your next visit; refreshing unlocks the shop.','固定5格宝可梦邀请，不出售道具。锁定保留整店至下次访问，手动刷新会解除锁定。')));layout.append(goods);box.append(layout);G.UI.show('scr-journey');if(run.pendingTalentPicks?.length)G.TrainerTalentsUI?.showPickModal(renderShop);
+    goods.append(node('p','note',L('Cinco invitaciones, sin objetos. Bloquear conserva todo al volver; renovar desbloquea la tienda.','Five invitations, no item sales. Lock to preserve all slots on your next visit; refreshing unlocks the shop.','固定5格宝可梦邀请，不出售道具。锁定保留整店至下次访问，手动刷新会解除锁定。')));layout.append(goods);box.append(layout);G.HoennMarketUI?.renderShop(box,run);G.UI.show('scr-journey');if(run.pendingTalentPicks?.length)G.TrainerTalentsUI?.showPickModal(renderShop);
   }
   function startBattle(kind){
     run.phase='combat';run.squadHealing={};run.kind=kind;run.elapsed=0;run.spawned=0;run.acc=0;run.kills=0;run.wave=R.wave(run.day,kind);run.bossDead=false;run.waveType=Math.random()<.5?G.U.pick([...new Set(run.pool.flatMap(p=>p.types))]):null;

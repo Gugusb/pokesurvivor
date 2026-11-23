@@ -128,7 +128,7 @@ G.Combat = (() => {
   }
 
   /** Tabla de tipos × clima para un ataque de tipo `type` contra `e`. */
-  function typeK(type, e, pl) {const k=G.Abilities.outgoingType(pl,type,e.types);return (G.LeaderJohto?.typeFactor(pl,type,e,k)??k)*G.Weather.mult(type);}
+  function typeK(type, e, pl,m) {const k=G.Abilities.outgoingType(pl,type,e.types),j=G.LeaderJohto?.typeFactor(pl,type,e,k)??k;return (G.LeaderHoenn?.typeFactor(pl,type,e,j,m)??j)*G.Weather.mult(type);}
 
   function counterTackle(pl, attacker) {
     if (G.ZMoves && G.ZMoves.busy(pl)) return;
@@ -649,7 +649,7 @@ G.Combat = (() => {
   const isCrit = (pl,m,e) => {const chance=Math.min(1,(pl.critChance||0)+(G.LeaderAbilities?.crit(pl,m,e)||0)+(G.ExpeditionGrowth?.crit(pl)||0)+(G.SquadTraits?.crit(pl)||0)+(G.TrainerTalents?.crit(pl)||0)+(G.Items?.critBonus(pl)||0)+(G.Specialization?.stats(m).crit||0));return !ghost&&chance>0&&Math.random()<chance;};
   const critMul=(pl,m,e)=>G.Abilities.critMultiplier(pl)+(G.LeaderAbilities?.critMultiplier(pl,m)||0)+(G.ExpeditionGrowth?.critDamage(pl)||0)+(G.Items?.critDamage(pl)||0)+(G.Specialization?.stats(m).critDamage||0)+(e?G.TypeBonds?.critBonus(pl,e)||0:0);
   function hit(pl, e, dmg, col, dx, dy, knock, m) {
-    const k = typeK(m.type, e, pl);
+    const k = typeK(m.type, e, pl,m);
     const crit = m.zCrit ||G.TypeBonds?.forceCrit(pl,e)|| isCrit(pl,m,e);
     dmg *= k * (crit ? critMul(pl,m,e) : 1);
     const dealt = e.hurt(dmg, col, dx, dy, knock, crit ? 'crit' : G.Types.label(G.Abilities.outgoingType(pl, m.type, e.types)), ghost ? null : pl, {...m,leaderCrit:crit,typeBondCritApplied:true}) || 0;
@@ -777,10 +777,10 @@ G.Combat = (() => {
         const raw = G.ZMoves ? G.ZMoves.projectileDamage(p,e) : p.dmg;
         if(p.bondOrbitShot)p.pierce=Math.max(0,G.EconomyConfig.classBonds.orbit.launchPierce-(p.hits.size-1));
         if(raw<=0){if(p.bondOrbitShot&&p.pierce===0){G.Projectiles.remove(p);break;}continue;}
-        const crit=p.specMove?.zCrit||p.specMove?.johtoCritOnStun&&e.classStunT>0||p.back&&p.specMove?.leaderReturnCrit||G.TypeBonds?.forceCrit(owner,e)||isCrit(owner,p.specMove,e);
-        const k = (p.back?(p.specMove?.leaderReturn||1):1) * (p.mtype ? typeK(p.mtype, e, owner) : 1) * (crit ? critMul(owner,p.specMove,e) : 1);
+        const crit=p.specMove?.zCrit||p.specMove?.hoennBurnCrit&&e.burn>0||p.specMove?.hoennPoisonCrit&&e.poison>0||p.specMove?.johtoCritOnStun&&e.classStunT>0||p.back&&p.specMove?.leaderReturnCrit||G.TypeBonds?.forceCrit(owner,e)||isCrit(owner,p.specMove,e);
+        const k = (p.back?(p.specMove?.leaderReturn||1):1) * (p.mtype ? typeK(p.mtype, e, owner,p.specMove) : 1) * (crit ? critMul(owner,p.specMove,e) : 1);
         const dealt = e.hurt(raw * k, p.color, p.vx || (e.x - owner.x), p.vy || (e.y - owner.y), p.knock,
-               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, {leaderGenerated:!!p.specMove?.leaderGenerated,leaderCrit:crit,leaderReturning:!!p.back,leaderBounced:!!p.leaderBounced, id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved,typeCastId:p.typeCastId||0,johtoBaton:!!p.specMove?.johtoBaton,typeBondSecondary:!!p.typeBondSecondary,noDragonCount:!!p.noDragonCount,typeBondCritApplied:true,bondDamageContributions:p.bondDamageContributions,bondDamageKind:p.bondDamageKind }) || 0;
+               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, {leaderGenerated:!!p.specMove?.leaderGenerated,leaderCrit:crit,leaderReturning:!!p.back,leaderBounced:!!p.leaderBounced, id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved,typeCastId:p.typeCastId||0,johtoBaton:!!p.specMove?.johtoBaton,leaderTrue:!!p.specMove?.leaderTrue,hoennZ:!!p.specMove?.hoennZ,hoennExecute:p.specMove?.hoennExecute,hoennShieldCut:p.specMove?.hoennShieldCut,hoennSoften:p.specMove?.hoennSoften,hoennSpdefZero:p.specMove?.hoennSpdefZero,hoennTeamAttack:p.specMove?.hoennTeamAttack,hoennPen:p.specMove?.hoennPen,typeBondSecondary:!!p.typeBondSecondary,noDragonCount:!!p.noDragonCount,typeBondCritApplied:true,bondDamageContributions:p.bondDamageContributions,bondDamageKind:p.bondDamageKind }) || 0;
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
         owner.dmgDealt += dealt;
         owner.onDealt(dealt);

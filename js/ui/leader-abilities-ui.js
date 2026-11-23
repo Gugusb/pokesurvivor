@@ -44,9 +44,9 @@ G.LeaderAbilitiesUI=(()=>{
    const h=node('h4');h.append(node('i','',icon),node('span','',title),node('small','',key==='active'?L('手动施放','Manual cast'):level>1?'Lv.'+level:L('开局生效','From start')));section.append(h);
    const list=node('ul');
    const authored=d.description?.[G.I18n.lang]?.[key];const text=authored?[authored]:key==='active'?[L(zText[d.active.kind]||'',d.name.en+' · '+d.active.kind.replace(/([A-Z])/g,' $1')),L('充能：'+chargeWords[d.charge.event]+'；常规构筑约60秒一发。','Charge: '+d.charge.event.replace(/([A-Z])/g,' $1')+'; about 60 combat seconds in a matching build.'),L('按 Z 或点击槽位施放；最多1发，跨战保留。','Press Z or tap the slot; one stored charge, retained between battles.')]:lines(d[key]);
-   for(const t of text)list.append(node('li','',t));if(!text.length)list.append(node('li','',L('无额外规则','No additional rule')));section.append(list);grid.append(section);
+   for(const t of text){const li=node('li');if(authored){const parts=t.replace(/^\s*\*\s+/gm,'').split(/(\*\*[^*]+\*\*|`[^`]+`)/g);for(const part of parts){if(part.startsWith('**'))li.append(node('strong','',part.slice(2,-2)));else if(part.startsWith('`'))li.append(node('code','',part.slice(1,-1)));else li.append(document.createTextNode(part));}}else li.textContent=t;list.append(li);}if(!text.length)list.append(node('li','',L('无额外规则','No additional rule')));section.append(list);grid.append(section);
   }
-  box.append(grid,node('p','leader-ability-note',L('持续治疗每秒不超过各自最大生命3%；瞬时治疗按具体效果结算。白盾上限40%，BOSS控制时长减半。','Sustained healing capped at 3% max HP/s; burst healing follows its described trigger. Shields cap at 40%; bosses receive half control duration.')));return box;
+  box.append(grid);if(d.generation===3)box.append(G.HoennMarketUI.actualNotes(d));box.append(node('p','leader-ability-note',L('持续治疗每秒不超过各自最大生命3%；瞬时治疗按具体效果结算。白盾上限40%，BOSS控制时长减半。','Sustained healing capped at 3% max HP/s; burst healing follows its described trigger. Shields cap at 40%; bosses receive half control duration.')));return box;
  }
  function hud(ctx,p,x,y,size){
   if(!G.LeaderAbilities.active())return false;

@@ -40,7 +40,7 @@ G.Economy=(()=>{
       report.totalGoldGained=report.investmentReturn+report.baseWage+report.interest+report.streakBonus+report.comebackBounty+report.eliteFlawlessBonus+report.inWaveDrops;s.gold+=report.totalGoldGained-report.investmentReturn;
       report.grantFreePostBossShop=eventType==='BOSS_BATTLE';report.traitGold=s.traitBattleRewards?.gold||0;report.totalGoldGained+=report.traitGold;
     }
-    report.baseXp=config().freeXpByEvent[eventType]||0;report.clearXpBonus=eventType==='ELITE_BATTLE'&&input.victory&&input.cleared===true?config().eliteClearBonusXp:0;report.xpGained=report.baseXp+report.clearXpBonus+(combat&&input.victory?(G.TrainerTalents?.battleReward(s)||0):0);report.leveledUpTo=addXp(s,report.xpGained);if(combat&&input.victory){report.traitXp=s.traitBattleRewards?.exp||0;report.xpGained+=report.traitXp;}return report;
+    report.baseXp=config().freeXpByEvent[eventType]||0;report.clearXpBonus=eventType==='ELITE_BATTLE'&&input.victory&&input.cleared===true?config().eliteClearBonusXp:0;report.xpGained=report.baseXp+report.clearXpBonus+(combat&&input.victory?(G.TrainerTalents?.battleReward(s)||0):0);report.leveledUpTo=addXp(s,report.xpGained);if(combat&&input.victory){report.traitXp=s.traitBattleRewards?.exp||0;report.xpGained+=report.traitXp;}G.HoennMarket?.settle(s,input,report);return report;
   }
   function settleDay(s,input){if(s.settledDays.has(s.day))return s.settlement;s.settledDays.add(s.day);return s.settlement=settle(s,input);}
   return {config,formatGold,events,create,levelRow,maxLevel,interest,capacity,refreshCost,licenseCost,overclockCost,addXp,buyXp,buyLicense,buyPopCap,overclock,settle,settleDay};
