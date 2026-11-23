@@ -1,0 +1,3925 @@
+{
+  "version": 1,
+  "generation": 6,
+  "sourceSha256": "e4a528cc443e60176ed9bb4c8cfe871a13f9597b157cef8abc950f75aff499a1",
+  "sharedNotes": [
+    "以alpha.63为基线；原文逐段保留，下面单列试玩修正。基础与代价开局生效，训练家5/8级进阶，家族勋章解锁手动Z，匹配行为约60游戏秒充满、最多一发、跨战保留。",
+    "按确认：补给生成就计充能，治疗和PP胜利后发放给击杀者，加速留给下一战；试玩上限为每场果实4份、根茎2份。",
+    "按确认：受预算限制的Z治疗排队以每秒3%最大生命逐步兑现；多种治疗共用预算，补偿不产生再次排队或递归充能。",
+    "按确认：哲尔尼亚斯群救援每场一次，队长与阵亡队员25%血，存活成员至少25%且不降血；黏黏宝基础近战实际受伤可充能。",
+    "按确认：属性倍率0.3—2.4仅限第六世代，0倍免疫保留；复合攻击均分威力逐属性结算。主技能物特65/35，防御展示值按100×基础系数换算。",
+    "Z输出锚定当前主招10秒理论伤害budget；同次多个弹体/往返/反射对同一精英或首领合计不超过65%预算，单命中不超过30%，BOSS控制时长减半。"
+  ],
+  "families": [
+    {
+      "root": 650,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "hurtCount",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "defense": 0.25
+        },
+        "rangedIncoming": 0.8,
+        "physicalIncoming": 0.85,
+        "moves": {
+          "melee": {
+            "damage": 1.15
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.2
+        },
+        "incomingTypes": {
+          "flying": 1.5
+        },
+        "ban": [
+          "beam"
+        ]
+      },
+      "five": {
+        "defMelee": 0.4,
+        "kalos": {
+          "defCap": 0.35
+        }
+      },
+      "eight": {
+        "kalos": {
+          "reflect": 0.4,
+          "counterSpikes": 4
+        }
+      },
+      "active": {
+        "kind": "kalos650",
+        "shape": "nova",
+        "power": 0.45,
+        "types": [
+          "grass"
+        ],
+        "radius": 220,
+        "shield": 0.3,
+        "knock": 200
+      },
+      "estimate": "近战×1.15，标准化防御转伤最多35%后×1.553；物理有效生命×1.25/0.85=1.471，远程物理约1.563。防御每点按100×底层系数换算；反伤仅实际损血且不递归。",
+      "notes": [
+        "近战×1.15，标准化防御转伤最多35%后×1.553；物理有效生命×1.25/0.85=1.471，远程物理约1.563。防御每点按100×底层系数换算；反伤仅实际损血且不递归。"
+      ],
+      "id": "leader_bulletproof_spiky_shield",
+      "members": [
+        650,
+        651,
+        652
+      ],
+      "name": {
+        "zh": "防弹尖刺铁壁",
+        "en": "Bulletproof Spiky Shield",
+        "es": "Bulletproof Spiky Shield"
+      },
+      "source": {
+        "heading": "哈力栗家族 (Chesnaught Family)",
+        "raw": "\n- **家族成员**：#650 哈力栗 / #651 胖胖哈力 / #652 布里卡隆\n- **属性配置**：草 (Grass) / 格斗 (Fighting)\n- **特性标识**：`leader_bulletproof_spiky_shield`\n- **特性名称**：**防弹尖刺铁壁** (Bulletproof Spiky Shield)\n- **接口映射**：`stats.defense`、`physicalIncoming`、`rangedIncoming`、`moves.melee`、`defMelee`、`contactReflect`、`counterSpikes`、`ban: ['beam']`\n\n#### 【基础被动能力】 (Passive)\n- **防弹硬壳阵型 (Bulletproof Bastion)**：\n  - 全队基础物理防御提升 **+25%**；\n  - 受到远程/弹幕伤害降低 **20%** (`rangedIncoming: 0.8`)，受到近战接触伤害降低 **15%** (`physicalIncoming: 0.85`)；\n  - 全队【近战 (`melee`)】招式伤害提升 **+15%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **尖刺防守反击 (Spiky Shield Z)** · *充能事件：`hurtCount`（约 60s 校准）*：\n  - 满充后手动激活持续 4 秒的尖刺防守状态：全队立即获得相当于各自最大生命值 **30% 的白盾** (`shield`，受 40% 上限保护)；\n  - 激活瞬间向自身周围 220 范围爆发一圈草系尖刺震荡，造成相当于 `budget(c) * 0.45` 的【草属性】伤害，并将非首领敌人击退 200 距离。\n\n#### 【能力代价】 (Downside)\n- **重甲迟缓与远射禁令 (Armored Sluggishness)**：\n  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)；\n  - 受到【飞行属性】伤害提升 **50%** (`incomingTypes.flying: 1.5`)；\n  - 全队禁止学习或使用【能量柱 (`beam`)】招式 (`ban: ['beam']`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **铁壁腕力转化 (Defense-to-Melee)**：\n  - 全队将自身基础物理防御转化为【近战 (`melee`)】招式的额外伤害倍率（每点防御 +0.4%，**封顶 +35%**，复用 `defMelee` 钩子）。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **荆棘逆刺回敬 (Spiky Retaliation)**：\n  - 受到近战接触伤害时，立即对攻击者反弹本次受损值 **40% 的草属性伤害** (`contactReflect: 0.4`)；\n  - 每次受击（冷却 2 秒）自动朝四周发射 **4 枚岩石尖刺** (`counterSpikes: 4`)，每枚造成基础近战威力的散射伤害。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **防弹硬壳阵型 (Bulletproof Bastion)**：",
+            "  - 全队基础物理防御提升 **+25%**；",
+            "  - 受到远程/弹幕伤害降低 **20%** (`rangedIncoming: 0.8`)，受到近战接触伤害降低 **15%** (`physicalIncoming: 0.85`)；",
+            "  - 全队【近战 (`melee`)】招式伤害提升 **+15%**。"
+          ],
+          "active": [
+            "- **尖刺防守反击 (Spiky Shield Z)** · *充能事件：`hurtCount`（约 60s 校准）*：",
+            "  - 满充后手动激活持续 4 秒的尖刺防守状态：全队立即获得相当于各自最大生命值 **30% 的白盾** (`shield`，受 40% 上限保护)；",
+            "  - 激活瞬间向自身周围 220 范围爆发一圈草系尖刺震荡，造成相当于 `budget(c) * 0.45` 的【草属性】伤害，并将非首领敌人击退 200 距离。"
+          ],
+          "cost": [
+            "- **重甲迟缓与远射禁令 (Armored Sluggishness)**：",
+            "  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)；",
+            "  - 受到【飞行属性】伤害提升 **50%** (`incomingTypes.flying: 1.5`)；",
+            "  - 全队禁止学习或使用【能量柱 (`beam`)】招式 (`ban: ['beam']`)。"
+          ],
+          "five": [
+            "- **铁壁腕力转化 (Defense-to-Melee)**：",
+            "  - 全队将自身基础物理防御转化为【近战 (`melee`)】招式的额外伤害倍率（每点防御 +0.4%，**封顶 +35%**，复用 `defMelee` 钩子）。"
+          ],
+          "eight": [
+            "- **荆棘逆刺回敬 (Spiky Retaliation)**：",
+            "  - 受到近战接触伤害时，立即对攻击者反弹本次受损值 **40% 的草属性伤害** (`contactReflect: 0.4`)；",
+            "  - 每次受击（冷却 2 秒）自动朝四周发射 **4 枚岩石尖刺** (`counterSpikes: 4`)，每枚造成基础近战威力的散射伤害。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **防弹硬壳阵型 (Bulletproof Bastion)**：\n  - 全队基础物理防御提升 **+25%**；\n  - 受到远程/弹幕伤害降低 **20%** (`rangedIncoming: 0.8`)，受到近战接触伤害降低 **15%** (`physicalIncoming: 0.85`)；\n  - 全队【近战 (`melee`)】招式伤害提升 **+15%**。",
+          "active": "- **尖刺防守反击 (Spiky Shield Z)** · *充能事件：`hurtCount`（约 60s 校准）*：\n  - 满充后手动激活持续 4 秒的尖刺防守状态：全队立即获得相当于各自最大生命值 **30% 的白盾** (`shield`，受 40% 上限保护)；\n  - 激活瞬间向自身周围 220 范围爆发一圈草系尖刺震荡，造成相当于 `budget(c) * 0.45` 的【草属性】伤害，并将非首领敌人击退 200 距离。",
+          "cost": "- **重甲迟缓与远射禁令 (Armored Sluggishness)**：\n  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)；\n  - 受到【飞行属性】伤害提升 **50%** (`incomingTypes.flying: 1.5`)；\n  - 全队禁止学习或使用【能量柱 (`beam`)】招式 (`ban: ['beam']`)。",
+          "five": "- **铁壁腕力转化 (Defense-to-Melee)**：\n  - 全队将自身基础物理防御转化为【近战 (`melee`)】招式的额外伤害倍率（每点防御 +0.4%，**封顶 +35%**，复用 `defMelee` 钩子）。",
+          "eight": "- **荆棘逆刺回敬 (Spiky Retaliation)**：\n  - 受到近战接触伤害时，立即对攻击者反弹本次受损值 **40% 的草属性伤害** (`contactReflect: 0.4`)；\n  - 每次受击（冷却 2 秒）自动朝四周发射 **4 枚岩石尖刺** (`counterSpikes: 4`)，每枚造成基础近战威力的散射伤害。"
+        }
+      }
+    },
+    {
+      "root": 653,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "burnStack",
+        "targetSeconds": 60
+      },
+      "base": {
+        "moves": {
+          "projectile": {
+            "damage": 1.2,
+            "burn": 1
+          }
+        },
+        "homingTurns": 1.2,
+        "burnSpa": 0.015
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.15,
+          "defense": -0.2
+        },
+        "ban": [
+          "melee"
+        ]
+      },
+      "five": {
+        "burnDamage": 1.25
+      },
+      "eight": {
+        "psychicPenetration": 0.25,
+        "moves": {
+          "projectile": {
+            "count": 1
+          }
+        }
+      },
+      "active": {
+        "kind": "kalos653",
+        "shape": "projectile",
+        "power": 0.55,
+        "types": [
+          "fire"
+        ],
+        "count": 3,
+        "burn": 3,
+        "attackDown": 0.25,
+        "fullBurnBlast": true
+      },
+      "estimate": "基础弹伤×1.2；仅特攻+25%在65/35混合后约×1.163，合计1.395；灼伤与25%穿甲后约2.325，再加一弹依原数量提升。Z原65%预算加满灼爆破偏高，改55%且小爆破包含在同次总预算。物理有效生命×0.68。",
+      "notes": [
+        "基础弹伤×1.2；仅特攻+25%在65/35混合后约×1.163，合计1.395；灼伤与25%穿甲后约2.325，再加一弹依原数量提升。Z原65%预算加满灼爆破偏高，改55%且小爆破包含在同次总预算。物理有效生命×0.68。"
+      ],
+      "id": "leader_magician_mystical_fire",
+      "members": [
+        653,
+        654,
+        655
+      ],
+      "name": {
+        "zh": "魔术师妖火法杖",
+        "en": "Magician Mystical Blaze",
+        "es": "Magician Mystical Blaze"
+      },
+      "source": {
+        "heading": "火狐狸家族 (Delphox Family)",
+        "raw": "\n- **家族成员**：#653 火狐狸 / #654 长尾火狐 / #655 妖火红狐\n- **属性配置**：火 (Fire) / 超能力 (Psychic)\n- **特性标识**：`leader_magician_mystical_fire`\n- **特性名称**：**魔术师妖火法杖** (Magician Mystical Blaze)\n- **接口映射**：`moves.projectile`、`homingTurns`、`burnSpa`、`burnDamage`、`psychicPenetration`、`ban: ['melee']`\n\n#### 【基础被动能力】 (Passive)\n- **妖火魔杖追踪 (Mystical Homing Wand)**：\n  - 全队【投射物 (`projectile`)】招式伤害提升 **+20%**，命中附加 **+1 层灼烧** (`burn: 1`)，并强制获得自动追踪修正 (`homingTurns: 1.2`)；\n  - 场上每有 1 名处于灼烧状态的敌人，全队特殊攻击 (`spa`) 提升 **+1.5%**（**封顶 +25%**，复用 `burnSpa`）。\n\n#### 【累计特殊能力】 (Cadence)\n- **幻焰魔法阵 (Mystical Pyre Z)** · *充能事件：`burnStack`（约 60s 校准）*：\n  - 手动激活后向前方扇形投出 **3 发巨型追踪魔法火球** (`projectile`，合计总伤 `budget(c) * 0.65`)；\n  - 命中敌人施加 **3 层灼烧**并令目标在 3 秒内攻击力降低 25% (`leaderDamage: 0.75`)；对已满层（8层）灼烧目标额外引发 90 范围小爆轰。\n\n#### 【能力代价】 (Downside)\n- **脆皮法师禁近战 (Fragile Mage)**：\n  - 全队最大生命值降低 **15%** (`stats.hp: -0.15`)，基础物理防御降低 **20%** (`stats.defense: -0.2`)；\n  - 全队禁止使用【近战 (`melee`)】招式 (`ban: ['melee']`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **炽焰催化 (Scorched Catalyst)**：\n  - 全队【火属性】招式命中处于灼烧状态的目标时，最终伤害直接提高 **25%** (`burnDamage: 1.25`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **超能魔杖穿甲 (Psychic Wand Penetration)**：\n  - 队伍所有非衍生攻击获得 **25% 护甲/特防穿透** (`psychicPenetration: 0.25`)，且【投射物 (`projectile`)】单次齐射弹幕数量 **+1** (`moves.projectile.count: 1`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **妖火魔杖追踪 (Mystical Homing Wand)**：",
+            "  - 全队【投射物 (`projectile`)】招式伤害提升 **+20%**，命中附加 **+1 层灼烧** (`burn: 1`)，并强制获得自动追踪修正 (`homingTurns: 1.2`)；",
+            "  - 场上每有 1 名处于灼烧状态的敌人，全队特殊攻击 (`spa`) 提升 **+1.5%**（**封顶 +25%**，复用 `burnSpa`）。"
+          ],
+          "active": [
+            "- **幻焰魔法阵 (Mystical Pyre Z)** · *充能事件：`burnStack`（约 60s 校准）*：",
+            "  - 手动激活后向前方扇形投出 **3 发巨型追踪魔法火球** (`projectile`，合计总伤 `budget(c) * 0.65`)；",
+            "  - 命中敌人施加 **3 层灼烧**并令目标在 3 秒内攻击力降低 25% (`leaderDamage: 0.75`)；对已满层（8层）灼烧目标额外引发 90 范围小爆轰。"
+          ],
+          "cost": [
+            "- **脆皮法师禁近战 (Fragile Mage)**：",
+            "  - 全队最大生命值降低 **15%** (`stats.hp: -0.15`)，基础物理防御降低 **20%** (`stats.defense: -0.2`)；",
+            "  - 全队禁止使用【近战 (`melee`)】招式 (`ban: ['melee']`)。"
+          ],
+          "five": [
+            "- **炽焰催化 (Scorched Catalyst)**：",
+            "  - 全队【火属性】招式命中处于灼烧状态的目标时，最终伤害直接提高 **25%** (`burnDamage: 1.25`)。"
+          ],
+          "eight": [
+            "- **超能魔杖穿甲 (Psychic Wand Penetration)**：",
+            "  - 队伍所有非衍生攻击获得 **25% 护甲/特防穿透** (`psychicPenetration: 0.25`)，且【投射物 (`projectile`)】单次齐射弹幕数量 **+1** (`moves.projectile.count: 1`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **妖火魔杖追踪 (Mystical Homing Wand)**：\n  - 全队【投射物 (`projectile`)】招式伤害提升 **+20%**，命中附加 **+1 层灼烧** (`burn: 1`)，并强制获得自动追踪修正 (`homingTurns: 1.2`)；\n  - 场上每有 1 名处于灼烧状态的敌人，全队特殊攻击 (`spa`) 提升 **+1.5%**（**封顶 +25%**，复用 `burnSpa`）。",
+          "active": "- **幻焰魔法阵 (Mystical Pyre Z)** · *充能事件：`burnStack`（约 60s 校准）*：\n  - 手动激活后向前方扇形投出 **3 发巨型追踪魔法火球** (`projectile`，合计总伤 `budget(c) * 0.65`)；\n  - 命中敌人施加 **3 层灼烧**并令目标在 3 秒内攻击力降低 25% (`leaderDamage: 0.75`)；对已满层（8层）灼烧目标额外引发 90 范围小爆轰。",
+          "cost": "- **脆皮法师禁近战 (Fragile Mage)**：\n  - 全队最大生命值降低 **15%** (`stats.hp: -0.15`)，基础物理防御降低 **20%** (`stats.defense: -0.2`)；\n  - 全队禁止使用【近战 (`melee`)】招式 (`ban: ['melee']`)。",
+          "five": "- **炽焰催化 (Scorched Catalyst)**：\n  - 全队【火属性】招式命中处于灼烧状态的目标时，最终伤害直接提高 **25%** (`burnDamage: 1.25`)。",
+          "eight": "- **超能魔杖穿甲 (Psychic Wand Penetration)**：\n  - 队伍所有非衍生攻击获得 **25% 护甲/特防穿透** (`psychicPenetration: 0.25`)，且【投射物 (`projectile`)】单次齐射弹幕数量 **+1** (`moves.projectile.count: 1`)。"
+        }
+      }
+    },
+    {
+      "root": 656,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "crit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "spd": 0.15
+        },
+        "moves": {
+          "boomerang": {
+            "damage": 1.2
+          },
+          "dash": {
+            "cd": 0.85
+          }
+        },
+        "firstHealthyCrit": true
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.2
+        },
+        "incomingTypes": {
+          "electric": 1.35,
+          "grass": 1.35
+        }
+      },
+      "five": {
+        "dashInvuln": true,
+        "dashEndSpeed": 0.25
+      },
+      "eight": {
+        "critMultiplier": 1.85,
+        "nonStabDamage": 1.2
+      },
+      "active": {
+        "kind": "kalos656",
+        "shape": "boomerang",
+        "power": 0.6,
+        "types": [
+          "water"
+        ],
+        "count": 5,
+        "knock": 150,
+        "returnStun": 0.5
+      },
+      "estimate": "回旋×1.2，首击暴击初始×1.8，但同一敌人仅首次；突进频率×1.176。8级跨系回旋首击×2.664，后续×1.44。Z往返共享60%总预算，不能每次返程再复制全额。",
+      "notes": [
+        "回旋×1.2，首击暴击初始×1.8，但同一敌人仅首次；突进频率×1.176。8级跨系回旋首击×2.664，后续×1.44。Z往返共享60%总预算，不能每次返程再复制全额。"
+      ],
+      "id": "leader_protean_water_shuriken",
+      "members": [
+        656,
+        657,
+        658
+      ],
+      "name": {
+        "zh": "变换自如水手里剑",
+        "en": "Protean Water Shuriken",
+        "es": "Protean Water Shuriken"
+      },
+      "source": {
+        "heading": "呱呱泡蛙家族 (Greninja Family)",
+        "raw": "\n- **家族成员**：#656 呱呱泡蛙 / #657 呱头蛙 / #658 甲贺忍蛙\n- **属性配置**：水 (Water) / 恶 (Dark)\n- **特性标识**：`leader_protean_water_shuriken`\n- **特性名称**：**变换自如水手里剑** (Protean Water Shuriken)\n- **接口映射**：`stats.spd`、`moves.boomerang`、`moves.dash`、`firstHealthyCrit`、`dashEndSpeed`、`dashInvuln`、`critMultiplier`、`nonStabDamage`\n\n#### 【基础被动能力】 (Passive)\n- **暗影忍者身法 (Ninja Swiftness)**：\n  - 全队移动速度提升 **+15%** (`stats.spd: 0.15`)；\n  - 【回旋镖 (`boomerang`)】伤害提升 **+20%**，【突进 (`dash`)】冷却时间缩短 **15%** (`moves.dash.cd: 0.85`)；\n  - 攻击生命值大于 80% 的满状态敌人时，首次命中 **必定暴击** (`firstHealthyCrit: true`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **飞水手里剑乱舞 (Giant Water Shuriken Z)** · *充能事件：`crit`（约 60s 校准）*：\n  - 手动激活向四周与瞄准方向极速投出 **5 枚穿透墙壁的水手里剑** (`boomerang`，合计总伤 `budget(c) * 0.65`)；\n  - 手里剑自带 150 击退并在折返时对命中目标附加 **0.5 秒眩晕** (`stun`，对 BOSS 减半)。\n\n#### 【能力代价】 (Downside)\n- **忍蛙脆甲弱电草 (Frail Amphibian)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【电属性】与【草属性】伤害提升 **35%** (`incomingTypes: { electric: 1.35, grass: 1.35 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **忍法·水遁隐身 (Shadow Dash Mastery)**：\n  - 施放【突进 (`dash`)】时获得 **0.25 秒无敌帧** (`dashInvuln: true`)，且突进结束后的 0.8 秒内移动速度提升 **+25%** (`dashEndSpeed: 0.25`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **变换自如暴击大师 (Protean Crit Mastery)**：\n  - 全队暴击伤害倍率由 1.5× 提升至 **1.85×** (`critMultiplier: 1.85`)；\n  - 队内成员施放非自身属性的招式时，额外获得 **+20% 跨系增伤** (`nonStabDamage: 1.2`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **暗影忍者身法 (Ninja Swiftness)**：",
+            "  - 全队移动速度提升 **+15%** (`stats.spd: 0.15`)；",
+            "  - 【回旋镖 (`boomerang`)】伤害提升 **+20%**，【突进 (`dash`)】冷却时间缩短 **15%** (`moves.dash.cd: 0.85`)；",
+            "  - 攻击生命值大于 80% 的满状态敌人时，首次命中 **必定暴击** (`firstHealthyCrit: true`)。"
+          ],
+          "active": [
+            "- **飞水手里剑乱舞 (Giant Water Shuriken Z)** · *充能事件：`crit`（约 60s 校准）*：",
+            "  - 手动激活向四周与瞄准方向极速投出 **5 枚穿透墙壁的水手里剑** (`boomerang`，合计总伤 `budget(c) * 0.65`)；",
+            "  - 手里剑自带 150 击退并在折返时对命中目标附加 **0.5 秒眩晕** (`stun`，对 BOSS 减半)。"
+          ],
+          "cost": [
+            "- **忍蛙脆甲弱电草 (Frail Amphibian)**：",
+            "  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；",
+            "  - 受到【电属性】与【草属性】伤害提升 **35%** (`incomingTypes: { electric: 1.35, grass: 1.35 }`)。"
+          ],
+          "five": [
+            "- **忍法·水遁隐身 (Shadow Dash Mastery)**：",
+            "  - 施放【突进 (`dash`)】时获得 **0.25 秒无敌帧** (`dashInvuln: true`)，且突进结束后的 0.8 秒内移动速度提升 **+25%** (`dashEndSpeed: 0.25`)。"
+          ],
+          "eight": [
+            "- **变换自如暴击大师 (Protean Crit Mastery)**：",
+            "  - 全队暴击伤害倍率由 1.5× 提升至 **1.85×** (`critMultiplier: 1.85`)；",
+            "  - 队内成员施放非自身属性的招式时，额外获得 **+20% 跨系增伤** (`nonStabDamage: 1.2`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **暗影忍者身法 (Ninja Swiftness)**：\n  - 全队移动速度提升 **+15%** (`stats.spd: 0.15`)；\n  - 【回旋镖 (`boomerang`)】伤害提升 **+20%**，【突进 (`dash`)】冷却时间缩短 **15%** (`moves.dash.cd: 0.85`)；\n  - 攻击生命值大于 80% 的满状态敌人时，首次命中 **必定暴击** (`firstHealthyCrit: true`)。",
+          "active": "- **飞水手里剑乱舞 (Giant Water Shuriken Z)** · *充能事件：`crit`（约 60s 校准）*：\n  - 手动激活向四周与瞄准方向极速投出 **5 枚穿透墙壁的水手里剑** (`boomerang`，合计总伤 `budget(c) * 0.65`)；\n  - 手里剑自带 150 击退并在折返时对命中目标附加 **0.5 秒眩晕** (`stun`，对 BOSS 减半)。",
+          "cost": "- **忍蛙脆甲弱电草 (Frail Amphibian)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【电属性】与【草属性】伤害提升 **35%** (`incomingTypes: { electric: 1.35, grass: 1.35 }`)。",
+          "five": "- **忍法·水遁隐身 (Shadow Dash Mastery)**：\n  - 施放【突进 (`dash`)】时获得 **0.25 秒无敌帧** (`dashInvuln: true`)，且突进结束后的 0.8 秒内移动速度提升 **+25%** (`dashEndSpeed: 0.25`)。",
+          "eight": "- **变换自如暴击大师 (Protean Crit Mastery)**：\n  - 全队暴击伤害倍率由 1.5× 提升至 **1.85×** (`critMultiplier: 1.85`)；\n  - 队内成员施放非自身属性的招式时，额外获得 **+20% 跨系增伤** (`nonStabDamage: 1.2`)。"
+        }
+      }
+    },
+    {
+      "root": 659,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "distance",
+        "targetSeconds": 60
+      },
+      "base": {
+        "groundImmune": true,
+        "moves": {
+          "dash": {
+            "damage": 1.25
+          },
+          "meteor": {
+            "radius": 1.2
+          }
+        },
+        "burrowCycle": true
+      },
+      "cost": {
+        "stats": {
+          "spa": -0.25
+        },
+        "incomingTypes": {
+          "ice": 1.4,
+          "fighting": 1.4
+        }
+      },
+      "five": {
+        "kalos": {
+          "bank": 0.015
+        }
+      },
+      "eight": {
+        "stats": {
+          "atk": 0.2
+        },
+        "kalos": {
+          "carrots": true
+        }
+      },
+      "active": {
+        "kind": "kalos659",
+        "shape": "delayedNova",
+        "power": 0.55,
+        "types": [
+          "ground"
+        ],
+        "radius": 260,
+        "delay": 1.1,
+        "guard": 1.1,
+        "stun": 1.5,
+        "armor": 0.3
+      },
+      "estimate": "突进×1.25；等双攻时特攻代价令物理招式×0.9125，约1.141。8级物攻+20%后约1.303，300G财富+22.5%后1.596。连续走位每6秒1.1秒遁地有风险收益；金币最多2G/战，根茎最多2份战后发。",
+      "notes": [
+        "突进×1.25；等双攻时特攻代价令物理招式×0.9125，约1.141。8级物攻+20%后约1.303，300G财富+22.5%后1.596。连续走位每6秒1.1秒遁地有风险收益；金币最多2G/战，根茎最多2份战后发。"
+      ],
+      "id": "leader_huge_power_dig_scavenge",
+      "members": [
+        659,
+        660
+      ],
+      "name": {
+        "zh": "大力士挖地掘宝",
+        "en": "Huge Power Burrow Bounty",
+        "es": "Huge Power Burrow Bounty"
+      },
+      "source": {
+        "heading": "掘掘兔家族 (Diggersby Family)",
+        "raw": "\n- **家族成员**：#659 掘掘兔 / #660 掘地兔\n- **属性配置**：一般 (Normal) / 地面 (Ground)\n- **特性标识**：`leader_huge_power_dig_scavenge`\n- **特性名称**：**大力士挖地掘宝** (Huge Power Burrow Bounty)\n- **接口映射**：`groundImmune`、`moves.dash`、`moves.meteor`、`burrowCycle`、`bankDamage`、`rice`、`stats.atk`\n\n#### 【基础被动能力】 (Passive)\n- **强壮双耳钻地 (Burrow Ear Strike)**：\n  - 队长与队员【地面属性】伤害免疫 (`groundImmune: true`)；\n  - 【突进 (`dash`)】伤害提升 **+25%**，【陨石 (`meteor`)】砸击半径扩大 **+20%**；\n  - 队长每持续移动 6 秒，自动触发 **1.1 秒钻地无敌状态** (`burrowCycle: true`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **大地震塌突袭 (Earthquake Tremor Z)** · *充能事件：`distance`（约 60s 校准）*：\n  - 手动激活使队长立刻进入 1.1 秒钻地无敌，随后破土引发 260 范围重型地震波 (`blast`，伤害 `budget(c) * 0.55`，附加 1.5 秒 `stun`，BOSS 减半)；\n  - 被地震命中的敌人 3 秒内被削弱防御，受到攻击额外附带 **30% 穿甲** (`leaderArmor: 0.3`)。\n\n#### 【能力代价】 (Downside)\n- **蛮力钝脑 (Brawn Over Brains)**：\n  - 全队特殊攻击 (`spa`) 降低 **25%** (`stats.spa: -0.25`)；\n  - 受到【冰属性】与【格斗属性】伤害提升 **40%** (`incomingTypes: { ice: 1.4, fighting: 1.4 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **地脉藏宝图 (💰 Burrow Gold Ledger)**：\n  - 开启钻地补贴结算（复用 `bankDamage: 0.015`）：战斗中每累计 20 次团队击杀，战后额外获得 **+1 金币**（**单场严格封顶 +2G**）；\n  - 同时当前每持有 20 局内金币，全队输出提高 **1.5%**（**封顶 +30%**）。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **胡萝卜补给与大力士 (Carrot Rations & Power)**：\n  - 团队每击杀 20 名敌人于原地掘出 **1 份补给根茎**（每场最多 2 份，拾取回复 **10% 最大生命**，复用 `rice: true`）；\n  - 全队物理攻击 (`atk`) 提升 **+20%** (`stats.atk: 0.2`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **强壮双耳钻地 (Burrow Ear Strike)**：",
+            "  - 队长与队员【地面属性】伤害免疫 (`groundImmune: true`)；",
+            "  - 【突进 (`dash`)】伤害提升 **+25%**，【陨石 (`meteor`)】砸击半径扩大 **+20%**；",
+            "  - 队长每持续移动 6 秒，自动触发 **1.1 秒钻地无敌状态** (`burrowCycle: true`)。"
+          ],
+          "active": [
+            "- **大地震塌突袭 (Earthquake Tremor Z)** · *充能事件：`distance`（约 60s 校准）*：",
+            "  - 手动激活使队长立刻进入 1.1 秒钻地无敌，随后破土引发 260 范围重型地震波 (`blast`，伤害 `budget(c) * 0.55`，附加 1.5 秒 `stun`，BOSS 减半)；",
+            "  - 被地震命中的敌人 3 秒内被削弱防御，受到攻击额外附带 **30% 穿甲** (`leaderArmor: 0.3`)。"
+          ],
+          "cost": [
+            "- **蛮力钝脑 (Brawn Over Brains)**：",
+            "  - 全队特殊攻击 (`spa`) 降低 **25%** (`stats.spa: -0.25`)；",
+            "  - 受到【冰属性】与【格斗属性】伤害提升 **40%** (`incomingTypes: { ice: 1.4, fighting: 1.4 }`)。"
+          ],
+          "five": [
+            "- **地脉藏宝图 (💰 Burrow Gold Ledger)**：",
+            "  - 开启钻地补贴结算（复用 `bankDamage: 0.015`）：战斗中每累计 20 次团队击杀，战后额外获得 **+1 金币**（**单场严格封顶 +2G**）；",
+            "  - 同时当前每持有 20 局内金币，全队输出提高 **1.5%**（**封顶 +30%**）。"
+          ],
+          "eight": [
+            "- **胡萝卜补给与大力士 (Carrot Rations & Power)**：",
+            "  - 团队每击杀 20 名敌人于原地掘出 **1 份补给根茎**（每场最多 2 份，拾取回复 **10% 最大生命**，复用 `rice: true`）；",
+            "  - 全队物理攻击 (`atk`) 提升 **+20%** (`stats.atk: 0.2`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **强壮双耳钻地 (Burrow Ear Strike)**：\n  - 队长与队员【地面属性】伤害免疫 (`groundImmune: true`)；\n  - 【突进 (`dash`)】伤害提升 **+25%**，【陨石 (`meteor`)】砸击半径扩大 **+20%**；\n  - 队长每持续移动 6 秒，自动触发 **1.1 秒钻地无敌状态** (`burrowCycle: true`)。",
+          "active": "- **大地震塌突袭 (Earthquake Tremor Z)** · *充能事件：`distance`（约 60s 校准）*：\n  - 手动激活使队长立刻进入 1.1 秒钻地无敌，随后破土引发 260 范围重型地震波 (`blast`，伤害 `budget(c) * 0.55`，附加 1.5 秒 `stun`，BOSS 减半)；\n  - 被地震命中的敌人 3 秒内被削弱防御，受到攻击额外附带 **30% 穿甲** (`leaderArmor: 0.3`)。",
+          "cost": "- **蛮力钝脑 (Brawn Over Brains)**：\n  - 全队特殊攻击 (`spa`) 降低 **25%** (`stats.spa: -0.25`)；\n  - 受到【冰属性】与【格斗属性】伤害提升 **40%** (`incomingTypes: { ice: 1.4, fighting: 1.4 }`)。",
+          "five": "- **地脉藏宝图 (💰 Burrow Gold Ledger)**：\n  - 开启钻地补贴结算（复用 `bankDamage: 0.015`）：战斗中每累计 20 次团队击杀，战后额外获得 **+1 金币**（**单场严格封顶 +2G**）；\n  - 同时当前每持有 20 局内金币，全队输出提高 **1.5%**（**封顶 +30%**）。",
+          "eight": "- **胡萝卜补给与大力士 (Carrot Rations & Power)**：\n  - 团队每击杀 20 名敌人于原地掘出 **1 份补给根茎**（每场最多 2 份，拾取回复 **10% 最大生命**，复用 `rice: true`）；\n  - 全队物理攻击 (`atk`) 提升 **+20%** (`stats.atk: 0.2`)。"
+        }
+      }
+    },
+    {
+      "root": 661,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "dashCast",
+        "targetSeconds": 60
+      },
+      "base": {
+        "moves": {
+          "dash": {
+            "cd": 0.75,
+            "damage": 1.2
+          }
+        },
+        "healthyDamage": 1.25
+      },
+      "cost": {
+        "incomingTypes": {
+          "rock": 1.6,
+          "electric": 1.3
+        },
+        "dashAfterIncoming": 1.25
+      },
+      "five": {
+        "kalos": {
+          "dashKillReset": 0.5
+        }
+      },
+      "eight": {
+        "longDashTrail": true,
+        "fireDamage": 1.2
+      },
+      "active": {
+        "kind": "kalos661",
+        "shape": "rush",
+        "power": 0.55,
+        "types": [
+          "flying",
+          "fire"
+        ],
+        "range": 700,
+        "burn": 2,
+        "trail": true,
+        "clear": true
+      },
+      "estimate": "满血突进伤害×1.5、频率×1.333，理论2倍；火系8级2.4倍。连杀减CD原每个敌人一次可瞬时全清，试玩同一施法只结算一次；火痕伤害计入Z55%总预算。",
+      "notes": [
+        "满血突进伤害×1.5、频率×1.333，理论2倍；火系8级2.4倍。连杀减CD原每个敌人一次可瞬时全清，试玩同一施法只结算一次；火痕伤害计入Z55%总预算。"
+      ],
+      "id": "leader_gale_wings_blitz",
+      "members": [
+        661,
+        662,
+        663
+      ],
+      "name": {
+        "zh": "疾风之翼先制烈焰",
+        "en": "Gale Wings Blitz",
+        "es": "Gale Wings Blitz"
+      },
+      "source": {
+        "heading": "小箭雀家族 (Talonflame Family)",
+        "raw": "\n- **家族成员**：#661 小箭雀 / #662 火箭雀 / #663 烈箭鹰\n- **属性配置**：火 (Fire) / 飞行 (Flying)\n- **特性标识**：`leader_gale_wings_blitz`\n- **特性名称**：**疾风之翼先制烈焰** (Gale Wings Blitz)\n- **接口映射**：`moves.dash`、`healthyDamage`、`dashAfterIncoming`、`dashKillReset`、`longDashTrail`、`fireDamage`\n\n#### 【基础被动能力】 (Passive)\n- **疾风之翼先攻 (Gale Wings Priority)**：\n  - 全队【突进 (`dash`)】招式冷却时间缩短 **25%** (`moves.dash.cd: 0.75`)，伤害提升 **+20%**；\n  - 当宝可梦自身生命值高于 85% 时，所有攻击伤害提升 **+25%** (`healthyDamage: 1.25`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **火焰勇鸟直撞 (Flare Brave Bird Z)** · *充能事件：`dashCast`（约 60s 校准）*：\n  - 手动激活化身赤红火隼向瞄准方向超高速俯冲贯穿 700 距离 (`dash`，造成 `budget(c) * 0.65` 【飞行/火】伤害并附加 `burn: 2`)；\n  - 沿途留下一条持续 3 秒的灼热火焰轨迹，并清除路径上接触到的敌方射弹。\n\n#### 【能力代价】 (Downside)\n- **四倍惧岩与着陆破绽 (Rock Hazard & Landing Lag)**：\n  - 受到【岩石属性】伤害提升 **60%** (`incomingTypes.rock: 1.6`)，受到【电属性】伤害提升 **30%**；\n  - 每次【突进 (`dash`)】结束后的 0.5 秒滞空收招期内，自身受到伤害提升 **25%** (`dashAfterIncoming: 1.25`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **俯冲猎杀连击 (Blitz Reset)**：\n  - 使用【突进 (`dash`)】招式击杀敌人时，自身全部 `dash` 类技能剩余冷却立即缩短 **50%** (`dashKillReset: 0.5`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **焚风烈焰尾迹 (Burning Flight Trail)**：\n  - 冲刺留下的火焰地面持续时间延长至 **5 秒** (`longDashTrail: true`)；\n  - 全队【火属性】招式基础伤害额外提升 **+20%** (`fireDamage: 1.2`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **疾风之翼先攻 (Gale Wings Priority)**：",
+            "  - 全队【突进 (`dash`)】招式冷却时间缩短 **25%** (`moves.dash.cd: 0.75`)，伤害提升 **+20%**；",
+            "  - 当宝可梦自身生命值高于 85% 时，所有攻击伤害提升 **+25%** (`healthyDamage: 1.25`)。"
+          ],
+          "active": [
+            "- **火焰勇鸟直撞 (Flare Brave Bird Z)** · *充能事件：`dashCast`（约 60s 校准）*：",
+            "  - 手动激活化身赤红火隼向瞄准方向超高速俯冲贯穿 700 距离 (`dash`，造成 `budget(c) * 0.65` 【飞行/火】伤害并附加 `burn: 2`)；",
+            "  - 沿途留下一条持续 3 秒的灼热火焰轨迹，并清除路径上接触到的敌方射弹。"
+          ],
+          "cost": [
+            "- **四倍惧岩与着陆破绽 (Rock Hazard & Landing Lag)**：",
+            "  - 受到【岩石属性】伤害提升 **60%** (`incomingTypes.rock: 1.6`)，受到【电属性】伤害提升 **30%**；",
+            "  - 每次【突进 (`dash`)】结束后的 0.5 秒滞空收招期内，自身受到伤害提升 **25%** (`dashAfterIncoming: 1.25`)。"
+          ],
+          "five": [
+            "- **俯冲猎杀连击 (Blitz Reset)**：",
+            "  - 使用【突进 (`dash`)】招式击杀敌人时，自身全部 `dash` 类技能剩余冷却立即缩短 **50%** (`dashKillReset: 0.5`)。"
+          ],
+          "eight": [
+            "- **焚风烈焰尾迹 (Burning Flight Trail)**：",
+            "  - 冲刺留下的火焰地面持续时间延长至 **5 秒** (`longDashTrail: true`)；",
+            "  - 全队【火属性】招式基础伤害额外提升 **+20%** (`fireDamage: 1.2`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **疾风之翼先攻 (Gale Wings Priority)**：\n  - 全队【突进 (`dash`)】招式冷却时间缩短 **25%** (`moves.dash.cd: 0.75`)，伤害提升 **+20%**；\n  - 当宝可梦自身生命值高于 85% 时，所有攻击伤害提升 **+25%** (`healthyDamage: 1.25`)。",
+          "active": "- **火焰勇鸟直撞 (Flare Brave Bird Z)** · *充能事件：`dashCast`（约 60s 校准）*：\n  - 手动激活化身赤红火隼向瞄准方向超高速俯冲贯穿 700 距离 (`dash`，造成 `budget(c) * 0.65` 【飞行/火】伤害并附加 `burn: 2`)；\n  - 沿途留下一条持续 3 秒的灼热火焰轨迹，并清除路径上接触到的敌方射弹。",
+          "cost": "- **四倍惧岩与着陆破绽 (Rock Hazard & Landing Lag)**：\n  - 受到【岩石属性】伤害提升 **60%** (`incomingTypes.rock: 1.6`)，受到【电属性】伤害提升 **30%**；\n  - 每次【突进 (`dash`)】结束后的 0.5 秒滞空收招期内，自身受到伤害提升 **25%** (`dashAfterIncoming: 1.25`)。",
+          "five": "- **俯冲猎杀连击 (Blitz Reset)**：\n  - 使用【突进 (`dash`)】招式击杀敌人时，自身全部 `dash` 类技能剩余冷却立即缩短 **50%** (`dashKillReset: 0.5`)。",
+          "eight": "- **焚风烈焰尾迹 (Burning Flight Trail)**：\n  - 冲刺留下的火焰地面持续时间延长至 **5 秒** (`longDashTrail: true`)；\n  - 全队【火属性】招式基础伤害额外提升 **+20%** (`fireDamage: 1.2`)。"
+        }
+      }
+    },
+    {
+      "root": 664,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "novaCast",
+        "targetSeconds": 60
+      },
+      "base": {
+        "moves": {
+          "nova": {
+            "count": 2,
+            "damage": 1.15
+          }
+        },
+        "statusDuration": 1.25
+      },
+      "cost": {
+        "stats": {
+          "defense": -0.25
+        },
+        "incomingTypes": {
+          "rock": 1.6,
+          "fire": 1.35
+        }
+      },
+      "five": {
+        "kalos": {
+          "pollen": true
+        }
+      },
+      "eight": {
+        "moves": {
+          "nova": {
+            "crit": 0.2
+          }
+        },
+        "safeDefense": 0.35
+      },
+      "active": {
+        "kind": "kalos664",
+        "shape": "nova",
+        "power": 0.45,
+        "types": [
+          "bug"
+        ],
+        "count": 16,
+        "clear": 300,
+        "poison": 2,
+        "stun": 1.5
+      },
+      "estimate": "原n枚变n+2枚，3枚时整体×1.917，8枚时×1.438；异常目标再×1.05，8级20%会心期望×1.1。花粉爆破每0.5秒同击杀者一次，不允许衍生伤害递归引爆。",
+      "notes": [
+        "原n枚变n+2枚，3枚时整体×1.917，8枚时×1.438；异常目标再×1.05，8级20%会心期望×1.1。花粉爆破每0.5秒同击杀者一次，不允许衍生伤害递归引爆。"
+      ],
+      "id": "leader_compoundeyes_scale_storm",
+      "members": [
+        664,
+        665,
+        666
+      ],
+      "name": {
+        "zh": "复眼绚丽鳞粉",
+        "en": "Compound Eyes Powder Storm",
+        "es": "Compound Eyes Powder Storm"
+      },
+      "source": {
+        "heading": "粉蝶虫家族 (Vivillon Family)",
+        "raw": "\n- **家族成员**：#664 粉蝶虫 / #665 粉蝶蛹 / #666 彩粉蝶\n- **属性配置**：虫 (Bug) / 飞行 (Flying)\n- **特性标识**：`leader_compoundeyes_scale_storm`\n- **特性名称**：**复眼绚丽鳞粉** (Compound Eyes Powder Storm)\n- **接口映射**：`moves.nova`、`statusDuration`、`statusDeathPollen`、`safeDefense`\n\n#### 【基础被动能力】 (Passive)\n- **复眼异常增效 (Compound Eyes Calibration)**：\n  - 全队【爆发绽放 (`nova`)】招式弹幕数量 **+2** (`moves.nova.count: 2`)，伤害提升 **+15%**；\n  - 全队施加的灼烧与中毒持续时间延长 **25%** (`statusDuration: 1.25`)，攻击带有任意异常状态的敌人伤害自动额外 **+5%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **缤纷鳞粉狂舞 (Vivid Powder Storm Z)** · *充能事件：`novaCast`（约 60s 校准）*：\n  - 手动激活清除半径 300 内的敌方射弹，并以自身为中心向四周释放 16 发绚丽虫系弹幕 (`nova`，合计总伤 `budget(c) * 0.45`)；\n  - 弹幕命中后附带 **2 层中毒**与 **1.5 秒眩晕** (`stun`，BOSS 减半)。\n\n#### 【能力代价】 (Downside)\n- **薄翼脆甲 (Delicate Wing)**：\n  - 全队基础物理防御降低 **25%** (`stats.defense: -0.25`)；\n  - 受到【岩石属性】伤害提升 **60%** (`incomingTypes.rock: 1.6`)，受到【火属性】伤害提升 **35%**。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **鳞粉余烬爆裂 (Pollen Detonation)**：\n  - 任何带有中毒、灼烧、减速或冻结/眩晕状态的敌人死亡时，在原地引发 70 范围微小虫系爆轰并向周围散播 **1 层中毒** (`statusDeathPollen: true`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **安逸鳞粉护盾 (Safe Dust Shield)**：\n  - 全队【爆发 (`nova`)】招式暴击率提升 **+20%** (`moves.nova.crit: 0.2`)；\n  - 宝可梦连续 5 秒未受到伤害后，获得 **+35% 双防保护**直到下次受击 (`safeDefense: 0.35`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **复眼异常增效 (Compound Eyes Calibration)**：",
+            "  - 全队【爆发绽放 (`nova`)】招式弹幕数量 **+2** (`moves.nova.count: 2`)，伤害提升 **+15%**；",
+            "  - 全队施加的灼烧与中毒持续时间延长 **25%** (`statusDuration: 1.25`)，攻击带有任意异常状态的敌人伤害自动额外 **+5%**。"
+          ],
+          "active": [
+            "- **缤纷鳞粉狂舞 (Vivid Powder Storm Z)** · *充能事件：`novaCast`（约 60s 校准）*：",
+            "  - 手动激活清除半径 300 内的敌方射弹，并以自身为中心向四周释放 16 发绚丽虫系弹幕 (`nova`，合计总伤 `budget(c) * 0.45`)；",
+            "  - 弹幕命中后附带 **2 层中毒**与 **1.5 秒眩晕** (`stun`，BOSS 减半)。"
+          ],
+          "cost": [
+            "- **薄翼脆甲 (Delicate Wing)**：",
+            "  - 全队基础物理防御降低 **25%** (`stats.defense: -0.25`)；",
+            "  - 受到【岩石属性】伤害提升 **60%** (`incomingTypes.rock: 1.6`)，受到【火属性】伤害提升 **35%**。"
+          ],
+          "five": [
+            "- **鳞粉余烬爆裂 (Pollen Detonation)**：",
+            "  - 任何带有中毒、灼烧、减速或冻结/眩晕状态的敌人死亡时，在原地引发 70 范围微小虫系爆轰并向周围散播 **1 层中毒** (`statusDeathPollen: true`)。"
+          ],
+          "eight": [
+            "- **安逸鳞粉护盾 (Safe Dust Shield)**：",
+            "  - 全队【爆发 (`nova`)】招式暴击率提升 **+20%** (`moves.nova.crit: 0.2`)；",
+            "  - 宝可梦连续 5 秒未受到伤害后，获得 **+35% 双防保护**直到下次受击 (`safeDefense: 0.35`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **复眼异常增效 (Compound Eyes Calibration)**：\n  - 全队【爆发绽放 (`nova`)】招式弹幕数量 **+2** (`moves.nova.count: 2`)，伤害提升 **+15%**；\n  - 全队施加的灼烧与中毒持续时间延长 **25%** (`statusDuration: 1.25`)，攻击带有任意异常状态的敌人伤害自动额外 **+5%**。",
+          "active": "- **缤纷鳞粉狂舞 (Vivid Powder Storm Z)** · *充能事件：`novaCast`（约 60s 校准）*：\n  - 手动激活清除半径 300 内的敌方射弹，并以自身为中心向四周释放 16 发绚丽虫系弹幕 (`nova`，合计总伤 `budget(c) * 0.45`)；\n  - 弹幕命中后附带 **2 层中毒**与 **1.5 秒眩晕** (`stun`，BOSS 减半)。",
+          "cost": "- **薄翼脆甲 (Delicate Wing)**：\n  - 全队基础物理防御降低 **25%** (`stats.defense: -0.25`)；\n  - 受到【岩石属性】伤害提升 **60%** (`incomingTypes.rock: 1.6`)，受到【火属性】伤害提升 **35%**。",
+          "five": "- **鳞粉余烬爆裂 (Pollen Detonation)**：\n  - 任何带有中毒、灼烧、减速或冻结/眩晕状态的敌人死亡时，在原地引发 70 范围微小虫系爆轰并向周围散播 **1 层中毒** (`statusDeathPollen: true`)。",
+          "eight": "- **安逸鳞粉护盾 (Safe Dust Shield)**：\n  - 全队【爆发 (`nova`)】招式暴击率提升 **+20%** (`moves.nova.crit: 0.2`)；\n  - 宝可梦连续 5 秒未受到伤害后，获得 **+35% 双防保护**直到下次受击 (`safeDefense: 0.35`)。"
+        }
+      }
+    },
+    {
+      "root": 667,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "coneHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "kalos": {
+          "teamMoxie": 0.015
+        },
+        "moves": {
+          "cone": {
+            "damage": 1.2,
+            "range": 1.25
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "spdef": -0.2
+        },
+        "incomingTypes": {
+          "water": 1.4,
+          "fighting": 1.4
+        }
+      },
+      "five": {
+        "dashIntimidate": true,
+        "burnCrit": 0.15
+      },
+      "eight": {
+        "kalos": {
+          "bank": 0.015
+        },
+        "fireDamage": 1.2
+      },
+      "active": {
+        "kind": "kalos667",
+        "shape": "beam",
+        "power": 0.5,
+        "types": [
+          "fire"
+        ],
+        "count": 3,
+        "burn": 2,
+        "globalDebuff": 0.3,
+        "slow": 0.5
+      },
+      "estimate": "24次全队击杀封顶物攻+35%，等双攻时物理结算×1.228、特殊×1.123；扇形约1.473或1.347。8级火扇再×1.2，银行最高30%，额外金币最多2G。补齐现接口原本只累计击杀者的差异。",
+      "notes": [
+        "24次全队击杀封顶物攻+35%，等双攻时物理结算×1.228、特殊×1.123；扇形约1.473或1.347。8级火扇再×1.2，银行最高30%，额外金币最多2G。补齐现接口原本只累计击杀者的差异。"
+      ],
+      "id": "leader_moxie_royal_roar",
+      "members": [
+        667
+      ],
+      "name": {
+        "zh": "自信过剩与王者咆哮",
+        "en": "Moxie Royal Bounty",
+        "es": "Moxie Royal Bounty"
+      },
+      "source": {
+        "heading": "小狮狮家族 (Litleo Family)",
+        "raw": "\n- **家族成员**：#667 小狮狮 *(注：当前图鉴收录 #667)*\n- **属性配置**：火 (Fire) / 一般 (Normal)\n- **特性标识**：`leader_moxie_royal_roar`\n- **特性名称**：**自信过剩与王者咆哮** (Moxie Royal Bounty)\n- **接口映射**：`killAttack`、`moves.cone`、`dashIntimidate`、`burnCrit`、`bankDamage`、`fireDamage`\n\n#### 【基础被动能力】 (Passive)\n- **狮群自信狩猎 (Cub Moxie Hunt)**：\n  - 任意队员或队长每消灭 1 名敌人，物理攻击临时累加提升 **+1.5%**（**单场封顶 +35%**，复用 `killAttack`）；\n  - 全队【锥形喷射 (`cone`)】招式伤害提升 **+20%**，喷射射程延长 **+25%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **烈焰王者吼叫 (Noble Flame Roar Z)** · *充能事件：`coneHit`（约 60s 校准）*：\n  - 手动激活发出全屏咆哮震慑，使全屏敌人 3 秒内攻击力降低 **30%** (`leaderDamage: 0.7`)、移动减速 **50%**；\n  - 同时朝瞄准扇区喷吐 3 道炽热狮焰光柱 (`beam`，总伤 `budget(c) * 0.50` 并附加 `burn: 2`)。\n\n#### 【能力代价】 (Downside)\n- **幼狮焦躁 (Hot-Headed Pride)**：\n  - 全队基础特殊防御降低 **20%** (`stats.spdef: -0.2`)；\n  - 受到【水属性】与【格斗属性】伤害提升 **40%** (`incomingTypes: { water: 1.4, fighting: 1.4 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **威吓追扑与焦灼暴击 (Intimidate & Burn Crit)**：\n  - 使用【突进 (`dash`)】时威吓周围 180 范围敌人 2 秒降低其 **25% 攻击力** (`dashIntimidate: true`)；\n  - 【锥形 (`cone`)】招式攻击处于灼烧状态的敌人时，暴击率额外提升 **+15%** (`burnCrit: 0.15`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **王室金库赏赐 (💰 Royal Tax Bounty)**：\n  - 开启狮群赏金核算（`bankDamage: 0.015`）：每累计 20 次击杀，战后结算额外奖励 **+1 金币**（**每战封顶 +2G**），每保有 20 金币提供 **+1.5% 伤害加成**（**封顶 +30%**）；\n  - 全队【火属性】招式伤害提升 **+20%** (`fireDamage: 1.2`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **狮群自信狩猎 (Cub Moxie Hunt)**：",
+            "  - 任意队员或队长每消灭 1 名敌人，物理攻击临时累加提升 **+1.5%**（**单场封顶 +35%**，复用 `killAttack`）；",
+            "  - 全队【锥形喷射 (`cone`)】招式伤害提升 **+20%**，喷射射程延长 **+25%**。"
+          ],
+          "active": [
+            "- **烈焰王者吼叫 (Noble Flame Roar Z)** · *充能事件：`coneHit`（约 60s 校准）*：",
+            "  - 手动激活发出全屏咆哮震慑，使全屏敌人 3 秒内攻击力降低 **30%** (`leaderDamage: 0.7`)、移动减速 **50%**；",
+            "  - 同时朝瞄准扇区喷吐 3 道炽热狮焰光柱 (`beam`，总伤 `budget(c) * 0.50` 并附加 `burn: 2`)。"
+          ],
+          "cost": [
+            "- **幼狮焦躁 (Hot-Headed Pride)**：",
+            "  - 全队基础特殊防御降低 **20%** (`stats.spdef: -0.2`)；",
+            "  - 受到【水属性】与【格斗属性】伤害提升 **40%** (`incomingTypes: { water: 1.4, fighting: 1.4 }`)。"
+          ],
+          "five": [
+            "- **威吓追扑与焦灼暴击 (Intimidate & Burn Crit)**：",
+            "  - 使用【突进 (`dash`)】时威吓周围 180 范围敌人 2 秒降低其 **25% 攻击力** (`dashIntimidate: true`)；",
+            "  - 【锥形 (`cone`)】招式攻击处于灼烧状态的敌人时，暴击率额外提升 **+15%** (`burnCrit: 0.15`)。"
+          ],
+          "eight": [
+            "- **王室金库赏赐 (💰 Royal Tax Bounty)**：",
+            "  - 开启狮群赏金核算（`bankDamage: 0.015`）：每累计 20 次击杀，战后结算额外奖励 **+1 金币**（**每战封顶 +2G**），每保有 20 金币提供 **+1.5% 伤害加成**（**封顶 +30%**）；",
+            "  - 全队【火属性】招式伤害提升 **+20%** (`fireDamage: 1.2`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **狮群自信狩猎 (Cub Moxie Hunt)**：\n  - 任意队员或队长每消灭 1 名敌人，物理攻击临时累加提升 **+1.5%**（**单场封顶 +35%**，复用 `killAttack`）；\n  - 全队【锥形喷射 (`cone`)】招式伤害提升 **+20%**，喷射射程延长 **+25%**。",
+          "active": "- **烈焰王者吼叫 (Noble Flame Roar Z)** · *充能事件：`coneHit`（约 60s 校准）*：\n  - 手动激活发出全屏咆哮震慑，使全屏敌人 3 秒内攻击力降低 **30%** (`leaderDamage: 0.7`)、移动减速 **50%**；\n  - 同时朝瞄准扇区喷吐 3 道炽热狮焰光柱 (`beam`，总伤 `budget(c) * 0.50` 并附加 `burn: 2`)。",
+          "cost": "- **幼狮焦躁 (Hot-Headed Pride)**：\n  - 全队基础特殊防御降低 **20%** (`stats.spdef: -0.2`)；\n  - 受到【水属性】与【格斗属性】伤害提升 **40%** (`incomingTypes: { water: 1.4, fighting: 1.4 }`)。",
+          "five": "- **威吓追扑与焦灼暴击 (Intimidate & Burn Crit)**：\n  - 使用【突进 (`dash`)】时威吓周围 180 范围敌人 2 秒降低其 **25% 攻击力** (`dashIntimidate: true`)；\n  - 【锥形 (`cone`)】招式攻击处于灼烧状态的敌人时，暴击率额外提升 **+15%** (`burnCrit: 0.15`)。",
+          "eight": "- **王室金库赏赐 (💰 Royal Tax Bounty)**：\n  - 开启狮群赏金核算（`bankDamage: 0.015`）：每累计 20 次击杀，战后结算额外奖励 **+1 金币**（**每战封顶 +2G**），每保有 20 金币提供 **+1.5% 伤害加成**（**封顶 +30%**）；\n  - 全队【火属性】招式伤害提升 **+20%** (`fireDamage: 1.2`)。"
+        }
+      }
+    },
+    {
+      "root": 669,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "heal",
+        "targetSeconds": 60
+      },
+      "base": {
+        "moves": {
+          "aura": {
+            "radius": 1.35
+          },
+          "buff": {
+            "amount": 1.25
+          }
+        },
+        "regenRate": 1.25,
+        "statusPenalty": 0.5
+      },
+      "cost": {
+        "stats": {
+          "atk": -0.25
+        },
+        "incomingTypes": {
+          "poison": 1.5,
+          "steel": 1.4
+        }
+      },
+      "five": {
+        "kalos": {
+          "overheal": 0.5
+        }
+      },
+      "eight": {
+        "kalos": {
+          "sync": 0.3
+        },
+        "endHeal": 0.2
+      },
+      "active": {
+        "kind": "kalos669",
+        "shape": "support",
+        "power": 0,
+        "types": [
+          "fairy"
+        ],
+        "healMissing": 0.18,
+        "shield": 0.25,
+        "radius": 260,
+        "vulnerable": 0.3,
+        "slow": 0.3
+      },
+      "estimate": "辅助增益25%、光环半径35%约覆盖面积1.823倍；攻击代价令等双攻物理0.838、特殊0.913。30%全队共享不能覆盖原强Buff、不能递归；Z治疗排队按3%/秒兑现，不直接截去其余15%。",
+      "notes": [
+        "辅助增益25%、光环半径35%约覆盖面积1.823倍；攻击代价令等双攻物理0.838、特殊0.913。30%全队共享不能覆盖原强Buff、不能递归；Z治疗排队按3%/秒兑现，不直接截去其余15%。"
+      ],
+      "id": "leader_flower_veil_symbiotic_bloom",
+      "members": [
+        669,
+        670,
+        671
+      ],
+      "name": {
+        "zh": "花幕共生圣洁治愈",
+        "en": "Flower Veil Bloom",
+        "es": "Flower Veil Bloom"
+      },
+      "source": {
+        "heading": "花蓓蓓家族 (Florges Family)",
+        "raw": "\n- **家族成员**：#669 花蓓蓓 / #670 花叶蒂 / #671 花洁夫人\n- **属性配置**：妖精 (Fairy)\n- **特性标识**：`leader_flower_veil_symbiotic_bloom`\n- **特性名称**：**花幕共生圣洁治愈** (Flower Veil Bloom)\n- **接口映射**：`moves.aura`、`moves.buff`、`regenRate`、`statusPenalty`、`overhealShield`、`synchronize`、`endHeal`\n\n#### 【基础被动能力】 (Passive)\n- **青草花幕守护 (Flower Veil Blessing)**：\n  - 全队【光环 (`aura`)】技能覆盖半径扩大 **+35%**，【辅助 (`buff`)】技能增益效果提升 **+25%**；\n  - 全队生命回复速率提升 **+25%** (`regenRate: 1.25`)，且受到的减速与减攻负面状态持续时间强制缩短 **50%** (`statusPenalty: 0.5`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **落英永恒守护 (Floral Healing Z)** · *充能事件：`heal`（约 60s 校准）*：\n  - 手动激活后立即恢复全队各自 **18% 已损失生命值**（受 `healHpPerSecond` 预算校验上限），并赐予全队等同于各自最大生命 **25% 的花瓣白盾**持续 5 秒；\n  - 对自身周围 260 范围敌人施加 **30% 易伤** (`leaderVulnerable: 0.3`，持续 4 秒) 与 30% 减速。\n\n#### 【能力代价】 (Downside)\n- **柔弱花灵 (Fragile Blossom)**：\n  - 全队物理攻击 (`atk`) 降低 **25%** (`stats.atk: -0.25`)；\n  - 受到【毒属性】伤害提升 **50%** (`incomingTypes.poison: 1.5`)，【钢属性】伤害提升 **40%**。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **共生溢流白盾 (Symbiotic Overheal Shield)**：\n  - 队伍成员在满血状态下受到任何治疗溢出时，溢出的 **50%** 转化为白盾储存（`overhealShield: 0.5`，白盾上限仍为 **40% MaxHP**）。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **百花齐放共鸣 (Floral Symbiosis)**：\n  - 任意队员释放【辅助 (`buff`)】技能时，将 **30% 强度的增益效果同步扩散**至全体队友 (`synchronize: true`)；\n  - 战斗胜利结算时，存活参战宝可梦立刻恢复 **20% 已损局内生命值** (`endHeal: 0.2`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **青草花幕守护 (Flower Veil Blessing)**：",
+            "  - 全队【光环 (`aura`)】技能覆盖半径扩大 **+35%**，【辅助 (`buff`)】技能增益效果提升 **+25%**；",
+            "  - 全队生命回复速率提升 **+25%** (`regenRate: 1.25`)，且受到的减速与减攻负面状态持续时间强制缩短 **50%** (`statusPenalty: 0.5`)。"
+          ],
+          "active": [
+            "- **落英永恒守护 (Floral Healing Z)** · *充能事件：`heal`（约 60s 校准）*：",
+            "  - 手动激活后立即恢复全队各自 **18% 已损失生命值**（受 `healHpPerSecond` 预算校验上限），并赐予全队等同于各自最大生命 **25% 的花瓣白盾**持续 5 秒；",
+            "  - 对自身周围 260 范围敌人施加 **30% 易伤** (`leaderVulnerable: 0.3`，持续 4 秒) 与 30% 减速。"
+          ],
+          "cost": [
+            "- **柔弱花灵 (Fragile Blossom)**：",
+            "  - 全队物理攻击 (`atk`) 降低 **25%** (`stats.atk: -0.25`)；",
+            "  - 受到【毒属性】伤害提升 **50%** (`incomingTypes.poison: 1.5`)，【钢属性】伤害提升 **40%**。"
+          ],
+          "five": [
+            "- **共生溢流白盾 (Symbiotic Overheal Shield)**：",
+            "  - 队伍成员在满血状态下受到任何治疗溢出时，溢出的 **50%** 转化为白盾储存（`overhealShield: 0.5`，白盾上限仍为 **40% MaxHP**）。"
+          ],
+          "eight": [
+            "- **百花齐放共鸣 (Floral Symbiosis)**：",
+            "  - 任意队员释放【辅助 (`buff`)】技能时，将 **30% 强度的增益效果同步扩散**至全体队友 (`synchronize: true`)；",
+            "  - 战斗胜利结算时，存活参战宝可梦立刻恢复 **20% 已损局内生命值** (`endHeal: 0.2`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **青草花幕守护 (Flower Veil Blessing)**：\n  - 全队【光环 (`aura`)】技能覆盖半径扩大 **+35%**，【辅助 (`buff`)】技能增益效果提升 **+25%**；\n  - 全队生命回复速率提升 **+25%** (`regenRate: 1.25`)，且受到的减速与减攻负面状态持续时间强制缩短 **50%** (`statusPenalty: 0.5`)。",
+          "active": "- **落英永恒守护 (Floral Healing Z)** · *充能事件：`heal`（约 60s 校准）*：\n  - 手动激活后立即恢复全队各自 **18% 已损失生命值**（受 `healHpPerSecond` 预算校验上限），并赐予全队等同于各自最大生命 **25% 的花瓣白盾**持续 5 秒；\n  - 对自身周围 260 范围敌人施加 **30% 易伤** (`leaderVulnerable: 0.3`，持续 4 秒) 与 30% 减速。",
+          "cost": "- **柔弱花灵 (Fragile Blossom)**：\n  - 全队物理攻击 (`atk`) 降低 **25%** (`stats.atk: -0.25`)；\n  - 受到【毒属性】伤害提升 **50%** (`incomingTypes.poison: 1.5`)，【钢属性】伤害提升 **40%**。",
+          "five": "- **共生溢流白盾 (Symbiotic Overheal Shield)**：\n  - 队伍成员在满血状态下受到任何治疗溢出时，溢出的 **50%** 转化为白盾储存（`overhealShield: 0.5`，白盾上限仍为 **40% MaxHP**）。",
+          "eight": "- **百花齐放共鸣 (Floral Symbiosis)**：\n  - 任意队员释放【辅助 (`buff`)】技能时，将 **30% 强度的增益效果同步扩散**至全体队友 (`synchronize: true`)；\n  - 战斗胜利结算时，存活参战宝可梦立刻恢复 **20% 已损局内生命值** (`endHeal: 0.2`)。"
+        }
+      }
+    },
+    {
+      "root": 672,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "distance",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "spd": 0.15
+        },
+        "regenRate": 1.2,
+        "moves": {
+          "dash": {
+            "damage": 1.25,
+            "width": 1.2
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "spa": -0.2
+        },
+        "incomingTypes": {
+          "fire": 1.5,
+          "ice": 1.35
+        },
+        "ban": [
+          "turret"
+        ]
+      },
+      "five": {
+        "kalos": {
+          "fruitChance": 0.08
+        }
+      },
+      "eight": {
+        "dashInvuln": true,
+        "dashGuard": 0.35,
+        "safeDefense": 0.3
+      },
+      "active": {
+        "kind": "kalos672",
+        "shape": "rush",
+        "power": 0.5,
+        "types": [
+          "grass"
+        ],
+        "range": 650,
+        "slow": 0.5,
+        "healingTrail": true,
+        "healPerTarget": 0.005
+      },
+      "estimate": "物理草冲刺等双攻×1.25×0.93=1.163，宽度+20%改善覆盖；无伤双防1.3、冲刺减伤35%有效生命2倍。果实最多4份/战战后按击杀者领取，避免100杀产8份以上免费续航。",
+      "notes": [
+        "物理草冲刺等双攻×1.25×0.93=1.163，宽度+20%改善覆盖；无伤双防1.3、冲刺减伤35%有效生命2倍。果实最多4份/战战后按击杀者领取，避免100杀产8份以上免费续航。"
+      ],
+      "id": "leader_sap_sipper_grassy_ride",
+      "members": [
+        672,
+        673
+      ],
+      "name": {
+        "zh": "食草山羊草地疾驰",
+        "en": "Sap Sipper Horn Ride",
+        "es": "Sap Sipper Horn Ride"
+      },
+      "source": {
+        "heading": "坐骑小羊家族 (Gogoat Family)",
+        "raw": "\n- **家族成员**：#672 坐骑小羊 / #673 坐骑山羊\n- **属性配置**：草 (Grass)\n- **特性标识**：`leader_sap_sipper_grassy_ride`\n- **特性名称**：**食草山羊草地疾驰** (Sap Sipper Horn Ride)\n- **接口映射**：`stats.spd`、`moves.dash`、`regenRate`、`fruitChance`、`dashGuard`、`dashInvuln`、`safeDefense`、`ban: ['turret']`\n\n#### 【基础被动能力】 (Passive)\n- **山道冲刺健足 (Mountain Trail Stride)**：\n  - 全队移动速度提升 **+15%** (`stats.spd: 0.15`)，生命回复速率提升 **+20%** (`regenRate: 1.2`)；\n  - 全队【突进 (`dash`)】招式伤害提升 **+25%**、突进判定宽度提升 **+20%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **角跃治愈木角 (Horn Leech Stampede Z)** · *充能事件：`distance`（约 60s 校准）*：\n  - 手动激活向瞄准方向发起 650 距离长途突进冲撞 (`dash`，造成 `budget(c) * 0.55` 草属性伤害与 50% 减速)；\n  - 沿冲刺路径铺开 3 秒青草治疗带，同时为队伍按命中目标数恢复生命值（受 3% MaxHP/s 预算保护）。\n\n#### 【能力代价】 (Downside)\n- **游牧反阵地 (Nomadic Charge)**：\n  - 全队特殊攻击 (`spa`) 降低 **20%** (`stats.spa: -0.2`)；\n  - 受到【火属性】伤害提升 **50%**、`【冰属性】` 伤害提升 **35%**，且禁止使用【炮台 (`turret`)】召唤技 (`ban: ['turret']`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **牧场青草甜果 (Pasture Fruit Harvest)**：\n  - 击杀敌人时有 **8% 概率**在场中掉落恢复果实（全队每 2 秒至多掉落 1 枚，拾取恢复 **8% 已损血 + 1 PP + 3 秒加速**，复用 `fruitChance`）。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **食草厚角防护 (Sap Horn Guard)**：\n  - 施放【突进 (`dash`)】期间获得 **0.25 秒无敌保护** (`dashInvuln: true`) 并获得 **35% 冲刺减伤** (`dashGuard: 0.35`)；\n  - 未受击超过 5 秒进入草原蓄势，双防提升 **+30%** (`safeDefense: 0.3`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **山道冲刺健足 (Mountain Trail Stride)**：",
+            "  - 全队移动速度提升 **+15%** (`stats.spd: 0.15`)，生命回复速率提升 **+20%** (`regenRate: 1.2`)；",
+            "  - 全队【突进 (`dash`)】招式伤害提升 **+25%**、突进判定宽度提升 **+20%**。"
+          ],
+          "active": [
+            "- **角跃治愈木角 (Horn Leech Stampede Z)** · *充能事件：`distance`（约 60s 校准）*：",
+            "  - 手动激活向瞄准方向发起 650 距离长途突进冲撞 (`dash`，造成 `budget(c) * 0.55` 草属性伤害与 50% 减速)；",
+            "  - 沿冲刺路径铺开 3 秒青草治疗带，同时为队伍按命中目标数恢复生命值（受 3% MaxHP/s 预算保护）。"
+          ],
+          "cost": [
+            "- **游牧反阵地 (Nomadic Charge)**：",
+            "  - 全队特殊攻击 (`spa`) 降低 **20%** (`stats.spa: -0.2`)；",
+            "  - 受到【火属性】伤害提升 **50%**、`【冰属性】` 伤害提升 **35%**，且禁止使用【炮台 (`turret`)】召唤技 (`ban: ['turret']`)。"
+          ],
+          "five": [
+            "- **牧场青草甜果 (Pasture Fruit Harvest)**：",
+            "  - 击杀敌人时有 **8% 概率**在场中掉落恢复果实（全队每 2 秒至多掉落 1 枚，拾取恢复 **8% 已损血 + 1 PP + 3 秒加速**，复用 `fruitChance`）。"
+          ],
+          "eight": [
+            "- **食草厚角防护 (Sap Horn Guard)**：",
+            "  - 施放【突进 (`dash`)】期间获得 **0.25 秒无敌保护** (`dashInvuln: true`) 并获得 **35% 冲刺减伤** (`dashGuard: 0.35`)；",
+            "  - 未受击超过 5 秒进入草原蓄势，双防提升 **+30%** (`safeDefense: 0.3`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **山道冲刺健足 (Mountain Trail Stride)**：\n  - 全队移动速度提升 **+15%** (`stats.spd: 0.15`)，生命回复速率提升 **+20%** (`regenRate: 1.2`)；\n  - 全队【突进 (`dash`)】招式伤害提升 **+25%**、突进判定宽度提升 **+20%**。",
+          "active": "- **角跃治愈木角 (Horn Leech Stampede Z)** · *充能事件：`distance`（约 60s 校准）*：\n  - 手动激活向瞄准方向发起 650 距离长途突进冲撞 (`dash`，造成 `budget(c) * 0.55` 草属性伤害与 50% 减速)；\n  - 沿冲刺路径铺开 3 秒青草治疗带，同时为队伍按命中目标数恢复生命值（受 3% MaxHP/s 预算保护）。",
+          "cost": "- **游牧反阵地 (Nomadic Charge)**：\n  - 全队特殊攻击 (`spa`) 降低 **20%** (`stats.spa: -0.2`)；\n  - 受到【火属性】伤害提升 **50%**、`【冰属性】` 伤害提升 **35%**，且禁止使用【炮台 (`turret`)】召唤技 (`ban: ['turret']`)。",
+          "five": "- **牧场青草甜果 (Pasture Fruit Harvest)**：\n  - 击杀敌人时有 **8% 概率**在场中掉落恢复果实（全队每 2 秒至多掉落 1 枚，拾取恢复 **8% 已损血 + 1 PP + 3 秒加速**，复用 `fruitChance`）。",
+          "eight": "- **食草厚角防护 (Sap Horn Guard)**：\n  - 施放【突进 (`dash`)】期间获得 **0.25 秒无敌保护** (`dashInvuln: true`) 并获得 **35% 冲刺减伤** (`dashGuard: 0.35`)；\n  - 未受击超过 5 秒进入草原蓄势，双防提升 **+30%** (`safeDefense: 0.3`)。"
+        }
+      }
+    },
+    {
+      "root": 674,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "meleeHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "attackDebuffImmune": true,
+        "moves": {
+          "melee": {
+            "damage": 1.25,
+            "knock": 1.3
+          }
+        }
+      },
+      "cost": {
+        "incomingTypes": {
+          "fairy": 1.7
+        },
+        "stats": {
+          "spd": -0.1
+        },
+        "ban": [
+          "projectile"
+        ]
+      },
+      "five": {
+        "ignoreDefenseBuffs": true,
+        "kalos": {
+          "meleeShield": 0.04
+        }
+      },
+      "eight": {
+        "stunVulnerable": 0.25,
+        "moves": {
+          "melee": {
+            "crit": 0.2
+          }
+        }
+      },
+      "active": {
+        "kind": "kalos674",
+        "shape": "melee",
+        "power": 0.6,
+        "types": [
+          "fighting",
+          "dark"
+        ],
+        "count": 3,
+        "breakShield": true,
+        "stun": 1.5,
+        "knock": 250
+      },
+      "estimate": "眩晕近战×1.25×1.25×1.1=1.719；有盾再10%穿甲约1.91。4%护盾改每次真实施法一次、最多每0.5秒一次，不能按一刀命中50敌人瞬间叠满。",
+      "notes": [
+        "眩晕近战×1.25×1.25×1.1=1.719；有盾再10%穿甲约1.91。4%护盾改每次真实施法一次、最多每0.5秒一次，不能按一刀命中50敌人瞬间叠满。"
+      ],
+      "id": "leader_iron_fist_brawl",
+      "members": [
+        674,
+        675
+      ],
+      "name": {
+        "zh": "铁拳破胆格斗霸主",
+        "en": "Iron Fist Brawl Dominator",
+        "es": "Iron Fist Brawl Dominator"
+      },
+      "source": {
+        "heading": "顽皮熊猫家族 (Pangoro Family)",
+        "raw": "\n- **家族成员**：#674 顽皮熊猫 / #675 霸道熊猫\n- **属性配置**：格斗 (Fighting) / 恶 (Dark)\n- **特性标识**：`leader_iron_fist_brawl`\n- **特性名称**：**铁拳破胆格斗霸主** (Iron Fist Brawl Dominator)\n- **接口映射**：`moves.melee`、`attackDebuffImmune`、`ignoreDefenseBuffs`、`meleeShieldGain`、`stunVulnerable`、`ban: ['projectile']`\n\n#### 【基础被动能力】 (Passive)\n- **恶霸铁拳威严 (Iron Fist Intimidation)**：\n  - 全队绝对免疫敌人的减攻负面效果 (`attackDebuffImmune: true`)；\n  - 全队【近战 (`melee`)】招式伤害提升 **+25%**、击退距离提升 **+30%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **霸道连环重拳 (Parting Smash Z)** · *充能事件：`meleeHit`（约 60s 校准）*：\n  - 手动激活连续挥出 3 次广角近战铁拳砸击 (`melee`，合计总伤 `budget(c) * 0.65`)；\n  - 重拳无视且直接击碎命中目标的敌方护盾 (`breakShield: true`)，附带 **1.5 秒眩晕** (`stun`，BOSS 减半) 及强力击退。\n\n#### 【能力代价】 (Downside)\n- **四倍弱妖与蛮横拒弹 (Quadruple Fairy Flaw)**：\n  - 受到【妖精属性】伤害提升 **70%** (`incomingTypes.fairy: 1.7`)；\n  - 移动速度降低 **10%** (`stats.spd: -0.1`)，且全队禁止学习【投射物 (`projectile`)】类弹幕招式 (`ban: ['projectile']`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **破盾恶霸拳 (Shield Breaker)**：\n  - 攻击持有白色护盾的敌人时无视 **10% 基础减防** (`ignoreDefenseBuffs: true`)；\n  - 每次【近战 (`melee`)】攻击命中至少 1 名敌人，触发短效护体（获得 **4% MaxHP 白盾** 持续 4 秒，受 40% 总盾上限限制，复用 `meleeShieldGain`）。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **乘胜追击重锤 (Stun Executioner)**：\n  - 全队对处于眩晕 (`classStunT`) 状态的敌人伤害额外提升 **+25%** (`stunVulnerable: 0.25`)；\n  - 全队【近战 (`melee`)】招式暴击率提升 **+20%** (`moves.melee.crit: 0.2`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **恶霸铁拳威严 (Iron Fist Intimidation)**：",
+            "  - 全队绝对免疫敌人的减攻负面效果 (`attackDebuffImmune: true`)；",
+            "  - 全队【近战 (`melee`)】招式伤害提升 **+25%**、击退距离提升 **+30%**。"
+          ],
+          "active": [
+            "- **霸道连环重拳 (Parting Smash Z)** · *充能事件：`meleeHit`（约 60s 校准）*：",
+            "  - 手动激活连续挥出 3 次广角近战铁拳砸击 (`melee`，合计总伤 `budget(c) * 0.65`)；",
+            "  - 重拳无视且直接击碎命中目标的敌方护盾 (`breakShield: true`)，附带 **1.5 秒眩晕** (`stun`，BOSS 减半) 及强力击退。"
+          ],
+          "cost": [
+            "- **四倍弱妖与蛮横拒弹 (Quadruple Fairy Flaw)**：",
+            "  - 受到【妖精属性】伤害提升 **70%** (`incomingTypes.fairy: 1.7`)；",
+            "  - 移动速度降低 **10%** (`stats.spd: -0.1`)，且全队禁止学习【投射物 (`projectile`)】类弹幕招式 (`ban: ['projectile']`)。"
+          ],
+          "five": [
+            "- **破盾恶霸拳 (Shield Breaker)**：",
+            "  - 攻击持有白色护盾的敌人时无视 **10% 基础减防** (`ignoreDefenseBuffs: true`)；",
+            "  - 每次【近战 (`melee`)】攻击命中至少 1 名敌人，触发短效护体（获得 **4% MaxHP 白盾** 持续 4 秒，受 40% 总盾上限限制，复用 `meleeShieldGain`）。"
+          ],
+          "eight": [
+            "- **乘胜追击重锤 (Stun Executioner)**：",
+            "  - 全队对处于眩晕 (`classStunT`) 状态的敌人伤害额外提升 **+25%** (`stunVulnerable: 0.25`)；",
+            "  - 全队【近战 (`melee`)】招式暴击率提升 **+20%** (`moves.melee.crit: 0.2`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **恶霸铁拳威严 (Iron Fist Intimidation)**：\n  - 全队绝对免疫敌人的减攻负面效果 (`attackDebuffImmune: true`)；\n  - 全队【近战 (`melee`)】招式伤害提升 **+25%**、击退距离提升 **+30%**。",
+          "active": "- **霸道连环重拳 (Parting Smash Z)** · *充能事件：`meleeHit`（约 60s 校准）*：\n  - 手动激活连续挥出 3 次广角近战铁拳砸击 (`melee`，合计总伤 `budget(c) * 0.65`)；\n  - 重拳无视且直接击碎命中目标的敌方护盾 (`breakShield: true`)，附带 **1.5 秒眩晕** (`stun`，BOSS 减半) 及强力击退。",
+          "cost": "- **四倍弱妖与蛮横拒弹 (Quadruple Fairy Flaw)**：\n  - 受到【妖精属性】伤害提升 **70%** (`incomingTypes.fairy: 1.7`)；\n  - 移动速度降低 **10%** (`stats.spd: -0.1`)，且全队禁止学习【投射物 (`projectile`)】类弹幕招式 (`ban: ['projectile']`)。",
+          "five": "- **破盾恶霸拳 (Shield Breaker)**：\n  - 攻击持有白色护盾的敌人时无视 **10% 基础减防** (`ignoreDefenseBuffs: true`)；\n  - 每次【近战 (`melee`)】攻击命中至少 1 名敌人，触发短效护体（获得 **4% MaxHP 白盾** 持续 4 秒，受 40% 总盾上限限制，复用 `meleeShieldGain`）。",
+          "eight": "- **乘胜追击重锤 (Stun Executioner)**：\n  - 全队对处于眩晕 (`classStunT`) 状态的敌人伤害额外提升 **+25%** (`stunVulnerable: 0.25`)；\n  - 全队【近战 (`melee`)】招式暴击率提升 **+20%** (`moves.melee.crit: 0.2`)。"
+        }
+      }
+    },
+    {
+      "root": 676,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "hurtCount",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "defense": 0.35
+        },
+        "physicalIncoming": 0.75,
+        "kalos": {
+          "visitRefresh": 1
+        }
+      },
+      "cost": {
+        "shopRefreshFactor": 1.5,
+        "specialIncoming": 1.25
+      },
+      "five": {
+        "frontParry": true
+      },
+      "eight": {
+        "neutralReduction": 0.2,
+        "moves": {
+          "melee": {
+            "damage": 1.2
+          }
+        }
+      },
+      "active": {
+        "kind": "kalos676",
+        "shape": "nova",
+        "power": 0.4,
+        "types": [
+          "normal"
+        ],
+        "radius": 240,
+        "stun": 1.5,
+        "shield": 0.3,
+        "physicalGuard": 0.4,
+        "duration": 5
+      },
+      "estimate": "物理有效生命×1.35/.75=1.8，中性8级2.25；特殊1/1.25=0.8。常规刷新2G涨至3G，赠1次后第3次开始总支出超过原版；不把免费额度重复发给同日回访重绘。",
+      "notes": [
+        "物理有效生命×1.35/.75=1.8，中性8级2.25；特殊1/1.25=0.8。常规刷新2G涨至3G，赠1次后第3次开始总支出超过原版；不把免费额度重复发给同日回访重绘。"
+      ],
+      "id": "leader_fur_coat_salon",
+      "members": [
+        676
+      ],
+      "name": {
+        "zh": "毛皮大衣与时尚沙龙",
+        "en": "Fur Coat Royal Salon",
+        "es": "Fur Coat Royal Salon"
+      },
+      "source": {
+        "heading": "多丽米亚家族 (Furfrou Family)",
+        "raw": "\n- **家族成员**：#676 多丽米亚\n- **属性配置**：一般 (Normal)\n- **特性标识**：`leader_fur_coat_salon`\n- **特性名称**：**毛皮大衣与时尚沙龙** (Fur Coat Royal Salon)\n- **接口映射**：`stats.defense`、`physicalIncoming`、`frontParry`、`neutralReduction`、`shopRefreshFactor`、`shopFreeRefreshes`\n\n#### 【基础被动能力】 (Passive)\n- **毛皮大衣与贵族刷新 (Fur Coat & 💰 Salon Voucher)**：\n  - 全队物理防御提升 **+35%** (`stats.defense: 0.35`)，受到接触与物理打击的最终伤害降低 **25%** (`physicalIncoming: 0.75`)；\n  - **沙龙免费打理**：每次步入宝可梦商店，默认额外获赠 **1 次免费刷新额度** (`shopFreeRefreshes += 1`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **棉花防守震荡 (Cotton Guard Bash Z)** · *充能事件：`hurtCount`（约 60s 校准）*：\n  - 手动激活向周围 240 范围震荡爆发，造成 `budget(c) * 0.40` 一般物理伤害与 1.5 秒眩晕；\n  - 随后 5 秒全队获得 **30% MaxHP 白盾**，且近战受击额外减免 40%。\n\n#### 【能力代价】 (Downside)\n- **奢华沙龙溢价与弱特攻 (High Grooming Cost)**：\n  - 用完免费次数后，商店付费刷新费用上升至 **1.5 倍（向上取整）** (`shopRefreshFactor: 1.5`)；\n  - 受到远程/特殊打击的最终伤害增加 **25%** (`specialIncoming: 1.25`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **迎头前向招架 (Front Fur Parry)**：\n  - 队长与队员面对前方近战敌人碰撞时，每隔 **3 秒自动格挡免除 1 次接触伤害** (`frontParry: true`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **优雅中性抗性 (Neutral Elegance)**：\n  - 受到所有无克制关系的普通属性攻击时，额外减伤 **20%** (`neutralReduction: 0.2`)；\n  - 全队【近战 (`melee`)】招式伤害提升 **+20%** (`moves.melee.damage: 1.2`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **毛皮大衣与贵族刷新 (Fur Coat & 💰 Salon Voucher)**：",
+            "  - 全队物理防御提升 **+35%** (`stats.defense: 0.35`)，受到接触与物理打击的最终伤害降低 **25%** (`physicalIncoming: 0.75`)；",
+            "  - **沙龙免费打理**：每次步入宝可梦商店，默认额外获赠 **1 次免费刷新额度** (`shopFreeRefreshes += 1`)。"
+          ],
+          "active": [
+            "- **棉花防守震荡 (Cotton Guard Bash Z)** · *充能事件：`hurtCount`（约 60s 校准）*：",
+            "  - 手动激活向周围 240 范围震荡爆发，造成 `budget(c) * 0.40` 一般物理伤害与 1.5 秒眩晕；",
+            "  - 随后 5 秒全队获得 **30% MaxHP 白盾**，且近战受击额外减免 40%。"
+          ],
+          "cost": [
+            "- **奢华沙龙溢价与弱特攻 (High Grooming Cost)**：",
+            "  - 用完免费次数后，商店付费刷新费用上升至 **1.5 倍（向上取整）** (`shopRefreshFactor: 1.5`)；",
+            "  - 受到远程/特殊打击的最终伤害增加 **25%** (`specialIncoming: 1.25`)。"
+          ],
+          "five": [
+            "- **迎头前向招架 (Front Fur Parry)**：",
+            "  - 队长与队员面对前方近战敌人碰撞时，每隔 **3 秒自动格挡免除 1 次接触伤害** (`frontParry: true`)。"
+          ],
+          "eight": [
+            "- **优雅中性抗性 (Neutral Elegance)**：",
+            "  - 受到所有无克制关系的普通属性攻击时，额外减伤 **20%** (`neutralReduction: 0.2`)；",
+            "  - 全队【近战 (`melee`)】招式伤害提升 **+20%** (`moves.melee.damage: 1.2`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **毛皮大衣与贵族刷新 (Fur Coat & 💰 Salon Voucher)**：\n  - 全队物理防御提升 **+35%** (`stats.defense: 0.35`)，受到接触与物理打击的最终伤害降低 **25%** (`physicalIncoming: 0.75`)；\n  - **沙龙免费打理**：每次步入宝可梦商店，默认额外获赠 **1 次免费刷新额度** (`shopFreeRefreshes += 1`)。",
+          "active": "- **棉花防守震荡 (Cotton Guard Bash Z)** · *充能事件：`hurtCount`（约 60s 校准）*：\n  - 手动激活向周围 240 范围震荡爆发，造成 `budget(c) * 0.40` 一般物理伤害与 1.5 秒眩晕；\n  - 随后 5 秒全队获得 **30% MaxHP 白盾**，且近战受击额外减免 40%。",
+          "cost": "- **奢华沙龙溢价与弱特攻 (High Grooming Cost)**：\n  - 用完免费次数后，商店付费刷新费用上升至 **1.5 倍（向上取整）** (`shopRefreshFactor: 1.5`)；\n  - 受到远程/特殊打击的最终伤害增加 **25%** (`specialIncoming: 1.25`)。",
+          "five": "- **迎头前向招架 (Front Fur Parry)**：\n  - 队长与队员面对前方近战敌人碰撞时，每隔 **3 秒自动格挡免除 1 次接触伤害** (`frontParry: true`)。",
+          "eight": "- **优雅中性抗性 (Neutral Elegance)**：\n  - 受到所有无克制关系的普通属性攻击时，额外减伤 **20%** (`neutralReduction: 0.2`)；\n  - 全队【近战 (`melee`)】招式伤害提升 **+20%** (`moves.melee.damage: 1.2`)。"
+        }
+      }
+    },
+    {
+      "root": 677,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "intercept",
+        "targetSeconds": 60
+      },
+      "base": {
+        "screenAura": 160,
+        "moves": {
+          "beam": {
+            "damage": 1.2,
+            "width": 1.25
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.2
+        },
+        "incomingTypes": {
+          "dark": 1.4,
+          "ghost": 1.4
+        }
+      },
+      "five": {
+        "screenShieldRegen": 0.02
+      },
+      "eight": {
+        "psychicPenetration": 0.25,
+        "beamDefense": 0.25
+      },
+      "active": {
+        "kind": "kalos677",
+        "shape": "nova",
+        "power": 0.35,
+        "types": [
+          "psychic"
+        ],
+        "radius": 240,
+        "reflect": true,
+        "stun": 1.5
+      },
+      "estimate": "光束×1.2、8级穿甲后×1.6；范围盾减速35%、50内销毁，单发弹丸只计一次减速充能与一次真实拦截。反射敌弹纳入Z对首领总预算，避免高密度弹幕无限爆发。",
+      "notes": [
+        "光束×1.2、8级穿甲后×1.6；范围盾减速35%、50内销毁，单发弹丸只计一次减速充能与一次真实拦截。反射敌弹纳入Z对首领总预算，避免高密度弹幕无限爆发。"
+      ],
+      "id": "leader_infiltrator_twin_screens",
+      "members": [
+        677,
+        678
+      ],
+      "name": {
+        "zh": "超能双墙与弹幕折射",
+        "en": "Infiltrator Twin Screens",
+        "es": "Infiltrator Twin Screens"
+      },
+      "source": {
+        "heading": "妙喵家族 (Meowstic Family)",
+        "raw": "\n- **家族成员**：#677 妙喵 / #678 超能妙喵\n- **属性配置**：超能力 (Psychic)\n- **特性标识**：`leader_infiltrator_twin_screens`\n- **特性名称**：**超能双墙与弹幕折射** (Infiltrator Twin Screens)\n- **接口映射**：`screenAura`、`moves.beam`、`screenShieldRegen`、`psychicPenetration`、`beamDefense`\n\n#### 【基础被动能力】 (Passive)\n- **光学双墙领域 (Dual Screen Aura)**：\n  - 队长周围展开半径 **160 单位的超能防御壁** (`screenAura: 160`)：进入壁内的敌方弹幕飞行速度立即减慢 35%，接近队长 50 距离内时**直接拦截湮灭**；\n  - 全队【能量柱 (`beam`)】伤害提升 **+20%**、光束宽度增加 **+25%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **空间折射反击 (Expanding Mirror Wave Z)** · *充能事件：`intercept`（约 60s 校准）*：\n  - 手动激活触发大范围空间折射：立刻清空全屏敌方射弹并将其转为追踪超能反击弹射向附近敌人 (`clearShots(..., true)`)；\n  - 同时在周围 240 范围触发超能冲击波 (`budget(c) * 0.35`)，附加 1.5 秒眩晕 (`stun`，BOSS 减半)。\n\n#### 【能力代价】 (Downside)\n- **超能耳朵负荷 (Psychic Overload)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【恶属性】与【幽灵属性】伤害提升 **40%** (`incomingTypes: { dark: 1.4, ghost: 1.4 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **双墙能量再生 (Screen Shield Regeneration)**：\n  - 宝可梦身上只要还存有白盾，每秒自动补充恢复 **2% 最大生命值的白盾** (`screenShieldRegen: 0.02`，受 40% 总盾上限限制)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **穿透耳膜与光线护体 (Infiltrator Beam Shield)**：\n  - 队伍所有常规攻击无视目标 **25% 抗性** (`psychicPenetration: 0.25`)；\n  - 释放【能量柱 (`beam`)】期间获得 **+25% 临时双防保护** (`beamDefense: 0.25`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **光学双墙领域 (Dual Screen Aura)**：",
+            "  - 队长周围展开半径 **160 单位的超能防御壁** (`screenAura: 160`)：进入壁内的敌方弹幕飞行速度立即减慢 35%，接近队长 50 距离内时**直接拦截湮灭**；",
+            "  - 全队【能量柱 (`beam`)】伤害提升 **+20%**、光束宽度增加 **+25%**。"
+          ],
+          "active": [
+            "- **空间折射反击 (Expanding Mirror Wave Z)** · *充能事件：`intercept`（约 60s 校准）*：",
+            "  - 手动激活触发大范围空间折射：立刻清空全屏敌方射弹并将其转为追踪超能反击弹射向附近敌人 (`clearShots(..., true)`)；",
+            "  - 同时在周围 240 范围触发超能冲击波 (`budget(c) * 0.35`)，附加 1.5 秒眩晕 (`stun`，BOSS 减半)。"
+          ],
+          "cost": [
+            "- **超能耳朵负荷 (Psychic Overload)**：",
+            "  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；",
+            "  - 受到【恶属性】与【幽灵属性】伤害提升 **40%** (`incomingTypes: { dark: 1.4, ghost: 1.4 }`)。"
+          ],
+          "five": [
+            "- **双墙能量再生 (Screen Shield Regeneration)**：",
+            "  - 宝可梦身上只要还存有白盾，每秒自动补充恢复 **2% 最大生命值的白盾** (`screenShieldRegen: 0.02`，受 40% 总盾上限限制)。"
+          ],
+          "eight": [
+            "- **穿透耳膜与光线护体 (Infiltrator Beam Shield)**：",
+            "  - 队伍所有常规攻击无视目标 **25% 抗性** (`psychicPenetration: 0.25`)；",
+            "  - 释放【能量柱 (`beam`)】期间获得 **+25% 临时双防保护** (`beamDefense: 0.25`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **光学双墙领域 (Dual Screen Aura)**：\n  - 队长周围展开半径 **160 单位的超能防御壁** (`screenAura: 160`)：进入壁内的敌方弹幕飞行速度立即减慢 35%，接近队长 50 距离内时**直接拦截湮灭**；\n  - 全队【能量柱 (`beam`)】伤害提升 **+20%**、光束宽度增加 **+25%**。",
+          "active": "- **空间折射反击 (Expanding Mirror Wave Z)** · *充能事件：`intercept`（约 60s 校准）*：\n  - 手动激活触发大范围空间折射：立刻清空全屏敌方射弹并将其转为追踪超能反击弹射向附近敌人 (`clearShots(..., true)`)；\n  - 同时在周围 240 范围触发超能冲击波 (`budget(c) * 0.35`)，附加 1.5 秒眩晕 (`stun`，BOSS 减半)。",
+          "cost": "- **超能耳朵负荷 (Psychic Overload)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【恶属性】与【幽灵属性】伤害提升 **40%** (`incomingTypes: { dark: 1.4, ghost: 1.4 }`)。",
+          "five": "- **双墙能量再生 (Screen Shield Regeneration)**：\n  - 宝可梦身上只要还存有白盾，每秒自动补充恢复 **2% 最大生命值的白盾** (`screenShieldRegen: 0.02`，受 40% 总盾上限限制)。",
+          "eight": "- **穿透耳膜与光线护体 (Infiltrator Beam Shield)**：\n  - 队伍所有常规攻击无视目标 **25% 抗性** (`psychicPenetration: 0.25`)；\n  - 释放【能量柱 (`beam`)】期间获得 **+25% 临时双防保护** (`beamDefense: 0.25`)。"
+        }
+      }
+    },
+    {
+      "root": 679,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "meleeCrit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "defense": 0.2,
+          "spdef": 0.2
+        },
+        "frontParry": true,
+        "moves": {
+          "melee": {
+            "damage": 1.2
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.15
+        },
+        "incomingTypes": {
+          "dark": 1.35,
+          "fire": 1.35,
+          "ghost": 1.35
+        }
+      },
+      "five": {
+        "defMelee": 0.4,
+        "kalos": {
+          "defCap": 0.35
+        }
+      },
+      "eight": {
+        "ignoreDefenseBuffs": true,
+        "psychicPenetration": 0.25
+      },
+      "active": {
+        "kind": "kalos679",
+        "shape": "delayedNova",
+        "power": 0.45,
+        "types": [
+          "steel",
+          "ghost"
+        ],
+        "delay": 2,
+        "radius": 350,
+        "shield": 0.35,
+        "critical": true,
+        "armor": 0.4,
+        "clear": 180
+      },
+      "estimate": "近战1.2×最高1.35×穿甲1.333=2.16，对带盾目标穿甲最高35%时2.492。Z必暴+35%盾原55%预算偏强，主动伤害降45%；先撑盾2秒再360度斩击。",
+      "notes": [
+        "近战1.2×最高1.35×穿甲1.333=2.16，对带盾目标穿甲最高35%时2.492。Z必暴+35%盾原55%预算偏强，主动伤害降45%；先撑盾2秒再360度斩击。"
+      ],
+      "id": "leader_stance_change_sacred_blade",
+      "members": [
+        679,
+        680,
+        681
+      ],
+      "name": {
+        "zh": "剑盾切换与王者圣剑",
+        "en": "Stance Change Kings Blade",
+        "es": "Stance Change Kings Blade"
+      },
+      "source": {
+        "heading": "独剑鞘家族 (Aegislash Family)",
+        "raw": "\n- **家族成员**：#679 独剑鞘 / #680 双剑鞘 / #681 坚盾剑怪\n- **属性配置**：钢 (Steel) / 幽灵 (Ghost)\n- **特性标识**：`leader_stance_change_sacred_blade`\n- **特性名称**：**剑盾切换与王者圣剑** (Stance Change Kings Blade)\n- **接口映射**：`frontParry`、`stats.defense`、`stats.spdef`、`moves.melee`、`defMelee`、`ignoreDefenseBuffs`、`psychicPenetration`\n\n#### 【基础被动能力】 (Passive)\n- **战斗切换双守势 (Stance Guard & Slash)**：\n  - 全队基础物理防御与特殊防御各提升 **+20%**；\n  - 队长与队员正面遭遇近战碰撞时，每 **3 秒自动格挡免除 1 次近战撞击伤害** (`frontParry: true`)；\n  - 全队【近战 (`melee`)】招式伤害提升 **+20%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **王者盾击圣剑 (King Shield & Sacred Sword Z)** · *充能事件：`meleeCrit`（约 60s 校准）*：\n  - 手动激活后前 2 秒张开王者盾牌，立即授予全队 **35% MaxHP 钢质白盾** 并清除近身 180 范围敌弹；\n  - 随即斩出 350 范围 360° 全周身圣剑刃 (`melee`，造成 `budget(c) * 0.55` 【钢/幽灵】必暴伤害 `zCrit: true`），令命中敌人 3 秒内被削弱防御 (`leaderArmor: 0.4`)。\n\n#### 【能力代价】 (Downside)\n- **重剑缓步与恶火隐患 (Heavy Hilt Penalty)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 受到【恶属性】、【火属性】与【幽灵属性】伤害提升 **35%** (`incomingTypes: { dark: 1.35, fire: 1.35, ghost: 1.35 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **剑盾力量转换 (Shield-to-Blade)**：\n  - 将自身物理防御按比例转化为【近战 (`melee`)】招式增伤（每点防御 +0.4%，**封顶 +35%**，复用 `defMelee` 钩子）。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **无视壁垒的至高圣剑 (Sacred Armor Piercer)**：\n  - 攻击带有白盾的目标时额外无视其防御减免 (`ignoreDefenseBuffs: true`)；\n  - 全队非衍生攻击获得 **25% 通用防抗穿透** (`psychicPenetration: 0.25`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **战斗切换双守势 (Stance Guard & Slash)**：",
+            "  - 全队基础物理防御与特殊防御各提升 **+20%**；",
+            "  - 队长与队员正面遭遇近战碰撞时，每 **3 秒自动格挡免除 1 次近战撞击伤害** (`frontParry: true`)；",
+            "  - 全队【近战 (`melee`)】招式伤害提升 **+20%**。"
+          ],
+          "active": [
+            "- **王者盾击圣剑 (King Shield & Sacred Sword Z)** · *充能事件：`meleeCrit`（约 60s 校准）*：",
+            "  - 手动激活后前 2 秒张开王者盾牌，立即授予全队 **35% MaxHP 钢质白盾** 并清除近身 180 范围敌弹；",
+            "  - 随即斩出 350 范围 360° 全周身圣剑刃 (`melee`，造成 `budget(c) * 0.55` 【钢/幽灵】必暴伤害 `zCrit: true`），令命中敌人 3 秒内被削弱防御 (`leaderArmor: 0.4`)。"
+          ],
+          "cost": [
+            "- **重剑缓步与恶火隐患 (Heavy Hilt Penalty)**：",
+            "  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；",
+            "  - 受到【恶属性】、【火属性】与【幽灵属性】伤害提升 **35%** (`incomingTypes: { dark: 1.35, fire: 1.35, ghost: 1.35 }`)。"
+          ],
+          "five": [
+            "- **剑盾力量转换 (Shield-to-Blade)**：",
+            "  - 将自身物理防御按比例转化为【近战 (`melee`)】招式增伤（每点防御 +0.4%，**封顶 +35%**，复用 `defMelee` 钩子）。"
+          ],
+          "eight": [
+            "- **无视壁垒的至高圣剑 (Sacred Armor Piercer)**：",
+            "  - 攻击带有白盾的目标时额外无视其防御减免 (`ignoreDefenseBuffs: true`)；",
+            "  - 全队非衍生攻击获得 **25% 通用防抗穿透** (`psychicPenetration: 0.25`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **战斗切换双守势 (Stance Guard & Slash)**：\n  - 全队基础物理防御与特殊防御各提升 **+20%**；\n  - 队长与队员正面遭遇近战碰撞时，每 **3 秒自动格挡免除 1 次近战撞击伤害** (`frontParry: true`)；\n  - 全队【近战 (`melee`)】招式伤害提升 **+20%**。",
+          "active": "- **王者盾击圣剑 (King Shield & Sacred Sword Z)** · *充能事件：`meleeCrit`（约 60s 校准）*：\n  - 手动激活后前 2 秒张开王者盾牌，立即授予全队 **35% MaxHP 钢质白盾** 并清除近身 180 范围敌弹；\n  - 随即斩出 350 范围 360° 全周身圣剑刃 (`melee`，造成 `budget(c) * 0.55` 【钢/幽灵】必暴伤害 `zCrit: true`），令命中敌人 3 秒内被削弱防御 (`leaderArmor: 0.4`)。",
+          "cost": "- **重剑缓步与恶火隐患 (Heavy Hilt Penalty)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 受到【恶属性】、【火属性】与【幽灵属性】伤害提升 **35%** (`incomingTypes: { dark: 1.35, fire: 1.35, ghost: 1.35 }`)。",
+          "five": "- **剑盾力量转换 (Shield-to-Blade)**：\n  - 将自身物理防御按比例转化为【近战 (`melee`)】招式增伤（每点防御 +0.4%，**封顶 +35%**，复用 `defMelee` 钩子）。",
+          "eight": "- **无视壁垒的至高圣剑 (Sacred Armor Piercer)**：\n  - 攻击带有白盾的目标时额外无视其防御减免 (`ignoreDefenseBuffs: true`)；\n  - 全队非衍生攻击获得 **25% 通用防抗穿透** (`psychicPenetration: 0.25`)。"
+        }
+      }
+    },
+    {
+      "root": 682,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "debuffKill",
+        "targetSeconds": 60
+      },
+      "base": {
+        "sweetAura": 160,
+        "statusPenalty": 0.5
+      },
+      "cost": {
+        "stats": {
+          "atk": -0.25,
+          "spd": -0.15
+        },
+        "incomingTypes": {
+          "poison": 1.45,
+          "steel": 1.45
+        }
+      },
+      "five": {
+        "moves": {
+          "aura": {
+            "radius": 1.25
+          },
+          "buff": {
+            "amount": 1.25
+          }
+        }
+      },
+      "eight": {
+        "kalos": {
+          "killGold": true,
+          "interestCap": 1
+        }
+      },
+      "active": {
+        "kind": "kalos682",
+        "shape": "support",
+        "power": 0,
+        "types": [
+          "fairy"
+        ],
+        "globalDebuff": 0.3,
+        "stun": 1.5,
+        "heal": 0.15
+      },
+      "estimate": "近身15%易伤补偿攻击代价，等双攻物理约0.963、特殊1.05；技能辅助25%。额外工资2G加最多1G利息差额=最多3G/战，严格按战后真实事件结算且不会放大投资返款。",
+      "notes": [
+        "近身15%易伤补偿攻击代价，等双攻物理约0.963、特殊1.05；技能辅助25%。额外工资2G加最多1G利息差额=最多3G/战，严格按战后真实事件结算且不会放大投资返款。"
+      ],
+      "id": "leader_aroma_veil_perfume_ledger",
+      "members": [
+        682
+      ],
+      "name": {
+        "zh": "芳香幕与调香工坊",
+        "en": "Aroma Veil Perfume Atelier",
+        "es": "Aroma Veil Perfume Atelier"
+      },
+      "source": {
+        "heading": "粉香香家族 (Spritzee Family)",
+        "raw": "\n- **家族成员**：#682 粉香香 *(注：当前图鉴收录 #682)*\n- **属性配置**：妖精 (Fairy)\n- **特性标识**：`leader_aroma_veil_perfume_ledger`\n- **特性名称**：**芳香幕与调香工坊** (Aroma Veil Perfume Atelier)\n- **接口映射**：`sweetAura`、`statusPenalty`、`moves.aura`、`moves.buff`、`bankDamage`\n\n#### 【基础被动能力】 (Passive)\n- **芳香迷雾与心神护幕 (Sweet Aroma Aura)**：\n  - 队长周身散发出半径 **160 单位的甜美芳香光环** (`sweetAura: 160`)：每秒对环内敌人施加 **20% 减速**与 **15% 易伤** (`leaderVulnerable: 0.15`)；\n  - 全队受到的减速和减攻负面状态持续时间缩短 **50%** (`statusPenalty: 0.5`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **镇静花香迷雾 (Aromatic Mist Z)** · *充能事件：`debuffKill`（约 60s 校准）*：\n  - 手动激活释放全屏安抚香气：使全屏敌人攻击力降低 **30%** (`leaderDamage: 0.7`，持续 3 秒) 并附加 1.5 秒眩晕；\n  - 同时为全队恢复 **15% 最大生命值**（受每秒 3% 治疗预算上限管辖）。\n\n#### 【能力代价】 (Downside)\n- **香氛娇弱体魄 (Delicate Fragrance)**：\n  - 全队物理攻击降低 **25%** (`stats.atk: -0.25`)，移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 受到【毒属性】与【钢属性】伤害提升 **45%** (`incomingTypes: { poison: 1.45, steel: 1.45 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **浓郁沙龙扩散 (Aroma Diffusion)**：\n  - 全队【光环 (`aura`)】技能范围扩大 **+25%**，【辅助 (`buff`)】技能增益力度提升 **+25%**。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **调香工坊红利 (💰 Perfume Atelier Dividend)**：\n  - 开启调香坊战后结算（复用 `bankDamage: 0.015`）：战斗中每累计消灭 20 名敌人，战后结算额外奖励 **+1 金币**（**单战严格封顶 +2G**）；\n  - 战后利息计算上限提升 **+1G**（由常规 5G 上限放宽至 6G 上限，微调不破坏紧平衡）。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **芳香迷雾与心神护幕 (Sweet Aroma Aura)**：",
+            "  - 队长周身散发出半径 **160 单位的甜美芳香光环** (`sweetAura: 160`)：每秒对环内敌人施加 **20% 减速**与 **15% 易伤** (`leaderVulnerable: 0.15`)；",
+            "  - 全队受到的减速和减攻负面状态持续时间缩短 **50%** (`statusPenalty: 0.5`)。"
+          ],
+          "active": [
+            "- **镇静花香迷雾 (Aromatic Mist Z)** · *充能事件：`debuffKill`（约 60s 校准）*：",
+            "  - 手动激活释放全屏安抚香气：使全屏敌人攻击力降低 **30%** (`leaderDamage: 0.7`，持续 3 秒) 并附加 1.5 秒眩晕；",
+            "  - 同时为全队恢复 **15% 最大生命值**（受每秒 3% 治疗预算上限管辖）。"
+          ],
+          "cost": [
+            "- **香氛娇弱体魄 (Delicate Fragrance)**：",
+            "  - 全队物理攻击降低 **25%** (`stats.atk: -0.25`)，移动速度降低 **15%** (`stats.spd: -0.15`)；",
+            "  - 受到【毒属性】与【钢属性】伤害提升 **45%** (`incomingTypes: { poison: 1.45, steel: 1.45 }`)。"
+          ],
+          "five": [
+            "- **浓郁沙龙扩散 (Aroma Diffusion)**：",
+            "  - 全队【光环 (`aura`)】技能范围扩大 **+25%**，【辅助 (`buff`)】技能增益力度提升 **+25%**。"
+          ],
+          "eight": [
+            "- **调香工坊红利 (💰 Perfume Atelier Dividend)**：",
+            "  - 开启调香坊战后结算（复用 `bankDamage: 0.015`）：战斗中每累计消灭 20 名敌人，战后结算额外奖励 **+1 金币**（**单战严格封顶 +2G**）；",
+            "  - 战后利息计算上限提升 **+1G**（由常规 5G 上限放宽至 6G 上限，微调不破坏紧平衡）。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **芳香迷雾与心神护幕 (Sweet Aroma Aura)**：\n  - 队长周身散发出半径 **160 单位的甜美芳香光环** (`sweetAura: 160`)：每秒对环内敌人施加 **20% 减速**与 **15% 易伤** (`leaderVulnerable: 0.15`)；\n  - 全队受到的减速和减攻负面状态持续时间缩短 **50%** (`statusPenalty: 0.5`)。",
+          "active": "- **镇静花香迷雾 (Aromatic Mist Z)** · *充能事件：`debuffKill`（约 60s 校准）*：\n  - 手动激活释放全屏安抚香气：使全屏敌人攻击力降低 **30%** (`leaderDamage: 0.7`，持续 3 秒) 并附加 1.5 秒眩晕；\n  - 同时为全队恢复 **15% 最大生命值**（受每秒 3% 治疗预算上限管辖）。",
+          "cost": "- **香氛娇弱体魄 (Delicate Fragrance)**：\n  - 全队物理攻击降低 **25%** (`stats.atk: -0.25`)，移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 受到【毒属性】与【钢属性】伤害提升 **45%** (`incomingTypes: { poison: 1.45, steel: 1.45 }`)。",
+          "five": "- **浓郁沙龙扩散 (Aroma Diffusion)**：\n  - 全队【光环 (`aura`)】技能范围扩大 **+25%**，【辅助 (`buff`)】技能增益力度提升 **+25%**。",
+          "eight": "- **调香工坊红利 (💰 Perfume Atelier Dividend)**：\n  - 开启调香坊战后结算（复用 `bankDamage: 0.015`）：战斗中每累计消灭 20 名敌人，战后结算额外奖励 **+1 金币**（**单战严格封顶 +2G**）；\n  - 战后利息计算上限提升 **+1G**（由常规 5G 上限放宽至 6G 上限，微调不破坏紧平衡）。"
+        }
+      }
+    },
+    {
+      "root": 684,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "fruitPickup",
+        "targetSeconds": 60
+      },
+      "base": {
+        "attackDebuffImmune": true,
+        "kalos": {
+          "fruitChance": 0.1
+        }
+      },
+      "cost": {
+        "stats": {
+          "defense": -0.2
+        },
+        "incomingTypes": {
+          "poison": 1.45,
+          "steel": 1.45
+        }
+      },
+      "five": {
+        "moves": {
+          "melee": {
+            "cd": 0.85
+          },
+          "cone": {
+            "cd": 0.85
+          }
+        },
+        "kalos": {
+          "foodSpeed": 0.25
+        }
+      },
+      "eight": {
+        "kalos": {
+          "overheal": 0.5
+        },
+        "moves": {
+          "cone": {
+            "crit": 0.2
+          }
+        }
+      },
+      "active": {
+        "kind": "kalos684",
+        "shape": "nova",
+        "power": 0.35,
+        "types": [
+          "fairy"
+        ],
+        "radius": 240,
+        "slow": 0.5,
+        "selfCost": 0.15,
+        "attackBuff": 0.4,
+        "speedBuff": 0,
+        "haste": 0.2,
+        "duration": 6
+      },
+      "estimate": "原15%当前HP换50%双攻再40%预算爆破明显强，试玩双攻40%/攻速20%持续6秒、爆破35%。基础果实提供续航、5级频率1.176；触发补给即充能，不等待战后拾取。",
+      "notes": [
+        "原15%当前HP换50%双攻再40%预算爆破明显强，试玩双攻40%/攻速20%持续6秒、爆破35%。基础果实提供续航、5级频率1.176；触发补给即充能，不等待战后拾取。"
+      ],
+      "id": "leader_sweet_veil_unburden",
+      "members": [
+        684,
+        685
+      ],
+      "name": {
+        "zh": "甜幕糖果与轻装贪吃",
+        "en": "Sweet Veil Unburden",
+        "es": "Sweet Veil Unburden"
+      },
+      "source": {
+        "heading": "绵绵泡芙家族 (Swirlix Family)",
+        "raw": "\n- **家族成员**：#684 绵绵泡芙 / #685 胖甜妮\n- **属性配置**：妖精 (Fairy)\n- **特性标识**：`leader_sweet_veil_unburden`\n- **特性名称**：**甜幕糖果与轻装贪吃** (Sweet Veil Unburden)\n- **接口映射**：`attackDebuffImmune`、`fruitChance`、`fruitSpeed`、`moves.melee`、`moves.cone`、`overhealShield`\n\n#### 【基础被动能力】 (Passive)\n- **甜幕护身与糖果补给 (Sweet Veil & Berry)**：\n  - 全队免疫一切敌方降攻减益 (`attackDebuffImmune: true`)；\n  - 击杀敌人有 **10% 概率掉落糖果果实**（全队至多每 2 秒 1 颗，拾取回 **8% 已损血 + 1 PP + 3 秒移速加成**，复用 `fruitChance`）。\n\n#### 【累计特殊能力】 (Cadence)\n- **腹鼓奶油爆炸 (Belly Drum Sugar Blast Z)** · *充能事件：`fruitPickup`（约 60s 校准）*：\n  - 手动激活后模仿卡比兽腹鼓代价：全队消耗 **15% 当前生命值**（保底留 1 HP），换取持续 6 秒的全队双攻 **+50%** 狂热；\n  - 同时向周围 240 范围引爆糖霜冲击波，造成 `budget(c) * 0.40` 妖精系伤害与 50% 减速。\n\n#### 【能力代价】 (Downside)\n- **软糯糖霜脆皮 (Soft Sugar Body)**：\n  - 全队物理防御降低 **20%** (`stats.defense: -0.2`)；\n  - 受到【毒属性】与【钢属性】伤害提升 **45%** (`incomingTypes: { poison: 1.45, steel: 1.45 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **轻装上阵 (Unburden Cadence)**：\n  - 拾取甜果后的加速增幅提升至 **+25%** (`fruitSpeed: 0.25`)；\n  - 全队【近战 (`melee`)】与【锥形喷射 (`cone`)】招式冷却缩减 **15%** (`cd: 0.85`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **满腹糖霜护盾 (Sugar Overheal Shield)**：\n  - 满血拾取果实或受到溢出治疗时，**50% 的溢出恢复值转化为白盾** (`overhealShield: 0.5`，受 40% MaxHP 总上限保护)；\n  - 全队【锥形 (`cone`)】招式暴击率提升 **+20%** (`moves.cone.crit: 0.2`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **甜幕护身与糖果补给 (Sweet Veil & Berry)**：",
+            "  - 全队免疫一切敌方降攻减益 (`attackDebuffImmune: true`)；",
+            "  - 击杀敌人有 **10% 概率掉落糖果果实**（全队至多每 2 秒 1 颗，拾取回 **8% 已损血 + 1 PP + 3 秒移速加成**，复用 `fruitChance`）。"
+          ],
+          "active": [
+            "- **腹鼓奶油爆炸 (Belly Drum Sugar Blast Z)** · *充能事件：`fruitPickup`（约 60s 校准）*：",
+            "  - 手动激活后模仿卡比兽腹鼓代价：全队消耗 **15% 当前生命值**（保底留 1 HP），换取持续 6 秒的全队双攻 **+50%** 狂热；",
+            "  - 同时向周围 240 范围引爆糖霜冲击波，造成 `budget(c) * 0.40` 妖精系伤害与 50% 减速。"
+          ],
+          "cost": [
+            "- **软糯糖霜脆皮 (Soft Sugar Body)**：",
+            "  - 全队物理防御降低 **20%** (`stats.defense: -0.2`)；",
+            "  - 受到【毒属性】与【钢属性】伤害提升 **45%** (`incomingTypes: { poison: 1.45, steel: 1.45 }`)。"
+          ],
+          "five": [
+            "- **轻装上阵 (Unburden Cadence)**：",
+            "  - 拾取甜果后的加速增幅提升至 **+25%** (`fruitSpeed: 0.25`)；",
+            "  - 全队【近战 (`melee`)】与【锥形喷射 (`cone`)】招式冷却缩减 **15%** (`cd: 0.85`)。"
+          ],
+          "eight": [
+            "- **满腹糖霜护盾 (Sugar Overheal Shield)**：",
+            "  - 满血拾取果实或受到溢出治疗时，**50% 的溢出恢复值转化为白盾** (`overhealShield: 0.5`，受 40% MaxHP 总上限保护)；",
+            "  - 全队【锥形 (`cone`)】招式暴击率提升 **+20%** (`moves.cone.crit: 0.2`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **甜幕护身与糖果补给 (Sweet Veil & Berry)**：\n  - 全队免疫一切敌方降攻减益 (`attackDebuffImmune: true`)；\n  - 击杀敌人有 **10% 概率掉落糖果果实**（全队至多每 2 秒 1 颗，拾取回 **8% 已损血 + 1 PP + 3 秒移速加成**，复用 `fruitChance`）。",
+          "active": "- **腹鼓奶油爆炸 (Belly Drum Sugar Blast Z)** · *充能事件：`fruitPickup`（约 60s 校准）*：\n  - 手动激活后模仿卡比兽腹鼓代价：全队消耗 **15% 当前生命值**（保底留 1 HP），换取持续 6 秒的全队双攻 **+50%** 狂热；\n  - 同时向周围 240 范围引爆糖霜冲击波，造成 `budget(c) * 0.40` 妖精系伤害与 50% 减速。",
+          "cost": "- **软糯糖霜脆皮 (Soft Sugar Body)**：\n  - 全队物理防御降低 **20%** (`stats.defense: -0.2`)；\n  - 受到【毒属性】与【钢属性】伤害提升 **45%** (`incomingTypes: { poison: 1.45, steel: 1.45 }`)。",
+          "five": "- **轻装上阵 (Unburden Cadence)**：\n  - 拾取甜果后的加速增幅提升至 **+25%** (`fruitSpeed: 0.25`)；\n  - 全队【近战 (`melee`)】与【锥形喷射 (`cone`)】招式冷却缩减 **15%** (`cd: 0.85`)。",
+          "eight": "- **满腹糖霜护盾 (Sugar Overheal Shield)**：\n  - 满血拾取果实或受到溢出治疗时，**50% 的溢出恢复值转化为白盾** (`overhealShield: 0.5`，受 40% MaxHP 总上限保护)；\n  - 全队【锥形 (`cone`)】招式暴击率提升 **+20%** (`moves.cone.crit: 0.2`)。"
+        }
+      }
+    },
+    {
+      "root": 686,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "stun",
+        "targetSeconds": 60
+      },
+      "base": {
+        "poorDefense": 1.35,
+        "moves": {
+          "beam": {
+            "damage": 1.2
+          },
+          "cone": {
+            "damage": 1.2
+          }
+        }
+      },
+      "cost": {
+        "incomingTypes": {
+          "bug": 1.8
+        },
+        "stats": {
+          "hp": -0.15
+        }
+      },
+      "five": {
+        "statusDamage": 1.2,
+        "stunVulnerable": 0.2
+      },
+      "eight": {
+        "kalos": {
+          "visitRefresh": 1,
+          "povertyGold": 2
+        }
+      },
+      "active": {
+        "kind": "kalos686",
+        "shape": "nova",
+        "power": 0.45,
+        "types": [
+          "psychic"
+        ],
+        "breakShield": true,
+        "nonBossStun": 2,
+        "slow": 0.6
+      },
+      "estimate": "穷困双防×1.35但生命0.85，综合有效生命1.148；受控目标光束/扇形×1.2×1.2×1.2=1.728。贫困补贴在常规工资、利息等到账后检查<20G，最多2G，不重复或自我递归。",
+      "notes": [
+        "穷困双防×1.35但生命0.85，综合有效生命1.148；受控目标光束/扇形×1.2×1.2×1.2=1.728。贫困补贴在常规工资、利息等到账后检查<20G，最多2G，不重复或自我递归。"
+      ],
+      "id": "leader_contrary_topsy_turvy",
+      "members": [
+        686,
+        687
+      ],
+      "name": {
+        "zh": "唱反调与颠倒契约",
+        "en": "Contrary Topsy-Turvy",
+        "es": "Contrary Topsy-Turvy"
+      },
+      "source": {
+        "heading": "好啦耶家族 (Malamar Family)",
+        "raw": "\n- **家族成员**：#686 好啦耶 / #687 乌贼王\n- **属性配置**：恶 (Dark) / 超能力 (Psychic)\n- **特性标识**：`leader_contrary_topsy_turvy`\n- **特性名称**：**唱反调与颠倒契约** (Contrary Topsy-Turvy)\n- **接口映射**：`poorDefense`、`moves.beam`、`moves.cone`、`statusDamage`、`stunVulnerable`、`shopFreeRefreshes`\n\n#### 【基础被动能力】 (Passive)\n- **唱反调逆境防线 (Contrary Poverty Guard)**：\n  - 当局内当前持有金币低于 30G 时，全队物理与特殊防御反而提升 **×1.35** (`poorDefense: 1.35`)；\n  - 全队【能量柱 (`beam`)】与【锥形 (`cone`)】招式基础伤害提升 **+20%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **颠倒空间震荡 (Topsy-Turvy Wave Z)** · *充能事件：`stun`（约 60s 校准）*：\n  - 手动激活发动空间逆转：清零全屏所有敌人的白色护盾 (`breakShield: true`)，对非 BOSS 敌人强制眩晕 **2 秒**与 **60% 减速**；\n  - 同时释放全屏超能冲击波，造成 `budget(c) * 0.45` 伤害。\n\n#### 【能力代价】 (Downside)\n- **四倍弱虫与单薄身躯 (Quadruple Bug Weakness)**：\n  - 受到【虫属性】伤害提升 **80%** (`incomingTypes.bug: 1.8`)；\n  - 全队最大生命值降低 **15%** (`stats.hp: -0.15`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **逆向心灵摧残 (Inverted Torment)**：\n  - 全队攻击带有任意异常状态（灼烧/中毒/减速/眩晕/冻结）的敌人时伤害提高 **+20%** (`statusDamage: 1.2`)；对眩晕目标再额外提高 **+20%** (`stunVulnerable: 0.2`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **低保逆袭契约 (💰 Contrary Bankruptcy Grant)**：\n  - 每进入一家宝可梦商店额外获得 **+1 次免费刷新额度**；\n  - 若战后结算瞬间身上金币不足 20G（穷困逆反判定），战后额外发放 **+2 金币反调补贴**（单场严格封顶 +2G）。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **唱反调逆境防线 (Contrary Poverty Guard)**：",
+            "  - 当局内当前持有金币低于 30G 时，全队物理与特殊防御反而提升 **×1.35** (`poorDefense: 1.35`)；",
+            "  - 全队【能量柱 (`beam`)】与【锥形 (`cone`)】招式基础伤害提升 **+20%**。"
+          ],
+          "active": [
+            "- **颠倒空间震荡 (Topsy-Turvy Wave Z)** · *充能事件：`stun`（约 60s 校准）*：",
+            "  - 手动激活发动空间逆转：清零全屏所有敌人的白色护盾 (`breakShield: true`)，对非 BOSS 敌人强制眩晕 **2 秒**与 **60% 减速**；",
+            "  - 同时释放全屏超能冲击波，造成 `budget(c) * 0.45` 伤害。"
+          ],
+          "cost": [
+            "- **四倍弱虫与单薄身躯 (Quadruple Bug Weakness)**：",
+            "  - 受到【虫属性】伤害提升 **80%** (`incomingTypes.bug: 1.8`)；",
+            "  - 全队最大生命值降低 **15%** (`stats.hp: -0.15`)。"
+          ],
+          "five": [
+            "- **逆向心灵摧残 (Inverted Torment)**：",
+            "  - 全队攻击带有任意异常状态（灼烧/中毒/减速/眩晕/冻结）的敌人时伤害提高 **+20%** (`statusDamage: 1.2`)；对眩晕目标再额外提高 **+20%** (`stunVulnerable: 0.2`)。"
+          ],
+          "eight": [
+            "- **低保逆袭契约 (💰 Contrary Bankruptcy Grant)**：",
+            "  - 每进入一家宝可梦商店额外获得 **+1 次免费刷新额度**；",
+            "  - 若战后结算瞬间身上金币不足 20G（穷困逆反判定），战后额外发放 **+2 金币反调补贴**（单场严格封顶 +2G）。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **唱反调逆境防线 (Contrary Poverty Guard)**：\n  - 当局内当前持有金币低于 30G 时，全队物理与特殊防御反而提升 **×1.35** (`poorDefense: 1.35`)；\n  - 全队【能量柱 (`beam`)】与【锥形 (`cone`)】招式基础伤害提升 **+20%**。",
+          "active": "- **颠倒空间震荡 (Topsy-Turvy Wave Z)** · *充能事件：`stun`（约 60s 校准）*：\n  - 手动激活发动空间逆转：清零全屏所有敌人的白色护盾 (`breakShield: true`)，对非 BOSS 敌人强制眩晕 **2 秒**与 **60% 减速**；\n  - 同时释放全屏超能冲击波，造成 `budget(c) * 0.45` 伤害。",
+          "cost": "- **四倍弱虫与单薄身躯 (Quadruple Bug Weakness)**：\n  - 受到【虫属性】伤害提升 **80%** (`incomingTypes.bug: 1.8`)；\n  - 全队最大生命值降低 **15%** (`stats.hp: -0.15`)。",
+          "five": "- **逆向心灵摧残 (Inverted Torment)**：\n  - 全队攻击带有任意异常状态（灼烧/中毒/减速/眩晕/冻结）的敌人时伤害提高 **+20%** (`statusDamage: 1.2`)；对眩晕目标再额外提高 **+20%** (`stunVulnerable: 0.2`)。",
+          "eight": "- **低保逆袭契约 (💰 Contrary Bankruptcy Grant)**：\n  - 每进入一家宝可梦商店额外获得 **+1 次免费刷新额度**；\n  - 若战后结算瞬间身上金币不足 20G（穷困逆反判定），战后额外发放 **+2 金币反调补贴**（单场严格封顶 +2G）。"
+        }
+      }
+    },
+    {
+      "root": 688,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "echoHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "moves": {
+          "melee": {
+            "damage": 1.25,
+            "arc": 2.2
+          }
+        },
+        "kalos": {
+          "meleeEcho": 0.2
+        }
+      },
+      "cost": {
+        "incomingTypes": {
+          "grass": 1.8
+        },
+        "stats": {
+          "spdef": -0.25
+        }
+      },
+      "five": {
+        "moves": {
+          "melee": {
+            "crit": 0.15
+          }
+        },
+        "meleeSpeed": 0.2
+      },
+      "eight": {
+        "critMultiplier": 1.9,
+        "rainMelee": true
+      },
+      "active": {
+        "kind": "kalos688",
+        "shape": "melee",
+        "power": 0.45,
+        "types": [
+          "water",
+          "rock"
+        ],
+        "count": 3,
+        "attackBuff": 0.35,
+        "speedBuff": 0.3,
+        "haste": 0.25,
+        "defenseBuff": -0.35,
+        "duration": 5
+      },
+      "estimate": "普通近战+回响×1.5；8级15%暴击期望1.135，雨天再20%连斩，约1.987。原破壳45%双攻+30%频率+55%预算偏高，改35%双攻/25%频率/45%预算。回响按实际伤害，不能再次叠完整主技能增伤。",
+      "notes": [
+        "普通近战+回响×1.5；8级15%暴击期望1.135，雨天再20%连斩，约1.987。原破壳45%双攻+30%频率+55%预算偏高，改35%双攻/25%频率/45%预算。回响按实际伤害，不能再次叠完整主技能增伤。"
+      ],
+      "id": "leader_tough_claws_shell_smash",
+      "members": [
+        688,
+        689
+      ],
+      "name": {
+        "zh": "坚硬之爪连环破壳",
+        "en": "Tough Claws Shell Smash",
+        "es": "Tough Claws Shell Smash"
+      },
+      "source": {
+        "heading": "龟脚脚家族 (Barbaracle Family)",
+        "raw": "\n- **家族成员**：#688 龟脚脚 / #689 龟足巨铠\n- **属性配置**：岩石 (Rock) / 水 (Water)\n- **特性标识**：`leader_tough_claws_shell_smash`\n- **特性名称**：**坚硬之爪连环破壳** (Tough Claws Shell Smash)\n- **接口映射**：`moves.melee`、`meleeEcho`、`meleeSpeed`、`critMultiplier`、`rainMelee`\n\n#### 【基础被动能力】 (Passive)\n- **七头足硬爪 (Tough Claws Cleave)**：\n  - 全队【近战 (`melee`)】招式伤害提升 **+25%**、斩击角度覆盖扩大至 `2.2` 弧度；\n  - 近战招式命中目标后，会在 0.15 秒后自动追加一次 **20% 伤害的硬爪回响追击** (`meleeEcho: 0.2`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **破壳双刀乱斩 (Razor Shell Smash Z)** · *充能事件：`echoHit`（约 60s 校准）*：\n  - 手动激活进入持续 5 秒的破壳狂飙状态：全队物理防御临时降低 35%，但获得 **+45% 双攻、+30% 移速与射速增幅**；\n  - 激活瞬间向瞄准方向连挥 3 段水岩爪击 (`melee`，合计 `budget(c) * 0.55`)。\n\n#### 【能力代价】 (Downside)\n- **四倍惧草与特防脆壳 (Quadruple Grass Flaw)**：\n  - 受到【草属性】伤害提升 **80%** (`incomingTypes.grass: 1.8`)；\n  - 全队基础特殊防御降低 **25%** (`stats.spdef: -0.25`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **爪击势能与锋利度 (Claw Momentum)**：\n  - 全队【近战 (`melee`)】招式暴击率提升 **+15%** (`moves.melee.crit: 0.15`)；\n  - 每次发动近战攻击后的 1 秒内，移动速度提高 **+20%** (`meleeSpeed: 0.2`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **暴雨连斩狂潮 (Rain Claw Surge)**：\n  - 全队暴击倍率由 1.5× 提升至 **1.9×** (`critMultiplier: 1.9`)；\n  - 在雨天环境下每次发动近战攻击，于 0.15 秒后额外附带一发 20% 威力的水属性近战连斩 (`rainMelee: true`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **七头足硬爪 (Tough Claws Cleave)**：",
+            "  - 全队【近战 (`melee`)】招式伤害提升 **+25%**、斩击角度覆盖扩大至 `2.2` 弧度；",
+            "  - 近战招式命中目标后，会在 0.15 秒后自动追加一次 **20% 伤害的硬爪回响追击** (`meleeEcho: 0.2`)。"
+          ],
+          "active": [
+            "- **破壳双刀乱斩 (Razor Shell Smash Z)** · *充能事件：`echoHit`（约 60s 校准）*：",
+            "  - 手动激活进入持续 5 秒的破壳狂飙状态：全队物理防御临时降低 35%，但获得 **+45% 双攻、+30% 移速与射速增幅**；",
+            "  - 激活瞬间向瞄准方向连挥 3 段水岩爪击 (`melee`，合计 `budget(c) * 0.55`)。"
+          ],
+          "cost": [
+            "- **四倍惧草与特防脆壳 (Quadruple Grass Flaw)**：",
+            "  - 受到【草属性】伤害提升 **80%** (`incomingTypes.grass: 1.8`)；",
+            "  - 全队基础特殊防御降低 **25%** (`stats.spdef: -0.25`)。"
+          ],
+          "five": [
+            "- **爪击势能与锋利度 (Claw Momentum)**：",
+            "  - 全队【近战 (`melee`)】招式暴击率提升 **+15%** (`moves.melee.crit: 0.15`)；",
+            "  - 每次发动近战攻击后的 1 秒内，移动速度提高 **+20%** (`meleeSpeed: 0.2`)。"
+          ],
+          "eight": [
+            "- **暴雨连斩狂潮 (Rain Claw Surge)**：",
+            "  - 全队暴击倍率由 1.5× 提升至 **1.9×** (`critMultiplier: 1.9`)；",
+            "  - 在雨天环境下每次发动近战攻击，于 0.15 秒后额外附带一发 20% 威力的水属性近战连斩 (`rainMelee: true`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **七头足硬爪 (Tough Claws Cleave)**：\n  - 全队【近战 (`melee`)】招式伤害提升 **+25%**、斩击角度覆盖扩大至 `2.2` 弧度；\n  - 近战招式命中目标后，会在 0.15 秒后自动追加一次 **20% 伤害的硬爪回响追击** (`meleeEcho: 0.2`)。",
+          "active": "- **破壳双刀乱斩 (Razor Shell Smash Z)** · *充能事件：`echoHit`（约 60s 校准）*：\n  - 手动激活进入持续 5 秒的破壳狂飙状态：全队物理防御临时降低 35%，但获得 **+45% 双攻、+30% 移速与射速增幅**；\n  - 激活瞬间向瞄准方向连挥 3 段水岩爪击 (`melee`，合计 `budget(c) * 0.55`)。",
+          "cost": "- **四倍惧草与特防脆壳 (Quadruple Grass Flaw)**：\n  - 受到【草属性】伤害提升 **80%** (`incomingTypes.grass: 1.8`)；\n  - 全队基础特殊防御降低 **25%** (`stats.spdef: -0.25`)。",
+          "five": "- **爪击势能与锋利度 (Claw Momentum)**：\n  - 全队【近战 (`melee`)】招式暴击率提升 **+15%** (`moves.melee.crit: 0.15`)；\n  - 每次发动近战攻击后的 1 秒内，移动速度提高 **+20%** (`meleeSpeed: 0.2`)。",
+          "eight": "- **暴雨连斩狂潮 (Rain Claw Surge)**：\n  - 全队暴击倍率由 1.5× 提升至 **1.9×** (`critMultiplier: 1.9`)；\n  - 在雨天环境下每次发动近战攻击，于 0.15 秒后额外附带一发 20% 威力的水属性近战连斩 (`rainMelee: true`)。"
+        }
+      }
+    },
+    {
+      "root": 690,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "poisonStack",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stabDamage": 1.25,
+        "moves": {
+          "cone": {
+            "poison": 1
+          },
+          "trail": {
+            "radius": 1.25
+          }
+        },
+        "puddleBuff": 0.2
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.15
+        },
+        "nonStabDamage": 0.8,
+        "incomingTypes": {
+          "ice": 1.4,
+          "dragon": 1.4
+        }
+      },
+      "five": {
+        "poisonRate": 1.4
+      },
+      "eight": {
+        "acidPuddle": true,
+        "acidDefense": 0.35
+      },
+      "active": {
+        "kind": "kalos690",
+        "shape": "nova",
+        "power": 0.5,
+        "types": [
+          "poison",
+          "dragon"
+        ],
+        "count": 16,
+        "poison": 2,
+        "acid": true,
+        "vulnerable": 0.25
+      },
+      "estimate": "本系毒池×1.25×1.2=1.5，35%穿甲后2.308；非本系0.8×1.2/0.65=1.477。毒跳频仅180内、保留其来源，Z毒池不递归生成酸池；原毒池脚下判定覆盖现有技能领域和特性领域。",
+      "notes": [
+        "本系毒池×1.25×1.2=1.5，35%穿甲后2.308；非本系0.8×1.2/0.65=1.477。毒跳频仅180内、保留其来源，Z毒池不递归生成酸池；原毒池脚下判定覆盖现有技能领域和特性领域。"
+      ],
+      "id": "leader_adaptability_toxic_kelp",
+      "members": [
+        690,
+        691
+      ],
+      "name": {
+        "zh": "适应力毒龙腐沼",
+        "en": "Adaptability Toxic Kelp",
+        "es": "Adaptability Toxic Kelp"
+      },
+      "source": {
+        "heading": "垃垃藻家族 (Dragalge Family)",
+        "raw": "\n- **家族成员**：#690 垃垃藻 / #691 毒藻龙\n- **属性配置**：毒 (Poison) / 龙 (Dragon)\n- **特性标识**：`leader_adaptability_toxic_kelp`\n- **特性名称**：**适应力毒龙腐沼** (Adaptability Toxic Kelp)\n- **接口映射**：`stabDamage`、`nonStabDamage`、`moves.cone`、`moves.trail`、`puddleBuff`、`poisonRate`、`acidPuddle`、`acidDefense`\n\n#### 【基础被动能力】 (Passive)\n- **毒龙适应力强化 (Adaptability STAB Boost)**：\n  - 队伍成员施放与自身属性一致的本系（STAB）招式时，最终伤害提升 **+25%** (`stabDamage: 1.25`)；\n  - 【锥形 (`cone`)】招式必定附加 **+1 层中毒** (`poison: 1`)，【轨迹 (`trail`)】范围扩大 **+25%**；站在场地毒池内时全队伤害提升 **+20%** (`puddleBuff: 0.2`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **毒龙腐液喷涌 (Draco Sludge Nova Z)** · *充能事件：`poisonStack`（约 60s 校准）*：\n  - 手动激活向四周 360° 喷射 16 发毒龙酸液弹 (`nova`，总伤 `budget(c) * 0.50`、附加 `poison: 2`)，并在自身脚下留下持续 4 秒的毒沼区域 (`acid`，减速 50%)；\n  - 被毒波命中的目标承受 4 秒 **25% 易伤** (`leaderVulnerable: 0.25`)。\n\n#### 【能力代价】 (Downside)\n- **拟态缓游与排异反应 (Adaptability Restriction)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 施放非自身属性的招式时伤害打 **8 折** (`nonStabDamage: 0.8`)；受到【冰属性】与【龙属性】伤害提升 **40%**。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **毒龙腐化加速 (Corrosive Tick Rate)**：\n  - 距队长 180 半径范围内处于中毒状态的敌人，其中毒扣血周期加快 **+40%** (`poisonRate: 1.4`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **溶甲毒池与酸液溶解 (Acid Dissolution)**：\n  - 【锥形 (`cone`)】招式命中目标有 **10% 概率**在敌方脚底生成 2 秒腐蚀酸池 (`acidPuddle: true`)；\n  - 锥形招式命中敌人时，在 3 秒内削弱其 **35% 护甲/特防** (`acidDefense: 0.35`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **毒龙适应力强化 (Adaptability STAB Boost)**：",
+            "  - 队伍成员施放与自身属性一致的本系（STAB）招式时，最终伤害提升 **+25%** (`stabDamage: 1.25`)；",
+            "  - 【锥形 (`cone`)】招式必定附加 **+1 层中毒** (`poison: 1`)，【轨迹 (`trail`)】范围扩大 **+25%**；站在场地毒池内时全队伤害提升 **+20%** (`puddleBuff: 0.2`)。"
+          ],
+          "active": [
+            "- **毒龙腐液喷涌 (Draco Sludge Nova Z)** · *充能事件：`poisonStack`（约 60s 校准）*：",
+            "  - 手动激活向四周 360° 喷射 16 发毒龙酸液弹 (`nova`，总伤 `budget(c) * 0.50`、附加 `poison: 2`)，并在自身脚下留下持续 4 秒的毒沼区域 (`acid`，减速 50%)；",
+            "  - 被毒波命中的目标承受 4 秒 **25% 易伤** (`leaderVulnerable: 0.25`)。"
+          ],
+          "cost": [
+            "- **拟态缓游与排异反应 (Adaptability Restriction)**：",
+            "  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；",
+            "  - 施放非自身属性的招式时伤害打 **8 折** (`nonStabDamage: 0.8`)；受到【冰属性】与【龙属性】伤害提升 **40%**。"
+          ],
+          "five": [
+            "- **毒龙腐化加速 (Corrosive Tick Rate)**：",
+            "  - 距队长 180 半径范围内处于中毒状态的敌人，其中毒扣血周期加快 **+40%** (`poisonRate: 1.4`)。"
+          ],
+          "eight": [
+            "- **溶甲毒池与酸液溶解 (Acid Dissolution)**：",
+            "  - 【锥形 (`cone`)】招式命中目标有 **10% 概率**在敌方脚底生成 2 秒腐蚀酸池 (`acidPuddle: true`)；",
+            "  - 锥形招式命中敌人时，在 3 秒内削弱其 **35% 护甲/特防** (`acidDefense: 0.35`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **毒龙适应力强化 (Adaptability STAB Boost)**：\n  - 队伍成员施放与自身属性一致的本系（STAB）招式时，最终伤害提升 **+25%** (`stabDamage: 1.25`)；\n  - 【锥形 (`cone`)】招式必定附加 **+1 层中毒** (`poison: 1`)，【轨迹 (`trail`)】范围扩大 **+25%**；站在场地毒池内时全队伤害提升 **+20%** (`puddleBuff: 0.2`)。",
+          "active": "- **毒龙腐液喷涌 (Draco Sludge Nova Z)** · *充能事件：`poisonStack`（约 60s 校准）*：\n  - 手动激活向四周 360° 喷射 16 发毒龙酸液弹 (`nova`，总伤 `budget(c) * 0.50`、附加 `poison: 2`)，并在自身脚下留下持续 4 秒的毒沼区域 (`acid`，减速 50%)；\n  - 被毒波命中的目标承受 4 秒 **25% 易伤** (`leaderVulnerable: 0.25`)。",
+          "cost": "- **拟态缓游与排异反应 (Adaptability Restriction)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 施放非自身属性的招式时伤害打 **8 折** (`nonStabDamage: 0.8`)；受到【冰属性】与【龙属性】伤害提升 **40%**。",
+          "five": "- **毒龙腐化加速 (Corrosive Tick Rate)**：\n  - 距队长 180 半径范围内处于中毒状态的敌人，其中毒扣血周期加快 **+40%** (`poisonRate: 1.4`)。",
+          "eight": "- **溶甲毒池与酸液溶解 (Acid Dissolution)**：\n  - 【锥形 (`cone`)】招式命中目标有 **10% 概率**在敌方脚底生成 2 秒腐蚀酸池 (`acidPuddle: true`)；\n  - 锥形招式命中敌人时，在 3 秒内削弱其 **35% 护甲/特防** (`acidDefense: 0.35`)。"
+        }
+      }
+    },
+    {
+      "root": 692,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "projectileHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "moves": {
+          "projectile": {
+            "damage": 1.25,
+            "range": 1.3
+          },
+          "beam": {
+            "damage": 1.25
+          }
+        },
+        "healthyProjectile": 1.2
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.15
+        },
+        "moves": {
+          "melee": {
+            "cd": 1.35
+          }
+        }
+      },
+      "five": {
+        "ricochet": 2
+      },
+      "eight": {
+        "moves": {
+          "projectile": {
+            "count": 1
+          }
+        },
+        "firstDamage": 1.2
+      },
+      "active": {
+        "kind": "kalos692",
+        "shape": "beam",
+        "power": 0.5,
+        "types": [
+          "water"
+        ],
+        "count": 3,
+        "width": 60,
+        "critical": true,
+        "stun": 1.5,
+        "knock": 250
+      },
+      "estimate": "高血炮弹1.5，8级再1.2=1.8，+1弹的数量收益取决原数量；无血量代价、射程和弹墙都占优势。必暴Z原65%预算改50%，两次墙反弹仅首次提速50%，不重复加速失控。",
+      "notes": [
+        "高血炮弹1.5，8级再1.2=1.8，+1弹的数量收益取决原数量；无血量代价、射程和弹墙都占优势。必暴Z原65%预算改50%，两次墙反弹仅首次提速50%，不重复加速失控。"
+      ],
+      "id": "leader_mega_launcher_cannon",
+      "members": [
+        692,
+        693
+      ],
+      "name": {
+        "zh": "超级发射器重水炮",
+        "en": "Mega Launcher Siege",
+        "es": "Mega Launcher Siege"
+      },
+      "source": {
+        "heading": "铁臂枪虾家族 (Clawitzer Family)",
+        "raw": "\n- **家族成员**：#692 铁臂枪虾 / #693 钢炮臂虾\n- **属性配置**：水 (Water)\n- **特性标识**：`leader_mega_launcher_cannon`\n- **特性名称**：**超级发射器重水炮** (Mega Launcher Siege)\n- **接口映射**：`moves.projectile`、`moves.beam`、`healthyProjectile`、`ricochet`、`firstDamage`\n\n#### 【基础被动能力】 (Passive)\n- **波动炮弹膛室 (Mega Launcher Barrel)**：\n  - 全队【投射物 (`projectile`)】与【能量柱 (`beam`)】招式伤害提升 **+25%**，投射物有效射程延长 **+30%**；\n  - 使用投射物攻击生命值高于 70% 的敌人时，伤害额外提升 **+20%** (`healthyProjectile: 1.2`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **超级波动水龙炮 (Mega Launcher Pulse Z)** · *充能事件：`projectileHit`（约 60s 校准）*：\n  - 手动激活向瞄准扇区轰出 3 道宽达 60 单位的贯穿波动加农光柱 (`beam`，合计总伤 `budget(c) * 0.65`、自带 `zCrit: true` 与 1.5 秒眩晕 `leaderStun`)；\n  - 将正前方近身敌人猛烈击退。\n\n#### 【能力代价】 (Downside)\n- **单侧重炮负担 (Heavy Claw Recoil)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 【近战 (`melee`)】招式冷却时间延长 **35%** (`moves.melee.cd: 1.35`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **水压跳弹发射器 (Ricochet Pulse)**：\n  - 全队【投射物 (`projectile`)】弹丸在触碰墙壁或障碍时不再立刻消散，而是进行最多 **2 次墙壁反弹**并提速 50% 继续索敌 (`ricochet: 2`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **双联重膛炮口 (Twin Cannon Volley)**：\n  - 每次释放【投射物 (`projectile`)】招式额外多发射 **+1 枚炮弹** (`moves.projectile.count: 1`)；\n  - 全队主体直接招式伤害永久提升 **+20%** (`firstDamage: 1.2`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **波动炮弹膛室 (Mega Launcher Barrel)**：",
+            "  - 全队【投射物 (`projectile`)】与【能量柱 (`beam`)】招式伤害提升 **+25%**，投射物有效射程延长 **+30%**；",
+            "  - 使用投射物攻击生命值高于 70% 的敌人时，伤害额外提升 **+20%** (`healthyProjectile: 1.2`)。"
+          ],
+          "active": [
+            "- **超级波动水龙炮 (Mega Launcher Pulse Z)** · *充能事件：`projectileHit`（约 60s 校准）*：",
+            "  - 手动激活向瞄准扇区轰出 3 道宽达 60 单位的贯穿波动加农光柱 (`beam`，合计总伤 `budget(c) * 0.65`、自带 `zCrit: true` 与 1.5 秒眩晕 `leaderStun`)；",
+            "  - 将正前方近身敌人猛烈击退。"
+          ],
+          "cost": [
+            "- **单侧重炮负担 (Heavy Claw Recoil)**：",
+            "  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；",
+            "  - 【近战 (`melee`)】招式冷却时间延长 **35%** (`moves.melee.cd: 1.35`)。"
+          ],
+          "five": [
+            "- **水压跳弹发射器 (Ricochet Pulse)**：",
+            "  - 全队【投射物 (`projectile`)】弹丸在触碰墙壁或障碍时不再立刻消散，而是进行最多 **2 次墙壁反弹**并提速 50% 继续索敌 (`ricochet: 2`)。"
+          ],
+          "eight": [
+            "- **双联重膛炮口 (Twin Cannon Volley)**：",
+            "  - 每次释放【投射物 (`projectile`)】招式额外多发射 **+1 枚炮弹** (`moves.projectile.count: 1`)；",
+            "  - 全队主体直接招式伤害永久提升 **+20%** (`firstDamage: 1.2`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **波动炮弹膛室 (Mega Launcher Barrel)**：\n  - 全队【投射物 (`projectile`)】与【能量柱 (`beam`)】招式伤害提升 **+25%**，投射物有效射程延长 **+30%**；\n  - 使用投射物攻击生命值高于 70% 的敌人时，伤害额外提升 **+20%** (`healthyProjectile: 1.2`)。",
+          "active": "- **超级波动水龙炮 (Mega Launcher Pulse Z)** · *充能事件：`projectileHit`（约 60s 校准）*：\n  - 手动激活向瞄准扇区轰出 3 道宽达 60 单位的贯穿波动加农光柱 (`beam`，合计总伤 `budget(c) * 0.65`、自带 `zCrit: true` 与 1.5 秒眩晕 `leaderStun`)；\n  - 将正前方近身敌人猛烈击退。",
+          "cost": "- **单侧重炮负担 (Heavy Claw Recoil)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 【近战 (`melee`)】招式冷却时间延长 **35%** (`moves.melee.cd: 1.35`)。",
+          "five": "- **水压跳弹发射器 (Ricochet Pulse)**：\n  - 全队【投射物 (`projectile`)】弹丸在触碰墙壁或障碍时不再立刻消散，而是进行最多 **2 次墙壁反弹**并提速 50% 继续索敌 (`ricochet: 2`)。",
+          "eight": "- **双联重膛炮口 (Twin Cannon Volley)**：\n  - 每次释放【投射物 (`projectile`)】招式额外多发射 **+1 枚炮弹** (`moves.projectile.count: 1`)；\n  - 全队主体直接招式伤害永久提升 **+20%** (`firstDamage: 1.2`)。"
+        }
+      }
+    },
+    {
+      "root": 694,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "electricHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "sunStats": 0.2,
+        "rainSpeed": 0.25,
+        "moves": {
+          "chain": {
+            "count": 1,
+            "damage": 1.2
+          }
+        },
+        "electricCrit": 0.15
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.2
+        },
+        "sunIncoming": 1.2,
+        "incomingTypes": {
+          "ground": 1.4,
+          "fighting": 1.4
+        }
+      },
+      "five": {
+        "openingWeather": "sun",
+        "rainDamage": 1.2
+      },
+      "eight": {
+        "kalos": {
+          "solarGold": 2,
+          "critPP": 0.3
+        }
+      },
+      "active": {
+        "kind": "kalos694",
+        "shape": "targets",
+        "power": 0.55,
+        "types": [
+          "electric"
+        ],
+        "count": 8,
+        "slow": 0.5,
+        "heal": 0.12
+      },
+      "estimate": "电连锁期望×1.2×1.075=1.29，晴天敏捷+20%另受现行CD公式影响，雨天×1.548；生命0.8/晴天承伤1.2=有效生命0.667。15次电击或会心取并集，每命中一次只计一次，太阳补贴仍8级才开放。",
+      "notes": [
+        "电连锁期望×1.2×1.075=1.29，晴天敏捷+20%另受现行CD公式影响，雨天×1.548；生命0.8/晴天承伤1.2=有效生命0.667。15次电击或会心取并集，每命中一次只计一次，太阳补贴仍8级才开放。"
+      ],
+      "id": "leader_solar_power_generator",
+      "members": [
+        694,
+        695
+      ],
+      "name": {
+        "zh": "伞蜥光伏充电理财",
+        "en": "Solar Power Volt Generator",
+        "es": "Solar Power Volt Generator"
+      },
+      "source": {
+        "heading": "伞电蜥家族 (Heliolisk Family)",
+        "raw": "\n- **家族成员**：#694 伞电蜥 / #695 光电伞蜥\n- **属性配置**：电 (Electric) / 一般 (Normal)\n- **特性标识**：`leader_solar_power_generator`\n- **特性名称**：**伞蜥光伏充电理财** (Solar Power Volt Generator)\n- **接口映射**：`sunStats`、`rainSpeed`、`rainDamage`、`openingWeather`、`moves.chain`、`electricCrit`、`critPP`、`bankDamage`\n\n#### 【基础被动能力】 (Passive)\n- **全气候伞领发电 (Solar & Rain Conductor)**：\n  - 晴天时全队移速与敏捷各提高 **+20%** (`sunStats: 0.2`)；雨天时全队移速提高 **+25%** (`rainSpeed: 0.25`)；\n  - 全队【连锁 (`chain`)】招式跳跃数 **+1**、伤害提升 **+20%**；【电属性】招式暴击率提升 **+15%** (`electricCrit: 0.15`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **抛物面充电风暴 (Parabolic Charge Z)** · *充能事件：`electricHit`（约 60s 校准）*：\n  - 手动激活引动伞状颈部放电，对全屏随机至多 8 名敌人降下连锁高压雷击 (`blast` 合计 `budget(c) * 0.55`、附带 50% 减速)；\n  - 将吸收的电能转化为团队恢复，为全队回复 **12% 最大生命值**（受 3%/s 预算管辖）。\n\n#### 【能力代价】 (Downside)\n- **干燥皮肤炙烤 (Dry Skin Fragility)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 晴天状态下受到的所有伤害额外提升 **20%** (`sunIncoming: 1.2`)；受到【地面】与【格斗】伤害提升 **40%**。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **光伏开局与暴雨增幅 (Climate Generator)**：\n  - 每场战斗开局强制以 **晴天 (`openingWeather: 'sun'`)** 开幕；若队伍转向雨天作战，全队获得 **+20% 伤害强化** (`rainDamage: 1.2`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **电网余电回收与补贴 (💰 Solar Grid Dividend)**：\n  - 任意攻击触发暴击时有 **30% 概率恢复 1 点 PP** (`critPP: 0.3`)；\n  - 开启太阳能余电补贴：波次中完成至少 15 次电属性/暴击命中，战后结算固定补贴 **+2 金币**（**单场严格封顶 +2G**）。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **全气候伞领发电 (Solar & Rain Conductor)**：",
+            "  - 晴天时全队移速与敏捷各提高 **+20%** (`sunStats: 0.2`)；雨天时全队移速提高 **+25%** (`rainSpeed: 0.25`)；",
+            "  - 全队【连锁 (`chain`)】招式跳跃数 **+1**、伤害提升 **+20%**；【电属性】招式暴击率提升 **+15%** (`electricCrit: 0.15`)。"
+          ],
+          "active": [
+            "- **抛物面充电风暴 (Parabolic Charge Z)** · *充能事件：`electricHit`（约 60s 校准）*：",
+            "  - 手动激活引动伞状颈部放电，对全屏随机至多 8 名敌人降下连锁高压雷击 (`blast` 合计 `budget(c) * 0.55`、附带 50% 减速)；",
+            "  - 将吸收的电能转化为团队恢复，为全队回复 **12% 最大生命值**（受 3%/s 预算管辖）。"
+          ],
+          "cost": [
+            "- **干燥皮肤炙烤 (Dry Skin Fragility)**：",
+            "  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；",
+            "  - 晴天状态下受到的所有伤害额外提升 **20%** (`sunIncoming: 1.2`)；受到【地面】与【格斗】伤害提升 **40%**。"
+          ],
+          "five": [
+            "- **光伏开局与暴雨增幅 (Climate Generator)**：",
+            "  - 每场战斗开局强制以 **晴天 (`openingWeather: 'sun'`)** 开幕；若队伍转向雨天作战，全队获得 **+20% 伤害强化** (`rainDamage: 1.2`)。"
+          ],
+          "eight": [
+            "- **电网余电回收与补贴 (💰 Solar Grid Dividend)**：",
+            "  - 任意攻击触发暴击时有 **30% 概率恢复 1 点 PP** (`critPP: 0.3`)；",
+            "  - 开启太阳能余电补贴：波次中完成至少 15 次电属性/暴击命中，战后结算固定补贴 **+2 金币**（**单场严格封顶 +2G**）。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **全气候伞领发电 (Solar & Rain Conductor)**：\n  - 晴天时全队移速与敏捷各提高 **+20%** (`sunStats: 0.2`)；雨天时全队移速提高 **+25%** (`rainSpeed: 0.25`)；\n  - 全队【连锁 (`chain`)】招式跳跃数 **+1**、伤害提升 **+20%**；【电属性】招式暴击率提升 **+15%** (`electricCrit: 0.15`)。",
+          "active": "- **抛物面充电风暴 (Parabolic Charge Z)** · *充能事件：`electricHit`（约 60s 校准）*：\n  - 手动激活引动伞状颈部放电，对全屏随机至多 8 名敌人降下连锁高压雷击 (`blast` 合计 `budget(c) * 0.55`、附带 50% 减速)；\n  - 将吸收的电能转化为团队恢复，为全队回复 **12% 最大生命值**（受 3%/s 预算管辖）。",
+          "cost": "- **干燥皮肤炙烤 (Dry Skin Fragility)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 晴天状态下受到的所有伤害额外提升 **20%** (`sunIncoming: 1.2`)；受到【地面】与【格斗】伤害提升 **40%**。",
+          "five": "- **光伏开局与暴雨增幅 (Climate Generator)**：\n  - 每场战斗开局强制以 **晴天 (`openingWeather: 'sun'`)** 开幕；若队伍转向雨天作战，全队获得 **+20% 伤害强化** (`rainDamage: 1.2`)。",
+          "eight": "- **电网余电回收与补贴 (💰 Solar Grid Dividend)**：\n  - 任意攻击触发暴击时有 **30% 概率恢复 1 点 PP** (`critPP: 0.3`)；\n  - 开启太阳能余电补贴：波次中完成至少 15 次电属性/暴击命中，战后结算固定补贴 **+2 金币**（**单场严格封顶 +2G**）。"
+        }
+      }
+    },
+    {
+      "root": 696,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "meleeHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "recoilImmune": true,
+        "stats": {
+          "defense": 0.2
+        },
+        "moves": {
+          "melee": {
+            "damage": 1.3
+          },
+          "dash": {
+            "damage": 1.2
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.15
+        },
+        "incomingTypes": {
+          "ice": 1.35,
+          "fighting": 1.35,
+          "fairy": 1.35
+        }
+      },
+      "five": {
+        "heavyFury": true,
+        "kalos": {
+          "meleeShield": 0.05
+        }
+      },
+      "eight": {
+        "moves": {
+          "melee": {
+            "critMul": 2
+          }
+        },
+        "stunVulnerable": 0.25
+      },
+      "active": {
+        "kind": "kalos696",
+        "shape": "rush",
+        "power": 0.6,
+        "types": [
+          "rock",
+          "dragon"
+        ],
+        "range": 750,
+        "knock": 400,
+        "stun": 2
+      },
+      "estimate": "受重伤后近战1.3×1.25=1.625，眩晕后2.031；暴伤2倍需有会心来源才兑现。5%护盾每0.5秒、每施法一次；反冲免疫不免敌方直接攻击或所有地形伤害。",
+      "notes": [
+        "受重伤后近战1.3×1.25=1.625，眩晕后2.031；暴伤2倍需有会心来源才兑现。5%护盾每0.5秒、每施法一次；反冲免疫不免敌方直接攻击或所有地形伤害。"
+      ],
+      "id": "leader_strong_jaw_tyrant_chomp",
+      "members": [
+        696,
+        697
+      ],
+      "name": {
+        "zh": "强壮之颚硬头暴君",
+        "en": "Strong Jaw Tyrant Chomp",
+        "es": "Strong Jaw Tyrant Chomp"
+      },
+      "source": {
+        "heading": "宝宝暴龙家族 (Tyrunt Family)",
+        "raw": "\n- **家族成员**：#696 宝宝暴龙 / #697 怪颚龙\n- **属性配置**：岩石 (Rock) / 龙 (Dragon)\n- **特性标识**：`leader_strong_jaw_tyrant_chomp`\n- **特性名称**：**强壮之颚硬头暴君** (Strong Jaw Tyrant Chomp)\n- **接口映射**：`moves.melee`、`moves.dash`、`stats.defense`、`recoilImmune`、`heavyFury`、`meleeShieldGain`、`stunVulnerable`\n\n#### 【基础被动能力】 (Passive)\n- **硬脑袋与暴君巨颚 (Rock Head & Strong Jaw)**：\n  - 全队免疫冲撞/环境等反伤效果 (`recoilImmune: true`)，物理防御提升 **+20%**；\n  - 【近战 (`melee`)】招式伤害提升 **+30%**，【突进 (`dash`)】招式伤害提升 **+20%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **诸刃霸王龙暴冲 (Tyrant Head Smash Z)** · *充能事件：`meleeHit`（约 60s 校准）*：\n  - 手动激活化身远古暴君向前方 750 距离发起全速重撞 (`dash`，造成 `budget(c) * 0.65` 岩石/龙伤害)；\n  - 将沿途敌人猛烈击飞 400 距离，附加 **2 秒眩晕** (`stun`，BOSS 减半)。\n\n#### 【能力代价】 (Downside)\n- **巨兽沉步与多属性弱点 (Apex Predatory Flaw)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 受到【冰属性】、【格斗属性】与【妖精属性】伤害提升 **35%** (`incomingTypes: { ice: 1.35, fighting: 1.35, fairy: 1.35 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **暴怒痛击护盾 (Heavy Fury Shield)**：\n  - 单次受击损失 >=20% 最大生命时，后续 4 秒伤害提高 **+25%** (`heavyFury: true`)；\n  - 【近战 (`melee`)】命中敌人时立即获取 **5% MaxHP 护体白盾**（受 40% 总盾上限保护，复用 `meleeShieldGain`）。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **咬碎暴君裁决 (Jaw Crunch Execution)**：\n  - 全队【近战 (`melee`)】暴击伤害倍率由 1.5× 提升至 **2.0×** (`moves.melee.critMul: 2.0`)；\n  - 对处于眩晕 (`classStunT`) 状态的敌人伤害再提高 **+25%** (`stunVulnerable: 0.25`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **硬脑袋与暴君巨颚 (Rock Head & Strong Jaw)**：",
+            "  - 全队免疫冲撞/环境等反伤效果 (`recoilImmune: true`)，物理防御提升 **+20%**；",
+            "  - 【近战 (`melee`)】招式伤害提升 **+30%**，【突进 (`dash`)】招式伤害提升 **+20%**。"
+          ],
+          "active": [
+            "- **诸刃霸王龙暴冲 (Tyrant Head Smash Z)** · *充能事件：`meleeHit`（约 60s 校准）*：",
+            "  - 手动激活化身远古暴君向前方 750 距离发起全速重撞 (`dash`，造成 `budget(c) * 0.65` 岩石/龙伤害)；",
+            "  - 将沿途敌人猛烈击飞 400 距离，附加 **2 秒眩晕** (`stun`，BOSS 减半)。"
+          ],
+          "cost": [
+            "- **巨兽沉步与多属性弱点 (Apex Predatory Flaw)**：",
+            "  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；",
+            "  - 受到【冰属性】、【格斗属性】与【妖精属性】伤害提升 **35%** (`incomingTypes: { ice: 1.35, fighting: 1.35, fairy: 1.35 }`)。"
+          ],
+          "five": [
+            "- **暴怒痛击护盾 (Heavy Fury Shield)**：",
+            "  - 单次受击损失 >=20% 最大生命时，后续 4 秒伤害提高 **+25%** (`heavyFury: true`)；",
+            "  - 【近战 (`melee`)】命中敌人时立即获取 **5% MaxHP 护体白盾**（受 40% 总盾上限保护，复用 `meleeShieldGain`）。"
+          ],
+          "eight": [
+            "- **咬碎暴君裁决 (Jaw Crunch Execution)**：",
+            "  - 全队【近战 (`melee`)】暴击伤害倍率由 1.5× 提升至 **2.0×** (`moves.melee.critMul: 2.0`)；",
+            "  - 对处于眩晕 (`classStunT`) 状态的敌人伤害再提高 **+25%** (`stunVulnerable: 0.25`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **硬脑袋与暴君巨颚 (Rock Head & Strong Jaw)**：\n  - 全队免疫冲撞/环境等反伤效果 (`recoilImmune: true`)，物理防御提升 **+20%**；\n  - 【近战 (`melee`)】招式伤害提升 **+30%**，【突进 (`dash`)】招式伤害提升 **+20%**。",
+          "active": "- **诸刃霸王龙暴冲 (Tyrant Head Smash Z)** · *充能事件：`meleeHit`（约 60s 校准）*：\n  - 手动激活化身远古暴君向前方 750 距离发起全速重撞 (`dash`，造成 `budget(c) * 0.65` 岩石/龙伤害)；\n  - 将沿途敌人猛烈击飞 400 距离，附加 **2 秒眩晕** (`stun`，BOSS 减半)。",
+          "cost": "- **巨兽沉步与多属性弱点 (Apex Predatory Flaw)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 受到【冰属性】、【格斗属性】与【妖精属性】伤害提升 **35%** (`incomingTypes: { ice: 1.35, fighting: 1.35, fairy: 1.35 }`)。",
+          "five": "- **暴怒痛击护盾 (Heavy Fury Shield)**：\n  - 单次受击损失 >=20% 最大生命时，后续 4 秒伤害提高 **+25%** (`heavyFury: true`)；\n  - 【近战 (`melee`)】命中敌人时立即获取 **5% MaxHP 护体白盾**（受 40% 总盾上限保护，复用 `meleeShieldGain`）。",
+          "eight": "- **咬碎暴君裁决 (Jaw Crunch Execution)**：\n  - 全队【近战 (`melee`)】暴击伤害倍率由 1.5× 提升至 **2.0×** (`moves.melee.critMul: 2.0`)；\n  - 对处于眩晕 (`classStunT`) 状态的敌人伤害再提高 **+25%** (`stunVulnerable: 0.25`)。"
+        }
+      }
+    },
+    {
+      "root": 698,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "iceHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "weather": "snow",
+        "snowSpeed": 0.2,
+        "kalos": {
+          "iceAura": 200
+        }
+      },
+      "cost": {
+        "incomingTypes": {
+          "fighting": 1.75,
+          "steel": 1.75
+        },
+        "stats": {
+          "spd": -0.15
+        }
+      },
+      "five": {
+        "frozenVulnerable": 0.2,
+        "kalos": {
+          "freezeBeam": 0.4
+        }
+      },
+      "eight": {
+        "frozenBeam": 1.3,
+        "kalos": {
+          "zRegen": 0.03
+        }
+      },
+      "active": {
+        "kind": "kalos698",
+        "shape": "nova",
+        "power": 0.5,
+        "types": [
+          "ice"
+        ],
+        "clear": true,
+        "freeze": 2,
+        "shield": 0.25,
+        "duration": 5
+      },
+      "estimate": "净移速×1.05，冰光环总输出定每秒主招10秒预算1%，只为补充充能；受控光束8级×1.56。光束15%冻结最短同目标0.5秒判定，BOSS控制减半，避免连续光柱无限锁死。",
+      "notes": [
+        "净移速×1.05，冰光环总输出定每秒主招10秒预算1%，只为补充充能；受控光束8级×1.56。光束15%冻结最短同目标0.5秒判定，BOSS控制减半，避免连续光柱无限锁死。"
+      ],
+      "id": "leader_refrigerate_aurora_veil",
+      "members": [
+        698,
+        699
+      ],
+      "name": {
+        "zh": "冰冻皮肤极光降雪",
+        "en": "Refrigerate Aurora Veil",
+        "es": "Refrigerate Aurora Veil"
+      },
+      "source": {
+        "heading": "冰雪龙家族 (Aurorus Family)",
+        "raw": "\n- **家族成员**：#698 冰雪龙 / #699 冰雪巨龙\n- **属性配置**：岩石 (Rock) / 冰 (Ice)\n- **特性标识**：`leader_refrigerate_aurora_veil`\n- **特性名称**：**冰冻皮肤极光降雪** (Refrigerate Aurora Veil)\n- **接口映射**：`weather: 'snow'`、`snowSpeed`、`iceAura`、`beamFreeze`、`frozenVulnerable`、`frozenBeam`、`blizzardHeal`\n\n#### 【基础被动能力】 (Passive)\n- **永久降雪与寒冰领域 (Perpetual Snow Warning)**：\n  - 战斗开局强制持续触发 **降雪天气 (`weather: 'snow'`)**；雪天时全队移速提高 **+20%** (`snowSpeed: 0.2`)；\n  - 队长周围展开 **200 范围寒冰光环** (`iceAura: 200`)：每秒对环内敌人造成 30% 减速并附带冰属性伤害触发冰系充能。\n\n#### 【累计特殊能力】 (Cadence)\n- **极光冰幕零度劫 (Aurora Frost Veil Z)** · *充能事件：`iceHit`（约 60s 校准）*：\n  - 手动激活清除全屏敌弹并引爆大范围极光冻波 (`blast` 伤害 `budget(c) * 0.50`，附加 2 秒冻结眩晕)；\n  - 极光降下期间全队获得 **25% MaxHP 极光冰盾**持续 5 秒。\n\n#### 【能力代价】 (Downside)\n- **双四倍致命破甲 (Double Quadruple Weakness)**：\n  - 受到【格斗属性】与【钢属性】伤害提升 **75%** (`incomingTypes: { fighting: 1.75, steel: 1.75 }`)；\n  - 全队移动速度基础降低 **15%** (`stats.spd: -0.15`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **极光冰冻射线 (Freeze Beam)**：\n  - 全队【能量柱 (`beam`)】攻击附带 **40% 寒霜减速**，且每次命中拥有 **15% 概率瞬间冻停目标 0.7 秒** (`beamFreeze: 0.4`)；\n  - 攻击处于冻结/眩晕状态的目标伤害增加 **+20%** (`frozenVulnerable: 0.2`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **绝对冻伤碎裂 (Shatter Aurora)**：\n  - 【能量柱 (`beam`)】击中处于冻结或眩晕状态的敌人时伤害提升至 **1.3 倍** (`frozenBeam: 1.3`)；\n  - 极光 Z 招式开启期间全队每秒恢复 **3% 最大生命值** (`blizzardHeal: 0.03`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **永久降雪与寒冰领域 (Perpetual Snow Warning)**：",
+            "  - 战斗开局强制持续触发 **降雪天气 (`weather: 'snow'`)**；雪天时全队移速提高 **+20%** (`snowSpeed: 0.2`)；",
+            "  - 队长周围展开 **200 范围寒冰光环** (`iceAura: 200`)：每秒对环内敌人造成 30% 减速并附带冰属性伤害触发冰系充能。"
+          ],
+          "active": [
+            "- **极光冰幕零度劫 (Aurora Frost Veil Z)** · *充能事件：`iceHit`（约 60s 校准）*：",
+            "  - 手动激活清除全屏敌弹并引爆大范围极光冻波 (`blast` 伤害 `budget(c) * 0.50`，附加 2 秒冻结眩晕)；",
+            "  - 极光降下期间全队获得 **25% MaxHP 极光冰盾**持续 5 秒。"
+          ],
+          "cost": [
+            "- **双四倍致命破甲 (Double Quadruple Weakness)**：",
+            "  - 受到【格斗属性】与【钢属性】伤害提升 **75%** (`incomingTypes: { fighting: 1.75, steel: 1.75 }`)；",
+            "  - 全队移动速度基础降低 **15%** (`stats.spd: -0.15`)。"
+          ],
+          "five": [
+            "- **极光冰冻射线 (Freeze Beam)**：",
+            "  - 全队【能量柱 (`beam`)】攻击附带 **40% 寒霜减速**，且每次命中拥有 **15% 概率瞬间冻停目标 0.7 秒** (`beamFreeze: 0.4`)；",
+            "  - 攻击处于冻结/眩晕状态的目标伤害增加 **+20%** (`frozenVulnerable: 0.2`)。"
+          ],
+          "eight": [
+            "- **绝对冻伤碎裂 (Shatter Aurora)**：",
+            "  - 【能量柱 (`beam`)】击中处于冻结或眩晕状态的敌人时伤害提升至 **1.3 倍** (`frozenBeam: 1.3`)；",
+            "  - 极光 Z 招式开启期间全队每秒恢复 **3% 最大生命值** (`blizzardHeal: 0.03`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **永久降雪与寒冰领域 (Perpetual Snow Warning)**：\n  - 战斗开局强制持续触发 **降雪天气 (`weather: 'snow'`)**；雪天时全队移速提高 **+20%** (`snowSpeed: 0.2`)；\n  - 队长周围展开 **200 范围寒冰光环** (`iceAura: 200`)：每秒对环内敌人造成 30% 减速并附带冰属性伤害触发冰系充能。",
+          "active": "- **极光冰幕零度劫 (Aurora Frost Veil Z)** · *充能事件：`iceHit`（约 60s 校准）*：\n  - 手动激活清除全屏敌弹并引爆大范围极光冻波 (`blast` 伤害 `budget(c) * 0.50`，附加 2 秒冻结眩晕)；\n  - 极光降下期间全队获得 **25% MaxHP 极光冰盾**持续 5 秒。",
+          "cost": "- **双四倍致命破甲 (Double Quadruple Weakness)**：\n  - 受到【格斗属性】与【钢属性】伤害提升 **75%** (`incomingTypes: { fighting: 1.75, steel: 1.75 }`)；\n  - 全队移动速度基础降低 **15%** (`stats.spd: -0.15`)。",
+          "five": "- **极光冰冻射线 (Freeze Beam)**：\n  - 全队【能量柱 (`beam`)】攻击附带 **40% 寒霜减速**，且每次命中拥有 **15% 概率瞬间冻停目标 0.7 秒** (`beamFreeze: 0.4`)；\n  - 攻击处于冻结/眩晕状态的目标伤害增加 **+20%** (`frozenVulnerable: 0.2`)。",
+          "eight": "- **绝对冻伤碎裂 (Shatter Aurora)**：\n  - 【能量柱 (`beam`)】击中处于冻结或眩晕状态的敌人时伤害提升至 **1.3 倍** (`frozenBeam: 1.3`)；\n  - 极光 Z 招式开启期间全队每秒恢复 **3% 最大生命值** (`blizzardHeal: 0.03`)。"
+        }
+      }
+    },
+    {
+      "root": 701,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "knock",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "spd": 0.25
+        },
+        "moves": {
+          "dash": {
+            "damage": 1.35,
+            "knock": 1.5
+          }
+        },
+        "knockCrit": true
+      },
+      "cost": {
+        "noItems": true,
+        "incomingTypes": {
+          "electric": 1.4,
+          "fairy": 1.4
+        }
+      },
+      "five": {
+        "dashGuard": 0.4,
+        "speedDash": 0.04
+      },
+      "eight": {
+        "dashExecute": 0.25,
+        "critMultiplier": 1.85
+      },
+      "active": {
+        "kind": "kalos701",
+        "shape": "targetNova",
+        "power": 0.6,
+        "types": [
+          "fighting",
+          "flying"
+        ],
+        "radius": 260,
+        "stun": 2,
+        "knock": 250
+      },
+      "estimate": "基础突进1.35，标准化基础速度转伤最多40%，击退目标必暴：8级上限1.35×1.4×1.85=3.497。仅队长禁携带道具，PP、原碰撞索敌和地形边界保留；处决不作用精英/BOSS。",
+      "notes": [
+        "基础突进1.35，标准化基础速度转伤最多40%，击退目标必暴：8级上限1.35×1.4×1.85=3.497。仅队长禁携带道具，PP、原碰撞索敌和地形边界保留；处决不作用精英/BOSS。"
+      ],
+      "id": "leader_unburden_flying_press",
+      "members": [
+        701
+      ],
+      "name": {
+        "zh": "轻装空中飞身重压",
+        "en": "Unburden Flying Press",
+        "es": "Unburden Flying Press"
+      },
+      "source": {
+        "heading": "摔角鹰人家族 (Hawlucha Family)",
+        "raw": "\n- **家族成员**：#701 摔角鹰人\n- **属性配置**：格斗 (Fighting) / 飞行 (Flying)\n- **特性标识**：`leader_unburden_flying_press`\n- **特性名称**：**轻装空中飞身重压** (Unburden Flying Press)\n- **接口映射**：`noItems`、`stats.spd`、`moves.dash`、`knockCrit`、`dashGuard`、`speedDash`、`dashExecute`、`critMultiplier`\n\n#### 【基础被动能力】 (Passive)\n- **擂台无双高飞轻装 (Unburden Ring Stunt)**：\n  - 全队移动速度提升 **+25%** (`stats.spd: 0.25`)；\n  - 全队【突进 (`dash`)】招式伤害提升 **+35%**、击退力提升 **+50%**；\n  - 攻击处于**被击退滑动中 (`kx/ky`)** 的敌人时，**必定触发暴击** (`knockCrit: true`)！\n\n#### 【累计特殊能力】 (Cadence)\n- **究极飞身重压 (Flying Press Impact Z)** · *充能事件：`knock`（约 60s 校准）*：\n  - 手动激活高飞跃起扑向高血目标并引爆 260 范围十字摔角冲击 (`blast` `budget(c) * 0.65`)；\n  - 震飞周围敌群并附加 **2 秒眩晕** (`stun`，BOSS 减半)。\n\n#### 【能力代价】 (Downside)\n- **极简轻装禁带道具 (Unburden No-Items)**：\n  - 队长严格贯彻轻装法则，**无法享受背包中任何携带道具的效果加成** (`noItems: true`)；\n  - 受到【电属性】与【妖精属性】伤害提升 **40%** (`incomingTypes: { electric: 1.4, fairy: 1.4 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **高空助跑加压 (Velocity Press)**：\n  - 施放【突进 (`dash`)】期间获得 **40% 受击减伤** (`dashGuard: 0.4`)；\n  - 全队将自身基础移动速度转化为 `dash` 招式伤害加成（**封顶 +40%**，复用 `speedDash`）。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **冠军飞踹处决 (Champion Pin Execution)**：\n  - 【突进 (`dash`)】击中当前生命值低于 **25%** 的非首领/非精英普通敌人时直接处决斩杀 (`dashExecute: 0.25`)；\n  - 全队暴击倍率提高至 **1.85×** (`critMultiplier: 1.85`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **擂台无双高飞轻装 (Unburden Ring Stunt)**：",
+            "  - 全队移动速度提升 **+25%** (`stats.spd: 0.25`)；",
+            "  - 全队【突进 (`dash`)】招式伤害提升 **+35%**、击退力提升 **+50%**；",
+            "  - 攻击处于**被击退滑动中 (`kx/ky`)** 的敌人时，**必定触发暴击** (`knockCrit: true`)！"
+          ],
+          "active": [
+            "- **究极飞身重压 (Flying Press Impact Z)** · *充能事件：`knock`（约 60s 校准）*：",
+            "  - 手动激活高飞跃起扑向高血目标并引爆 260 范围十字摔角冲击 (`blast` `budget(c) * 0.65`)；",
+            "  - 震飞周围敌群并附加 **2 秒眩晕** (`stun`，BOSS 减半)。"
+          ],
+          "cost": [
+            "- **极简轻装禁带道具 (Unburden No-Items)**：",
+            "  - 队长严格贯彻轻装法则，**无法享受背包中任何携带道具的效果加成** (`noItems: true`)；",
+            "  - 受到【电属性】与【妖精属性】伤害提升 **40%** (`incomingTypes: { electric: 1.4, fairy: 1.4 }`)。"
+          ],
+          "five": [
+            "- **高空助跑加压 (Velocity Press)**：",
+            "  - 施放【突进 (`dash`)】期间获得 **40% 受击减伤** (`dashGuard: 0.4`)；",
+            "  - 全队将自身基础移动速度转化为 `dash` 招式伤害加成（**封顶 +40%**，复用 `speedDash`）。"
+          ],
+          "eight": [
+            "- **冠军飞踹处决 (Champion Pin Execution)**：",
+            "  - 【突进 (`dash`)】击中当前生命值低于 **25%** 的非首领/非精英普通敌人时直接处决斩杀 (`dashExecute: 0.25`)；",
+            "  - 全队暴击倍率提高至 **1.85×** (`critMultiplier: 1.85`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **擂台无双高飞轻装 (Unburden Ring Stunt)**：\n  - 全队移动速度提升 **+25%** (`stats.spd: 0.25`)；\n  - 全队【突进 (`dash`)】招式伤害提升 **+35%**、击退力提升 **+50%**；\n  - 攻击处于**被击退滑动中 (`kx/ky`)** 的敌人时，**必定触发暴击** (`knockCrit: true`)！",
+          "active": "- **究极飞身重压 (Flying Press Impact Z)** · *充能事件：`knock`（约 60s 校准）*：\n  - 手动激活高飞跃起扑向高血目标并引爆 260 范围十字摔角冲击 (`blast` `budget(c) * 0.65`)；\n  - 震飞周围敌群并附加 **2 秒眩晕** (`stun`，BOSS 减半)。",
+          "cost": "- **极简轻装禁带道具 (Unburden No-Items)**：\n  - 队长严格贯彻轻装法则，**无法享受背包中任何携带道具的效果加成** (`noItems: true`)；\n  - 受到【电属性】与【妖精属性】伤害提升 **40%** (`incomingTypes: { electric: 1.4, fairy: 1.4 }`)。",
+          "five": "- **高空助跑加压 (Velocity Press)**：\n  - 施放【突进 (`dash`)】期间获得 **40% 受击减伤** (`dashGuard: 0.4`)；\n  - 全队将自身基础移动速度转化为 `dash` 招式伤害加成（**封顶 +40%**，复用 `speedDash`）。",
+          "eight": "- **冠军飞踹处决 (Champion Pin Execution)**：\n  - 【突进 (`dash`)】击中当前生命值低于 **25%** 的非首领/非精英普通敌人时直接处决斩杀 (`dashExecute: 0.25`)；\n  - 全队暴击倍率提高至 **1.85×** (`critMultiplier: 1.85`)。"
+        }
+      }
+    },
+    {
+      "root": 702,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "electricHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "kalos": {
+          "fruitChance": 0.12
+        },
+        "moves": {
+          "chain": {
+            "damage": 1.2
+          }
+        },
+        "electricCrit": 0.2
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.2
+        },
+        "incomingTypes": {
+          "ground": 1.5,
+          "poison": 1.4
+        }
+      },
+      "five": {
+        "kalos": {
+          "foodSpeed": 0.3,
+          "critPP": 0.35
+        }
+      },
+      "eight": {
+        "kalos": {
+          "interestDivisor": 8,
+          "interestCap": 1
+        }
+      },
+      "active": {
+        "kind": "kalos702",
+        "shape": "targets",
+        "power": 0.5,
+        "types": [
+          "electric"
+        ],
+        "count": 8,
+        "stun": 1.5,
+        "slow": 0.5,
+        "pp": 2
+      },
+      "estimate": "电连锁会心期望×1.32；35%暴击返PP按20%会心约每命中7%，密集群怪试玩每成员最短0.5秒一次。8G计息+上限6比常规最多多2G，保留与训练家潜能同一利息结算，不额外再算一次。",
+      "notes": [
+        "电连锁会心期望×1.32；35%暴击返PP按20%会心约每命中7%，密集群怪试玩每成员最短0.5秒一次。8G计息+上限6比常规最多多2G，保留与训练家潜能同一利息结算，不额外再算一次。"
+      ],
+      "id": "leader_cheek_pouch_nuzzle",
+      "members": [
+        702
+      ],
+      "name": {
+        "zh": "颊囊储蓄与蹭蹭麻痹",
+        "en": "Cheek Pouch Voltaic",
+        "es": "Cheek Pouch Voltaic"
+      },
+      "source": {
+        "heading": "咚咚鼠家族 (Dedenne Family)",
+        "raw": "\n- **家族成员**：#702 咚咚鼠\n- **属性配置**：电 (Electric) / 妖精 (Fairy)\n- **特性标识**：`leader_cheek_pouch_nuzzle`\n- **特性名称**：**颊囊储蓄与蹭蹭麻痹** (Cheek Pouch Voltaic)\n- **接口映射**：`fruitChance`、`fruitSpeed`、`electricCrit`、`moves.chain`、`critPP`、`interestDivisor`\n\n#### 【基础被动能力】 (Passive)\n- **颊囊藏果与碰触电击 (Cheek Pouch Berry)**：\n  - 击杀敌人有 **12% 概率掉落电气果实**（拾取恢复 **8% 已损血 + 1 PP + 3 秒移速加成**，复用 `fruitChance`）；\n  - 全队【连锁 (`chain`)】伤害提升 **+20%**，所有【电属性】招式暴击率额外提升 **+20%** (`electricCrit: 0.2`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **麻痹脸颊大充电 (Nuzzle Spark Volley Z)** · *充能事件：`electricHit`（约 60s 校准）*：\n  - 手动激活向全屏随机至多 8 个敌人发射高周波蹭脸电击 (`blast`，合计总伤 `budget(c) * 0.50`、强制 **1.5 秒眩晕** 与 50% 减速)；\n  - 为全队所有宝可梦的当前招式槽立刻回复 **2 点 PP**。\n\n#### 【能力代价】 (Downside)\n- **鼠躯短小弱地毒 (Tiny Rodent Fragility)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【地面属性】伤害提升 **50%**，【毒属性】伤害提升 **40%**。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **暴击充能循环 (Static PP Loop)**：\n  - 任意暴击命中时有 **35% 概率回复 1 点 PP** (`critPP: 0.35`)；拾取果实的移速加成提高至 **+30%** (`fruitSpeed: 0.3`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **松鼠小金库 (💰 Cheek Pouch Savings)**：\n  - 开启颊囊微额储蓄增益：战后银行利息计算除数放宽（每持有 **8G 即可产出 1G 利息**，取代原本每 10G 计息；且利息上限由 5G 小幅放宽至 6G）。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **颊囊藏果与碰触电击 (Cheek Pouch Berry)**：",
+            "  - 击杀敌人有 **12% 概率掉落电气果实**（拾取恢复 **8% 已损血 + 1 PP + 3 秒移速加成**，复用 `fruitChance`）；",
+            "  - 全队【连锁 (`chain`)】伤害提升 **+20%**，所有【电属性】招式暴击率额外提升 **+20%** (`electricCrit: 0.2`)。"
+          ],
+          "active": [
+            "- **麻痹脸颊大充电 (Nuzzle Spark Volley Z)** · *充能事件：`electricHit`（约 60s 校准）*：",
+            "  - 手动激活向全屏随机至多 8 个敌人发射高周波蹭脸电击 (`blast`，合计总伤 `budget(c) * 0.50`、强制 **1.5 秒眩晕** 与 50% 减速)；",
+            "  - 为全队所有宝可梦的当前招式槽立刻回复 **2 点 PP**。"
+          ],
+          "cost": [
+            "- **鼠躯短小弱地毒 (Tiny Rodent Fragility)**：",
+            "  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；",
+            "  - 受到【地面属性】伤害提升 **50%**，【毒属性】伤害提升 **40%**。"
+          ],
+          "five": [
+            "- **暴击充能循环 (Static PP Loop)**：",
+            "  - 任意暴击命中时有 **35% 概率回复 1 点 PP** (`critPP: 0.35`)；拾取果实的移速加成提高至 **+30%** (`fruitSpeed: 0.3`)。"
+          ],
+          "eight": [
+            "- **松鼠小金库 (💰 Cheek Pouch Savings)**：",
+            "  - 开启颊囊微额储蓄增益：战后银行利息计算除数放宽（每持有 **8G 即可产出 1G 利息**，取代原本每 10G 计息；且利息上限由 5G 小幅放宽至 6G）。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **颊囊藏果与碰触电击 (Cheek Pouch Berry)**：\n  - 击杀敌人有 **12% 概率掉落电气果实**（拾取恢复 **8% 已损血 + 1 PP + 3 秒移速加成**，复用 `fruitChance`）；\n  - 全队【连锁 (`chain`)】伤害提升 **+20%**，所有【电属性】招式暴击率额外提升 **+20%** (`electricCrit: 0.2`)。",
+          "active": "- **麻痹脸颊大充电 (Nuzzle Spark Volley Z)** · *充能事件：`electricHit`（约 60s 校准）*：\n  - 手动激活向全屏随机至多 8 个敌人发射高周波蹭脸电击 (`blast`，合计总伤 `budget(c) * 0.50`、强制 **1.5 秒眩晕** 与 50% 减速)；\n  - 为全队所有宝可梦的当前招式槽立刻回复 **2 点 PP**。",
+          "cost": "- **鼠躯短小弱地毒 (Tiny Rodent Fragility)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【地面属性】伤害提升 **50%**，【毒属性】伤害提升 **40%**。",
+          "five": "- **暴击充能循环 (Static PP Loop)**：\n  - 任意暴击命中时有 **35% 概率回复 1 点 PP** (`critPP: 0.35`)；拾取果实的移速加成提高至 **+30%** (`fruitSpeed: 0.3`)。",
+          "eight": "- **松鼠小金库 (💰 Cheek Pouch Savings)**：\n  - 开启颊囊微额储蓄增益：战后银行利息计算除数放宽（每持有 **8G 即可产出 1G 利息**，取代原本每 10G 计息；且利息上限由 5G 小幅放宽至 6G）。"
+        }
+      }
+    },
+    {
+      "root": 703,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "orbitHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "defense": 0.35,
+          "spdef": 0.35
+        },
+        "moves": {
+          "orbit": {
+            "count": 1,
+            "damage": 1.25
+          }
+        },
+        "orbitIntercept": true
+      },
+      "cost": {
+        "incomingTypes": {
+          "steel": 1.8
+        },
+        "stats": {
+          "spd": -0.2,
+          "atk": -0.2
+        }
+      },
+      "five": {
+        "spdefOrbit": 0.4,
+        "shieldOrbit": 1.25
+      },
+      "eight": {
+        "deathHeal": 0.35
+      },
+      "active": {
+        "kind": "kalos703",
+        "shape": "nova",
+        "power": 0.4,
+        "types": [
+          "rock",
+          "fairy"
+        ],
+        "shield": 0.4,
+        "count": 16
+      },
+      "estimate": "双防1.35，等双攻特殊环绕因物攻代价×0.93；原n+1数量收益再×1.25。8级有盾魔抗转伤最高1.4×1.25令每球×2.034；满盾Z45%预算降40%，每人结实每战仅一次。",
+      "notes": [
+        "双防1.35，等双攻特殊环绕因物攻代价×0.93；原n+1数量收益再×1.25。8级有盾魔抗转伤最高1.4×1.25令每球×2.034；满盾Z45%预算降40%，每人结实每战仅一次。"
+      ],
+      "id": "leader_sturdy_gem_orbit",
+      "members": [
+        703
+      ],
+      "name": {
+        "zh": "结实原石与钻石卫星",
+        "en": "Sturdy Gem Orbit",
+        "es": "Sturdy Gem Orbit"
+      },
+      "source": {
+        "heading": "小碎钻家族 (Carbink Family)",
+        "raw": "\n- **家族成员**：#703 小碎钻\n- **属性配置**：岩石 (Rock) / 妖精 (Fairy)\n- **特性标识**：`leader_sturdy_gem_orbit`\n- **特性名称**：**结实原石与钻石卫星** (Sturdy Gem Orbit)\n- **接口映射**：`stats.defense`、`stats.spdef`、`moves.orbit`、`orbitIntercept`、`spdefOrbit`、`shieldOrbit`、`deathHeal`\n\n#### 【基础被动能力】 (Passive)\n- **原石双抗与卫星护卫 (Gemstone Orbit Shield)**：\n  - 全队物理防御与特殊防御同时提升 **+35%**；\n  - 全队【环绕 (`orbit`)】招式法球数 **+1**、伤害提升 **+25%**；且环绕球体接触敌方弹幕时**直接拦截销毁** (`orbitIntercept: true`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **结晶钻石绝对壁垒 (Crystal Diamond Barrier Z)** · *充能事件：`orbitHit`（约 60s 校准）*：\n  - 手动激活为全队赋予 **40% 最大生命值的满额钻石白盾**持续 5 秒；\n  - 同时令当前所有环绕星体向外迸发一轮 360° 宝石碎屑爆发 (`nova`，合计总伤 `budget(c) * 0.45`)。\n\n#### 【能力代价】 (Downside)\n- **四倍弱钢与笨重石体 (Quadruple Steel Weakness)**：\n  - 受到【钢属性】伤害提升 **80%** (`incomingTypes.steel: 1.8`)；\n  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)，物理攻击降低 **20%** (`stats.atk: -0.2`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **晶盾魔抗共鸣 (SpDef & Shield Orbit)**：\n  - 全队将自身基础特殊防御按比例转化为【环绕 (`orbit`)】招式伤害（**封顶 +40%**，复用 `spdefOrbit`）；\n  - 宝可梦身上存有白盾期间，环绕招式伤害额外提升 **+25%** (`shieldOrbit: 1.25`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **绝对结实顽石 (Unbreakable Sturdy)**：\n  - 全队每波战斗各自享有 **1 次结实免死救援**：受到致死打击时强制保留存活并立刻回复 **35% 最大生命值**，获得 1.5 秒无敌保护 (`deathHeal: 0.35`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **原石双抗与卫星护卫 (Gemstone Orbit Shield)**：",
+            "  - 全队物理防御与特殊防御同时提升 **+35%**；",
+            "  - 全队【环绕 (`orbit`)】招式法球数 **+1**、伤害提升 **+25%**；且环绕球体接触敌方弹幕时**直接拦截销毁** (`orbitIntercept: true`)。"
+          ],
+          "active": [
+            "- **结晶钻石绝对壁垒 (Crystal Diamond Barrier Z)** · *充能事件：`orbitHit`（约 60s 校准）*：",
+            "  - 手动激活为全队赋予 **40% 最大生命值的满额钻石白盾**持续 5 秒；",
+            "  - 同时令当前所有环绕星体向外迸发一轮 360° 宝石碎屑爆发 (`nova`，合计总伤 `budget(c) * 0.45`)。"
+          ],
+          "cost": [
+            "- **四倍弱钢与笨重石体 (Quadruple Steel Weakness)**：",
+            "  - 受到【钢属性】伤害提升 **80%** (`incomingTypes.steel: 1.8`)；",
+            "  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)，物理攻击降低 **20%** (`stats.atk: -0.2`)。"
+          ],
+          "five": [
+            "- **晶盾魔抗共鸣 (SpDef & Shield Orbit)**：",
+            "  - 全队将自身基础特殊防御按比例转化为【环绕 (`orbit`)】招式伤害（**封顶 +40%**，复用 `spdefOrbit`）；",
+            "  - 宝可梦身上存有白盾期间，环绕招式伤害额外提升 **+25%** (`shieldOrbit: 1.25`)。"
+          ],
+          "eight": [
+            "- **绝对结实顽石 (Unbreakable Sturdy)**：",
+            "  - 全队每波战斗各自享有 **1 次结实免死救援**：受到致死打击时强制保留存活并立刻回复 **35% 最大生命值**，获得 1.5 秒无敌保护 (`deathHeal: 0.35`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **原石双抗与卫星护卫 (Gemstone Orbit Shield)**：\n  - 全队物理防御与特殊防御同时提升 **+35%**；\n  - 全队【环绕 (`orbit`)】招式法球数 **+1**、伤害提升 **+25%**；且环绕球体接触敌方弹幕时**直接拦截销毁** (`orbitIntercept: true`)。",
+          "active": "- **结晶钻石绝对壁垒 (Crystal Diamond Barrier Z)** · *充能事件：`orbitHit`（约 60s 校准）*：\n  - 手动激活为全队赋予 **40% 最大生命值的满额钻石白盾**持续 5 秒；\n  - 同时令当前所有环绕星体向外迸发一轮 360° 宝石碎屑爆发 (`nova`，合计总伤 `budget(c) * 0.45`)。",
+          "cost": "- **四倍弱钢与笨重石体 (Quadruple Steel Weakness)**：\n  - 受到【钢属性】伤害提升 **80%** (`incomingTypes.steel: 1.8`)；\n  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)，物理攻击降低 **20%** (`stats.atk: -0.2`)。",
+          "five": "- **晶盾魔抗共鸣 (SpDef & Shield Orbit)**：\n  - 全队将自身基础特殊防御按比例转化为【环绕 (`orbit`)】招式伤害（**封顶 +40%**，复用 `spdefOrbit`）；\n  - 宝可梦身上存有白盾期间，环绕招式伤害额外提升 **+25%** (`shieldOrbit: 1.25`)。",
+          "eight": "- **绝对结实顽石 (Unbreakable Sturdy)**：\n  - 全队每波战斗各自享有 **1 次结实免死救援**：受到致死打击时强制保留存活并立刻回复 **35% 最大生命值**，获得 1.5 秒无敌保护 (`deathHeal: 0.35`)。"
+        }
+      }
+    },
+    {
+      "root": 704,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "absorb",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "spdef": 0.35
+        },
+        "contactSlow": 0.5,
+        "moves": {
+          "orbit": {
+            "damage": 1.25
+          }
+        },
+        "kalos": {
+          "contactCharge": true
+        }
+      },
+      "cost": {
+        "stats": {
+          "defense": -0.2
+        },
+        "incomingTypes": {
+          "ice": 1.4,
+          "fairy": 1.4
+        }
+      },
+      "five": {
+        "openingWeather": "rain",
+        "rainSpeed": 0.2,
+        "waterCurtain": 180
+      },
+      "eight": {
+        "spdefOrbit": 0.4,
+        "kalos": {
+          "rainRegen": 1.4,
+          "terrainImmune": true
+        }
+      },
+      "active": {
+        "kind": "kalos704",
+        "shape": "nova",
+        "power": 0.55,
+        "types": [
+          "dragon",
+          "water"
+        ],
+        "radius": 260,
+        "rain": 12,
+        "clear": 260,
+        "slow": 0.5,
+        "stun": 1,
+        "shield": 0.25
+      },
+      "estimate": "初始特防有效生命1.35但物防0.8；原环绕仅+15%且缺充能偏低，试玩提高到+25%，并按确认允许近战实际受伤充能；8级魔抗转环绕最多1.4倍，合计1.75。水幕同一弹只减伤一次。",
+      "notes": [
+        "初始特防有效生命1.35但物防0.8；原环绕仅+15%且缺充能偏低，试玩提高到+25%，并按确认允许近战实际受伤充能；8级魔抗转环绕最多1.4倍，合计1.75。水幕同一弹只减伤一次。"
+      ],
+      "id": "leader_hydration_gooey_rain",
+      "members": [
+        704,
+        705,
+        706
+      ],
+      "name": {
+        "zh": "湿润黏滑雨幕巨龙",
+        "en": "Hydration Gooey Rain",
+        "es": "Hydration Gooey Rain"
+      },
+      "source": {
+        "heading": "黏黏宝家族 (Goodra Family)",
+        "raw": "\n- **家族成员**：#704 黏黏宝 / #705 黏美儿 / #706 黏美龙\n- **属性配置**：龙 (Dragon)\n- **特性标识**：`leader_hydration_gooey_rain`\n- **特性名称**：**湿润黏滑雨幕巨龙** (Hydration Gooey Rain)\n- **接口映射**：`stats.spdef`、`contactSlow`、`openingWeather: 'rain'`、`rainSpeed`、`waterCurtain`、`spdefOrbit`、`slowImmune`\n\n#### 【基础被动能力】 (Passive)\n- **龙族软甲与黏滑反制 (Gooey Dragon Hide)**：\n  - 全队基础特殊防御提升 **+35%** (`stats.spdef: 0.35`)；\n  - 敌人以近战接触攻击我方时，会立刻被黏液缠身陷入 **50% 移动减速** 持续 2 秒 (`contactSlow: 0.5`)；\n  - 全队【环绕 (`orbit`)】招式伤害提升 **+15%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **浊流暴雨龙脉 (Muddy Rain Pulse Z)** · *充能事件：`absorb`（约 60s 校准）*：\n  - 手动激活强制在场地降下持续 **12 秒的大雨**，清除周围敌方射弹并引发 260 范围【龙/水】混合冲刷波 (`blast`，伤害 `budget(c) * 0.55`、`slow: 0.5`、`stun: 1`)；\n  - 同时为全队生成 **25% MaxHP 的水幕白盾**持续 5 秒。\n\n#### 【能力代价】 (Downside)\n- **软躯近战劣势 (Soft Physical Flesh)**：\n  - 全队基础物理防御降低 **20%** (`stats.defense: -0.2`)；\n  - 受到【冰属性】与【妖精属性】伤害提升 **40%** (`incomingTypes: { ice: 1.4, fairy: 1.4 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **雨天湿润水幕 (Hydration Curtain)**：\n  - 每场战斗开局以 **雨天 (`openingWeather: 'rain'`)** 开幕，雨天移速提升 **+20%** (`rainSpeed: 0.2`)；\n  - 队长周身展开 **180 半径的黏液缓冲水幕** (`waterCurtain: 180`)：进入水幕的敌方弹丸伤害强制打 **75 折**，减免的伤害直接转化为 Z 充能！\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **魔抗环绕与暴雨新生 (SpDef Orbit & Rain Cure)**：\n  - 将自身基础特殊防御按比例转化为【环绕 (`orbit`)】招式伤害加成（**封顶 +40%**，复用 `spdefOrbit`）；\n  - 全队免疫环境与地形引起的迟缓，且在雨天生命恢复速度提升至 **1.4 倍**。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **龙族软甲与黏滑反制 (Gooey Dragon Hide)**：",
+            "  - 全队基础特殊防御提升 **+35%** (`stats.spdef: 0.35`)；",
+            "  - 敌人以近战接触攻击我方时，会立刻被黏液缠身陷入 **50% 移动减速** 持续 2 秒 (`contactSlow: 0.5`)；",
+            "  - 全队【环绕 (`orbit`)】招式伤害提升 **+15%**。"
+          ],
+          "active": [
+            "- **浊流暴雨龙脉 (Muddy Rain Pulse Z)** · *充能事件：`absorb`（约 60s 校准）*：",
+            "  - 手动激活强制在场地降下持续 **12 秒的大雨**，清除周围敌方射弹并引发 260 范围【龙/水】混合冲刷波 (`blast`，伤害 `budget(c) * 0.55`、`slow: 0.5`、`stun: 1`)；",
+            "  - 同时为全队生成 **25% MaxHP 的水幕白盾**持续 5 秒。"
+          ],
+          "cost": [
+            "- **软躯近战劣势 (Soft Physical Flesh)**：",
+            "  - 全队基础物理防御降低 **20%** (`stats.defense: -0.2`)；",
+            "  - 受到【冰属性】与【妖精属性】伤害提升 **40%** (`incomingTypes: { ice: 1.4, fairy: 1.4 }`)。"
+          ],
+          "five": [
+            "- **雨天湿润水幕 (Hydration Curtain)**：",
+            "  - 每场战斗开局以 **雨天 (`openingWeather: 'rain'`)** 开幕，雨天移速提升 **+20%** (`rainSpeed: 0.2`)；",
+            "  - 队长周身展开 **180 半径的黏液缓冲水幕** (`waterCurtain: 180`)：进入水幕的敌方弹丸伤害强制打 **75 折**，减免的伤害直接转化为 Z 充能！"
+          ],
+          "eight": [
+            "- **魔抗环绕与暴雨新生 (SpDef Orbit & Rain Cure)**：",
+            "  - 将自身基础特殊防御按比例转化为【环绕 (`orbit`)】招式伤害加成（**封顶 +40%**，复用 `spdefOrbit`）；",
+            "  - 全队免疫环境与地形引起的迟缓，且在雨天生命恢复速度提升至 **1.4 倍**。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **龙族软甲与黏滑反制 (Gooey Dragon Hide)**：\n  - 全队基础特殊防御提升 **+35%** (`stats.spdef: 0.35`)；\n  - 敌人以近战接触攻击我方时，会立刻被黏液缠身陷入 **50% 移动减速** 持续 2 秒 (`contactSlow: 0.5`)；\n  - 全队【环绕 (`orbit`)】招式伤害提升 **+15%**。",
+          "active": "- **浊流暴雨龙脉 (Muddy Rain Pulse Z)** · *充能事件：`absorb`（约 60s 校准）*：\n  - 手动激活强制在场地降下持续 **12 秒的大雨**，清除周围敌方射弹并引发 260 范围【龙/水】混合冲刷波 (`blast`，伤害 `budget(c) * 0.55`、`slow: 0.5`、`stun: 1`)；\n  - 同时为全队生成 **25% MaxHP 的水幕白盾**持续 5 秒。",
+          "cost": "- **软躯近战劣势 (Soft Physical Flesh)**：\n  - 全队基础物理防御降低 **20%** (`stats.defense: -0.2`)；\n  - 受到【冰属性】与【妖精属性】伤害提升 **40%** (`incomingTypes: { ice: 1.4, fairy: 1.4 }`)。",
+          "five": "- **雨天湿润水幕 (Hydration Curtain)**：\n  - 每场战斗开局以 **雨天 (`openingWeather: 'rain'`)** 开幕，雨天移速提升 **+20%** (`rainSpeed: 0.2`)；\n  - 队长周身展开 **180 半径的黏液缓冲水幕** (`waterCurtain: 180`)：进入水幕的敌方弹丸伤害强制打 **75 折**，减免的伤害直接转化为 Z 充能！",
+          "eight": "- **魔抗环绕与暴雨新生 (SpDef Orbit & Rain Cure)**：\n  - 将自身基础特殊防御按比例转化为【环绕 (`orbit`)】招式伤害加成（**封顶 +40%**，复用 `spdefOrbit`）；\n  - 全队免疫环境与地形引起的迟缓，且在雨天生命恢复速度提升至 **1.4 倍**。"
+        }
+      }
+    },
+    {
+      "root": 707,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "buffCast",
+        "targetSeconds": 60
+      },
+      "base": {
+        "immune": [
+          "poison"
+        ],
+        "moves": {
+          "buff": {
+            "cd": 0.75
+          },
+          "mine": {
+            "cd": 0.8
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.15
+        },
+        "incomingTypes": {
+          "fire": 1.4,
+          "ground": 1.4
+        }
+      },
+      "five": {
+        "kalos": {
+          "eliteChoice": true
+        }
+      },
+      "eight": {
+        "trapSilence": 2,
+        "kalos": {
+          "sync": 0.3
+        }
+      },
+      "active": {
+        "kind": "kalos707",
+        "shape": "support",
+        "power": 0,
+        "types": [
+          "fairy"
+        ],
+        "clear": true,
+        "silence": 2,
+        "slow": 0.6,
+        "reduceCd": 0.3
+      },
+      "estimate": "辅助频率1.333、地雷1.25，生命0.85；每次精英事件通关额外一次道具三选一，排除BOSS/禁用/本局已耗尽非无限道具。Z减剩余CD30%，不刷新Z本身；沉默对BOSS时长减半。",
+      "notes": [
+        "辅助频率1.333、地雷1.25，生命0.85；每次精英事件通关额外一次道具三选一，排除BOSS/禁用/本局已耗尽非无限道具。Z减剩余CD30%，不刷新Z本身；沉默对BOSS时长减半。"
+      ],
+      "id": "leader_prankster_vault_keys",
+      "members": [
+        707
+      ],
+      "name": {
+        "zh": "恶作剧金库钥匙",
+        "en": "Prankster Vault Keys",
+        "es": "Prankster Vault Keys"
+      },
+      "source": {
+        "heading": "钥匙圈家族 (Klefki Family)",
+        "raw": "\n- **家族成员**：#707 钥匙圈\n- **属性配置**：钢 (Steel) / 妖精 (Fairy)\n- **特性标识**：`leader_prankster_vault_keys`\n- **特性名称**：**恶作剧金库钥匙** (Prankster Vault Keys)\n- **接口映射**：`immune: ['poison']`、`moves.buff`、`moves.mine`、`eliteItem`、`trapSilence`、`synchronize`\n\n#### 【基础被动能力】 (Passive)\n- **钢躯免疫与先手布防 (Prankster Trap Setup)**：\n  - 全队免疫【毒属性】直接伤害 (`immune: ['poison']`)；\n  - 得益于恶作剧之心，全队【辅助 (`buff`)】技能冷却缩减 **25%** (`moves.buff.cd: 0.75`)，【地雷 (`mine`)】招式冷却缩减 **20%** (`moves.mine.cd: 0.8`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **妖精异度锁死 (Fairy Lock Z)** · *充能事件：`buffCast`（约 60s 校准）*：\n  - 手动激活开启金属妖精锁，清除全屏敌方弹丸并使全屏敌人陷入 **2 秒技能与射弹沉默** (`leaderSilenceUntil`) 及 **60% 减速**；\n  - 同时令全队当前冷却中的普通招式恢复部分冷却时间。\n\n#### 【能力代价】 (Downside)\n- **娇小金属饰品 (Tiny Keyring)**：\n  - 全队最大生命值降低 **15%** (`stats.hp: -0.15`)；\n  - 受到【火属性】与【地面属性】伤害提升 **40%** (`incomingTypes: { fire: 1.4, ground: 1.4 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **金库密钥搜刮 (💰 Vault Key Loot)**：\n  - 每次在**精英战斗 (`elite`)** 中取得胜利，战利品结算阶段额外获得 **+1 次携带道具三选一机会** (`eliteItem: 1`，直接复用现有接口！)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **封锁陷阱与增益同步 (Lockdown & Sync)**：\n  - 全队【地雷 (`mine`)】与【轨迹 (`trail`)】伤害命中敌人时，使目标 **沉默 2 秒并减速 70%** (`trapSilence: 2`)；\n  - 释放【辅助 (`buff`)】时将 **30% 强度的增益属性同步共享**至出战队友 (`synchronize: true`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **钢躯免疫与先手布防 (Prankster Trap Setup)**：",
+            "  - 全队免疫【毒属性】直接伤害 (`immune: ['poison']`)；",
+            "  - 得益于恶作剧之心，全队【辅助 (`buff`)】技能冷却缩减 **25%** (`moves.buff.cd: 0.75`)，【地雷 (`mine`)】招式冷却缩减 **20%** (`moves.mine.cd: 0.8`)。"
+          ],
+          "active": [
+            "- **妖精异度锁死 (Fairy Lock Z)** · *充能事件：`buffCast`（约 60s 校准）*：",
+            "  - 手动激活开启金属妖精锁，清除全屏敌方弹丸并使全屏敌人陷入 **2 秒技能与射弹沉默** (`leaderSilenceUntil`) 及 **60% 减速**；",
+            "  - 同时令全队当前冷却中的普通招式恢复部分冷却时间。"
+          ],
+          "cost": [
+            "- **娇小金属饰品 (Tiny Keyring)**：",
+            "  - 全队最大生命值降低 **15%** (`stats.hp: -0.15`)；",
+            "  - 受到【火属性】与【地面属性】伤害提升 **40%** (`incomingTypes: { fire: 1.4, ground: 1.4 }`)。"
+          ],
+          "five": [
+            "- **金库密钥搜刮 (💰 Vault Key Loot)**：",
+            "  - 每次在**精英战斗 (`elite`)** 中取得胜利，战利品结算阶段额外获得 **+1 次携带道具三选一机会** (`eliteItem: 1`，直接复用现有接口！)。"
+          ],
+          "eight": [
+            "- **封锁陷阱与增益同步 (Lockdown & Sync)**：",
+            "  - 全队【地雷 (`mine`)】与【轨迹 (`trail`)】伤害命中敌人时，使目标 **沉默 2 秒并减速 70%** (`trapSilence: 2`)；",
+            "  - 释放【辅助 (`buff`)】时将 **30% 强度的增益属性同步共享**至出战队友 (`synchronize: true`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **钢躯免疫与先手布防 (Prankster Trap Setup)**：\n  - 全队免疫【毒属性】直接伤害 (`immune: ['poison']`)；\n  - 得益于恶作剧之心，全队【辅助 (`buff`)】技能冷却缩减 **25%** (`moves.buff.cd: 0.75`)，【地雷 (`mine`)】招式冷却缩减 **20%** (`moves.mine.cd: 0.8`)。",
+          "active": "- **妖精异度锁死 (Fairy Lock Z)** · *充能事件：`buffCast`（约 60s 校准）*：\n  - 手动激活开启金属妖精锁，清除全屏敌方弹丸并使全屏敌人陷入 **2 秒技能与射弹沉默** (`leaderSilenceUntil`) 及 **60% 减速**；\n  - 同时令全队当前冷却中的普通招式恢复部分冷却时间。",
+          "cost": "- **娇小金属饰品 (Tiny Keyring)**：\n  - 全队最大生命值降低 **15%** (`stats.hp: -0.15`)；\n  - 受到【火属性】与【地面属性】伤害提升 **40%** (`incomingTypes: { fire: 1.4, ground: 1.4 }`)。",
+          "five": "- **金库密钥搜刮 (💰 Vault Key Loot)**：\n  - 每次在**精英战斗 (`elite`)** 中取得胜利，战利品结算阶段额外获得 **+1 次携带道具三选一机会** (`eliteItem: 1`，直接复用现有接口！)。",
+          "eight": "- **封锁陷阱与增益同步 (Lockdown & Sync)**：\n  - 全队【地雷 (`mine`)】与【轨迹 (`trail`)】伤害命中敌人时，使目标 **沉默 2 秒并减速 70%** (`trapSilence: 2`)；\n  - 释放【辅助 (`buff`)】时将 **30% 强度的增益属性同步共享**至出战队友 (`synchronize: true`)。"
+        }
+      }
+    },
+    {
+      "root": 708,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "fruitPickup",
+        "targetSeconds": 60
+      },
+      "base": {
+        "kalos": {
+          "fruitChance": 0.1
+        },
+        "moves": {
+          "melee": {
+            "damage": 1.2
+          }
+        },
+        "meleeLeech": 0.05
+      },
+      "cost": {
+        "incomingTypes": {
+          "fire": 1.5,
+          "flying": 1.35,
+          "dark": 1.35
+        }
+      },
+      "five": {
+        "moves": {
+          "mine": {
+            "damage": 1.3
+          }
+        },
+        "kalos": {
+          "parasitic": true
+        }
+      },
+      "eight": {
+        "kalos": {
+          "parasiteHeal": 0.05,
+          "foodSpeed": 0.3
+        }
+      },
+      "active": {
+        "kind": "kalos708",
+        "shape": "field",
+        "power": 0.4,
+        "types": [
+          "grass",
+          "ghost"
+        ],
+        "radius": 250,
+        "duration": 4,
+        "poison": 1,
+        "slow": 0.5,
+        "vulnerable": 0.2
+      },
+      "estimate": "近战1.2与5%吸血（每秒3%生命）支撑前排；地雷1.3同时增加4秒寄生，不抹掉主爆炸。每场4份补给、寄生阵亡治疗受共享预算；额外毒区不能再触发寄生或补给递归。",
+      "notes": [
+        "近战1.2与5%吸血（每秒3%生命）支撑前排；地雷1.3同时增加4秒寄生，不抹掉主爆炸。每场4份补给、寄生阵亡治疗受共享预算；额外毒区不能再触发寄生或补给递归。"
+      ],
+      "id": "leader_harvest_forest_curse",
+      "members": [
+        708,
+        709
+      ],
+      "name": {
+        "zh": "收获森林诅咒缠绕",
+        "en": "Harvest Forest Curse",
+        "es": "Harvest Forest Curse"
+      },
+      "source": {
+        "heading": "小木灵家族 (Trevenant Family)",
+        "raw": "\n- **家族成员**：#708 小木灵 / #709 朽木妖\n- **属性配置**：幽灵 (Ghost) / 草 (Grass)\n- **特性标识**：`leader_harvest_forest_curse`\n- **特性名称**：**收获森林诅咒缠绕** (Harvest Forest Curse)\n- **接口映射**：`fruitChance`、`fruitSpeed`、`moves.melee`、`meleeLeech`、`moves.mine`、`parasiticMines`、`parasiteHeal`\n\n#### 【基础被动能力】 (Passive)\n- **森林收获与吸魂木槌 (Harvest Leech Root)**：\n  - 消灭敌人有 **10% 概率掉落恢复树果**（全队至多每 2 秒 1 枚，拾取回 **8% 已损血 + 1 PP + 3 秒移速**，复用 `fruitChance`）；\n  - 全队【近战 (`melee`)】招式伤害提升 **+20%**，并获得 **5% 近战伤害吸血** (`meleeLeech: 0.05`，严格受 3% MaxHP/s 总治疗预算限制)。\n\n#### 【累计特殊能力】 (Cadence)\n- **幽林诅咒领域 (Forest's Curse Field Z)** · *充能事件：`fruitPickup`（约 60s 校准）*：\n  - 手动激活在自身周身 250 半径召唤持续 4 秒的森林诅咒阵 (`field`)；\n  - 领域内敌人每 0.5 秒受到 `budget(c) * 0.05` 的【草/幽灵】伤害，叠加 `poison: 1`、50% 减速与 **20% 易伤** (`leaderVulnerable: 0.2`)。\n\n#### 【能力代价】 (Downside)\n- **枯木惧炎弱点 (Dry Timber Vulnerability)**：\n  - 受到【火属性】伤害提升 **50%** (`incomingTypes.fire: 1.5`)；\n  - 受到【飞行属性】与【恶属性】伤害提升 **35%** (`incomingTypes: { flying: 1.35, dark: 1.35 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **森林寄生孢雷 (Parasitic Forest Mines)**：\n  - 全队【地雷 (`mine`)】伤害提升 **+30%** (`moves.mine.damage: 1.3`)；\n  - 地雷命中敌人后触发寄生效应：给敌人挂上 4 秒寄生状态持续扣血，且带寄生敌人死亡时在原地生出 **2 枚小型毒爆区域** (`parasiticMines: true`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **树果狂奔与寄生反哺 (Forest Bounty Cure)**：\n  - 带寄生状态的敌人死亡时，额外治疗全队 **5% 已损生命** (`parasiteHeal: 0.05`，受 3%/s 预算管辖)；\n  - 拾取果实触发的移速增幅提高至 **+30%** (`fruitSpeed: 0.3`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **森林收获与吸魂木槌 (Harvest Leech Root)**：",
+            "  - 消灭敌人有 **10% 概率掉落恢复树果**（全队至多每 2 秒 1 枚，拾取回 **8% 已损血 + 1 PP + 3 秒移速**，复用 `fruitChance`）；",
+            "  - 全队【近战 (`melee`)】招式伤害提升 **+20%**，并获得 **5% 近战伤害吸血** (`meleeLeech: 0.05`，严格受 3% MaxHP/s 总治疗预算限制)。"
+          ],
+          "active": [
+            "- **幽林诅咒领域 (Forest's Curse Field Z)** · *充能事件：`fruitPickup`（约 60s 校准）*：",
+            "  - 手动激活在自身周身 250 半径召唤持续 4 秒的森林诅咒阵 (`field`)；",
+            "  - 领域内敌人每 0.5 秒受到 `budget(c) * 0.05` 的【草/幽灵】伤害，叠加 `poison: 1`、50% 减速与 **20% 易伤** (`leaderVulnerable: 0.2`)。"
+          ],
+          "cost": [
+            "- **枯木惧炎弱点 (Dry Timber Vulnerability)**：",
+            "  - 受到【火属性】伤害提升 **50%** (`incomingTypes.fire: 1.5`)；",
+            "  - 受到【飞行属性】与【恶属性】伤害提升 **35%** (`incomingTypes: { flying: 1.35, dark: 1.35 }`)。"
+          ],
+          "five": [
+            "- **森林寄生孢雷 (Parasitic Forest Mines)**：",
+            "  - 全队【地雷 (`mine`)】伤害提升 **+30%** (`moves.mine.damage: 1.3`)；",
+            "  - 地雷命中敌人后触发寄生效应：给敌人挂上 4 秒寄生状态持续扣血，且带寄生敌人死亡时在原地生出 **2 枚小型毒爆区域** (`parasiticMines: true`)。"
+          ],
+          "eight": [
+            "- **树果狂奔与寄生反哺 (Forest Bounty Cure)**：",
+            "  - 带寄生状态的敌人死亡时，额外治疗全队 **5% 已损生命** (`parasiteHeal: 0.05`，受 3%/s 预算管辖)；",
+            "  - 拾取果实触发的移速增幅提高至 **+30%** (`fruitSpeed: 0.3`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **森林收获与吸魂木槌 (Harvest Leech Root)**：\n  - 消灭敌人有 **10% 概率掉落恢复树果**（全队至多每 2 秒 1 枚，拾取回 **8% 已损血 + 1 PP + 3 秒移速**，复用 `fruitChance`）；\n  - 全队【近战 (`melee`)】招式伤害提升 **+20%**，并获得 **5% 近战伤害吸血** (`meleeLeech: 0.05`，严格受 3% MaxHP/s 总治疗预算限制)。",
+          "active": "- **幽林诅咒领域 (Forest's Curse Field Z)** · *充能事件：`fruitPickup`（约 60s 校准）*：\n  - 手动激活在自身周身 250 半径召唤持续 4 秒的森林诅咒阵 (`field`)；\n  - 领域内敌人每 0.5 秒受到 `budget(c) * 0.05` 的【草/幽灵】伤害，叠加 `poison: 1`、50% 减速与 **20% 易伤** (`leaderVulnerable: 0.2`)。",
+          "cost": "- **枯木惧炎弱点 (Dry Timber Vulnerability)**：\n  - 受到【火属性】伤害提升 **50%** (`incomingTypes.fire: 1.5`)；\n  - 受到【飞行属性】与【恶属性】伤害提升 **35%** (`incomingTypes: { flying: 1.35, dark: 1.35 }`)。",
+          "five": "- **森林寄生孢雷 (Parasitic Forest Mines)**：\n  - 全队【地雷 (`mine`)】伤害提升 **+30%** (`moves.mine.damage: 1.3`)；\n  - 地雷命中敌人后触发寄生效应：给敌人挂上 4 秒寄生状态持续扣血，且带寄生敌人死亡时在原地生出 **2 枚小型毒爆区域** (`parasiticMines: true`)。",
+          "eight": "- **树果狂奔与寄生反哺 (Forest Bounty Cure)**：\n  - 带寄生状态的敌人死亡时，额外治疗全队 **5% 已损生命** (`parasiteHeal: 0.05`，受 3%/s 预算管辖)；\n  - 拾取果实触发的移速增幅提高至 **+30%** (`fruitSpeed: 0.3`)。"
+        }
+      }
+    },
+    {
+      "root": 710,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "mineTrigger",
+        "targetSeconds": 60
+      },
+      "base": {
+        "attackDebuffImmune": true,
+        "moves": {
+          "mine": {
+            "count": 1,
+            "radius": 1.35
+          }
+        },
+        "mineDamage": 1.3
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.15
+        },
+        "ban": [
+          "dash"
+        ],
+        "incomingTypes": {
+          "fire": 1.4,
+          "ghost": 1.4,
+          "dark": 1.4
+        }
+      },
+      "five": {
+        "mushroomUses": 2
+      },
+      "eight": {
+        "contactFear": 1,
+        "deathNova": true
+      },
+      "active": {
+        "kind": "kalos710",
+        "shape": "nova",
+        "power": 0.5,
+        "types": [
+          "ghost"
+        ],
+        "count": 6,
+        "stun": 2
+      },
+      "estimate": "每颗1.3倍，两次触发理论2.6；再+1枚覆盖、半径面积1.823倍，上限很强但需敌人重复踩踏。重置触发至少0.6秒，不在同帧对同人多次爆破；亡灵余烬每成员一战一次。",
+      "notes": [
+        "每颗1.3倍，两次触发理论2.6；再+1枚覆盖、半径面积1.823倍，上限很强但需敌人重复踩踏。重置触发至少0.6秒，不在同帧对同人多次爆破；亡灵余烬每成员一战一次。"
+      ],
+      "id": "leader_insomnia_halloween_mines",
+      "members": [
+        710,
+        711
+      ],
+      "name": {
+        "zh": "不眠万圣夜南瓜雷阵",
+        "en": "Insomnia Pumpkin Mines",
+        "es": "Insomnia Pumpkin Mines"
+      },
+      "source": {
+        "heading": "南瓜精家族 (Gourgeist Family)",
+        "raw": "\n- **家族成员**：#710 南瓜精 / #711 南瓜怪人\n- **属性配置**：幽灵 (Ghost) / 草 (Grass)\n- **特性标识**：`leader_insomnia_halloween_mines`\n- **特性名称**：**不眠万圣夜南瓜雷阵** (Insomnia Pumpkin Mines)\n- **接口映射**：`attackDebuffImmune`、`moves.mine`、`mineDamage`、`mushroomUses`、`contactFear`、`deathNova`、`ban: ['dash']`\n\n#### 【基础被动能力】 (Passive)\n- **不眠灵灯与南瓜炸弹 (Insomnia Lantern Bombs)**：\n  - 全队精力充沛，免疫敌人的减攻负面影响 (`attackDebuffImmune: true`)；\n  - 全队【地雷 (`mine`)】招式单次放置量 **+1**、触发爆炸半径扩大 **+35%**、地雷基础伤害提升 **+30%** (`mineDamage: 1.3`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **万圣狂欢大惊吓 (Trick-or-Treat Z)** · *充能事件：`mineTrigger`（约 60s 校准）*：\n  - 手动激活向周围环绕投掷 6 枚聚能南瓜炸弹立即连环引爆，对全屏敌人施加 **2 秒惊恐眩晕** (`stun`，BOSS 减半)；\n  - 同时产生 `budget(c) * 0.50` 的【幽灵属性】范围爆破伤害。\n\n#### 【能力代价】 (Downside)\n- **沉重巨瓜禁止冲刺 (Heavy Pumpkin Hull)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)，全队禁止学习【突进 (`dash`)】招式 (`ban: ['dash']`)；\n  - 受到【火属性】与【幽灵/恶属性】伤害提升 **40%** (`incomingTypes: { fire: 1.4, ghost: 1.4, dark: 1.4 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **连环发条南瓜雷 (Multi-Trigger Pumpkin)**：\n  - 全队放出的每颗【地雷 (`mine`)】被敌人踩踏触发爆破后不再立刻销毁，而是能重新就绪并**多爆炸 1 次** (`mushroomUses: 2`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **鬼面惊吓与亡灵余烬 (Ghostly Scare & Aftermath)**：\n  - 受到敌人近战接触碰撞时，立刻吓退接触者使其停手眩晕 **1 秒** (`contactFear: 1`)；\n  - 队员或队长每战首次濒死时保留 1 血存活并原地爆发全屏幽灵冲击 (`deathNova: true`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **不眠灵灯与南瓜炸弹 (Insomnia Lantern Bombs)**：",
+            "  - 全队精力充沛，免疫敌人的减攻负面影响 (`attackDebuffImmune: true`)；",
+            "  - 全队【地雷 (`mine`)】招式单次放置量 **+1**、触发爆炸半径扩大 **+35%**、地雷基础伤害提升 **+30%** (`mineDamage: 1.3`)。"
+          ],
+          "active": [
+            "- **万圣狂欢大惊吓 (Trick-or-Treat Z)** · *充能事件：`mineTrigger`（约 60s 校准）*：",
+            "  - 手动激活向周围环绕投掷 6 枚聚能南瓜炸弹立即连环引爆，对全屏敌人施加 **2 秒惊恐眩晕** (`stun`，BOSS 减半)；",
+            "  - 同时产生 `budget(c) * 0.50` 的【幽灵属性】范围爆破伤害。"
+          ],
+          "cost": [
+            "- **沉重巨瓜禁止冲刺 (Heavy Pumpkin Hull)**：",
+            "  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)，全队禁止学习【突进 (`dash`)】招式 (`ban: ['dash']`)；",
+            "  - 受到【火属性】与【幽灵/恶属性】伤害提升 **40%** (`incomingTypes: { fire: 1.4, ghost: 1.4, dark: 1.4 }`)。"
+          ],
+          "five": [
+            "- **连环发条南瓜雷 (Multi-Trigger Pumpkin)**：",
+            "  - 全队放出的每颗【地雷 (`mine`)】被敌人踩踏触发爆破后不再立刻销毁，而是能重新就绪并**多爆炸 1 次** (`mushroomUses: 2`)。"
+          ],
+          "eight": [
+            "- **鬼面惊吓与亡灵余烬 (Ghostly Scare & Aftermath)**：",
+            "  - 受到敌人近战接触碰撞时，立刻吓退接触者使其停手眩晕 **1 秒** (`contactFear: 1`)；",
+            "  - 队员或队长每战首次濒死时保留 1 血存活并原地爆发全屏幽灵冲击 (`deathNova: true`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **不眠灵灯与南瓜炸弹 (Insomnia Lantern Bombs)**：\n  - 全队精力充沛，免疫敌人的减攻负面影响 (`attackDebuffImmune: true`)；\n  - 全队【地雷 (`mine`)】招式单次放置量 **+1**、触发爆炸半径扩大 **+35%**、地雷基础伤害提升 **+30%** (`mineDamage: 1.3`)。",
+          "active": "- **万圣狂欢大惊吓 (Trick-or-Treat Z)** · *充能事件：`mineTrigger`（约 60s 校准）*：\n  - 手动激活向周围环绕投掷 6 枚聚能南瓜炸弹立即连环引爆，对全屏敌人施加 **2 秒惊恐眩晕** (`stun`，BOSS 减半)；\n  - 同时产生 `budget(c) * 0.50` 的【幽灵属性】范围爆破伤害。",
+          "cost": "- **沉重巨瓜禁止冲刺 (Heavy Pumpkin Hull)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)，全队禁止学习【突进 (`dash`)】招式 (`ban: ['dash']`)；\n  - 受到【火属性】与【幽灵/恶属性】伤害提升 **40%** (`incomingTypes: { fire: 1.4, ghost: 1.4, dark: 1.4 }`)。",
+          "five": "- **连环发条南瓜雷 (Multi-Trigger Pumpkin)**：\n  - 全队放出的每颗【地雷 (`mine`)】被敌人踩踏触发爆破后不再立刻销毁，而是能重新就绪并**多爆炸 1 次** (`mushroomUses: 2`)。",
+          "eight": "- **鬼面惊吓与亡灵余烬 (Ghostly Scare & Aftermath)**：\n  - 受到敌人近战接触碰撞时，立刻吓退接触者使其停手眩晕 **1 秒** (`contactFear: 1`)；\n  - 队员或队长每战首次濒死时保留 1 血存活并原地爆发全屏幽灵冲击 (`deathNova: true`)。"
+        }
+      }
+    },
+    {
+      "root": 712,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "iceHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "defense": 0.4
+        },
+        "physicalIncoming": 0.75,
+        "kalos": {
+          "iceAura": 160
+        }
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.25,
+          "spdef": -0.2
+        },
+        "incomingTypes": {
+          "fire": 1.45,
+          "fighting": 1.45,
+          "steel": 1.45
+        }
+      },
+      "five": {
+        "kalos": {
+          "iceCounter": 4
+        }
+      },
+      "eight": {
+        "deathHeal": 0.4
+      },
+      "active": {
+        "kind": "kalos712",
+        "shape": "nova",
+        "power": 0.5,
+        "types": [
+          "ice"
+        ],
+        "radius": 300,
+        "clear": true,
+        "stun": 2.5,
+        "shield": 0.3,
+        "duration": 4
+      },
+      "estimate": "物理有效生命1.4/.75=1.867，特殊弱点有效生命.8/1.45=.552；4冰刺原“主体威力”未限定会偏高，试玩每枚20%当前主招伤害、2秒间隔。高坦+结实+盾，Z55%预算调50%。",
+      "notes": [
+        "物理有效生命1.4/.75=1.867，特殊弱点有效生命.8/1.45=.552；4冰刺原“主体威力”未限定会偏高，试玩每枚20%当前主招伤害、2秒间隔。高坦+结实+盾，Z55%预算调50%。"
+      ],
+      "id": "leader_sturdy_glacier_fortress",
+      "members": [
+        712,
+        713
+      ],
+      "name": {
+        "zh": "结实极地冰川堡垒",
+        "en": "Sturdy Glacier Fortress",
+        "es": "Sturdy Glacier Fortress"
+      },
+      "source": {
+        "heading": "冰宝家族 (Avalugg Family)",
+        "raw": "\n- **家族成员**：#712 冰宝 / #713 冰岩怪\n- **属性配置**：冰 (Ice)\n- **特性标识**：`leader_sturdy_glacier_fortress`\n- **特性名称**：**结实极地冰川堡垒** (Sturdy Glacier Fortress)\n- **接口映射**：`stats.defense`、`physicalIncoming`、`iceAura`、`iceCounter`、`deathHeal`、`stats.spd`、`stats.spdef`\n\n#### 【基础被动能力】 (Passive)\n- **厚重冰甲与霜冻环绕 (Glacier Armor & Frost Aura)**：\n  - 全队基础物理防御提升 **+40%** (`stats.defense: 0.4`)，受到接触与物理攻击的最终伤害降低 **25%** (`physicalIncoming: 0.75`)；\n  - 队长周身保持半径 **160 单位的极寒光环** (`iceAura: 160`)，每秒减速接触敌人 **30%** 并附带极轻微冰霜跳伤（驱动冰系充能）。\n\n#### 【累计特殊能力】 (Cadence)\n- **冰川雪崩冲击 (Glacier Avalanche Z)** · *充能事件：`iceHit`（约 60s 校准）*：\n  - 手动激活清除全屏敌弹并引发 300 范围冰山塌陷冲击 (`blast`，伤害 `budget(c) * 0.55`、附加 **2.5 秒冰冻停手眩晕** `stun`，BOSS 减半)；\n  - 为全队提供 4 秒 **30% MaxHP 冰川护盾**。\n\n#### 【能力代价】 (Downside)\n- **冰山缓行脆魔抗 (Glacier Slowness)**：\n  - 全队移动速度降低 **25%** (`stats.spd: -0.25`)，特殊防御降低 **20%** (`stats.spdef: -0.2`)；\n  - 受到【火属性】、【格斗属性】与【钢属性】伤害提升 **45%** (`incomingTypes: { fire: 1.45, fighting: 1.45, steel: 1.45 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **冰刺逆反甲 (Ice Counter Spikes)**：\n  - 队伍受到攻击时（每 **2 秒**最多触发 1 次），自动向四周弹出 **4 枚冰属性尖刺** (`iceCounter: 4`)，每枚按主体威力击退近身敌人。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **绝对结实冰山 (Unbreakable Iceberg)**：\n  - 每场战斗全员享有 **1 次结实免死救援**：遭到致命一击时不会退场，立刻回复 **40% 最大生命值** 并获 1.5 秒无敌防护 (`deathHeal: 0.4`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **厚重冰甲与霜冻环绕 (Glacier Armor & Frost Aura)**：",
+            "  - 全队基础物理防御提升 **+40%** (`stats.defense: 0.4`)，受到接触与物理攻击的最终伤害降低 **25%** (`physicalIncoming: 0.75`)；",
+            "  - 队长周身保持半径 **160 单位的极寒光环** (`iceAura: 160`)，每秒减速接触敌人 **30%** 并附带极轻微冰霜跳伤（驱动冰系充能）。"
+          ],
+          "active": [
+            "- **冰川雪崩冲击 (Glacier Avalanche Z)** · *充能事件：`iceHit`（约 60s 校准）*：",
+            "  - 手动激活清除全屏敌弹并引发 300 范围冰山塌陷冲击 (`blast`，伤害 `budget(c) * 0.55`、附加 **2.5 秒冰冻停手眩晕** `stun`，BOSS 减半)；",
+            "  - 为全队提供 4 秒 **30% MaxHP 冰川护盾**。"
+          ],
+          "cost": [
+            "- **冰山缓行脆魔抗 (Glacier Slowness)**：",
+            "  - 全队移动速度降低 **25%** (`stats.spd: -0.25`)，特殊防御降低 **20%** (`stats.spdef: -0.2`)；",
+            "  - 受到【火属性】、【格斗属性】与【钢属性】伤害提升 **45%** (`incomingTypes: { fire: 1.45, fighting: 1.45, steel: 1.45 }`)。"
+          ],
+          "five": [
+            "- **冰刺逆反甲 (Ice Counter Spikes)**：",
+            "  - 队伍受到攻击时（每 **2 秒**最多触发 1 次），自动向四周弹出 **4 枚冰属性尖刺** (`iceCounter: 4`)，每枚按主体威力击退近身敌人。"
+          ],
+          "eight": [
+            "- **绝对结实冰山 (Unbreakable Iceberg)**：",
+            "  - 每场战斗全员享有 **1 次结实免死救援**：遭到致命一击时不会退场，立刻回复 **40% 最大生命值** 并获 1.5 秒无敌防护 (`deathHeal: 0.4`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **厚重冰甲与霜冻环绕 (Glacier Armor & Frost Aura)**：\n  - 全队基础物理防御提升 **+40%** (`stats.defense: 0.4`)，受到接触与物理攻击的最终伤害降低 **25%** (`physicalIncoming: 0.75`)；\n  - 队长周身保持半径 **160 单位的极寒光环** (`iceAura: 160`)，每秒减速接触敌人 **30%** 并附带极轻微冰霜跳伤（驱动冰系充能）。",
+          "active": "- **冰川雪崩冲击 (Glacier Avalanche Z)** · *充能事件：`iceHit`（约 60s 校准）*：\n  - 手动激活清除全屏敌弹并引发 300 范围冰山塌陷冲击 (`blast`，伤害 `budget(c) * 0.55`、附加 **2.5 秒冰冻停手眩晕** `stun`，BOSS 减半)；\n  - 为全队提供 4 秒 **30% MaxHP 冰川护盾**。",
+          "cost": "- **冰山缓行脆魔抗 (Glacier Slowness)**：\n  - 全队移动速度降低 **25%** (`stats.spd: -0.25`)，特殊防御降低 **20%** (`stats.spdef: -0.2`)；\n  - 受到【火属性】、【格斗属性】与【钢属性】伤害提升 **45%** (`incomingTypes: { fire: 1.45, fighting: 1.45, steel: 1.45 }`)。",
+          "five": "- **冰刺逆反甲 (Ice Counter Spikes)**：\n  - 队伍受到攻击时（每 **2 秒**最多触发 1 次），自动向四周弹出 **4 枚冰属性尖刺** (`iceCounter: 4`)，每枚按主体威力击退近身敌人。",
+          "eight": "- **绝对结实冰山 (Unbreakable Iceberg)**：\n  - 每场战斗全员享有 **1 次结实免死救援**：遭到致命一击时不会退场，立刻回复 **40% 最大生命值** 并获 1.5 秒无敌防护 (`deathHeal: 0.4`)。"
+        }
+      }
+    },
+    {
+      "root": 714,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "coneHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "spd": 0.2
+        },
+        "projectileTerrain": true,
+        "moves": {
+          "cone": {
+            "damage": 1.2,
+            "speed": 1.25
+          }
+        }
+      },
+      "cost": {
+        "incomingTypes": {
+          "ice": 1.7
+        },
+        "stats": {
+          "hp": -0.2
+        }
+      },
+      "five": {
+        "kalos": {
+          "echo": 0.2
+        }
+      },
+      "eight": {
+        "kalos": {
+          "echoStun": 0.5
+        },
+        "phaseTerrain": true
+      },
+      "active": {
+        "kind": "kalos714",
+        "shape": "cone",
+        "power": 0.6,
+        "types": [
+          "flying",
+          "dragon"
+        ],
+        "count": 3,
+        "clear": true,
+        "stun": 2,
+        "knock": 220
+      },
+      "estimate": "扇形主伤1.2+实际伤害20%回响=1.44，回响不再次乘主增伤/防御/克制，8级20%短晕同目标最短1秒一次；冰弱点有效生命.8/1.7=.471。穿障碍不允许越出地图/竞技场。",
+      "notes": [
+        "扇形主伤1.2+实际伤害20%回响=1.44，回响不再次乘主增伤/防御/克制，8级20%短晕同目标最短1秒一次；冰弱点有效生命.8/1.7=.471。穿障碍不允许越出地图/竞技场。"
+      ],
+      "id": "leader_infiltrator_boomburst_echo",
+      "members": [
+        714,
+        715
+      ],
+      "name": {
+        "zh": "穿透音波与回响游击",
+        "en": "Infiltrator Boomburst Echo",
+        "es": "Infiltrator Boomburst Echo"
+      },
+      "source": {
+        "heading": "嗡蝠家族 (Noivern Family)",
+        "raw": "\n- **家族成员**：#714 嗡蝠 / #715 音波龙\n- **属性配置**：飞行 (Flying) / 龙 (Dragon)\n- **特性标识**：`leader_infiltrator_boomburst_echo`\n- **特性名称**：**穿透音波与回响游击** (Infiltrator Boomburst Echo)\n- **接口映射**：`stats.spd`、`projectileTerrain`、`moves.cone`、`echo`、`echoStun`、`phaseTerrain`\n\n#### 【基础被动能力】 (Passive)\n- **声纳穿透与超音速之翼 (Sonar Piercing Flight)**：\n  - 全队移动速度提升 **+20%** (`stats.spd: 0.2`)；\n  - 全队所有【投射物 (`projectile`)】类弹丸自动获得穿墙性能 (`projectileTerrain: true`)；\n  - 【锥形 (`cone`)】音波喷射伤害提升 **+20%**、弹道速度提升 **+25%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **全频震天爆音波 (Boomburst Resonance Z)** · *充能事件：`coneHit`（约 60s 校准）*：\n  - 手动激活清除全屏敌弹并朝瞄准扇区连续发出 3 轮穿透高频爆音波 (`cone`，合计 `budget(c) * 0.60`、强力击退与 **2 秒眩晕** BOSS 减半)。\n\n#### 【能力代价】 (Downside)\n- **四倍弱冰与夜行薄血 (Quadruple Ice Flaw)**：\n  - 受到【冰属性】伤害提升 **70%** (`incomingTypes.ice: 1.7`)；\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **空间回响追伤 (Sonic Echo Damage)**：\n  - 队伍主体直击命中任何敌人后，会在 **0.12 秒后**于目标身上再次震爆一次 **20% 原始实际伤害**的回响打击 (`echo: 0.2`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **滞空穿障与音波致晕 (Echo Stun & Phase Flight)**：\n  - 上述音波回响每次触发均有 **20% 概率**令受击目标短暂昏迷停手 **0.5 秒** (`echoStun: 0.5`)；\n  - 启用低空掠过机制，全队移动无视地形障碍碰撞 (`phaseTerrain: true`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **声纳穿透与超音速之翼 (Sonar Piercing Flight)**：",
+            "  - 全队移动速度提升 **+20%** (`stats.spd: 0.2`)；",
+            "  - 全队所有【投射物 (`projectile`)】类弹丸自动获得穿墙性能 (`projectileTerrain: true`)；",
+            "  - 【锥形 (`cone`)】音波喷射伤害提升 **+20%**、弹道速度提升 **+25%**。"
+          ],
+          "active": [
+            "- **全频震天爆音波 (Boomburst Resonance Z)** · *充能事件：`coneHit`（约 60s 校准）*：",
+            "  - 手动激活清除全屏敌弹并朝瞄准扇区连续发出 3 轮穿透高频爆音波 (`cone`，合计 `budget(c) * 0.60`、强力击退与 **2 秒眩晕** BOSS 减半)。"
+          ],
+          "cost": [
+            "- **四倍弱冰与夜行薄血 (Quadruple Ice Flaw)**：",
+            "  - 受到【冰属性】伤害提升 **70%** (`incomingTypes.ice: 1.7`)；",
+            "  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)。"
+          ],
+          "five": [
+            "- **空间回响追伤 (Sonic Echo Damage)**：",
+            "  - 队伍主体直击命中任何敌人后，会在 **0.12 秒后**于目标身上再次震爆一次 **20% 原始实际伤害**的回响打击 (`echo: 0.2`)。"
+          ],
+          "eight": [
+            "- **滞空穿障与音波致晕 (Echo Stun & Phase Flight)**：",
+            "  - 上述音波回响每次触发均有 **20% 概率**令受击目标短暂昏迷停手 **0.5 秒** (`echoStun: 0.5`)；",
+            "  - 启用低空掠过机制，全队移动无视地形障碍碰撞 (`phaseTerrain: true`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **声纳穿透与超音速之翼 (Sonar Piercing Flight)**：\n  - 全队移动速度提升 **+20%** (`stats.spd: 0.2`)；\n  - 全队所有【投射物 (`projectile`)】类弹丸自动获得穿墙性能 (`projectileTerrain: true`)；\n  - 【锥形 (`cone`)】音波喷射伤害提升 **+20%**、弹道速度提升 **+25%**。",
+          "active": "- **全频震天爆音波 (Boomburst Resonance Z)** · *充能事件：`coneHit`（约 60s 校准）*：\n  - 手动激活清除全屏敌弹并朝瞄准扇区连续发出 3 轮穿透高频爆音波 (`cone`，合计 `budget(c) * 0.60`、强力击退与 **2 秒眩晕** BOSS 减半)。",
+          "cost": "- **四倍弱冰与夜行薄血 (Quadruple Ice Flaw)**：\n  - 受到【冰属性】伤害提升 **70%** (`incomingTypes.ice: 1.7`)；\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)。",
+          "five": "- **空间回响追伤 (Sonic Echo Damage)**：\n  - 队伍主体直击命中任何敌人后，会在 **0.12 秒后**于目标身上再次震爆一次 **20% 原始实际伤害**的回响打击 (`echo: 0.2`)。",
+          "eight": "- **滞空穿障与音波致晕 (Echo Stun & Phase Flight)**：\n  - 上述音波回响每次触发均有 **20% 概率**令受击目标短暂昏迷停手 **0.5 秒** (`echoStun: 0.5`)；\n  - 启用低空掠过机制，全队移动无视地形障碍碰撞 (`phaseTerrain: true`)。"
+        }
+      }
+    },
+    {
+      "root": 716,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "heal",
+        "targetSeconds": 60
+      },
+      "base": {
+        "regenRate": 1.4,
+        "weakReduction": 0.25,
+        "neutralReduction": 0.15,
+        "moves": {
+          "aura": {
+            "damage": 1.2,
+            "radius": 1.2
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "defense": -0.15
+        },
+        "extraPP": {
+          "beam": 1,
+          "nova": 1
+        }
+      },
+      "five": {
+        "kalos": {
+          "overheal": 0.5
+        },
+        "endHeal": 0.25
+      },
+      "eight": {
+        "kalos": {
+          "lifeRescue": true
+        }
+      },
+      "active": {
+        "kind": "kalos716",
+        "shape": "support",
+        "power": 0,
+        "types": [
+          "fairy"
+        ],
+        "healMissing": 0.2,
+        "shield": 0.4,
+        "attackBuff": 0.3,
+        "speedBuff": 0.3,
+        "haste": 0.2,
+        "duration": 6
+      },
+      "estimate": "中性特殊有效生命1/.85=1.176、克制伤害×.75；物理防御代价抵消中性减伤。原+35%双攻/移速与未定CD、满盾和群复活明显强，试玩30%双攻/移速、20%频率6秒，群救援每场全队一次。",
+      "notes": [
+        "中性特殊有效生命1/.85=1.176、克制伤害×.75；物理防御代价抵消中性减伤。原+35%双攻/移速与未定CD、满盾和群复活明显强，试玩30%双攻/移速、20%频率6秒，群救援每场全队一次。"
+      ],
+      "id": "leader_fairy_aura_geomancy",
+      "members": [
+        716
+      ],
+      "name": {
+        "zh": "妖精气场与大地掌控",
+        "en": "Fairy Aura Geomancy",
+        "es": "Fairy Aura Geomancy"
+      },
+      "source": {
+        "heading": "哲尔尼亚斯家族 (Xerneas Family)",
+        "raw": "\n- **家族成员**：#716 哲尔尼亚斯\n- **属性配置**：妖精 (Fairy)\n- **特性标识**：`leader_fairy_aura_geomancy`\n- **特性名称**：**妖精气场与大地掌控** (Fairy Aura Geomancy)\n- **接口映射**：`regenRate`、`weakReduction`、`neutralReduction`、`moves.aura`、`extraPP`、`overhealShield`、`endHeal`、`phoenixRescue`\n\n#### 【基础被动能力】 (Passive)\n- **永恒生命妖精气场 (Fairy Aura Blessing)**：\n  - 全队生命回复速率大幅提高 **+40%** (`regenRate: 1.4`)；\n  - 受到敌人克制打击时最终伤害减免 **25%** (`weakReduction: 0.25`)，受中性伤害减免 **15%** (`neutralReduction: 0.15`)；\n  - 全队【光环 (`aura`)】招式伤害与范围各提高 **+20%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **彩虹大地掌控 (Geomancy Ascend Z)** · *充能事件：`heal`（约 60s 校准）*：\n  - 手动激活唤醒生命之树神力：全队立即回复 **20% 已损生命**（受 3%/s 预算管辖），获得 **40% MaxHP 满额彩虹白盾**持续 5 秒；\n  - 随后 6 秒内全队物理/特殊攻击与移动速度同步提升 **+35%**，技能冷却加速。\n\n#### 【能力代价】 (Downside)\n- **生命负荷损耗 (Vitality Cost)**：\n  - 全队物理防御降低 **15%** (`stats.defense: -0.15`)；\n  - 爆发技（如 `beam` / `nova`）每次施放额外消耗 **+1 点 PP** (`extraPP`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **溢流圣光盾与战后生机 (Overheal Sanctuary)**：\n  - 满血时溢出的治疗量按 **50%** 转化为持久白盾 (`overhealShield: 0.5`，受 40% 总盾上限限制)；\n  - 战斗胜利结束时，所有存活成员恢复 **25% 已损失局内生命值** (`endHeal: 0.25`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **生生不息大复苏 (Life Rekindled Rescue)**：\n  - 队长每场战斗首次遭遇致死危机时，强制触发群体生命救援：复活全队所有阵亡与受伤队员至 **25% 血并赋予 2 秒无敌保护**，同时向全屏引爆一圈妖精生命神波 (`phoenixRescue: true`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **永恒生命妖精气场 (Fairy Aura Blessing)**：",
+            "  - 全队生命回复速率大幅提高 **+40%** (`regenRate: 1.4`)；",
+            "  - 受到敌人克制打击时最终伤害减免 **25%** (`weakReduction: 0.25`)，受中性伤害减免 **15%** (`neutralReduction: 0.15`)；",
+            "  - 全队【光环 (`aura`)】招式伤害与范围各提高 **+20%**。"
+          ],
+          "active": [
+            "- **彩虹大地掌控 (Geomancy Ascend Z)** · *充能事件：`heal`（约 60s 校准）*：",
+            "  - 手动激活唤醒生命之树神力：全队立即回复 **20% 已损生命**（受 3%/s 预算管辖），获得 **40% MaxHP 满额彩虹白盾**持续 5 秒；",
+            "  - 随后 6 秒内全队物理/特殊攻击与移动速度同步提升 **+35%**，技能冷却加速。"
+          ],
+          "cost": [
+            "- **生命负荷损耗 (Vitality Cost)**：",
+            "  - 全队物理防御降低 **15%** (`stats.defense: -0.15`)；",
+            "  - 爆发技（如 `beam` / `nova`）每次施放额外消耗 **+1 点 PP** (`extraPP`)。"
+          ],
+          "five": [
+            "- **溢流圣光盾与战后生机 (Overheal Sanctuary)**：",
+            "  - 满血时溢出的治疗量按 **50%** 转化为持久白盾 (`overhealShield: 0.5`，受 40% 总盾上限限制)；",
+            "  - 战斗胜利结束时，所有存活成员恢复 **25% 已损失局内生命值** (`endHeal: 0.25`)。"
+          ],
+          "eight": [
+            "- **生生不息大复苏 (Life Rekindled Rescue)**：",
+            "  - 队长每场战斗首次遭遇致死危机时，强制触发群体生命救援：复活全队所有阵亡与受伤队员至 **25% 血并赋予 2 秒无敌保护**，同时向全屏引爆一圈妖精生命神波 (`phoenixRescue: true`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **永恒生命妖精气场 (Fairy Aura Blessing)**：\n  - 全队生命回复速率大幅提高 **+40%** (`regenRate: 1.4`)；\n  - 受到敌人克制打击时最终伤害减免 **25%** (`weakReduction: 0.25`)，受中性伤害减免 **15%** (`neutralReduction: 0.15`)；\n  - 全队【光环 (`aura`)】招式伤害与范围各提高 **+20%**。",
+          "active": "- **彩虹大地掌控 (Geomancy Ascend Z)** · *充能事件：`heal`（约 60s 校准）*：\n  - 手动激活唤醒生命之树神力：全队立即回复 **20% 已损生命**（受 3%/s 预算管辖），获得 **40% MaxHP 满额彩虹白盾**持续 5 秒；\n  - 随后 6 秒内全队物理/特殊攻击与移动速度同步提升 **+35%**，技能冷却加速。",
+          "cost": "- **生命负荷损耗 (Vitality Cost)**：\n  - 全队物理防御降低 **15%** (`stats.defense: -0.15`)；\n  - 爆发技（如 `beam` / `nova`）每次施放额外消耗 **+1 点 PP** (`extraPP`)。",
+          "five": "- **溢流圣光盾与战后生机 (Overheal Sanctuary)**：\n  - 满血时溢出的治疗量按 **50%** 转化为持久白盾 (`overhealShield: 0.5`，受 40% 总盾上限限制)；\n  - 战斗胜利结束时，所有存活成员恢复 **25% 已损失局内生命值** (`endHeal: 0.25`)。",
+          "eight": "- **生生不息大复苏 (Life Rekindled Rescue)**：\n  - 队长每场战斗首次遭遇致死危机时，强制触发群体生命救援：复活全队所有阵亡与受伤队员至 **25% 血并赋予 2 秒无敌保护**，同时向全屏引爆一圈妖精生命神波 (`phoenixRescue: true`)。"
+        }
+      }
+    },
+    {
+      "root": 717,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "kill",
+        "targetSeconds": 60
+      },
+      "base": {
+        "damage": 1.15,
+        "meleeLeech": 0.05,
+        "projectileLeech": 0.04
+      },
+      "cost": {
+        "regenRate": 0.5,
+        "incomingTypes": {
+          "electric": 1.35,
+          "ice": 1.35,
+          "rock": 1.35
+        }
+      },
+      "five": {
+        "kalos": {
+          "killGuard": 0.3
+        }
+      },
+      "eight": {
+        "kalos": {
+          "eliteReset": true
+        },
+        "moves": {
+          "beam": {
+            "damage": 1.25
+          }
+        }
+      },
+      "active": {
+        "kind": "kalos717",
+        "shape": "beam",
+        "power": 0.6,
+        "types": [
+          "dark",
+          "flying"
+        ],
+        "width": 80,
+        "execute": 0.3,
+        "damageHeal": 0.05
+      },
+      "estimate": "全伤1.15、8级光束1.438。原每次击杀0.3秒无敌在群怪3.33杀/秒时常驻，改每人共享最短1.5秒间隔；精英重置全队CD最短10秒一次，仍以击杀事件而非通关触发。",
+      "notes": [
+        "全伤1.15、8级光束1.438。原每次击杀0.3秒无敌在群怪3.33杀/秒时常驻，改每人共享最短1.5秒间隔；精英重置全队CD最短10秒一次，仍以击杀事件而非通关触发。"
+      ],
+      "id": "leader_dark_aura_oblivion_wing",
+      "members": [
+        717
+      ],
+      "name": {
+        "zh": "暗黑气场与死亡之翼",
+        "en": "Dark Aura Oblivion Wing",
+        "es": "Dark Aura Oblivion Wing"
+      },
+      "source": {
+        "heading": "伊裴尔塔尔家族 (Yveltal Family)",
+        "raw": "\n- **家族成员**：#717 伊裴尔塔尔\n- **属性配置**：恶 (Dark) / 飞行 (Flying)\n- **特性标识**：`leader_dark_aura_oblivion_wing`\n- **特性名称**：**暗黑气场与死亡之翼** (Dark Aura Oblivion Wing)\n- **接口映射**：`meleeLeech`、`projectileLeech`、`damage`、`regenRate`、`killGuard`、`eliteReset`、`moves.beam`\n\n#### 【基础被动能力】 (Passive)\n- **破灭暗黑吸魂 (Dark Aura Drain)**：\n  - 全队综合伤害乘区直接提高 **+15%** (`damage: 1.15`)；\n  - 【近战 (`melee`)】造成的实际伤害按 **5%**、【投射物 (`projectile`)】造成的实际伤害按 **4%** 转化为自身生命偷取（严格受 3% MaxHP/s 治疗漏斗预算管控）。\n\n#### 【累计特殊能力】 (Cadence)\n- **死亡之翼掠夺 (Oblivion Wing Z)** · *充能事件：`kill`（约 60s 校准）*：\n  - 手动激活朝瞄准方向轰出 width 80 巨型破坏光束 (`beam`，造成 `budget(c) * 0.60` 【恶/飞行】贯穿伤害)；\n  - 对沿途生命低于 **30%** 的普通杂兵直接处决收割（精英与 BOSS 除外），并按预算上限为全队提供高效生命回复。\n\n#### 【能力代价】 (Downside)\n- **破坏者的枯竭 (Destroyer's Rot)**：\n  - 自身无法依靠安静回复，全队自然及道具治疗效果速率减半 (`regenRate: 0.5`)；\n  - 受到【电属性】、【冰属性】与【岩石属性】伤害提升 **35%**。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **收割暗影庇护 (Oblivion Kill Guard)**：\n  - 任意队员或队长每亲手击杀 1 名敌人，立刻获得 **0.3 秒短暂暗影豁免无敌帧** (`killGuard: 0.3`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **王者猎杀重置 (Apex Execution Reset)**：\n  - 成功击败精英怪物或关卡首领的瞬间，全队所有宝可梦的全部招式冷却时间**瞬间归零清空** (`eliteReset: true`)；\n  - 全队【能量柱 (`beam`)】招式伤害提升 **+25%**。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **破灭暗黑吸魂 (Dark Aura Drain)**：",
+            "  - 全队综合伤害乘区直接提高 **+15%** (`damage: 1.15`)；",
+            "  - 【近战 (`melee`)】造成的实际伤害按 **5%**、【投射物 (`projectile`)】造成的实际伤害按 **4%** 转化为自身生命偷取（严格受 3% MaxHP/s 治疗漏斗预算管控）。"
+          ],
+          "active": [
+            "- **死亡之翼掠夺 (Oblivion Wing Z)** · *充能事件：`kill`（约 60s 校准）*：",
+            "  - 手动激活朝瞄准方向轰出 width 80 巨型破坏光束 (`beam`，造成 `budget(c) * 0.60` 【恶/飞行】贯穿伤害)；",
+            "  - 对沿途生命低于 **30%** 的普通杂兵直接处决收割（精英与 BOSS 除外），并按预算上限为全队提供高效生命回复。"
+          ],
+          "cost": [
+            "- **破坏者的枯竭 (Destroyer's Rot)**：",
+            "  - 自身无法依靠安静回复，全队自然及道具治疗效果速率减半 (`regenRate: 0.5`)；",
+            "  - 受到【电属性】、【冰属性】与【岩石属性】伤害提升 **35%**。"
+          ],
+          "five": [
+            "- **收割暗影庇护 (Oblivion Kill Guard)**：",
+            "  - 任意队员或队长每亲手击杀 1 名敌人，立刻获得 **0.3 秒短暂暗影豁免无敌帧** (`killGuard: 0.3`)。"
+          ],
+          "eight": [
+            "- **王者猎杀重置 (Apex Execution Reset)**：",
+            "  - 成功击败精英怪物或关卡首领的瞬间，全队所有宝可梦的全部招式冷却时间**瞬间归零清空** (`eliteReset: true`)；",
+            "  - 全队【能量柱 (`beam`)】招式伤害提升 **+25%**。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **破灭暗黑吸魂 (Dark Aura Drain)**：\n  - 全队综合伤害乘区直接提高 **+15%** (`damage: 1.15`)；\n  - 【近战 (`melee`)】造成的实际伤害按 **5%**、【投射物 (`projectile`)】造成的实际伤害按 **4%** 转化为自身生命偷取（严格受 3% MaxHP/s 治疗漏斗预算管控）。",
+          "active": "- **死亡之翼掠夺 (Oblivion Wing Z)** · *充能事件：`kill`（约 60s 校准）*：\n  - 手动激活朝瞄准方向轰出 width 80 巨型破坏光束 (`beam`，造成 `budget(c) * 0.60` 【恶/飞行】贯穿伤害)；\n  - 对沿途生命低于 **30%** 的普通杂兵直接处决收割（精英与 BOSS 除外），并按预算上限为全队提供高效生命回复。",
+          "cost": "- **破坏者的枯竭 (Destroyer's Rot)**：\n  - 自身无法依靠安静回复，全队自然及道具治疗效果速率减半 (`regenRate: 0.5`)；\n  - 受到【电属性】、【冰属性】与【岩石属性】伤害提升 **35%**。",
+          "five": "- **收割暗影庇护 (Oblivion Kill Guard)**：\n  - 任意队员或队长每亲手击杀 1 名敌人，立刻获得 **0.3 秒短暂暗影豁免无敌帧** (`killGuard: 0.3`)。",
+          "eight": "- **王者猎杀重置 (Apex Execution Reset)**：\n  - 成功击败精英怪物或关卡首领的瞬间，全队所有宝可梦的全部招式冷却时间**瞬间归零清空** (`eliteReset: true`)；\n  - 全队【能量柱 (`beam`)】招式伤害提升 **+25%**。"
+        }
+      }
+    },
+    {
+      "root": 718,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "beamHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "kalos": {
+          "pressure": 0.35
+        },
+        "groundImmune": true,
+        "moves": {
+          "beam": {
+            "damage": 1.25,
+            "width": 1.3
+          }
+        }
+      },
+      "cost": {
+        "stats": {
+          "spd": -0.15
+        },
+        "incomingTypes": {
+          "ice": 1.65
+        }
+      },
+      "five": {
+        "kalos": {
+          "globalPressure": 0.2
+        },
+        "beamDefense": 0.25
+      },
+      "eight": {
+        "psychicPenetration": 0.25,
+        "deathHeal": 0.3
+      },
+      "active": {
+        "kind": "kalos718",
+        "shape": "beamNova",
+        "power": 0.6,
+        "types": [
+          "dragon",
+          "ground"
+        ],
+        "armor": 0.4,
+        "stun": 1.5,
+        "pull": 150
+      },
+      "estimate": "光束1.25、25%穿甲后1.667，施法双防再25%。局部35%与全图20%压制取最大不叠加：近身频率65%、远处80%。光束+震荡共60%预算，不各自一份65%，每成员免死一战一次。",
+      "notes": [
+        "光束1.25、25%穿甲后1.667，施法双防再25%。局部35%与全图20%压制取最大不叠加：近身频率65%、远处80%。光束+震荡共60%预算，不各自一份65%，每成员免死一战一次。"
+      ],
+      "id": "leader_aura_break_core_enforcer",
+      "members": [
+        718
+      ],
+      "name": {
+        "zh": "气场破坏与核心惩罚者",
+        "en": "Aura Break Core Enforcer",
+        "es": "Aura Break Core Enforcer"
+      },
+      "source": {
+        "heading": "基格尔德家族 (Zygarde Family)",
+        "raw": "\n- **家族成员**：#718 基格尔德\n- **属性配置**：龙 (Dragon) / 地面 (Ground)\n- **特性标识**：`leader_aura_break_core_enforcer`\n- **特性名称**：**气场破坏与核心惩罚者** (Aura Break Core Enforcer)\n- **接口映射**：`pressure`、`globalPressure`、`groundImmune`、`moves.beam`、`beamDefense`、`psychicPenetration`、`deathHeal`\n\n#### 【基础被动能力】 (Passive)\n- **气场破坏与千箭制空 (Aura Break Suppressor)**：\n  - 队长周身 **250 半径内**的敌人遭到气场压制，其射弹与技能的发射冷却速率强制减缓 **35%** (`pressure: 0.35`)；\n  - 队伍免疫【地面属性】伤害 (`groundImmune: true`)；\n  - 全队【能量柱 (`beam`)】招式伤害提高 **+25%**、光束宽度增加 **+30%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **核心惩罚者“Z”射线 (Core Enforcer Z)** · *充能事件：`beamHit`（约 60s 校准）*：\n  - 手动激活朝瞄准方向释放贯穿世界的秩序光柱并伴随地面震荡冲击 (`beam` + `blast`，合计 `budget(c) * 0.65` 【龙/地面】伤害)；\n  - 将命中的非 BOSS 敌人聚向光束中心并附加 **1.5 秒眩晕**，同时剥夺目标防御 3 秒 (`leaderArmor: 0.4`)。\n\n#### 【能力代价】 (Downside)\n- **细胞重整迟滞与四倍冰伤 (Cellular Mass & Quad Ice)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 受到【冰属性】伤害提升 **65%** (`incomingTypes.ice: 1.65`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **全局秩序压制与光子护壁 (Global Order)**：\n  - 气场破坏扩展至整个战场：全图范围内敌方施放技能频率均被压制延缓 **20%** (`globalPressure: 0.2`)；\n  - 释放【能量柱 (`beam`)】期间获得 **+25% 临时双防保护** (`beamDefense: 0.25`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **完全体细胞重构与穿甲 (Perfect Form Resurgence)**：\n  - 全队主体攻击获得 **25% 防抗穿透** (`psychicPenetration: 0.25`)；\n  - 每波战斗首次濒死时触发基格尔德细胞聚能免死，立即回复 **30% 最大生命值** 并无敌 1.5 秒 (`deathHeal: 0.3`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **气场破坏与千箭制空 (Aura Break Suppressor)**：",
+            "  - 队长周身 **250 半径内**的敌人遭到气场压制，其射弹与技能的发射冷却速率强制减缓 **35%** (`pressure: 0.35`)；",
+            "  - 队伍免疫【地面属性】伤害 (`groundImmune: true`)；",
+            "  - 全队【能量柱 (`beam`)】招式伤害提高 **+25%**、光束宽度增加 **+30%**。"
+          ],
+          "active": [
+            "- **核心惩罚者“Z”射线 (Core Enforcer Z)** · *充能事件：`beamHit`（约 60s 校准）*：",
+            "  - 手动激活朝瞄准方向释放贯穿世界的秩序光柱并伴随地面震荡冲击 (`beam` + `blast`，合计 `budget(c) * 0.65` 【龙/地面】伤害)；",
+            "  - 将命中的非 BOSS 敌人聚向光束中心并附加 **1.5 秒眩晕**，同时剥夺目标防御 3 秒 (`leaderArmor: 0.4`)。"
+          ],
+          "cost": [
+            "- **细胞重整迟滞与四倍冰伤 (Cellular Mass & Quad Ice)**：",
+            "  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；",
+            "  - 受到【冰属性】伤害提升 **65%** (`incomingTypes.ice: 1.65`)。"
+          ],
+          "five": [
+            "- **全局秩序压制与光子护壁 (Global Order)**：",
+            "  - 气场破坏扩展至整个战场：全图范围内敌方施放技能频率均被压制延缓 **20%** (`globalPressure: 0.2`)；",
+            "  - 释放【能量柱 (`beam`)】期间获得 **+25% 临时双防保护** (`beamDefense: 0.25`)。"
+          ],
+          "eight": [
+            "- **完全体细胞重构与穿甲 (Perfect Form Resurgence)**：",
+            "  - 全队主体攻击获得 **25% 防抗穿透** (`psychicPenetration: 0.25`)；",
+            "  - 每波战斗首次濒死时触发基格尔德细胞聚能免死，立即回复 **30% 最大生命值** 并无敌 1.5 秒 (`deathHeal: 0.3`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **气场破坏与千箭制空 (Aura Break Suppressor)**：\n  - 队长周身 **250 半径内**的敌人遭到气场压制，其射弹与技能的发射冷却速率强制减缓 **35%** (`pressure: 0.35`)；\n  - 队伍免疫【地面属性】伤害 (`groundImmune: true`)；\n  - 全队【能量柱 (`beam`)】招式伤害提高 **+25%**、光束宽度增加 **+30%**。",
+          "active": "- **核心惩罚者“Z”射线 (Core Enforcer Z)** · *充能事件：`beamHit`（约 60s 校准）*：\n  - 手动激活朝瞄准方向释放贯穿世界的秩序光柱并伴随地面震荡冲击 (`beam` + `blast`，合计 `budget(c) * 0.65` 【龙/地面】伤害)；\n  - 将命中的非 BOSS 敌人聚向光束中心并附加 **1.5 秒眩晕**，同时剥夺目标防御 3 秒 (`leaderArmor: 0.4`)。",
+          "cost": "- **细胞重整迟滞与四倍冰伤 (Cellular Mass & Quad Ice)**：\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)；\n  - 受到【冰属性】伤害提升 **65%** (`incomingTypes.ice: 1.65`)。",
+          "five": "- **全局秩序压制与光子护壁 (Global Order)**：\n  - 气场破坏扩展至整个战场：全图范围内敌方施放技能频率均被压制延缓 **20%** (`globalPressure: 0.2`)；\n  - 释放【能量柱 (`beam`)】期间获得 **+25% 临时双防保护** (`beamDefense: 0.25`)。",
+          "eight": "- **完全体细胞重构与穿甲 (Perfect Form Resurgence)**：\n  - 全队主体攻击获得 **25% 防抗穿透** (`psychicPenetration: 0.25`)；\n  - 每波战斗首次濒死时触发基格尔德细胞聚能免死，立即回复 **30% 最大生命值** 并无敌 1.5 秒 (`deathHeal: 0.3`)。"
+        }
+      }
+    },
+    {
+      "root": 719,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "novaCast",
+        "targetSeconds": 60
+      },
+      "base": {
+        "stats": {
+          "defense": 0.25,
+          "spdef": 0.25
+        },
+        "kalos": {
+          "bankShield": 50
+        }
+      },
+      "cost": {
+        "incomingTypes": {
+          "steel": 1.75
+        },
+        "stats": {
+          "spd": -0.15
+        }
+      },
+      "five": {
+        "kalos": {
+          "bank": 0.015
+        }
+      },
+      "eight": {
+        "screenShieldRegen": 0.02,
+        "shieldOrbit": 1.3
+      },
+      "active": {
+        "kind": "kalos719",
+        "shape": "nova",
+        "power": 0.5,
+        "types": [
+          "fairy",
+          "rock"
+        ],
+        "count": 20,
+        "shield": 0.3
+      },
+      "estimate": "原150G才有初始盾、双防20%明显弱于小碎钻35%双防+多一球拦截，试玩双防25%、门槛50G、盾等于金币数且≤40%生命。财富300G增22.5%并多2G/战，8级有盾环绕再1.3。",
+      "notes": [
+        "原150G才有初始盾、双防20%明显弱于小碎钻35%双防+多一球拦截，试玩双防25%、门槛50G、盾等于金币数且≤40%生命。财富300G增22.5%并多2G/战，8级有盾环绕再1.3。"
+      ],
+      "id": "leader_clear_body_diamond_storm",
+      "members": [
+        719
+      ],
+      "name": {
+        "zh": "净白钻石护盾与皇室宝库",
+        "en": "Clear Body Diamond Treasury",
+        "es": "Clear Body Diamond Treasury"
+      },
+      "source": {
+        "heading": "蒂安希家族 (Diancie Family)",
+        "raw": "\n- **家族成员**：#719 蒂安希\n- **属性配置**：岩石 (Rock) / 妖精 (Fairy)\n- **特性标识**：`leader_clear_body_diamond_storm`\n- **特性名称**：**净白钻石护盾与皇室宝库** (Clear Body Diamond Treasury)\n- **接口映射**：`stats.defense`、`stats.spdef`、`bankShield`、`bankDamage`、`moves.nova`、`shieldOrbit`、`screenShieldRegen`\n\n#### 【基础被动能力】 (Passive)\n- **钻石王冠与国库壁垒 (💰 Royal Treasury Shield)**：\n  - 全队物理防御与特殊防御提升 **+20%**；\n  - **金库护盾 (`bankShield: true`)**：若开战时持有局内金币 **`>= 150G`**，进入战斗立刻为全队生成与存款关联的高额钻石白盾（**受 40% MaxHP 硬上限管制**）。\n\n#### 【累计特殊能力】 (Cadence)\n- **璀璨钻石风暴 (Diamond Storm Z)** · *充能事件：`novaCast`（约 60s 校准）*：\n  - 手动激活向四周 360° 喷射 20 发可穿墙的妖精/岩石钻石弹 (`nova`，合计总伤 `budget(c) * 0.55`)；\n  - 爆发瞬间同时为全队赋予 **30% MaxHP 钻石白盾**持续 5 秒。\n\n#### 【能力代价】 (Downside)\n- **四倍弱钢与高贵缓步 (Quadruple Steel Weakness)**：\n  - 受到【钢属性】伤害提升 **75%** (`incomingTypes.steel: 1.75`)；\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **皇室宝石红利账本 (💰 Diamond Ledger)**：\n  - 开启存款战力转化（`bankDamage: 0.015`）：队伍每保有 20 局内金币，全队输出提高 **1.5%**（**封顶 +30%**）；\n  - 战斗中每累计 20 次全队击杀，战后额外奖励 **+1 金币**（**每场封顶 +2G**）。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **钻石护盾再生与环爆增幅 (Radiant Shield Synergy)**：\n  - 宝可梦身上存有白盾期间，每秒自动补充恢复 **2% MaxHP 白盾** (`screenShieldRegen: 0.02`，上限 40%)；\n  - 存有白盾时全队【环绕 (`orbit`)】技能伤害提升 **+30%** (`shieldOrbit: 1.3`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **钻石王冠与国库壁垒 (💰 Royal Treasury Shield)**：",
+            "  - 全队物理防御与特殊防御提升 **+20%**；",
+            "  - **金库护盾 (`bankShield: true`)**：若开战时持有局内金币 **`>= 150G`**，进入战斗立刻为全队生成与存款关联的高额钻石白盾（**受 40% MaxHP 硬上限管制**）。"
+          ],
+          "active": [
+            "- **璀璨钻石风暴 (Diamond Storm Z)** · *充能事件：`novaCast`（约 60s 校准）*：",
+            "  - 手动激活向四周 360° 喷射 20 发可穿墙的妖精/岩石钻石弹 (`nova`，合计总伤 `budget(c) * 0.55`)；",
+            "  - 爆发瞬间同时为全队赋予 **30% MaxHP 钻石白盾**持续 5 秒。"
+          ],
+          "cost": [
+            "- **四倍弱钢与高贵缓步 (Quadruple Steel Weakness)**：",
+            "  - 受到【钢属性】伤害提升 **75%** (`incomingTypes.steel: 1.75`)；",
+            "  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)。"
+          ],
+          "five": [
+            "- **皇室宝石红利账本 (💰 Diamond Ledger)**：",
+            "  - 开启存款战力转化（`bankDamage: 0.015`）：队伍每保有 20 局内金币，全队输出提高 **1.5%**（**封顶 +30%**）；",
+            "  - 战斗中每累计 20 次全队击杀，战后额外奖励 **+1 金币**（**每场封顶 +2G**）。"
+          ],
+          "eight": [
+            "- **钻石护盾再生与环爆增幅 (Radiant Shield Synergy)**：",
+            "  - 宝可梦身上存有白盾期间，每秒自动补充恢复 **2% MaxHP 白盾** (`screenShieldRegen: 0.02`，上限 40%)；",
+            "  - 存有白盾时全队【环绕 (`orbit`)】技能伤害提升 **+30%** (`shieldOrbit: 1.3`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **钻石王冠与国库壁垒 (💰 Royal Treasury Shield)**：\n  - 全队物理防御与特殊防御提升 **+20%**；\n  - **金库护盾 (`bankShield: true`)**：若开战时持有局内金币 **`>= 150G`**，进入战斗立刻为全队生成与存款关联的高额钻石白盾（**受 40% MaxHP 硬上限管制**）。",
+          "active": "- **璀璨钻石风暴 (Diamond Storm Z)** · *充能事件：`novaCast`（约 60s 校准）*：\n  - 手动激活向四周 360° 喷射 20 发可穿墙的妖精/岩石钻石弹 (`nova`，合计总伤 `budget(c) * 0.55`)；\n  - 爆发瞬间同时为全队赋予 **30% MaxHP 钻石白盾**持续 5 秒。",
+          "cost": "- **四倍弱钢与高贵缓步 (Quadruple Steel Weakness)**：\n  - 受到【钢属性】伤害提升 **75%** (`incomingTypes.steel: 1.75`)；\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)。",
+          "five": "- **皇室宝石红利账本 (💰 Diamond Ledger)**：\n  - 开启存款战力转化（`bankDamage: 0.015`）：队伍每保有 20 局内金币，全队输出提高 **1.5%**（**封顶 +30%**）；\n  - 战斗中每累计 20 次全队击杀，战后额外奖励 **+1 金币**（**每场封顶 +2G**）。",
+          "eight": "- **钻石护盾再生与环爆增幅 (Radiant Shield Synergy)**：\n  - 宝可梦身上存有白盾期间，每秒自动补充恢复 **2% MaxHP 白盾** (`screenShieldRegen: 0.02`，上限 40%)；\n  - 存有白盾时全队【环绕 (`orbit`)】技能伤害提升 **+30%** (`shieldOrbit: 1.3`)。"
+        }
+      }
+    },
+    {
+      "root": 720,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "intercept",
+        "targetSeconds": 60
+      },
+      "base": {
+        "moves": {
+          "orbit": {
+            "count": 1
+          },
+          "beam": {
+            "damage": 1.25
+          }
+        },
+        "orbitIntercept": true,
+        "projectileTerrain": true
+      },
+      "cost": {
+        "stats": {
+          "hp": -0.2
+        },
+        "incomingTypes": {
+          "dark": 1.65,
+          "ghost": 1.65
+        }
+      },
+      "five": {
+        "emergencyWarp": 1.5
+      },
+      "eight": {
+        "psychicPenetration": 0.25,
+        "moves": {
+          "orbit": {
+            "damage": 1.25
+          }
+        }
+      },
+      "active": {
+        "kind": "kalos720",
+        "shape": "beam",
+        "power": 0.45,
+        "types": [
+          "psychic",
+          "ghost"
+        ],
+        "count": 3,
+        "reflect": true,
+        "stun": 1.5
+      },
+      "estimate": "光束基础1.25、后期穿甲1.667；多环绕球拦截和25%增伤依原球数兑现。0.8生命/1.65弱点=0.485有效生命；反射和3光束共用一次首领预算，免死每成员一战一次。",
+      "notes": [
+        "光束基础1.25、后期穿甲1.667；多环绕球拦截和25%增伤依原球数兑现。0.8生命/1.65弱点=0.485有效生命；反射和3光束共用一次首领预算，免死每成员一战一次。"
+      ],
+      "id": "leader_magician_hyperspace_ring",
+      "members": [
+        720
+      ],
+      "name": {
+        "zh": "异次元魔术金环",
+        "en": "Magician Hyperspace Ring",
+        "es": "Magician Hyperspace Ring"
+      },
+      "source": {
+        "heading": "胡帕家族 (Hoopa Family)",
+        "raw": "\n- **家族成员**：#720 胡帕\n- **属性配置**：超能力 (Psychic) / 幽灵 (Ghost)\n- **特性标识**：`leader_magician_hyperspace_ring`\n- **特性名称**：**异次元魔术金环** (Magician Hyperspace Ring)\n- **接口映射**：`moves.orbit`、`orbitIntercept`、`moves.beam`、`projectileTerrain`、`emergencyWarp`、`psychicPenetration`\n\n#### 【基础被动能力】 (Passive)\n- **空间金环与穿墙魔术 (Hyperspace Ring Trick)**：\n  - 全队【环绕 (`orbit`)】招式法球数量 **+1**，且金环法球碰撞敌方弹幕时**直接拦截消除** (`orbitIntercept: true`)；\n  - 全队【能量柱 (`beam`)】招式伤害提升 **+25%**，投射物自动穿透障碍墙壁 (`projectileTerrain: true`)。\n\n#### 【累计特殊能力】 (Cadence)\n- **异次元空间折射 (Hyperspace Fury Z)** · *充能事件：`intercept`（约 60s 校准）*：\n  - 手动激活开启金环空间门，把全屏所有敌方射弹**反转为追踪我方敌人的超能弹矢量** (`clearShots(..., true)`)；\n  - 紧接着连射 3 道贯穿空间的魔术射线（合计 `budget(c) * 0.45`）并附带 1.5 秒眩晕 (`stun`，BOSS 减半)。\n\n#### 【能力代价】 (Downside)\n- **惩戒双四倍脆弱 (Twin Quadruple Weakness)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【恶属性】与【幽灵属性】伤害提升 **65%** (`incomingTypes: { dark: 1.65, ghost: 1.65 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **异次元紧急逃脱门 (Emergency Warp)**：\n  - 当宝可梦遭到致死打击时，金环于脚下开启实施紧急空间跃迁免死（每场限 1 次，保留 1 血存活并进入 **1.5 秒无敌保护状态**，直接复用 `emergencyWarp: 1.5`！）。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **解放之环穿甲魔炮 (Unbound Piercing)**：\n  - 全队主体攻击无视敌方 **25% 抗性防御** (`psychicPenetration: 0.25`)；\n  - 【环绕 (`orbit`)】招式基础伤害额外提升 **+25%** (`moves.orbit.damage: 1.25`)。\n\n---\n\n",
+        "parts": {
+          "base": [
+            "- **空间金环与穿墙魔术 (Hyperspace Ring Trick)**：",
+            "  - 全队【环绕 (`orbit`)】招式法球数量 **+1**，且金环法球碰撞敌方弹幕时**直接拦截消除** (`orbitIntercept: true`)；",
+            "  - 全队【能量柱 (`beam`)】招式伤害提升 **+25%**，投射物自动穿透障碍墙壁 (`projectileTerrain: true`)。"
+          ],
+          "active": [
+            "- **异次元空间折射 (Hyperspace Fury Z)** · *充能事件：`intercept`（约 60s 校准）*：",
+            "  - 手动激活开启金环空间门，把全屏所有敌方射弹**反转为追踪我方敌人的超能弹矢量** (`clearShots(..., true)`)；",
+            "  - 紧接着连射 3 道贯穿空间的魔术射线（合计 `budget(c) * 0.45`）并附带 1.5 秒眩晕 (`stun`，BOSS 减半)。"
+          ],
+          "cost": [
+            "- **惩戒双四倍脆弱 (Twin Quadruple Weakness)**：",
+            "  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；",
+            "  - 受到【恶属性】与【幽灵属性】伤害提升 **65%** (`incomingTypes: { dark: 1.65, ghost: 1.65 }`)。"
+          ],
+          "five": [
+            "- **异次元紧急逃脱门 (Emergency Warp)**：",
+            "  - 当宝可梦遭到致死打击时，金环于脚下开启实施紧急空间跃迁免死（每场限 1 次，保留 1 血存活并进入 **1.5 秒无敌保护状态**，直接复用 `emergencyWarp: 1.5`！）。"
+          ],
+          "eight": [
+            "- **解放之环穿甲魔炮 (Unbound Piercing)**：",
+            "  - 全队主体攻击无视敌方 **25% 抗性防御** (`psychicPenetration: 0.25`)；",
+            "  - 【环绕 (`orbit`)】招式基础伤害额外提升 **+25%** (`moves.orbit.damage: 1.25`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **空间金环与穿墙魔术 (Hyperspace Ring Trick)**：\n  - 全队【环绕 (`orbit`)】招式法球数量 **+1**，且金环法球碰撞敌方弹幕时**直接拦截消除** (`orbitIntercept: true`)；\n  - 全队【能量柱 (`beam`)】招式伤害提升 **+25%**，投射物自动穿透障碍墙壁 (`projectileTerrain: true`)。",
+          "active": "- **异次元空间折射 (Hyperspace Fury Z)** · *充能事件：`intercept`（约 60s 校准）*：\n  - 手动激活开启金环空间门，把全屏所有敌方射弹**反转为追踪我方敌人的超能弹矢量** (`clearShots(..., true)`)；\n  - 紧接着连射 3 道贯穿空间的魔术射线（合计 `budget(c) * 0.45`）并附带 1.5 秒眩晕 (`stun`，BOSS 减半)。",
+          "cost": "- **惩戒双四倍脆弱 (Twin Quadruple Weakness)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【恶属性】与【幽灵属性】伤害提升 **65%** (`incomingTypes: { dark: 1.65, ghost: 1.65 }`)。",
+          "five": "- **异次元紧急逃脱门 (Emergency Warp)**：\n  - 当宝可梦遭到致死打击时，金环于脚下开启实施紧急空间跃迁免死（每场限 1 次，保留 1 血存活并进入 **1.5 秒无敌保护状态**，直接复用 `emergencyWarp: 1.5`！）。",
+          "eight": "- **解放之环穿甲魔炮 (Unbound Piercing)**：\n  - 全队主体攻击无视敌方 **25% 抗性防御** (`psychicPenetration: 0.25`)；\n  - 【环绕 (`orbit`)】招式基础伤害额外提升 **+25%** (`moves.orbit.damage: 1.25`)。"
+        }
+      }
+    },
+    {
+      "root": 721,
+      "generation": 6,
+      "runtime": "kalos",
+      "charge": {
+        "event": "coneHit",
+        "targetSeconds": 60
+      },
+      "base": {
+        "immune": [
+          "water"
+        ],
+        "kalos": {
+          "waterHeal": 0.02
+        },
+        "moves": {
+          "cone": {
+            "damage": 1.2
+          },
+          "nova": {
+            "damage": 1.2
+          }
+        }
+      },
+      "cost": {
+        "cooldown": 1.1,
+        "incomingTypes": {
+          "electric": 1.35,
+          "ground": 1.35,
+          "rock": 1.35
+        }
+      },
+      "five": {
+        "burnDamage": 1.25,
+        "fireFormation": true
+      },
+      "eight": {
+        "fireDamage": 1.25,
+        "burnCrit": 0.2
+      },
+      "active": {
+        "kind": "kalos721",
+        "shape": "nova",
+        "power": 0.6,
+        "types": [
+          "water",
+          "fire"
+        ],
+        "radius": 320,
+        "burn": 3,
+        "slow": 0.6,
+        "clear": 320
+      },
+      "estimate": "基础火扇形持续输出1.2/1.1=1.091，8级灼伤火扇1.2×1.25×1.25×1.1/1.1=1.875。水吸收每实际水攻击给2%最大HP并共享3%/秒治疗；不把水免疫误改成最低0.3倍承伤。",
+      "notes": [
+        "基础火扇形持续输出1.2/1.1=1.091，8级灼伤火扇1.2×1.25×1.25×1.1/1.1=1.875。水吸收每实际水攻击给2%最大HP并共享3%/秒治疗；不把水免疫误改成最低0.3倍承伤。"
+      ],
+      "id": "leader_water_absorb_steam_eruption",
+      "members": [
+        721
+      ],
+      "name": {
+        "zh": "储水锅炉与水汽蒸汽爆发",
+        "en": "Water Absorb Steam Eruption",
+        "es": "Water Absorb Steam Eruption"
+      },
+      "source": {
+        "heading": "波尔凯尼恩家族 (Volcanion Family)",
+        "raw": "\n- **家族成员**：#721 波尔凯尼恩\n- **属性配置**：火 (Fire) / 水 (Water)\n- **特性标识**：`leader_water_absorb_steam_eruption`\n- **特性名称**：**储水锅炉与水汽蒸汽爆发** (Water Absorb Steam Eruption)\n- **接口映射**：`immune: ['water']`、`waterHeal`、`moves.cone`、`moves.nova`、`burnDamage`、`fireFormation`、`fireDamage`、`burnCrit`\n\n#### 【基础被动能力】 (Passive)\n- **水火蒸汽锅炉 (Water Absorb Boiler)**：\n  - 全队永久免疫【水属性】伤害并将其部分吸收转化恢复自身生命 (`immune: ['water']`、`waterHeal: 0.02`，受 3%/s 预算限制)；\n  - 全队【锥形喷射 (`cone`)】与【爆发 (`nova`)】招式基础伤害提升 **+20%**。\n\n#### 【累计特殊能力】 (Cadence)\n- **超高压蒸汽爆发 (Steam Eruption Z)** · *充能事件：`coneHit`（约 60s 校准）*：\n  - 手动激活于自身周围 320 范围炸开高温高压水汽冲击波 (`blast`，造成 `budget(c) * 0.60` 【水/火】复合爆伤)；\n  - 令范围内敌人同时承受 **3 层重度灼烧** 与 **60% 移动减速**，并驱散近身弹幕。\n\n#### 【能力代价】 (Downside)\n- **内压锅炉散热负担 (Boiler Overpressure)**：\n  - 全队常规技能冷却时间略微延长 **10%** (`cooldown: 1.1`)；\n  - 受到【电属性】、【地面属性】与【岩石属性】伤害提升 **35%** (`incomingTypes: { electric: 1.35, ground: 1.35, rock: 1.35 }`)。\n\n#### 【进阶能力 1】 (Evolution 1 - Lv.5)\n- **过热蒸汽助燃 (Superheated Steam)**：\n  - 全队【火属性】招式攻击处于灼烧状态敌人时伤害提升 **+25%** (`burnDamage: 1.25`)；\n  - 火系投射物与陨石的伤害覆盖范围放大 **+15%** (`fireFormation: true`)。\n\n#### 【进阶能力 2】 (Evolution 2 - Lv.8)\n- **双极熔炉狂暴 (Thermal Furnace Apex)**：\n  - 全队【火属性】招式伤害额外提升 **+25%** (`fireDamage: 1.25`)；\n  - 【锥形 (`cone`)】招式攻击处于灼烧中的目标时暴击率提高 **+20%** (`burnCrit: 0.2`)。\n",
+        "parts": {
+          "base": [
+            "- **水火蒸汽锅炉 (Water Absorb Boiler)**：",
+            "  - 全队永久免疫【水属性】伤害并将其部分吸收转化恢复自身生命 (`immune: ['water']`、`waterHeal: 0.02`，受 3%/s 预算限制)；",
+            "  - 全队【锥形喷射 (`cone`)】与【爆发 (`nova`)】招式基础伤害提升 **+20%**。"
+          ],
+          "active": [
+            "- **超高压蒸汽爆发 (Steam Eruption Z)** · *充能事件：`coneHit`（约 60s 校准）*：",
+            "  - 手动激活于自身周围 320 范围炸开高温高压水汽冲击波 (`blast`，造成 `budget(c) * 0.60` 【水/火】复合爆伤)；",
+            "  - 令范围内敌人同时承受 **3 层重度灼烧** 与 **60% 移动减速**，并驱散近身弹幕。"
+          ],
+          "cost": [
+            "- **内压锅炉散热负担 (Boiler Overpressure)**：",
+            "  - 全队常规技能冷却时间略微延长 **10%** (`cooldown: 1.1`)；",
+            "  - 受到【电属性】、【地面属性】与【岩石属性】伤害提升 **35%** (`incomingTypes: { electric: 1.35, ground: 1.35, rock: 1.35 }`)。"
+          ],
+          "five": [
+            "- **过热蒸汽助燃 (Superheated Steam)**：",
+            "  - 全队【火属性】招式攻击处于灼烧状态敌人时伤害提升 **+25%** (`burnDamage: 1.25`)；",
+            "  - 火系投射物与陨石的伤害覆盖范围放大 **+15%** (`fireFormation: true`)。"
+          ],
+          "eight": [
+            "- **双极熔炉狂暴 (Thermal Furnace Apex)**：",
+            "  - 全队【火属性】招式伤害额外提升 **+25%** (`fireDamage: 1.25`)；",
+            "  - 【锥形 (`cone`)】招式攻击处于灼烧中的目标时暴击率提高 **+20%** (`burnCrit: 0.2`)。"
+          ]
+        }
+      },
+      "description": {
+        "zh": {
+          "base": "- **水火蒸汽锅炉 (Water Absorb Boiler)**：\n  - 全队永久免疫【水属性】伤害并将其部分吸收转化恢复自身生命 (`immune: ['water']`、`waterHeal: 0.02`，受 3%/s 预算限制)；\n  - 全队【锥形喷射 (`cone`)】与【爆发 (`nova`)】招式基础伤害提升 **+20%**。",
+          "active": "- **超高压蒸汽爆发 (Steam Eruption Z)** · *充能事件：`coneHit`（约 60s 校准）*：\n  - 手动激活于自身周围 320 范围炸开高温高压水汽冲击波 (`blast`，造成 `budget(c) * 0.60` 【水/火】复合爆伤)；\n  - 令范围内敌人同时承受 **3 层重度灼烧** 与 **60% 移动减速**，并驱散近身弹幕。",
+          "cost": "- **内压锅炉散热负担 (Boiler Overpressure)**：\n  - 全队常规技能冷却时间略微延长 **10%** (`cooldown: 1.1`)；\n  - 受到【电属性】、【地面属性】与【岩石属性】伤害提升 **35%** (`incomingTypes: { electric: 1.35, ground: 1.35, rock: 1.35 }`)。",
+          "five": "- **过热蒸汽助燃 (Superheated Steam)**：\n  - 全队【火属性】招式攻击处于灼烧状态敌人时伤害提升 **+25%** (`burnDamage: 1.25`)；\n  - 火系投射物与陨石的伤害覆盖范围放大 **+15%** (`fireFormation: true`)。",
+          "eight": "- **双极熔炉狂暴 (Thermal Furnace Apex)**：\n  - 全队【火属性】招式伤害额外提升 **+25%** (`fireDamage: 1.25`)；\n  - 【锥形 (`cone`)】招式攻击处于灼烧中的目标时暴击率提高 **+20%** (`burnCrit: 0.2`)。"
+        }
+      }
+    }
+  ]
+}

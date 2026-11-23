@@ -66,7 +66,7 @@ G.Items = (() => {
   function useActive(p){
     const item=ACTIVE[p?.activeItem];
     if(!item||p.dead||p.remote||(p.activeItemCd||0)>0||G.Game?.state!=='playing')return false;
-    if(item.heal){if(p.hp>=p.maxHp)return false;p.heal(p.maxHp*item.heal);}
+    if(item.heal){if(p.hp>=p.maxHp)return false;if(G.LeaderKalos?.has(p))G.LeaderKalos.itemHeal(p,p.maxHp*item.heal,true);else p.heal(p.maxHp*item.heal);}
     else if(item.id==='pppotion'){if(p.ppPotionReady)return false;p.ppPotionReady=20;}
     else if(item.id==='spiritspray')p.tempPP=(p.tempPP||0)+15;
     G.BreakItems?.active(p);

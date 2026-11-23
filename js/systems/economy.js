@@ -6,7 +6,7 @@ G.Economy=(()=>{
   const events={battle:'NORMAL_BATTLE',elite:'ELITE_BATTLE',boss:'BOSS_BATTLE',shop:'SHOP','item-shop':'SHOP',peddler:'SHOP',training:'SKILL_TRAINING','pokemon-training':'POKEMON_TRAINING',wild:'WILD_EXPEDITION',rest:'REST'};
   const levelRow=level=>config().levels.find(row=>row.level===level);
   const maxLevel=s=>s.cycle>=config().endless.unlockCycle?config().levels.at(-1).level:config().levels.at(-2).level;
-  const interest=(gold,s=G.Expedition?.run)=>Math.max(0,Math.min(G.TrainerTalents?.maxInterest(s)??config().interest.maxInterest,Math.floor(gold/(G.TrainerTalents?.interestDivisor(s)||config().interest.divisor))));
+  const interest=(gold,s=G.Expedition?.run)=>{const terms=G.LeaderKalos?.interest(s);return Math.max(0,Math.min(terms?.cap??G.TrainerTalents?.maxInterest(s)??config().interest.maxInterest,Math.floor(gold/(terms?.divisor||G.TrainerTalents?.interestDivisor(s)||config().interest.divisor))));};
   const capacity=s=>levelRow(s.trainerLevel).squadCap+(s.extraPopPurchases||0)+(s.hasPopCapItem?1:0);
   const refreshCost=s=>(G.LeaderAbilities?.refreshCost||((v)=>v))(Math.max(1,(s.cycle>=config().endless.unlockCycle+1?config().shop.endlessCycle5PlusRefreshCost:config().shop.baseRefreshCost)-(G.TrainerTalents?.refreshDiscount(s)||0)));
   const licenseCost=s=>config().endless.extraPopLicenseBaseCost+config().endless.extraPopLicenseStepCost*s.extraPopPurchases;

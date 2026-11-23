@@ -4417,3 +4417,12 @@ G.I18n.addChinese({
   "Bisharp usa la vida estratégica mínima del combate. Crustle limita cada golpe directo al 25%; Audino duplica solo EXP Pokémon; Alomomola no revive aliados caídos.": "驹刀小兵读取本场最低小队生命；岩殿居蟹单次直接受伤最多25%；差不多娃娃只翻倍宝可梦经验；保姆曼波不会复活倒下成员。",
   "Dejé las nuevas fichas sujetas con una concha para que no se las lleve el viento. Quien cocina revisa los números; yo guardo una página del cuaderno para las historias de nuestros nuevos capitanes.": "我用贝壳压住了新特性卡，省得海风把它们吹乱。做饭的那家伙核对数值，我在手账上留了一页，等咱们的新队长写下故事。"
 });
+
+G.I18n.addChinese({
+  "Capitanes de Kalos · v0.43.0-alpha.64": "第六世代队长特性 · v0.43.0-alpha.64",
+  "Se incorporan 37 familias de habilidades de capitán de Kalos, con pasiva, coste, avances de entrenador 5/8 y Z manual por medalla familiar.": "新增卡洛斯37个队长特性家族，基础被动与代价开局生效，训练家5／8级进阶，家族勋章解锁手动Z。",
+  "Las fichas conservan el texto original y separan las reglas y ajustes actuales. Los ataques múltiples, escudos, ecos y recompensas se han revisado por familia.": "特性卡保留设计原文，另列本版本实际规则与调整。逐家族核算多段攻击、护盾、回响和经济收益。",
+  "Las provisiones de habilidades se entregan tras ganar; generan carga al aparecer y conservan la velocidad para el siguiente combate. La curación Z limitada se paga gradualmente sin perder el resto.": "特性补给胜利后领取，生成时即可为Z充能，加速留给下一战；受限Z治疗会按秒逐步兑现，保留未恢复的额度。",
+  "Klefki añade una elección real de objeto entre tres tras las élites. Xerneas dispone de un rescate de equipo compartido por combate, sin reducir la vida de aliados que siguen en pie.": "钥匙圈在精英通关后额外提供真正的道具三选一；哲尔尼亚斯每战可触发一次全队救援，存活伙伴不会被降低生命值。",
+  "Marqué las treinta y siete fichas con pequeñas banderas de colores. Quien cocina ajustó las cuentas; yo aparté un sitio junto a la ventana para que podamos revisar juntos las nuevas rutas.": "我给三十七张特性卡都夹好了彩色小旗。做饭的那家伙算完了账，我在窗边留了个位置，咱们可以慢慢挑下一条路线啦。"
+});

@@ -119,16 +119,17 @@
       if (this.dead || !(amount > 0)) return 0;
       if(G.LeaderSinnoh?.has(attacker)&&G.LeaderSinnoh.f().fireTrue&&attack.type==='fire'&&(this.sinnohArmor>0||this.sinnohPhysicalArmor>0&&(!this.sinnohPhysicalArmorUntil||this.sinnohPhysicalArmorUntil>G.LeaderSinnoh.now())||this.sinnohSoftUntil>G.LeaderSinnoh.now()))attack={...attack,leaderTrue:true};
       const shielded = this.shield > 0;
-      const leaderFactor=G.LeaderAbilities?.outgoing(attacker,this,attack)??1;amount*=leaderFactor;
+      const settledKalos=!!(attack.kalosSettled&&G.LeaderKalos?.has(attacker));
+      const leaderFactor=settledKalos?1:G.LeaderAbilities?.outgoing(attacker,this,attack)??1;amount*=leaderFactor;
       const bypass = !!(G.LeaderUnova?.has(attacker)&&G.LeaderUnova.f().moldBreaker)||!!(G.LeaderSinnoh?.has(attacker)&&(G.LeaderSinnoh.f().infiltrator||G.LeaderSinnoh.f().moldBreaker||attack.sinnohBreak))||!!(G.LeaderHoenn?.has(attacker)&&attack.hoennVenom&&G.LeaderHoenn.f().venomBypass)||!!(G.LeaderJohto?.has(attacker)&&G.LeaderJohto.f().infiltrator)||!!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
-      const bond=!this.remote?G.TypeBonds?.beforeHit(attacker,this,attack):null;
+      const bond=!this.remote&&!settledKalos?G.TypeBonds?.beforeHit(attacker,this,attack):null;
       if(bond)amount*=bond.factor;
-      const terminal=G.SquadTraits?.beforeHit(attacker,this,attack);if(terminal)amount*=terminal.factor;
+      const terminal=!settledKalos?G.SquadTraits?.beforeHit(attacker,this,attack):null;if(terminal)amount*=terminal.factor;
       const damageContext={contributions:[...(bond?.contributions||[]),...(terminal?.contributions||[])],execute:!!(bond?.execute||terminal?.execute),executionSource:terminal?.execute?terminal.executionSource:'fairy'};
       if(G.TypeBonds)knock*=G.TypeBonds.knock(attacker,attack);
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
-      if (!this.remote && attacker&&!attack.typeBondFraction&&!attack.talentPulse) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass)*(G.TrainerTalents?.outgoing(attacker)||1)*(G.ExpeditionGrowth?.damageFactor(attacker,attack)||1);
+      if (!this.remote && attacker&&!attack.typeBondFraction&&!attack.talentPulse&&!settledKalos) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass)*(G.TrainerTalents?.outgoing(attacker)||1)*(G.ExpeditionGrowth?.damageFactor(attacker,attack)||1);
       if (!this.remote && attack.damageClass&&!attack.leaderTrue) {
         const rawDefense=attack.damageClass==='special'?this.spdef:this.defense,defense=G.LeaderUnova?.enemyDefense(attacker,this,attack,rawDefense)??rawDefense;
         amount /= (defense || 1)*(1-(G.LeaderAbilities?.penetration(attacker,this,attack)||0));
@@ -138,6 +139,7 @@
       if(attack.hoennZ&&(this.boss||this.elite)&&G.LeaderHoenn?.has(attacker))amount=Math.min(amount,G.LeaderAbilities._z.budget(attacker)*.3);
       if((attack.sinnohZ||attack.sinnohSoul)&&(this.boss||this.elite)&&G.LeaderSinnoh?.has(attacker))amount=Math.min(amount,G.LeaderAbilities._z.budget(attacker)*.3);
       if(attack.unovaZ)amount=G.LeaderUnova?.zBudget(this,amount,attack)??amount;
+      if(attack.kalosZ)amount=G.LeaderKalos?.zBudget(this,amount,attack)??amount;
       if(!(amount>0))return 0;const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
       // quien decide si cae. Aquí sólo se ve (número, destello y animación).

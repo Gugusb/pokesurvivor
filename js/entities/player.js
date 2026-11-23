@@ -143,8 +143,8 @@ G.Player = class Player {
     if(this.actorStunT>0||G.LeaderUnova?.immobile(this))return 0;
     const s = (this.baseSpd+(G.TypeBonds?.baseBonus(this,'spd')||0)+(G.SquadTraits?.flat(this,'spd')||0)) * (1+this.statGrowth.spd+this.buffFraction('spd')+(G.TrainerTalents?.speedPct(this)||0)) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
       (1 + G.Abilities.speedBonus(this));
-    const w = G.Weather.speedFor(this.mon.types);
-    const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
+    const w = G.LeaderKalos?.terrainImmune(this)?1:G.Weather.speedFor(this.mon.types);
+    const slow = G.LeaderKalos?.terrainImmune(this)?1:this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
     return s * (G.Abilities.slowImmune(this) ? 1 : ((G.LeaderJohto?.floating(this)||G.LeaderHoenn?.floating(this)||G.LeaderSinnoh?.floating(this))?1:slow) * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
       (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1)*(G.TypeBonds?.speed(this)||1)*(G.SquadTraits?.factor(this,'spd')||1)*(G.LeaderAbilities?.factor(this,'spd')||1);
   }
@@ -422,7 +422,7 @@ G.Player = class Player {
       if (b.n > 0) { b.t -= dt; if (b.t <= 0) b.n = 0; }
     }
     if (this.slowT > 0) this.slowT -= dt;
-    if (this.bellHeal > 0) { const h = Math.min(this.bellHeal, .8*G.Items.count(this,'shellbell')*dt); if(G.LeaderSinnoh?.has(this))G.LeaderSinnoh.leech(this,h);else this.hp = Math.min(this.maxHp, this.hp + h); this.bellHeal -= h; }
+    if (this.bellHeal > 0) { const h = Math.min(this.bellHeal, .8*G.Items.count(this,'shellbell')*dt); if(G.LeaderKalos?.has(this))G.LeaderKalos.itemHeal(this,h);else if(G.LeaderSinnoh?.has(this))G.LeaderSinnoh.leech(this,h);else this.hp = Math.min(this.maxHp, this.hp + h); this.bellHeal -= h; }
     if (this.power && (this.power.t -= dt) <= 0) { this.power.def.off(this); this.power = null; }
     this.regenerate(dt);
 
