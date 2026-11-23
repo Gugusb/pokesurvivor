@@ -94,7 +94,7 @@ G.Dev = (() => {
     if(['leader-charge','leader-cast','leader-reset'].includes(id)&&!leader?.active()){G.UI.toast('当前队长没有已实装的家族特性');return false;}
     if(id==='trainer-level'&&(!Number.isSafeInteger(value)||value<1||value>G.Economy.maxLevel(r)))return false;
     if(id==='squad-health'&&(!Number.isFinite(value)||value<1||value>G.TrainerTalents.maxHp(r)))return false;
-    if(['wave-end','test-enemies','leader-cast'].includes(id)&&r.phase!=='combat'){G.UI.toast('此项目需在战斗中测试');return false;}
+    if(['wave-end','test-enemies','leader-cast','actor-status'].includes(id)&&r.phase!=='combat'){G.UI.toast('此项目需在战斗中测试');return false;}
     G.Game.debugMark();
     switch(id){
       case 'leader-charge':{const d=G.LeaderMedals.medalsFor(r.captain.dex).find(m=>m.leader);G.DB.save.abilityMedals[d.id]||={at:Date.now(),from:'dev'};leader.state().charge=1;break;}
@@ -103,6 +103,8 @@ G.Dev = (() => {
       case 'trainer-level':r.trainerLevel=value;r.trainerXp=0;G.Squad.syncTrainer();break;
       case 'squad-health':r.squadHp=value;break;
       case 'jar-fill':G.ExpeditionSupplies.deposit(r,G.ExpeditionSupplies.jarMax(r));break;
+      case 'actor-status':if(!G.ActorStatus?.kinds.includes(value))return false;G.ActorStatus.apply(r.captain,value,4,1,G.EnemyMgr.all().find(e=>!e.dead)||null);break;
+      case 'clear-status':G.ActorStatus?.clear(r.captain);break;
       case 'wave-end':r.elapsed=r.wave.duration;G.Expedition.tick(0);break;
       case 'test-enemies':{const p=r.captain;for(let i=0;i<8;i++){const a=i*Math.PI/4,e=new G.Enemy({dex:1,hp:1000000,spd:0,dmg:0,xp:0,behavior:'chase'},p.x+Math.cos(a)*140,p.y+Math.sin(a)*140,{hp:1,spd:1,dmg:1});G.EnemyMgr.add(e);}G.EnemyMgr.rebuildGrid();break;}
       default:return false;
@@ -112,7 +114,7 @@ G.Dev = (() => {
   function recentPanel(){
     const r=G.Expedition?.run;if(!r)return '<h4>近期远征测试</h4><p class="note">进入远征后可测试队长特性、5／8级进阶、小队生命、经验罐及战后结算。</p>';
     const d=G.LeaderAbilities?.definition(r.captain.dex),hp=G.TrainerTalents.maxHp(r);
-    return '<h4>近期远征测试</h4><p class="note">第'+r.day+'天 · '+r.phase+' · 训练家Lv.'+r.trainerLevel+' · 小队生命 '+Math.ceil(r.squadHp)+'/'+hp+'</p>'+
+    return '<h4>近期远征测试</h4><label>我方异常测试 <select id="dev-actor-status"><option value="poison">中毒</option><option value="burn">灼伤</option><option value="freeze">冻结</option><option value="stun">定身</option><option value="slow">减速</option><option value="attack">减攻</option></select></label><div class="row wrap"><button class="btn small" data-dev="actor-status">施加4秒异常</button><button class="btn small" data-dev="clear-status">清除我方异常</button></div><p class="note">第'+r.day+'天 · '+r.phase+' · 训练家Lv.'+r.trainerLevel+' · 小队生命 '+Math.ceil(r.squadHp)+'/'+hp+'</p>'+
       (d?'<p>队长特性：'+(d.name.zh||d.name.en)+' · 主动Z充能 '+Math.floor(G.LeaderAbilities.state().charge*100)+'%</p><div class="row wrap"><button class="btn small" data-dev="leader-charge">解锁家族勋章并充满主动Z</button><button class="btn small" data-dev="leader-cast">施放队长主动Z</button><button class="btn small" data-dev="leader-reset">清空主动Z充能</button></div>':'')+
       '<label>训练家等级 <input id="dev-trainer-level" type="number" min="1" max="'+G.Economy.maxLevel(r)+'" value="'+r.trainerLevel+'"></label><button class="btn small" data-dev="trainer-level">设置等级（5／8级测试进阶）</button>'+
       '<label>小队生命 <input id="dev-squad-health" type="number" min="1" max="'+hp+'" value="'+Math.ceil(r.squadHp)+'"></label><div class="row wrap"><button class="btn small" data-dev="squad-health">设置小队生命</button><button class="btn small" data-dev="jar-fill">填满经验罐</button><button class="btn small" data-dev="test-enemies">生成8只无伤害测试靶</button><button class="btn small" data-dev="wave-end">本场时间到（保留存活敌人扣血）</button></div><p class="note">等级调整可能进化队长，降低等级不回退形态。测试靶也计入存活敌人扣血。</p>';
@@ -181,8 +183,8 @@ G.Dev = (() => {
           case 'medals': for (const m of G.AbilityDefs.LIST) s.abilityMedals[m.id] = s.abilityMedals[m.id] || { at: Date.now(), from: 'dev' }; break;
           case 'all-pokemon': unlockAllPokemon();G.UI.toast('已解锁全部宝可梦');break;
           case 'all-cards': unlockAllCards();G.UI.toast('全部卡包内容已解锁至上限；开局加成下局生效');break;
-          case 'leader-charge':case 'leader-cast':case 'leader-reset':case 'trainer-level':case 'squad-health':case 'jar-fill':case 'wave-end':case 'test-enemies':
-            expeditionAction(b.dataset.dev,b.dataset.dev==='trainer-level'?Number(panel.querySelector('#dev-trainer-level').value):b.dataset.dev==='squad-health'?Number(panel.querySelector('#dev-squad-health').value):undefined);break;
+          case 'actor-status':case 'clear-status':case 'leader-charge':case 'leader-cast':case 'leader-reset':case 'trainer-level':case 'squad-health':case 'jar-fill':case 'wave-end':case 'test-enemies':
+            expeditionAction(b.dataset.dev,b.dataset.dev==='actor-status'?panel.querySelector('#dev-actor-status').value:b.dataset.dev==='trainer-level'?Number(panel.querySelector('#dev-trainer-level').value):b.dataset.dev==='squad-health'?Number(panel.querySelector('#dev-squad-health').value):undefined);break;
           case 'force': G.AbilityGacha.debugMedal(medalId); G.UI.toast('下次抽卡将产出指定勋章，仍消耗宝石'); break;
           case 'partner':
             if (G.Game.state !== 'ui') { G.UI.toast('请先返回主菜单'); break; }

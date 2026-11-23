@@ -95,4 +95,5 @@
   Z.withoutCharge(()=>fn(p,profile()));return true;
  }
  L.activate=activate;L.zKinds=Object.freeze(Object.keys(handlers));
+ L.registerZ=(entries,timing={})=>{for(const [id,fn]of Object.entries(entries)){if(handlers[id])throw Error('Duplicate Z handler '+id);handlers[id]=fn;}Object.assign(durations,timing);L.zKinds=Object.freeze(Object.keys(handlers));};
 })();

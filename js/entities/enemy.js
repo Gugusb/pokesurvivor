@@ -119,7 +119,7 @@
       if (this.dead || !(amount > 0)) return 0;
       const shielded = this.shield > 0;
       const leaderFactor=G.LeaderAbilities?.outgoing(attacker,this,attack)||1;amount*=leaderFactor;
-      const bypass = !!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
+      const bypass = !!(G.LeaderJohto?.has(attacker)&&G.LeaderJohto.f().infiltrator)||!!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
       const bond=!this.remote?G.TypeBonds?.beforeHit(attacker,this,attack):null;
       if(bond)amount*=bond.factor;
@@ -421,7 +421,7 @@
       } else if (this.behavior === 'charger') {
         this.pt -= dt * (this.phase === 'walk' ? attackRate : 1);
         if (this.phase === 'walk') {
-          if (dist < 200 && this.pt <= 0) {
+          if (dist < 200 && this.pt <= 0&&!G.LeaderJohto?.anchored(this)) {
             this.phase = 'aim'; this.pt = 0.55;
             this.anim.play('Charge', { speed: 1.6 });
           }
@@ -731,12 +731,14 @@
     }
 
     startFuse() {
+      if(G.LeaderJohto?.damp())return;
       this.phase = 'fuse'; this.pt = 1.0;
       this.hazard({ kind: 'zone', x: this.x, y: this.y, r: 62, delay: 1.0, dmg: this.dmg * 1.4, type: this.atkType, color: '#ff7b3d' });
     }
 
     startJump(pl) {
       const tx = pl.x, ty = pl.y;
+      if(G.LeaderJohto?.anchored(this))return;
       this.jump = { sx: this.x, sy: this.y, tx, ty, t: -0.45, dur: 0.6 };
       this.anim.play('Charge', { speed: 1.4 });
       this.hazard({ kind: 'zone', sourceKind: 'contact', x: tx, y: ty, r: 50, delay: 1.05, dmg: this.dmg * 1.2, type: this.atkType,

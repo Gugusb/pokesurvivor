@@ -128,7 +128,7 @@ G.Combat = (() => {
   }
 
   /** Tabla de tipos × clima para un ataque de tipo `type` contra `e`. */
-  function typeK(type, e, pl) { return G.Abilities.outgoingType(pl, type, e.types) * G.Weather.mult(type); }
+  function typeK(type, e, pl) {const k=G.Abilities.outgoingType(pl,type,e.types);return (G.LeaderJohto?.typeFactor(pl,type,e,k)??k)*G.Weather.mult(type);}
 
   function counterTackle(pl, attacker) {
     if (G.ZMoves && G.ZMoves.busy(pl)) return;
@@ -396,6 +396,7 @@ G.Combat = (() => {
       if (len > 0) pl.grantDashGuard(castCooldown);
       if (G.Mega && G.Mega.active(pl)) pl.megaDashGuard = 0.6;
     }
+    G.LeaderJohto?.dashed(pl,m,sx,sy,castCooldown||m.cd);
     const w = m.width || 34;
     const mx = sx + ca * len / 2, my = sy + sa * len / 2;
     for (const e of G.EnemyMgr.queryCircle(mx, my, len / 2 + w)) {
@@ -656,7 +657,7 @@ G.Combat = (() => {
     pl.dmgDealt += dealt;
     if (m.burn) e.applyBurn(m.burn, pl,!!m.leaderGenerated);
     if (m.poison) e.applyPoison(m.poison, pl,!!m.leaderGenerated);
-    if (m.slow) e.applySlow(m.slow, m.zMove ? 2 : 1.2);
+    if (m.slow) e.applySlow(m.slow, m.zMove ? 2 : 1.2);if(m.leaderStun){G.LeaderAbilities?._z.stun(e,m.leaderStun);}if(m.johtoExtendStun)G.LeaderJohto?.extendStun(e,m.johtoExtendStun);if(m.johtoSmash)e.shield=0;
     if(!ghost)G.SquadBonds?.afterHit(pl,e,m,dealt);
   }
 
@@ -776,16 +777,16 @@ G.Combat = (() => {
         const raw = G.ZMoves ? G.ZMoves.projectileDamage(p,e) : p.dmg;
         if(p.bondOrbitShot)p.pierce=Math.max(0,G.EconomyConfig.classBonds.orbit.launchPierce-(p.hits.size-1));
         if(raw<=0){if(p.bondOrbitShot&&p.pierce===0){G.Projectiles.remove(p);break;}continue;}
-        const crit=p.back&&p.specMove?.leaderReturnCrit||G.TypeBonds?.forceCrit(owner,e)||isCrit(owner,p.specMove,e);
+        const crit=p.specMove?.zCrit||p.specMove?.johtoCritOnStun&&e.classStunT>0||p.back&&p.specMove?.leaderReturnCrit||G.TypeBonds?.forceCrit(owner,e)||isCrit(owner,p.specMove,e);
         const k = (p.back?(p.specMove?.leaderReturn||1):1) * (p.mtype ? typeK(p.mtype, e, owner) : 1) * (crit ? critMul(owner,p.specMove,e) : 1);
         const dealt = e.hurt(raw * k, p.color, p.vx || (e.x - owner.x), p.vy || (e.y - owner.y), p.knock,
-               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, {leaderGenerated:!!p.specMove?.leaderGenerated,leaderCrit:crit,leaderReturning:!!p.back,leaderBounced:!!p.leaderBounced, id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved,typeCastId:p.typeCastId||0,typeBondSecondary:!!p.typeBondSecondary,noDragonCount:!!p.noDragonCount,typeBondCritApplied:true,bondDamageContributions:p.bondDamageContributions,bondDamageKind:p.bondDamageKind }) || 0;
+               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, {leaderGenerated:!!p.specMove?.leaderGenerated,leaderCrit:crit,leaderReturning:!!p.back,leaderBounced:!!p.leaderBounced, id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved,typeCastId:p.typeCastId||0,johtoBaton:!!p.specMove?.johtoBaton,typeBondSecondary:!!p.typeBondSecondary,noDragonCount:!!p.noDragonCount,typeBondCritApplied:true,bondDamageContributions:p.bondDamageContributions,bondDamageKind:p.bondDamageKind }) || 0;
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
         owner.dmgDealt += dealt;
         owner.onDealt(dealt);
         if (p.burn) e.applyBurn(p.burn, owner,!!p.specMove?.leaderGenerated);
         if (p.poison) e.applyPoison(p.poison, owner,!!p.specMove?.leaderGenerated);
-        if (p.slow) e.applySlow(p.slow);
+        if (p.slow) e.applySlow(p.slow);if(p.specMove?.leaderStun)G.LeaderAbilities?._z.stun(e,p.specMove.leaderStun);if(p.specMove?.johtoExtendStun)G.LeaderJohto?.extendStun(e,p.specMove.johtoExtendStun);if(p.specMove?.johtoSmash)e.shield=0;
         G.SquadBonds?.afterHit(owner,e,p.specMove||{kind:p.moveKind},dealt);if(p.back&&p.specMove?.leaderReturnPull&&!e.boss){const dx=owner.x-e.x,dy=owner.y-e.y,d=Math.hypot(dx,dy)||1;e.kx+=dx/d*100;e.ky+=dy/d*100;}
 
         if (!p.orb) {

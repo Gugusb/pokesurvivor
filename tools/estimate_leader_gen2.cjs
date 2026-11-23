@@ -1,0 +1,8 @@
+const fs=require('node:fs'),c=JSON.parse(fs.readFileSync('config/leader_abilities_gen2.json','utf8'));
+const round=n=>Number(n.toFixed(3));
+const rows=c.families.map(d=>{const stats={};for(const part of [d.base,d.cost])for(const[k,v]of Object.entries(part.stats||{}))stats[k]=(stats[k]||0)+v;
+ const captain=d.root===235?.75:1,hp=(1+(stats.hp||0))*(d.cost.captainHp||1),def=1+(stats.defense||0),spdef=1+(stats.spdef||0),incoming=d.cost.incoming||1;
+ return '|'+d.root+' '+d.name.zh+'|'+round((1+(stats.atk||0))*captain)+' / '+round((1+(stats.spa||0))*captain)+'|'+round(hp*def*captain/incoming)+' / '+round(hp*spdef*captain/incoming)+'|'+Object.entries(d.base.moves||{}).map(([k,v])=>k+': '+Object.entries(v).map(([key,n])=>key+'='+n).join(', ')).join('; ')+'|'+(d.cost.cooldown||1)+'|';});
+const marker='\n## 配置完成后的静态倍率复核';let text=fs.readFileSync('docs/LEADER_ABILITIES_GEN2_BALANCE.md','utf8').split(marker)[0];
+text+=marker+'\n\n以下为开局最终配置的基础乘数（图图犬一行仅表示队长本人）：双攻与物理/特殊有效生命分别列出，不将移动、控制、覆盖率或治疗硬折算成单体DPS。有效生命仅计HP、双防与通用易伤，不包括属性克制、临时状态或护盾。直接冷却×0.7对应理论频率×1.429，PP不足时不能兑现全部频率收益。\n\n|家族|物攻 / 特攻×|物理 / 特殊EHP×|绑定招式增幅|冷却代价×|\n|---|---|---|---|---|\n'+rows.join('\n')+'\n\n## 已确认的设计转换与实际调参\n\n未知图腾改绽放；果然翁免费受击施放主技能，每成员间隔1秒；新增我方异常接口但不向所有敌人普加状态；布鲁致死盾每人每战一次；乌波保留超时激怒；图图犬技能修炼额外5级候选，队员换招可立刻学习一次专精，即使等级不足。\n\n'+c.families.filter(d=>d.adjustments.length).map(d=>'### '+d.name.zh+'\n\n'+d.adjustments.map(([a,b])=>'- '+a+' → '+b).join('\n')).join('\n\n')+'\n\n最小调度/次数资源：瞬时治疗依具体触发间隔；光环/吸血共用每秒3%最大生命恢复预算；白盾上限40%；BOSS控制时长减半。额外攻击使用leaderGenerated阻断自身命中回响与充能循环。绽放新增符文仅按每秒几何检测，不开启无上限实体生成。\n';
+fs.writeFileSync('docs/LEADER_ABILITIES_GEN2_BALANCE.md',text.replace(/[ \t]+$/gm,''));console.log('Reviewed static multipliers and adjustments for 55 Johto families.');

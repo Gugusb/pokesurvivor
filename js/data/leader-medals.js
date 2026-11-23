@@ -7,8 +7,8 @@ G.LeaderMedals=(()=>{
   if(!G.LeaderAbilitiesConfig)throw Error('Leader ability catalogue is not loaded');
   for(const f of G.LeaderAbilitiesConfig.families){
    for(const dex of f.members)byDex.set(dex,f);
-   const dex=f.members.find(d=>G.DEX_BY[d]?.gen===1),id=dex+'-'+f.id;
-   if(!dex)throw Error('Missing Kanto medal representative '+f.id);
+   const dex=f.members.find(d=>G.DEX_BY[d]?.gen===(f.generation||1)),id=dex+'-'+f.id;
+   if(!dex)throw Error('Missing family medal representative '+f.id);
    const d={id,dex,ability:f.id,family:f.root,leader:true,rarity:G.DEX_BY[dex].rarity,name:f.name.es,en:f.name.en,
     desc:'Desbloquea el movimiento Z activo de esta familia.',descEn:'Unlocks this family’s manual Z move.'};
    G.AbilityDefs.LIST.push(d);G.AbilityDefs.BY_ID[id]=d;

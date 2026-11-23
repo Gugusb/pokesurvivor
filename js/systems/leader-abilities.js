@@ -165,8 +165,8 @@ G.LeaderAbilities=(()=>{
  function ppCost(p,m,n){if(!team(p))return n;if(zOn('genesis'))return 0;const f=profile();return Math.max(0,n+(f.extraPP?.[m.kind]||0)-(f.ppDiscount||0));}
  function regen(p){if(!team(p))return 1;const f=profile();if(f.noRegen)return 0;let n=f.regenRate||1;if(f.sunRegen&&isSun())n*=f.sunRegen;if(f.safeRegen&&state().time-(own(p).lastHurt||0)>5)n*=f.safeRegen;if(own(p).pollenUntil>state().time)n*=2;return n;}
  function xp(p){return team(p)&&p===captain()&&p.dex===129?(profile().magikarpGrowth||1):1;}
- function allowed(m){const f=profile();return !f||!!m&&!(f.ban||[]).includes(m.kind)&&!(f.banSpecial&&m.damageClass==='special');}
- function learnPool(mon,ids){if(!active())return ids;const f=profile();return (f.allMoves?G.Moves.ALL.map(m=>m.id):ids).filter(id=>allowed(G.Moves.BY_ID[id]));}
+ function allowed(m){const f=profile();return (!G.LeaderJohto||G.LeaderJohto.allows(m))&&(!f||!!m&&!(f.ban||[]).includes(m.kind)&&!(f.banSpecial&&m.damageClass==='special'));}
+ function learnPool(mon,ids){if(!active())return ids;const f=profile();return (f.allMoves&&(!f.johto?.sketch||G.LeaderMedals.family(mon.dex)?.root===235)?G.Moves.ALL.map(m=>m.id):ids).filter(id=>allowed(G.Moves.BY_ID[id]));}
  function legalFixed(mon,id){if(!active()||allowed(G.Moves.BY_ID[id]))return id;return learnPool(mon,G.Moves.poolFor(mon)).find(x=>allowed(G.Moves.BY_ID[x]))||null;}
  function screenRadius(){return Math.max(500,Math.min(1600,G.Camera?.outerRadius?.()||700));}
  function shield(p,amount,duration=5){if(!team(p)||p.dead||!(amount>0))return;const s=own(p);s.shield=Math.min(p.maxHp*.4,s.shield+amount);s.shieldUntil=Math.max(s.shieldUntil,state().time+duration);}

@@ -62,6 +62,7 @@ G.Abilities = (() => {
   };
   const critMultiplier = p => has(p, 'airlock') && !(G.Weather.hasWeather && G.Weather.hasWeather()) ? 2.25 : 1.5;
   function canCast(p) {
+    if(p.actorStunT>0||G.LeaderJohto&&!G.LeaderJohto.canCast(p))return false;
     return !(has(p, 'levitate') && G.World.overlapsSolid && G.World.overlapsSolid(p.x, p.y, p.r));
   }
   function updatePhase(p, dt = 0) {

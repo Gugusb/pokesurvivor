@@ -111,7 +111,7 @@ G.Player = class Player {
   buffStacks(b) { return G.Mega ? G.Mega.buffStacks(this, b.n) : b.n; }
   buffFraction(stat) { const b = this.buffs[stat]; return this.buffStacks(b) * b.amount; }
   get attackMultiplier() { return Math.max(0, this.atkMul +
-    G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant') ? 0 : this.attackDebuff)); }
+    G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant')||G.LeaderJohto?.guts(this) ? 0 : this.attackDebuff)); }
   get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)+(G.SquadTraits?.flat(this,'atk')||0)) * (1+this.statGrowth.atk+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'atk')||1)*(G.LeaderAbilities?.factor(this,'atk')||1); }
   get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)+(G.SquadTraits?.flat(this,'spa')||0)) * (1+this.statGrowth.spa+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'spa')||1)*(G.LeaderAbilities?.factor(this,'spa')||1); }
   get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)+(G.SquadTraits?.flat(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1)*(G.SquadTraits?.factor(this,'agility')||1)*(G.LeaderAbilities?.factor(this,'agility')||1); }
@@ -135,11 +135,12 @@ G.Player = class Player {
     return 1;
   }
   get spd() {
+    if(this.actorStunT>0)return 0;
     const s = (this.baseSpd+(G.TypeBonds?.baseBonus(this,'spd')||0)+(G.SquadTraits?.flat(this,'spd')||0)) * (1+this.statGrowth.spd+this.buffFraction('spd')+(G.TrainerTalents?.speedPct(this)||0)) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
       (1 + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
-    return s * (G.Abilities.slowImmune(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
+    return s * (G.Abilities.slowImmune(this)||G.LeaderJohto?.floating(this) ? 1 : slow * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
       (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1)*(G.TypeBonds?.speed(this)||1)*(G.SquadTraits?.factor(this,'spd')||1)*(G.LeaderAbilities?.factor(this,'spd')||1);
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0)); }
@@ -284,7 +285,7 @@ G.Player = class Player {
     if (G.ZMoves && G.ZMoves.immune(this)) return false;
     if (G.Dev && G.Dev.invincible) return false;
     if (type === 'electric' && G.Abilities.has(this, 'voltabsorb')) { this.heal(this.maxHp * 0.25); return false; }
-    if (this.invuln > 0 || this.dashGuardT > 0) return false;
+    if ((this.invuln > 0 || this.dashGuardT > 0)&&source.kind!=='status') {G.LeaderJohto?.guarded?.(this,source);return false;}
     if(G.LeaderAbilities&&!G.LeaderAbilities.beforeHurt(this,type,source))return false;
     if (!G.Abilities.beforeHurt(this, source)) return false;
     if(G.TypeBonds?.block(this,source)){this.invuln=.45;return false;}
@@ -308,7 +309,7 @@ G.Player = class Player {
     G.Abilities.onDamage(this);
     G.Abilities.afterHurt(this, source, type);
     if(d>0&&G.Difficulty)G.Difficulty.onHurt(this);
-    this.invuln = 0.45*(source.kind==='contact'?(G.LeaderAbilities?.profile()?.contactIFrames||1):1);
+    if(source.kind!=='status')this.invuln = 0.45*(source.kind==='contact'?(G.LeaderAbilities?.profile()?.contactIFrames||1):1);
     G.BreakItems?.afterHurt(this,source);
     this.flash = 0.14;
     G.Audio.sfx('hurt');

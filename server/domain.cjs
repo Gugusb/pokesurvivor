@@ -44,7 +44,7 @@ for (const f of [
     filename: f,
   });
 }
-ctx.G.LeaderAbilitiesConfig=JSON.parse(fs.readFileSync(path.join(ROOT,"config/leader_abilities_gen1.json"),"utf8"));
+ctx.G.LeaderAbilitiesConfig=require('../tools/leader_config.cjs').read(ROOT);
 ctx.G.LeaderMedals.install();
 const G = ctx.G,
   clone = (x) => JSON.parse(JSON.stringify(x));
