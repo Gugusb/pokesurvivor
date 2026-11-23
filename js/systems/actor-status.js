@@ -5,7 +5,8 @@ G.ActorStatus=(()=>{
  const get=p=>p.actorStatus||=( {} );
  function apply(p,kind,duration=3,amount=1,source=null){
   if(!p||p.dead||!kinds.includes(kind)||!Number.isFinite(duration)||duration<=0)return false;
-  if(G.LeaderJohto?.status(p,kind,source)===false||G.LeaderHoenn?.status(p,kind,source)===false)return false;
+  if(G.LeaderJohto?.status(p,kind,source)===false||G.LeaderHoenn?.status(p,kind,source)===false||G.LeaderSinnoh?.status(p,kind,source)===false)return false;
+  duration*=G.LeaderSinnoh?.has(p)?G.LeaderSinnoh.f().statusDuration||1:1;
   const s=get(p);s[kind]={left:Math.max(s[kind]?.left||0,Math.min(15,duration)),amount:Math.max(0,Math.min(kind==='poison'?8:1,amount)),wait:s[kind]?.wait||0};
   if(kind==='slow')p.slowT=Math.max(p.slowT||0,duration);
   if(kind==='attack')p.applyAttackDebuff?.(amount,duration);
@@ -25,6 +26,6 @@ G.ActorStatus=(()=>{
   }p.actorStunT=Math.max(0,s.stun?.left||0,s.freeze?.left||0);
  }
  const active=(p,kind)=>!!(p?.actorStatus?.[kind]?.left>0);
- function displace(p,dx,dy){if(!p||p.dead||(G.LeaderJohto?.knockImmune(p)||G.LeaderHoenn?.knockImmune(p)))return false;const x=p.x+dx,y=p.y+dy;if(!G.World.isFree(x,y,p.r))return false;p.x=x;p.y=y;return true;}
+ function displace(p,dx,dy){if(!p||p.dead||(G.LeaderJohto?.knockImmune(p)||G.LeaderHoenn?.knockImmune(p)||G.LeaderSinnoh?.knockImmune(p)))return false;const x=p.x+dx,y=p.y+dy;if(!G.World.isFree(x,y,p.r))return false;p.x=x;p.y=y;return true;}
  return {apply,clear,tick,active,kinds,displace};
 })();

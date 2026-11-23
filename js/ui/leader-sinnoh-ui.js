@@ -1,0 +1,7 @@
+/* Small battle control beside the existing manual Z slot. Uses combat time and touch hit regions. */
+G.LeaderSinnohUI=(()=>{
+ function hud(ctx,p,x,y,size){const H=G.LeaderSinnoh;if(!H?.has(p)||!H.f().shayminForms&&!H.f().cloak&&!H.f().appliance&&!H.f().slowStart)return;const manual=!!H.f().shayminForms,sky=H.s().form==='sky',left=manual?Math.max(0,2-(H.now()-(H.s().formAt??-10))):H.f().slowStart?Math.max(0,(H.f().startupSeconds||15)-H.t()):0,form=H.f().slowStart?(left?'startup':'awake'):H.s().form,zh={sky:'天空',land:'陆上',plant:'草木',sand:'沙土',trash:'垃圾',moth:'绅士蛾',heat:'加热',wash:'清洗',frost:'结冰',fan:'旋转',mow:'切割',startup:'热机',awake:'觉醒'},en={sky:'Sky',land:'Land',plant:'Plant',sand:'Sand',trash:'Trash',moth:'Moth',heat:'Heat',wash:'Wash',frost:'Frost',fan:'Fan',mow:'Mow',startup:'Startup',awake:'Awake'},label=(G.I18n.lang==='zh'?zh:en)[form]||form;
+  ctx.save();ctx.fillStyle=sky?'#244e58':'#304b39';ctx.strokeStyle=left?'#75868a':'#a9ebbe';ctx.lineWidth=2;ctx.beginPath();ctx.roundRect(x,y,size,size,12);ctx.fill();ctx.stroke();ctx.fillStyle='#e6ffed';ctx.textAlign='center';ctx.font='bold 12px sans-serif';ctx.fillText(label,x+size/2,y+size*.45);ctx.font='10px sans-serif';ctx.fillText(left?left.toFixed(1)+'s':G.I18n.lang==='zh'?(manual?'切换形态':'本场状态'):(manual?'⇄':'Battle'),x+size/2,y+size*.75);ctx.restore();if(manual)G.Touch.addButton(x,y,size,size,()=>H.toggleForm(),3);
+ }
+ return {hud};
+})();

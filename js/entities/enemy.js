@@ -117,9 +117,10 @@
     /** @param eff  'super' | 'weak' | null (tabla de tipos, sólo para enseñarlo) */
     hurt(amount, color = '#fff', dirX = 0, dirY = 0, knock = 0, eff = null, attacker = null, attack = {}) {
       if (this.dead || !(amount > 0)) return 0;
+      if(G.LeaderSinnoh?.has(attacker)&&G.LeaderSinnoh.f().fireTrue&&attack.type==='fire'&&(this.sinnohArmor>0||this.sinnohPhysicalArmor>0&&(!this.sinnohPhysicalArmorUntil||this.sinnohPhysicalArmorUntil>G.LeaderSinnoh.now())||this.sinnohSoftUntil>G.LeaderSinnoh.now()))attack={...attack,leaderTrue:true};
       const shielded = this.shield > 0;
       const leaderFactor=G.LeaderAbilities?.outgoing(attacker,this,attack)??1;amount*=leaderFactor;
-      const bypass = !!(G.LeaderHoenn?.has(attacker)&&attack.hoennVenom&&G.LeaderHoenn.f().venomBypass)||!!(G.LeaderJohto?.has(attacker)&&G.LeaderJohto.f().infiltrator)||!!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
+      const bypass = !!(G.LeaderSinnoh?.has(attacker)&&(G.LeaderSinnoh.f().infiltrator||G.LeaderSinnoh.f().moldBreaker||attack.sinnohBreak))||!!(G.LeaderHoenn?.has(attacker)&&attack.hoennVenom&&G.LeaderHoenn.f().venomBypass)||!!(G.LeaderJohto?.has(attacker)&&G.LeaderJohto.f().infiltrator)||!!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
       const bond=!this.remote?G.TypeBonds?.beforeHit(attacker,this,attack):null;
       if(bond)amount*=bond.factor;
@@ -135,6 +136,7 @@
       if (!this.remote && this.mega&&!attack.typeBondFraction) amount /= 1.3;
       if(bond?.execute||terminal?.execute)amount=Math.max(amount,this.hp+(this.shield||0)+1);
       if(attack.hoennZ&&(this.boss||this.elite)&&G.LeaderHoenn?.has(attacker))amount=Math.min(amount,G.LeaderAbilities._z.budget(attacker)*.3);
+      if((attack.sinnohZ||attack.sinnohSoul)&&(this.boss||this.elite)&&G.LeaderSinnoh?.has(attacker))amount=Math.min(amount,G.LeaderAbilities._z.budget(attacker)*.3);
       if(!(amount>0))return 0;const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
       // quien decide si cae. Aquí sólo se ve (número, destello y animación).

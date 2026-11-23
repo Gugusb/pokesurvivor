@@ -40,6 +40,7 @@ G.Hazards = (() => {
     const pl = G.Game.player;
     for (let i = list.length - 1; i >= 0; i--) {
       const h = list[i];
+      if(G.LeaderSinnoh?.frozenSource(h))continue;
       h.t += dt;
       if (!h.hit && h.t >= h.delay) {
         h.hit = true;

@@ -52,6 +52,7 @@ G.Projectiles = (() => {
   function update(dt, player, enemies) {
     for (let i = list.length - 1; i >= 0; i--) {
       const p = list[i];
+      if(!p.friendly&&G.LeaderSinnoh?.frozenSource(p))continue;
       p.t += dt;
 
       if (p.orb) {
@@ -80,7 +81,7 @@ G.Projectiles = (() => {
 
       // Teledirigido: curva la velocidad hacia el enemigo más cercano.
       if (p.homing > 0 && p.friendly) {
-        const tg = p.zMove && p.homingTarget && !p.homingTarget.dead ? p.homingTarget : nearest(enemies, p.x, p.y, 340);
+        const tg = (p.zMove||p.sinnohSoul) && p.homingTarget && !p.homingTarget.dead ? p.homingTarget : nearest(enemies, p.x, p.y, 340);
         if (tg) {
           const [dx, dy] = G.U.norm(tg.x - p.x, tg.cy() - p.y);
           const sp = Math.hypot(p.vx, p.vy);

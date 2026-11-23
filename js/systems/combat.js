@@ -124,11 +124,11 @@ G.Combat = (() => {
   }
 
   function payload(m) {
-    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, moveKind: m.kind, moveId: m.id, damageClass:m.damageClass, evolved:!!m.evolved, phaseWalls:!!m.phaseWalls,leaderBounce:m.leaderBounce||0, specMove:m,bondPierceGrowth:m.bondPierceGrowth||0,bondDamageContributions:m.bondDamageContributions,visualScale:m.bondVisualScale,bondScale:m.bondScale||1,typeCastId:m.typeCastId||0 };
+    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, moveKind: m.kind, moveId: m.id, damageClass:m.damageClass, evolved:!!m.evolved, phaseWalls:!!m.phaseWalls,leaderBounce:m.leaderBounce||0, specMove:m,homingTarget:m.homingTarget,sinnohSoul:!!m.sinnohSoul,bondPierceGrowth:m.bondPierceGrowth||0,bondDamageContributions:m.bondDamageContributions,visualScale:m.bondVisualScale,bondScale:m.bondScale||1,typeCastId:m.typeCastId||0 };
   }
 
   /** Tabla de tipos × clima para un ataque de tipo `type` contra `e`. */
-  function typeK(type, e, pl,m) {const k=G.Abilities.outgoingType(pl,type,e.types),j=G.LeaderJohto?.typeFactor(pl,type,e,k)??k;return (G.LeaderHoenn?.typeFactor(pl,type,e,j,m)??j)*G.Weather.mult(type);}
+  function typeK(type, e, pl,m) {if(m?.sinnohZ&&m.neutral)return 1;const k=G.Abilities.outgoingType(pl,type,e.types),j=G.LeaderJohto?.typeFactor(pl,type,e,k)??k;const h=G.LeaderHoenn?.typeFactor(pl,type,e,j,m)??j;return (G.LeaderSinnoh?.typeFactor(pl,type,e,h,m)??h)*G.Weather.mult(type);}
 
   function counterTackle(pl, attacker) {
     if (G.ZMoves && G.ZMoves.busy(pl)) return;
@@ -254,7 +254,7 @@ G.Combat = (() => {
       if (m.drain) healed += m.drain;
     }
     for (const p of G.World.propsInCircle(pl.x, pl.y, m.radius)) G.World.damageProp(p, m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk), col);
-    if (healed > 0) pl.heal(Math.min(healed, 6));
+    if (healed > 0) pl.heal(G.LeaderSinnoh?.leech(pl,Math.min(healed,6))??Math.min(healed,6));
   }
 
   function buff(pl, m) {
@@ -377,21 +377,21 @@ G.Combat = (() => {
   function dash(pl, m, castCooldown) {
     const col = (m.bondColor||G.U.TYPE_COLOR[m.type]), vis = G.VFX.forMove(m);
     const ca = Math.cos(pl.aim), sa = Math.sin(pl.aim);
-    const sx = pl.x, sy = pl.y;
-    let len = 0;
-    for (let d = 8; d <= m.radius; d += 8) {
+    const sx = m.sinnohTeleport?(pl.sinnohState?.dashStartX??pl.x):pl.x, sy = m.sinnohTeleport?(pl.sinnohState?.dashStartY??pl.y):pl.y;
+    let len = m.sinnohTeleport?Math.hypot(pl.x-sx,pl.y-sy):0;
+    for (let d = 8; !m.sinnohTeleport&&d <= m.radius; d += 8) {
       const x=sx+ca*d,y=sy+sa*d;
       if(G.World.arenaContains&&!G.World.arenaContains(x,y,pl.r))break;
       const free=G.World.isFree(x,y,pl.r*.8,true);
       if(!free&&!m.phaseWalls)break;
-      if(free)len=d;
+      if(free||m.phaseWalls&&G.LeaderSinnoh?.has(pl))len=d;
     }
     // Estela: varias copias del golpe a lo largo del recorrido.
     for (let d = 0; d <= len; d += 22) G.FX.sp(vis.proj || 'streak', vis.pal, sx + ca * d, sy + sa * d - G.LIFT * 0.6, { life: 0.22, angle: pl.aim });
     G.FX.slash(sx + ca * len, sy + sa * len - G.LIFT * 0.5, pl.aim, m.width||34, 2.2, col, vis);
     if (ghost) return;
     pl.x = sx + ca * len; pl.y = sy + sa * len;
-    G.World.collide(pl);
+    if(!m.phaseWalls||!G.LeaderSinnoh?.has(pl))G.World.collide(pl);
     if (!G.Abilities.suppressEffects(pl)) {
       if (len > 0) pl.grantDashGuard(castCooldown);
       if (G.Mega && G.Mega.active(pl)) pl.megaDashGuard = 0.6;
@@ -690,6 +690,7 @@ G.Combat = (() => {
 
       // --- disparos enemigos: paredes y objetos sólidos dan cobertura ---
       if (!p.friendly) {
+        if(p.sinnohHarmless||G.LeaderSinnoh?.frozenSource(p))continue;
         if (G.World.projectileBlock(p.x, p.y, p.r)) {
           G.FX.burst(p.x, p.y - G.LIFT, p.color, 5, 70);
           G.Projectiles.remove(p);
@@ -780,7 +781,7 @@ G.Combat = (() => {
         const crit=p.specMove?.zCrit||p.specMove?.hoennBurnCrit&&e.burn>0||p.specMove?.hoennPoisonCrit&&e.poison>0||p.specMove?.johtoCritOnStun&&e.classStunT>0||p.back&&p.specMove?.leaderReturnCrit||G.TypeBonds?.forceCrit(owner,e)||isCrit(owner,p.specMove,e);
         const k = (p.back?(p.specMove?.leaderReturn||1):1) * (p.mtype ? typeK(p.mtype, e, owner,p.specMove) : 1) * (crit ? critMul(owner,p.specMove,e) : 1);
         const dealt = e.hurt(raw * k, p.color, p.vx || (e.x - owner.x), p.vy || (e.y - owner.y), p.knock,
-               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, {leaderGenerated:!!p.specMove?.leaderGenerated,leaderCrit:crit,leaderReturning:!!p.back,leaderBounced:!!p.leaderBounced, id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved,typeCastId:p.typeCastId||0,johtoBaton:!!p.specMove?.johtoBaton,leaderTrue:!!p.specMove?.leaderTrue,hoennZ:!!p.specMove?.hoennZ,hoennExecute:p.specMove?.hoennExecute,hoennShieldCut:p.specMove?.hoennShieldCut,hoennSoften:p.specMove?.hoennSoften,hoennSpdefZero:p.specMove?.hoennSpdefZero,hoennTeamAttack:p.specMove?.hoennTeamAttack,hoennPen:p.specMove?.hoennPen,typeBondSecondary:!!p.typeBondSecondary,noDragonCount:!!p.noDragonCount,typeBondCritApplied:true,bondDamageContributions:p.bondDamageContributions,bondDamageKind:p.bondDamageKind }) || 0;
+               crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, {leaderGenerated:!!p.specMove?.leaderGenerated,leaderCrit:crit,leaderReturning:!!p.back,leaderBounced:!!p.leaderBounced, id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved,typeCastId:p.typeCastId||0,johtoBaton:!!p.specMove?.johtoBaton,leaderTrue:!!p.specMove?.leaderTrue,hoennZ:!!p.specMove?.hoennZ,sinnohZ:!!p.specMove?.sinnohZ,sinnohVulnerable:p.specMove?.sinnohVulnerable,sinnohSoul:!!p.specMove?.sinnohSoul,sinnohSecondary:!!p.specMove?.sinnohSecondary,sinnohCut:p.specMove?.sinnohCut,sinnohBreak:!!p.specMove?.sinnohBreak,sinnohExecute:p.specMove?.sinnohExecute,hoennExecute:p.specMove?.hoennExecute,hoennShieldCut:p.specMove?.hoennShieldCut,hoennSoften:p.specMove?.hoennSoften,hoennSpdefZero:p.specMove?.hoennSpdefZero,hoennTeamAttack:p.specMove?.hoennTeamAttack,hoennPen:p.specMove?.hoennPen,typeBondSecondary:!!p.typeBondSecondary,noDragonCount:!!p.noDragonCount,typeBondCritApplied:true,bondDamageContributions:p.bondDamageContributions,bondDamageKind:p.bondDamageKind }) || 0;
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
         owner.dmgDealt += dealt;
         owner.onDealt(dealt);

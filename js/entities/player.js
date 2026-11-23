@@ -111,7 +111,7 @@ G.Player = class Player {
   buffStacks(b) { return G.Mega ? G.Mega.buffStacks(this, b.n) : b.n; }
   buffFraction(stat) { const b = this.buffs[stat]; return this.buffStacks(b) * b.amount; }
   get attackMultiplier() { return Math.max(0, this.atkMul +
-    G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant')||(G.LeaderJohto?.guts(this)||G.LeaderHoenn?.guts(this)) ? 0 : this.attackDebuff)); }
+    G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant')||(G.LeaderJohto?.guts(this)||G.LeaderHoenn?.guts(this)||G.LeaderSinnoh?.guts(this)) ? 0 : this.attackDebuff)); }
   get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)+(G.SquadTraits?.flat(this,'atk')||0)) * (1+this.statGrowth.atk+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'atk')||1)*(G.LeaderAbilities?.factor(this,'atk')||1); }
   get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)+(G.SquadTraits?.flat(this,'spa')||0)) * (1+this.statGrowth.spa+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'spa')||1)*(G.LeaderAbilities?.factor(this,'spa')||1); }
   get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)+(G.SquadTraits?.flat(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1)*(G.SquadTraits?.factor(this,'agility')||1)*(G.LeaderAbilities?.factor(this,'agility')||1); }
@@ -140,7 +140,7 @@ G.Player = class Player {
       (1 + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
     const slow = this.inLiquid ? G.World.liquidEffect(this.mon.types).slow || 1 : 1;
-    return s * (G.Abilities.slowImmune(this) ? 1 : ((G.LeaderJohto?.floating(this)||G.LeaderHoenn?.floating(this))?1:slow) * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
+    return s * (G.Abilities.slowImmune(this) ? 1 : ((G.LeaderJohto?.floating(this)||G.LeaderHoenn?.floating(this)||G.LeaderSinnoh?.floating(this))?1:slow) * w * (this.slowT > 0 ? 0.5 : 1)) * G.Abilities.movementFactor(this) *
       (G.ZMoves && G.ZMoves.busy(this) ? 0.001 : 1)*(G.TypeBonds?.speed(this)||1)*(G.SquadTraits?.factor(this,'spd')||1)*(G.LeaderAbilities?.factor(this,'spd')||1);
   }
   get reduction() { return Math.min(0.8, this.dmgReduce + .04*(G.Items?.count(this,'assaultvest')||0)); }
@@ -286,6 +286,7 @@ G.Player = class Player {
     if (G.Dev && G.Dev.invincible) return false;
     if (type === 'electric' && G.Abilities.has(this, 'voltabsorb')) { this.heal(this.maxHp * 0.25); return false; }
     if ((this.invuln > 0 || this.dashGuardT > 0)&&source.kind!=='status') {G.LeaderJohto?.guarded?.(this,source);return false;}
+    source={...source,rawAmount:amount};
     if(G.LeaderAbilities&&!G.LeaderAbilities.beforeHurt(this,type,source))return false;
     if (!G.Abilities.beforeHurt(this, source)) return false;
     if(G.TypeBonds?.block(this,source)){this.invuln=.45;return false;}
@@ -416,7 +417,7 @@ G.Player = class Player {
       if (b.n > 0) { b.t -= dt; if (b.t <= 0) b.n = 0; }
     }
     if (this.slowT > 0) this.slowT -= dt;
-    if (this.bellHeal > 0) { const h = Math.min(this.bellHeal, .8*G.Items.count(this,'shellbell')*dt); this.hp = Math.min(this.maxHp, this.hp + h); this.bellHeal -= h; }
+    if (this.bellHeal > 0) { const h = Math.min(this.bellHeal, .8*G.Items.count(this,'shellbell')*dt); if(G.LeaderSinnoh?.has(this))G.LeaderSinnoh.leech(this,h);else this.hp = Math.min(this.maxHp, this.hp + h); this.bellHeal -= h; }
     if (this.power && (this.power.t -= dt) <= 0) { this.power.def.off(this); this.power = null; }
     this.regenerate(dt);
 

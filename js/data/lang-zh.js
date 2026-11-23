@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Capitanes de Sinnoh · v0.43.0-alpha.58": "神奥队长特性 · v0.43.0-alpha.58",
+  "Sinnoh añade 44 familias de capitán con pasivas, costes, avances y Z manual. Siete familias de generaciones anteriores conservan sus reglas.": "新增44个神奥队长家族，包含基础被动、能力代价、进阶与手动Z；7个前代溯源家族沿用已实装规则。",
+  "Las fichas conservan los cinco apartados originales del diseño chino. Los ajustes y equivalencias se explican por separado.": "特性卡保留设计原文的完整五段；数值调整和招式映射另列，方便逐项核对。",
+  "Las formas de Burmy y Rotom se deciden al comenzar la batalla. Shaymin puede cambiar de forma con su control de combate desde el nivel de entrenador 5.": "结草儿和洛托姆在开战时确定本场形态；训练家5级后，谢米可通过战斗按钮切换形态。",
+  "La miel se cambia por oro o crecimiento tras ganar. Los cupones de Arceus pagan un único producto y no se duplican al refrescar.": "胜利后可将蜂蜜兑换金币或培养属性；阿尔宙斯免单券只支付一件商品，刷新不会复制。",
+  "Mesprit comparte una parte del daño fuerte sin cadenas recursivas. Dialga congela enemigos, disparos hostiles y avisos; las acciones aliadas continúan.": "艾姆利多分摊部分高额伤害，不触发递归受击；帝牙卢卡冻结敌人、敌弹与攻击预警，己方照常行动。",
+  "Marqué los nuevos linajes con pequeñas estrellas en el mapa. Quien cocina comprueba las cuentas; yo guardo las medallas junto a una taza caliente para que nadie se quede sin sitio.": "我在路线图上给神奥的新伙伴贴了小星星。做饭的那家伙核对账目，我把勋章放在热饮旁边，给咱们每位伙伴都留好位置。",
   "Hilos entre compañeros · v0.43.0-alpha.6": "伙伴间的彩线 · v0.43.0-alpha.6",
   "Tres o seis especies distintas con la misma etiqueta activan vínculos de proyectil, cuerpo a cuerpo, rayo, órbita o cadena. Cada vínculo muestra su número activo y sus capas por separado.": "同标签的不同名伙伴达到三位、六位，可激活投射物、近战、能量柱、环绕和连锁羁绊。生效数与羁绊层数会分开显示。",
   "Los proyectiles inestables traen sorpresas, las multitudes refuerzan los golpes cercanos y los rayos pueden mantenerse gastando PP. Las órbitas duran más, mientras las cadenas saltan con un breve retraso.": "不稳定投射物带来随机变化，近战迎敌越多越强，光柱可消耗PP维持；环绕更持久，连锁会延迟跳跃、短暂阻碍目标。",
