@@ -12,9 +12,12 @@ G.DifficultyUI = (() => {
     }
     select.value = s.difficulty.selected;
     const update = () => {
-      const n=s.difficulty.selected;
+      const n=s.difficulty.selected, tier=G.LeagueRank?.view(s)?.tier||1;
+      const lines=[G.T('Multiplicador de puntuación')+' ×'+G.Difficulty.scoreMultiplier(n).toFixed(2),...G.Difficulty.traits(n).map(x=>'• '+G.T(x))];
+      if(tier>=4&&n<tier)lines.push('⚠ '+G.T('En R{x}+ solo suma estrellas jugar en dificultad {x}★ o superior.').replace(/\{x\}/g,tier));
+      else if(tier<n&&tier<8)lines.push('★ '+G.T('Dificultad superior a tu rango R{x}: +1 ★ extra al completar.').replace(/\{x\}/g,tier));
       note.style.whiteSpace='pre-line';
-      note.textContent=G.T('Multiplicador de puntuación')+' ×'+G.Difficulty.scoreMultiplier(n).toFixed(2)+'\n'+G.Difficulty.traits(n).map(x=>'• '+G.T(x)).join('\n');
+      note.textContent=lines.join('\n');
       note.title = G.T('Supera una dificultad para desbloquear la siguiente.');
     };
     select.onchange = () => { if (G.Difficulty.select(s, +select.value)) G.DB.commit(); update(); };
@@ -72,7 +75,9 @@ G.DifficultyUI = (() => {
     'Sin récord de dificultad': 'No difficulty record yet', 'Limitada por el desbloqueo del equipo': 'Limited by the team’s shared unlocks',
     'Velocidad de juego': 'Game speed', 'Velocidad: 1×': 'Speed: 1×', 'En grupo, sólo el anfitrión cambia la velocidad.': 'In co-op, only the host changes speed.',
     'Supera una dificultad para desbloquear la siguiente.': 'Clear a difficulty to unlock the next one.',
-    'Las victorias mejoran el marco de la Pokédex.': 'Victories improve the Pokédex frame.'
+    'Las victorias mejoran el marco de la Pokédex.': 'Victories improve the Pokédex frame.',
+    'En R{x}+ solo suma estrellas jugar en dificultad {x}★ o superior.': 'At R{x}+, only {x}★+ difficulty awards League stars.',
+    'Dificultad superior a tu rango R{x}: +1 ★ extra al completar.': 'Difficulty above your R{x} rank: +1 extra ★ on clear.'
   });
   G.I18n.addChinese({
     'Dificultad': '难度', 'Bloqueada': '未解锁', 'Las estrellas más altas son más difíciles.': '星级越高，挑战越难。',
@@ -81,7 +86,9 @@ G.DifficultyUI = (() => {
     'Sin récord de dificultad': '暂无难度纪录', 'Limitada por el desbloqueo del equipo': '受全队共同解锁进度限制',
     'Velocidad de juego': '游戏速度', 'Velocidad: 1×': '游戏速度：1×', 'En grupo, sólo el anfitrión cambia la velocidad.': '联机速度由房主统一设置。',
     'Supera una dificultad para desbloquear la siguiente.': '通关一个难度后解锁下一个难度。',
-    'Las victorias mejoran el marco de la Pokédex.': '胜利会提升图鉴边框。'
+    'Las victorias mejoran el marco de la Pokédex.': '胜利会提升图鉴边框。',
+    'En R{x}+ solo suma estrellas jugar en dificultad {x}★ o superior.': '当前段位 R{x}，只有挑战 {x}★ 及以上难度才会在结算时加分。',
+    'Dificultad superior a tu rango R{x}: +1 ★ extra al completar.': '难度高于当前段位 R{x}：远征通关后额外 +1 ★。'
   });
   return { menu, detail, decorate };
 })();

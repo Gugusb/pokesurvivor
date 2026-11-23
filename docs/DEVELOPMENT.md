@@ -34,6 +34,14 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.61 — 2026-11-23
+
+- 优化联盟段位结算与难度提示规则：
+  - `G.LeagueRank.preview`（[js/systems/league-rank.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/systems/league-rank.js)）接收本局难度 `stars`（由 [js/game.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/game.js) 与 [server/server.cjs](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/server/server.cjs) 传入）：到达 `R4` 及以上时，仅当 `stars >= before.tier` 才计入加星/推进；低于段位返回 `reason: 'difficulty'` 且不加分。
+  - 当当前段位低于挑战难度（`before.tier < stars`）且在常规升星阶段通关时，额外奖励 `+1 ★`（单局最高 `4 ★`），同步放宽 `records` 校验上限至 `4` 星。
+  - 在 [js/ui/difficulty-ui.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/ui/difficulty-ui.js)、[js/systems/expedition.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/systems/expedition.js) 与 [js/ui/league-rank-ui.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/ui/league-rank-ui.js) 增加低难度提示、跨级加星说明及结算展示。
+- 在 [tools/test_league_rank.cjs](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/tools/test_league_rank.cjs) 新增 R4+ 难度限制与跨级加星测试并全部通过（9/9）；执行 `node tools/build.js` 与 `node tools/export_data.js`。
+
 ### v0.43.0-alpha.60 — 2026-11-23
 
 - 基于 `v0.43.0-alpha.58` 规整并补全全属性技能池：在 `js/data/moves.js` 中为全部 18 个属性补充缺失的技能类型，使每个属性在 15 种技能机制（`projectile`、`melee`、`beam`、`orbit`、`nova`、`aura`、`boomerang`、`chain`、`mine`、`meteor`、`turret`、`dash`、`trail`、`cone`、`buff`）中均至少有 1 个招式（总计 274 个招式）；未改动宝可梦个体技能池（`js/data/fixed-skills.js`）。同步补充 `js/entities/vfx.js` 视觉映射及 `js/data/lang-en.js`、`js/data/lang-zh.js` 英文/简中词条。

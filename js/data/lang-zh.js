@@ -4391,3 +4391,11 @@ G.I18n.addChinese({
   "El cálculo de daño combina un 65% del atributo principal del movimiento (Ataque o At. Esp.) y un 35% del otro atributo ofensivo.": "技能伤害收益调整为 65% 对应主攻属性（物攻或特攻）+ 35% 另一项攻击属性。",
   "Ordené todos los cuadernos de técnicas por tipo para que no falte ningún truco en la mochila. Quien cocina ajustó la balanza de los ataques; yo puse pegatinas de Súper en las portadas para encontrarlos a la primera.": "我把十八本属性招式手账都补齐了，背包里再也不会缺某种机制啦。做饭的那家伙调好了双攻比例，我在封面上都贴了“超”字小贴纸，一眼就能认出来。"
 });
+
+G.I18n.addChinese({
+  "Reglas de dificultad en la Liga · v0.43.0-alpha.61": "联盟段位难度匹配与跨级加星 · v0.43.0-alpha.61",
+  "A partir de R4, solo se suman estrellas o avances del Camino del Campeón al completar la expedición en una dificultad igual o superior a tu rango (por ejemplo, R5 requiere N5+).": "到达 R4 后，只有在对应或更高难度（例如 R5 需挑战 N5+）通关远征，才会在结算时加星或推进冠军之路。",
+  "Si eliges una dificultad inferior a tu rango R4+, la pantalla de dificultad y la preparación de la expedición muestran un aviso.": "当所选难度低于 R4+ 当前段位时，难度面板与远征战前准备界面会给出提示。",
+  "Si tu rango actual es inferior a la dificultad elegida, obtienes +1 ★ adicional al completar la expedición.": "若当前段位低于所选难度，通关远征结算时将额外获得 +1 ★。",
+  "Puse una marca de aviso en el mapa para que nadie salga en R5 hacia una ruta N3 sin darse cuenta. Quien cocina revisa las estrellas; yo guardo una estrella extra brillante para cuando nos atrevemos con una ruta más alta.": "我在地图旁夹好提示条啦，免得 R5 时迷迷糊糊跑进 N3 路线白打一趟。做饭的那家伙核对星数，我把那颗亮晶晶的跨级加星留给敢挑战高难度的咱们。"
+});

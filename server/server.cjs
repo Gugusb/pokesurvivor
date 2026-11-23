@@ -373,7 +373,7 @@ function createApp(opts = {}) {
       }
       rewards.seen={boss:r.counts.boss,rift:r.counts.rift};
       if (end) {
-        if(r.mode==='q')rewards.league=G.LeagueRank.settle(s,r.expedition,{id:r.id,clean:!r.dirty,alive:b.alive===true&&b.failed!==true,at:now()});
+        if(r.mode==='q')rewards.league=G.LeagueRank.settle(s,r.expedition,{id:r.id,clean:!r.dirty,alive:b.alive===true&&b.failed!==true,stars:r.stars,at:now()});
         if(!r.dirty)rewards.hatches=services.accelerate(u.uid,r.t,r.started);
         exec("UPDATE runs SET ended=1 WHERE id=?", r.id);
         if(!r.dirty&&r.mode==='s'&&r.t>=1){

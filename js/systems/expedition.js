@@ -183,7 +183,9 @@ G.Expedition = (() => {
     if(!await G.EconomyReady||G.TrainerTalentsReady&&!await G.TrainerTalentsReady){G.UI.toast(L('No se pudo cargar la economía. Recarga la página.','Economy configuration failed to load. Reload the page.','经济配置加载失败，请刷新页面。'));return;}
     draft={dex:G.DB.save.partner,gens:null};
     const render=()=>{
-      const mon=G.DEX_BY[draft.dex],box=header(L('Preparar expedición','Expedition preparation','远征战前准备'),L('Revisa al capitán y los recursos de la ruta antes de partir.','Review your captain and route resources before setting out.','出发前查看队长、本局宝可梦候选和道具池。'));
+      const mon=G.DEX_BY[draft.dex],tier=G.LeagueRank?.view(G.DB.save)?.tier||1,stars=G.DB.save.difficulty?.selected||1;
+      const warn=tier>=4&&stars<tier?L(' ⚠ Dificultad N'+stars+' inferior a R'+tier+': no sumará estrellas al finalizar.',' ⚠ Difficulty N'+stars+' is below R'+tier+': no stars will be awarded.',' ⚠ 当前所选难度 N'+stars+' 低于段位 R'+tier+'，通关结算不会加分。'):tier<stars&&tier<8?L(' ★ Dificultad N'+stars+' superior a R'+tier+': +1 ★ extra al completar.',' ★ Difficulty N'+stars+' is above R'+tier+': +1 extra ★ on clear.',' ★ 当前所选难度 N'+stars+' 高于段位 R'+tier+'，通关后额外 +1 ★。'):'';
+      const box=header(L('Preparar expedición','Expedition preparation','远征战前准备'),L('Revisa al capitán y los recursos de la ruta antes de partir.','Review your captain and route resources before setting out.','出发前查看队长、本局宝可梦候选和道具池。')+warn);
       G.LeagueRankUI?.mountHeader(box.querySelector('.journey-head'));
       const prep=node('div','journey-prep'),{section,select}=prepCaptain(mon);
       select.onchange=()=>{draft.dex=+select.value;draft.gens=null;render();$('journey-captain').focus();};

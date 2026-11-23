@@ -38,3 +38,20 @@ test('server settles final survival with zero boss kills, retries once, rejects 
  const forged=JSON.parse(JSON.stringify(end.data.save));for(let i=0;i<20;i++)R.settle(forged,{...run(100),leagueTier:1},opts('forged-result-'+i));const upload=await call('/save',{save:forged,rev:retry.data.rev},cookie);assert.equal(upload.status,200);assert.equal(R.view(upload.data.save).points,3);
  const another=await call('/run/start',{dex:4,stars:1,mode:'q',clean:true},cookie),lost=await call('/run/end',{...report,id:another.data.id,alive:false,failed:true,expedition:run(0)},cookie);assert.equal(lost.status,200);assert.equal(lost.data.leagueResult.award,0);assert.equal(R.view(lost.data.save).points,3);
 });
+test('R4+ requires difficulty >= rank tier; clearing above rank tier grants +1 bonus star up to 4 total',()=>{
+ const s=fresh('DiffRules');
+ // R1..R3 allow N1
+ for(let i=0;i<3;i++){const res=R.settle(s,run(70),{...opts('diff-r1-r3-'+i),stars:1});assert.equal(res.reason,'cleared');assert.equal(res.award,3);assert.equal(res.bonus,0);}
+ assert.equal(R.view(s).tier,4);
+ // R4 with N3 -> rejected with reason 'difficulty'
+ const low4=R.settle(s,run(100),{...opts('diff-r4-n3'),stars:3});assert.equal(low4.reason,'difficulty');assert.equal(low4.award,0);assert.equal(low4.applied,0);assert.equal(R.view(s).points,9);
+ // R4 with N4 -> +3 stars -> promotes to R5
+ const ok4=R.settle(s,run(70),{...opts('diff-r4-n4'),stars:4});assert.equal(ok4.reason,'cleared');assert.equal(ok4.award,3);assert.equal(ok4.bonus,0);assert.equal(R.view(s).tier,5);
+ // R5 with N4 -> rejected with reason 'difficulty'
+ const low5=R.settle(s,run(100),{...opts('diff-r5-n4'),stars:4});assert.equal(low5.reason,'difficulty');assert.equal(low5.award,0);
+ // R5 with N6 (tier < diff) -> SSS (3) + 1 bonus = 4 stars, survives normalize
+ const high5=R.settle(s,run(80),{...opts('diff-r5-n6'),stars:6});assert.equal(high5.reason,'cleared');assert.equal(high5.bonus,1);assert.equal(high5.award,4);assert.equal(R.view(s).points,16);
+ const norm=G.DB.normalize(JSON.parse(JSON.stringify(s)),'DiffRules');assert.equal(R.view(norm).points,16);
+ // R1 with N3 (tier < diff) -> A (1) + 1 bonus = 2 stars
+ const s2=fresh('BonusLow');const lowRankHighDiff=R.settle(s2,run(10),{...opts('diff-r1-n3'),stars:3});assert.equal(lowRankHighDiff.bonus,1);assert.equal(lowRankHighDiff.award,2);
+});

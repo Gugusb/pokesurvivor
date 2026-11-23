@@ -450,7 +450,7 @@ G.Game = (() => {
     const completed=G.Expedition?.active ? !!G.Expedition.summary()?.arceus : !!(G.Difficulty&&challenge&&time>G.Difficulty.WIN&&(challenge.survived||challenge.victory||!coop));
     if(G.Expedition?.active)challenge.expedition=G.Expedition.summary();
     if (G.Difficulty) G.Difficulty.record(save, challenge, time, completed||!pl.dead, ok);
-    const expedition=G.Expedition?.active?G.Expedition.summary():null,leagueOptions={id:protectionRunId,clean:ok&&!!challenge?.eligible&&!coop,alive:!dead&&!pl.dead};
+    const expedition=G.Expedition?.active?G.Expedition.summary():null,leagueOptions={id:protectionRunId,clean:ok&&!!challenge?.eligible&&!coop,alive:!dead&&!pl.dead,stars:challenge?.stars};
     const leagueResult=expedition?(G.DB.mode==='server'?{...G.LeagueRank.preview(save,expedition,leagueOptions),pending:true}:G.LeagueRank.settle(save,expedition,leagueOptions)):null;
     const progressExcluded=challenge&&!challenge.victory?(tampered?'debug':!challenge.eligible?'locked':!ok?'validation':null):null;
     const coins=base+victoryBonus;

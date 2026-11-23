@@ -15,7 +15,7 @@ G.LeagueRank=(()=>{
   function records(s){
     const out=Object.create(null),source=s?.leagueRank?.results;
     if(source&&typeof source==='object'&&!Array.isArray(source))for(const [id,r]of Object.entries(source)){
-      if(!validId(id)||!r||!['stars','protocol'].includes(r.kind)||!Number.isSafeInteger(r.award)||r.award<1||r.award>(r.kind==='stars'?3:1)||!Number.isFinite(r.hp)||r.hp<=0||r.hp>10000)continue;
+      if(!validId(id)||!r||!['stars','protocol'].includes(r.kind)||!Number.isSafeInteger(r.award)||r.award<1||r.award>(r.kind==='stars'?4:1)||!Number.isFinite(r.hp)||r.hp<=0||r.hp>10000)continue;
       out[id]={kind:r.kind,award:r.award,hp:r.hp,at:Number.isFinite(r.at)?Math.max(0,r.at):0};
     }
     return out;
@@ -28,12 +28,16 @@ G.LeagueRank=(()=>{
   function merge(a,b){const result=records(a);for(const [id,r]of Object.entries(records(b)))if(!result[id]||r.at<result[id].at)result[id]=r;return {leagueRank:{v:1,results:result}};}
   function preview(s,run,options={}){
     const before=view(s),hp=Number.isFinite(run?.squadHp)?run.squadHp:null,id=options.id||'',duplicate=!!records(s)[id],protocolRun=(run?.leagueTier??before.tier)>=8;
-    const reason=!options.clean?'excluded':options.alive!==true||!(hp>0)?'defeat':!run?.arceus||run.day<60?'incomplete':hp>10000||protocolRun&&before.tier<8?'invalid':before.maxed?'maxed':duplicate?'duplicate':'cleared';
-    const grade=hp>=70?'SSS':hp>=40?'S':'A',kind=protocolRun?'protocol':'stars',award=reason==='cleared'?(kind==='protocol'?1:hp>=70?3:hp>=40?2:1):0;
+    const diff=Number.isInteger(options.stars)?options.stars:Number.isInteger(run?.stars)?run.stars:before.tier;
+    const lowDiff=before.tier>=4&&diff<before.tier;
+    const reason=!options.clean?'excluded':options.alive!==true||!(hp>0)?'defeat':!run?.arceus||run.day<60?'incomplete':hp>10000||protocolRun&&before.tier<8?'invalid':before.maxed?'maxed':duplicate?'duplicate':lowDiff?'difficulty':'cleared';
+    const grade=hp>=70?'SSS':hp>=40?'S':'A',kind=protocolRun?'protocol':'stars';
+    const baseAward=reason==='cleared'?(kind==='protocol'?1:hp>=70?3:hp>=40?2:1):0;
+    const bonus=reason==='cleared'&&kind==='stars'&&before.tier<diff?1:0,award=baseAward+bonus;
     const points=Math.min(21,before.points+(kind==='stars'?award:0)),protocol=kind==='protocol'?Math.min(20,before.protocol+award):before.protocol;
     const after={...before,points,tier:Math.min(8,1+Math.floor(points/3)),protocol};after.stars=after.tier===8?3:points%3;after.name=local(TIERS[after.tier-1].name);after.color=protocol?'#ff007f':TIERS[after.tier-1].color;after.maxed=protocol===20;
     const applied=kind==='stars'?points-before.points:protocol-before.protocol;
-    return {id,reason,hp,grade:reason==='cleared'?grade:null,kind,award,applied,before,after,promoted:after.tier>before.tier||after.protocol>before.protocol};
+    return {id,reason,hp,diff,bonus,grade:reason==='cleared'?grade:null,kind,award,applied,before,after,promoted:after.tier>before.tier||after.protocol>before.protocol};
   }
   function settle(s,run,options={}){
     normalize(s);const r=preview(s,run,options);
