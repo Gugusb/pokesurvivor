@@ -10,6 +10,7 @@
 }
 .journey-box {
   width: min(1220px, 100%); max-height: 94dvh; overflow: auto;
+  overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch;
   padding: 24px 26px;
   border: 1.5px solid rgba(145, 198, 250, 0.34);
   border-top-color: rgba(215, 238, 255, 0.52);
@@ -951,7 +952,7 @@ body:has(#scr-journey:not(.hidden) .journey-prep) :is(#topbar, #credits-line) { 
 @keyframes battle-result-enter { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
 
 /* ---------- Battle Loot Report (.battle-loot-box) ---------- */
-.journey-box.battle-loot-box { width: min(1280px, 100%); padding: 18px; border-radius: 20px; text-align: left; scrollbar-gutter: stable; font-size: 14px; line-height: 1.4; text-shadow: none; }
+.journey-box.battle-loot-box { width: min(1280px, 100%); padding: 18px; border-radius: 20px; text-align: left; scrollbar-gutter: stable; font-size: 14px; line-height: 1.4; text-shadow: none; overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; touch-action: pan-y; }
 .battle-loot-layout { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 2fr); gap: 14px; align-items: start; }
 .battle-loot-main { min-width: 0; display: flex; flex-direction: column; gap: 10px; }
 .battle-loot-side { min-width: 0; position: sticky; top: 0; align-self: start; }
@@ -1418,4 +1419,7 @@ html.ls-scaled .squad-modal-card { width: min(640px, calc(var(--ui-vw) - 36px));
 html.ls-scaled .battle-loot-layout { grid-template-columns: minmax(0, 1fr) 290px; }
 html.ls-scaled .battle-loot-side .journey-loot-damage { max-height: calc(var(--ui-vh) - 50px); }
 html.ls-scaled .battle-loot-side .damage-list { max-height: calc(var(--ui-vh) - 190px); }
-html.ls-scaled .journey-box.battle-loot-box { max-height: calc(var(--ui-vh) - 28px); }
+html.ls-scaled .journey-box.battle-loot-box {
+  display: block; height: auto; max-height: calc(var(--ui-vh) - 28px);
+  overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; touch-action: pan-y;
+}

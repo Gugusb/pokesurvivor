@@ -519,7 +519,7 @@ G.Expedition = (() => {
     card.append(preview);
   }
   function renderLoot(){
-    const box=$('journey-content'),first=!box.classList.contains('battle-loot-box'),scroll=first?0:box.scrollTop;box.replaceChildren();box.classList.add('battle-loot-box');
+    const box=$('journey-content'),first=!box.classList.contains('battle-loot-box'),scroll=first?0:box.scrollTop;box.replaceChildren();box.classList.remove('route-room','training-room','event-room');box.classList.add('battle-loot-box');
     G.ExpeditionLootUI.render(box,run,{
       onClaim:claimCompanion,
       onRelease:()=>{if(run.phase!=='loot'||run.companionResolved)return;run.unitPool.putBack(run.companionOffer);run.companionResolved=true;run.companion=null;renderLoot();},

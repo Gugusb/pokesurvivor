@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.gugusb.pokesurvivor.offlinetest" android:versionCode="53" android:versionName="0.43.0-alpha.53-offline">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.gugusb.pokesurvivor.offlinetest" android:versionCode="55" android:versionName="0.43.0-alpha.55-offline">
   <!-- Deliberately no INTERNET permission: all game files are bundled locally. -->
   <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="35" />
   <uses-feature android:name="android.hardware.touchscreen" android:required="false" />

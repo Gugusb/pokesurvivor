@@ -1908,7 +1908,7 @@ html.ls-scaled .mi-ico { width: 28px; height: 28px; border-radius: 8px; }
 html.ls-scaled .mi-ico img { width: 20px; height: 20px; }
 
 /* Virtual viewport heights inside zoomed dialogs */
-html.ls-scaled .box { max-height: calc(var(--ui-vh) - 34px); overflow-y: auto; padding: 20px 22px; border-radius: 18px; }
+html.ls-scaled .box { max-height: calc(var(--ui-vh) - 34px); overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; padding: 20px 22px; border-radius: 18px; }
 html.ls-scaled .box.settings { max-height: calc(var(--ui-vh) - 24px); }
 html.ls-scaled .box.news-box { max-height: calc(var(--ui-vh) - 70px); }
 html.ls-scaled .bag-panel { width: min(1080px, calc(var(--ui-vw) - 36px)); max-height: calc(var(--ui-vh) - 36px); padding: 20px; }

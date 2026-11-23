@@ -1157,3 +1157,16 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
   - Playwright + Edge 遍历 4 种手机横屏分辨率（`740×360` / `667×375` / `915×412` / `844×390`）覆盖主菜单、联盟卡、图鉴、远征准备、日程棋盘、编队及触控战斗 HUD，均按预期激活 `ls-scaled` 且零页面报错；
   - 使用 Android SDK 35 + Java 17 构建签名 `outputs/PokeSurvivor-Next-alpha.53-offline.apk`（SHA-256：`c4307d373079ee3fd24d606052764aa959773ee6b8b59643338f832758f62966`），通过 `apksigner verify`（v2/v3 签名）与 `tools/check_android_apk.cjs`（14,069 项条目，`resourcesCompression: 0`，`resourcesOffset: 1572`）。
 - 限制：当前机器缺少 Python 3.12+，未重新执行 `tools/make_seo_pages.py`。
+
+## v0.43.0-alpha.55 — 2026-11-23
+
+- 修复战后结算界面无法上下滑动问题，并同步输出新版离线安卓 APK：
+  - `js/systems/expedition.js`（`renderLoot`）与 `js/ui/expedition-training-ui.js`：进入战后结算或修炼室时显式移除残留的 `route-room`、`training-room`、`event-room` 类名，避免 `.route-room.journey-box` 的 `overflow: hidden` 与固定栅格高度覆盖结算报告滚动属性。
+  - `css/expedition.css`、`css/style.css`、`css/league-rank.css`：为 `.journey-box`、`.journey-box.battle-loot-box`（含 `html.ls-scaled`）、`html.ls-scaled .box` 与 `.league-card` 显式启用 `overflow-y: auto`、`overscroll-behavior: contain` 与 `touch-action: pan-y`，避免 `body { touch-action: manipulation; }` 影响触控竖向滑动，确保结算底部按钮与同行伙伴操作区可顺畅滑出。
+  - `android/offline/AndroidManifest.xml`、`android/offline/README.md`、`tools/build_android_offline.cjs`：版本号更新至 `0.43.0-alpha.55-offline`（`versionCode="55"`），产物输出至 `outputs/PokeSurvivor-Next-alpha.55-offline.apk`。
+- 验证：
+  - Playwright + Edge（`844×390` 触控模式）模拟 `scrollTop = 0` 下的 `Input.dispatchTouchEvent` 纵向滑动及鼠标滚轮，确认 `#journey-content` 计算样式为 `overflow-y: auto`、`touch-action: pan-y`，滑动后 `scrollTop` 由 `0` 顺畅滚动至底部 `210.04`，`#journey-loot-next` 完整进入可视区域；
+  - `node tools/build.js`（`app.min.js?v=e78844a750`）与 `node tools/export_data.js` 执行通过；
+  - `node --test tools/test_abilities.cjs tools/test_leader_abilities.cjs tools/test_character_profiles.cjs tools/test_league_rank.cjs tools/test_release_mode.cjs`：96/96 全部通过；
+  - `outputs/PokeSurvivor-Next-alpha.55-offline.apk`（`86,314,845` 字节，SHA-256：`a3cd1111a08b2b91017c61e38b541764b7ee0bd671bd44cc40ccd6f48f2c534e`）通过 `apksigner verify`（v2/v3 签名）与 `tools/check_android_apk.cjs`（14,069 项条目，`resourcesCompression: 0`，`resourcesOffset: 1572`）。
+- 限制：当前机器缺少 Python 3.12+，未重新执行 `tools/make_seo_pages.py`。
