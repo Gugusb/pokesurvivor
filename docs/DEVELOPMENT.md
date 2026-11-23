@@ -34,6 +34,13 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.60 — 2026-11-23
+
+- 基于 `v0.43.0-alpha.58` 规整并补全全属性技能池：在 `js/data/moves.js` 中为全部 18 个属性补充缺失的技能类型，使每个属性在 15 种技能机制（`projectile`、`melee`、`beam`、`orbit`、`nova`、`aura`、`boomerang`、`chain`、`mine`、`meteor`、`turret`、`dash`、`trail`、`cone`、`buff`）中均至少有 1 个招式（总计 274 个招式）；未改动宝可梦个体技能池（`js/data/fixed-skills.js`）。同步补充 `js/entities/vfx.js` 视觉映射及 `js/data/lang-en.js`、`js/data/lang-zh.js` 英文/简中词条。
+- 移除超武进化改变技能名称与物理/特殊结算分类的设定：`G.Moves.evoInfo` 与 `G.Moves.evolve` 保留原 `damageClass`，进化后统一使用 `Súper-{name}`（英文 `Super-{name}`、简中 `超-{name}`）。
+- 调整 `Player.attackFor(move)` 属性收益：从仅结算物攻或特攻改为结算 `65%` 本技能对应属性 + `35%` 另一攻击属性（物理技 `atk * 0.65 + spa * 0.35`，特殊技 `spa * 0.65 + atk * 0.35`）。
+- 更新 `tools/test_battle_stats.cjs` 与 `tools/test_base_buffs.cjs` 断言并新增 18×15 技能池覆盖与进化规则测试；执行 `node tools/build.js`、`node tools/export_data.js` 及单元测试验证。
+
 ### v0.43.0-alpha.47 — 2026-11-21
 
 - 修复用户反馈小米15 Pro无法安装单机APK的问题。检查alpha.45/46最终APK确认：自定义ZipDex重打包将aapt2原本STORED的resources.arsc重新压为DEFLATED；Android11+在target>=30时会拒绝这种APK，签名验证通过不代表可安装。ZipDex现保留未压缩条目的存储方式、尺寸及CRC，随后再执行4字节对齐与签名，不下调target或要求手机关闭安全校验。

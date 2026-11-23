@@ -23,7 +23,7 @@ test('Swords Dance and Dragon Dance add IV-adjusted base attack, independent of 
 test('generic attack bonuses and damage remain separate from natural stat growth',()=>{
   const s=setup(),p=s.player(150);p.atkMul=1.4;p.growStat('atk',.8);p.growStat('spa',.4);
   const m=s.cast(p,'swords-dance');close(p.atk,p.baseAtk*(1.8+m.amount)*1.4);close(p.spa,p.baseSpa*(1.4+m.amount)*1.4);
-  close(p.attackFor({damageClass:'physical'}),p.atk);close(p.attackFor({damageClass:'special'}),p.spa);
+  close(p.attackFor({damageClass:'physical'}),p.atk*.65+p.spa*.35);close(p.attackFor({damageClass:'special'}),p.spa*.65+p.atk*.35);
 });
 
 test('Agility raises only base Speed, sharing the additive natural stat layer',()=>{

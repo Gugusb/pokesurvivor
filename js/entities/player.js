@@ -127,7 +127,12 @@ G.Player = class Player {
     this.statGrowth[key]=(this.statGrowth[key]||0)+fraction;
     if(key==='hp')this.addMaxHp(this.baseHp*fraction);
   }
-  attackFor(move) { return (move?.damageClass === 'special' ? this.spa : this.atk)*(1+(move?.overclock||0)*(G.EconomyConfig?.endless.overclockDamagePerPurchase||0)); }
+  attackFor(move) {
+    const base = move?.damageClass === 'special'
+      ? this.spa * 0.65 + this.atk * 0.35
+      : this.atk * 0.65 + this.spa * 0.35;
+    return base * (1 + (move?.overclock || 0) * (G.EconomyConfig?.endless.overclockDamagePerPurchase || 0));
+  }
   defenseFor(source) {
     const kind=source?.kind;
     if (kind==='contact' || kind==='melee') return Math.max(.1,(this.baseDefense+(G.TypeBonds?.baseBonus(this,'defense')||0)+(G.SquadTraits?.flat(this,'defense')||0))*(1+this.statGrowth.defense+this.buffFraction('def'))*(G.TrainerTalents?.defFactor(this)||1)*(G.SquadTraits?.factor(this,'defense')||1)*(G.LeaderAbilities?.factor(this,'defense')||1));

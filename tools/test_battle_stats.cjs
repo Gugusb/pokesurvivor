@@ -11,11 +11,11 @@ test('all 966 species carry six original base stats, with separate original atta
  assert.equal(G.DEX_BY[213].baseStats.def,230);assert.equal(G.DEX_BY[242].baseStats.def,10);
  assert.ok(G.DEX_BY[150].spa>G.DEX_BY[150].atk);assert.ok(G.DEX_BY[68].atk>G.DEX_BY[68].spa);
 });
-test('physical ranged moves remain physical; special close-range moves remain special; evolved classification can change independently of geometry',()=>{
+test('physical ranged moves remain physical; special close-range moves remain special; evolving keeps damageClass and adds Super prefix',()=>{
  const {G}=context('zh',false);
  for(const m of G.Moves.ALL){assert.equal(m.damageClass==='status',m.kind==='buff');assert.ok(['status','physical','special'].includes(m.damageClass));}
  assert.equal(G.Moves.instance('rock-throw').damageClass,'physical');assert.equal(G.Moves.instance('bulldoze').damageClass,'physical');assert.equal(G.Moves.instance('giga-drain').damageClass,'special');
- const m=G.Moves.instance('razor-leaf',5);assert.equal(m.damageClass,'physical');G.Moves.evolve(m);assert.equal(m.damageClass,'special');assert.equal(G.Moves.BY_ID[m.id].damageClass,'physical');
+ const m=G.Moves.instance('razor-leaf',5);assert.equal(m.damageClass,'physical');G.Moves.evolve(m);assert.equal(m.damageClass,'physical');assert.equal(m.name,'Súper-Hoja Afilada');assert.equal(G.Moves.BY_ID[m.id].damageClass,'physical');
 });
 test('old HP/Attack/Speed IVs expand deterministically and mixed-format merges preserve every best value',()=>{
  const {G}=context('zh',false),old=G.DB.fresh('legacy');old.owned[6]={at:1,iv:[4,17,31]};
@@ -40,9 +40,9 @@ test('contact and melee use physical defense; ranged uses special defense; reduc
  p.invuln=0;let before=p.hp;p.hurt(100,null,true,{kind:'ranged'});close(before-p.hp,100);
  p.moves=[s.G.Moves.instance('tackle')];p.slots=[p.moves];p.invuln=0;before=p.hp;p.hurt(100,null,false,{kind:'contact'});close(before-p.hp,30);
 });
-test('ordinary physical and special projectiles snapshot different attack stats and carry category through collision',()=>{
+test('ordinary physical and special projectiles snapshot 65/35 blended attack stats and carry category through collision',()=>{
  const s=fixture(),{G}=s,p=s.player(150),e=s.enemy();e.x=80;p.target=e;p.baseAtk=2;p.baseSpa=5;
- for(const [id,atk,category]of [['rock-throw',2,'physical'],['ember',5,'special']]){G.Projectiles.clear();const m=G.Moves.instance(id);p.moves=[m];p.slots=[[m]];p.active=0;G.Combat.tick(0,p,0);const shot=G.Projectiles.all()[0];assert.ok(shot);close(shot.dmg,m.dmg*atk);assert.equal(shot.damageClass,category);}
+ for(const [id,atk,category]of [['rock-throw',2*.65+5*.35,'physical'],['ember',5*.65+2*.35,'special']]){G.Projectiles.clear();const m=G.Moves.instance(id);p.moves=[m];p.slots=[[m]];p.active=0;G.Combat.tick(0,p,0);const shot=G.Projectiles.all()[0];assert.ok(shot);close(shot.dmg,m.dmg*atk);assert.equal(shot.damageClass,category);}
 });
 test('enemy defenses resolve the move category once, while status/environment damage bypasses species defenses',()=>{
  const s=fixture(),{G}=s,p=s.player(150),e=s.enemy();e.defense=2;e.spdef=4;
@@ -60,20 +60,31 @@ test('P2P host reconstructs normal and evolved damage classes and applies only t
  const p=s.player(150),e=s.enemy();e.id=77;e.defense=2;e.spdef=4;G.EnemyMgr.get=id=>id===77?e:null;
  G.Coop.begin({host:'host',members:[{uid:'host',dex:150},{uid:'peer',dex:150}]},p,{});
  const frame=[0,0,0,0,100,100,0,'shadow-ball',5,78,0,1,0,0,0,null];
- for(const [evolved,loss]of [[0,25],[1,50]]){const before=e.hp;receive('peer',{k:'f',p:frame,ev:[['h',77,100,'#fff',0,0,0,'shadow-ball',evolved]]});assert.equal(before-e.hp,loss);}
+ for(const [evolved,loss]of [[0,25],[1,25]]){const before=e.hp;receive('peer',{k:'f',p:frame,ev:[['h',77,100,'#fff',0,0,0,'shadow-ball',evolved]]});assert.equal(before-e.hp,loss);}
  G.Coop.end();
 });
 
-test('existing orbit projectiles update attack category when the learned move evolves',()=>{
+test('existing orbit projectiles keep attack category when the learned move evolves',()=>{
  const s=fixture(),{G}=s,p=s.player(6),m=G.Moves.instance('fire-spin',5);p.baseAtk=2;p.baseSpa=5;p.moves=[m];p.slots=[[m]];
- G.Combat.tick(0,p,0);assert.ok(G.Projectiles.all().length>0);assert.ok(G.Projectiles.all().every(o=>o.damageClass==='special'&&o.dmg===m.dmg*5));
- assert.equal(G.Moves.evolve(m),true);G.Combat.tick(0,p,0);assert.ok(G.Projectiles.all().every(o=>o.damageClass==='physical'&&o.evolved&&o.dmg===m.dmg*2));
+ G.Combat.tick(0,p,0);assert.ok(G.Projectiles.all().length>0);assert.ok(G.Projectiles.all().every(o=>o.damageClass==='special'&&Math.abs(o.dmg-m.dmg*(5*.65+2*.35))<1e-7));
+ assert.equal(G.Moves.evolve(m),true);G.Combat.tick(0,p,0);assert.ok(G.Projectiles.all().every(o=>o.damageClass==='special'&&o.evolved&&Math.abs(o.dmg-m.dmg*(5*.65+2*.35))<1e-7));
 });
-test('Z budgets and spawned projectile metadata use the selected physical or special attack',()=>{
+test('Z budgets and spawned projectile metadata use the 65/35 blended physical or special attack',()=>{
  const s=fixture(),{G}=s;s.load('js/systems/z-access.js');s.load('js/systems/z-moves.js');const p=s.player(6);G.Game.state='playing';G.Game.player=p;p.baseAtk=2;p.baseSpa=5;
- for(const [id,power]of [['rock-throw',2],['ember',5]]){
+ for(const [id,power]of [['rock-throw',2*.65+5*.35],['ember',5*.65+2*.35]]){
   G.Projectiles.clear();const m=G.Moves.instance(id);p.moves=[m];p.slots=[[m]];G.ZMoves.grant(G.DB.save,m.type);assert.equal(G.ZMoves.equip(G.DB.save,p.dex,m.type),true);p.zState=null;G.ZMoves.init(p,G.DB.save);
   assert.equal(G.ZMoves.arm(p),true);assert.equal(G.ZMoves.choose(p,0),true);close(p.zState.casts[0].budget,1200*power);
   G.ZMoves.tick(p,.01);assert.ok(G.Projectiles.all().length>0);assert.ok(G.Projectiles.all().every(o=>o.damageClass===m.damageClass));G.ZMoves.cancel(p);
+ }
+});
+test('all 18 type pools cover every move kind and all non-buff moves evolve to Super-name without changing damageClass',()=>{
+ const {G}=context('zh',false);
+ const types=['normal','fire','water','grass','electric','psychic','poison','ground','flying','bug','rock','ice','fighting','ghost','dragon','fairy','steel','dark'];
+ const kinds=['projectile','melee','beam','orbit','nova','aura','boomerang','chain','mine','meteor','turret','dash','trail','cone','buff'];
+ for(const t of types)for(const k of kinds)assert.ok(G.Moves.ALL.some(m=>m.type===t&&m.kind===k),`missing ${t}:${k}`);
+ for(const def of G.Moves.ALL){
+  if(def.kind==='buff')continue;
+  const m=G.Moves.instance(def.id,def.maxLvl);const cls=m.damageClass;
+  assert.equal(G.Moves.evolve(m),true,def.id);assert.equal(m.damageClass,cls);assert.equal(m.name,'Súper-'+def.name);
  }
 });
