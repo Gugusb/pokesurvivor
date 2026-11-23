@@ -120,7 +120,7 @@
       if(G.LeaderSinnoh?.has(attacker)&&G.LeaderSinnoh.f().fireTrue&&attack.type==='fire'&&(this.sinnohArmor>0||this.sinnohPhysicalArmor>0&&(!this.sinnohPhysicalArmorUntil||this.sinnohPhysicalArmorUntil>G.LeaderSinnoh.now())||this.sinnohSoftUntil>G.LeaderSinnoh.now()))attack={...attack,leaderTrue:true};
       const shielded = this.shield > 0;
       const leaderFactor=G.LeaderAbilities?.outgoing(attacker,this,attack)??1;amount*=leaderFactor;
-      const bypass = !!(G.LeaderSinnoh?.has(attacker)&&(G.LeaderSinnoh.f().infiltrator||G.LeaderSinnoh.f().moldBreaker||attack.sinnohBreak))||!!(G.LeaderHoenn?.has(attacker)&&attack.hoennVenom&&G.LeaderHoenn.f().venomBypass)||!!(G.LeaderJohto?.has(attacker)&&G.LeaderJohto.f().infiltrator)||!!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
+      const bypass = !!(G.LeaderUnova?.has(attacker)&&G.LeaderUnova.f().moldBreaker)||!!(G.LeaderSinnoh?.has(attacker)&&(G.LeaderSinnoh.f().infiltrator||G.LeaderSinnoh.f().moldBreaker||attack.sinnohBreak))||!!(G.LeaderHoenn?.has(attacker)&&attack.hoennVenom&&G.LeaderHoenn.f().venomBypass)||!!(G.LeaderJohto?.has(attacker)&&G.LeaderJohto.f().infiltrator)||!!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
       const bond=!this.remote?G.TypeBonds?.beforeHit(attacker,this,attack):null;
       if(bond)amount*=bond.factor;
@@ -130,13 +130,14 @@
       // Los golpes del invitado llegan sin este factor; sólo la autoridad lo aplica.
       if (!this.remote && attacker&&!attack.typeBondFraction&&!attack.talentPulse) amount *= G.Abilities.outgoingDamage(attacker, attack, bypass)*(G.TrainerTalents?.outgoing(attacker)||1)*(G.ExpeditionGrowth?.damageFactor(attacker,attack)||1);
       if (!this.remote && attack.damageClass&&!attack.leaderTrue) {
-        const defense=attack.damageClass==='special'?this.spdef:this.defense;
+        const rawDefense=attack.damageClass==='special'?this.spdef:this.defense,defense=G.LeaderUnova?.enemyDefense(attacker,this,attack,rawDefense)??rawDefense;
         amount /= (defense || 1)*(1-(G.LeaderAbilities?.penetration(attacker,this,attack)||0));
       }
-      if (!this.remote && this.mega&&!attack.typeBondFraction) amount /= 1.3;
+      if (!this.remote && this.mega&&!attack.typeBondFraction&&!(G.LeaderUnova?.has(attacker)&&G.LeaderUnova.f().moldBreaker)) amount /= 1.3;
       if(bond?.execute||terminal?.execute)amount=Math.max(amount,this.hp+(this.shield||0)+1);
       if(attack.hoennZ&&(this.boss||this.elite)&&G.LeaderHoenn?.has(attacker))amount=Math.min(amount,G.LeaderAbilities._z.budget(attacker)*.3);
       if((attack.sinnohZ||attack.sinnohSoul)&&(this.boss||this.elite)&&G.LeaderSinnoh?.has(attacker))amount=Math.min(amount,G.LeaderAbilities._z.budget(attacker)*.3);
+      if(attack.unovaZ)amount=G.LeaderUnova?.zBudget(this,amount,attack)??amount;
       if(!(amount>0))return 0;const d = Math.max(1, Math.round(amount));
       // Copia de un enemigo del anfitrión: el golpe se le manda a él, que es
       // quien decide si cae. Aquí sólo se ve (número, destello y animación).
@@ -330,7 +331,7 @@
       if (this.slowT > 0) { this.slowT -= dt; if (this.slowT <= 0) this.slow = 0; }
       if (this.burn > 0) {
         this.burnT -= dt; this.burnTick -= dt;
-        if (this.burnTick <= 0) { this.burnTick = 0.5; this.hurt(1.6 * this.burn * (1 + pl.level * 0.06), '#ff9a4d', 0, 0, 0, null, this.burnOwner,{typeBondSecondary:true,typeBondDot:true}); }
+        if (this.burnTick <= 0) { this.burnTick = 0.5; this.hurt(1.6 * this.burn * (1 + pl.level * 0.06), '#ff9a4d', 0, 0, 0, null, this.burnOwner,{typeBondSecondary:true,typeBondDot:true,...(G.LeaderUnova?.has(this.burnOwner)?{unovaBurnDot:true,type:'fire'}:{})}); }
         if (this.burnT <= 0) this.burn = 0;
       }
       if (this.poison > 0) {

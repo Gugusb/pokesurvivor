@@ -43,13 +43,13 @@ G.LeaderAbilitiesUI=(()=>{
    const section=node('article','leader-ability-part '+key);section.dataset.part=key;if(level>trainerLevel||key==='active'&&!unlocked)section.classList.add('locked');
    const h=node('h4');h.append(node('i','',icon),node('span','',title),node('small','',key==='active'?L('手动施放','Manual cast'):level>1?'Lv.'+level:L('开局生效','From start')));section.append(h);
    const list=node('ul');
-   const authored=d.description?.[G.I18n.lang]?.[key];const text=authored?[authored]:key==='active'?[L(zText[d.active.kind]||'',d.name.en+' · '+d.active.kind.replace(/([A-Z])/g,' $1')),L('充能：'+chargeWords[d.charge.event]+'；常规构筑约60秒一发。','Charge: '+d.charge.event.replace(/([A-Z])/g,' $1')+'; about 60 combat seconds in a matching build.'),L('按 Z 或点击槽位施放；最多1发，跨战保留。','Press Z or tap the slot; one stored charge, retained between battles.')]:lines(d[key]);
+   const authored=d.description?.[G.I18n.lang]?.[key]||(d.generation===5?d.description?.zh?.[key]:null);const text=authored?[authored]:key==='active'?[L(zText[d.active.kind]||'',d.name.en+' · '+d.active.kind.replace(/([A-Z])/g,' $1')),L('充能：'+chargeWords[d.charge.event]+'；常规构筑约60秒一发。','Charge: '+d.charge.event.replace(/([A-Z])/g,' $1')+'; about 60 combat seconds in a matching build.'),L('按 Z 或点击槽位施放；最多1发，跨战保留。','Press Z or tap the slot; one stored charge, retained between battles.')]:lines(d[key]);
    for(const t of text){const li=node('li');if(authored){const parts=t.replace(/^\s*\*\s+/gm,'').split(/(\*\*[^*]+\*\*|`[^`]+`)/g);for(const part of parts){if(part.startsWith('**'))li.append(node('strong','',part.slice(2,-2)));else if(part.startsWith('`'))li.append(node('code','',part.slice(1,-1)));else li.append(document.createTextNode(part));}}else li.textContent=t;list.append(li);}if(!text.length)list.append(node('li','',L('无额外规则','No additional rule')));section.append(list);grid.append(section);
   }
-  box.append(grid);if(d.generation>=3)box.append(G.HoennMarketUI.actualNotes(d));box.append(node('p','leader-ability-note',L('持续治疗每秒不超过各自最大生命3%；瞬时治疗按具体效果结算。白盾上限40%，BOSS控制时长减半。','Sustained healing capped at 3% max HP/s; burst healing follows its described trigger. Shields cap at 40%; bosses receive half control duration.')));return box;
+  box.append(grid);if(d.generation>=3)box.append(G.HoennMarketUI.actualNotes(d));box.append(node('p','leader-ability-note',L('持续治疗每秒不超过各自最大生命3%；瞬时治疗按具体效果结算。白盾上限40%，BOSS控制时长减半。','Sustained healing capped at 3% max HP/s; burst healing follows its described trigger. Shields cap at 40%; bosses receive half control duration.')));G.LeaderUnovaUI?.prep(dex,box);return box;
  }
  function hud(ctx,p,x,y,size){
-  if(!G.LeaderAbilities.active())return false;G.LeaderSinnohUI?.hud(ctx,p,x-size-8,y,size);
+  if(!G.LeaderAbilities.active())return false;G.LeaderSinnohUI?.hud(ctx,p,x-size-8,y,size);G.LeaderUnovaUI?.hud(ctx,p,x,y,size);
   const d=G.LeaderAbilities.definition(p.dex),s=G.LeaderAbilities.state(),unlocked=G.LeaderMedals.unlocked(p.dex),ready=unlocked&&s.charge>=1&&!(s.zUntil>s.time);
   ctx.save();ctx.fillStyle='#122b43';ctx.strokeStyle=ready?'#ffe293':'#74adce';ctx.lineWidth=ready?3:1.5;ctx.beginPath();ctx.roundRect(x,y,size,size,12);ctx.fill();ctx.stroke();
   ctx.fillStyle=ready?'#fff1bb':'#9ebcd3';ctx.textAlign='center';ctx.font='bold '+Math.round(size*.42)+'px sans-serif';ctx.fillText('Z',x+size/2,y+size*.52);

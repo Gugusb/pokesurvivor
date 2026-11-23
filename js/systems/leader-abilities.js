@@ -169,7 +169,7 @@ G.LeaderAbilities=(()=>{
  function learnPool(mon,ids){if(!active())return ids;const f=profile();return (f.allMoves&&(!f.johto?.sketch||G.LeaderMedals.family(mon.dex)?.root===235)?G.Moves.ALL.map(m=>m.id):ids).filter(id=>allowed(G.Moves.BY_ID[id]));}
  function legalFixed(mon,id){if(!active()||allowed(G.Moves.BY_ID[id]))return id;return learnPool(mon,G.Moves.poolFor(mon)).find(x=>allowed(G.Moves.BY_ID[x]))||null;}
  function screenRadius(){return Math.max(500,Math.min(1600,G.Camera?.outerRadius?.()||700));}
- function shield(p,amount,duration=5){if(!team(p)||p.dead||!(amount>0))return;const s=own(p);s.shield=Math.min(p.maxHp*.4,s.shield+amount);s.shieldUntil=Math.max(s.shieldUntil,state().time+duration);}
+ function shield(p,amount,duration=5){if(G.LeaderUnova?.blocksShield(p))return;if(!team(p)||p.dead||!(amount>0))return;const s=own(p);s.shield=Math.min(p.maxHp*.4,s.shield+amount);s.shieldUntil=Math.max(s.shieldUntil,state().time+duration);}
  function heal(p,amount){
   if(!p||p.dead||!(amount>0))return 0;const s=own(p),budget=Math.max(0,p.maxHp*.03-s.healBudget),n=Math.min(amount,budget),before=p.hp;
   if(n>0){s.healBudget+=n;p.heal(n);}return Math.max(0,p.hp-before);
@@ -427,7 +427,7 @@ G.LeaderAbilities=(()=>{
   if(f.postZWeakness&&q.postZUntil>s.time)n*=f.postZWeakness;
   if(f.dashRecovery&&q.dashEnd>s.time&&q.dashUntil<=s.time)n*=1+f.dashRecovery;
   if(source.enemy?.leaderDamageUntil>s.time)n*=source.enemy.leaderDamage||1;
-  let d=damage*n;if(f.hitCap)d=Math.min(d,p.maxHp*f.hitCap);
+  let d=damage*n;d=G.LeaderUnova?.capIncoming(p,d,source)??d;if(f.hitCap)d=Math.min(d,p.maxHp*f.hitCap);
   if(f.heavyShield&&d>p.maxHp*.2)shield(p,p.maxHp*f.heavyShield);
   if(f.delayedDamage){const part=d*f.delayedDamage;q.pain=(q.pain||0)+part;q.painRate=q.pain/4;d-=part;}
   if(q.shield>0){const absorbed=Math.min(d,q.shield);q.shield-=absorbed;d-=absorbed;event('absorb',absorbed);if(!q.shield&&f.shieldShards)synthetic(p,'nova',{type:'poison',dmg:.3,count:f.shieldShards});}

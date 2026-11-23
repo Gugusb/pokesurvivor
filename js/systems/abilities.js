@@ -19,7 +19,7 @@ G.Abilities = (() => {
     (has(p, 'sandforce') && weatherActive('sand') ? 0.25 : 0);
   const electricField = () => players().some(p => has(p, 'transistor'));
   const fieldDamage = type => type === 'electric' && electricField() ? 1.1 : 1;
-  const suppressEffects = p => has(p, 'sheerforce');
+  const suppressEffects = p => has(p, 'sheerforce')||!!G.LeaderUnova?.suppresses(p);
   function move(p, m) {
     if (!suppressEffects(p) || m.kind === 'buff') return m;
     return { ...m, burn: 0, poison: 0, slow: 0, knock: 0, drain: 0 };
@@ -62,7 +62,7 @@ G.Abilities = (() => {
   };
   const critMultiplier = p => has(p, 'airlock') && !(G.Weather.hasWeather && G.Weather.hasWeather()) ? 2.25 : 1.5;
   function canCast(p) {
-    if(p.actorStunT>0||G.LeaderJohto&&!G.LeaderJohto.canCast(p)||G.LeaderHoenn&&!G.LeaderHoenn.canCast(p)||G.LeaderSinnoh&&!G.LeaderSinnoh.canCast(p))return false;
+    if(p.actorStunT>0||G.LeaderJohto&&!G.LeaderJohto.canCast(p)||G.LeaderHoenn&&!G.LeaderHoenn.canCast(p)||G.LeaderSinnoh&&!G.LeaderSinnoh.canCast(p)||G.LeaderUnova&&!G.LeaderUnova.canCast(p))return false;
     return !(has(p, 'levitate') && G.World.overlapsSolid && G.World.overlapsSolid(p.x, p.y, p.r));
   }
   function updatePhase(p, dt = 0) {

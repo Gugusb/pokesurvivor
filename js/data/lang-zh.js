@@ -4408,3 +4408,12 @@ G.I18n.addChinese({
   "El paquete de Superación se integra en Primeros Pasos sin cartas Z, se retira el desbloqueo Z por duplicados y llegan la Pokédex expandida y la Investigación Pokémon con títulos y avatares.": "移除累计宝可梦解锁 Z 招式与突破卡包中的 Z 招式并将剩余内容并入初心者包；图鉴新增分栏详情界面，并新增可解锁称号与头像的宝可梦研究系统。",
   "Preparé una bolsita aparte para las Poké Balls y otra para las invitaciones. Quien cocina ordenó los archivos de investigación; yo ya estoy probando cuál título queda mejor junto a la firma.": "我把精灵球和邀请函分装进两个小口袋啦。做饭的那家伙整理好了研究档案，我已经开始挑哪个称号配头像更好看咯。"
 });
+
+G.I18n.addChinese({
+  "Capitanes de Teselia · v0.43.0-alpha.63": "第五世代队长特性 · v0.43.0-alpha.63",
+  "Llegan 76 familias de habilidades de capitán de Teselia, con pasiva, coste, avances de entrenador 5/8 y Z manual desbloqueado por medalla familiar.": "新增合众76个队长特性家族：基础被动与代价开局生效，训练家5／8级进阶，家族勋章解锁手动Z。",
+  "Las fichas conservan el texto original y muestran aparte los ajustes de esta versión. Se equilibraron ingresos, acumulaciones y ataques múltiples contra jefes.": "特性卡保留设计原文，另列本版本实际规则。调整经济收益、无限叠层与多段首领伤害，使各家族收益更接近。",
+  "Kyurem puede elegir su configuración en la tienda desde el nivel 5; Genesect elige su módulo en preparación o en la tienda, sin consumir compañeros.": "酋雷姆从训练家5级起可在商店免费选择配置；盖诺赛克特可在战前准备或商店选择卡带，不消耗宝可梦。",
+  "Bisharp usa la vida estratégica mínima del combate. Crustle limita cada golpe directo al 25%; Audino duplica solo EXP Pokémon; Alomomola no revive aliados caídos.": "驹刀小兵读取本场最低小队生命；岩殿居蟹单次直接受伤最多25%；差不多娃娃只翻倍宝可梦经验；保姆曼波不会复活倒下成员。",
+  "Dejé las nuevas fichas sujetas con una concha para que no se las lleve el viento. Quien cocina revisa los números; yo guardo una página del cuaderno para las historias de nuestros nuevos capitanes.": "我用贝壳压住了新特性卡，省得海风把它们吹乱。做饭的那家伙核对数值，我在手账上留了一页，等咱们的新队长写下故事。"
+});

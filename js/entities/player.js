@@ -111,7 +111,7 @@ G.Player = class Player {
   buffStacks(b) { return G.Mega ? G.Mega.buffStacks(this, b.n) : b.n; }
   buffFraction(stat) { const b = this.buffs[stat]; return this.buffStacks(b) * b.amount; }
   get attackMultiplier() { return Math.max(0, this.atkMul +
-    G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant')||(G.LeaderJohto?.guts(this)||G.LeaderHoenn?.guts(this)||G.LeaderSinnoh?.guts(this)) ? 0 : this.attackDebuff)); }
+    G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant')||(G.LeaderJohto?.guts(this)||G.LeaderHoenn?.guts(this)||G.LeaderSinnoh?.guts(this)||G.LeaderUnova?.guts(this)) ? 0 : this.attackDebuff)); }
   get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)+(G.SquadTraits?.flat(this,'atk')||0)) * (1+this.statGrowth.atk+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'atk')||1)*(G.LeaderAbilities?.factor(this,'atk')||1); }
   get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)+(G.SquadTraits?.flat(this,'spa')||0)) * (1+this.statGrowth.spa+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'spa')||1)*(G.LeaderAbilities?.factor(this,'spa')||1); }
   get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)+(G.SquadTraits?.flat(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1)*(G.SquadTraits?.factor(this,'agility')||1)*(G.LeaderAbilities?.factor(this,'agility')||1); }
@@ -140,7 +140,7 @@ G.Player = class Player {
     return 1;
   }
   get spd() {
-    if(this.actorStunT>0)return 0;
+    if(this.actorStunT>0||G.LeaderUnova?.immobile(this))return 0;
     const s = (this.baseSpd+(G.TypeBonds?.baseBonus(this,'spd')||0)+(G.SquadTraits?.flat(this,'spd')||0)) * (1+this.statGrowth.spd+this.buffFraction('spd')+(G.TrainerTalents?.speedPct(this)||0)) * (this.spdMul + G.Abilities.state(this).growthSpeed + .07*(G.Items?.count(this,'choicescarf')||0)) *
       (1 + G.Abilities.speedBonus(this));
     const w = G.Weather.speedFor(this.mon.types);
@@ -353,7 +353,7 @@ G.Player = class Player {
   }
 
   applyAttackDebuff(amount, duration) {
-    if (G.LeaderAbilities?.active()&&G.LeaderAbilities.profile().attackDebuffImmune || G.Abilities.has(this, 'defiant') || G.Abilities.debuffImmune(this) || !(amount > 0) || !(duration > 0)) return false;
+    if (!(amount > 0) || !(duration > 0) || G.LeaderUnova?.status(this,'attack',null)===false||G.LeaderAbilities?.active()&&G.LeaderAbilities.profile().attackDebuffImmune || G.Abilities.has(this, 'defiant') || G.Abilities.debuffImmune(this)) return false;
     this.attackDebuff = Math.max(this.attackDebuff, Math.min(1, amount));
     this.attackDebuffT = Math.max(this.attackDebuffT, duration); return true;
   }
@@ -429,7 +429,8 @@ G.Player = class Player {
     // --- movimiento con colisiones ---
     // (En cooperativo la pausa no para el juego: sólo te quedas quieto.)
     const zDash = G.ZMoves && G.ZMoves.dashing(this);
-    const [ax, ay] = this.frozen || zDash ? [0, 0] : G.Input.axis();
+    let [ax, ay] = this.frozen || zDash ? [0, 0] : G.Input.axis();
+    if(G.LeaderUnova)[ax,ay]=G.LeaderUnova.steer(this,ax,ay,dt);
     this.walking = ax !== 0 || ay !== 0;
     const s = this.spd;
     // Hielo: resbalas (la velocidad cambia despacio).

@@ -5,7 +5,7 @@ G.ActorStatus=(()=>{
  const get=p=>p.actorStatus||=( {} );
  function apply(p,kind,duration=3,amount=1,source=null){
   if(!p||p.dead||!kinds.includes(kind)||!Number.isFinite(duration)||duration<=0)return false;
-  if(G.LeaderJohto?.status(p,kind,source)===false||G.LeaderHoenn?.status(p,kind,source)===false||G.LeaderSinnoh?.status(p,kind,source)===false)return false;
+  if(G.LeaderJohto?.status(p,kind,source)===false||G.LeaderHoenn?.status(p,kind,source)===false||G.LeaderSinnoh?.status(p,kind,source)===false||G.LeaderUnova?.status(p,kind,source)===false)return false;
   duration*=G.LeaderSinnoh?.has(p)?G.LeaderSinnoh.f().statusDuration||1:1;
   const s=get(p);s[kind]={left:Math.max(s[kind]?.left||0,Math.min(15,duration)),amount:Math.max(0,Math.min(kind==='poison'?8:1,amount)),wait:s[kind]?.wait||0};
   if(kind==='slow')p.slowT=Math.max(p.slowT||0,duration);

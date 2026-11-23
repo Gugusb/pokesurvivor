@@ -76,7 +76,7 @@ G.Squad = (() => {
     if(!p.isSquadMember&&G.Mega?.active(p))G.Mega.finish(p);
     const dex=G.U.pick(choices),mon=G.DEX_BY[dex],fraction=p.hp/p.maxHp,iv=G.MonProgression.normalizeIV(G.DB.save?.owned?.[dex]?.iv),s=G.MonProgression.stats(dex,iv);
     p.mon=mon;p.dex=p.spriteDex=p.ivDex=dex;p.baseHp=s.hp;p.baseAtk=s.atk;p.baseSpa=s.spa;p.baseDefense=s.defense;p.baseSpDef=s.spdef;p.baseSpd=s.spd;p.baseAgility=s.agility;p.baseStamina=s.stamina;
-    p.leaderHpFactor=1;p.sinnohHpFactor=1;p.hoennPaidHp=0;p.squadHpBonus=0;p.talentHpBonus=0;p.traitHpFactor=1;p.qualityHpFactor=p.isSquadMember?(G.ExpeditionQuality?.factors(p).hp||1):1;p.maxHp=s.hp*(1+p.statGrowth.hp)*p.qualityHpFactor;p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
+    p.leaderHpFactor=1;p.sinnohHpFactor=1;p.unovaHpFactor=1;p.hoennPaidHp=0;p.squadHpBonus=0;p.talentHpBonus=0;p.traitHpFactor=1;p.qualityHpFactor=p.isSquadMember?(G.ExpeditionQuality?.factors(p).hp||1):1;p.maxHp=s.hp*(1+p.statGrowth.hp)*p.qualityHpFactor;p.hp=p.dead?0:p.maxHp*fraction;p.anim=new G.Sprites.Animator(dex);p.r=G.Sprites.bodyRadius(dex);p.bodyH=G.Sprites.bodyHeight(dex);
     if(!p.isSquadMember){p.monStage=dex;p.evolutionPath=G.MonProgression.pathFor(dex);p.ability=G.LeaderAbilities?.active()?null:G.Abilities.equipped(G.DB.save,dex)||null;G.Mega?.init(p,G.DB.save);}
     G.Sprites.preload([dex]);
   }
