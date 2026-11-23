@@ -1941,3 +1941,401 @@ html.ls-scaled .split { grid-template-columns: 1fr 1fr; }
 html.ls-scaled .mission { grid-template-columns: 1fr auto; }
 html.ls-scaled .prof-marks { grid-template-columns: repeat(4, 1fr); }
 html.ls-scaled .bind-slots { grid-template-columns: repeat(4, 1fr); }
+
+/* ================= 3D League Sanctuary Hub & Sub-UI Stage ================= */
+body { --league-share: 62%; }
+#league-world {
+  display: none;
+  position: fixed; inset: 0; z-index: 5;
+  background: #0d1d35;
+}
+#league-world::after {
+  content: '';
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    linear-gradient(90deg, rgba(5, 13, 28, 0.08) 0%, transparent 24%, transparent 56%, rgba(6, 15, 34, 0.42) 100%),
+    radial-gradient(circle at 30% 48%, transparent 45%, rgba(4, 10, 24, 0.32) 100%);
+}
+#league-scene { display: block; width: 100%; height: 100%; border: 0; }
+body.league-active #league-world { display: block; }
+body.league-active #game { visibility: hidden; pointer-events: none; }
+
+/* Top-Left Floating 3D Sanctuary & Environment HUD */
+.league-env-bar {
+  display: none;
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  left: max(14px, env(safe-area-inset-left));
+  z-index: 32;
+  align-items: center; gap: 7px;
+  padding: 5px 10px;
+  border-radius: 14px;
+  background: linear-gradient(165deg, rgba(18, 37, 72, 0.88), rgba(8, 18, 38, 0.94));
+  border: 1.5px solid rgba(164, 214, 255, 0.42);
+  border-top-color: rgba(225, 242, 255, 0.65);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 4px 0 rgba(4, 9, 22, 0.88),
+    0 14px 32px rgba(2, 7, 18, 0.55);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+body.league-active .league-env-bar { display: inline-flex; }
+.league-env-brand { display: flex; align-items: center; gap: 7px; padding-right: 8px; border-right: 1px solid rgba(154, 198, 248, 0.24); }
+.league-env-seal {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: grid; place-items: center;
+  background: linear-gradient(160deg, #ffe27a, #e5940c);
+  border: 1.5px solid #fff6cf;
+  box-shadow: inset 0 1px 0 #fff, 0 2px 0 #8a4e03, 0 4px 10px rgba(245, 158, 11, 0.35);
+  color: #261400; font-size: 15px; font-weight: 900;
+}
+.league-env-copy { display: flex; flex-direction: column; line-height: 1.15; }
+.league-env-kicker { font-size: 8px; font-weight: 800; letter-spacing: 1px; color: #7fd6ff; }
+.league-env-title { font-size: 13.5px; font-weight: 800; color: #f4f9ff; letter-spacing: 0.2px; margin-top: 1px; }
+.league-env-sub { font-size: 10.5px; color: #b5d0ec; margin-top: 1px; max-width: 190px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 1680px) { .league-env-sub { display: none; } }
+@media (max-width: 1560px) { .league-env-kicker { display: none; } }
+
+.league-env-controls { display: flex; align-items: center; gap: 4px; }
+.league-env-pill {
+  appearance: none; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 4px 8px; border-radius: 9px;
+  background: linear-gradient(180deg, rgba(31, 58, 108, 0.85), rgba(15, 30, 62, 0.92));
+  border: 1.5px solid rgba(156, 204, 255, 0.36);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 2px 0 rgba(4, 9, 22, 0.85);
+  color: #eaf4ff; font-size: 11.5px; font-weight: 700;
+  transition: transform .1s, border-color .14s, background .14s;
+}
+.league-env-pill i { font-style: normal; font-size: 13px; line-height: 1; }
+.league-env-pill:hover { transform: translateY(-1px); border-color: var(--cyan); background: linear-gradient(180deg, rgba(44, 80, 145, 0.92), rgba(20, 40, 82, 0.96)); }
+.league-env-pill:active { transform: translateY(1px); }
+.league-env-pill.on {
+  border-color: rgba(110, 235, 185, 0.72);
+  background: linear-gradient(180deg, rgba(24, 92, 82, 0.88), rgba(12, 48, 46, 0.94));
+  color: #c6ffea;
+}
+.league-env-pill.icon-only { width: 28px; height: 28px; padding: 0; justify-content: center; border-radius: 9px; font-weight: 800; color: var(--gold); }
+
+/* Bottom-Left Floating 3D Landmark Showcase Card (Detail Sub-UI View) */
+.league-focus-card {
+  display: none;
+  position: fixed;
+  left: max(18px, env(safe-area-inset-left));
+  bottom: max(28px, env(safe-area-inset-bottom));
+  width: min(350px, calc(var(--league-share, 35%) - 28px));
+  min-width: 240px;
+  z-index: 32;
+  flex-direction: column; gap: 10px;
+  padding: 13px 15px;
+  border-radius: 18px;
+  background: linear-gradient(165deg, rgba(17, 35, 68, 0.9), rgba(8, 17, 36, 0.95));
+  border: 1.5px solid rgba(158, 210, 255, 0.42);
+  border-top-color: rgba(225, 242, 255, 0.65);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 5px 0 rgba(4, 9, 22, 0.9),
+    0 18px 42px rgba(2, 7, 18, 0.68);
+  backdrop-filter: blur(14px) saturate(1.2);
+  animation: pop .22s ease-out;
+}
+body.league-active[data-league-view="detail"] .league-focus-card { display: flex; }
+.league-focus-back {
+  appearance: none; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: space-between; gap: 8px;
+  width: 100%; padding: 8px 12px;
+  border-radius: 11px;
+  background: linear-gradient(180deg, #ffe278 0%, #f59e0b 100%);
+  border: 1.5px solid #fff5c0;
+  box-shadow: inset 0 1px 0 #fff, 0 3px 0 #965704, 0 6px 14px rgba(245, 158, 11, 0.32);
+  color: #261400; font-size: 13.5px; font-weight: 800;
+  transition: transform .1s, filter .14s;
+}
+.league-focus-back i { font-style: normal; font-size: 18px; line-height: 1; font-weight: 900; }
+.league-focus-back span { flex: 1; text-align: left; }
+.league-focus-back kbd { background: rgba(38, 20, 0, 0.16); border-color: rgba(38, 20, 0, 0.35); color: #261400; font-size: 11px; }
+.league-focus-back:hover { transform: translateY(-1px); filter: brightness(1.06); }
+.league-focus-back:active { transform: translateY(2px); box-shadow: inset 0 1px 0 #fff, 0 1px 0 #965704; }
+.league-focus-body { display: flex; align-items: center; gap: 11px; }
+.league-focus-ico {
+  flex: 0 0 40px; height: 40px; border-radius: 12px;
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 35% 30%, rgba(92, 204, 255, 0.32), rgba(14, 30, 62, 0.92));
+  border: 1px solid rgba(154, 212, 255, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
+  font-size: 21px;
+}
+.league-focus-text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.league-focus-text b { font-size: 14.5px; color: #f4f9ff; font-weight: 800; }
+.league-focus-text small { font-size: 11.5px; color: #adc8e6; line-height: 1.35; }
+
+/* Home Screen (#scr-menu) Four-Zone Spatial Layout over 3D Sanctuary */
+body.league-active .league-panel:not(.league-current) { display: none !important; }
+body.league-active #scr-menu {
+  position: fixed; inset: 0;
+  display: flex; align-items: stretch; justify-content: space-between;
+  padding: 0;
+  background: transparent;
+  pointer-events: none;
+}
+
+/* Zone 3: Bottom-Left Floating Captain & League Rank Spotlight Dock */
+body.league-active #scr-menu .menu-left {
+  position: fixed;
+  left: max(18px, env(safe-area-inset-left));
+  bottom: max(26px, env(safe-area-inset-bottom));
+  width: min(396px, 35vw);
+  flex: none;
+  padding: 0;
+  margin: 0;
+  background: none;
+  align-items: stretch;
+  justify-content: flex-end;
+  pointer-events: auto;
+  z-index: 24;
+}
+body.league-active #scr-menu .logo { display: none; }
+.league-captain-kicker,
+.league-console-kicker {
+  grid-column: 1 / -1;
+  display: flex; align-items: center; gap: 7px;
+  font-size: 10px; font-weight: 800; letter-spacing: 1.8px;
+  color: #79d6ff; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.league-captain-kicker::before,
+.league-console-kicker::before {
+  content: ''; width: 7px; height: 7px; border-radius: 50%;
+  background: #45e08e; box-shadow: 0 0 8px #45e08e;
+}
+body.league-active #scr-menu .partner-card {
+  display: grid;
+  grid-template-columns: 108px minmax(0, 1fr);
+  gap: 5px 14px;
+  align-items: center;
+  text-align: left;
+  margin: 0;
+  padding: 13px 15px;
+  border-radius: 20px;
+  background:
+    radial-gradient(ellipse at 18% 20%, rgba(76, 201, 255, 0.18), transparent 58%),
+    linear-gradient(165deg, rgba(18, 37, 72, 0.9), rgba(8, 18, 38, 0.95));
+  border: 1.5px solid rgba(164, 214, 255, 0.44);
+  border-top-color: rgba(228, 244, 255, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 5px 0 rgba(4, 9, 22, 0.9),
+    0 18px 44px rgba(2, 7, 18, 0.68);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
+body.league-active #scr-menu #menu-partner {
+  grid-column: 1;
+  grid-row: 2 / 5;
+  width: 108px; height: 92px;
+  border-radius: 14px;
+  margin: 0;
+}
+body.league-active #scr-menu .partner-card .nm {
+  grid-column: 2;
+  font-size: 19px; margin: 0; line-height: 1.2;
+}
+body.league-active #scr-menu .partner-card .lv {
+  grid-column: 2;
+  font-size: 12px; margin: 0; line-height: 1.45;
+}
+body.league-active #scr-menu .partner-card .seg {
+  grid-column: 1;
+  justify-self: center;
+  margin-top: 2px;
+}
+body.league-active #scr-menu #menu-league {
+  grid-column: 2;
+  width: 100%;
+  margin: 3px 0 0;
+  padding: 6px 10px;
+}
+body.league-active #scr-menu .menu-community {
+  position: static;
+  margin-top: 7px;
+  align-self: flex-start;
+  padding: 5px 13px;
+  background: linear-gradient(180deg, rgba(16, 33, 66, 0.9), rgba(8, 18, 38, 0.95));
+  border: 1.5px solid rgba(146, 204, 250, 0.36);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18), 0 3px 0 rgba(4, 9, 22, 0.85);
+  backdrop-filter: blur(10px);
+}
+
+/* Zone 4: Right-Side Floating 3D Expedition Command Console */
+body.league-active #scr-menu .menu-right {
+  margin-left: auto;
+  width: min(478px, 39vw);
+  height: 100%;
+  padding: 60px max(18px, env(safe-area-inset-right)) 24px 12px;
+  display: flex; flex-direction: column; justify-content: center;
+  gap: 8px;
+  background: none;
+  overflow-y: auto;
+  pointer-events: auto;
+  z-index: 24;
+}
+body.league-active #scr-menu .menu-right > .box {
+  padding: 13px 15px;
+  border-radius: 20px;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(76, 201, 255, 0.16), transparent 55%),
+    linear-gradient(165deg, rgba(18, 36, 70, 0.9), rgba(8, 17, 36, 0.95));
+  border: 1.5px solid rgba(164, 214, 255, 0.44);
+  border-top-color: rgba(228, 244, 255, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 5px 0 rgba(4, 9, 22, 0.9),
+    0 20px 48px rgba(2, 7, 18, 0.68);
+  backdrop-filter: blur(16px) saturate(1.22);
+}
+body.league-active #scr-menu .menu-right > .box:last-child {
+  padding: 9px 14px !important;
+  border-radius: 14px;
+}
+body.league-active #scr-menu #menu-stats {
+  font-size: 12px !important;
+  line-height: 1.55;
+  color: #b8d2ee !important;
+}
+body.league-active #scr-menu .menu-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+body.league-active #scr-menu .play-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr;
+  gap: 8px;
+}
+body.league-active #scr-menu .menu-item {
+  position: relative;
+  padding: 7px 10px;
+  min-height: 46px;
+  border-radius: 12px;
+  font-size: 14px;
+  grid-template-columns: 28px 1fr;
+  column-gap: 9px;
+}
+body.league-active #scr-menu .menu-item small {
+  display: block;
+  font-size: 10px;
+  color: #9ec0e4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+body.league-active #scr-menu .menu-item.play {
+  font-size: 19px;
+  padding: 10px 12px;
+  min-height: 62px;
+}
+body.league-active #scr-menu .menu-item.play small {
+  color: #ffe3e6;
+  font-size: 10.5px;
+}
+body.league-active #scr-menu .menu-item[data-go="gacha"],
+body.league-active #scr-menu .menu-item[data-go="ability-gacha"] {
+  background: linear-gradient(165deg, rgba(64, 46, 118, 0.88), rgba(28, 20, 62, 0.95));
+  border-color: rgba(196, 162, 255, 0.45);
+}
+body.league-active #scr-menu .menu-item[data-go="nursery"],
+body.league-active #scr-menu .menu-item[data-go="achievements"] {
+  background: linear-gradient(165deg, rgba(78, 60, 26, 0.86), rgba(38, 28, 12, 0.94));
+  border-color: rgba(255, 214, 118, 0.44);
+}
+body.league-active #scr-menu .menu-item[data-notice]::after {
+  content: attr(data-notice);
+  position: absolute; right: 7px; top: 6px;
+  min-width: 19px; height: 19px; padding: 0 5px;
+  border-radius: 999px;
+  display: grid; place-items: center;
+  background: linear-gradient(180deg, #ffe57f, #f59e0b);
+  border: 1px solid #fff7d1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45);
+  color: #241300; font-size: 10.5px; font-weight: 900; line-height: 1;
+}
+
+/* Sub-UI Detail View: Left 35% 3D Showcase Window + Right 65% Floating 3D Glass-Ceramic Drawer */
+body.league-active[data-league-view="detail"] .league-panel.league-current {
+  position: fixed;
+  left: var(--league-share, 35%);
+  right: 0; top: 0; bottom: 0;
+  width: auto; height: auto;
+  padding: 58px max(18px, env(safe-area-inset-right)) 24px 12px;
+  display: flex; align-items: center; justify-content: center;
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  z-index: 24;
+}
+body.league-active[data-league-view="detail"] .league-panel.league-current > .box {
+  width: 100% !important;
+  max-width: 1020px !important;
+  max-height: calc(100dvh - 84px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  background:
+    radial-gradient(ellipse at 18% 0%, rgba(76, 201, 255, 0.16), transparent 54%),
+    linear-gradient(165deg, rgba(18, 36, 70, 0.92), rgba(8, 18, 38, 0.96));
+  border: 1.5px solid rgba(164, 214, 255, 0.46);
+  border-top-color: rgba(228, 244, 255, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    0 6px 0 rgba(4, 9, 22, 0.92),
+    0 24px 68px rgba(2, 7, 18, 0.75);
+  backdrop-filter: blur(18px) saturate(1.25);
+}
+body.league-active #scr-league-mail #fr-inbox > .note { display: none; }
+body.league-active #scr-league-mail .league-empty { padding: 22px 0; color: var(--muted-strong); text-align: center; }
+body.league-active #set-body [id^="league-"] { width: auto; min-width: 36px; max-width: 58%; }
+body.league-active #set-body label.set-row { display: flex; align-items: center; justify-content: space-between; gap: 18px; margin: 12px 0; }
+.league-help { padding: 14px 0 4px; color: var(--muted-strong); font-size: 13px; line-height: 1.65; }
+.league-help summary { cursor: pointer; font-weight: 700; color: var(--gold); }
+
+body.league-active.league-unavailable #league-world { display: none; }
+body.league-active.league-unavailable { --league-share: 0% !important; }
+body.league-active.league-unavailable .league-focus-card { display: none !important; }
+
+/* Responsive & Proportional Landscape Scaling for 3D League Hub */
+@media (max-width: 980px) {
+  body.league-active #scr-menu .menu-left { width: min(340px, 42vw); }
+  body.league-active #scr-menu .menu-right { width: min(440px, 52vw); }
+  .league-env-sub { display: none; }
+}
+@media (max-width: 760px) and (min-height: 541px) {
+  body.league-active #scr-menu { flex-direction: column; overflow-y: auto; pointer-events: auto; padding-top: 108px; }
+  body.league-active #scr-menu .menu-left { position: static; width: 100%; padding: 8px 14px; }
+  body.league-active #scr-menu .menu-right { width: 100%; height: auto; padding: 8px 14px 28px; }
+  body.league-active[data-league-view="detail"] .league-panel.league-current { left: 0; padding: 104px 10px 16px; }
+  body.league-active[data-league-view="detail"] .league-focus-card { display: none; }
+}
+
+html.ls-scaled .league-env-bar,
+html.ls-scaled .league-focus-card {
+  zoom: var(--ui-scale);
+}
+html.ls-scaled body.league-active #scr-menu .menu-left {
+  width: 392px;
+  left: max(16px, env(safe-area-inset-left));
+  bottom: max(22px, env(safe-area-inset-bottom));
+}
+html.ls-scaled body.league-active #scr-menu .menu-right {
+  width: 472px;
+  padding: 54px max(16px, env(safe-area-inset-right)) 18px 10px;
+}
+html.ls-scaled body.league-active[data-league-view="detail"] .league-panel.league-current {
+  padding:
+    calc(56px * var(--ui-scale))
+    max(calc(16px * var(--ui-scale)), env(safe-area-inset-right))
+    calc(18px * var(--ui-scale))
+    calc(10px * var(--ui-scale));
+}
+html.ls-scaled body.league-active[data-league-view="detail"] .league-panel.league-current > .box {
+  max-height: calc(var(--ui-vh) - 76px);
+}

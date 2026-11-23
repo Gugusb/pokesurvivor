@@ -1423,3 +1423,16 @@ html.ls-scaled .journey-box.battle-loot-box {
   display: block; height: auto; max-height: calc(var(--ui-vh) - 28px);
   overflow-y: auto; overflow-x: hidden; overscroll-behavior: contain; touch-action: pan-y;
 }
+
+/* 3D League Sanctuary Hub: Expedition Preparation Stage */
+body.league-active[data-league-view="detail"] #scr-journey.league-current > .journey-box {
+  width: 100% !important;
+  max-width: 1020px !important;
+}
+body.league-active[data-league-view="detail"] #scr-journey.league-current .journey-layout {
+  grid-template-columns: minmax(0, 1fr) 250px;
+  gap: 14px;
+}
+html.ls-scaled body.league-active[data-league-view="detail"] #scr-journey.league-current > .journey-box {
+  max-height: calc(var(--ui-vh) - 76px);
+}

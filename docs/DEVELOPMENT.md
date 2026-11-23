@@ -34,6 +34,18 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.57 — 2026-11-23
+
+- 借用 `G:\PokemooonDev\PokeSurvivor` 的 3D 宝可梦联盟微缩庭院模型（`outputs/pokemon-league.html`），为 `-next` 分支新远征玩法重新设计游戏开始主界面（`#scr-menu`）与主界面全部子 UI（`#scr-journey` 战前准备、`#scr-dex`、`#scr-gacha`、`#scr-upgrades`、`#scr-nursery`、`#scr-goals`、`#scr-league-mail`、`#scr-friends`、`#scr-rank`、`#scr-offline`、`#scr-news`、`#scr-support`、`#scr-settings`、`#scr-legal`、`#scr-profile`、`#scr-lobby`、`#scr-mod`、`#scr-nick`）。
+- 升级 `outputs/pokemon-league.html` 嵌入渲染管线：移除原仓库 `66% / 34%` 硬切分竖墙与灰绿平面侧栏，将 `#stage` WebGL 画布固定为 `100%` 全屏渲染，并通过 Three.js `camera.setViewOffset(renderWidth, renderHeight, (0.5 - share * 0.5) * renderWidth, 0, renderWidth, renderHeight)` 动态偏移视锥投影中心（主界面 `share=0.62` 时 3D 岛屿在左半屏居中，进入子界面 `share=0.34` 时 3D 焦点地标自动平移至左 35% 视窗中央），彻底消除镜头推拉过程中的 WebGL 缓冲区重分配掉帧与生硬分割线。
+- 新增 `js/ui/league-ui.js` 并在 `css/style.css`、`css/expedition.css`、`dev.html`、`js/ui/menu.js`、`js/ui/settings-ui.js`、`js/ui/ui.js`、`js/game.js` 接入四分区空间主界面与子 UI 镜头跟随：
+  - 左上角悬浮 `#league-env-bar` 园区环境交互胶囊，支持一键切换四季（春/夏/秋/冬）、昼夜四时（清晨/白天/黄昏/夜晚）、自动时序开关及镜头导览面板。
+  - 左下角悬浮出战队长展示底座（普通/异色切换与联盟段位荣誉铭牌），子界面下切换为 `#league-focus-card` 3D 地标铭牌与 `‹ 返回联盟总部 Esc` 快捷返回卡。
+  - 右侧悬浮 `EXPEDITION COMMAND` 12 宫格双列 3D 战术终端（顶部英雄级红色立体出征卡 + 10 枚色彩编码功能卡 + 底部远征战绩横条）。
+  - `#scr-journey` 在 `.journey-prep` 战前整备阶段作为主界面子 UI 聚焦于 3D 远征传送门；当玩家点击“生成本局世代 → 出发”进入 `.route-room` 21×7 赛程地图或进入战斗时，自动退出 `body.league-active` 3D 园区模式，确保局内日程与战斗全屏运行。
+- 必要验证：96 项自动化单元测试（`test_abilities.cjs`、`test_leader_abilities.cjs`、`test_character_profiles.cjs`、`test_league_rank.cjs`、`test_release_mode.cjs`）全部通过；隔离内存 SQLite 服务端 + Playwright 在桌面 `1440×900` 与手机横屏 `844×390` 实测主界面日夜四季切换、各子界面镜头聚焦与返回、以及战前整备出发切入全屏日程表，12 张实测截图核对无重叠且 `pageerror` 为 0。标准构建 `node tools/build.js` 与 `node tools/export_data.js` 通过；本机未安装 Python 3.12+（`py -3.14` 不可用），未重跑 `tools/make_seo_pages.py`。
+
+
 ### v0.43.0-alpha.47 — 2026-11-21
 
 - 修复用户反馈小米15 Pro无法安装单机APK的问题。检查alpha.45/46最终APK确认：自定义ZipDex重打包将aapt2原本STORED的resources.arsc重新压为DEFLATED；Android11+在target>=30时会拒绝这种APK，签名验证通过不代表可安装。ZipDex现保留未压缩条目的存储方式、尺寸及CRC，随后再执行4字节对齐与签名，不下调target或要求手机关闭安全校验。

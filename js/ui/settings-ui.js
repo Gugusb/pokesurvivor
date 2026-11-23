@@ -79,6 +79,7 @@ G.SettingsUI = (() => {
     const box = $('set-body');
     box.removeAttribute('translate');
     box.scrollTop = 0;
+    if (tab === 'league' && G.LeagueUI) { G.LeagueUI.renderSettings(box); return; }
     if (tab === 'sound') {
       box.innerHTML = section('Sonido') + '<div id="set-sound" class="sound-inline"></div>';
       G.UI.soundControls($('set-sound'));

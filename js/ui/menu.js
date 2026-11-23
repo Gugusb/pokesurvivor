@@ -10,7 +10,7 @@ G.MenuUI = (() => {
     dexFilter === 'shiny' ? !!s.shiny?.[p.dex] : /^\d$/.test(dexFilter) ? p.rarity === +dexFilter : true;
 
   function init() {
-    const ICON = { play: 'ball', dex: 'book', nursery:'ball', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
+    const ICON = { play: 'ball', dex: 'book', nursery:'ball', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', achievements: 'trophy', mail: 'friends', news: 'book', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
     document.querySelectorAll('#scr-menu [data-go]').forEach(b => {
       b.insertAdjacentHTML('afterbegin', `<span class="mi-ico">${G.Icons.html(ICON[b.dataset.go], 26)}</span>`);
       b.dataset.sfx = b.dataset.go === 'play' ? 'confirm' : 'click';
@@ -22,6 +22,9 @@ G.MenuUI = (() => {
         else if (go === 'gacha') G.GachaUI.open();
         else if (go === 'ability-gacha') G.GachaUI.open('ability');
         else if (go === 'goals') G.GoalsUI.open();
+        else if (go === 'achievements') G.GoalsUI.open('ach');
+        else if (go === 'mail') G.LeagueUI?.openMail();
+        else if (go === 'news') G.NewsUI.open();
         else if (go === 'offline') G.OfflineUI.open();
         else if (go === 'nursery') G.NurseryUI.open();
         else if (go === 'friends') G.FriendsUI.open();
@@ -95,9 +98,13 @@ G.MenuUI = (() => {
       G.Social.start().then(r => {
         if (r === 'need-nick' && !G.NickUI.skipped && G.UI.isOpen('scr-menu')) G.NickUI.open();
         socialLine();
+        G.LeagueUI?.applyLabels?.();
       });
     }
     G.InvitePop.refresh();
+    G.LeagueUI?.applyLabels?.();
+    G.LeagueUI?.refreshNotices?.();
+    G.LeagueUI?.sync?.();
   }
 
   /** Texto bajo "Amigos" y "Jugar": quién está en línea, solicitudes, sala. */

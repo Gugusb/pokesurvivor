@@ -34,7 +34,7 @@ function web(){
  else run(windows?'npx.cmd':'npx',['--offline','--yes','terser@5.51.2',...terserArgs],{shell:windows});
  let page=html.replace(/<!-- scripts:begin -->[\s\S]*?<!-- scripts:end -->/,'<script defer src="js/app.min.js"></script>').replace(/<!-- seo:begin -->[\s\S]*?<!-- seo:end -->/g,'').replace(/<link[^>]+(?:rel="manifest"|rel="preconnect")[^>]*>/g,'').replace(/[ \t]*<button\b[^>]*data-t="dev"[^>]*>[\s\S]*?<\/button>\r?\n?/g,'');
  page=page.replace('</head>','<style>[data-go="friends"],[data-go="rank"],#btn-logout{display:none!important}</style></head>');
- fs.writeFileSync(path.join(WEB,'index.html'),page);for(const f of ['css','assets','favicon.ico','manifest.webmanifest','LICENSE','CREDITS.md'])copy(path.join(ROOT,f),path.join(WEB,f));
+ fs.writeFileSync(path.join(WEB,'index.html'),page);for(const f of ['css','assets','outputs/pokemon-league.html','favicon.ico','manifest.webmanifest','LICENSE','CREDITS.md'])copy(path.join(ROOT,f),path.join(WEB,f));
  console.log('Offline web prepared:',WEB);return WEB;
 }
 web();if(args.includes('--web-only'))process.exit(0);

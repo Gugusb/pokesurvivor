@@ -77,8 +77,8 @@
 }
 </script>
 
-<link rel="stylesheet" href="css/style.css?v=e78844a750">
-<link rel="stylesheet" href="css/expedition.css?v=e78844a750">
+<link rel="stylesheet" href="css/style.css?v=b24fb272dd">
+<link rel="stylesheet" href="css/expedition.css?v=b24fb272dd">
 <link rel="stylesheet" href="css/trainer-talents.css">
 <link rel="stylesheet" href="css/league-rank.css">
 <link rel="stylesheet" href="css/leader-abilities.css">
@@ -191,10 +191,12 @@
         <button class="menu-item" data-go="upgrades">Paquetes de cartas<small>Cartas para toda tu colección</small></button>
         <button class="menu-item" data-go="gacha">Gacha<small>9 regiones · Pokémon y shinies</small></button>
         <button class="menu-item" data-go="ability-gacha">Gacha de habilidades<small>Medallas de las regiones disponibles</small></button>
-        <button class="menu-item" data-go="goals">Misiones<small id="menu-goals-sub">Misiones, logros y perfil</small></button>
-        <button class="menu-item" data-go="offline">Ingresos sin conexión<small id="menu-offline-rate">Sólo cuentas registradas</small></button>
         <button class="menu-item" data-go="nursery">Guardería<small id="menu-nursery-sub">Huevos y crianza con amigos</small></button>
+        <button class="menu-item" data-go="goals">Misiones<small id="menu-goals-sub">Misiones, logros y perfil</small></button>
+        <button class="menu-item" data-go="achievements">Logros de la Liga<small>Trofeos, medallas y títulos</small></button>
+        <button class="menu-item" data-go="offline">Ingresos sin conexión<small id="menu-offline-rate">Sólo cuentas registradas</small></button>
         <button class="menu-item" data-go="friends">Amigos<small id="menu-friends-sub">Guardería y regalos</small></button>
+        <button class="menu-item" data-go="mail">Buzón<small>Regalos e invitaciones</small></button>
         <button class="menu-item" data-go="rank">Ranking<small>Medallas completas y supervivencia 8★</small></button>
         <button class="menu-item" data-go="settings">Ajustes<small>Sonido, gráficos, controles y cuenta</small></button>
       </div>
@@ -260,6 +262,7 @@
       <button class="gen-tab" data-t="expedition">Guardar expedición</button>
       <button class="gen-tab" data-t="acc">Cuenta</button>
       <button class="gen-tab" data-t="about">Acerca de</button>
+      <button class="gen-tab" data-t="league">Parque de la Liga</button>
     </div>
     <div id="set-body" class="set-body"></div>
   </div>
@@ -368,6 +371,7 @@
 </section>
 
 <!-- ====== Sala (partida en grupo) ====== -->
+<section id="scr-league-mail" class="scr dim hidden"><div class="box wide"><div class="row between"><h2>Buzón</h2><button class="btn small ghost" data-back>Volver</button></div><div id="league-mail-body"></div></div></section>
 <section id="scr-nursery" class="scr dim hidden">
   <div class="box wide nursery-box">
     <div class="nursery-toolbar"><div class="nursery-heading"><span class="nursery-emblem" aria-hidden="true"><i class="nursery-egg"></i></span><div><h2 id="nursery-title">Guardería</h2><p>Un hogar para nuevos compañeros</p></div></div><button id="nursery-back" class="btn small ghost">Volver</button></div>
@@ -606,6 +610,6 @@
 <button id="squad-open" class="bag-open squad-open hidden" type="button">♧<kbd>T</kbd></button>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=e78844a750"></script>
+<script defer src="js/app.min.js?v=b24fb272dd"></script>
 </body>
 </html>

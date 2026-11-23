@@ -1132,6 +1132,7 @@ G.Flow = {
     document.getElementById('user-pill').onclick = () => G.GoalsUI.open('profile');
     G.Audio.music('village');     // suena tras el primer clic (lo exige el navegador)
     G.Game.init();
+    G.LeagueUI?.init();
     // La base de datos (nube o local) recupera la sesión anterior.
     G.DB.ready().then(restored => {
       document.getElementById('boot').classList.add('hidden');
