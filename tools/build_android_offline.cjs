@@ -50,7 +50,8 @@ run(exe(jbin,'java'),['-cp',path.join(bt,'lib/d8.jar'),'com.android.tools.r8.D8'
 run(exe(jbin,'javac'),['--release','8','-d',OUT,path.join(ROOT,'android/offline/ZipDex.java')]);
 const withDex=path.join(OUT,'with-dex.apk');run(exe(jbin,'java'),['-cp',OUT,'ZipDex',unsigned,path.join(dex,'classes.dex'),withDex]);const aligned=path.join(OUT,'aligned.apk');run(exe(bt,'zipalign'),['-f','-p','4',withDex,aligned]);
 const key=path.join(OUT,'offline-test.p12'),passFile=path.join(OUT,'signing-password.txt');if(!fs.existsSync(key)){fs.writeFileSync(passFile,crypto.randomBytes(24).toString('hex'));run(exe(jbin,'keytool'),['-genkeypair','-keystore',key,'-storetype','PKCS12','-storepass:file',passFile,'-alias','offline-test','-keyalg','RSA','-keysize','2048','-validity','3650','-dname','CN=Offline Test Build']);}
-const output=path.join(OUT,'PokeSurvivor-Next-alpha.47-offline.apk');run(exe(jbin,'java'),['-jar',path.join(bt,'lib/apksigner.jar'),'sign','--ks',key,'--ks-pass','file:'+passFile,'--ks-key-alias','offline-test','--out',output,aligned]);
+const output=path.join(OUT,'PokeSurvivor-Next-alpha.52-offline.apk');run(exe(jbin,'java'),['-jar',path.join(bt,'lib/apksigner.jar'),'sign','--ks',key,'--ks-pass','file:'+passFile,'--ks-key-alias','offline-test','--out',output,aligned]);
 run(exe(jbin,'java'),['-jar',path.join(bt,'lib/apksigner.jar'),'verify','--verbose',output]);
 console.log('Android resource-table checks:',require('./check_android_apk.cjs').check(output));
 const digest=crypto.createHash('sha256').update(fs.readFileSync(output)).digest('hex');fs.writeFileSync(output+'.sha256',digest+'  '+path.basename(output)+'\n');console.log('APK:',output,'\nSHA256:',digest);
+const outDir=path.join(ROOT,'outputs');fs.mkdirSync(outDir,{recursive:true});const outCopy=path.join(outDir,path.basename(output));fs.copyFileSync(output,outCopy);fs.copyFileSync(output+'.sha256',outCopy+'.sha256');console.log('Copied APK to outputs:',outCopy);

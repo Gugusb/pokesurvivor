@@ -59,10 +59,13 @@ G.HUD = (() => {
     ctx.restore();
   }
 
-  function draw(ctx, w, h, pl, st) {
+  function draw(ctx, rawW, rawH, pl, st) {
+    const hs = G.Touch.hudScale ? G.Touch.hudScale(rawW, rawH) : 1;
+    const w = rawW / hs, h = rawH / hs;
     ctx.save();
+    if (hs !== 1) ctx.scale(hs, hs);
     ctx.textBaseline = 'alphabetic';
-    G.Touch.clearButtons();
+    G.Touch.clearButtons(hs);
     const touch = G.Touch.active;
 
     // ---------- barra de experiencia (borde superior) ----------
@@ -183,9 +186,9 @@ G.HUD = (() => {
 
     // ---------- aviso ----------
     // ---------- shinies fuera de pantalla: destello en el borde ----------
-    const cam = G.Camera, pulse = 0.6 + Math.sin(performance.now() / 160) * 0.4;
+    const cam = G.Camera, wScale = cam.scale / hs, pulse = 0.6 + Math.sin(performance.now() / 160) * 0.4;
     for (const e of G.EnemyMgr.shinies()) {
-      const sx = (e.x - cam.left()) * cam.scale, sy = (e.y - cam.top()) * cam.scale;
+      const sx = (e.x - cam.left()) * wScale, sy = (e.y - cam.top()) * wScale;
       if (sx > 0 && sx < w && sy > 0 && sy < h) continue;
       const M = 34;
       const ex = G.U.clamp(sx, M, w - M), ey = G.U.clamp(sy, M + 60, h - M - 70);
@@ -218,13 +221,13 @@ G.HUD = (() => {
       bx += tw + 5;
     }
 
-    if (G.Coop.active) drawCoop(ctx, w, h, pl, px, py + (G.Abilities.status(pl) ? 84 : bx > px ? 65 : 46));
+    if (G.Coop.active) drawCoop(ctx, w, h, pl, px, py + (G.Abilities.status(pl) ? 84 : bx > px ? 65 : 46), wScale);
 
     // Grieta: flecha grande que late en el borde si no se ve, y si se ve, una
     // flecha que bota encima; en la arena, cuenta atrás.
     const rift = G.Rift.rift;
     if (rift) {
-      const sx = (rift.x - cam.left()) * cam.scale, sy = (rift.y - 40 - cam.top()) * cam.scale;
+      const sx = (rift.x - cam.left()) * wScale, sy = (rift.y - 40 - cam.top()) * wScale;
       const now = performance.now() / 1000, beat = 0.5 + Math.sin(now * 7) * 0.5;
       const label = 'GRIETA · ' + Math.round(G.U.dist(pl.x, pl.y, rift.x, rift.y) / 32) + ' m · ' + Math.ceil(rift.ttl) + ' s';
       const off = sx < 0 || sx > w || sy < 0 || sy > h;
@@ -276,7 +279,7 @@ G.HUD = (() => {
     }
 
     // Eventos: cuenta atrás, flecha al Pokémon perdido / a la marca y a los duendes.
-    G.Events.drawHud(ctx, w, h, pl, F);
+    G.Events.drawHud(ctx, w, h, pl, F, wScale);
 
     // Aviso propio al abrirse una grieta (no lo tapan los otros avisos).
     if (rift && rift.t < 4.5) {
@@ -311,22 +314,22 @@ G.HUD = (() => {
     }
 
     if(G.Targeting?.manual(pl)){
-      const x=(pl.x-cam.left())*cam.scale,y=(pl.y-cam.top())*cam.scale,r=Math.max(18,pl.r*cam.scale+8),a=pl.aim;
+      const x=(pl.x-cam.left())*wScale,y=(pl.y-cam.top())*wScale,r=Math.max(18,pl.r*wScale+8),a=pl.aim;
       ctx.save();ctx.strokeStyle='#8be8ff';ctx.fillStyle='#8be8ff';ctx.lineWidth=2;ctx.globalAlpha=.85;ctx.beginPath();ctx.moveTo(x+Math.cos(a)*r,y+Math.sin(a)*r);ctx.lineTo(x+Math.cos(a)*(r+26),y+Math.sin(a)*(r+26));ctx.stroke();ctx.beginPath();ctx.arc(x+Math.cos(a)*(r+30),y+Math.sin(a)*(r+30),3,0,Math.PI*2);ctx.fill();ctx.restore();
     }
     // ---------- ranura de movimientos ----------
-    const mobile=touch?G.Touch.controls(w,h):null;
-    const S = mobile?mobile.size:54, GAP = 9;
+    const mobile=touch?G.Touch.controls(rawW,rawH):null;
+    const S = mobile?mobile.size/hs:54, GAP = 9;
     const n = touch?4:Math.max(1, pl.slots.length);
     const hasZ = !!(G.ZMoves && G.ZMoves.hasStone(pl));
     const hasMega = hasZ || !!(pl.megaState && pl.megaState.id);
     const activeItem=!hasMega&&G.Items?.ACTIVE[pl.activeItem];
     const hasEquipment=hasMega||!!activeItem;
     const hasLeader=G.LeaderAbilities?.active();const totalW = (n + Number(hasEquipment)+Number(hasLeader)) * S + (n - 1 + Number(hasEquipment)+Number(hasLeader)) * GAP;
-    let sx = mobile?mobile.item.x:(w - totalW) / 2;
+    let sx = mobile?mobile.item.x/hs:(w - totalW) / 2;
     // Por encima de la barra de inicio del iPhone (allí los toques a veces no llegan).
-    const sy = mobile?mobile.item.y:h-S-18;
-    if(hasLeader){const lx=mobile?mobile.item.x-S-GAP:sx,ly=mobile?Math.max(12,mobile.item.y-S-GAP):sy;G.LeaderAbilitiesUI.hud(ctx,pl,lx,ly,S);if(!mobile)sx+=S+GAP;}
+    const sy = mobile?mobile.item.y/hs:h-S-18;
+    if(hasLeader){const lx=mobile?mobile.item.x/hs-S-GAP:sx,ly=mobile?Math.max(12,mobile.item.y/hs-S-GAP):sy;G.LeaderAbilitiesUI.hud(ctx,pl,lx,ly,S);if(!mobile)sx+=S+GAP;}
     if (hasZ) {
       const zs=G.ZMoves.state(pl),ready=zs.phase==='ready'&&zs.charges>0,choosing=zs.phase==='choose',casting=zs.phase==='cast';
       panel3D(ctx,sx,sy,S,S,13,'rgba(64,46,16,.95)','rgba(28,18,6,.96)',ready||choosing?'#fff0a0':'#a7a2b8','rgba(10,6,2,0.85)');
@@ -374,8 +377,8 @@ G.HUD = (() => {
       const m = g[0];
       const fused = g.length > 1;
       const on = i === pl.active;
-      const x = mobile?mobile.moves[i].x:sx+i*(S+GAP);
-      const y = mobile?mobile.moves[i].y:on?sy-6:sy;
+      const x = mobile?mobile.moves[i].x/hs:sx+i*(S+GAP);
+      const y = mobile?mobile.moves[i].y/hs:on?sy-6:sy;
       // Tocar (o hacer clic en) un icono activa ese movimiento.
       G.Touch.addButton(x,y,S,S,()=>{if(m&&G.Game.state==='playing'){G.MoveControl?G.MoveControl.input(pl,i):pl.setActive(i);G.Audio.sfx('click');}},touch?3:GAP/2+3);
       const col = m ? G.U.TYPE_COLOR[m.type] : '#4a5468';
@@ -475,7 +478,7 @@ G.HUD = (() => {
 
     // ---------- vínculo guardado (aún no hay dos movimientos sueltos) ----------
     if (pl.bonds > 0) {
-      const bx = mobile?mobile.moves[0].x: (w+totalW)/2+12, by=mobile?mobile.moves[0].y-38:sy+S/2-12;
+      const bx = mobile?mobile.moves[0].x/hs: (w+totalW)/2+12, by=mobile?mobile.moves[0].y/hs-38:sy+S/2-12;
       G.Icons.draw(ctx, 'bond', bx, by, 24);
       if (pl.bonds > 1) {
         ctx.font = F(800, 10);
@@ -488,7 +491,7 @@ G.HUD = (() => {
     // ---------- botón de pausa (táctil) ----------
     if (touch) {
       const sa = G.Touch.safeArea();
-      const bx = w - 52 - Math.min(44, sa.right), by = 12 + Math.min(20, sa.top), bs = 40;
+      const bx = w - 52 - Math.min(44, sa.right / hs), by = 12 + Math.min(20, sa.top / hs), bs = 40;
       roundRect(ctx, bx, by, bs, bs, 10);
       ctx.fillStyle = 'rgba(10,16,28,.7)'; ctx.fill();
       ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(244,248,255,.8)'; ctx.stroke();
@@ -517,7 +520,7 @@ G.HUD = (() => {
    *   y a cuántos metros están (roja y parpadeando si está caído).
    * - Si has caído tú: aviso y barra de "te están levantando".
    */
-  function drawCoop(ctx, w, h, pl, px, top) {
+  function drawCoop(ctx, w, h, pl, px, top, wScale = G.Camera.scale) {
     const cam = G.Camera;
     const t = performance.now() / 1000;
     let y = top;
@@ -547,7 +550,7 @@ G.HUD = (() => {
     for (const m of G.Coop.mates) {
       if (!m.connected) continue;
       const o = m.pl;
-      const sx = (o.x - cam.left()) * cam.scale, sy = (o.y - o.bodyH * 0.5 - cam.top()) * cam.scale;
+      const sx = (o.x - cam.left()) * wScale, sy = (o.y - o.bodyH * 0.5 - cam.top()) * wScale;
       if (sx > 0 && sx < w && sy > 0 && sy < h) continue;
       const M = 42;
       const ex = G.U.clamp(sx, M, w - M), ey = G.U.clamp(sy, M + 70, h - M - 80);

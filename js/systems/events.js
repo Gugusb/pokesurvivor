@@ -301,15 +301,15 @@ G.Events = (() => {
   }
 
   /** Flecha en el borde hacia el Pokémon perdido (o hacia la marca, si ya te sigue). */
-  function drawHud(ctx, w, h, pl, F) {
+  function drawHud(ctx, w, h, pl, F, wScale = G.Camera.scale) {
     const cam = G.Camera;
     if (lost) {
       const L = lost, to = L.state === 'wait' ? [L.x, L.y - 10] : [L.tx, L.ty];
       edgeArrow(ctx, w, h, cam, to[0], to[1], '#7dffb0', (L.state === 'wait' ? L.name : 'Marca') + ' · ' +
-                Math.round(G.U.dist(pl.x, pl.y, to[0], to[1]) / 32) + ' m', F);
+                Math.round(G.U.dist(pl.x, pl.y, to[0], to[1]) / 32) + ' m', F, wScale);
     }
     for (const e of G.EnemyMgr.all()) {
-      if (e.behavior === 'thief' && !e.dead) edgeArrow(ctx, w, h, cam, e.x, e.y - 10, '#ffd23f', e.name, F);
+      if (e.behavior === 'thief' && !e.dead) edgeArrow(ctx, w, h, cam, e.x, e.y - 10, '#ffd23f', e.name, F, wScale);
     }
     if (cur && cur.id !== 'lost') {
       const left = Math.max(0, Math.ceil(cur.dur - cur.t));
@@ -324,8 +324,8 @@ G.Events = (() => {
     }
   }
 
-  function edgeArrow(ctx, w, h, cam, x, y, col, label, F) {
-    const sx = (x - cam.left()) * cam.scale, sy = (y - cam.top()) * cam.scale;
+  function edgeArrow(ctx, w, h, cam, x, y, col, label, F, wScale = cam.scale) {
+    const sx = (x - cam.left()) * wScale, sy = (y - cam.top()) * wScale;
     if (sx > 0 && sx < w && sy > 0 && sy < h) return;
     const M = 44, ex = G.U.clamp(sx, M, w - M), ey = G.U.clamp(sy, M + 70, h - M - 80);
     const a = Math.atan2(sy - ey, sx - ex), ca = Math.cos(a), sa = Math.sin(a);

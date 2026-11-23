@@ -167,7 +167,43 @@ G.UI = (() => {
     };
   }
 
+  function landscapeMetrics(w = innerWidth, h = innerHeight) {
+    const active = w > h && h > 0 && h <= 540;
+    if (!active) return { active: false, scale: 1, vw: w, vh: h };
+    const scale = G.U.clamp(Math.min(w / 1140, h / 640), 0.48, 0.90);
+    return { active: true, scale, vw: Math.round(w / scale), vh: Math.round(h / scale) };
+  }
+
+  function syncLandscapeScale() {
+    const root = document.documentElement;
+    if (!root) return;
+    const m = landscapeMetrics(window.innerWidth, window.innerHeight);
+    root.classList.toggle('ls-scaled', m.active);
+    if (m.active) {
+      root.style.setProperty('--ui-scale', m.scale.toFixed(4));
+      root.style.setProperty('--ui-vw', m.vw + 'px');
+      root.style.setProperty('--ui-vh', m.vh + 'px');
+    } else {
+      root.style.removeProperty('--ui-scale');
+      root.style.removeProperty('--ui-vw');
+      root.style.removeProperty('--ui-vh');
+    }
+  }
+
+  let scaleWired = false;
+  function wireLandscapeScale() {
+    syncLandscapeScale();
+    if (scaleWired) return;
+    scaleWired = true;
+    addEventListener('resize', syncLandscapeScale);
+    addEventListener('orientationchange', () => setTimeout(syncLandscapeScale, 80));
+    window.visualViewport?.addEventListener('resize', syncLandscapeScale);
+  }
+  if (document.readyState === 'loading') addEventListener('DOMContentLoaded', wireLandscapeScale, { once: true });
+  else wireLandscapeScale();
+
   function initChrome() {
+    wireLandscapeScale();
     G.Icons.installCss();
     wireLegal();
     G.DB.onSync(() => { if (!$('topbar').classList.contains('hidden')) refreshCoins(); });
@@ -300,5 +336,5 @@ G.UI = (() => {
   }
 
   return { $, show, hide, hideAll, isOpen, chrome, refreshCoins, toast, typeChips, stars, confirmDelete,
-           sprite, spriteCanvas, tick, initChrome, soundControls };
+           sprite, spriteCanvas, tick, initChrome, soundControls, landscapeMetrics, syncLandscapeScale };
 })();

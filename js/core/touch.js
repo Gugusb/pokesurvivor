@@ -1,12 +1,24 @@
 /* Independent movement and aim sticks; HUD buttons use the same screen layout. */
 G.Touch=(()=>{
- let cv=null,stick=null,aimStick=null,active=G.Settings.touch,buttons=[];
+ let cv=null,stick=null,aimStick=null,active=G.Settings.touch,buttons=[],btnScale=1;
  const manual=()=>!!G.Settings.get('manualAim'),playing=()=>G.Game?.state==='playing';
+ function hudScale(w=innerWidth,h=innerHeight){
+  if(!(w>h&&h>0&&h<=540))return 1;
+  return Math.max(0.64,Math.min(0.90,Math.min(w/1080,h/540)));
+ }
  function controls(w=innerWidth,h=innerHeight){
-  const safe=safeArea(),r=Math.min(56*(G.Settings.get('stick')||1),Math.max(30,w*.12),h*.15),size=w<360?40:44,gap=12;
+  const safe=safeArea(),hs=hudScale(w,h),isLandscape=hs<1,rScale=G.Settings.get('stick')||1;
+  if(isLandscape){
+   const r=Math.min(54*hs*rScale,h*.145,42),size=Math.round(52*hs),gap=Math.round(8*hs),rowGap=size+Math.round(14*hs);
+   const aim={x:w-safe.right-r-Math.round(14*hs),y:h-safe.bottom-r-Math.round(14*hs),r};
+   const left=aim.x-r-Math.round(16*hs)-size*2-gap;
+   const moves=Array.from({length:4},(_,i)=>({x:left+(i%2)*(size+gap),y:aim.y-size-Math.round(10*hs)+Math.floor(i/2)*rowGap,w:size,h:size}));
+   return {aim,moves,item:{x:aim.x-size/2,y:aim.y-r-size-Math.round(12*hs),w:size,h:size},size,hs};
+  }
+  const r=Math.min(56*rScale,Math.max(30,w*.12),h*.15),size=w<360?40:44,gap=12;
   const aim={x:w-safe.right-r-16,y:h-safe.bottom-r-24,r},left=aim.x-r-18-size*2-gap;
   const moves=Array.from({length:4},(_,i)=>({x:left+(i%2)*(size+gap),y:aim.y-size-20+Math.floor(i/2)*(size+28),w:size,h:size}));
-  return {aim,moves,item:{x:aim.x-size/2,y:aim.y-r-size-24,w:size,h:size},size};
+  return {aim,moves,item:{x:aim.x-size/2,y:aim.y-r-size-24,w:size,h:size},size,hs:1};
  }
  function hit(x,y){for(let i=buttons.length-1;i>=0;i--){const b=buttons[i];if(x>=b.x-b.pad&&x<=b.x+b.w+b.pad&&y>=b.y-b.pad&&y<=b.y+b.h+b.pad)return b;}return null;}
  let lastKey='',lastAt=0;
@@ -63,8 +75,8 @@ G.Touch=(()=>{
   addEventListener('orientationchange', () => { safe = null; });
 
 
- function clearButtons(){buttons=[];}
- function addButton(x,y,w,h,fn,pad=6){buttons.push({x,y,w,h,fn,pad});}
+ function clearButtons(scale=1){buttons=[];btnScale=scale||1;}
+ function addButton(x,y,w,h,fn,pad=6){buttons.push({x:x*btnScale,y:y*btnScale,w:w*btnScale,h:h*btnScale,fn,pad:pad*btnScale});}
  function wheel(ctx,s,r,color){const dx=s.x-s.ox,dy=s.y-s.oy,d=Math.hypot(dx,dy),k=d>r?r/d:1;ctx.fillStyle='rgba(10,20,48,.48)';ctx.strokeStyle=color;ctx.lineWidth=2;ctx.beginPath();ctx.arc(s.ox,s.oy,r,0,Math.PI*2);ctx.fill();ctx.stroke();ctx.globalAlpha=.85;ctx.fillStyle=color;ctx.beginPath();ctx.arc(s.ox+dx*k,s.oy+dy*k,r*.34,0,Math.PI*2);ctx.fill();}
  function draw(ctx){
   if(!playing()||G.Judgment?.cinematic){reset();return;}if(!active)return;const l=controls();ctx.save();ctx.globalAlpha=.6;
@@ -73,5 +85,5 @@ G.Touch=(()=>{
   if(!aimStick){ctx.fillStyle='#14283d';ctx.textAlign='center';ctx.font='700 11px Pixelify,"Segoe UI",sans-serif';ctx.fillText(G.T(manual()?'Apuntar':'Auto'),l.aim.x,l.aim.y+4);}
   ctx.restore();
  }
- return {init,vector,aimVector,draw,controls,clearButtons,addButton,reset,safeArea,get active(){return active;},get stick(){return stick;}};
+ return {init,vector,aimVector,draw,controls,hudScale,clearButtons,addButton,reset,safeArea,get active(){return active;},get stick(){return stick;}};
 })();

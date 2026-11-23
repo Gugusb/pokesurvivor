@@ -1355,3 +1355,67 @@ button:not(:disabled):active { filter: brightness(1.12); }
   .ui-button-burst:before, .ui-button-burst:after { display: none; }
   button, summary, .market-service { transition: none !important; }
 }
+
+/* ============ Proportional Mobile Landscape Scaling ============ */
+html.ls-scaled #journey-status,
+html.ls-scaled #expedition-progress-hud,
+html.ls-scaled .expedition-damage,
+html.ls-scaled .squad-modal > *,
+html.ls-scaled .squad-rankup > *,
+html.ls-scaled .expedition-battle-result > *,
+html.ls-scaled .squad-drag-ghost {
+  zoom: var(--ui-scale);
+}
+html.ls-scaled #expedition-progress-hud { left: max(12px, env(safe-area-inset-left)); top: 124px; }
+html.ls-scaled .expedition-damage.damage-meter {
+  right: max(12px, env(safe-area-inset-right)); top: 152px;
+  max-height: calc(var(--ui-vh) - 260px);
+}
+html.ls-scaled .expedition-damage .damage-list { max-height: calc(var(--ui-vh) - 340px); }
+html.ls-scaled #journey-status { top: 76px; max-width: calc(var(--ui-vw) * 0.72); }
+
+/* Restore proportional multi-column expedition dashboards inside zoomed virtual width */
+html.ls-scaled .journey-box {
+  width: min(1220px, calc(var(--ui-vw) - 32px));
+  max-height: calc(var(--ui-vh) - 30px);
+  padding: 18px 20px; border-radius: 18px;
+}
+html.ls-scaled .journey-layout { grid-template-columns: minmax(0, 1fr) 270px; gap: 16px; }
+html.ls-scaled .journey-route { max-height: calc(var(--ui-vh) * 0.50); }
+html.ls-scaled .journey-grid { gap: 7px; }
+html.ls-scaled .journey-event { min-height: 68px; border-radius: 10px; }
+html.ls-scaled .route-room.journey-box {
+  width: min(1480px, calc(var(--ui-vw) - 28px));
+  height: calc(var(--ui-vh) - 54px); max-height: none;
+  padding: 16px; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 12px; overflow: hidden;
+}
+html.ls-scaled .route-dashboard {
+  display: grid; grid-template-columns: 208px minmax(0, 1fr) 216px; gap: 13px; height: 100%; align-items: stretch;
+}
+html.ls-scaled .route-sidebar { display: flex; flex-direction: column; overflow-y: auto; gap: 9px; padding: 0 2px; }
+html.ls-scaled .route-sidebar > section, html.ls-scaled .route-sidebar > .journey-xp-jar { padding: 10px 11px; }
+html.ls-scaled .route-resources > .expedition-progress { display: flex; flex-direction: column; gap: 8px; }
+html.ls-scaled .route-status { grid-template-columns: 1fr; }
+html.ls-scaled .route-main { gap: 10px; }
+html.ls-scaled .route-main .route-choice { min-height: 140px; }
+html.ls-scaled .route-main .journey-route { max-height: none; flex: 1; min-height: 0; }
+html.ls-scaled .journey-goods { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+html.ls-scaled .market-items { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+html.ls-scaled .squad-box {
+  width: min(1480px, calc(var(--ui-vw) - 24px));
+  height: calc(var(--ui-vh) - 18px); max-height: calc(var(--ui-vh) - 18px);
+  padding: 12px 14px; gap: 8px; display: grid; overflow: hidden;
+}
+html.ls-scaled .squad-box .squad-formation-surface,
+html.ls-scaled .squad-box .squad-formation-surface:has(>.squad-release-slot) {
+  grid-template-columns: 215px minmax(0, 1fr) 265px; gap: 9px;
+}
+html.ls-scaled .squad-box .squad-battle-grid {
+  grid-template-rows: repeat(var(--squad-rows), minmax(200px, auto));
+  grid-auto-rows: minmax(200px, auto);
+}
+html.ls-scaled .squad-modal-card { width: min(640px, calc(var(--ui-vw) - 36px)); max-height: calc(var(--ui-vh) - 36px); }
+html.ls-scaled .battle-loot-layout { grid-template-columns: minmax(0, 1fr) 290px; }
+html.ls-scaled .battle-loot-side .journey-loot-damage { max-height: calc(var(--ui-vh) - 50px); }
+html.ls-scaled .battle-loot-side .damage-list { max-height: calc(var(--ui-vh) - 190px); }
+html.ls-scaled .journey-box.battle-loot-box { max-height: calc(var(--ui-vh) - 28px); }

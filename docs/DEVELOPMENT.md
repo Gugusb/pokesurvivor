@@ -1143,3 +1143,17 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
   - `js/ui/hud.js`、`js/ui/leader-abilities-ui.js`：将局内 Canvas HUD 的经验条、队长生命模块、顶部计时与 Boss 血条、天气/评分胶囊以及底部技能槽/Z 槽升级为 3D 倒角键帽与立体进度条，并确保协同队友血条不与状态栏重叠。
 - 验证：运行 `node --test tools/test_abilities.cjs tools/test_leader_abilities.cjs tools/test_character_profiles.cjs tools/test_league_rank.cjs tools/test_release_mode.cjs`（配合服务依赖 `NODE_PATH`），96/96 通过；运行 `node tools/build.js`（`app.min.js?v=66864c5dba`）与 `node tools/export_data.js`；使用 Playwright + 隔离内存服务端完成桌面（1280×800）、手机竖屏（390×844）及手机横屏（844×390）实际渲染与截图检查，页面异常为零。
 - 限制：当前运行环境未安装 Python 3.12+（`py -3.14` 不可用），未能在本机重新执行 `tools/make_seo_pages.py`；静态 SEO 派生页需在安装 Python 3.12+ 后再生成同步。
+
+## v0.43.0-alpha.52 — 2026-11-23
+
+- 手机横屏 UI 等比放缩优化与离线安卓 APK 输出：
+  - `js/ui/ui.js`（`landscapeMetrics`、`syncLandscapeScale`、`wireLandscapeScale`）：在横屏低高度视口（`w > h && h <= 540`）下按 `clamp(min(w / 1140, h / 640), 0.48, 0.90)` 计算动态缩放令牌（`--ui-scale`、`--ui-vw`、`--ui-vh`）并挂载 `html.ls-scaled`，随窗口缩放、横竖屏切换及 `visualViewport` 变化实时更新。
+  - `css/style.css`、`css/expedition.css`、`css/league-rank.css`、`css/trainer-talents.css`：在 `html.ls-scaled` 下对全屏容器子面板、顶栏、悬浮面板及远征/联盟/天赋浮层应用 `--ui-scale` 等比缩放，并用 `--ui-vw`/`--ui-vh` 替换会随 `zoom` 折算缩小的 `vw`/`dvh` 高度上限；保持横屏双栏主菜单、三栏远征日程台、编队布局、图鉴面板与刘海屏安全区完整无裁切，修复非顶栏界面 `credits-line` 误显及低高度下图鉴按钮遮挡/成就弹窗重叠问题。
+  - `js/core/touch.js`、`js/ui/hud.js`、`js/systems/events.js`：增加 `G.Touch.hudScale` 与 `ctx.scale(hs, hs)` 等比缩放局内 Canvas HUD（顶部经验条、队长生命、时钟/天气/得分胶囊、Boss 血条与底部技能/Z/Mega/道具键帽）及 `clearButtons(hs)` 点击坐标映射，同步按比例缩放 `G.Touch.controls` 触控区，保持世界坐标箭头（闪光/裂隙/事件/队友）投影对齐。
+  - `android/offline/AndroidManifest.xml`、`android/offline/README.md`、`tools/build_android_offline.cjs`、`.gitignore`：版本号升级至 `0.43.0-alpha.52-offline`（`versionCode="52"`），产物复制至 `outputs/PokeSurvivor-Next-alpha.52-offline.apk`（及 `.sha256`）并在 `.gitignore` 忽略二进制包。
+- 验证：
+  - `node tools/build.js`（`app.min.js?v=1ca3198fd7`）与 `node tools/export_data.js` 执行通过；
+  - `node --test tools/test_abilities.cjs tools/test_leader_abilities.cjs tools/test_character_profiles.cjs tools/test_league_rank.cjs tools/test_release_mode.cjs`：96/96 全部通过；
+  - Playwright + Edge 遍历 4 种手机横屏分辨率（`740×360` / `667×375` / `915×412` / `844×390`）覆盖主菜单、联盟卡、图鉴、远征准备、日程棋盘、编队及触控战斗 HUD，均按预期激活 `ls-scaled` 且零页面报错；
+  - 使用 Android SDK 35 + Java 17 构建签名 `outputs/PokeSurvivor-Next-alpha.52-offline.apk`（SHA-256：`510686e3a94f99104c4f891b314b83014dec607db900a1f9143ad92e7c72899a`），通过 `apksigner verify`（v2/v3 签名）与 `tools/check_android_apk.cjs`（14,069 项条目，`resourcesCompression: 0`，`resourcesOffset: 1572`）。
+- 限制：当前机器缺少 Python 3.12+，未重新执行 `tools/make_seo_pages.py`。

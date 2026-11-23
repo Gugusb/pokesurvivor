@@ -156,3 +156,11 @@
   .league-profile { padding: 17px 12px; }
   .league-profile > .league-crest { width: 106px !important; height: 116px !important; }
 }
+html.ls-scaled .league-overlay > * { zoom: var(--ui-scale); }
+html.ls-scaled .league-card {
+  width: min(1100px, calc(var(--ui-vw) - 36px));
+  max-height: calc(var(--ui-vh) - 32px);
+  padding: 18px 20px;
+}
+html.ls-scaled .league-card-layout { grid-template-columns: 248px minmax(0, 1fr); gap: 20px; margin-top: 14px; }
+html.ls-scaled .league-tiers { grid-template-columns: repeat(4, minmax(0, 1fr)); }

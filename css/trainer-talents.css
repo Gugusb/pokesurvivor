@@ -170,3 +170,12 @@
 @media(prefers-reduced-motion:reduce){ .talent-panel, .talent-card { animation: none; transition: none; } .talent-card:hover { transform: none; } }
 .talent-calm .talent-panel, .talent-calm .talent-card { animation: none; transition: none; }
 .talent-calm .talent-card:hover { transform: none; }
+
+html.ls-scaled .talent-overlay { padding: calc(14px * var(--ui-scale)); }
+html.ls-scaled .talent-overlay > * { zoom: var(--ui-scale); }
+html.ls-scaled .talent-panel {
+  width: min(1120px, calc(var(--ui-vw) - 32px));
+  max-height: calc(var(--ui-vh) - 28px);
+  padding: 20px 22px;
+}
+html.ls-scaled .talent-cards { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
