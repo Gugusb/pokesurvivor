@@ -655,9 +655,25 @@ G.Social = (() => {
       G.Server.api("/profile?uid=" + encodeURIComponent(uid)),
     profileData() {
       const s = G.DB.save;
+      const completed = Object.keys(s.difficultyRecords || {}).map(Number).filter(dex => G.DEX_BY[dex] && G.Difficulty?.frame(s, dex) === "ruby");
+      const lv = G.LeagueRank ? G.LeagueRank.view(s) : null;
+      const avDex = (s.profile?.avatarDex && G.DEX_BY[s.profile.avatarDex] && s.owned?.[s.profile.avatarDex]) ? s.profile.avatarDex : (s.partner || 25);
+      const avShiny = !!((s.profile?.avatarDex && s.owned?.[s.profile.avatarDex]) ? (s.profile.avatarShiny && G.DB.ownsShiny(avDex)) : (s.partner && s.partnerShiny && G.DB.ownsShiny(s.partner)));
       return {
-        cardTheme:G.CardPacks?.normalize(s).theme,
-        name: G.DB.user,
+        cardTheme: G.CardPacks?.normalize(s).theme,
+        name: G.DB.user || (G.I18n.lang === "zh" ? "旅行训练家" : "Trainer"),
+        partner: s.partner || 25,
+        partnerShiny: !!(s.partner && s.partnerShiny && G.DB.ownsShiny(s.partner)),
+        avatarDex: avDex,
+        avatarShiny: avShiny,
+        avatarFrame: s.profile?.avatarFrame || "gold",
+        cardBorder: s.profile?.cardBorder || "sanctuary",
+        titlePrefix: s.profile?.titlePrefix || "",
+        titleSuffix: s.profile?.titleSuffix || "",
+        leagueTier: lv?.tier || 1,
+        leagueStars: lv?.points ?? lv?.stars ?? 0,
+        championStage: lv?.protocol || 0,
+        completedDex: completed.slice(0, 12),
         favs: s.profile?.favs || [],
         title: s.profile?.title || "",
         best: {
@@ -665,9 +681,17 @@ G.Social = (() => {
           group: s.stats.bestGroupTime || 0,
           level: s.stats.bestLevel || 1,
           kills: s.stats.totalKills || 0,
+          legends: Object.keys(s.legends || {}).length,
           medals: G.Difficulty.completedCount(s),
+          abilityMedals: Object.keys(s.abilityMedals || {}).length,
+          achCount: Object.keys(s.ach || {}).length,
+          ownedCount: Object.keys(s.owned || {}).filter(d => G.DEX_BY[d]).length,
+          shinyCount: Object.keys(s.shiny || {}).filter(d => G.DEX_BY[d]).length,
+          runs: s.stats.runs || 0,
+          bosses: s.stats.bossesTotal || 0,
+          score: s.stats.bestScore || 0,
         },
-        medals: [],
+        medals: Object.keys(s.ach || {}).slice(0, 24),
       };
     },
   };

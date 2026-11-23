@@ -190,7 +190,7 @@ G.Expedition = (() => {
       prep.append(section,prepItems(),prepCandidates(draft.gens));
       const actions=node('div','journey-actions');actions.append(button(L('Volver','Back','返回'),()=>{draft=null;G.MenuUI.open();}));
       if(!draft.gens)actions.append(button(L('Preparar ruta','Prepare route','生成本局世代'),()=>{draft.gens=R.generations(mon);render();},'btn gold'));
-      else actions.append(button(L('¡En marcha!','Set out!','出发'),async()=>{if(busy)return;if(G.ExpeditionSave?.hasSave&&!confirm(L('La nueva expedición reemplazará el archivo local. ¿Continuar?','A new expedition will replace the local checkpoint. Continue?','开始新远征会替换本机存档，是否继续？')))return;busy=true;try{if(G.DB.save.partner!==draft.dex)G.DB.save.partnerShiny=false;G.DB.save.partner=draft.dex;G.DB.commit();await G.Game.startRun(null,true);}finally{busy=false;}},'btn gold'));
+      else actions.append(button(L('¡En marcha!','Set out!','出发'),async()=>{if(busy)return;if(G.ExpeditionSave?.hasSave&&!confirm(L('La nueva expedición reemplazará el archivo local. ¿Continuar?','A new expedition will replace the local checkpoint. Continue?','开始新远征会替换本机存档，是否继续？')))return;busy=true;const loader=G.LeagueUI?.showExpeditionLoader?.({dex:draft.dex,shiny:draft.dex===G.DB.save.partner&&!!G.DB.save.partnerShiny&&G.DB.ownsShiny(draft.dex),gens:draft.gens});try{if(G.DB.save.partner!==draft.dex)G.DB.save.partnerShiny=false;G.DB.save.partner=draft.dex;G.DB.commit();const task=G.Game.startRun(null,true);if(loader)await loader.finish(task);else await task;}finally{busy=false;}},'btn gold'));
       actions.classList.add('journey-prep-actions');box.append(actions,prep);G.UI.show('scr-journey');
     };render();
   }

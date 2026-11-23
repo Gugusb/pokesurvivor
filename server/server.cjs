@@ -891,14 +891,25 @@ function createApp(opts = {}) {
       const character=characterFor(db,id),record=q('SELECT t FROM time_scores WHERE uid=?',id),bestScore=q('SELECT score,stars,t FROM run_scores WHERE uid=?',id);
       const curatedTime=character?Math.max(0,...Object.values(s.difficultyRecords||{}).map(rows=>rows[8]?.best||0)):0;
       const completed=Object.keys(s.difficultyRecords||{}).map(Number).filter(dex=>G.DEX_BY[dex]&&G.Difficulty.frame(s,dex)==='ruby');
+      const leagueView = G.LeagueRank ? G.LeagueRank.view(s) : null;
       return json(res, 200, {
         name: displayName(p),
         character,
         partner:s.partner||null,
+        partnerShiny: !!(s.partner && s.partnerShiny && s.shiny?.[s.partner]),
+        avatarDex: (s.profile?.avatarDex && G.DEX_BY[s.profile.avatarDex] && s.owned?.[s.profile.avatarDex]) ? s.profile.avatarDex : (s.partner || 25),
+        avatarShiny: !!((s.profile?.avatarDex && s.owned?.[s.profile.avatarDex]) ? (s.profile.avatarShiny && s.shiny?.[s.profile.avatarDex]) : (s.partner && s.partnerShiny && s.shiny?.[s.partner])),
+        avatarFrame: String(s.profile?.avatarFrame || "gold").slice(0, 24),
+        cardBorder: String(s.profile?.cardBorder || "sanctuary").slice(0, 24),
+        titlePrefix: String(s.profile?.titlePrefix || "").slice(0, 24),
+        titleSuffix: String(s.profile?.titleSuffix || "").slice(0, 24),
+        leagueTier: leagueView?.tier || 1,
+        leagueStars: leagueView?.points ?? leagueView?.stars ?? 0,
+        championStage: leagueView?.protocol || 0,
         completedDex:completed.slice(0,12),
         favs: character ? character.team.filter(dex=>G.DEX_BY[dex]).map(dex=>({dex,shiny:false})) : (s.profile?.favs || []).filter(f=>G.DEX_BY[f?.dex]).slice(0, 3),
         cardTheme: G.CardPacks.normalize(s).theme,
-        title: String(s.profile?.title || "").slice(0, 40),
+        title: String(s.profile?.title || "").slice(0, 48),
         best: {
           solo: s.stats.bestTime || 0,
           group: s.stats.bestGroupTime || 0,
@@ -906,12 +917,16 @@ function createApp(opts = {}) {
           kills: s.stats.totalKills || 0,
           legends: Object.keys(s.legends || {}).length,
           medals: G.Difficulty.completedCount(s),
+          abilityMedals: Object.keys(s.abilityMedals || {}).length,
+          achCount: Object.keys(s.ach || {}).length,
+          ownedCount: Object.keys(s.owned || {}).filter(d => G.DEX_BY[d]).length,
+          shinyCount: Object.keys(s.shiny || {}).filter(d => G.DEX_BY[d]).length,
           eightStar:record?.t||curatedTime,
           score:bestScore?.score||(character?s.stats.bestScore||0:0),scoreStars:bestScore?.stars||(character&&s.stats.bestScore?8:0),
           runs:s.stats.runs||0,
           bosses:s.stats.bossesTotal||0,
         },
-        medals: [],
+        medals: Object.keys(s.ach || {}).slice(0, 24),
       });
     }
     if (route === "/report") {

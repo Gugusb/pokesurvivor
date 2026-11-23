@@ -1147,16 +1147,29 @@ G.Flow = {
    */
   tapToStart(then) {
     G.Audio.unlock();
-    if (G.Audio.canPlay()) { then(); return; }
     const el = document.getElementById('tap-start');
+    const hint = el?.querySelector('.tap-blink');
+    if (hint) {
+      hint.setAttribute('translate', 'no');
+      hint.textContent = G.I18n.lang === 'zh'
+        ? '点击任意处进入游戏'
+        : G.I18n.lang === 'en'
+          ? 'Click anywhere to enter the game'
+          : 'Haz clic en cualquier lugar para entrar al juego';
+    }
     el.classList.remove('hidden');
+    G.LeagueUI?.sync?.();
     const go = e => {
       if (e.type === 'keydown' && ['Shift', 'Control', 'Alt', 'Meta', 'Tab'].includes(e.key)) return;
       e.preventDefault(); e.stopPropagation();
       G.Audio.unlock();
-      el.classList.add('hidden');
+      el.classList.add('tapstart-leave');
       el.removeEventListener('click', go); removeEventListener('keydown', go, true);
-      then();
+      setTimeout(() => {
+        el.classList.add('hidden');
+        el.classList.remove('tapstart-leave');
+        then();
+      }, 220);
     };
     el.addEventListener('click', go);
     addEventListener('keydown', go, true);

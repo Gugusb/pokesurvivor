@@ -122,10 +122,13 @@ G.LeagueUI = (() => {
   G.I18n.addChinese({ 'Buzón': '联盟邮箱', 'Logros de la Liga': '荣誉成就', 'Parque de la Liga': '联盟园区' });
 
   let initialized = false, frame = null, ready = false, active = false, current = null, lastFocus = null, failed = false, timeout;
+  let splashActive = false, enterTimer = 0, loadingEl = null;
   const order = [], environment = { season: 0, time: 1, seasonAuto: true, timeAuto: true, blur: 1, night: false };
   let inboxHome, envBar, focusCard;
 
   const visible = id => $(id) && !$(id).classList.contains('hidden');
+  const PRE_MENU_SCREENS = ['boot', 'tap-start', 'scr-login', 'scr-recover', 'scr-test', 'scr-result', 'scr-starters'];
+  const isPreMenuOpen = () => PRE_MENU_SCREENS.some(visible);
 
   /** In Next-edition, #scr-journey is a hub screen ONLY during pre-run preparation (.journey-prep). */
   function isHubScreen(id) {
@@ -178,7 +181,7 @@ G.LeagueUI = (() => {
     frame.allow = 'fullscreen';
     const css = document.querySelector('link[href*="css/style.css"]');
     const root = new URL('../', css.href);
-    frame.src = new URL('outputs/pokemon-league.html?embed=1&v=0.43.0-alpha.57', root).href;
+    frame.src = new URL('outputs/pokemon-league.html?embed=1&v=0.43.0-alpha.59', root).href;
     world.append(frame);
     document.body.insertBefore(world, document.body.firstChild);
     timeout = setTimeout(() => {
@@ -269,13 +272,16 @@ G.LeagueUI = (() => {
   function sync() {
     const candidates = order.filter(isHubScreen);
     const id = candidates.at(-1) || Object.keys(ROUTES).find(isHubScreen);
-    const nextActive = !!G.DB.loggedIn && G.Game.state === 'ui' && !!id;
+    const preMenu = G.Game.state === 'ui' && (!G.DB.loggedIn || !id) && isPreMenuOpen();
+    const nextActive = G.Game.state === 'ui' && ((!!G.DB.loggedIn && !!id) || preMenu);
     if (!nextActive) {
-      if (active) {
+      if (active || splashActive) {
         active = false;
-        document.body.classList.remove('league-active');
+        splashActive = false;
+        document.body.classList.remove('league-active', 'league-splash', 'league-entering');
         delete document.body.dataset.leagueView;
         delete document.body.dataset.leagueScreen;
+        send('splash', { splash: false });
         send('active', { active: false });
         for (const k of Object.keys(ROUTES)) {
           const el = $(k);
@@ -288,14 +294,119 @@ G.LeagueUI = (() => {
       }
       return;
     }
+    ensureFrame();
+    if (preMenu && !(G.DB.loggedIn && id)) {
+      active = false;
+      document.body.classList.remove('league-active');
+      document.body.classList.add('league-splash');
+      delete document.body.dataset.leagueView;
+      delete document.body.dataset.leagueScreen;
+      if (!splashActive) {
+        splashActive = true;
+        send('active', { active: true });
+        send('splash', { splash: true });
+      }
+      return;
+    }
+    const fromSplash = splashActive || !active;
+    if (splashActive) {
+      splashActive = false;
+      document.body.classList.remove('league-splash');
+      send('splash', { splash: false });
+    }
     if (!active) {
       active = true;
       document.body.classList.add('league-active');
-      ensureFrame();
       send('active', { active: true });
       current = null;
     }
+    if (fromSplash && id === 'scr-menu') {
+      playEnterTransition();
+    }
     setCurrent(id);
+  }
+
+  function playEnterTransition() {
+    clearTimeout(enterTimer);
+    document.body.classList.remove('league-entering');
+    void document.body.offsetWidth;
+    document.body.classList.add('league-entering');
+    enterTimer = setTimeout(() => document.body.classList.remove('league-entering'), 1050);
+  }
+
+  function showExpeditionLoader(opts = {}) {
+    if (!loadingEl) {
+      loadingEl = document.createElement('section');
+      loadingEl.id = 'expedition-loader';
+      loadingEl.className = 'expedition-loader hidden';
+      loadingEl.setAttribute('translate', 'no');
+      loadingEl.innerHTML = `
+        <div class="exp-loader-bg">
+          <i class="exp-loader-ring r1"></i>
+          <i class="exp-loader-ring r2"></i>
+          <i class="exp-loader-ring r3"></i>
+        </div>
+        <div class="exp-loader-card">
+          <div class="exp-loader-kicker"></div>
+          <div class="exp-loader-stage">
+            <div class="exp-loader-portal"></div>
+            <canvas id="exp-loader-canvas" width="160" height="130"></canvas>
+          </div>
+          <h2 class="exp-loader-title"></h2>
+          <p class="exp-loader-sub"></p>
+          <div class="exp-loader-gens"></div>
+          <div class="exp-loader-track"><i class="exp-loader-fill"></i></div>
+          <div class="exp-loader-tip"></div>
+        </div>
+      `;
+      document.body.append(loadingEl);
+    }
+    const lang = G.I18n.lang;
+    const L = (es, en, zh) => lang === 'zh' ? zh : lang === 'en' ? en : es;
+    const dex = opts.dex || G.DB.save?.partner || 25;
+    const shiny = opts.shiny ?? (!!G.DB.save?.partnerShiny && G.DB.ownsShiny(dex));
+    const mon = G.DEX_BY[dex] || G.DEX_BY[25];
+    const gens = opts.gens || [];
+    const GEN_ZH = ['关都', '城都', '丰缘', '神奥', '合众', '卡洛斯', '阿罗拉', '伽勒尔', '帕底亚'];
+    const GEN_EN = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Unova', 'Kalos', 'Alola', 'Galar', 'Paldea'];
+    const tips = [
+      L('Consejo: Combina vínculos de oficio y tipo para potenciar a todo el escuadrón.', 'Tip: Combine class and type bonds to empower your whole squad.', '远征提示：合理搭配职业羁绊与属性羁绊，能大幅提升全队战力。'),
+      L('Consejo: El tarro de experiencia guarda la EXP sobrante para el siguiente combate.', 'Tip: The XP Jar stores leftover experience on the ground for your next battle.', '远征提示：战场上未拾取的经验会自动存入经验罐，在后续战斗中额外提取。'),
+      L('Consejo: En los campamentos puedes descansar para curar un 50% de PS o entrenar al capitán.', 'Tip: At rest camps you can sleep to restore 50% HP or exercise for trainer XP.', '远征提示：在露营休息站可以选择睡觉恢复 50% 生命，或锻炼获取训练家经验。'),
+      L('Consejo: Sobrevivir al límite de tiempo o derrotar a todos los enemigos supera la etapa.', 'Tip: Either surviving the timer or defeating all enemies clears the stage.', '远征提示：坚持到倒计时结束或全歼场上敌人，均可成功突破当前关卡。')
+    ];
+    loadingEl.querySelector('.exp-loader-kicker').textContent = L('PORTAL DE EXPEDICIÓN · SINCRONIZANDO RUTA', 'EXPEDITION PORTAL · SYNCHRONIZING ROUTE', 'EXPEDITION PORTAL · 远征传送门开启中');
+    loadingEl.querySelector('.exp-loader-title').textContent = L('¡Rumbo a la expedición de 60 días!', 'Setting out on the 60-day expedition!', `与 ${G.T(mon.name)} 一同踏上 60 天远征！`);
+    loadingEl.querySelector('.exp-loader-sub').textContent = L('Generando matriz de ruta, encuentros y suministros de la Liga…', 'Generating route matrix, encounters and League supplies…', '正在构筑 21×7 远征日程矩阵、时空裂隙与联盟补给线…');
+    const gensBox = loadingEl.querySelector('.exp-loader-gens');
+    gensBox.innerHTML = gens.map(g => `<span class="exp-loader-chip">✦ ${(lang === 'zh' ? GEN_ZH : GEN_EN)[g - 1] || ('Gen ' + g)}</span>`).join('');
+    loadingEl.querySelector('.exp-loader-tip').textContent = tips[Math.floor(Math.random() * tips.length)];
+
+    const cv = loadingEl.querySelector('#exp-loader-canvas');
+    if (cv && G.UI?.sprite) G.UI.sprite(cv, mon.dex, { lively: true, scale: 3, hero: true, shiny });
+
+    const fill = loadingEl.querySelector('.exp-loader-fill');
+    fill.style.transition = 'none';
+    fill.style.width = '8%';
+    loadingEl.classList.remove('hidden', 'exp-loader-out');
+    requestAnimationFrame(() => {
+      fill.style.transition = 'width 0.85s cubic-bezier(0.22, 1, 0.36, 1)';
+      fill.style.width = '100%';
+    });
+    const minWait = new Promise(r => setTimeout(r, opts.duration || 920));
+    return {
+      async finish(taskPromise) {
+        try {
+          await Promise.all([taskPromise, minWait]);
+        } finally {
+          loadingEl.classList.add('exp-loader-out');
+          setTimeout(() => {
+            loadingEl.classList.add('hidden');
+            loadingEl.classList.remove('exp-loader-out');
+          }, 320);
+        }
+      }
+    };
   }
 
   function refreshNotices() {
@@ -549,7 +660,7 @@ G.LeagueUI = (() => {
       }
       if (changed) sync();
     });
-    for (const id of [...Object.keys(ROUTES), 'topbar', 'journey-content']) {
+    for (const id of [...Object.keys(ROUTES), ...PRE_MENU_SCREENS, 'topbar', 'journey-content']) {
       if ($(id)) observer.observe($(id), { attributes: true, attributeFilter: ['class'], attributeOldValue: true });
     }
     const goalsTabs = $('goals-tabs');
@@ -574,7 +685,8 @@ G.LeagueUI = (() => {
         clearTimeout(timeout);
         document.body.classList.remove('league-unavailable');
         send('language', { lang: G.I18n.lang });
-        send('active', { active });
+        send('active', { active: active || splashActive });
+        send('splash', { splash: splashActive });
         send('focus', { key: lastFocus });
       }
       if (m.type === 'layout' && Number.isFinite(m.mix) && m.mix >= 0 && m.mix <= 1) {
@@ -623,6 +735,8 @@ G.LeagueUI = (() => {
     renderSettings,
     refreshNotices,
     applyLabels,
+    playEnterTransition,
+    showExpeditionLoader,
     get active() { return active; }
   };
 })();

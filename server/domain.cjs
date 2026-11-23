@@ -86,9 +86,16 @@ function sanitize(input, old, name, options={}) {
   for (const v of Object.values(s.stats))
     if (typeof v === "number" && (!Number.isFinite(v) || v < 0 || v > 1e12))
       throw new Error("Invalid statistics");
+  const strField = (v, n = 24) => (typeof v === "string" ? v.slice(0, n) : "");
+  const avatarDex = Number(s.profile.avatarDex) || 0;
   s.profile = {
-    title:
-      typeof s.profile.title === "string" ? s.profile.title.slice(0, 40) : "",
+    title: strField(s.profile.title, 48),
+    titlePrefix: strField(s.profile.titlePrefix, 24),
+    titleSuffix: strField(s.profile.titleSuffix, 24),
+    avatarDex: G.DEX_BY[avatarDex] && s.owned?.[avatarDex] ? avatarDex : 0,
+    avatarShiny: !!(G.DEX_BY[avatarDex] && s.shiny?.[avatarDex] && s.profile.avatarShiny),
+    avatarFrame: strField(s.profile.avatarFrame, 24),
+    cardBorder: strField(s.profile.cardBorder, 24),
     favs: Array.isArray(s.profile.favs)
       ? s.profile.favs
           .filter((f) => f && G.DEX_BY[f.dex])

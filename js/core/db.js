@@ -103,7 +103,7 @@ G.DB = (() => {
       evoMoves: {},           // id -> fecha: movimientos evolucionados alguna vez
       ach: {},                // id -> fecha: logros conseguidos
       missions: {},           // misiones del día / semana (systems/progress.js)
-      profile: { favs: [], title: '' },   // perfil público: 3 favoritos y título
+      profile: { favs: [], title: '', titlePrefix: 'starlight', titleSuffix: 'trainer', avatarDex: 0, avatarShiny: false, avatarFrame: 'gold', cardBorder: 'sanctuary' },   // perfil público personalizado
       stats: { runs: 0, bestScore: 0, bestTime: 0, bestLevel: 0, totalKills: 0, pulls: 0, coinsEarned: 0, shinies: 0,
                bossesTotal: 0, riftWins: 0, evolutions: 0, missionsDone: 0, groupRuns: 0, bestGroupTime: 0, abilityPulls: 0 }
     };
@@ -115,7 +115,9 @@ G.DB = (() => {
     const needsAbilityGift = !s.abilityStarterGranted;
     const base = newSave(name || s.name);
     for (const k in base) if (s[k] == null) s[k] = base[k];
-    for (const k in base.stats) if (s.stats[k] == null) s.stats[k] = base.stats[k];
+    for (const k in base.stats) if (s.stats[k] == null) s.stats[k] = base[k] ? base.stats[k] : 0;
+    if (!s.profile || typeof s.profile !== 'object' || Array.isArray(s.profile)) s.profile = { ...base.profile };
+    else for (const k in base.profile) if (s.profile[k] == null) s.profile[k] = base.profile[k];
     // v1 -> v2: había un único banner (Kanto) con el pity como número.
     if (typeof s.pity === 'number') s.pity = { 1: s.pity };
     // v2 -> v3: las mejoras eran de la cuenta; pasan al compañero de entonces.

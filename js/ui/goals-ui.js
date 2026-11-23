@@ -144,45 +144,288 @@
       return el;
     }
 
-    // ---------------- perfil (editar) ----------------
+    // ---------------- perfil (editar y personalizar) ----------------
+
+    const PROFILE_BORDERS = [
+      { id: 'sanctuary', name: ['Santuario de la Liga', 'League Sanctuary', '联盟圣殿'], accent: '#53c8ff' },
+      { id: 'royal', name: ['Oro de Campeón', 'Champion Gold', '冠军金辉'], accent: '#ffd447' },
+      { id: 'sakura', name: ['Brisa de Cerezos', 'Sakura Breeze', '春日樱庭'], accent: '#ff96c5' },
+      { id: 'emerald', name: ['Bosque Esmeralda', 'Emerald Grove', '翡翠森境'], accent: '#48e29a' },
+      { id: 'astral', name: ['Grieta Astral', 'Astral Rift', '星界裂隙'], accent: '#b88cff' },
+      { id: 'crimson', name: ['Llama Escarlata', 'Crimson Blaze', '绯红烈焰'], accent: '#ff6678' }
+    ];
+
+    const AVATAR_FRAMES = [
+      { id: 'gold', name: ['Anillo de la Liga', 'League Crest', '联盟金环'], color: '#ffd447', badge: '✦' },
+      { id: 'crystal', name: ['Cristal Celeste', 'Celeste Crystal', '湛蓝晶冠'], color: '#5ce1ff', badge: '❖' },
+      { id: 'blossom', name: ['Guirnalda Floral', 'Blossom Wreath', '落樱花环'], color: '#ff96c8', badge: '❀' },
+      { id: 'flame', name: ['Corona Ígnea', 'Blazing Crown', '炽焰冠冕'], color: '#ff784f', badge: '🔥' },
+      { id: 'starlight', name: ['Halo Estelar', 'Starlight Halo', '星辉光轮'], color: '#c49bff', badge: '★' },
+      { id: 'master', name: ['Emblema Maestro', 'Master Emblem', '大师徽记'], color: '#52f2b8', badge: '👑' }
+    ];
+
+    const TITLE_PREFIXES = [
+      { id: 'starlight', text: ['de la Luz Estelar', 'Starlight', '星辉下的'] },
+      { id: 'breeze', text: ['de la Brisa Marina', 'Sea-Breeze', '海风中的'] },
+      { id: 'evergreen', text: ['del Bosque Eterno', 'Evergreen', '常青林的'] },
+      { id: 'blazing', text: ['del Corazón Ardiente', 'Blazing-Heart', '炽热之心的'] },
+      { id: 'rift', text: ['del Más Allá', 'Rift-Striding', '穿越裂隙的'] },
+      { id: 'shiny', text: ['del Destello Irisado', 'Prismatic', '追逐闪光的'] },
+      { id: 'unyielding', text: ['de Voluntad Férrea', 'Unyielding', '百折不挠的'] },
+      { id: 'dawn', text: ['del Alba Dorada', 'Golden-Dawn', '破晓时分的'] },
+      { id: 'sanctuary', text: ['del Santuario', 'Sanctuary', '联盟庭院的'] },
+      { id: 'dreaming', text: ['de la Siesta Feliz', 'Daydreaming', '爱睡午觉的'] }
+    ];
+
+    const TITLE_SUFFIXES = [
+      { id: 'trainer', text: ['Entrenador', 'Trainer', '训练家'] },
+      { id: 'pioneer', text: ['Pionero', 'Pioneer', '远征先驱'] },
+      { id: 'captain', text: ['Capitán', 'Captain', '小队队长'] },
+      { id: 'collector', text: ['Coleccionista', 'Collector', '图鉴学者'] },
+      { id: 'guardian', text: ['Guardián', 'Guardian', '守护者'] },
+      { id: 'tactician', text: ['Estratega', 'Tactician', '战术大师'] },
+      { id: 'champion', text: ['Campeón', 'Champion', '殿堂冠军'] },
+      { id: 'companion', text: ['Compañero Fiel', 'True Partner', '羁绊旅人'] },
+      { id: 'conqueror', text: ['Conquistador', 'Conqueror', '首领克星'] },
+      { id: 'legend', text: ['Leyenda Viva', 'Living Legend', '传奇名宿'] }
+    ];
+
+    function loc(arr) {
+      return arr[G.I18n.lang === 'zh' ? 2 : G.I18n.lang === 'en' ? 1 : 0];
+    }
+
+    function formatTwoPartTitle(prefixId, suffixId, legacyTitle, unlockedTitles = []) {
+      const pObj = TITLE_PREFIXES.find(x => x.id === prefixId) || TITLE_PREFIXES[0];
+      let sText = '';
+      if (suffixId && suffixId.startsWith('ach:')) {
+        const raw = suffixId.slice(4);
+        sText = G.T(raw);
+      } else {
+        const sObj = TITLE_SUFFIXES.find(x => x.id === suffixId) || TITLE_SUFFIXES[0];
+        sText = loc(sObj.text);
+      }
+      if (!prefixId && !suffixId && legacyTitle) return legacyTitle;
+      const pText = loc(pObj.text);
+      if (G.I18n.lang === 'zh') {
+        const cleanP = pText.endsWith('的') ? pText.slice(0, -1) : pText;
+        return `${cleanP}的${sText}`;
+      }
+      if (G.I18n.lang === 'en') return `${pText} ${sText}`;
+      return `${sText} ${pText}`;
+    }
+
+    function ensureProfileDefaults(s) {
+      s.profile = s.profile || {};
+      const P = s.profile;
+      if (!Array.isArray(P.favs)) P.favs = [];
+      if (!P.titlePrefix) P.titlePrefix = 'starlight';
+      if (!P.titleSuffix) P.titleSuffix = 'trainer';
+      if (!P.avatarFrame || !AVATAR_FRAMES.some(f => f.id === P.avatarFrame)) P.avatarFrame = 'gold';
+      if (!P.cardBorder || !PROFILE_BORDERS.some(b => b.id === P.cardBorder)) P.cardBorder = 'sanctuary';
+      if (!P.avatarDex || !G.DEX_BY[P.avatarDex] || !s.owned?.[P.avatarDex]) {
+        P.avatarDex = s.partner && G.DEX_BY[s.partner] ? s.partner : Number(Object.keys(s.owned || {})[0]) || 25;
+        P.avatarShiny = !!(P.avatarDex === s.partner && s.partnerShiny && G.DB.ownsShiny(P.avatarDex));
+      }
+      P.title = formatTwoPartTitle(P.titlePrefix, P.titleSuffix, P.title);
+      return P;
+    }
 
     function profile(box) {
       const s = G.DB.save;
-      s.profile = s.profile || { favs: [], title: '' };
-      const P = s.profile;
-      box.insertAdjacentHTML('beforeend', `<p class="sub">${G.DB.online ? 'Así te ven los demás jugadores (desde el ranking y la lista de amigos).'
-        : 'Tu perfil se publica cuando juegas con una cuenta online.'}</p>
-        <h3>Tus 3 Pokémon favoritos</h3>`);
-      const favs = document.createElement('div');
-      favs.className = 'fav-slots';
+      const P = ensureProfileDefaults(s);
+      const T = (es, en, zh) => G.Server.text(es, en, zh);
+      const unlockedTitles = G.Progress.titles();
+      const borderDef = PROFILE_BORDERS.find(b => b.id === P.cardBorder) || PROFILE_BORDERS[0];
+      const frameDef = AVATAR_FRAMES.find(f => f.id === P.avatarFrame) || AVATAR_FRAMES[0];
+      const lv = G.LeagueRank ? G.LeagueRank.view(s) : { tier: 1, stars: 0, points: 0, protocol: 0 };
+      const fullMedals = G.Difficulty ? G.Difficulty.completedCount(s) : 0;
+      const abilityMedals = Object.keys(s.abilityMedals || {}).length;
+      const achMedals = Object.keys(s.ach || {}).length;
+      const legendMedals = Object.keys(s.legends || {}).length;
+      const totalMedals = fullMedals + abilityMedals + achMedals;
+      const fullTitle = formatTwoPartTitle(P.titlePrefix, P.titleSuffix, P.title, unlockedTitles);
+
+      box.innerHTML = `
+        <div class="prof-editor-layout" translate="no">
+          <div class="prof-live-card border-${esc(borderDef.id)}" style="--prof-accent:${borderDef.accent};--frame-accent:${frameDef.color}">
+            <div class="prof-card-watermark">POKÉSURVIVOR LEAGUE</div>
+            <div class="prof-card-top">
+              <button type="button" class="prof-avatar-shell frame-${esc(frameDef.id)}" id="prof-edit-avatar" title="${T('Cambiar avatar Pokémon', 'Change Pokémon avatar', '点击更换头像宝可梦')}">
+                <span class="prof-avatar-ring"></span>
+                <canvas id="prof-editor-avatar-cv" width="96" height="96"></canvas>
+                <span class="prof-avatar-crest">${frameDef.badge}</span>
+                <small class="prof-avatar-edit-tag">${T('Avatar', 'Avatar', '更换头像')}</small>
+              </button>
+              <div class="prof-identity">
+                <div class="prof-kicker-row">
+                  <span class="prof-kicker-badge">${T('TARJETA DE ENTRENADOR', 'TRAINER PASSPORT', '联盟训练家档案卡')}</span>
+                  <span class="prof-rank-pill">R${lv.tier} · ★${lv.points ?? lv.stars ?? 0}${lv.protocol ? ` · 🏆${lv.protocol}` : ''}</span>
+                </div>
+                <h2 class="prof-player-name">${esc(G.DB.user || T('Entrenador', 'Trainer', '旅行训练家'))}</h2>
+                <div class="prof-twopart-title">
+                  <span class="prof-title-icon">✦</span>
+                  <b>${esc(fullTitle)}</b>
+                </div>
+              </div>
+              <button type="button" class="btn small gold prof-preview-btn" id="prof-open-public">${T('Vista pública', 'Public card', '查看完整名片')}</button>
+            </div>
+
+            <div class="prof-medal-ribbon">
+              <div class="prof-medal-stat total">
+                <span class="pms-ico">${G.Icons.html('trophy', 22)}</span>
+                <div><small>${T('Medallas totales', 'Total medals', '勋章总计')}</small><b>${totalMedals}</b></div>
+              </div>
+              <div class="prof-medal-stat">
+                <span class="pms-ico">${G.Icons.html('medal3', 22)}</span>
+                <div><small>${T('Logros de Liga', 'Achievements', '成就勋章')}</small><b>${achMedals}</b></div>
+              </div>
+              <div class="prof-medal-stat">
+                <span class="pms-ico">${G.Icons.html('gem', 22)}</span>
+                <div><small>${T('Medallas de habilidad', 'Ability medals', '特性勋章')}</small><b>${abilityMedals}</b></div>
+              </div>
+              <div class="prof-medal-stat">
+                <span class="pms-ico">${G.Icons.html('crown', 22)}</span>
+                <div><small>${T('8★ / Mitos vencidos', '8★ / Myths beaten', '满星伙伴 / 传说击败')}</small><b>${fullMedals} / ${legendMedals}</b></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="prof-custom-grid">
+            <section class="prof-custom-panel">
+              <h3>${T('Título de dos partes («xx的xx»)', 'Two-part title', '二段式称号定制（xx的xx）')}</h3>
+              <div class="prof-title-builder">
+                <label class="prof-title-part">
+                  <small>${T('Prefijo (Estilo / Origen)', 'Prefix (Style / Origin)', '前段词缀（风格 / 归属）')}</small>
+                  <select class="field" id="prof-title-prefix"></select>
+                </label>
+                <span class="prof-title-joiner">${G.I18n.lang === 'zh' ? '的' : '·'}</span>
+                <label class="prof-title-part">
+                  <small>${T('Sufijo (Rango / Logro)', 'Suffix (Role / Achievement)', '后段头衔（身份 / 成就解锁）')}</small>
+                  <select class="field" id="prof-title-suffix"></select>
+                </label>
+              </div>
+            </section>
+
+            <section class="prof-custom-panel">
+              <h3>${T('Marco de avatar', 'Avatar frame', '头像框选择')}</h3>
+              <div class="prof-swatch-grid" id="prof-frame-swatches"></div>
+            </section>
+
+            <section class="prof-custom-panel">
+              <h3>${T('Borde de tarjeta de perfil', 'Profile card border', '资料界面边框主题')}</h3>
+              <div class="prof-swatch-grid" id="prof-border-swatches"></div>
+            </section>
+
+            <section class="prof-custom-panel prof-favs-panel">
+              <h3>${T('Tus 3 Pokémon favoritos', 'Your 3 favorite Pokémon', '展示的 3 位代表伙伴')}</h3>
+              <div class="fav-slots" id="prof-editor-favs"></div>
+            </section>
+          </div>
+        </div>
+      `;
+
+      const avCv = $('prof-editor-avatar-cv');
+      if (avCv) G.UI.sprite(avCv, P.avatarDex, { portrait: true, hero: true, shiny: !!P.avatarShiny, shadow: false });
+      $('prof-edit-avatar').onclick = () => pickAvatar();
+      $('prof-open-public').onclick = () => G.DB.mode === 'server' && G.DB.online ? G.ProfileUI.show(G.Server.user?.uid) : G.ProfileUI.showData(G.Social.profileData());
+
+      // Populate prefix & suffix selectors
+      const prefSel = $('prof-title-prefix');
+      for (const p of TITLE_PREFIXES) {
+        const opt = new Option(loc(p.text), p.id, p.id === P.titlePrefix, p.id === P.titlePrefix);
+        prefSel.add(opt);
+      }
+      const sufSel = $('prof-title-suffix');
+      for (const sItem of TITLE_SUFFIXES) {
+        const opt = new Option(loc(sItem.text), sItem.id, sItem.id === P.titleSuffix, sItem.id === P.titleSuffix);
+        sufSel.add(opt);
+      }
+      for (const achTitle of unlockedTitles) {
+        const val = 'ach:' + achTitle;
+        const opt = new Option('★ ' + G.T(achTitle), val, val === P.titleSuffix, val === P.titleSuffix);
+        sufSel.add(opt);
+      }
+      const updateTitle = () => {
+        P.titlePrefix = prefSel.value;
+        P.titleSuffix = sufSel.value;
+        P.title = formatTwoPartTitle(P.titlePrefix, P.titleSuffix, P.title, unlockedTitles);
+        save();
+        render();
+      };
+      prefSel.onchange = updateTitle;
+      sufSel.onchange = updateTitle;
+
+      // Populate Avatar Frame swatches
+      const frameGrid = $('prof-frame-swatches');
+      for (const f of AVATAR_FRAMES) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'prof-swatch' + (P.avatarFrame === f.id ? ' on' : '');
+        btn.style.setProperty('--sw-color', f.color);
+        btn.innerHTML = `<span class="sw-dot">${f.badge}</span><b>${esc(loc(f.name))}</b>`;
+        btn.onclick = () => { P.avatarFrame = f.id; save(); render(); };
+        frameGrid.append(btn);
+      }
+
+      // Populate Card Border swatches
+      const borderGrid = $('prof-border-swatches');
+      for (const b of PROFILE_BORDERS) {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'prof-swatch' + (P.cardBorder === b.id ? ' on' : '');
+        btn.style.setProperty('--sw-color', b.accent);
+        btn.innerHTML = `<span class="sw-bar"></span><b>${esc(loc(b.name))}</b>`;
+        btn.onclick = () => { P.cardBorder = b.id; save(); render(); };
+        borderGrid.append(btn);
+      }
+
+      // Populate 3 favorite slots
+      const favs = $('prof-editor-favs');
       for (let i = 0; i < 3; i++) {
         const f = P.favs[i];
         const slot = document.createElement('div');
         slot.className = 'fav-slot';
         if (f && G.DEX_BY[f.dex]) {
-          slot.appendChild(G.UI.spriteCanvas(f.dex, 120, 100, { scale: 2, lively: true, shiny: !!f.shiny }));
-          slot.insertAdjacentHTML('beforeend', `<b>${f.shiny ? G.Icons.html('shiny', 12) + ' ' : ''}${esc(G.DEX_BY[f.dex].name)}</b>`);
-        } else slot.innerHTML = '<span>Elegir</span>';
+          slot.appendChild(G.UI.spriteCanvas(f.dex, 112, 92, { scale: 2, lively: true, shiny: !!f.shiny }));
+          slot.insertAdjacentHTML('beforeend', `<b>${f.shiny ? G.Icons.html('shiny', 12) + ' ' : ''}${esc(G.T(G.DEX_BY[f.dex].name))}</b>`);
+        } else {
+          slot.innerHTML = `<span>+ ${T('Elegir', 'Choose', '选择伙伴')}</span>`;
+        }
         slot.onclick = () => pickFav(i);
         favs.appendChild(slot);
       }
-      box.appendChild(favs);
+    }
 
-      const titles = G.Progress.titles();
-      box.insertAdjacentHTML('beforeend', `<h3 style="margin-top:14px">Título</h3>`);
-      const sel = document.createElement('select');
-      sel.className = 'field';
-      sel.style.maxWidth = '320px';
-      sel.innerHTML = `<option value="">(sin título)</option>` + titles.map(t => `<option ${t === P.title ? 'selected' : ''}>${esc(t)}</option>`).join('');
-      sel.onchange = () => { P.title = sel.value; save(); };
-      box.appendChild(sel);
-      if (!titles.length) box.insertAdjacentHTML('beforeend', '<p class="note">Consigue logros para desbloquear títulos.</p>');
-
-      const prev = document.createElement('button');
-      prev.className = 'btn gold'; prev.style.marginTop = '16px';
-      prev.textContent = 'Ver mi perfil público';
-      prev.onclick = () => G.DB.mode==='server' ? G.ProfileUI.show(G.Server.user?.uid) : G.ProfileUI.showData(G.Social.profileData());
-      box.appendChild(prev);
+    function pickAvatar() {
+      const s = G.DB.save;
+      const T = (es, en, zh) => G.Server.text(es, en, zh);
+      const box = $('goals-body');
+      box.innerHTML = `<div class="row between"><h3>${T('Elige tu avatar Pokémon', 'Choose your Pokémon avatar', '选择个人头像宝可梦')}</h3>
+        <button class="btn small ghost" id="fav-back">${T('Volver', 'Back', '返回')}</button></div>
+        <input class="field" id="fav-q" placeholder="${T('Buscar por nombre', 'Search by name', '搜索已拥有的宝可梦')}" style="max-width:320px;margin:6px 0 10px">
+        <div class="grid" id="fav-grid"></div>`;
+      $('fav-back').onclick = () => { tab = 'profile'; render(); };
+      const fill = q => {
+        const g = $('fav-grid');
+        g.innerHTML = '';
+        const mons = Object.keys(s.owned).map(Number).filter(d => G.DEX_BY[d] && (!q || G.DEX_BY[d].name.toLowerCase().includes(q) || G.T(G.DEX_BY[d].name).toLowerCase().includes(q)));
+        for (const d of mons.slice(0, 120)) {
+          for (const shiny of G.DB.ownsShiny(d) ? [false, true] : [false]) {
+            const c = document.createElement('div');
+            c.className = 'cell' + (s.profile.avatarDex === d && !!s.profile.avatarShiny === shiny ? ' sel' : '');
+            c.appendChild(G.UI.spriteCanvas(d, 88, 78, { portrait: true, hero: true, shiny, shadow: false }));
+            c.insertAdjacentHTML('beforeend', `<b>${shiny ? G.Icons.html('shiny', 12) + ' ' : ''}${esc(G.T(G.DEX_BY[d].name))}</b>`);
+            c.onclick = () => {
+              s.profile.avatarDex = d;
+              s.profile.avatarShiny = shiny;
+              save(); tab = 'profile'; render();
+            };
+            g.appendChild(c);
+          }
+        }
+      };
+      $('fav-q').oninput = () => fill($('fav-q').value.trim().toLowerCase());
+      fill('');
     }
 
     function pickFav(i) {
@@ -255,29 +498,108 @@
     function showData(d) {
       const b = d.best || {};
       const body = $('prof-body');
-      const character=d.character?.preset?d.character:null;
-      const theme=G.CardPacks?.themes.find(t=>t.id===d.cardTheme);body.classList.toggle('profile-themed',!!theme);body.style.setProperty('--card-accent',theme?.color||'#ffd23f');
-      body.style.setProperty('--prof-accent',/^#[0-9a-f]{6}$/i.test(character?.color||'')?character.color:'#ffd23f');
-      const number=v=>Math.max(0,Math.floor(Number(v)||0)).toLocaleString(G.I18n.lang==='zh'?'zh-CN':G.I18n.lang==='en'?'en':'es');
-      const completed=(d.completedDex||[]).filter(dex=>G.DEX_BY[dex]);
+      const character = d.character?.preset ? d.character : null;
+      const theme = G.CardPacks?.themes.find(t => t.id === d.cardTheme);
+      body.classList.toggle('profile-themed', !!theme);
+      body.style.setProperty('--card-accent', theme?.color || '#ffd23f');
+
+      const BORDER_MAP = {
+        sanctuary: '#53c8ff',
+        royal: '#ffd447',
+        sakura: '#ff96c5',
+        emerald: '#48e29a',
+        astral: '#b88cff',
+        crimson: '#ff6678'
+      };
+      const FRAME_MAP = {
+        gold: { color: '#ffd447', badge: '✦' },
+        crystal: { color: '#5ce1ff', badge: '❖' },
+        blossom: { color: '#ff96c8', badge: '❀' },
+        flame: { color: '#ff784f', badge: '🔥' },
+        starlight: { color: '#c49bff', badge: '★' },
+        master: { color: '#52f2b8', badge: '👑' }
+      };
+      const borderId = BORDER_MAP[d.cardBorder] ? d.cardBorder : 'sanctuary';
+      const frameId = FRAME_MAP[d.avatarFrame] ? d.avatarFrame : 'gold';
+      const accentColor = /^#[0-9a-f]{6}$/i.test(character?.color || '') ? character.color : (BORDER_MAP[borderId] || '#53c8ff');
+      const frameInfo = FRAME_MAP[frameId];
+      body.style.setProperty('--prof-accent', accentColor);
+      body.style.setProperty('--frame-accent', frameInfo.color);
+
+      const pBox = body.closest('.profile-box');
+      if (pBox) {
+        pBox.className = 'box profile-box border-' + borderId;
+        pBox.style.setProperty('--prof-accent', accentColor);
+        pBox.style.setProperty('--frame-accent', frameInfo.color);
+      }
+
+      const number = v => Math.max(0, Math.floor(Number(v) || 0)).toLocaleString(G.I18n.lang === 'zh' ? 'zh-CN' : G.I18n.lang === 'en' ? 'en' : 'es');
+      const completed = (d.completedDex || []).filter(dex => G.DEX_BY[dex]);
+      const avDex = G.DEX_BY[d.avatarDex] ? d.avatarDex : (G.DEX_BY[d.partner] ? d.partner : (d.favs?.[0]?.dex || 25));
+      const avShiny = !!d.avatarShiny;
+      const fullMedals = Number(b.medals) || 0;
+      const abilityMedals = Number(b.abilityMedals) || 0;
+      const achCount = Number(b.achCount) || (d.medals?.length || 0);
+      const legendCount = Number(b.legends) || 0;
+      const totalMedals = fullMedals + abilityMedals + achCount;
+      const leagueTier = d.leagueTier || 1;
+      const leagueStars = d.leagueStars || 0;
+      const displayTitle = character ? local(character.title) : (d.title || (G.I18n.lang === 'zh' ? '星辉下的训练家' : G.I18n.lang === 'en' ? 'Starlight Trainer' : 'Entrenador de la Luz Estelar'));
+
       body.innerHTML = `
-        <div class="prof-hero">
-          <div class="prof-kicker">${T('CUADERNO DE AVENTURAS','ADVENTURE JOURNAL','冒险档案')}</div>
-          <div class="prof-head"><h2 translate="no">${esc(d.name || '???')}</h2>${character||d.title ? `<span class="prof-title">${esc(character?local(character.title):d.title)}</span>` : ''}</div>
-          <p class="prof-bio">${esc(character?local(character.bio):T('Cada compañero guarda una historia. Aquí continúa la aventura.','Every partner has a story. The adventure continues here.','每一位伙伴都珍藏着故事，下一段冒险从这里继续。'))}</p>
-          ${character?`<p class="prof-preset">${T('Ficha de personaje · datos y marcas predefinidos.','Preset character profile · curated records and information.','预设角色档案 · 资料与成绩为预置展示内容。')}</p>`:''}
+        <div class="prof-hero border-${esc(borderId)}">
+          <div class="prof-hero-top">
+            <div class="prof-avatar-shell frame-${esc(frameId)}">
+              <span class="prof-avatar-ring"></span>
+              <canvas id="prof-public-avatar-cv" width="100" height="100"></canvas>
+              <span class="prof-avatar-crest">${frameInfo.badge}</span>
+            </div>
+            <div class="prof-hero-main">
+              <div class="prof-kicker-row">
+                <span class="prof-kicker">${T('CUADERNO DE AVENTURAS', 'ADVENTURE PASSPORT', '联盟冒险者档案')}</span>
+                <span class="prof-rank-pill">R${leagueTier} · ★${leagueStars}${d.championStage ? ` · 🏆${d.championStage}` : ''}</span>
+              </div>
+              <div class="prof-head">
+                <h2 translate="no">${esc(d.name || '???')}</h2>
+                ${displayTitle ? `<span class="prof-title"><i>✦</i> ${esc(displayTitle)}</span>` : ''}
+              </div>
+              <p class="prof-bio">${esc(character ? local(character.bio) : T('Cada compañero guarda una historia. Aquí continúa la aventura.', 'Every partner has a story. The adventure continues here.', '每一位伙伴都珍藏着故事，下一段冒险从这里继续。'))}</p>
+              ${character ? `<p class="prof-preset">${T('Ficha de personaje · datos y marcas predefinidos.', 'Preset character profile · curated records and information.', '预设角色档案 · 资料与成绩为预置展示内容。')}</p>` : ''}
+            </div>
+          </div>
+
+          <div class="prof-medal-ribbon">
+            <div class="prof-medal-stat total">
+              <span class="pms-ico">${G.Icons.html('trophy', 22)}</span>
+              <div><small>${T('Medallas totales', 'Total medals', '勋章总计')}</small><b>${number(totalMedals)}</b></div>
+            </div>
+            <div class="prof-medal-stat">
+              <span class="pms-ico">${G.Icons.html('crown', 22)}</span>
+              <div><small>${T('Pokémon 8★', 'Full-medal 8★', '满星通关勋章')}</small><b>${number(fullMedals)}</b></div>
+            </div>
+            <div class="prof-medal-stat">
+              <span class="pms-ico">${G.Icons.html('gem', 22)}</span>
+              <div><small>${T('Medallas habilidad', 'Ability medals', '家族特性勋章')}</small><b>${number(abilityMedals)}</b></div>
+            </div>
+            <div class="prof-medal-stat">
+              <span class="pms-ico">${G.Icons.html('medal3', 22)}</span>
+              <div><small>${T('Logros / Mitos', 'Achievements / Myths', '成就 / 传说击败')}</small><b>${number(achCount)} / ${number(legendCount)}</b></div>
+            </div>
+          </div>
         </div>
         <div class="prof-marks">
-          <div><span>${T('Colección completa','Full-medal Pokémon','满勋章宝可梦')}</span><b>${number(b.medals)}</b></div>
-          <div><span>${T('Puntuación de aventura','Adventure score','冒险最高得分')}</span><b>${b.score?number(b.score):'—'}</b></div>
-          <div><span>${T('Nivel máximo','Highest level','最高等级')}</span><b>${number(b.level)}</b></div>
-          <div><span>${T('Derrotados','Pokémon defeated','累计击败')}</span><b>${number(b.kills)}</b></div>
+          <div><span>${T('Colección completa', 'Full-medal Pokémon', '满勋章宝可梦')}</span><b>${number(b.medals)}</b></div>
+          <div><span>${T('Puntuación de aventura', 'Adventure score', '冒险最高得分')}</span><b>${b.score ? number(b.score) : '—'}</b></div>
+          <div><span>${T('Nivel máximo', 'Highest level', '最高等级')}</span><b>${number(b.level)}</b></div>
+          <div><span>${T('Derrotados', 'Pokémon defeated', '累计击败')}</span><b>${number(b.kills)}</b></div>
         </div>
-        <h3 class="prof-section-title">${T('Compañeros de aventura','Adventure partners','旅途搭档')}</h3>
+        <h3 class="prof-section-title">${T('Compañeros de aventura', 'Adventure partners', '旅途代表搭档')}</h3>
         <div class="prof-team" id="prof-favs"></div>
-        <h3 class="prof-section-title">${T('Galería de victorias','Hall of victories','通关伙伴墙')} <small>${number(b.medals)}</small></h3>
+        <h3 class="prof-section-title">${T('Galería de victorias', 'Hall of victories', '八星通关伙伴墙')} <small>${number(b.medals)}</small></h3>
         <div class="prof-victories" id="prof-victories"></div>
-        <h3 class="prof-ach-title hidden" id="prof-ach-title">${T('Logros','Achievements','成就收藏')}</h3><div class="prof-medals" id="prof-medals"></div>`;
+        <h3 class="prof-ach-title hidden" id="prof-ach-title">${T('Insignias de logro', 'Achievement badges', '荣誉成就勋章陈列')}</h3><div class="prof-medals" id="prof-medals"></div>`;
+      const pubAv = $('prof-public-avatar-cv');
+      if (pubAv && G.DEX_BY[avDex]) G.UI.sprite(pubAv, avDex, { portrait: true, hero: true, shiny: avShiny, shadow: false });
       if(theme){const badge=document.createElement('span');badge.className='pack-theme-badge';badge.textContent='✦ '+G.CardPacks.local(theme.name);body.querySelector('.prof-hero').append(badge);}
       const favs = $('prof-favs');
       for (const f of (d.favs || []).slice(0, 3)) {

@@ -255,8 +255,17 @@ G.UI = (() => {
 
       if (s.opts.lively) {
         s.t -= dt;
-        if (s.t <= 0) { s.t = G.U.rand(2.5, 4.5); s.a.play(G.U.pick(['Attack', 'Shoot', 'Charge'])); }
+        if (s.t <= 0) {
+          s.t = G.U.rand(2.6, 4.8);
+          if (Math.random() < 0.48) {
+            s.a.dir = 0; // Look directly at the player
+            s.hopT = 0.72;
+          } else {
+            s.a.play(G.U.pick(['Attack', 'Shoot', 'Charge']));
+          }
+        }
       }
+      if (s.hopT > 0) s.hopT = Math.max(0, s.hopT - dt);
       if (s.opts.spin) {
         s.spinT += dt;
         if (s.spinT > 1.4) { s.spinT = 0; s.a.dir = (s.a.dir + 7) % 8; }
@@ -293,19 +302,34 @@ G.UI = (() => {
       // Si no cabe de pie, se centra el cuerpo en el recuadro.
       const big = ay * k > cv.height * 0.8;
       const fx = cv.width / 2, fy = big ? cv.height / 2 + ay * k * 0.45 : cv.height * 0.88;
+      const hopPhase = s.hopT > 0 ? 1 - s.hopT / 0.72 : 0;
+      const hopY = s.hopT > 0 ? Math.abs(Math.sin(hopPhase * Math.PI * 2)) * (6 * k) * (1 - hopPhase * 0.25) : 0;
+      const shadowScale = s.hopT > 0 ? 1 - Math.sin(hopPhase * Math.PI) * 0.26 : 1;
 
       if (s.opts.shadow !== false && !s.opts.silhouette) {
         ctx.fillStyle = 'rgba(0,0,0,.35)';
-        ctx.beginPath(); ctx.ellipse(fx, fy, 9 * k, 3.4 * k, 0, 0, 6.2832); ctx.fill();
+        ctx.beginPath(); ctx.ellipse(fx, fy, 9 * k * shadowScale, 3.4 * k * shadowScale, 0, 0, 6.2832); ctx.fill();
       }
       if (s.opts.silhouette) {
         ctx.save();
         ctx.filter = 'brightness(0)';
         ctx.globalAlpha = 0.55;
-        s.a.draw(ctx, fx, fy);
+        s.a.draw(ctx, fx, fy - hopY);
         ctx.restore();
       } else {
-        s.a.draw(ctx, fx, fy);
+        s.a.draw(ctx, fx, fy - hopY);
+      }
+      if (s.hopT > 0 && !s.opts.silhouette) {
+        ctx.save();
+        ctx.globalAlpha = Math.sin(hopPhase * Math.PI);
+        ctx.font = `800 ${Math.max(12, 6 * k)}px "Segoe UI", sans-serif`;
+        ctx.fillStyle = '#ffe57f';
+        ctx.strokeStyle = 'rgba(12, 24, 52, 0.9)';
+        ctx.lineWidth = 3;
+        const markX = fx + 8 * k, markY = Math.max(16, fy - ay * k - hopY - 2 * k);
+        ctx.strokeText('♪', markX, markY);
+        ctx.fillText('♪', markX, markY);
+        ctx.restore();
       }
 
       // Centelleos alrededor de los shiny: cada uno nace en un sitio al azar.

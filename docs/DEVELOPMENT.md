@@ -34,6 +34,21 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.59 — 2026-11-23
+
+- 优化进入主界面前的首屏界面（`#tap-start` 与 `body.league-splash`）：网页加载完成时即在后台启动 3D 宝可梦联盟庭院模型（`outputs/pokemon-league.html`），在 `splash` 模式下将视锥居中（`share = 1.0`）并以 `0.14 rad/s` 缓慢旋转整个 3D 建筑群；首屏底板采用 `backdrop-filter: blur(20px)` 毛玻璃叠层，仅隐约透出下方旋转建筑的轮廓，画面中央仅保留立体金色游戏名 `PokéSurvivor` 与“点击任意处进入游戏”胶囊提示。
+- 新增进入主界面的专场展开动画（`body.league-entering`）与开始远征全屏加载过场界面（`#expedition-loader`）：
+  - 从首屏/登录进入 `#scr-menu` 时，3D 庭院毛玻璃平滑褪去并从屏幕正中推镜至左侧 62% 全景位，同时左上角环境控制栏、右上角资源栏、左下角队长展示底座与右侧 12 宫格战术终端依次交错滑入展开。
+  - 在战前整备界面点击“出发”或续玩本机远征存档时，开启 `#expedition-loader` 全屏传送门加载界面，展示多层旋转星环、出战队长动态像素精灵、本局抽取的世代徽章、平滑进度条及随机远征战术提示。
+- 重构玩家个人资料与自定义名片系统（`js/ui/goals-ui.js`、`css/style.css`、`server/domain.cjs`、`server/server.cjs`、`js/net/server-client.js`、`js/core/db.js`）：
+  - 新增 6 款资料界面边框主题（联盟圣殿、冠军金辉、春日樱庭、翡翠森境、星界裂隙、绯红烈焰）。
+  - 新增独立宝可梦头像选择器（支持已拥有物种与异色形态切换）与 6 款立体头像框（联盟金环、湛蓝晶冠、落樱花环、炽焰冠冕、星辉光轮、大师徽记）。
+  - 新增二段式称号定制工坊（`titlePrefix` + `titleSuffix`，自动拼接为中文 `xx的xx` 及英/西对应双段称号，兼容已解锁成就头衔）。
+  - 新增 4 栏勋章数量统计横条（勋章总计、成就勋章、家族特性勋章、满星通关伙伴 / 传说击败计数），并同步至公开资料名片弹窗（`#scr-profile`）。
+- 增强宝可梦自发开心互动（`outputs/pokemon-league.html`、`js/ui/ui.js`）：即使玩家未点击宝可梦，3D 庭院中漫步或驻足的宝可梦以及 2D 展示底座上的伙伴也会以小概率主动转向玩家镜头、开心双跳并浮现 `♪ / ♡ / 😊 / ✨` 心情气泡。
+- 必要验证：96 项自动化单元测试全部通过；Playwright + 隔离内存 SQLite 服务端实测验证毛玻璃 3D 旋转首屏、主界面展开专场动画、个人资料二段式称号/边框/头像/头像框定制、公开名片弹窗以及远征全屏加载界面，`pageerror` 为 0。标准构建 `node tools/build.js` 与 `node tools/export_data.js` 通过。
+
+
 ### v0.43.0-alpha.57 — 2026-11-23
 
 - 借用 `G:\PokemooonDev\PokeSurvivor` 的 3D 宝可梦联盟微缩庭院模型（`outputs/pokemon-league.html`），为 `-next` 分支新远征玩法重新设计游戏开始主界面（`#scr-menu`）与主界面全部子 UI（`#scr-journey` 战前准备、`#scr-dex`、`#scr-gacha`、`#scr-upgrades`、`#scr-nursery`、`#scr-goals`、`#scr-league-mail`、`#scr-friends`、`#scr-rank`、`#scr-offline`、`#scr-news`、`#scr-support`、`#scr-settings`、`#scr-legal`、`#scr-profile`、`#scr-lobby`、`#scr-mod`、`#scr-nick`）。
