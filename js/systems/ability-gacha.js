@@ -41,20 +41,13 @@ G.AbilityGacha = (() => {
           if (!medal.leader && save.abilityEquipped[mon.dex] === undefined) save.abilityEquipped[mon.dex] = medal.id;
         } else refund = medal.leader ? G.Gacha.REFUND[rarity] : 300;
       } else {
-        shiny = G.Sprites.hasShiny(mon.dex) && Math.random() < G.Gacha.SHINY_RATE;
-        if (shiny && save.shiny[mon.dex]) {
-          const missing = pool(rarity, gen).filter(p => !G.AbilityDefs.medalsFor(p.dex).length && G.Sprites.hasShiny(p.dex) && !save.shiny[p.dex]);
-          if (missing.length) mon = G.U.pick(missing); else shiny = false;
-        }
-        const isOwned = !!save.owned[mon.dex];
-        const iv = G.DB.grant(mon.dex, 'ability-gacha');
-        ivUp = iv.ivUp;
-        isNew = shiny ? !save.shiny[mon.dex] : !isOwned;
-        if (shiny && isNew) save.shiny[mon.dex] = { at: Date.now(), from: 'ability-gacha' };
-        if (!isNew) refund = G.Gacha.REFUND[rarity] * (shiny ? 3 : 1);
+        const inv = G.DB.grantInvitation(mon.dex, save);
+        ivUp = inv.ivUp;
+        isNew = !inv.owned && inv.count === 1;
+        if (inv.owned) refund = inv.convertedCoins;
       }
       save.coins += refund;
-      out.push({ dex: mon.dex, rarity, shiny, isNew, refund, medal: medal && medal.id, ivUp });
+      out.push({ dex: mon.dex, rarity, shiny: false, invitation: !medal && !save.owned?.[mon.dex], isNew, refund, medal: medal && medal.id, ivUp });
     }
     save.stats.abilityPulls = (save.stats.abilityPulls || 0) + n;
     return out;

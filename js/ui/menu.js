@@ -173,17 +173,18 @@ G.MenuUI = (() => {
     grid.innerHTML = '';
     for (const p of G.DEX) {
       if (!inDexIndex(p)||!inDexFilter(p,s)) continue;
-      const own = !!s.owned[p.dex], sh = !!(s.shiny && s.shiny[p.dex]);
-      const reveal = own || dexGen === 'mega';
+      const own = !!s.owned[p.dex], inv = s.invites?.[p.dex] || 0, sh = !!(s.shiny && s.shiny[p.dex]);
+      const reveal = own || inv > 0 || dexGen === 'mega';
 
       const cell = document.createElement('div');
-      cell.className = 'cell' + (own ? '' : ' locked') + (p.dex === dexSel ? ' on' : '');
+      cell.className = 'cell' + (own || inv > 0 ? '' : ' locked') + (p.dex === dexSel ? ' on' : '');
       cell.dataset.dex = p.dex;
       if(dexGen==='mega'){cell.classList.add('mega-entry');cell.tabIndex=0;cell.setAttribute('role','button');cell.setAttribute('aria-label',G.T(p.name)+' · '+G.T(own?'Tengo':'Sin registrar'));}
       if (G.DifficultyUI && own) G.DifficultyUI.decorate(cell, p.dex);
       cell.insertAdjacentHTML('beforeend', `<span class="no">${String(p.dex).padStart(3, '0')}</span>`);
       if (p.dex === s.partner) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Compañero">${G.Icons.html('crown', 14)}</span>`);
       else if (sh) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Tienes su shiny">${G.Icons.html('shiny', 12)}</span>`);
+      else if (!own && inv > 0) cell.insertAdjacentHTML('beforeend', `<span class="badge-r" title="Invitación">✉${inv}</span>`);
       const useShiny = sh && p.dex === s.partner && s.partnerShiny;
       cell.appendChild(G.UI.spriteCanvas(p.dex, 92, 80, { scale: 2, silhouette: !reveal, shadow: own, shiny: useShiny }));
       cell.insertAdjacentHTML('beforeend', `<b>${reveal ? p.name : '???'}</b>${G.UI.stars(p.rarity, 9)}`);
@@ -203,23 +204,134 @@ G.MenuUI = (() => {
   // Variante que se está viendo en la ficha (normal o shiny).
   let viewShiny = false;
 
+  function openExpandedDetail(dex) {
+    const s = G.DB.save, p = G.DEX_BY[dex], own = !!s.owned[dex], inv = s.invites?.[dex] || 0;
+    const L = (es, en, zh) => G.I18n?.lang === 'zh' ? zh : G.I18n?.lang === 'en' ? en : es;
+    document.getElementById('dex-expanded-modal')?.remove();
+    const modal = document.createElement('div');
+    modal.id = 'dex-expanded-modal';
+    modal.style.cssText = 'position:fixed;inset:0;z-index:9200;display:flex;align-items:center;justify-content:center;background:rgba(8,12,24,.82);backdrop-filter:blur(6px);padding:16px;';
+    const card = document.createElement('section');
+    card.style.cssText = 'width:min(820px,100%);max-height:88vh;overflow:auto;background:linear-gradient(160deg,#162038,#0f172a);border:1px solid rgba(148,163,184,.3);border-radius:16px;padding:18px;color:#f1f5f9;';
+    const head = document.createElement('div');
+    head.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;';
+    head.innerHTML = `<div style="display:flex;align-items:center;gap:10px;"><h3 style="margin:0;">Nº ${String(p.dex).padStart(3, '0')} · ${G.T(p.name)}</h3>${G.UI.typeChips(p.types)}</div>`;
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'btn small ghost';
+    closeBtn.textContent = '×';
+    closeBtn.onclick = () => modal.remove();
+    head.appendChild(closeBtn);
+
+    const tabs = document.createElement('div');
+    tabs.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;';
+    const body = document.createElement('div');
+    body.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;';
+
+    let activeTab = 'stats';
+    const tabDefs = [
+      ['stats', L('Estadísticas e IV', 'Stats & IVs', '基础与个体')],
+      ['moves', L('Movimientos y equipo', 'Moves & Gear', '招式与装备')],
+      ['research', L('Investigación', 'Research', '宝可梦研究')]
+    ];
+
+    const renderTab = () => {
+      tabs.querySelectorAll('button').forEach(b => b.classList.toggle('gold', b.dataset.tab === activeTab));
+      body.replaceChildren();
+      if (activeTab === 'stats') {
+        const col1 = document.createElement('div');
+        const max = { hp: 183, atk: 2.3, spd: 137 };
+        const iv = own ? G.MonProgression.normalizeIV(G.DB.ivOf(dex)) : (s.inviteIVs?.[dex] ? G.MonProgression.normalizeIV(s.inviteIVs[dex]) : Array(8).fill(1));
+        const ivClass = value => value <= 10 ? 'iv-low' : value <= 20 ? 'iv-mid' : value <= 29 ? 'iv-high' : 'iv-perfect';
+        const bar = (label, v, m, txt, value) =>
+          `<div class="stat"><span>${label}</span><div class="bar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div><span>${txt}</span><span class="iv-value ${ivClass(value)}">IV ${value}</span></div>`;
+        col1.innerHTML =
+          bar(G.T('Vida'), p.hp, max.hp, p.hp, iv[0]) +
+          bar(G.T('At. físico'), p.atk, max.atk, '×' + p.atk.toFixed(2), iv[1]) +
+          bar(G.T('At. especial'), p.spa, max.atk, '×' + p.spa.toFixed(2), iv[3]) +
+          bar(G.T('Def. física'), p.defense, max.atk, '÷' + p.defense.toFixed(2), iv[4]) +
+          bar(G.T('Def. especial'), p.spdef, max.atk, '÷' + p.spdef.toFixed(2), iv[5]) +
+          bar(G.T('Velocidad'), p.spd, max.spd, p.spd, iv[2]) +
+          bar(G.T('Agilidad base'), G.MonProgression.agilityBase(p), 200, Math.round(G.MonProgression.agilityBase(p)), iv[6]) +
+          bar(G.T('Resistencia base'), G.MonProgression.staminaBase(p), 200, Math.round(G.MonProgression.staminaBase(p)), iv[7]) +
+          `<p class="note">${G.T('Stats base originales')}: ${Object.values(p.baseStats).join(' / ')}</p>`;
+        const col2 = document.createElement('div');
+        if (G.DifficultyUI && own) G.DifficultyUI.detail(col2, dex);
+        else col2.innerHTML = `<p class="note">${own ? '' : inv > 0 ? L('Tienes ' + inv + ' invitaciones. Los combates con invitación usan IV aleatorios.', 'You have ' + inv + ' invitations. Battles with invitations use random IVs.', '当前持有 ' + inv + ' 张邀请函；使用邀请函出战时个体值随机。') : L('Captura o consigue una bola dorada para desbloquearlo permanentemente.', 'Capture it in battle to unlock permanently.', '局内捕捉后可永久解锁该宝可梦。')}</p>`;
+        body.append(col1, col2);
+      } else if (activeTab === 'moves') {
+        const col1 = document.createElement('div');
+        col1.innerHTML = `<p style="font-size:14px;margin:0 0 8px">${G.T('Empieza con')} <b class="gold">${G.T(G.Moves.BY_ID[G.startMoveOf(dex)].name)}</b></p>
+          <p class="move-icons">${G.Moves.poolFor(p).map(id => `<span title="${G.T(G.Moves.BY_ID[id].name)} · ${G.Moves.classLabel(G.Moves.BY_ID[id])}">${G.Icons.html('move:' + id, 18)}</span>`).join('')}</p>`;
+        const col2 = document.createElement('div');
+        if (G.AbilityDefs.medalsFor(dex).length) G.GachaUI.renderEquipment(col2, dex);
+        if (G.EquipmentUI && own) G.EquipmentUI.render(col2, dex);
+        body.append(col1, col2);
+      } else {
+        const wrap = document.createElement('div');
+        wrap.style.gridColumn = '1 / -1';
+        if (!own) {
+          wrap.innerHTML = `<p class="note">${L('La investigación se desbloquea al poseer este Pokémon.', 'Research unlocks once you own this Pokémon.', '永久拥有该宝可梦后开启宝可梦研究任务。')}</p>`;
+        } else if (G.Research) {
+          for (const t of G.Research.tasksFor(dex, s)) {
+            const row = document.createElement('div');
+            row.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border-radius:10px;background:rgba(255,255,255,.04);margin-bottom:8px;';
+            row.innerHTML = `<div><b>${t.label}</b><div class="note">${t.rewardLabel} · ${t.value} / ${t.goal}</div></div>`;
+            const b = document.createElement('button');
+            b.className = 'btn small' + (t.done && !t.claimed ? ' gold' : '');
+            if (t.claimed) {
+              if (t.rewardType === 'title') {
+                const eq = s.profile?.title === t.titleText;
+                b.textContent = eq ? L('Equipado', 'Equipped', '已佩戴') : L('Equipar título', 'Equip Title', '佩戴称号');
+                b.disabled = eq;
+                b.onclick = () => { G.Research.equipTitle(t.titleText, s); renderTab(); };
+              } else {
+                const eq = s.profile?.avatar === t.rewardId;
+                b.textContent = eq ? L('Equipado', 'Equipped', '使用中') : L('Usar avatar', 'Use Avatar', '使用头像');
+                b.disabled = eq;
+                b.onclick = () => { G.Research.equipAvatar(t.rewardId, s); renderTab(); };
+              }
+            } else {
+              b.textContent = t.done ? L('Reclamar', 'Claim', '领取奖励') : L('En progreso', 'In progress', '未完成');
+              b.disabled = !t.done;
+              b.onclick = () => { G.Research.claim(dex, t.id, s); renderTab(); };
+            }
+            row.appendChild(b);
+            wrap.appendChild(row);
+          }
+        }
+        body.append(wrap);
+      }
+    };
+
+    for (const [id, label] of tabDefs) {
+      const b = document.createElement('button');
+      b.className = 'btn small';
+      b.dataset.tab = id;
+      b.textContent = label;
+      b.onclick = () => { activeTab = id; renderTab(); };
+      tabs.appendChild(b);
+    }
+
+    card.append(head, tabs, body);
+    modal.appendChild(card);
+    modal.onclick = e => { if (e.target === modal) modal.remove(); };
+    document.body.appendChild(modal);
+    renderTab();
+  }
+
   function showDetail(dex) {
     const s = G.DB.save;
     const p = G.DEX_BY[dex];
-    const own = !!s.owned[dex];
-    const reveal = own || dexGen === 'mega' && megaDexes.has(dex);
+    const own = !!s.owned[dex], inv = s.invites?.[dex] || 0;
+    const canUse = own || inv > 0;
+    const reveal = canUse || dexGen === 'mega' && megaDexes.has(dex);
     const hasSh = G.DB.ownsShiny(dex);
     const isPartner = dex === s.partner;
     if (!hasSh) viewShiny = false;
     else if (isPartner && dex !== showDetail.last) viewShiny = !!s.partnerShiny;
     showDetail.last = dex;
-
-    const max = { hp: 183, atk: 2.3, spd: 137 };
-    const iv = own ? G.MonProgression.normalizeIV(G.DB.ivOf(dex)) : Array(8).fill(1);
-    const ivClass = value => value <= 10 ? 'iv-low' : value <= 20 ? 'iv-mid' : value <= 29 ? 'iv-high' : 'iv-perfect';
-    const bar = (label, v, m, txt, value) =>
-      `<div class="stat"><span>${label}</span><div class="bar"><i style="width:${Math.min(100, v / m * 100)}%"></i></div><span>${txt}</span><span class="iv-value ${ivClass(value)}" title="${label} IV ${value}" aria-label="${label} IV ${value}">IV ${value}</span></div>`;
     const usingThis = isPartner && (!hasSh || !!s.partnerShiny === viewShiny);
+    const L = (es, en, zh) => G.I18n?.lang === 'zh' ? zh : G.I18n?.lang === 'en' ? en : es;
 
     const box = $('dex-detail');
     box.innerHTML = `
@@ -232,36 +344,27 @@ G.MenuUI = (() => {
         <h3>${reveal ? p.name : '???'}</h3>
         <div style="color:${G.Gacha.RARITY_COLOR[p.rarity]}">${G.UI.stars(p.rarity, 24)} ${G.Gacha.RARITY_NAME[p.rarity]}</div>
         <div style="margin:6px 0">${reveal ? G.UI.typeChips(p.types) : ''}</div>
+        <div class="note" style="margin:6px 0">${own ? L('Poseído permanentemente', 'Owned permanently', '已永久拥有') : inv > 0 ? L('Invitaciones: ', 'Invitations: ', '持有邀请函：') + inv : L('Sin registrar', 'Unregistered', '未拥有')}</div>
       </div>
-      ${own ? `
-        ${bar('Vida', p.hp, max.hp, p.hp, iv[0])}
-        ${bar('At. físico', p.atk, max.atk, '×' + p.atk.toFixed(2), iv[1])}
-        ${bar('At. especial', p.spa, max.atk, '×' + p.spa.toFixed(2), iv[3])}
-        ${bar('Def. física', p.defense, max.atk, '÷' + p.defense.toFixed(2), iv[4])}
-        ${bar('Def. especial', p.spdef, max.atk, '÷' + p.spdef.toFixed(2), iv[5])}
-        ${bar('Velocidad', p.spd, max.spd, p.spd, iv[2])}
-        ${bar(G.T('Agilidad base'),G.MonProgression.agilityBase(p),200,Math.round(G.MonProgression.agilityBase(p)),iv[6])}
-        ${bar(G.T('Resistencia base'),G.MonProgression.staminaBase(p),200,Math.round(G.MonProgression.staminaBase(p)),iv[7])}
-        <p class="note">${G.T('La agilidad acorta la recarga; la resistencia acelera la recuperación de PP.')}</p>
-        <p class="note">${G.T('Stats base originales')}: ${Object.values(p.baseStats).join(' / ')} (${G.T('PS / At. / Def. / At. Esp. / Def. Esp. / Vel.')})</p>
-        <p style="font-size:14px;margin:10px 0 4px">Empieza con <b class="gold">${G.Moves.BY_ID[G.startMoveOf(dex)].name}</b></p>
-        <p class="move-icons" title="Movimientos que puede aprender">
-          ${G.Moves.poolFor(p).map(id => `<span title="${G.Moves.BY_ID[id].name} · ${G.Moves.classLabel(G.Moves.BY_ID[id])}">${G.Icons.html('move:' + id, 16)}</span>`).join('')}</p>
-        ${usingThis
-          ? '<button class="btn grow" disabled style="width:100%">Es tu compañero</button>'
-          : `<button id="dex-pick" class="btn gold" data-sfx="confirm" style="width:100%">Elegir de compañero${viewShiny ? ' (shiny)' : ''}</button>`}
-      ` : `<p class="center" style="color:var(--muted)">Aún no lo tienes.<br>Consíguelo en el banner de <b class="gold">${GEN_NAMES[p.gen - 1]}</b>
-            o derrotándolo cuando salga shiny.</p>`}
+      ${canUse ? `
+        <p style="font-size:14px;margin:8px 0">Empieza con <b class="gold">${G.T(G.Moves.BY_ID[G.startMoveOf(dex)].name)}</b></p>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-top:10px;">
+          <button id="dex-expand" class="btn" style="width:100%">${L('Ver detalles completos', 'Expand Details', '展开详细信息')}</button>
+          ${usingThis
+            ? '<button class="btn grow" disabled style="width:100%">Es tu compañero</button>'
+            : `<button id="dex-pick" class="btn gold" data-sfx="confirm" style="width:100%">Elegir de compañero${viewShiny ? ' (shiny)' : ''}</button>`}
+        </div>
+      ` : `<p class="center" style="color:var(--muted)">${L('Consigue su invitación en el gacha o captúralo en combate.', 'Get an invitation from Gacha or capture it in battle.', '可在扭蛋获取邀请函，或在局内晕倒捕捉永久解锁。')}</p>
+           <button id="dex-expand" class="btn" style="width:100%;margin-top:8px;">${L('Ver detalles completos', 'Expand Details', '展开详细信息')}</button>`}
     `;
-    $('dex-big').style.setProperty('--stage-c', !own ? '#5b83d6' : viewShiny ? '#9ae6ff' : G.U.TYPE_COLOR[p.types[0]]);
+    $('dex-big').style.setProperty('--stage-c', !canUse ? '#5b83d6' : viewShiny ? '#9ae6ff' : G.U.TYPE_COLOR[p.types[0]]);
     $('dex-big').classList.toggle('shiny', own && viewShiny);
-    if (G.DifficultyUI && own) { G.DifficultyUI.decorate($('dex-big'), dex); G.DifficultyUI.detail(box, dex); }
-    G.UI.sprite($('dex-big'), dex, { lively: own, spin: own, silhouette: !reveal, scale: 3, hero: true, shiny: own && viewShiny });
-    if (G.AbilityDefs.medalsFor(dex).length) G.GachaUI.renderEquipment(box, dex);
-    if (G.EquipmentUI && own) G.EquipmentUI.render(box, dex);
+    if (G.DifficultyUI && own) G.DifficultyUI.decorate($('dex-big'), dex);
+    G.UI.sprite($('dex-big'), dex, { lively: canUse, spin: own, silhouette: !reveal, scale: 3, hero: true, shiny: own && viewShiny });
     box.querySelectorAll('.seg button').forEach(b => {
       b.onclick = () => { viewShiny = b.dataset.v === '1'; showDetail(dex); };
     });
+    $('dex-expand')?.addEventListener('click', () => openExpandedDetail(dex));
     const pick = $('dex-pick');
     if (pick) pick.onclick = () => {
       s.partner = dex;

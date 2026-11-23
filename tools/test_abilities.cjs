@@ -648,13 +648,13 @@ test('70th ability pull replaces legendary with one medal, duplicate refunds and
   result = G.AbilityGacha.pull(save, 1)[0]; assert.equal(result.refund, 300); assert.equal(save.coins, coins + 300);
   assert.equal(result.isNew, false);
 });
-test('ordinary Pokémon gacha still grants Pokémon, never consumes gems', () => {
+test('ordinary Pokémon gacha grants Invitation, never consumes gems', () => {
   const s = context(), { G } = s, save = G.DB.save;
   save.tickets.t1 = 1; save.pity[1] = 69;
   const pool = G.Gacha.pool(5, 1), i = pool.findIndex(p => p.dex === 150);
   s.random([(i + .01) / pool.length, .9]);
   const result = G.Gacha.pull(save, 1)[0]; assert.equal(result.dex, 150);
-  assert.ok(save.owned[150]); assert.equal(save.abilityGems, 10); assert.equal(Object.keys(save.abilityMedals).length, 0);
+  assert.equal(save.invites[150], 1); assert.equal(save.owned[150], undefined); assert.equal(save.abilityGems, 10); assert.equal(Object.keys(save.abilityMedals).length, 0);
 });
 
 test('Dragonite five-star rewards become either medal; duplicates refund, normal gacha still grants Dragonite', () => {

@@ -13,8 +13,7 @@ G.CardPacks=(()=>{
  const itemCard=u=>({id:'item:'+u.id,kind:'item',key:u.id,max:1,name:u.name,desc:u.desc,icon:u.icon,boss:!!u.boss});
  const legacy={id:'stat:cd',kind:'stat',key:'cd',max:8,name:G.Upgrades.BY.cd.name,desc:G.Upgrades.BY.cd.unit,icon:'clock'};
  const packs=[
-  {id:'beginner',price:800,name:{es:'Primeros pasos',en:'Beginner Pack',zh:'初心者包'},cards:[...G.Upgrades.LIST.filter(u=>u.id!=='cd').map(u=>({id:'stat:'+u.id,kind:'stat',key:u.id,max:u.max,name:u.name,desc:u.unit,icon:u.icon})),...G.STARTER_ITEMS.map(itemCard),{id:'tickets',kind:'tickets',max:10,name:{es:'100 vales',en:'100 Draw Tickets',zh:'抽奖券 ×100'},icon:'ticket'},{id:'gems',kind:'gems',max:10,name:{es:'20 gemas',en:'20 Ability Gems',zh:'特性宝石 ×20'},icon:'gem'},...themes.map(u=>({id:'theme:'+u.id,kind:'theme',key:u.id,max:1,name:u.name,icon:'star'}))]},
-  {id:'breakthrough',price:2700,name:{es:'Superación de movimientos',en:'Move Breakthrough Pack',zh:'招式突破卡包'},cards:[...skills,...(G.BREAKTHROUGH_ITEMS||[]).map(itemCard),...[...new Set(G.DEX.map(m=>G.ZAccess?.root(m.dex)||m.dex))].sort((a,b)=>a-b).map(d=>({id:'z:'+d,kind:'z',key:d,max:1,name:G.DEX_BY[d].name,desc:{es:'Permiso Z para toda la familia evolutiva',en:'Z permission for this entire evolution family',zh:'解锁整条进化链携带Z石的权限'},icon:'gem'}))]}
+  {id:'beginner',price:800,name:{es:'Primeros pasos',en:'Beginner Pack',zh:'初心者包'},cards:[...G.Upgrades.LIST.filter(u=>u.id!=='cd').map(u=>({id:'stat:'+u.id,kind:'stat',key:u.id,max:u.max,name:u.name,desc:u.unit,icon:u.icon})),...G.STARTER_ITEMS.map(itemCard),...skills,...(G.BREAKTHROUGH_ITEMS||[]).map(itemCard),{id:'tickets',kind:'tickets',max:10,name:{es:'100 vales',en:'100 Draw Tickets',zh:'抽奖券 ×100'},icon:'ticket'},{id:'gems',kind:'gems',max:10,name:{es:'20 gemas',en:'20 Ability Gems',zh:'特性宝石 ×20'},icon:'gem'},...themes.map(u=>({id:'theme:'+u.id,kind:'theme',key:u.id,max:1,name:u.name,icon:'star'}))]}
  ];
  packs.push({id:'long-march',price:5000,name:{es:'La larga marcha',en:'Long March Pack',zh:'长征之路卡包'},cards:[
   ['specialize','Especialización','Skill specialization','技能专精'],['link','Vínculo','Skill link','技能联结'],['breakthrough','Superación','Skill breakthrough','技能突破'],['pokemon-breakthrough','Ascenso Pokémon','Pokémon breakthrough','宝可梦突破']
@@ -22,7 +21,7 @@ G.CardPacks=(()=>{
  const legacyFruits=['type','skill','slot'].map(key=>({id:'fruit:'+key,kind:'expedition',key,max:1,name:{en:'Legacy '+key+' fruits',zh:'旧果实权限'},desc:{en:'Preserved category permission',zh:'保留原整类权限'},icon:'berry'}));
  packs.find(p=>p.id==='long-march').cards.push(...(G.ExpeditionCards?.FRUITS||[]),...(G.ExpeditionCards?.PERKS||[]),...(G.ExpeditionCards?.EVENTS||[]),...(G.ExpeditionCards?.ITEMS||[]).map(itemCard));
  const speedCards=[1.5,2,3].map(value=>({id:'speed:'+value,kind:'speed',key:value,max:1,name:{es:'Velocidad '+value+'×',en:value+'× Speed',zh:value+'倍速权限'},desc:{es:'Desbloquea esta velocidad de juego',en:'Unlocks this game speed',zh:'解锁此游戏速度，可在操作设置中选择'},icon:'clock'}));
- packs[0].cards.push(...speedCards.slice(0,2));packs[1].cards.push(speedCards[2]);
+ packs[0].cards.push(...speedCards);
  const cards=packs.flatMap(p=>p.cards),BY=Object.assign(Object.create(null),Object.fromEntries([...cards,legacy,...legacyFruits].map(c=>[c.id,c])));
  const packBy=Object.assign(Object.create(null),Object.fromEntries(packs.map(p=>[p.id,p])));
  const available=(s,p,c)=>Math.max(0,c.max-(p.taken[c.id]||0))*(c.kind==='z'&&G.ZAccess?.allowed(s,c.key)?0:1);
@@ -38,7 +37,9 @@ G.CardPacks=(()=>{
    p.refundDue=Math.max(0,Number(p.refundDue)||0);const credit=Math.min(p.refundDue,Math.max(0,1e8-(s.coins||0)));s.coins=(s.coins||0)+credit;p.refundDue-=credit;
    const sourceTaken={...p.taken};for(const c of G.ExpeditionCards?.FRUITS||[])for(const kind of ['type','skill','slot'])if(sourceTaken['fruit:'+kind]&&c.id.startsWith('fruit:'+kind+':'))sourceTaken[c.id]=1;
    const taken={};for(const c of [...cards,legacy,...legacyFruits])taken[c.id]=Math.max(0,Math.min(c.max,Math.floor(+sourceTaken?.[c.id]||0)));p.taken=taken;
+   const legacyTokens=Math.max(0,Math.floor(+p.tokens?.breakthrough||0));
    p.tokens=Object.fromEntries(packs.map(pack=>[pack.id,Math.max(0,Math.min(1e6,Math.floor(+p.tokens?.[pack.id]||0)))]));
+   if(legacyTokens)p.tokens.beginner=Math.min(1e6,(p.tokens.beginner||0)+legacyTokens);
    if(p.skillMigrated!==1){const bonus=taken['stat:cd']*.03,levels=Math.min(6,Math.floor((bonus+1e-9)/.05));taken['skill:agility']=levels;p.legacyAgility=Math.max(0,bonus-levels*.05);p.skillMigrated=1;}
    p.legacyAgility=Math.max(0,Math.min(.24,Number(p.legacyAgility)||0));
    p.disabled=Object.fromEntries(items.filter(i=>p.disabled?.[i.id]===true).map(i=>[i.id,true]));
@@ -104,6 +105,6 @@ G.CardPacks=(()=>{
  const speedAllowed=(s,value)=>value===1||speedCards.some(c=>c.key===value&&normalize(s).taken[c.id]>0);
  const allowedSpeeds=s=>[1,...speedCards.filter(c=>normalize(s).taken[c.id]>0).map(c=>c.key)];
  function grantToken(s,id,n=1){const p=normalize(s);if(!packBy[id]||!Number.isSafeInteger(n)||n<1)return false;p.tokens[id]=Math.min(1e6,p.tokens[id]+n);return true;}
- function rollBoss(rift=false,rng=Math.random){return rng()<(rift?.2:.1)?(rng()<.75?'beginner':'breakthrough'):null;}
+ function rollBoss(rift=false,rng=Math.random){return rng()<(rift?.2:.1)?'beginner':null;}
  return {settlement,resume,apply,reconcile,drawMany,speedAllowed,allowedSpeeds,grantToken,rollBoss,legacyFruits,PRICE,packs,packBy,skills,items,cards,BY,themes,local,normalize,levels,remaining,draw,choose,toggle,equip,enabled};
 })();

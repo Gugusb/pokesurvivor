@@ -4399,3 +4399,12 @@ G.I18n.addChinese({
   "Si tu rango actual es inferior a la dificultad elegida, obtienes +1 ★ adicional al completar la expedición.": "若当前段位低于所选难度，通关远征结算时将额外获得 +1 ★。",
   "Puse una marca de aviso en el mapa para que nadie salga en R5 hacia una ruta N3 sin darse cuenta. Quien cocina revisa las estrellas; yo guardo una estrella extra brillante para cuando nos atrevemos con una ruta más alta.": "我在地图旁夹好提示条啦，免得 R5 时迷迷糊糊跑进 N3 路线白打一趟。做饭的那家伙核对星数，我把那颗亮晶晶的跨级加星留给敢挑战高难度的咱们。"
 });
+
+G.I18n.addChinese({
+  "Captura en combate, invitaciones e investigación · v0.43.0-alpha.62": "局内捕捉、邀请函与宝可梦研究 · v0.43.0-alpha.62",
+  "Los enemigos derrotados pueden quedar debilitados (0,02%/0,2%/100%, salvo Arceus) durante 20 s; quédate 5 s junto a ellos para abrir la captura con tus Poké Balls.": "击败普通/精英/非阿尔宙斯 BOSS 敌人分别有 0.02%/0.2%/100% 概率使其晕倒 20 秒；在其位置停留 5 秒即可使用库存宝可梦球进入独立捕捉界面。",
+  "Las expediciones incluyen 1 Zona de Grieta por ciclo con un jefe legendario o Mega; derrótalo a tiempo para intentar capturarlo.": "远征每个轮次固定刷新 1 个“裂隙区域”，挑战神兽/幻兽或 Mega BOSS；限时内击败即可靠近捕捉。",
+  "El gacha entrega invitaciones (y los repetidos o poseídos se convierten en monedas). Capturar una versión shiny desbloquea el aspecto shiny de toda su familia.": "扭蛋改为发放“邀请函”并移除普通出闪，出战未拥有宝可梦会消耗 1 张邀请函并使用随机个体；获得闪光将解锁该家族全部形态的闪光皮肤。",
+  "El paquete de Superación se integra en Primeros Pasos sin cartas Z, se retira el desbloqueo Z por duplicados y llegan la Pokédex expandida y la Investigación Pokémon con títulos y avatares.": "移除累计宝可梦解锁 Z 招式与突破卡包中的 Z 招式并将剩余内容并入初心者包；图鉴新增分栏详情界面，并新增可解锁称号与头像的宝可梦研究系统。",
+  "Preparé una bolsita aparte para las Poké Balls y otra para las invitaciones. Quien cocina ordenó los archivos de investigación; yo ya estoy probando cuál título queda mejor junto a la firma.": "我把精灵球和邀请函分装进两个小口袋啦。做饭的那家伙整理好了研究档案，我已经开始挑哪个称号配头像更好看咯。"
+});

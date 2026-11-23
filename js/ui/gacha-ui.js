@@ -73,8 +73,7 @@ G.GachaUI = (() => {
     $('gacha-rates').innerHTML = '<h3>Probabilidades</h3>' + G.Gacha.RATES.slice().reverse().map(([r, w]) => `
       <div><span style="color:${G.Gacha.RARITY_COLOR[r]}">${G.UI.stars(r, 10)} ${G.Gacha.RARITY_NAME[r]}</span>
       <span>${w}% · ${G.Gacha.pool(r, gen).length}</span></div>`).join('') +
-      `<div><span>${G.Icons.html('shiny', 12)} Shiny</span><span>1%</span></div>
-       <p class="note">${G.T('El gacha conserva sus recompensas, garantías y premios shiny.')}</p>`;
+      `<p class="note">${G.T('Las tiradas entregan invitaciones para usar al Pokémon como capitán; si ya lo tienes, se convierten en monedas.')}</p>`;
 
     const t = s.tickets;
     $('cost-1').innerHTML = `${G.Icons.html('ticket', 18)} 1`;
@@ -88,10 +87,12 @@ G.GachaUI = (() => {
   }
 
   G.I18n.add({
-    'El gacha conserva sus recompensas, garantías y premios shiny.': 'The gacha keeps its rewards, pity systems and shiny prizes.'
+    'Las tiradas entregan invitaciones para usar al Pokémon como capitán; si ya lo tienes, se convierten en monedas.': 'Pulls grant invitations to deploy that Pokémon as captain; duplicates convert into PokéCoins.',
+    '¡BOLA DORADA!': 'GOLDEN BALL!', 'Invitación': 'Invitation', '¡NUEVA INVITACIÓN!': 'NEW INVITATION!'
   });
   G.I18n.addChinese({
-    'El gacha conserva sus recompensas, garantías y premios shiny.': '抽卡奖励、保底和异色奖励均沿用。'
+    'Las tiradas entregan invitaciones para usar al Pokémon como capitán; si ya lo tienes, se convierten en monedas.': '抽卡获得对应宝可梦的“邀请函”（可作为队长出战）；若已拥有该宝可梦，则自动转化为宝可梦币。',
+    '¡BOLA DORADA!': '金色精灵球！', 'Invitación': '邀请函', '¡NUEVA INVITACIÓN!': '新邀请函！'
   });
 
   const wait = ms => new Promise(r => setTimeout(r, ms));
@@ -167,6 +168,33 @@ G.GachaUI = (() => {
     G.UI.refreshCoins();
   }
 
+  async function playGoldenEvolution(r) {
+    const mon = G.DEX_BY[r.dex];
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle,rgba(255,215,0,.35),rgba(10,12,24,.95));color:#fff;text-align:center;animation:fadeIn .25s ease';
+    const ball = document.createElement('div');
+    ball.style.cssText = 'width:96px;height:96px;border-radius:50%;border:4px solid #ffe066;background:linear-gradient(180deg,#ffd700 48%,#222 48%,#222 54%,#fff7cc 54%);box-shadow:0 0 40px #ffd700;transition:transform .5s ease,box-shadow .5s ease';
+    const label = document.createElement('div');
+    label.style.cssText = 'margin-top:20px;font-size:20px;font-weight:700;letter-spacing:1px;color:#ffe680';
+    label.textContent = G.T('Invitación') + '…';
+    overlay.append(ball, label);
+    document.body.appendChild(overlay);
+    G.Audio.sfx('legend');
+    await wait(350);
+    ball.style.transform = 'scale(1.25) rotate(12deg)';
+    ball.style.boxShadow = '0 0 70px #fff4a3';
+    label.textContent = G.T('¡BOLA DORADA!');
+    await wait(550);
+    ball.style.transform = 'scale(0.1)';
+    ball.style.opacity = '0';
+    await wait(250);
+    ball.replaceWith(G.UI.spriteCanvas(r.dex, 160, 160, { lively: true, scale: 3, shiny: !!r.shiny }));
+    label.textContent = (r.shiny ? '★ ' : '') + mon.name;
+    G.Audio.sfx(r.shiny ? 'shinyGet' : 'reveal', { rarity: 5 });
+    await wait(1100);
+    overlay.remove();
+  }
+
   async function pull(n, use = 't1') {
     if (busy) return;
     const res = mode === 'ability' ? G.AbilityGacha.pull(G.DB.save, n, gen) : G.Gacha.pull(G.DB.save, n, gen, use);
@@ -188,21 +216,26 @@ G.GachaUI = (() => {
     slot.style.display = 'none';
 
     for (const r of res) {
+      if (r.goldenBall) await playGoldenEvolution(r);
       const mon = G.DEX_BY[r.dex];
       const c = document.createElement('div');
-      c.className = 'pcard r' + r.rarity + (r.shiny ? ' shiny' : '');
-      c.style.setProperty('--rc', r.shiny ? '#9ae6ff' : G.Gacha.RARITY_COLOR[r.rarity]);
+      c.className = 'pcard r' + r.rarity + (r.shiny ? ' shiny' : '') + (r.goldenBall ? ' golden-ball' : '');
+      c.style.setProperty('--rc', r.goldenBall ? '#ffd700' : r.shiny ? '#9ae6ff' : G.Gacha.RARITY_COLOR[r.rarity]);
       c.innerHTML = `<div class="stars">${G.UI.stars(r.rarity, 24)}</div>`;
       if (r.medal) c.appendChild(medalArt(r.dex));
       else {
         const art = document.createElement('div'); art.className = 'iv-improved-art';
-        art.appendChild(G.UI.spriteCanvas(r.dex, 132, 120, { lively: r.rarity >= 4 || r.shiny, scale: 2, shiny: r.shiny }));
+        art.appendChild(G.UI.spriteCanvas(r.dex, 132, 120, { lively: r.rarity >= 4 || r.shiny || r.goldenBall, scale: 2, shiny: r.shiny }));
         if (r.ivUp) art.insertAdjacentHTML('beforeend', '<span class="iv-up" title="' + G.T('IV mejorados') + '" aria-label="' + G.T('IV mejorados') + '">↑</span>');
         c.appendChild(art);
       }
-      const tag = r.isNew
-        ? `<span class="new">${r.shiny ? '¡SHINY NUEVO!' : '¡NUEVO!'}</span>`
-        : `Repetido · <span class="coin"></span> +${r.refund}`;
+      const tag = r.goldenBall
+        ? `<span class="new">${r.shiny ? '¡SHINY NUEVO!' : G.T('¡BOLA DORADA!')}</span>`
+        : r.invitation
+          ? `<span class="new">${r.isNew ? G.T('¡NUEVA INVITACIÓN!') : G.T('Invitación') + ' ×' + (r.invites || 1)}</span>`
+          : r.isNew
+            ? `<span class="new">¡NUEVO!</span>`
+            : `Repetido · <span class="coin"></span> +${r.refund}`;
       const medal = r.medal && G.AbilityDefs.BY_ID[r.medal];
       c.insertAdjacentHTML('beforeend', `<b>${r.shiny ? G.Icons.html('shiny', 12) + ' ' : ''}${mon.name}${medal ? ' · ' + medal.name : ''}</b>${medal ? '<small>Medalla de habilidad</small>' : ''}<div class="tag">${tag}</div>`);
       out.appendChild(c);

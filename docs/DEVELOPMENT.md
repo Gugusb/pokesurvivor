@@ -34,6 +34,16 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.62 — 2026-11-23
+
+- 重构宝可梦获取、捕捉、扭蛋、图鉴与研究系统：
+  - 新增局内晕倒宝可梦与独立捕捉界面（[js/systems/capture.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/systems/capture.js)、[js/ui/capture-ui.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/ui/capture-ui.js)）：击败普通/精英/非阿尔宙斯 BOSS 分别有 0.02%/0.2%/100% 概率晕倒 20s（每场上限 1/3/1），停留 5s 后暂停进入捕捉动画，消耗库存宝可梦球捕捉（1 次机会），成功后永久解锁该家族；移除旧版击败概率直接入库逻辑。
+  - 新增远征“裂隙区域”事件（[js/systems/expedition-rules.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/systems/expedition-rules.js)、[js/systems/expedition.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/systems/expedition.js)）：每轮次固定刷新 1 个，BOSS 必为神兽/幻兽或 Mega 宝可梦，超时驱逐、击败后可捕捉。
+  - 扭蛋系统改造（[js/systems/gacha.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/systems/gacha.js)、[js/systems/ability-gacha.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/systems/ability-gacha.js)、[js/ui/gacha-ui.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/ui/gacha-ui.js)）：移除常规出闪，改为发放“邀请函”并记录最大个体值；使用邀请函出战消耗 1 张且使用随机个体值；拥有宝可梦后库存/新增邀请函转为宝可梦币；0.1% 隐藏概率进化为金色精灵球直接解锁并有 20% 概率闪光，闪光解锁整条家族闪光皮肤。
+  - 移除 `ZAccess.acquired` 累计重复解锁 Z 招式；移除招式突破卡包中的 Z 招式并将剩余内容并入初心者卡包（[js/systems/card-packs.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/systems/card-packs.js)）。
+  - 优化图鉴界面为精简信息 + 分栏详情弹窗（[js/ui/menu.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/ui/menu.js)），并新增宝可梦研究系统（[js/systems/research.js](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/js/systems/research.js)）用于解锁和佩戴称号、头像。
+- 新增并运行 [tools/test_capture_gacha_research.cjs](file:///C:/Users/Gugusb/.gemini/antigravity/worktrees/PokeSurvivor-Next/pokemon_skill_pools_refactor/tools/test_capture_gacha_research.cjs)（4/4 通过）、`test_card_packs.cjs`（6/6 通过）、`test_league_rank.cjs`（9/9 通过）与 `test_abilities.cjs`；执行 `node tools/build.js` 与 `node tools/export_data.js`。
+
 ### v0.43.0-alpha.61 — 2026-11-23
 
 - 优化联盟段位结算与难度提示规则：

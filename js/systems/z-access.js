@@ -38,14 +38,12 @@ G.ZAccess = (() => {
     for (const k of Object.keys(s.zAccess))
       if (!G.DEX_BY[k] || root(k) !== Number(k) || !s.zAccess[k])
         delete s.zAccess[k];
-    // Preserve the capabilities of old development crystals once, not forever.
+    // Legacy duplicate Z-unlocking removed; retain already unlocked zAccess records.
     if (!s.zAccessMigrated) {
       if (TYPES.some((t) => s.zStones?.[t]))
         for (const d of Object.keys(s.owned || {})) unlock(s, d, "legacy");
       s.zAccessMigrated = true;
     }
-    for (const [d, n] of Object.entries(s.zDuplicates))
-      if (n >= 6) unlock(s, d, "duplicates");
   }
   function unlock(s, dex, from = "dev") {
     if (!G.DEX_BY[dex]) return false;
@@ -56,19 +54,8 @@ G.ZAccess = (() => {
     return fresh;
   }
   const allowed = (s, dex) => !!s?.zAccess?.[root(dex)];
-  function acquired(s, dex, rng = Math.random) {
-    normalize(s);
-    const familyOwned = Object.keys(s.owned || {}).some(
-      (d) => root(d) === root(dex),
-    );
-    if (!familyOwned) return false;
-    const r = root(dex);
-    s.zDuplicates[r] = Math.min(6, (s.zDuplicates[r] || 0) + 1);
-    return (
-      !allowed(s, dex) &&
-      (s.zDuplicates[r] >= 6 || rng() < 0.2) &&
-      unlock(s, dex, "duplicates")
-    );
+  function acquired() {
+    return false;
   }
   function merge(a, b) {
     const s = {

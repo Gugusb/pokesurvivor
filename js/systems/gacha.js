@@ -25,9 +25,11 @@ G.Gacha = (() => {
   }
   const RATES = [[1, 45], [2, 30], [3, 17], [4, 6.5], [5, 1.5]];
   const PITY_5 = 70;
-  const SHINY_RATE = 1 / 100;
+  const SHINY_RATE = 0;
+  const GOLDEN_BALL_RATE = 0.001;
+  const GOLDEN_SHINY_RATE = 0.2;
   const REFUND = { 1: 15, 2: 30, 3: 60, 4: 120, 5: 300 };
-  let forceShiny = 0;           // para pruebas y vídeos: las N próximas salen shiny
+  let forceGolden = 0;
 
   const RARITY_NAME = { 1: 'Común', 2: 'Poco común', 3: 'Rara', 4: 'Épica', 5: 'Legendaria' };
   const RARITY_COLOR = { 1: '#9fb1c9', 2: '#5fe08a', 3: '#4fb4ff', 4: '#c47bff', 5: '#ffcb3d' };
@@ -98,35 +100,48 @@ G.Gacha = (() => {
 
       const { rarity, list } = poolNear(want, gen);
       if (rarity === 5) save.pity[gen] = 0;
-      let mon = G.U.pick(list);
-      let shiny = G.Sprites.hasShiny(mon.dex) && (forceShiny > 0 ? (forceShiny--, true) : Math.random() < SHINY_RATE);
-      // Los shiny no se repiten: si ya tienes ese, sale otro de la misma rareza
-      // cuyo shiny te falte; si los tienes todos, sale normal.
-      if (shiny && save.shiny[mon.dex]) {
-        const missing = list.filter(p => G.Sprites.hasShiny(p.dex) && !save.shiny[p.dex]);
-        if (missing.length) mon = G.U.pick(missing);
-        else shiny = false;
+      const mon = G.U.pick(list);
+      const goldenBall = forceGolden > 0 ? (forceGolden--, true) : Math.random() < GOLDEN_BALL_RATE;
+      let shiny = false, isNew = false, refund = 0, ivUp = false, ivRaised = [], invitation = false;
+
+      if (goldenBall) {
+        shiny = G.Sprites.hasShiny(mon.dex) && Math.random() < GOLDEN_SHINY_RATE;
+        const gRes = shiny
+          ? G.DB.grantShiny(mon.dex, 'golden-ball', save)
+          : G.DB.grantFamily(mon.dex, 'golden-ball', save);
+        isNew = !!gRes?.isNew || !!gRes?.shinyNew;
+        ivUp = !!gRes?.ivUp;
+        ivRaised = gRes?.ivRaised || [];
+        if (gRes?.convertedCoins) refund = gRes.convertedCoins;
+        if (!isNew && !refund) {
+          refund = REFUND[rarity];
+          save.coins += refund;
+        }
+      } else {
+        const inv = G.DB.grantInvitation(mon.dex, save);
+        ivUp = !!inv.ivUp;
+        ivRaised = inv.ivRaised || [];
+        if (inv.owned) {
+          refund = inv.convertedCoins;
+          isNew = false;
+        } else {
+          invitation = true;
+          isNew = inv.count === 1;
+        }
       }
 
-      const isOwned = !!save.owned[mon.dex];
-      const iv = G.DB.grant(mon.dex, 'gacha');
-      let isNew = false, refund = 0;
-      if (shiny) {
-        isNew = !save.shiny[mon.dex];
-        if (isNew) save.shiny[mon.dex] = { at: Date.now(), from: 'gacha' };
-        else refund = REFUND[rarity] * 3;
-      } else {
-        isNew = !isOwned;
-        if (!isNew) refund = REFUND[rarity];
-      }
-      save.coins += refund;
-      out.push({ dex: mon.dex, rarity, shiny, isNew, refund, ivUp: iv.ivUp, ivRaised: iv.ivRaised });
+      if (shiny) save.stats.shinies = (save.stats.shinies || 0) + 1;
+      out.push({
+        dex: mon.dex, rarity, shiny, goldenBall, invitation, isNew, refund,
+        ivUp, ivRaised, invites: save.invites?.[mon.dex] || 0
+      });
     }
     save.stats.pulls = (save.stats.pulls || 0) + n;
     return out;
   }
 
-  return { debugForceShiny(n = 1) { forceShiny = n; },
-           costOf, RATES, PITY_5, SHINY_RATE, REFUND, RARITY_NAME, RARITY_COLOR, BANNERS,
+  return { debugForceShiny() {},
+           debugForceGolden(n = 1) { forceGolden = n; },
+           costOf, RATES, PITY_5, SHINY_RATE, GOLDEN_BALL_RATE, GOLDEN_SHINY_RATE, REFUND, RARITY_NAME, RARITY_COLOR, BANNERS,
            pool, featured, pull };
 })();

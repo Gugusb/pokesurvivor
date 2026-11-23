@@ -5,7 +5,9 @@ G.ExpeditionRules = (() => {
   const weights=[['battle',10],['elite',2],['shop',5],['rest',5],['training',3]];
   function roll(rng=Math.random,tier=4,events={}){const base=G.EconomyConfig?Object.entries(G.EconomyConfig.eventWeights):weights,shop=base.find(([id])=>id==='shop')?.[1]||0,item=events['item-shop']?shop*.2:0,peddler=events.peddler?shop*.1:0;const table=base.map(([id,w])=>[id,id==='shop'?w-item-peddler:w]).concat([['item-shop',item],['peddler',peddler]]).filter(([id,w])=>w>0&&(G.LeagueRank?.allows(id,tier)??true));let n=rng()*table.reduce((n,[,w])=>n+w,0);for(const [id,w]of table){n-=w;if(n<0)return id;}return table[0][0];}
   function matrix(cycle=1,rng=Math.random,tier=4,events={}){
-    return Array.from({length:days()+1},(_,r)=>Array.from({length:COLS},(_,c)=>({kind:r===0?'start':r===days()?'boss':roll(rng,tier,events),row:r,col:c,day:(cycle-1)*days()+r})));
+    const d=days(),m=Array.from({length:d+1},(_,r)=>Array.from({length:COLS},(_,c)=>({kind:r===0?'start':r===d?'boss':roll(rng,tier,events),row:r,col:c,day:(cycle-1)*d+r})));
+    if(d>1){const rr=1+Math.floor(rng()*(d-1)),rc=Math.floor(rng()*COLS);m[rr][rc].kind='rift';}
+    return m;
   }
   const reachable=(row,col,r,c)=>r===row+1&&c>=0&&c<COLS&&Math.abs(c-col)<=1;
   const cycleOf=day=>Math.floor(Math.max(0,day-1)/days())+1;
@@ -14,8 +16,8 @@ G.ExpeditionRules = (() => {
   const wave=(day,kind='battle')=>{
     const cycle=cycleOf(day),within=(day-1)%days()+1,boost=Math.pow(3,cycle-1);
     const originalBase=Math.min(60,24+day*1.2),t=G.EconomyConfig.battleTiming,extra=t.baseExtensionSeconds;
-    const standardDuration=kind==='elite'?t.eliteEnrageAt+extra:kind==='boss'?t.bossEnrageAt+extra:originalBase+extra;
-    const duration=kind==='elite'?t.eliteSeconds+extra:kind==='boss'?t.bossSeconds+extra:standardDuration+FINAL_CHASE;
+    const standardDuration=kind==='elite'?t.eliteEnrageAt+extra:kind==='boss'||kind==='rift'?t.bossEnrageAt+extra:originalBase+extra;
+    const duration=kind==='elite'?t.eliteSeconds+extra:kind==='boss'||kind==='rift'?t.bossSeconds+extra:standardDuration+FINAL_CHASE;
     const spawnDuration=Math.max(t.minSpawnWindowSeconds,originalBase*t.spawnWindowRatio);
     return {count:2*Math.round(12+Math.min(72,day*2)),standardDuration,duration,enrageAt:standardDuration,spawnDuration,
       hp:5*(1+.8*Math.pow(within/20,1.7))*boost,dmg:(1+.35*Math.pow(within/20,1.3))*Math.pow(1.8,cycle-1),

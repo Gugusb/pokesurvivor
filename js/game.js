@@ -103,7 +103,8 @@ G.Game = (() => {
   // ---------------- run ----------------
 
   /** @param coop  { seed, host, members } para una partida en grupo */
-  let startingRun=false;
+  let startingRun=false, inviteRunIVs=null;
+  const inviteIVsFor = dex => inviteRunIVs?.[dex] || inviteRunIVs?.default || null;
   async function startRun(coop = null, expeditionReady = false) {
     if(!coop&&!expeditionReady){G.Expedition.setup();return;}
     G.Expedition.reset();
@@ -122,6 +123,18 @@ G.Game = (() => {
       catch(e){G.UI.toast(e.message,6000);G.MenuUI.open();return;}
       finally{startingRun=false;}
     }
+    if (!G.DB.owns(save.partner)) {
+      if (!G.DB.consumeInvitation(save.partner)) {
+        G.UI.toast(G.I18n?.lang === 'zh' ? '需要拥有该宝可梦或持有邀请函才能出战。' : G.I18n?.lang === 'en' ? 'You need to own this Pokémon or have an invitation.' : 'Necesitas poseer este Pokémon o tener una invitación.', 3500);
+        G.MenuUI.open();
+        return;
+      }
+      const randIv = Array.from({ length: 8 }, () => 1 + Math.floor(Math.random() * 31));
+      inviteRunIVs = { default: randIv, [save.partner]: randIv };
+      G.DB.commit(true);
+    } else {
+      inviteRunIVs = null;
+    }
     const evolutionPath = G.MonProgression ? G.MonProgression.pathFor(save.partner) : [startDex];
     const mon = G.DEX_BY[startDex];
     challenge = G.Difficulty ? G.Difficulty.begin(save, mon.dex, coop?.difficulty ?? (coop ? 1 : undefined)) : null;
@@ -136,6 +149,7 @@ G.Game = (() => {
     G.Pickups.clear();
     G.Spawner.reset();
     G.Rift.reset();
+    G.Capture?.reset();
     G.Judgment.reset();
     G.Events.reset();
     G.Weather.reset();
@@ -850,6 +864,7 @@ G.Game = (() => {
       if (deathT > 1.3) { deathT = 0; endRun(true); }
       return;
     }
+    if (G.CaptureUI?.isOpen()) return;
     time += dt;
     if(G.FailureProtection?.advance(pl,G.DB.save,time,!tampered&&!!challenge?.eligible)){
       if(G.DB.mode==='server')G.Server.heartbeat().catch(()=>{});else G.DB.commit(true);
@@ -887,6 +902,7 @@ G.Game = (() => {
     G.Combat.resolve(dt, pl, time);
     G.Combat.updateFields(dt);
     G.Pickups.update(dt, G.Squad?.active?[pl]:all, onCollect);
+    G.Capture?.update(dt, pl);
     G.Hazards.update(dt);
     G.Interact.update(dt, pl);
     if(!G.Expedition?.active){
@@ -940,6 +956,7 @@ G.Game = (() => {
     G.TypeBonds?.drawGround(ctx);
     if (G.ZMoves) G.ZMoves.drawGround(ctx);
     G.Pickups.draw(ctx);
+    G.Capture?.draw(ctx);
 
     // Todo lo que tiene "pies" se ordena por Y: objetos, enemigos, jugador.
     const items = [];
@@ -1104,7 +1121,7 @@ G.Game = (() => {
   })();
 
   return {
-    checkpoint,restoreCheckpoint,suspendExpedition,expeditionPause,expeditionResume,expeditionGainXp,expeditionEnd,expeditionDefeat,expeditionVictory, init, startRun, everyone, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
+    checkpoint,restoreCheckpoint,suspendExpedition,expeditionPause,expeditionResume,expeditionGainXp,expeditionEnd,expeditionDefeat,expeditionVictory, init, startRun, everyone, inviteIVsFor, scoreKill,recordLoot,recordServerLoot,scoreEvent,scoreCounts,runScore, levelXp, flash, hitStop, offerBond, offerSpecialChoice, setSpeed,cycleSpeed, runClean:clean, get challenge() { return challenge; }, get speed() { return runSpeed; },
     debugMark() { tampered = true; },
     /** Para pruebas: salta el reloj de la run. */
     debugTime(t) { tampered = true; time = t; },

@@ -74,7 +74,13 @@ G.DB = (() => {
       created: Date.now(),
       updated: Date.now(),    // última modificación (para fusionar)
       coins: START_COINS,
-      owned: {},              // dex -> { at, from: 'starter'|'gacha'|'wild' }
+      owned: {},              // dex -> { at, from: 'starter'|'gacha'|'capture'|'golden-ball' }
+      invites: {},            // dex -> count of invitation cards
+      inviteIVs: {},          // dex -> 8-stat max IV array recorded from invitations before permanent ownership
+      pokeballs: { pokeball: 5, greatball: 2, ultraball: 1 },
+      research: {},           // rootDex -> { battles, kills, bosses, wins, maxLv, claimed: {} }
+      titles: [],             // unlocked custom title IDs
+      avatars: [],            // unlocked avatar dex IDs
       shiny: {},              // dex -> { at, from } — variantes shiny conseguidas
       partner: null,          // dex del Pokémon con el que juegas
       partnerShiny: false,    // jugar con su versión shiny (si la tienes)
@@ -103,7 +109,7 @@ G.DB = (() => {
       evoMoves: {},           // id -> fecha: movimientos evolucionados alguna vez
       ach: {},                // id -> fecha: logros conseguidos
       missions: {},           // misiones del día / semana (systems/progress.js)
-      profile: { favs: [], title: '' },   // perfil público: 3 favoritos y título
+      profile: { favs: [], title: '', avatar: 0 },   // perfil público: 3 favoritos, título y avatar
       stats: { runs: 0, bestScore: 0, bestTime: 0, bestLevel: 0, totalKills: 0, pulls: 0, coinsEarned: 0, shinies: 0,
                bossesTotal: 0, riftWins: 0, evolutions: 0, missionsDone: 0, groupRuns: 0, bestGroupTime: 0, abilityPulls: 0 }
     };
@@ -184,6 +190,24 @@ G.DB = (() => {
     }
     for (const entry of Object.values(s.owned || {}))
       if (entry && G.MonProgression) entry.iv = G.MonProgression.normalizeIV(entry.iv);
+    if (!s.invites || typeof s.invites !== 'object' || Array.isArray(s.invites)) s.invites = {};
+    for (const d of Object.keys(s.invites)) {
+      const cnt = Math.max(0, Math.floor(+s.invites[d] || 0));
+      if (!G.DEX_BY?.[d] || cnt <= 0 || s.owned?.[d]) delete s.invites[d];
+      else s.invites[d] = cnt;
+    }
+    if (!s.inviteIVs || typeof s.inviteIVs !== 'object' || Array.isArray(s.inviteIVs)) s.inviteIVs = {};
+    for (const d of Object.keys(s.inviteIVs)) {
+      if (!G.DEX_BY?.[d] || s.owned?.[d]) delete s.inviteIVs[d];
+      else if (G.MonProgression) s.inviteIVs[d] = G.MonProgression.normalizeIV(s.inviteIVs[d]);
+    }
+    if (!s.pokeballs || typeof s.pokeballs !== 'object' || Array.isArray(s.pokeballs)) s.pokeballs = { pokeball: 5, greatball: 2, ultraball: 1 };
+    for (const k of ['pokeball', 'greatball', 'ultraball']) s.pokeballs[k] = Math.max(0, Math.min(9999, Math.floor(+s.pokeballs[k] || 0)));
+    if (!s.research || typeof s.research !== 'object' || Array.isArray(s.research)) s.research = {};
+    if (!Array.isArray(s.titles)) s.titles = [];
+    if (!Array.isArray(s.avatars)) s.avatars = [];
+    if (!s.profile || typeof s.profile !== 'object') s.profile = { favs: [], title: '', avatar: 0 };
+    if (s.profile.avatar == null) s.profile.avatar = 0;
     // Atajos: 4 huecos con un movimiento que exista (o null), sin repetir.
     if (s.pbind && typeof s.pbind === 'object') {
       for (const d of Object.keys(s.pbind)) {
@@ -250,6 +274,27 @@ G.DB = (() => {
     if (G.MonProgression) for (const d of Object.keys(r.owned || {})) {
       const aIV=G.MonProgression.normalizeIV(a.owned?.[d]?.iv),bIV=G.MonProgression.normalizeIV(b.owned?.[d]?.iv);
       r.owned[d]={...r.owned[d],iv:aIV.map((v,i)=>Math.max(v,bIV[i]))};
+    }
+    r.inviteIVs = r.inviteIVs || {};
+    if (G.MonProgression) for (const d of new Set([...Object.keys(a.inviteIVs || {}), ...Object.keys(b.inviteIVs || {})])) {
+      if (r.owned?.[d]) { delete r.inviteIVs[d]; continue; }
+      const aIV = G.MonProgression.normalizeIV(a.inviteIVs?.[d]), bIV = G.MonProgression.normalizeIV(b.inviteIVs?.[d]);
+      r.inviteIVs[d] = aIV.map((v, i) => Math.max(v, bIV[i]));
+    }
+    r.titles = [...new Set([...(newer.titles || []), ...(older.titles || [])])];
+    r.avatars = [...new Set([...(newer.avatars || []), ...(older.avatars || [])])];
+    r.research = r.research || {};
+    for (const d of Object.keys(older.research || {})) {
+      const cur = r.research[d] || { battles: 0, kills: 0, bosses: 0, wins: 0, maxLv: 0, claimed: {} };
+      const old = older.research[d] || {};
+      r.research[d] = {
+        battles: Math.max(cur.battles || 0, old.battles || 0),
+        kills: Math.max(cur.kills || 0, old.kills || 0),
+        bosses: Math.max(cur.bosses || 0, old.bosses || 0),
+        wins: Math.max(cur.wins || 0, old.wins || 0),
+        maxLv: Math.max(cur.maxLv || 0, old.maxLv || 0),
+        claimed: { ...(old.claimed || {}), ...(cur.claimed || {}) }
+      };
     }
     // Cuando están presentes, el saldo y el pity son los de la copia reciente.
     if (r.abilityGems == null) r.abilityGems = older.abilityGems || 0;
@@ -919,19 +964,73 @@ G.DB = (() => {
     return e.iv;
   }
 
-  function grant(dex, from) {
-    const zUnlocked=G.ZAccess?.acquired(save,dex) || false;
-    const fresh = !save.owned[dex];
-    if (fresh) save.owned[dex] = { at: Date.now(), from, iv: Array.from({length:8},randomIv) };
-    const old = fresh ? save.owned[dex].iv : ivOf(dex);
-    const next = fresh ? old.slice() : Array.from({length:8},randomIv);
+  function canUse(dex) { return !!(owns(dex) || (save?.invites?.[dex] || 0) > 0); }
+
+  function mergeIvArray(target, incoming) {
     const raised = [];
-    if (!fresh) for (let i = 0; i < 8; i++) {
-      if (next[i] > old[i]) raised.push(i);
-      old[i] = Math.max(old[i], next[i]);
+    for (let i = 0; i < 8; i++) {
+      if (incoming[i] > target[i]) raised.push(i);
+      target[i] = Math.max(target[i], incoming[i]);
     }
-    if(zUnlocked)G.UI?.toast(G.T('Permiso Z desbloqueado para esta familia.'),4500);
-    return { isNew: fresh, ivUp: raised.length > 0, ivRaised: raised, zUnlocked };
+    return raised;
+  }
+
+  function grant(dex, from, targetSave = save) {
+    const s = targetSave;
+    const fresh = !s.owned[dex];
+    const ivRoll = Array.from({ length: 8 }, randomIv);
+    if (fresh) {
+      const invIv = s.inviteIVs?.[dex];
+      const baseIv = invIv ? invIv.map((v, i) => Math.max(v, ivRoll[i])) : ivRoll;
+      s.owned[dex] = { at: Date.now(), from, iv: baseIv };
+      if (s.inviteIVs) delete s.inviteIVs[dex];
+    }
+    const old = fresh ? s.owned[dex].iv : (s === save ? ivOf(dex) : s.owned[dex].iv);
+    const raised = fresh ? [] : mergeIvArray(old, ivRoll);
+    let convertedCoins = 0;
+    if (s.invites && s.invites[dex] > 0) {
+      const rate = G.Gacha?.REFUND?.[G.DEX_BY?.[dex]?.rarity] || 30;
+      convertedCoins = s.invites[dex] * rate;
+      s.coins = (s.coins || 0) + convertedCoins;
+      delete s.invites[dex];
+    }
+    return { isNew: fresh, ivUp: raised.length > 0, ivRaised: raised, convertedCoins, zUnlocked: false };
+  }
+
+  function grantFamily(dex, from, targetSave = save) {
+    const fam = G.MonProgression?.familyFor(dex) || [+dex];
+    let first = null;
+    for (const d of fam) {
+      const r = grant(d, from, targetSave);
+      if (+d === +dex || !first) first = r;
+    }
+    return first;
+  }
+
+  function grantInvitation(dex, targetSave = save) {
+    const s = targetSave;
+    const ivRoll = Array.from({ length: 8 }, randomIv);
+    if (s.owned?.[dex]) {
+      const raised = mergeIvArray(s.owned[dex].iv, ivRoll);
+      const coins = G.Gacha?.REFUND?.[G.DEX_BY?.[dex]?.rarity] || 30;
+      s.coins = (s.coins || 0) + coins;
+      return { owned: true, convertedCoins: coins, ivUp: raised.length > 0, ivRaised: raised };
+    }
+    s.invites ||= {};
+    s.inviteIVs ||= {};
+    s.invites[dex] = (s.invites[dex] || 0) + 1;
+    const prev = s.inviteIVs[dex] || Array(8).fill(0);
+    const raised = mergeIvArray(prev, ivRoll);
+    s.inviteIVs[dex] = prev;
+    return { owned: false, count: s.invites[dex], ivUp: raised.length > 0, ivRaised: raised };
+  }
+
+  function consumeInvitation(dex, targetSave = save) {
+    const s = targetSave;
+    if (!s || s.owned?.[dex] || !(s.invites?.[dex] > 0)) return false;
+    s.invites[dex]--;
+    if (s.invites[dex] <= 0) delete s.invites[dex];
+    return true;
   }
 
   function ownsShiny(dex) { return !!(save && save.shiny && save.shiny[dex]); }
@@ -958,11 +1057,20 @@ G.DB = (() => {
     return save.pupg[upgradeRoot(dex)] ||= {};
   }
 
-  /** Da la versión shiny (y la normal, si no la tenía). Devuelve true si es nueva. */
-  function grantShiny(dex, from) {
-    const result = grant(dex, from);
-    const shinyNew = !save.shiny[dex];
-    if (shinyNew) save.shiny[dex] = { at: Date.now(), from };
+  /** Da la versión shiny (y la normal, si no la tenía). Desbloquea shiny para toda la familia. */
+  function grantShiny(dex, from, targetSave = save) {
+    const s = targetSave;
+    const result = grantFamily(dex, from, s);
+    s.shiny ||= {};
+    const fam = G.MonProgression?.familyFor(dex) || [+dex];
+    let shinyNew = false;
+    for (const d of fam) {
+      if (!G.Sprites?.hasShiny(d) && +d !== +dex) continue;
+      if (!s.shiny[d]) {
+        s.shiny[d] = { at: Date.now(), from };
+        if (+d === +dex) shinyNew = true;
+      }
+    }
     return { ...result, shinyNew };
   }
 
@@ -973,7 +1081,7 @@ G.DB = (() => {
     serverSync: setSync,
     serverClear() {user=key=save=uid=null;guest=false;setSync('ok');},
     ready, register, login, retryConnection, legacyBackup, loginWithGoogle, playAsGuest, logout, commit, deleteAccount, settleOffline, claimVictoryBonus, flush: pushNow,
-    owns, grant, ownsShiny, grantShiny, ivOf, merge, setName, upgradesOf,
+    owns, canUse, grant, grantFamily, grantInvitation, consumeInvitation, ownsShiny, grantShiny, ivOf, merge, setName, upgradesOf,
     onSync(fn) { listeners.add(fn); },
     onLeave(fn) { leaveHooks.push(fn); },
     /** Acceso de bajo nivel para los módulos de red (sólo en modo nube). */

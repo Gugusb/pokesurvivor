@@ -47,6 +47,10 @@ G.MonProgression = (() => {
   }
   // Each form has its own Pokédex IV record; an unregistered form is 1/1/1.
   const values = dex => {
+    if (!G.DB.owns(dex)) {
+      const rand = G.Game?.inviteIVsFor?.(dex);
+      if (rand) return normalizeIV(rand);
+    }
     const iv = G.DB.ivOf(dex);
     return normalizeIV(iv);
   };
@@ -93,21 +97,8 @@ G.MonProgression = (() => {
     G.Projectiles?.clearOrbs(p);G.FX?.ring(p.x,p.y,8,120,'#ffd23f',.8,6);G.Audio?.sfx('legend');
     return true;
   }
-  function captureChance(enemy) { const p=enemy?.lastAttacker||G.Game?.player;return .0002*(G.Items?.count(p,'bugnet')||0)+(enemy && (enemy.boss || enemy.legend) ? 0.05 : 0.002)*(G.Difficulty?G.Difficulty.rewards():1); }
-  function tryCapture(enemy, run) {
-    if (!enemy || enemy.judge || enemy.remote || Math.random() >= captureChance(enemy)) return false;
-    run.pendingCaptures ||= [];
-    if (!run.pendingCaptures.some(c => c.dex === enemy.dex)) run.pendingCaptures.push({ dex: enemy.dex });
-    return true;
-  }
-  function commitCaptures(save, run) {
-    const out = [];
-    for (const c of run?.pendingCaptures || []) {
-      const result = G.DB.grant(c.dex, 'capture');
-      out.push({ dex: c.dex, isNew: result.isNew, ivUp: result.ivUp, ivRaised: result.ivRaised });
-    }
-    if (out.length) G.DB.commit(true);
-    return out;
-  }
+  function captureChance() { return 0; }
+  function tryCapture() { return false; }
+  function commitCaptures() { return []; }
   return { CHAINS, PATHS, chainBy, pathFor, rootFor, familyFor, ivMod, normalizeIV, AGILITY_STANDARD,agilityBase,staminaBase,cooldownFactor,ppInterval,values, stats, stageFor, evolutionLevel, validPath, evolutionOptions, evolve, captureChance, tryCapture, commitCaptures };
 })();
