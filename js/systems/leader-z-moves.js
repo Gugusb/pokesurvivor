@@ -89,7 +89,7 @@
   if(!L.active()||p!==captain()||p.dead||G.Game.state!=='playing'||G.Expedition.run.phase!=='combat'||!G.LeaderMedals.unlocked(p.dex))return false;
   const s=state(),d=definition(p.dex);if(s.charge<1-1e-9||s.zUntil>s.time)return false;
   const fn=handlers[d.active.kind];if(!fn)throw Error('Missing leader Z '+d.active.kind);
-  s.charge=0;s.types=[];s.z=d.active.kind;s.zUntil=s.time+(durations[s.z]||.4);s.zCasts=(s.zCasts||0)+1;
+  s.charge=0;s.chargeBoost=0;s.types=[];s.z=d.active.kind;s.zUntil=s.time+(durations[s.z]||.4);s.zCasts=(s.zCasts||0)+1;
   G.Audio.sfx('shot',{kind:'beam',type:p.mon.types[0]});G.Camera.kick(.14);G.FX.ring(p.x,p.y,10,130,'#fff2a3',.45,5);
   if(profile().postZWeakness)for(const ally of actors())own(ally).postZUntil=s.time+7;
   Z.withoutCharge(()=>fn(p,profile()));return true;

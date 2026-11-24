@@ -48,25 +48,12 @@ G.AbilityDefs = (() => {
     serenegrace: { name: 'Dicha', en: 'Serene Grace', desc: 'Los ataques pueden aplicar un efecto negativo aleatorio.', descEn: 'Attacks may apply a random negative effect.' }
   };
   const byDex = {
-    144: ['pressure', 'snowcloak'],
-    145: ['pressure', 'static'],
-    146: ['pressure', 'flamebody'],
     149: ['innerfocus', 'multiscale'],
-    150: ['pressure', 'unnerve'],
-    151: ['synchronize'],
-    243: ['pressure', 'innerfocus'], 244: ['pressure', 'innerfocus'], 245: ['pressure', 'innerfocus'],
-    248: ['sandstream', 'unnerve'], 249: ['pressure', 'multiscale'], 250: ['pressure', 'regenerator'], 251: ['naturalcure'],
-    289: ['truant'], 373: ['intimidate', 'moxie'], 376: ['clearbody', 'lightmetal'],
-    377: ['clearbody', 'sturdy'], 378: ['clearbody', 'icebody'], 379: ['clearbody', 'lightmetal'],
-    380: ['levitate'], 381: ['levitate'], 382: ['drizzle'], 383: ['drought'], 384: ['airlock'], 385: ['serenegrace'], 386: ['pressure'],
-    445: ['sandveil', 'roughskin'], 480: ['levitate'], 481: ['levitate'], 482: ['levitate'],
-    483: ['pressure', 'telepathy'], 484: ['pressure', 'telepathy'], 485: ['flashfire', 'flamebody'], 486: ['slowstart'],
-    487: ['pressure', 'telepathy'], 488: ['levitate'], 489: ['hydration'], 490: ['hydration'],
-    491: ['baddreams'], 492: ['naturalcure'], 493: ['multitype'], 494: ['victorystar'],
-    638: ['justified'], 639: ['justified'], 640: ['justified'], 641: ['prankster', 'defiant'],
-    642: ['prankster', 'defiant'], 643: ['turboblaze'], 644: ['teravolt'], 645: ['sandforce', 'sheerforce'],
-    647: ['justified'], 649: ['download'], 807: ['voltabsorb'],
-    888: ['intrepidsword'], 889: ['dauntlessshield'], 892: ['unseenfist'], 894: ['transistor']
+    248: ['sandstream', 'unnerve'],
+    289: ['truant'],
+    373: ['intimidate', 'moxie'],
+    376: ['clearbody', 'lightmetal'],
+    445: ['sandveil', 'roughskin']
   };
   const LIST = Object.entries(byDex).flatMap(([dex, ids]) => ids.map(ability => ({
     id: dex + '-' + ability, dex: +dex, ability, rarity: 5, ...abilities[ability]

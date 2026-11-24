@@ -8,7 +8,7 @@ G.ExpeditionSave=(()=>{
  const ledgerKey=id=>'ps.expedition.receipts.'+encodeURIComponent(owner())+'.'+id;
  function stringify(v){return JSON.stringify(v,(k,x)=>x instanceof Set?{$set:[...x]}:x instanceof Map?{$map:[...x]}:x);}
  function parse(s){return JSON.parse(s,(k,x)=>['__proto__','prototype','constructor'].includes(k)?undefined:x&&typeof x==='object'&&Object.keys(x).length===1&&Array.isArray(x.$set)?new Set(x.$set):x&&typeof x==='object'&&Object.keys(x).length===1&&Array.isArray(x.$map)?new Map(x.$map):x);}
- function actor(p){const fields={};for(const [k,v]of Object.entries(p))if(!['anim','moves','slots','target','uid','coopHost'].includes(k)&&typeof v!=='function')fields[k]=v;
+ function actor(p){const fields={};for(const [k,v]of Object.entries(p))if(!['anim','moves','slots','target','uid','coopHost','lastPatch','abilityState','leaderState','megaState','zState'].includes(k)&&typeof v!=='function')fields[k]=v;
   return {fields,moves:p.moves.map(m=>({...m})),slots:p.slots.map(g=>g.map(m=>p.moves.indexOf(m))),pp:G.MovePP.snapshot(p),control:G.MoveControl.snapshot(p),items:G.BreakItems.snapshot(p)};
  }
  function hydrate(a,member=false){const d=a.fields,p=member?new G.Squad.Member(d.dex,d.rank,a.moves[0]?.id):new G.Player(G.DEX_BY[d.dex]);Object.assign(p,d);

@@ -33,9 +33,9 @@ test('passives and costs do not require medals; 5/8 advances use trainer level; 
 });
 test('charge requires matching ordinary actions; manual cast consumes one, no auto cast or recursive charging',()=>{
  const {G,p}=setup();const L=G.LeaderAbilities,s=L.state();
- L.onCast(p,{kind:'beam',type:'fire'});assert.equal(s.charge,0);
- L.onCast(p,{kind:'cone',type:'fire',leaderGenerated:true});assert.equal(s.charge,0);
- s.targetEvents=3;for(let i=0;i<3;i++)L.onCast(p,{kind:'cone',type:'fire'});assert.equal(s.charge,1);assert.equal(s.zCasts,undefined);
+ L.onCast(p,{kind:'beam',type:'fire'});assert.equal(s.chargeBoost,0);
+ L.onCast(p,{kind:'cone',type:'fire',leaderGenerated:true});assert.equal(s.chargeBoost,0);
+ for(let i=0;i<3;i++)L.onCast(p,{kind:'cone',type:'fire'});assert.equal(s.chargeBoost,3);L.tick(117);assert.equal(s.charge,1);assert.equal(s.zCasts,undefined);
  assert.equal(L.activate(),true);assert.equal(s.charge,0);assert.equal(s.zCasts,1);assert.equal(L.activate(),false);
  L.finishBattle();s.charge=.42;L.beginBattle();assert.equal(s.charge,.42);G.Expedition.run.phase='route';L.tick(100);assert.equal(s.charge,.42);
 });

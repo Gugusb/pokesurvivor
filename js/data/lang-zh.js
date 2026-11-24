@@ -1,6 +1,14 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Interfaz de combate, carga Z y guardado · v0.43.0-alpha.66": "战场界面、Z充能与存档修复 · v0.43.0-alpha.66",
+  "Se unifica la barra superior de combate eliminando el reloj total para destacar el tiempo restante, la barra de jefe se sitúa debajo en móvil y el panel lateral de experiencia del entrenador ahora puede contraerse.": "合并战场顶部基础信息并移除总生存时间，突出本局剩余时间；手机端 BOSS 血条自动避让顶部信息栏；左侧训练家经验面板支持折叠收缩。",
+  "En el mapa de ruta móvil se retira la tarjeta grande del día actual para dejar visible el mapa completo; la ficha de detalle del equipo en móvil se amplía y mejora su lectura.": "手机端日程表移除遮挡地图的超大当日选项，完整保留日程大地图；放大并优化手机端编队宝可梦详情弹窗。",
+  "Se corrigen los avisos de orbes de poder que quedaban fijados en pantalla, las flechas de enemigos fuera de cámara al variar el zoom y el error de guardado por referencia circular en campos de suelo.": "修复对局内加成宝珠等通知横幅残留不消失、视距缩放导致的屏外敌人脚下箭头缺失，以及地面技能对象循环引用导致存档失败的问题。",
+  "La carga de movimientos Z pasa a un enfriamiento fijo de 120 s (cada evento compatible suma +1 s de carga doble) y se retiran las antiguas medallas exclusivas de legendarios.": "Z 招式改为固定 120 秒充能冷却，触发充能条件时可叠加 1 秒双倍加速充能状态；移除旧版传说宝可梦专属特性勋章。",
+  "Se genera un nuevo APK sin conexión con el mismo certificado de prueba y mayor código de versión para actualizar sobre la instalación anterior conservando el progreso.": "使用同一测试签名与更高版本号重新打包离线测试 APK，支持覆盖旧版本安装并继承本地存档。",
+  "Recogí las tarjetas sobrantes del mapa, doblé la esquina de la barra de experiencia y limpié el pizarrón de avisos. Quien cocina ajustó el reloj de los movimientos Z; yo dejo la mochila lista para que el nuevo instalador entre sin perder ni una baya.": "我把日程表上挡路的超大卡牌收好，把左侧经验栏折起一角，顺手擦掉了赖着不走的通知板。做饭的那家伙把 Z 招式计时器调稳了；我整理好行囊，新安装包直接覆盖也能把树果和存档好好留着。",
+
   "Capitanes de Alola · v0.43.0-alpha.65": "阿罗拉队长特性 · v0.43.0-alpha.65",
   "Llegan 54 familias de capitanes de Alola, con sus cinco apartados originales, avances 5/8 y Z manual por medalla familiar.": "新增54个阿罗拉队长家族，保留五段式原文、训练家5／8级进阶与家族勋章解锁的手动Z。",
   "Cada familia tiene una estimación y ajustes propios. Las salvas y los ataques conjuntos comparten presupuesto; los ecos y rayos añadidos no se activan a sí mismos.": "每个家族都有单独收益估算与调整。多段、全队攻击共享预算，回响与追加电弧不递归触发自身。",

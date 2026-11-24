@@ -79,17 +79,19 @@ G.HUD = (() => {
     ctx.fillText(G.Abilities.status(pl), px, py + 70);
 
     // ---------- reloj / bioma / kills ----------
-    ctx.textAlign = 'center';
-    ctx.font = F(800, 26);
-    ctx.fillStyle = 'rgba(255,255,255,.95)';
-    ctx.fillText(G.U.mmss(st.time), w / 2, 42);
-    if (G.Difficulty) {
-      ctx.font = F(700, 10); ctx.fillStyle = '#ffd46b';
-      ctx.fillText(G.T('Dificultad') + ' ' + (st.difficulty || G.Difficulty.current) + '★ · ' + (G.Game.speed || 1) + '×', w / 2, 16);
+    if (!G.Expedition?.active) {
+      ctx.textAlign = 'center';
+      ctx.font = F(800, 26);
+      ctx.fillStyle = 'rgba(255,255,255,.95)';
+      ctx.fillText(G.U.mmss(st.time), w / 2, 42);
+      if (G.Difficulty) {
+        ctx.font = F(700, 10); ctx.fillStyle = '#ffd46b';
+        ctx.fillText(G.T('Dificultad') + ' ' + (st.difficulty || G.Difficulty.current) + '★ · ' + (G.Game.speed || 1) + '×', w / 2, 16);
+      }
+      ctx.font = F(600, 10);
+      ctx.fillStyle = '#8fa3c4';
+      ctx.fillText(G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' MONEDAS', w / 2, 58);
     }
-    ctx.font = F(600, 10);
-    ctx.fillStyle = '#8fa3c4';
-    ctx.fillText(G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' ' + (G.Expedition?.active?G.T('Pokémonedas'):'MONEDAS'), w / 2, 58);
 
     // Live score stays clear of the health bar, boss bar and touch controls.
     if(G.Game.runScore){
@@ -118,12 +120,18 @@ G.HUD = (() => {
     // ---------- barra del jefe ----------
     const boss = G.EnemyMgr.all().find(e => e.boss && !e.dead);
     if (boss) {
+      let bossY = 70;
+      const jsEl = G.Expedition?.active ? document.getElementById('journey-status') : null;
+      if (jsEl && !jsEl.hidden) {
+        const r = jsEl.getBoundingClientRect();
+        if (r.height > 0) bossY = Math.max(bossY, Math.ceil(r.bottom + 8));
+      }
       ctx.textAlign='center';
       const bw = Math.min(420, w - 80);
-      bar(ctx, (w - bw) / 2, 70, bw, 12, boss.hp / boss.maxHp, '#ffcb3d');
+      bar(ctx, (w - bw) / 2, bossY, bw, 12, boss.hp / boss.maxHp, '#ffcb3d');
       ctx.font = F(800, 10);
       ctx.fillStyle = '#20160a';
-      ctx.fillText((boss.name+(boss.bossGuard?.resistance>.1?' · '+G.T('Guardia furiosa'):'')).toUpperCase(), w / 2, 80);
+      ctx.fillText((boss.name+(boss.bossGuard?.resistance>.1?' · '+G.T('Guardia furiosa'):'')).toUpperCase(), w / 2, bossY + 10);
     }
 
     // ---------- aviso ----------

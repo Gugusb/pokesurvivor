@@ -209,8 +209,10 @@ G.LeaderAbilities=(()=>{
   const s=state(),d=definition(captain().dex);s.events[name]=(s.events[name]||0)+n;
   if(d.charge.event===name&&G.LeaderMedals.unlocked(captain().dex)){
    s.matchingTotal=(s.matchingTotal||0)+n;
-   if(!s.calibrated&&s.time-s.sampleStart>=10){s.targetEvents=Math.max(1,s.matchingTotal/(s.time-s.sampleStart)*60);s.calibrated=true;}
-   s.charge=clamp(s.charge+n/(s.targetEvents||60),0,1);
+   let stacks=1;
+   if(name==='distance'){s.distanceAcc=(s.distanceAcc||0)+n;stacks=Math.floor(s.distanceAcc/80);s.distanceAcc-=stacks*80;}
+   else if(name==='hurtAmount'||name==='heal'||name==='absorb'){const step=Math.max(1,captain().maxHp*.05);s.hpAcc=(s.hpAcc||0)+n;stacks=Math.floor(s.hpAcc/step);s.hpAcc-=stacks*step;}
+   if(stacks>0)s.chargeBoost=Math.min(120,(s.chargeBoost||0)+stacks);
   }
  }
  function estimateTarget(){
@@ -228,7 +230,7 @@ G.LeaderAbilities=(()=>{
   for(const p of actors())sync(p);
  }
  function beginBattle(){
-  fields=[];jobs=[];food=[];if(!active())return;const s=state();s.battle++;s.z=null;s.zUntil=0;s.teamKills=0;s.fruitSpawn=0;s.riceSpawn=0;s.fruitCooldown=0;s.types=[];s.targetEvents=estimateTarget();s.sampleStart=s.time;s.matchingTotal=0;s.calibrated=false;
+  fields=[];jobs=[];food=[];if(!active())return;const s=state();s.battle++;s.z=null;s.zUntil=0;s.teamKills=0;s.fruitSpawn=0;s.riceSpawn=0;s.fruitCooldown=0;s.types=[];s.targetEvents=120;s.sampleStart=s.time;s.matchingTotal=0;s.calibrated=false;s.chargeBoost=0;s.distanceAcc=0;s.hpAcc=0;
   for(const p of actors()){p.leaderState={shield:0,shieldUntil:0,hurt:0,kills:0,stationary:0,lastX:p.x,lastY:p.y,healBudget:0};sync(p);}
   const f=profile();if(f.weather||f.openingWeather)G.Weather.force(f.weather||f.openingWeather,Math.max(60,run().duration||120));
   if(f.bankShield&&run().gold>=150)for(const p of actors())shield(p,run().gold,run().duration||120);
@@ -236,6 +238,11 @@ G.LeaderAbilities=(()=>{
  }
  function tick(dt){
   if(!active()||run().phase!=='combat'||!(dt>0))return;const s=state(),f=profile(),c=captain();s.time+=dt;
+  if(G.LeaderMedals.unlocked(c.dex)&&s.charge<1){
+   const boost=Math.min(dt,s.chargeBoost||0);
+   if(boost>0)s.chargeBoost=Math.max(0,(s.chargeBoost||0)-dt);
+   s.charge=clamp(s.charge+(dt+boost)/120,0,1);
+  }
   for(const p of actors()){
    const q=own(p),distance=Math.hypot(p.x-q.lastX,p.y-q.lastY);q.lastX=p.x;q.lastY=p.y;q.stationary=distance>.01?0:q.stationary+dt;q.healBudget=Math.max(0,q.healBudget-p.maxHp*.03*dt);
    if(p===c&&distance>0)event('distance',distance);

@@ -34,6 +34,22 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.66 — 2026-11-24
+
+- 修复远征存档序列化循环引用：`js/systems/expedition-save.js` 的 `actor(p)` 排除 `lastPatch`、`abilityState`、`leaderState`、`megaState`、`zState`，避免 `player.lastPatch -> owner -> player` 导致 `JSON.stringify` 失败。
+- 修复对局内横幅残留：`js/game.js` 在远征战斗中跳过 `G.Spawner.update` 时补充调用 `G.Spawner.tickBanner(dt)`，确保加成宝珠等通知按倒计时正常消失。
+- 优化战场与手机端界面：
+  - `js/systems/expedition.js` 移除日程页超大当日选项卡片（`.route-day-focus`），仅保留日程大地图；手机端 `.journey-route` 高度提升至 `56dvh`。
+  - 合并战场顶部基础信息至 `#journey-status` 并突出本局剩余时间，`js/ui/hud.js` 在远征模式移除总生存时间绘制，并将 BOSS 血条 `y` 坐标动态置于 `#journey-status` 下方，避免手机端遮挡。
+  - 左侧 `#expedition-progress-hud` 增加折叠按钮与 `.collapsed` 样式，战斗中可随时收缩。
+  - `css/expedition.css` 放大手机端编队详情弹窗（`.squad-detail`）。
+- 修复视距导致的屏外敌人箭头缺失：`js/systems/expedition.js` 的 `drawEnemyPointers` 改为按实际屏幕投影坐标判断屏外敌人，并覆盖追击、激怒及全部刷出后的清场阶段。
+- 调整 Z 招式充能机制：`js/systems/leader-abilities.js` 改为固定 120s 基础冷却，`event()` 命中充能条件时叠加 1s 双倍充能加速状态（`chargeBoost`），释放 Z 时清零。
+- 移除旧版传说宝可梦专属特性勋章：`js/data/abilities.js` 的 `byDex` 仅保留非传说 5 星特性条目，移除压迫感、心灵感应等旧传说特性勋章列表。
+- 重新打包离线测试 APK：`android/offline/AndroidManifest.xml` 升至 `versionCode="66"`、`versionName="0.43.0-alpha.66-offline"`，沿用原测试包名与 `offline-test.p12` 签名证书以支持覆盖安装与存档继承。
+- 验证：`node --test tools/test_battle_stats.cjs tools/test_capture_gacha_research.cjs` 16/16 通过；`node --test tools/test_leader_abilities.cjs tools/test_leader_gen6.cjs tools/test_leader_gen7.cjs` 30/30 通过；`node tools/build.js` 与 `node tools/export_data.js` 通过；`node tools/build_android_offline.cjs` 生成 `PokeSurvivor-Next-alpha.66-offline.apk`，v2/v3 签名与 `check_android_apk.cjs`（14070 条目、resources.arsc 未压缩且 4 字节对齐）通过。
+- 已知限制：本轮未在实体 Android 设备上执行覆盖安装与触控实机验证；`py` 启动器未在当前 shell 中注册，未重跑 `make_seo_pages.py`。
+
 ### v0.43.0-alpha.65 — 2026-11-24
 
 - 基于 `v0.43.0-alpha.64`（21a7aa1）在独立分支 `codex/leader-gen7` 实装阿罗拉54个队长家族，不合并已弃用界面分支。既有六代队长、招式与进化路线保留。
