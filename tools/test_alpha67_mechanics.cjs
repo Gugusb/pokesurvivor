@@ -200,3 +200,35 @@ test('9. Trail moves double CD & duration, +50% radius, and fire slow exploding 
   G.Combat.resolve(0.05, p, 1.05);
   assert.equal(G.Projectiles.all().filter(q => q.trailBurst).length, 0);
 });
+
+test('10. Expedition breathing S-curve enemy HP scales monotonically across cycles and N1-N8 difficulties', () => {
+  const s = loadFull(), { G } = s;
+  s.load('js/systems/difficulty.js');
+  const R = G.ExpeditionRules;
+  // Monotonicity across days 1..120 for normal, elite, and boss waves
+  for (const kind of ['battle', 'elite', 'boss']) {
+    for (let day = 1; day < 120; day++) {
+      assert.ok(R.wave(day + 1, kind, 5).hp > R.wave(day, kind, 5).hp, `${kind} day ${day} -> ${day + 1}`);
+    }
+  }
+  // Cycle step-up is meaningful at D20->D21 and D40->D41
+  assert.ok(R.wave(21, 'battle', 5).hp / R.wave(20, 'battle', 5).hp > 1.8);
+  assert.ok(R.wave(41, 'boss', 5).hp / R.wave(40, 'boss', 5).hp > 1.5);
+  // Elite and Boss have dedicated cycle scaling in C2 and C3
+  assert.ok(R.wave(40, 'elite', 5).hp > R.wave(40, 'battle', 5).hp * 1.25);
+  assert.ok(R.wave(60, 'elite', 5).hp > R.wave(60, 'battle', 5).hp * 1.55);
+  assert.ok(R.wave(60, 'boss', 5).hp > R.wave(60, 'battle', 5).hp * 0.9);
+  // N1-N8 effective enemy HP (including Difficulty.factors(n).hp in Enemy constructor) strictly increases
+  let prevEff = 0;
+  for (let diff = 1; diff <= 8; diff++) {
+    const eff = R.wave(60, 'boss', diff).hp * G.Difficulty.factors(diff).hp;
+    assert.ok(eff > prevEff, `N${diff} effective HP should exceed N${diff - 1}`);
+    prevEff = eff;
+  }
+  // N5 is 1.35x of N3 baseline, N8 is 2.60x of N3 baseline
+  const n3 = R.wave(60, 'boss', 3).hp * G.Difficulty.factors(3).hp;
+  const n5 = R.wave(60, 'boss', 5).hp * G.Difficulty.factors(5).hp;
+  const n8 = R.wave(60, 'boss', 8).hp * G.Difficulty.factors(8).hp;
+  assert.ok(Math.abs(n5 / n3 - 1.35) < 1e-6);
+  assert.ok(Math.abs(n8 / n3 - 2.60) < 1e-6);
+});

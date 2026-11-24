@@ -17,14 +17,23 @@ G.ExpeditionRules = (() => {
   const cycleOf=day=>Math.floor(Math.max(0,day-1)/days())+1;
   const capacity=level=>G.EconomyConfig?G.EconomyConfig.levels.find(row=>row.level===level).squadCap:3+Math.max(1,Math.min(MAX_SHOP,level));
   const upgradeCost=level=>60+level*45;
-  const wave=(day,kind='battle')=>{
-    const cycle=cycleOf(day),within=(day-1)%days()+1,boost=Math.pow(3,cycle-1);
+  const DIFF_HP=[0,.65,.82,1,1.15,1.35,1.65,2.05,2.6];
+  const difficultyHp=diff=>{const d=diff==null?(G.Difficulty?.current??3):diff,i=Math.max(1,Math.min(8,Math.floor(d)||3));return DIFF_HP[i];};
+  const wave=(day,kind='battle',diff=null)=>{
+    const cycle=cycleOf(day),within=(day-1)%days()+1,progress=within/days();
+    // Breathing S-curve: slow C1 -> step-up at C2 -> gentle C3 so players get clear power-spike windows without fully detaching.
+    const cycleBoost=cycle===1?1:cycle===2?4:cycle===3?13.2:13.2*Math.pow(3,cycle-3);
+    const withinFactor=cycle===1?(1+.95*Math.pow(progress,1.8)):cycle===2?(1+1.25*Math.pow(progress,1.65)):(1+.9*Math.pow(progress,1.45));
+    const countComp=kind==='boss'||kind==='rift'?1:(1+.015*Math.max(0,day-36));
+    const kindMult=kind==='elite'?(cycle===1?1:cycle===2?1.3:1.6):kind==='boss'||kind==='rift'?(cycle===1?.95:cycle===2?1.15:cycle===3?1.28:1.28*Math.pow(1.12,cycle-3)):1;
+    const d=diff==null?(G.Difficulty?.current??3):diff,dIdx=Math.max(1,Math.min(8,Math.floor(d)||3));
+    const diffScale=DIFF_HP[dIdx]/(dIdx===1?.8:1);
     const originalBase=Math.min(60,24+day*1.2),t=G.EconomyConfig.battleTiming,extra=t.baseExtensionSeconds;
     const standardDuration=kind==='elite'?t.eliteEnrageAt+extra:kind==='boss'||kind==='rift'?t.bossEnrageAt+extra:originalBase+extra;
     const duration=kind==='elite'?t.eliteSeconds+extra:kind==='boss'||kind==='rift'?t.bossSeconds+extra:standardDuration+FINAL_CHASE;
     const spawnDuration=Math.max(t.minSpawnWindowSeconds,originalBase*t.spawnWindowRatio);
     return {count:2*Math.round(12+Math.min(72,day*2)),standardDuration,duration,enrageAt:standardDuration,spawnDuration,
-      hp:5*(1+.8*Math.pow(within/20,1.7))*boost,dmg:(1+.35*Math.pow(within/20,1.3))*Math.pow(1.8,cycle-1),
+      hp:5*withinFactor*cycleBoost*countComp*kindMult*diffScale,dmg:(1+.35*Math.pow(within/20,1.3))*Math.pow(1.8,cycle-1),
       speed:Math.min(1.8,1+within*.005+(cycle-1)*.12),coins:Math.round(35+day*4)};
   };
   function generations(captain,rng=Math.random){
@@ -83,5 +92,5 @@ G.ExpeditionRules = (() => {
     for(const e of new Set(enemies))if(e.expedition&&!e.dead)counts[e.boss?'boss':e.elite?'elite':'normal']++;
     const raw=counts.normal*c.normalDamage+counts.elite*c.eliteDamage+counts.boss*c.bossDamage,cap=c.cycleCaps[Math.min(c.cycleCaps.length-1,Math.max(0,cycle-1))];return {...counts,raw,cap,applied:Math.min(raw,cap)};
   }
-  return {squadDamage,DAYS,COLS,MAX_SHOP,FINAL_CHASE,weights,matrix,reachable,cycleOf,capacity,upgradeCost,wave,generations,pool,next,border,formForRank,shopFamilies,encounterCandidates,shopMon,lootCompanion,shopRank,rankRates,qualityRates,monCost,progress};
+  return {squadDamage,DAYS,COLS,MAX_SHOP,FINAL_CHASE,DIFF_HP,difficultyHp,weights,matrix,reachable,cycleOf,capacity,upgradeCost,wave,generations,pool,next,border,formForRank,shopFamilies,encounterCandidates,shopMon,lootCompanion,shopRank,rankRates,qualityRates,monCost,progress};
 })();

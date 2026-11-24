@@ -34,6 +34,14 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.73 — 2026-11-24
+
+- 优化远征敌人生命成长曲线并补齐 N1–N8 难度生命梯度（`js/systems/expedition-rules.js`）：
+  1. 分轮回「呼吸感 S 型」生命成长：轮回阶梯由 `3^(cycle-1)` 调整为 `C1=1.0 / C2=4.0 / C3=13.2 / C4+=13.2×3^(cycle-3)`；轮回内斜率分段为 `C1: 1+0.95·t^1.8`、`C2: 1+1.25·t^1.65`、`C3+: 1+0.90·t^1.45`，在 D15–20（2★成型）与 D32–40（3★/超武成型）保留玩家明显超越怪物增速的爽感窗口，并在 C3 放缓斜率避免压死后期减速的玩家。
+  2. 普通/精英波次在 Day 36 刷怪数封顶（`168`）后增加平滑补偿 `1 + 0.015·max(0, day-36)`；精英战按轮回附加 `1.0 / 1.30 / 1.60` 生命倍率；BOSS/裂隙 BOSS 按轮回附加 `0.95 / 1.15 / 1.28 / 1.28×1.12^(cycle-3)` 倍率。
+  3. 新增远征专属 N1–N8 难度生命表 `DIFF_HP = [0, 0.65, 0.82, 1.00, 1.15, 1.35, 1.65, 2.05, 2.60]`（不改变经典模式 `Difficulty.factors`），修复原 N2–N8 敌人血量完全一致的问题。
+- 单元测试与模拟复验：在 `tools/test_alpha67_mechanics.cjs` 新增第 10 项单测覆盖 1–120 天单调性、跨轮回台阶、精英/BOSS 轮回乘区与 N1–N8 严格递增梯度。`node --test tools/test_alpha67_mechanics.cjs tools/test_battle_stats.cjs tools/test_capture_gacha_research.cjs` 24/24 通过；`node tools/build.js` 与 `node tools/export_data.js` 通过（当前终端未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.72 — 2026-11-24
 
 - 职业羁绊与技能数值平衡调整（`config/economy_config.json`、`js/systems/combat.js`、`js/data/moves.js`、`js/systems/boss-combat.js`、`js/systems/squad-bonds.js`）：

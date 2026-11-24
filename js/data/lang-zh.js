@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Curva de vida de enemigos y escalado N1–N8 · v0.43.0-alpha.73": "远征敌人生命成长曲线与 N1–N8 难度梯度优化 · v0.43.0-alpha.73",
+  "Se rediseña la curva de vida de enemigos en expedición por ciclos (ritmo respirado en S): el ciclo 1 mantiene un arranque accesible para disfrutar el pico de poder de 2★, el ciclo 2 y 3 suben de escalón entre ciclos con pendiente moderada para que el equipo vuelva a adelantarse al completar 3★ y movimientos Súper sin perder desafío en el tramo final.": "重构远征敌人生命成长曲线为分轮回「呼吸感 S 型」节奏：一轮回保持顺畅起步并保留 2★ 成型爽感窗口；跨入二/三轮回提供明确台阶，同时轮回内斜率克制，确保 3★ 与超武成型时能够再次反超怪物而不至于彻底脱节。",
+  "Las oleadas normales y élite compensan suavemente el tope de apariciones tras el día 36, y los combates élite y jefes reciben escalado propio por ciclo.": "普通与精英波次在 36 天刷怪数封顶后增加平滑单怪生命补偿，并为精英战与 BOSS 战分别配置按轮回递增的生命乘区。",
+  "Se añade escalado real de vida exclusivo de expedición para las ocho dificultades N1–N8 (de 0,65× en N1 y 1,00× en N3 hasta 1,35× en N5 y 2,60× en N8), diferenciando por fin N2–N8.": "新增远征专属的 N1–N8 难度敌人生命梯度（N1 为 0.65×、N3 基准 1.00×、N5 为 1.35×、N8 为 2.60×），修复此前 N2–N8 怪物生命完全一致的问题。",
+  "Ajusté los escalones de vida entre ciclos para que al evolucionar y subir estrellas sigamos sintiendo ese subidón de fuerza, pero sin que los jefes del último tramo caigan antes de abrir su escudo. Quien cocina revisó cada dificultad de N1 a N8; yo guardé una almohada extra para los retos altos.": "我把每个轮回之间的血量台阶重新摆顺了，升星突破那会儿咱们照样能爽快反超一波，又不至于把终局 BOSS 还没破盾就秒掉。做饭的那家伙把 N1 到 N8 挨个对过表了，冲高难记得带好抱枕哦。",
+
   "Ajustes de equilibrio de vínculos y habilidades · v0.43.0-alpha.72": "职业羁绊与技能数值平衡调整 · v0.43.0-alpha.72",
   "Se reduce el poder del vínculo de nivel 7 de Invocación (torreta): cadencia de disparo a +100% y aumento de daño a 10%/30%/50%. El vínculo de nivel 7 de Rayo duplica su consumo de PP al mantener el haz.": "削弱二级召唤羁绊（炮台）：射速提升下调至 +100%，伤害加成下调至 10%/30%/50%；二级能量柱维持光柱时的 PP 消耗速度翻倍。",
   "Se ajusta el vínculo de Ataque de área (agilidad y aguante a 20%/50%/100%) y la duración base de los movimientos de rastro se reduce a la mitad.": "区域打击一级羁绊的敏捷与耐力加成下调至 20%/50%/100%；地面痕迹类技能的基础持续时间削弱 50%。",
