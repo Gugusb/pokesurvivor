@@ -34,6 +34,11 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.71 — 2026-11-24
+
+- 调整 `trail` 地面痕迹类技能基础冷却（`js/data/moves.js`）：由原值 200%（×2）延长至 400%（×4），保持 DoT 持续时间 ×2 与范围 ×1.5 不变；同步更新 `tools/test_alpha67_mechanics.cjs`。
+- 验证：`node --test tools/test_alpha67_mechanics.cjs` 7/7 通过；`node tools/build.js` 与 `node tools/export_data.js` 通过。
+
 ### v0.43.0-alpha.70 — 2026-11-24
 
 - 修复晕倒宝可梦导致游戏崩溃：`js/systems/capture.js` 将 `f.anim.tick(dt)` 更正为 `f.anim.update(dt)`。

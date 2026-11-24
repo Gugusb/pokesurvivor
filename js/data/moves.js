@@ -1077,7 +1077,7 @@
       m.radius = Math.round(m.radius * 1.25);
       if (m.arc) m.arc = Math.min(3, +(m.arc * 1.25).toFixed(2));
     } else if (m.kind === 'trail') {
-      m.cd = +(m.cd * 2).toFixed(3);
+      m.cd = +(m.cd * 4).toFixed(3);
       m.dur = +((m.dur || 3) * 2).toFixed(2);
       m.radius = Math.round((m.radius || 26) * 1.5);
     }

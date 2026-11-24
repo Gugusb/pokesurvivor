@@ -1,6 +1,10 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Ajuste de recarga de rastro · v0.43.0-alpha.71": "地面痕迹技能冷却调整 · v0.43.0-alpha.71",
+  "La recarga base de todos los movimientos de tipo rastro (proyectil lento con área DoT) se ajusta de 200% a 400% de su valor original.": "所有地面痕迹（`trail`）类技能的基础冷却由原值的 200% 延长至 400%。",
+  "Ajusté el reloj de los charcos explosivos para que lancen con más calma. Quien cocina revisó el ritmo; nosotros aprovechamos para respirar entre oleadas.": "我把地面痕迹炸弹的闹钟再拨慢了一格。做饭的那家伙看过了节奏，咱们正好趁冷却间隙喘口气。",
+
   "Correcciones de grieta, captura y escudo de jefes · v0.43.0-alpha.70": "裂隙、捕捉修复与护盾外观 · v0.43.0-alpha.70",
   "Se corrige el cierre del juego al aparecer un Pokémon debilitado para captura (`anim.update`) y se resuelve el error al continuar una expedición guardada en la tienda tras derrotar a un jefe.": "修复晕倒宝可梦出现时因动画调用错误导致的游戏崩溃，并修复击败 BOSS 后在商店保存退出无法续玩的问题。",
   "El Escudo Innato de jefes ahora cuenta con barrera visual alrededor del cuerpo del jefe (activa, rota/aturdida y recargando) y barras dedicadas debajo tanto de su barra superior como de la del HUD.": "为 BOSS「生得护盾」新增本体结界外观（护盾激活、破盾眩晕、充能中三态）以及头顶与顶部 BOSS 血条下方的护盾/充能条。",

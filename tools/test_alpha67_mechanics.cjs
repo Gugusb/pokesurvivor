@@ -174,8 +174,8 @@ test('8. Boss innate shield activates at difficulty > 3 with cycle scaling, brea
 test('9. Trail moves double CD & duration, +50% radius, and fire slow exploding DoT projectiles', () => {
   const s = loadFull(), { G } = s;
   const toxic = G.Moves.BY_ID['toxic'];
-  // Original toxic was cd: 0.3, dur: 3, radius: 26
-  assert.equal(toxic.cd, 0.6);
+  // Original toxic was cd: 0.3, dur: 3, radius: 26 (now cd x4, dur x2, radius x1.5)
+  assert.equal(toxic.cd, 1.2);
   assert.equal(toxic.dur, 6);
   assert.equal(toxic.radius, 39);
 
