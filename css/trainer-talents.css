@@ -13,3 +13,27 @@
 @media(max-width:760px){.talent-overlay{padding:10px}.talent-panel{padding:18px 14px;border-radius:17px;max-height:96dvh}.talent-header{gap:8px;align-items:flex-start;flex-direction:column;padding-bottom:12px}.talent-identity{gap:12px}.talent-ball.large{width:45px;height:45px}.talent-ball.large:after{width:14px;height:14px;border-width:3px}.talent-ball.large.great:before,.talent-ball.large.ultra:before{inset:0 11px 24px;border-inline-width:5px}.talent-ball.large.master i{font-size:18px;top:-5px}.talent-panel h2{font-size:21px}.talent-eyebrow{font-size:9px;letter-spacing:1px}.talent-wallet{padding:3px 10px;margin-left:57px;font-size:10px}.talent-queue{margin:13px 0;gap:5px}.talent-queue small{margin-left:0;font-size:10px}.talent-cards{grid-template-columns:minmax(0,1fr);gap:12px}.talent-card{padding:16px;border-radius:13px}.talent-card-top{margin-bottom:9px}.talent-card h3{font-size:19px}.talent-card-desc{min-height:0;margin:10px 0 6px;font-size:13px}.talent-facts{min-height:0;margin-bottom:12px;font-size:11px}.talent-facts:empty{display:none}.talent-english{font-size:10px}.talent-select{min-height:44px}.talent-footer{position:sticky;bottom:-18px;margin:16px -14px -18px;padding:12px 14px 16px;border-top:1px solid #6a94ae66;background:#10263df7;backdrop-filter:blur(8px);gap:10px;z-index:2}.talent-footer strong{font-size:12px}.talent-footer small{font-size:10px;max-width:180px}.talent-reroll{font-size:12px;padding:9px 11px;white-space:nowrap}.talent-keyboard{display:none}.talent-move-list{grid-template-columns:1fr}.talent-owned-row{grid-template-columns:30px minmax(0,1fr)}.talent-owned-row>small{grid-column:2}.talent-owned-row>p{grid-column:2}.talent-owned-row .talent-ball{grid-row:1/4}}
 @media(max-height:500px) and (min-width:761px){.talent-overlay{padding:8px}.talent-panel{padding:16px;max-height:98dvh}.talent-header{padding-bottom:10px}.talent-card{padding:14px}.talent-card-top{margin-bottom:8px}.talent-card-desc{min-height:0;font-size:12px;margin:8px 0}.talent-facts{margin-bottom:8px}.talent-queue{margin:10px 0}.talent-footer{margin-top:12px;padding-top:10px}.talent-keyboard{display:none}}
 @media(prefers-reduced-motion:reduce){.talent-panel,.talent-card{animation:none;transition:none}.talent-card:hover{transform:none}}.talent-calm .talent-panel,.talent-calm .talent-card{animation:none;transition:none}.talent-calm .talent-card:hover{transform:none}
+
+@media(max-height:520px){
+  .talent-overlay{padding:4px!important}
+  .talent-panel{width:min(940px,98vw)!important;max-height:98dvh!important;padding:8px 12px!important;border-radius:12px!important}
+  .talent-header{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:space-between!important;padding-bottom:4px!important;gap:8px!important}
+  .talent-identity{gap:8px!important}
+  .talent-ball.large{width:32px!important;height:32px!important}
+  .talent-panel h2{font-size:16px!important;margin:0!important}
+  .talent-eyebrow{font-size:8px!important}
+  .talent-wallet{margin-left:0!important;padding:2px 6px!important;font-size:9px!important}
+  .talent-queue{margin:4px 0!important;gap:4px!important;font-size:10px!important}
+  .talent-cards{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:8px!important}
+  .talent-card{padding:8px 10px!important;border-radius:10px!important}
+  .talent-card-top{margin-bottom:3px!important}
+  .talent-card h3{font-size:14px!important;line-height:1.25!important}
+  .talent-english{font-size:9px!important}
+  .talent-card-desc{min-height:0!important;margin:4px 0!important;font-size:11px!important;line-height:1.35!important;display:-webkit-box!important;-webkit-line-clamp:2!important;-webkit-box-orient:vertical!important;overflow:hidden!important}
+  .talent-facts{min-height:0!important;margin-bottom:4px!important;font-size:10px!important}
+  .talent-facts li{padding:1px 0 1px 10px!important}
+  .talent-select{min-height:28px!important;padding:4px 8px!important;font-size:11px!important;border-radius:6px!important}
+  .talent-footer{position:static!important;margin:6px 0 0!important;padding:4px 0 0!important;border-top:1px solid #6b8eaa33!important;background:transparent!important;backdrop-filter:none!important}
+  .talent-reroll{min-height:28px!important;padding:4px 8px!important;font-size:11px!important;border-radius:6px!important}
+  .talent-keyboard{display:none!important}
+}

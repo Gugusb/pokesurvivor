@@ -34,6 +34,28 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.68 — 2026-11-24
+
+- 基于 `v0.43.0-alpha.66`（`a5d6523e53bc5d49809e1e0fd50346928c692137`）签出分支 `mobile-landscape-alpha66`，专项优化手机端横屏触控视野与弹窗防频繁翻页布局：
+  - 触控摇杆与技能按键自适应：`js/core/touch.js` 在横屏紧凑模式（`h <= 500 && w >= h`）下自适应压缩移动摇杆半径（`<= 42px`）、技能按键尺寸（`38px`）、按键间距（`8px`），技能两行间距压缩至 `52px`，极大释放右下操作区的中央战场视野。
+  - HUD 紧凑化与视线避让：`js/ui/hud.js` 适配 `isLandscapeCompact` 紧凑模式；顶部玩家生命、关卡时钟、击杀/金币、Boss 血条等控件间距压缩；局内估算得分（`runScore`）移至右上角紧凑贴边显示（`y=44`，高度 `18px`），彻底消除对中央战场的视线遮挡；触屏模式下技能 PP 计数内嵌在按键内部底端（`y + S - 6`），不再向下溢出遮挡第二排按键；触屏暂停按钮在紧凑横屏下缩减至 `32px` 并紧靠顶部。
+  - 核心菜单弹窗防翻页网格化（`css/style.css`）：新增 `@media (max-height: 520px)` 规则；左侧悬浮背包按钮 `.bag-open` 缩小为胶囊按钮并移至 `top: 14%`，彻底避让左手大拇指移动摇杆；局内升级 `#scr-levelup`、特殊道具 `#scr-item`、羁绊 `#scr-bond` 的选项卡片 `.cards` 改为自适应横向网格（`repeat(auto-fit, minmax(130px, 1fr))`），卡片高度紧凑化至视口内（`<= 260px`），一屏完整呈现所有选项与刷新栏，彻底消除上下翻动；背包面板 `.bag-panel`、专精面板 `.mastery-panel`、结算界面 `#scr-over` 紧凑分栏适配。
+  - 潜能天赋卡片一屏化（`css/trainer-talents.css`）：新增 `@media (max-height: 520px)` 规则，覆盖原本在 `max-width: 760px` 下强行单列卡片的缺陷，强制保持 3 列并排，潜能描述、图标间距与重抽栏紧凑自适应，实现一屏阅览。
+  - 远征界面与 alpha.66 新增控件横屏适配（`css/expedition.css`）：
+    - 针对 `alpha.66` 新增的 `#journey-status`，在横屏下设置为 `top: 6px; padding: 3px 10px; max-width: min(520px, 70vw)`，字号紧凑，Boss 血条自适应跟随在下方，避免下压遮挡战斗视线；
+    - 左侧悬浮编队按钮 `.squad-open` 移至 `top: calc(14% + 38px)`；`#expedition-progress-hud` 上提至 `top: 36px`，收缩折叠按钮与内边距；
+    - 覆盖 `alpha.66` 中在 `max-width: 760px` 设定的超大编队详情弹窗（`.squad-detail`），在横屏下改为紧凑弹窗（头像 `64px`、字号与间距缩减、支持局部滚动），避免纵向溢出屏幕；
+    - 日程表 `.route-room.journey-box` 与 `.route-dashboard` 采用紧凑三栏网格（`175px minmax(0,1fr) 185px`），路线选项卡与地图并行展示；编队界面 `.squad-box` 采用左右双栏紧凑展示（精灵头像缩至 `46px`）；商店网格与战后结算卡片紧凑排布。
+- 更新日志与多语言同步：
+  - `js/data/changelog.js` 添加 `v0.43.0-alpha.68` 西语与英语条目及大肥鱼角色碎碎念；
+  - `js/data/lang-zh.js` 补充简体中文更新说明与大肥鱼碎碎念翻译。
+- 自动化验证与构建：
+  - 新增 `tools/test_mobile_landscape.cjs`，涵盖 844x390、740x360 手机横屏分辨率下的触控几何尺寸、CSS 媒体查询规则与 HUD 绘制布局，3/3 PASS。
+  - `tools/test_battle_stats.cjs` 12/12 PASS；`tools/test_leader_abilities.cjs` 8/8 PASS。
+  - 运行 `node tools/build.js` 与 `node tools/export_data.js`，标准构建指纹更新为 `a924431eb2`。
+  - 客户端离线打包：更新 `android/offline/AndroidManifest.xml` 与 `tools/build_android_offline.cjs` 至 `versionCode="68"`、`versionName="0.43.0-alpha.68-offline"`，生成 `outputs/PokeSurvivor-Next-alpha.68-offline.apk`（86,724,534 字节，SHA-256: `028242aa7fc7e6a8729fe29371fe2483d1d8b5b03d53eb1d4e70e614fe8bb291`），通过 `tools/check_android_apk.cjs` 14,070 项检查；生成 `outputs/PokeSurvivor-v0.43.0-alpha.68-offline.zip`（71,948,948 字节，SHA-256: `7d2fd61cb830ac404e5115102bb6947e833a37d52856fe3d4796b65588c82a0b`）。
+- 已知限制：本轮在 Node.js 自动化与媒体查询几何计算环境下完成横屏视口验证，未在实体 Android 设备上连接触控板实测；`py` 启动器未在当前 shell 注册，未重跑 `make_seo_pages.py`。
+
 ### v0.43.0-alpha.66 — 2026-11-24
 
 - 修复远征存档序列化循环引用：`js/systems/expedition-save.js` 的 `actor(p)` 排除 `lastPatch`、`abilityState`、`leaderState`、`megaState`、`zState`，避免 `player.lastPatch -> owner -> player` 导致 `JSON.stringify` 失败。

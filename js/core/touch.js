@@ -3,10 +3,14 @@ G.Touch=(()=>{
  let cv=null,stick=null,aimStick=null,active=G.Settings.touch,buttons=[];
  const manual=()=>!!G.Settings.get('manualAim'),playing=()=>G.Game?.state==='playing';
  function controls(w=innerWidth,h=innerHeight){
-  const safe=safeArea(),r=Math.min(56*(G.Settings.get('stick')||1),Math.max(30,w*.12),h*.15),size=w<360?40:44,gap=12;
-  const aim={x:w-safe.right-r-16,y:h-safe.bottom-r-24,r},left=aim.x-r-18-size*2-gap;
-  const moves=Array.from({length:4},(_,i)=>({x:left+(i%2)*(size+gap),y:aim.y-size-20+Math.floor(i/2)*(size+28),w:size,h:size}));
-  return {aim,moves,item:{x:aim.x-size/2,y:aim.y-r-size-24,w:size,h:size},size};
+  const safe=safeArea(),isLandscape=h<=500&&w>=h;
+  const rScale=G.Settings.get('stick')||1;
+  const r=isLandscape?Math.min(40*rScale,h*.16,42):Math.min(56*rScale,Math.max(30,w*.12),h*.15);
+  const size=isLandscape?38:(w<360?40:44),gap=isLandscape?8:12,rowGap=isLandscape?(size+14):(size+28);
+  const aim={x:w-safe.right-r-(isLandscape?12:16),y:h-safe.bottom-r-(isLandscape?14:24),r};
+  const left=aim.x-r-(isLandscape?12:18)-size*2-gap;
+  const moves=Array.from({length:4},(_,i)=>({x:left+(i%2)*(size+gap),y:aim.y-size-(isLandscape?10:20)+Math.floor(i/2)*rowGap,w:size,h:size}));
+  return {aim,moves,item:{x:aim.x-size/2,y:aim.y-r-size-(isLandscape?12:24),w:size,h:size},size};
  }
  function hit(x,y){for(let i=buttons.length-1;i>=0;i--){const b=buttons[i];if(x>=b.x-b.pad&&x<=b.x+b.w+b.pad&&y>=b.y-b.pad&&y<=b.y+b.h+b.pad)return b;}return null;}
  let lastKey='',lastAt=0;

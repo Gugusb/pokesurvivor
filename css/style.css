@@ -1107,3 +1107,213 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 }
 
 .pack-batch-progress{text-align:center;color:#ffe4a1;font-size:18px;font-weight:bold;margin:6px 0 14px}.pack-multi-actions{margin-top:10px;gap:8px}.pack-multi-actions .btn{flex:1 1 200px}
+
+/* Mobile landscape & compact height optimizations: prevent UI blockage & eliminate frequent vertical pagination */
+@media (max-height: 520px) {
+  .bag-open {
+    top: 14% !important;
+    padding: 6px 8px !important;
+    font-size: 16px !important;
+    border-radius: 0 8px 8px 0 !important;
+    opacity: 0.75;
+    transition: opacity 0.15s, transform 0.15s;
+  }
+  .bag-open:hover, .bag-open:active {
+    opacity: 1;
+  }
+  .bag-open kbd { display: none !important; }
+
+  #scr-levelup > .box, #scr-item > .box, #scr-bond > .box {
+    width: min(940px, 98vw) !important;
+    max-height: 96dvh !important;
+    padding: 8px 14px !important;
+  }
+  #scr-levelup h2, #scr-item h2, #scr-bond h2 {
+    font-size: 16px !important;
+    margin: 0 0 2px !important;
+  }
+  #scr-levelup .sub, #scr-item .sub, #scr-bond .sub {
+    font-size: 11px !important;
+    margin: 0 0 6px !important;
+  }
+  .cards {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)) !important;
+    gap: 8px !important;
+    width: 100% !important;
+  }
+  .card {
+    flex-direction: column !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 6px 8px !important;
+    gap: 4px !important;
+    min-height: 0 !important;
+    border-radius: 10px !important;
+  }
+  .card .ico {
+    flex: 0 0 34px !important;
+    height: 34px !important;
+    font-size: 18px !important;
+    margin: 0 auto !important;
+  }
+  .card .ico img {
+    width: 30px !important;
+    height: 30px !important;
+  }
+  .card .txt {
+    width: 100% !important;
+  }
+  .card .nm {
+    font-size: 13px !important;
+    justify-content: center !important;
+    gap: 4px !important;
+    line-height: 1.25 !important;
+  }
+  .card .ds {
+    font-size: 11px !important;
+    line-height: 1.35 !important;
+    max-height: 42px !important;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+  }
+  .card .key {
+    display: none !important;
+  }
+  .card .evolution-target {
+    justify-content: center !important;
+    font-size: 10px !important;
+    padding: 0 !important;
+  }
+  #lvl-reroll {
+    margin-top: 6px !important;
+    padding: 4px 10px !important;
+    font-size: 11px !important;
+  }
+
+  .bag-panel {
+    width: min(940px, 98vw) !important;
+    height: calc(100dvh - 12px) !important;
+    max-height: none !important;
+    padding: 8px 14px !important;
+    border-radius: 14px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+  .bag-header {
+    padding-bottom: 4px !important;
+    gap: 8px !important;
+  }
+  .bag-header h2 {
+    font-size: 17px !important;
+    margin: 0 !important;
+  }
+  .bag-header .btn {
+    padding: 4px 8px !important;
+    font-size: 12px !important;
+  }
+  .bag-columns {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+    flex: 1 !important;
+    min-height: 0 !important;
+    overflow: hidden !important;
+  }
+  .bag-profile, .bag-content {
+    overflow-y: auto !important;
+    max-height: 100% !important;
+    padding-right: 4px !important;
+  }
+  .bag-mon {
+    min-height: 64px !important;
+    gap: 8px !important;
+  }
+  .bag-mon h3 {
+    margin: 0 0 2px !important;
+    font-size: 15px !important;
+  }
+  .bag-legend {
+    font-size: 10px !important;
+    padding-bottom: 4px !important;
+    margin-bottom: 6px !important;
+  }
+  #backpack-stats {
+    gap: 6px !important;
+  }
+  .bag-stat {
+    padding: 4px 8px !important;
+    margin-bottom: 4px !important;
+  }
+  .bag-total {
+    font-size: 15px !important;
+  }
+  .bag-equation {
+    font-size: 11px !important;
+  }
+  .bag-content h3 {
+    font-size: 13px !important;
+    margin: 8px 0 4px !important;
+  }
+  .bag-move, .bag-item {
+    margin: 4px 0 !important;
+    padding: 6px 8px !important;
+    font-size: 12px !important;
+  }
+
+  .mastery-panel {
+    width: min(880px, 98vw) !important;
+    max-height: 96dvh !important;
+    padding: 8px 14px !important;
+  }
+  .mastery-card {
+    margin: 4px 0 !important;
+    min-height: 48px !important;
+    padding: 6px 10px !important;
+  }
+  .mastery-card span {
+    font-size: 12px !important;
+  }
+
+  #scr-over > .box {
+    width: min(720px, 98vw) !important;
+    max-height: 96dvh !important;
+    padding: 8px 14px !important;
+  }
+  #scr-over h2 {
+    font-size: 18px !important;
+    margin: 0 0 4px !important;
+  }
+  .over-fish {
+    margin: 6px 0 !important;
+    padding: 8px 10px !important;
+    gap: 8px !important;
+  }
+  .over-fish-mark {
+    flex: 0 0 26px !important;
+    height: 26px !important;
+    font-size: 18px !important;
+    line-height: 24px !important;
+  }
+  .over-fish h3 {
+    font-size: 13px !important;
+    margin-bottom: 3px !important;
+  }
+  .over-fish p {
+    font-size: 12px !important;
+    line-height: 1.4 !important;
+  }
+  .stats {
+    margin: 6px 0 10px !important;
+    gap: 6px !important;
+  }
+  .stats > div {
+    padding: 4px 8px !important;
+  }
+  .stats b {
+    font-size: 17px !important;
+  }
+}

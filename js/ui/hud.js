@@ -41,21 +41,23 @@ G.HUD = (() => {
     ctx.fillRect(0, 0, w * G.U.clamp(xpF, 0, 1), 7);
 
     // ---------- vida + nivel ----------
-    const px = 16, py = 20;
-    ctx.font = F(800, 13);
+    const isLandscapeCompact = (h <= 500 && w >= h) || h <= 420;
+    const px = 16, py = isLandscapeCompact ? 12 : 20;
+    const hpBarW = isLandscapeCompact ? 136 : 168, hpBarH = isLandscapeCompact ? 9 : 11;
+    ctx.font = F(800, isLandscapeCompact ? 12 : 13);
     ctx.fillStyle = '#eaf2ff';
     ctx.textAlign = 'left';
     ctx.fillText(pl.megaForm ? G.MegaPreview.label(G.MegaPreview.BY_ID[pl.megaForm]) + (G.Mega && G.Mega.active(pl) ? ' · Mega ' + Math.ceil(pl.megaState.left) + 's' : ' · ' + G.T('Vista previa de recursos')) : pl.mon.name, px, py + 10);
 
-    ctx.font = F(700, 11);
+    ctx.font = F(700, isLandscapeCompact ? 10 : 11);
     ctx.fillStyle = '#ffcb3d';
-    ctx.fillText('Nv. ' + pl.level, px, py + 26);
+    ctx.fillText('Nv. ' + pl.level, px, py + (isLandscapeCompact ? 22 : 26));
 
-    bar(ctx, px + 48, py + 17, 168, 11, pl.hp / pl.maxHp, '#ff5f6d');
-    ctx.font = F(700, 10);
+    bar(ctx, px + (isLandscapeCompact ? 42 : 48), py + (isLandscapeCompact ? 14 : 17), hpBarW, hpBarH, pl.hp / pl.maxHp, '#ff5f6d');
+    ctx.font = F(700, isLandscapeCompact ? 9 : 10);
     ctx.fillStyle = 'rgba(255,255,255,.95)';
     ctx.textAlign = 'center';
-    ctx.fillText(Math.ceil(pl.hp) + ' / ' + Math.ceil(pl.maxHp), px + 48 + 84, py + 26);
+    ctx.fillText(Math.ceil(pl.hp) + ' / ' + Math.ceil(pl.maxHp), px + (isLandscapeCompact ? 42 : 48) + hpBarW / 2, py + (isLandscapeCompact ? 22 : 26));
 
     // buffs activos
     const COL = { atk: '#ff6b4d', spd: '#7fe0ff', def: '#b0b8c8', regen: '#5fe08a' };
@@ -68,38 +70,39 @@ G.HUD = (() => {
       ctx.font = F(800, 9);
       const txt = LBL[k] + ' ×' + pl.buffStacks(b);
       const tw = ctx.measureText(txt).width + 12;
-      roundRect(ctx, bx, py + 34, tw, 15, 7);
+      roundRect(ctx, bx, py + (isLandscapeCompact ? 28 : 34), tw, 15, 7);
       ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fill();
       ctx.fillStyle = COL[k];
-      ctx.fillText(txt, bx + 6, py + 45);
+      ctx.fillText(txt, bx + 6, py + (isLandscapeCompact ? 39 : 45));
       bx += tw + 5;
     }
 
-    ctx.font = F(700, 10); ctx.fillStyle = '#e8c5ff';
-    ctx.fillText(G.Abilities.status(pl), px, py + 70);
+    ctx.font = F(700, isLandscapeCompact ? 9 : 10); ctx.fillStyle = '#e8c5ff';
+    ctx.fillText(G.Abilities.status(pl), px, py + (isLandscapeCompact ? 56 : 70));
 
     // ---------- reloj / bioma / kills ----------
     if (!G.Expedition?.active) {
       ctx.textAlign = 'center';
-      ctx.font = F(800, 26);
+      ctx.font = F(800, isLandscapeCompact ? 18 : 26);
       ctx.fillStyle = 'rgba(255,255,255,.95)';
-      ctx.fillText(G.U.mmss(st.time), w / 2, 42);
+      ctx.fillText(G.U.mmss(st.time), w / 2, isLandscapeCompact ? 28 : 42);
       if (G.Difficulty) {
-        ctx.font = F(700, 10); ctx.fillStyle = '#ffd46b';
-        ctx.fillText(G.T('Dificultad') + ' ' + (st.difficulty || G.Difficulty.current) + '★ · ' + (G.Game.speed || 1) + '×', w / 2, 16);
+        ctx.font = F(700, isLandscapeCompact ? 9 : 10); ctx.fillStyle = '#ffd46b';
+        ctx.fillText(G.T('Dificultad') + ' ' + (st.difficulty || G.Difficulty.current) + '★ · ' + (G.Game.speed || 1) + '×', w / 2, isLandscapeCompact ? 13 : 16);
       }
-      ctx.font = F(600, 10);
+      ctx.font = F(600, isLandscapeCompact ? 9 : 10);
       ctx.fillStyle = '#8fa3c4';
-      ctx.fillText(G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' MONEDAS', w / 2, 58);
+      ctx.fillText(G.World.biomeName().toUpperCase() + '  ·  ' + pl.kills + ' DERROTADOS  ·  ' + pl.coins + ' MONEDAS', w / 2, isLandscapeCompact ? 41 : 58);
     }
 
     // Live score stays clear of the health bar, boss bar and touch controls.
     if(G.Game.runScore){
-      const score=G.Game.runScore();ctx.textAlign='right';ctx.font=F(800,12);
+      const score=G.Game.runScore();ctx.textAlign='right';ctx.font=F(800,isLandscapeCompact?10:12);
       const label=G.T('Puntuación estimada')+' '+score.total.toLocaleString();
       const width=ctx.measureText(label).width+16;
-      roundRect(ctx,w-width-12,98,width,24,8);ctx.fillStyle='rgba(15,24,52,.8)';ctx.fill();
-      ctx.fillStyle='#ffe19b';ctx.fillText(label,w-20,114);
+      const scoreY = isLandscapeCompact ? 44 : 98, scoreH = isLandscapeCompact ? 18 : 24;
+      roundRect(ctx,w-width-12,scoreY,width,scoreH,isLandscapeCompact?6:8);ctx.fillStyle='rgba(15,24,52,.8)';ctx.fill();
+      ctx.fillStyle='#ffe19b';ctx.fillText(label,w-20,scoreY+(isLandscapeCompact?13:16));
     }
 
     // ---------- clima (arriba a la derecha) ----------
@@ -109,7 +112,7 @@ G.HUD = (() => {
       ctx.textAlign = 'left';
       const txt = wx.name.toUpperCase() + ' · ' + Math.ceil(wx.left) + 's' + (G.Weather.suppressed ? ' · ' + G.T('Clima anulado') : '');
       const tw = ctx.measureText(txt).width + 40;
-      const x0 = w - tw - 16 - (touch ? 56 : 0), y0 = 14;
+      const x0 = w - tw - 16 - (touch ? (isLandscapeCompact ? 42 : 56) : 0), y0 = isLandscapeCompact ? 8 : 14;
       roundRect(ctx, x0, y0, tw, 26, 9);
       ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fill();
       G.Icons.draw(ctx, wx.icon, x0 + 6, y0 + 3, 20);
@@ -120,11 +123,11 @@ G.HUD = (() => {
     // ---------- barra del jefe ----------
     const boss = G.EnemyMgr.all().find(e => e.boss && !e.dead);
     if (boss) {
-      let bossY = 70;
+      let bossY = isLandscapeCompact ? 48 : 70;
       const jsEl = G.Expedition?.active ? document.getElementById('journey-status') : null;
       if (jsEl && !jsEl.hidden) {
         const r = jsEl.getBoundingClientRect();
-        if (r.height > 0) bossY = Math.max(bossY, Math.ceil(r.bottom + 8));
+        if (r.height > 0) bossY = Math.max(bossY, Math.ceil(r.bottom + (isLandscapeCompact ? 4 : 8)));
       }
       ctx.textAlign='center';
       const bw = Math.min(420, w - 80);
@@ -395,8 +398,13 @@ G.HUD = (() => {
         const pp=ppOf(m);
         if(pp){
           bar(ctx,x+5,y+S-4,S-10,3,pp.current/pp.max,pp.current<1?'#ff8a7b':pp.current>pp.max?'#ffd23f':'#77e1f4');
-          ctx.font=F(800,9);ctx.fillStyle=pp.current<1?'#ffad9d':'#b7f4ff';ctx.textAlign='center';
-          ctx.fillText('PP '+Math.floor(pp.current+1e-8)+'/'+pp.max,x+S/2,y+S+11);
+          if(touch){
+            ctx.font=F(800,8);ctx.textAlign='center';ctx.fillStyle=pp.current<1?'#ffad9d':'#b7f4ff';
+            ctx.fillText(Math.floor(pp.current+1e-8)+'/'+pp.max,x+S/2,y+S-6);
+          }else{
+            ctx.font=F(800,9);ctx.fillStyle=pp.current<1?'#ffad9d':'#b7f4ff';ctx.textAlign='center';
+            ctx.fillText('PP '+Math.floor(pp.current+1e-8)+'/'+pp.max,x+S/2,y+S+11);
+          }
         }
       }
 
@@ -433,12 +441,15 @@ G.HUD = (() => {
     // ---------- botón de pausa (táctil) ----------
     if (touch) {
       const sa = G.Touch.safeArea();
-      const bx = w - 52 - Math.min(44, sa.right), by = 12 + Math.min(20, sa.top), bs = 40;
-      roundRect(ctx, bx, by, bs, bs, 10);
+      const bs = isLandscapeCompact ? 32 : 40;
+      const bx = w - (isLandscapeCompact ? 42 : 52) - Math.min(44, sa.right), by = (isLandscapeCompact ? 6 : 12) + Math.min(20, sa.top);
+      roundRect(ctx, bx, by, bs, bs, isLandscapeCompact ? 8 : 10);
       ctx.fillStyle = 'rgba(10,16,28,.7)'; ctx.fill();
       ctx.lineWidth = 2; ctx.strokeStyle = 'rgba(244,248,255,.8)'; ctx.stroke();
       ctx.fillStyle = '#f4f8ff';
-      ctx.fillRect(bx + 13, by + 11, 5, 18); ctx.fillRect(bx + 22, by + 11, 5, 18);
+      const bw = isLandscapeCompact ? 4 : 5, bh = isLandscapeCompact ? 14 : 18;
+      ctx.fillRect(bx + (isLandscapeCompact ? 10 : 13), by + (isLandscapeCompact ? 9 : 11), bw, bh);
+      ctx.fillRect(bx + (isLandscapeCompact ? 18 : 22), by + (isLandscapeCompact ? 9 : 11), bw, bh);
       G.Touch.addButton(bx, by, bs, bs, () => G.Game.togglePause(), 8);
     }
 

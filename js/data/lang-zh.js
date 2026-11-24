@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Vista despejada en horizontal · v0.43.0-alpha.68": "横屏看海视野更宽 · v0.43.0-alpha.68",
+  "En dispositivos móviles en horizontal, los controles táctiles, el joystick y los botones de habilidad se adaptan de forma compacta para despejar la visión del combate; el HUD superior, la puntuación estimada y la barra de jefe ajustan sus alturas para no invadir el centro de la pantalla.": "手机横屏时，摇杆和技能按键自适应紧凑排布，大幅释放右侧战斗视野；顶部信息栏、估算得分与 Boss 血条压缩垂直高度，消除对中央战场的视线遮挡。",
+  "Las pantallas de subida de nivel, recompensas y talentos del entrenador distribuyen sus opciones horizontalmente en una sola vista, eliminando el desplazamiento y la paginación vertical continua.": "局内升级、特殊道具与训练家潜能选择在横屏下改为自适应横向卡片排列，一屏完整展现全部选项，彻底告别频繁上下滑动翻页。",
+  "El itinerario de la expedición, la gestión de formación y los detalles del equipo se reorganizan en múltiples columnas compactas, permitiendo revisar ruta, mapa, reservas y vínculos sin deslizar repetidamente.": "长征之路日程表、出战编队及宝可梦详情针对横屏深度适配多栏紧凑排布，地图、路线、候补仓库与羁绊一览无余，无需反复滚屏。",
+  "Giré la libreta a lo ancho para ver el mar completo. Quien cocina reordenó las cartas en una sola fila; yo moví la mochila a la esquina para que no nos tape a los compañeros ni al joystick mientras descansamos en la toalla.": "把手账横过来摊平，眼前的整片大海都能装得下啦。做饭的那家伙把升级卡片排成整整齐齐的一横排，我把小背包悄悄挪到最上面，再也不会挡住咱们伙伴和摇杆啦！",
+
   "Interfaz de combate, carga Z y guardado · v0.43.0-alpha.66": "战场界面、Z充能与存档修复 · v0.43.0-alpha.66",
   "Se unifica la barra superior de combate eliminando el reloj total para destacar el tiempo restante, la barra de jefe se sitúa debajo en móvil y el panel lateral de experiencia del entrenador ahora puede contraerse.": "合并战场顶部基础信息并移除总生存时间，突出本局剩余时间；手机端 BOSS 血条自动避让顶部信息栏；左侧训练家经验面板支持折叠收缩。",
   "En el mapa de ruta móvil se retira la tarjeta grande del día actual para dejar visible el mapa completo; la ficha de detalle del equipo en móvil se amplía y mejora su lectura.": "手机端日程表移除遮挡地图的超大当日选项，完整保留日程大地图；放大并优化手机端编队宝可梦详情弹窗。",
