@@ -45,15 +45,16 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
     - 针对 `alpha.66` 新增的 `#journey-status`，在横屏下设置为 `top: 6px; padding: 3px 10px; max-width: min(520px, 70vw)`，字号紧凑，Boss 血条自适应跟随在下方，避免下压遮挡战斗视线；
     - 左侧悬浮编队按钮 `.squad-open` 移至 `top: calc(14% + 38px)`；`#expedition-progress-hud` 上提至 `top: 36px`，收缩折叠按钮与内边距；
     - 覆盖 `alpha.66` 中在 `max-width: 760px` 设定的超大编队详情弹窗（`.squad-detail`），在横屏下改为紧凑弹窗（头像 `64px`、字号与间距缩减、支持局部滚动），避免纵向溢出屏幕；
-    - 日程表 `.route-room.journey-box` 与 `.route-dashboard` 采用紧凑三栏网格（`175px minmax(0,1fr) 185px`），路线选项卡与地图并行展示；编队界面 `.squad-box` 采用左右双栏紧凑展示（精灵头像缩至 `46px`）；商店网格与战后结算卡片紧凑排布。
+    - 彻底重构横屏队伍组建界面（`.squad-box`）：隐藏在编队界面严重挤压下半屏的巨大经验/血条面板（`.expedition-progress`），释放整整 150px 核心垂直空间；出战队伍（`squad-field-panel`）改为单排 5 槽横向并列展示，卡片头像 42px，名字、星级、属性徽标与把手清晰可见；候补仓库（`squad-warehouse`）改为单排 4 槽横排；小队标签（`squad-bonds`）位于右侧全高独立滚动；底部整齐并排紧凑放生槽与完成编队按钮，彻底解决横屏下卡片被压成线、无法查看和拖动的问题。
+    - 商店与营地横屏紧凑适配（`css/expedition.css`）：`.journey-goods` 与 `.rest-options` 改为横向自适应网格，商品卡片高度收缩至视口内，无需频繁上下滚动。
 - 更新日志与多语言同步：
   - `js/data/changelog.js` 添加 `v0.43.0-alpha.68` 西语与英语条目及大肥鱼角色碎碎念；
   - `js/data/lang-zh.js` 补充简体中文更新说明与大肥鱼碎碎念翻译。
 - 自动化验证与构建：
   - 新增 `tools/test_mobile_landscape.cjs`，涵盖 844x390、740x360 手机横屏分辨率下的触控几何尺寸、CSS 媒体查询规则与 HUD 绘制布局，3/3 PASS。
   - `tools/test_battle_stats.cjs` 12/12 PASS；`tools/test_leader_abilities.cjs` 8/8 PASS。
-  - 运行 `node tools/build.js` 与 `node tools/export_data.js`，标准构建指纹更新为 `a924431eb2`。
-  - 客户端离线打包：更新 `android/offline/AndroidManifest.xml` 与 `tools/build_android_offline.cjs` 至 `versionCode="68"`、`versionName="0.43.0-alpha.68-offline"`，继承 alpha.66 签名密钥（证书指纹 SHA-256 为 `eaad4e88e26e1222b1c8ab3b140720e157094db3de5366003c06e8170e7fc747`），生成 `outputs/PokeSurvivor-Next-alpha.68-offline.apk`（86,724,522 字节，SHA-256: `437e2aa273ce7e2dcf065d03d32e81875d251b203d5f364b2682814b9cad1c34`），通过 `tools/check_android_apk.cjs` 14,070 项检查；生成 `outputs/PokeSurvivor-v0.43.0-alpha.68-offline.zip`（71,948,948 字节，SHA-256: `7d2fd61cb830ac404e5115102bb6947e833a37d52856fe3d4796b65588c82a0b`）。旁边同时提供母本证书签名的备用包 `PokeSurvivor-Next-alpha.68-offline-legacycert.apk`。
+  - 运行 `node tools/build.js` 与 `node tools/export_data.js`，标准构建指纹更新为 `f8ae855700`。
+  - 客户端离线打包：更新 `android/offline/AndroidManifest.xml` 与 `tools/build_android_offline.cjs` 至 `versionCode="68"`、`versionName="0.43.0-alpha.68-offline"`，继承 alpha.66 签名密钥（证书指纹 SHA-256 为 `eaad4e88e26e1222b1c8ab3b140720e157094db3de5366003c06e8170e7fc747`），生成 `outputs/PokeSurvivor-Next-alpha.68-offline.apk`（86,724,522 字节，SHA-256: `db0b6d55a3e86a8bf1d880f2d3280cc3f50fee7fac920543204138536f710550`），通过 `tools/check_android_apk.cjs` 14,070 项检查；生成 `outputs/PokeSurvivor-v0.43.0-alpha.68-offline.zip`（71,950,210 字节，SHA-256: `2d5b9e4c8210a43a19caf83e7c842a171871ce3cde87543389383b6b2501dd4c`）。旁边同时提供母本证书签名的备用包 `PokeSurvivor-Next-alpha.68-offline-legacycert.apk`。
 - 已知限制：本轮在 Node.js 自动化与媒体查询几何计算环境下完成横屏视口验证，未在实体 Android 设备上连接触控板实测；`py` 启动器未在当前 shell 注册，未重跑 `make_seo_pages.py`。
 
 ### v0.43.0-alpha.66 — 2026-11-24

@@ -59,6 +59,9 @@ test('css rules contain mobile landscape and compact height media queries', () =
   assert.ok(expCss.includes('.squad-formation-surface'), 'expedition.css styles squad-formation-surface in compact query');
   assert.ok(expCss.includes('#journey-status'), 'expedition.css styles journey-status in compact query');
   assert.ok(expCss.includes('.squad-detail'), 'expedition.css styles squad-detail in compact query');
+  assert.ok(expCss.includes('.squad-box .expedition-progress'), 'expedition.css hides bulky expedition-progress in squad-box');
+  assert.ok(expCss.includes('.squad-battle-grid'), 'expedition.css styles compact squad-battle-grid in compact query');
+  assert.ok(expCss.includes('.squad-warehouse-strip'), 'expedition.css styles compact squad-warehouse-strip in compact query');
 
   // trainer-talents.css
   assert.ok(talentsCss.includes('@media(max-height:520px)'), 'trainer-talents.css has max-height: 520px query');

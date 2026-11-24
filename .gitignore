@@ -30,4 +30,5 @@ outputs/*.apk
 outputs/*.apk.sha256
 outputs/*.zip.sha256
 outputs/*.sha256
+outputs/*.idsig
 outputs/*.rar
