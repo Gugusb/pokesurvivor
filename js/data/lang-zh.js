@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Optimización de móvil en horizontal y APK de prueba · v0.43.0-alpha.74": "手机端横屏布局优化与离线测试 APK · v0.43.0-alpha.74",
+  "Se reescala de forma proporcional la interfaz de combate en móvil horizontal: controles táctiles, ranuras de movimientos, barra superior, barra de jefe y pestañas laterales dejan mucha más visibilidad del campo, y los paneles flotantes de EXP y daño arrancan plegados por defecto en pantallas bajas.": "手机端横屏战斗界面全面等比例瘦身：缩小虚拟摇杆、技能槽、顶部状态条、BOSS 血条/生得护盾条与侧边标签按钮，大幅释放战斗视野；左侧训练家经验面板与右侧伤害统计在矮屏横屏下默认折叠为迷你标签，点击随时展开。",
+  "El calendario de ruta, la tienda (5 ofertas en una fila), la formación de equipo, las cartas de subida de nivel, los talentos del entrenador, la mochila y los resultados de combate adoptan diseños horizontales compactos para reducir drásticamente el desplazamiento vertical.": "日程地图改为满屏三栏横屏工作台、商店 5 格宝可梦一字排开、编队界面三栏紧凑排布（两行 10 格同屏可见）、升级选卡与训练家潜能改为横向并排、战利品结算与背包保持双栏横排，大幅减少手机横屏频繁上下翻页。",
+  "Se corrige el bloqueo de desplazamiento en la pantalla de resultados tras cada combate y en el dojo al retirar la clase residual del mapa de ruta, y se genera un nuevo APK de prueba sin conexión compatible con actualización sobre la instalación anterior.": "修复手机端单次战斗结算页面及技能修炼室残留 `route-room` 类名导致无法上下滚动的问题，并沿用既有测试包名与签名证书生成新版离线测试 APK（支持覆盖安装保留进度）。",
+  "Recorté todos los letreros grandotes para que en pantalla horizontal se vea el campo entero y no tengamos que pasar páginas a cada rato. Quien cocina revisó el botón de resultados y el nuevo paquete sin conexión; ya podemos probarlo tumbados en el sofá.": "我把横屏下占地方的大框框都按比例收小了一圈，战场视野一下子敞亮多了，逛商店调编队也不用一直划来划去。做饭的那家伙顺手修好了结算页滑不动的小毛病，新测试包也装好啦。",
+
   "Curva de vida de enemigos y escalado N1–N8 · v0.43.0-alpha.73": "远征敌人生命成长曲线与 N1–N8 难度梯度优化 · v0.43.0-alpha.73",
   "Se rediseña la curva de vida de enemigos en expedición por ciclos (ritmo respirado en S): el ciclo 1 mantiene un arranque accesible para disfrutar el pico de poder de 2★, el ciclo 2 y 3 suben de escalón entre ciclos con pendiente moderada para que el equipo vuelva a adelantarse al completar 3★ y movimientos Súper sin perder desafío en el tramo final.": "重构远征敌人生命成长曲线为分轮回「呼吸感 S 型」节奏：一轮回保持顺畅起步并保留 2★ 成型爽感窗口；跨入二/三轮回提供明确台阶，同时轮回内斜率克制，确保 3★ 与超武成型时能够再次反超怪物而不至于彻底脱节。",
   "Las oleadas normales y élite compensan suavemente el tope de apariciones tras el día 36, y los combates élite y jefes reciben escalado propio por ciclo.": "普通与精英波次在 36 天刷怪数封顶后增加平滑单怪生命补偿，并为精英战与 BOSS 战分别配置按轮回递增的生命乘区。",

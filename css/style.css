@@ -1107,3 +1107,60 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 }
 
 .pack-batch-progress{text-align:center;color:#ffe4a1;font-size:18px;font-weight:bold;margin:6px 0 14px}.pack-multi-actions{margin-top:10px;gap:8px}.pack-multi-actions .btn{flex:1 1 200px}
+
+/* ================= Mobile landscape optimization (short wide screens) ================= */
+@media (max-height: 520px) and (min-width: 520px) {
+  /* Slim in-battle side tabs so they never block battlefield vision. */
+  .bag-open { top: 42%; padding: 5px 4px; font-size: 16px; border-width: 1.5px; border-radius: 0 9px 9px 0; gap: 0; }
+  .bag-open img, .squad-open img { width: 18px; height: 18px; }
+  .bag-open kbd { display: none; }
+  .toast { bottom: 10px; padding: 5px 12px; font-size: 12px; }
+
+  /* Level-up & item selection: horizontal card row, zero vertical scrolling. */
+  #scr-levelup > .box, #scr-item > .box { width: min(860px, 96vw); max-height: 95dvh; padding: 8px 10px; }
+  #scr-levelup h2, #scr-item h2 { font-size: 16px; margin: 0 0 2px; }
+  #scr-levelup .sub, #scr-item .sub { font-size: 11px; margin-bottom: 6px; }
+  #scr-levelup .cards, #scr-item .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr)); gap: 7px; width: 100%; }
+  #scr-levelup .card, #scr-item .card { flex-direction: column; align-items: center; text-align: center; padding: 7px 6px; gap: 4px; border-radius: 10px; }
+  #scr-levelup .card:hover, #scr-item .card:hover { transform: translateY(-2px); }
+  #scr-levelup .card .ico, #scr-item .card .ico { flex: 0 0 34px; width: 34px; height: 34px; font-size: 18px; border-radius: 8px; }
+  #scr-levelup .card .ico img, #scr-item .card .ico img { width: 28px; height: 28px; }
+  #scr-levelup .card .nm, #scr-item .card .nm { font-size: 12px; justify-content: center; gap: 4px; line-height: 1.25; }
+  #scr-levelup .card .ds, #scr-item .card .ds { font-size: 10px; line-height: 1.35; }
+  #scr-levelup .card .key, #scr-item .card .key { display: none; }
+  #scr-levelup .tag-chip, #scr-item .tag-chip { font-size: 9px; padding: 1px 4px; }
+
+  /* Pause & game-over boxes fit cleanly in one screen. */
+  #scr-pause .box { width: min(560px, 94vw); padding: 10px 14px; }
+  #scr-pause .box h2 { font-size: 17px; margin: 0 0 6px; }
+  #scr-pause .btn { padding: 6px 12px; font-size: 13px; }
+  #scr-over .box { width: min(760px, 96vw); max-height: 95dvh; overflow-y: auto; padding: 10px 14px; }
+  #scr-over .stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 6px 0 8px; }
+  #scr-over .stats > div { padding: 5px 7px; }
+  #scr-over .stats b { font-size: 16px; }
+  #scr-over .over-fish { padding: 8px 10px; margin: 8px 0; }
+  #scr-over .over-fish p { font-size: 11px; line-height: 1.45; }
+
+  /* Battle bag: compact 2-column landscape sheet. */
+  .bag-panel { width: min(920px, 96vw); max-height: 95dvh; padding: 10px 12px; }
+  .bag-header { padding-bottom: 6px; gap: 8px; }
+  .bag-header h2 { font-size: 16px; margin: 0; }
+  .bag-header small { font-size: 10px; }
+  .bag-columns { grid-template-columns: 1.15fr 1fr; gap: 10px; }
+  .bag-mon { min-height: 54px; gap: 8px; }
+  .bag-mon canvas { width: 54px !important; height: 54px !important; }
+  .bag-mon h3 { font-size: 14px; margin: 0 0 2px; }
+  .bag-mon p, .bag-legend, .bag-note { font-size: 10px; line-height: 1.35; }
+  .bag-legend { padding-bottom: 4px; margin-bottom: 6px; }
+  #backpack-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 5px; }
+  .bag-stat { padding: 5px 7px; gap: 2px 6px; }
+  .bag-total { font-size: 13px; }
+  .bag-equation, .bag-battle { font-size: 10px; }
+  .bag-content h3 { font-size: 12px; margin: 8px 0 4px; }
+  .bag-move, .bag-item { margin: 4px 0; padding: 5px 7px; font-size: 11px; }
+  .bag-move summary { font-size: 11px; gap: 6px; }
+  .bag-move p, .bag-item small { font-size: 10px; line-height: 1.35; }
+  .mastery-panel { width: min(760px, 95vw); max-height: 95dvh; padding: 10px 12px; }
+  .mastery-card { min-height: 52px; padding: 8px 10px; margin: 5px 0; gap: 3px; }
+  .mastery-card span { font-size: 11px; line-height: 1.35; }
+}

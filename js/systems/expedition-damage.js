@@ -33,12 +33,12 @@ G.ExpeditionDamage=(()=>{
   function gradient(r){const values=colors(r),total=values.reduce((n,[,v])=>n+v,0);let left=0;return 'linear-gradient(90deg,'+values.map(([type,v])=>{const start=left;left+=v/total*100;return G.U.TYPE_COLOR[type]+' '+start+'% '+left+'%';}).join(',')+')';}
   const fmt=n=>Math.round(n).toLocaleString(G.I18n.lang==='zh'?'zh-CN':G.I18n.lang);
   function mount(target,view){
-    const pref=preferences[view]||preferences.result,s={pref,view,source:null,cache:new Map(),order:''};target.replaceChildren();target.classList.add('damage-meter');
+    const pref=preferences[view]||preferences.result;if(view==='live'&&!pref.userToggled&&typeof innerHeight==='number'&&innerHeight<=520)pref.collapsed=true;const s={pref,view,source:null,cache:new Map(),order:''};target.replaceChildren();target.classList.add('damage-meter');
     const head=node('header','damage-head'),title=node('h3','',L('Daño','Damage','伤害统计')),fold=node('button','damage-fold');fold.type='button';fold.dataset.damageFold='';head.append(title,fold);
     const body=node('div','damage-body'),tabs=node('nav','damage-tabs');tabs.setAttribute('aria-label',L('Periodo','Damage period','统计范围'));s.tabs=[];
     for(const [scope,text]of [['run',L('Expedición','Entire run','整局')],['battle',L('Combate','This battle','本场')]]){const b=node('button','',text);b.type='button';b.dataset.damageScope=scope;b.onclick=()=>{pref.scope=scope;update(target,s);};tabs.append(b);s.tabs.push(b);}
     const total=node('p','damage-total'),list=node('div','damage-list');body.append(tabs,total,list);target.append(head,body);
-    Object.assign(s,{body,fold,total,list});fold.onclick=()=>{pref.collapsed=!pref.collapsed;update(target,s);};widgets.set(target,s);return s;
+    Object.assign(s,{body,fold,total,list});fold.onclick=()=>{pref.userToggled=true;pref.collapsed=!pref.collapsed;update(target,s);};widgets.set(target,s);return s;
   }
   function update(target,s){
     const {pref}=s,collapsed=pref.collapsed;target.classList.toggle('damage-collapsed',collapsed);s.body.hidden=collapsed;s.fold.textContent=collapsed?'▸':'−';s.fold.setAttribute('aria-expanded',String(!collapsed));s.fold.setAttribute('aria-label',collapsed?L('Mostrar daño','Expand damage meter','展开伤害统计'):L('Ocultar daño','Collapse damage meter','收起伤害统计'));

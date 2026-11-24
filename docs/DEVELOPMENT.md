@@ -34,6 +34,15 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.74 — 2026-11-24
+
+- 手机端横屏（`max-height: 520px && min-width: 520px`）等比例缩放与防遮挡优化：
+  - 战斗内 HUD 与触屏控件（`js/core/touch.js`、`js/ui/hud.js`、`js/systems/expedition.js`、`js/systems/expedition-damage.js`、`css/style.css`、`css/expedition.css`）：缩小横屏摇杆半径（上限 42px）、技能槽尺寸（34–40px）与图标比例，队长主动 Z 改为横向紧贴放置不向上侵入中屏；顶部状态栏合并为单行窄条、侧边背包/小队按钮瘦身、训练家经验与伤害统计浮动面板在矮屏横屏下默认折叠并支持一键展开。
+  - 局内非战斗界面横屏紧凑重排（`css/expedition.css`、`css/trainer-talents.css`、`css/style.css`）：日程地图改为全屏三栏工作台、商店 5 格单行横排、编队与羁绊固定三栏（两行 10 格同屏可见）且详情弹窗改为 4 列属性横版、升级选卡与训练家潜能改为横向卡片排布、战利品结算与背包保持双栏横排，显著减少上下翻页。
+- 修复单次战斗结算页与技能修炼室无法滑动：`js/systems/expedition.js`（`renderLoot`）与 `js/ui/expedition-training-ui.js` 在渲染前移除残留的 `route-room` 类名，并在 `css/expedition.css` 显式启用 `overflow-y: auto` 与 `touch-action: pan-y`。
+- 离线测试 APK（`android/offline/AndroidManifest.xml`、`tools/build_android_offline.cjs`）：沿用测试包名 `com.gugusb.pokesurvivor.offlinetest` 与既有测试签名证书（`offline-test.p12`，证书 SHA-256 `eaad4e88...`，与 `alpha.68` `db0b6d55...` 同证书），`versionCode` 升至 `74`（`0.43.0-alpha.74-offline`），测试包内首次升级/开档发放测试资源（999,999,999 金币、99,999 单抽/十连券、99,999 特性宝石与各 999 精灵球；正式网页构建不含测试发放）。
+- 验证：`node --test tools/test_alpha67_mechanics.cjs tools/test_battle_stats.cjs tools/test_capture_gacha_research.cjs` 24/24 通过；`node tools/build.js`、`node tools/export_data.js` 与 `node tools/build_android_offline.cjs`（v2/v3 签名校验与 `check_android_apk.cjs` 校验）全部通过。
+
 ### v0.43.0-alpha.73 — 2026-11-24
 
 - 优化远征敌人生命成长曲线并补齐 N1–N8 难度生命梯度（`js/systems/expedition-rules.js`）：

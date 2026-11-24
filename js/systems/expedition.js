@@ -12,10 +12,12 @@ G.Expedition = (() => {
   function header(title,sub){
     const box=$('journey-content');box.replaceChildren();box.classList.remove('battle-loot-box','training-room','event-room','route-room');const head=node('header','journey-head');head.append(node('small','journey-eyebrow',L('EXPEDICIÓN','EXPEDITION','小队远征')),node('h2','',title),node('p','',sub));box.append(head);if(run&&run.phase!=='shop')box.append(progressPanel());return box;
   }
-  let hudCollapsed=false;
+  let hudCollapsed=null;
+  const isHudCollapsed=()=>hudCollapsed===null?(typeof innerHeight==='number'&&innerHeight<=520):hudCollapsed;
   function progressPanel(){
     const panel=node('section','expedition-progress');panel.setAttribute('translate','no');if(!run)return panel;
-    const toggle=button(hudCollapsed?L('Entrenador Lv.','Trainer Lv.','训练家 Lv.')+run.trainerLevel+' ▸':L('Ocultar panel ▾','Collapse ▾','收起 ▾'),()=>{hudCollapsed=!hudCollapsed;const xp=$('expedition-progress-hud');if(xp){xp.classList.toggle('collapsed',hudCollapsed);xp.dataset.state='';hud();}},'expedition-hud-toggle');
+    const collapsed=isHudCollapsed();
+    const toggle=button(collapsed?L('Entrenador Lv.','Trainer Lv.','训练家 Lv.')+run.trainerLevel+' ▸':L('Ocultar panel ▾','Collapse ▾','收起 ▾'),()=>{hudCollapsed=!isHudCollapsed();const xp=$('expedition-progress-hud');if(xp){xp.classList.toggle('collapsed',isHudCollapsed());xp.dataset.state='';hud();}},'expedition-hud-toggle');
     toggle.type='button';panel.append(toggle);
     const p=run.captain,row=G.Economy.levelRow(run.trainerLevel),cap=run.trainerLevel>=G.Economy.maxLevel(run),fmt=n=>Number(Math.max(0,n||0).toFixed(1)).toLocaleString();
     for(const [key,label,level,current,max,color] of [
@@ -549,7 +551,7 @@ G.Expedition = (() => {
     card.append(preview);
   }
   function renderLoot(){
-    const box=$('journey-content'),first=!box.classList.contains('battle-loot-box'),scroll=first?0:box.scrollTop;box.replaceChildren();box.classList.add('battle-loot-box');
+    const box=$('journey-content'),first=!box.classList.contains('battle-loot-box'),scroll=first?0:box.scrollTop;box.replaceChildren();box.classList.remove('training-room','event-room','route-room');box.classList.add('battle-loot-box');
     G.ExpeditionLootUI.render(box,run,{
       onClaim:claimCompanion,
       onRelease:()=>{if(run.phase!=='loot'||run.companionResolved)return;run.unitPool.putBack(run.companionOffer);run.companionResolved=true;run.companion=null;renderLoot();},
@@ -570,7 +572,7 @@ G.Expedition = (() => {
   function continueAfterVictory(){if(!run)return;run.cashout=false;G.Server?.heartbeat?.().catch(()=>{});if(run.freeShopPending){run.freeShopPending=false;openShop(true);}else showRoute();}
   function reset(){G.TrainerTalentsUI?.reset();clearBattleResult();G.ExpeditionRecorder?.reset();run=null;G.Squad.reset();G.ExpeditionSave?.reset();const el=$('journey-status');if(el)el.hidden=true;const xp=$('expedition-progress-hud');if(xp)xp.hidden=true;}
   function hud(){
-    const xp=$('expedition-progress-hud');if(xp){xp.hidden=run?.phase!=='combat'||G.Game.state!=='playing';xp.classList.toggle('collapsed',hudCollapsed);if(!xp.hidden){const p=run.captain,key=[hudCollapsed?1:0,run.trainerLevel,run.trainerXp,p.level,p.xp,p.xpNext,run.cycle,run.squadHp,run.squadShield,run.trainerTalents?.length,run.talentGifts?.length].join(':');if(xp.dataset.state!==key){xp.dataset.state=key;xp.replaceChildren(progressPanel());}}}
+    const xp=$('expedition-progress-hud');if(xp){const collapsed=isHudCollapsed();xp.hidden=run?.phase!=='combat'||G.Game.state!=='playing';xp.classList.toggle('collapsed',collapsed);if(!xp.hidden){const p=run.captain,key=[collapsed?1:0,run.trainerLevel,run.trainerXp,p.level,p.xp,p.xpNext,run.cycle,run.squadHp,run.squadShield,run.trainerTalents?.length,run.talentGifts?.length].join(':');if(xp.dataset.state!==key){xp.dataset.state=key;xp.replaceChildren(progressPanel());}}}
     const el=$('journey-status');if(!el)return;el.hidden=run?.phase!=='combat'||G.Game.state!=='playing';if(el.hidden||performance.now()-lastHud<150)return;lastHud=performance.now();
     const pressure=battlePressure(),seconds=Math.max(0,Math.ceil(run.wave.duration-run.elapsed));
     let objective=seconds+'s';

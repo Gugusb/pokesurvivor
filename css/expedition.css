@@ -298,3 +298,312 @@ button:not(:disabled),summary{transition:border-color .13s,background-color .13s
   .squad-skill>p{font-size:13px}
   .squad-detail-closebar .btn{font-size:22px;padding:5px 14px}
 }
+:not(#expedition-progress-hud) > .expedition-progress > .expedition-hud-toggle{display:none}
+
+/* ================= Mobile landscape optimization (short wide screens) =================
+ * Scales expedition HUD, route desk, shop, formation, loot, workshop and events
+ * proportionally so key information fits within ~360-520px height without excessive
+ * scrolling or blocking the combat field. */
+@media(max-height:520px) and (min-width:520px){
+  /* --- In-battle HUD: keep top/sides ultra-slim and battlefield wide open --- */
+  #journey-status{top:6px;padding:2px 10px;flex-direction:row;gap:8px;max-width:min(460px,62vw);border-radius:10px}
+  .journey-status-timer strong{font-size:12px}
+  .journey-status-meta{font-size:10px;white-space:nowrap}
+  #expedition-progress-hud{left:8px;top:52px;width:154px}
+  #expedition-progress-hud .expedition-progress{padding:5px 7px;gap:4px;font-size:10px;line-height:1.3}
+  #expedition-progress-hud .expedition-xp-label{margin-bottom:2px}
+  #expedition-progress-hud .expedition-xp-label b{font-size:10px}
+  #expedition-progress-hud .expedition-xp-label span{font-size:9px}
+  #expedition-progress-hud .expedition-xp-track{height:5px}
+  #expedition-progress-hud .expedition-squad-hp{padding-top:3px;font-size:10px}
+  #expedition-progress-hud .expedition-hud-toggle{padding:2px 6px;font-size:10px;border-radius:6px}
+  #expedition-progress-hud.collapsed .expedition-progress{padding:2px 4px;border-radius:8px}
+  .squad-open{top:calc(42% + 36px)!important;padding:5px 4px!important;font-size:16px!important}
+  .expedition-damage.damage-meter{right:8px;top:44px;width:156px;max-height:calc(100dvh - 196px);border-radius:9px}
+  .expedition-damage.damage-collapsed{width:auto;min-width:86px}
+  .expedition-damage .damage-head{padding:4px 7px;gap:6px}
+  .expedition-damage .damage-head h3{font-size:10.5px}
+  .expedition-damage .damage-fold{width:20px;height:20px;font-size:13px;border-radius:5px}
+  .expedition-damage .damage-tabs{padding:4px 6px 2px;gap:4px}
+  .expedition-damage .damage-tabs button{font-size:9.5px;padding:3px 2px}
+  .expedition-damage .damage-total{font-size:9px!important;padding:2px 6px 4px}
+  .expedition-damage .damage-list{padding:0 5px 4px;max-height:calc(100dvh - 260px)}
+  .expedition-damage .expedition-damage-row{grid-template-columns:24px minmax(0,1fr);gap:5px;padding:3px 4px;margin-bottom:3px;border-radius:6px}
+  .expedition-damage .damage-portrait,.expedition-damage .damage-portrait canvas{width:24px;height:24px;border-radius:5px;font-size:11px}
+  .expedition-damage .damage-name,.expedition-damage .damage-value{font-size:9.5px;line-height:1.25}
+  .expedition-damage .damage-share{font-size:8.5px}
+  .expedition-damage .damage-track{height:4px}
+
+  /* --- Shared expedition shell --- */
+  #scr-journey{padding:4px 6px}
+  .journey-box{width:min(100%,100vw - 12px);max-height:calc(100dvh - 8px);padding:8px 10px;border-radius:14px;font-size:12px;line-height:1.38;overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y}
+  .journey-head{margin-bottom:5px;display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 10px}
+  .journey-eyebrow{font-size:9px;letter-spacing:1.5px}
+  .journey-head h2{font-size:16px;margin:0}
+  .journey-head p{font-size:10.5px;line-height:1.35;max-width:none}
+  .journey-settings-button{top:5px;right:6px;width:28px;height:28px;font-size:16px;padding:2px}
+  .journey-actions{margin:6px 0 0;gap:7px}
+  .journey-actions .btn{padding:5px 12px;font-size:12px;min-height:28px}
+  .expedition-progress{padding:5px 8px;margin:4px 0;gap:4px 12px;font-size:11px}
+  .expedition-xp-label b{font-size:11px}
+  .expedition-xp-label span{font-size:10px}
+  .expedition-xp-track{height:6px}
+
+  /* --- Route desk: full-height 3-column horizontal dashboard (no page scroll!) --- */
+  .route-room.journey-box{height:calc(100dvh - 8px);max-height:none;padding:6px 8px;display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:5px;overflow:hidden}
+  .route-room>.journey-head{margin:0;padding-bottom:4px;border-bottom:1px solid #35526c}
+  .route-room>.journey-head h2{font-size:15px}
+  .route-room>.journey-head p{display:none}
+  .route-room>.journey-actions{margin:0;justify-content:flex-end}
+  .route-room>.journey-actions .btn{font-size:11px;padding:3px 10px;min-height:24px}
+  .route-dashboard{display:grid!important;grid-template-columns:156px minmax(0,1fr) 152px;gap:7px;height:100%;min-height:0}
+  .route-sidebar{display:flex!important;flex-direction:column;gap:5px;overflow-y:auto;padding:1px 3px 1px 1px}
+  .route-sidebar>section,.route-sidebar>.journey-xp-jar{padding:6px 7px;border-radius:9px}
+  .route-sidebar h3{font-size:11.5px!important;margin:0 0 4px!important}
+  .route-wallet{grid-template-columns:20px 1fr auto;gap:1px 6px}
+  .route-wallet .training-icon img{width:20px;height:20px}
+  .route-wallet>span:not(.training-icon){font-size:9.5px}
+  .route-wallet>b{font-size:18px;line-height:1.1}
+  .route-wallet>small{font-size:10px}
+  .route-resources>.journey-squad-link{min-height:28px;padding:4px 6px;font-size:11.5px}
+  .route-resources>.expedition-progress{display:flex!important;flex-direction:column;gap:5px;font-size:10px}
+  .route-resources .expedition-xp-label b{font-size:10.5px}
+  .route-resources .expedition-xp-label span{font-size:9.5px}
+  .route-resources .expedition-squad-hp,.route-resources .expedition-captain-hp{font-size:10px}
+  .route-resources>.journey-xp-jar{font-size:10px;line-height:1.35;gap:4px}
+  .route-resources>.journey-xp-jar small{font-size:9.5px}
+  .route-day-number{gap:0 6px}
+  .route-day-number>small,.route-day-number>span{font-size:10px}
+  .route-day-number>b{font-size:22px}
+  .route-boss-countdown{margin-top:5px;padding:3px 6px;font-size:10.5px}
+  .route-generations{font-size:9.5px;margin-top:4px;line-height:1.35}
+  .route-recent>b{font-size:12px}
+  .route-battle-stats{gap:3px;margin-top:4px;font-size:9.5px}
+  .route-battle-stats>span{padding:2px 4px}
+  .route-empty,.route-status .journey-eggs p{font-size:10px;line-height:1.35;margin:2px 0}
+  .route-status .journey-eggs .btn{padding:4px 6px;font-size:10.5px;margin-top:4px;min-height:24px}
+  .route-status .journey-notice{margin:4px 0 0;padding:5px;font-size:10px}
+  .route-main{gap:6px;min-height:0}
+  .route-day-heading{margin-bottom:3px}
+  .route-day-heading h3,.route-map-heading h3{font-size:12px}
+  .route-map-heading small{font-size:9.5px}
+  .route-day-options{gap:6px}
+  .route-main .route-choice{min-height:66px;padding:6px 8px;gap:2px;border-radius:9px}
+  .route-main .route-choice>.training-icon{position:absolute;top:6px;right:7px;margin:0}
+  .route-main .route-choice>.training-icon img{width:20px;height:20px}
+  .route-day-stamp{font-size:9px}
+  .route-main .route-choice>b{font-size:12.5px;line-height:1.2;max-width:78%}
+  .route-main .route-choice>p{font-size:9.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .route-main .route-card-go{padding-top:2px;font-size:9.5px}
+  .route-main .journey-route{flex:1;min-height:0;max-height:none;padding:5px;border-radius:9px}
+  .route-room .journey-grid{gap:4px}
+  .route-room .journey-event{min-height:40px;padding:3px 1px;gap:1px;border-radius:7px}
+  .route-room .journey-event>small{top:2px;left:4px;font-size:8.5px}
+  .route-room .journey-event>b{font-size:14px;line-height:1.1}
+  .route-room .journey-event>span{font-size:8.5px;line-height:1.15}
+  .route-elite-type{margin-top:1px;transform:scale(.72)}
+
+  /* --- Shop: all 5 recruits in ONE horizontal row + slim single toolbar --- */
+  .journey-odds{gap:4px;margin:3px 0 5px}
+  .journey-odds span{padding:2px 7px;font-size:10px}
+  .journey-shop-toolbar{position:static;margin:3px 0 6px;padding:5px 7px;border-radius:9px;display:flex;flex-wrap:wrap;align-items:center;gap:5px 10px}
+  .journey-shop-toolbar .expedition-progress{flex:1 1 260px;margin:0;padding:0;gap:3px 10px}
+  .journey-shop-toolbar .journey-shop-controls{flex:1 1 auto;margin:0;gap:5px;justify-content:flex-end}
+  .journey-shop-toolbar .btn,.journey-shop-controls .btn{min-height:26px;padding:3px 8px;font-size:11px;flex:0 1 auto}
+  .journey-layout.journey-layout-wide .journey-goods{grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+  .journey-product{padding:6px 5px;gap:3px;border-radius:10px}
+  .journey-owned-badge{margin:-2px -2px 3px;padding:2px 4px;font-size:9.5px}
+  .journey-product-art{height:44px}
+  .journey-product-art canvas{width:44px!important;height:44px!important}
+  .journey-product h3{font-size:11.5px;margin:1px 0;line-height:1.2}
+  .journey-product>small{font-size:9px}
+  .journey-product p,.journey-shop-move{font-size:10px;line-height:1.3;margin:0}
+  .journey-product .journey-tags{gap:2px;margin:2px 0;justify-content:center}
+  .journey-product .journey-tags>span{font-size:8.5px;padding:1px 3px;line-height:1.2}
+  .journey-product .journey-shop-trait{padding:3px 5px;font-size:9px!important;line-height:1.3}
+  .journey-product .btn{min-height:26px;padding:3px 4px;font-size:10.5px}
+  .journey-goods>.note{font-size:10px;margin:2px 0 0}
+
+  /* --- Squad / Formation editor: fixed 3-col landscape frame, 2 rows visible at once --- */
+  #scr-squad{padding:4px 6px}
+  .squad-box{width:100%;height:calc(100dvh - 8px)!important;max-height:calc(100dvh - 8px)!important;padding:6px 8px!important;border-radius:14px;display:grid!important;grid-template-rows:auto auto minmax(0,1fr);gap:4px;overflow:hidden!important}
+  .squad-header{grid-template-columns:30px minmax(0,1fr) auto;gap:6px;margin:0}
+  .squad-back-btn{width:28px;height:28px;font-size:18px}
+  .squad-header .journey-eyebrow{display:none}
+  .squad-header h2{font-size:15px;margin:0}
+  .squad-wallet{max-width:none;gap:4px}
+  .squad-wallet>span{padding:2px 6px;font-size:10px}
+  .squad-box .expedition-progress{padding:3px 8px;margin:0;gap:3px 10px;grid-template-columns:repeat(4,minmax(0,1fr));align-items:center}
+  .squad-box .expedition-xp-label{margin-bottom:2px}
+  .squad-box .expedition-xp-label b,.squad-box .expedition-xp-label span{font-size:9.5px}
+  .squad-box .expedition-squad-hp,.squad-box .expedition-captain-hp{font-size:9.5px}
+  .squad-box .talent-hud{padding-top:2px;min-height:16px}
+  .squad-box .talent-hud button{font-size:9px;padding:1px 5px}
+  .squad-mode,.squad-help{display:none}
+  .squad-box .squad-formation-surface,.squad-box .squad-formation-surface:has(>.squad-release-slot){display:grid!important;grid-template-columns:126px minmax(0,1fr) 186px!important;grid-template-rows:minmax(0,1fr) 30px!important;grid-template-areas:'warehouse board bonds' 'warehouse board finish'!important;gap:5px!important;min-height:0}
+  .squad-box .squad-formation-surface:has(>.squad-release-slot){grid-template-areas:'warehouse board bonds' 'warehouse release finish'!important}
+  .squad-field-panel,.squad-warehouse,.squad-bonds{padding:5px 6px!important;border-radius:10px;height:auto!important}
+  .squad-box .squad-field-panel>h3,.squad-box .squad-bonds>h3,.squad-box .squad-warehouse-label h3{font-size:11px;margin:0 0 4px}
+  .squad-battle-scroll{padding:1px 2px 3px}
+  .squad-box .squad-battle-grid{grid-template-rows:repeat(var(--squad-rows),minmax(86px,auto))!important;grid-auto-rows:minmax(86px,auto)!important;gap:4px 3px!important;padding:2px 0!important}
+  .squad-box .squad-field-slot{padding:4px 1px 1px;border-radius:8px}
+  .squad-box .squad-slot-number{font-size:8.5px;top:1px;left:3px}
+  .squad-box .squad-field-panel .squad-unit{padding:3px 2px;border-radius:8px}
+  .squad-box .squad-field-panel .squad-unit .squad-pick{gap:2px}
+  .squad-box .squad-field-panel .squad-card-identity{gap:1px}
+  .squad-box .squad-field-panel .squad-unit .squad-unit-art{width:38px!important;height:38px!important;border-radius:8px;border-width:1.5px}
+  .squad-box .squad-field-panel .squad-unit .squad-unit-name{font-size:9.5px!important;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .squad-box .squad-field-panel .squad-card-info{gap:2px}
+  .squad-box .squad-field-panel .squad-card-top{flex-direction:row;justify-content:center;gap:3px}
+  .squad-box .squad-field-panel .squad-unit .squad-unit-rank{font-size:12px;letter-spacing:0}
+  .squad-box .squad-field-panel .squad-card-type>span{display:none}
+  .squad-box .squad-field-panel .squad-card-type img{width:11px;height:11px}
+  .squad-box .squad-field-panel .squad-card-tags{gap:2px}
+  .squad-box .squad-field-panel .squad-card-tag{font-size:8px;padding:1px 3px;line-height:1.15}
+  .squad-box .squad-vacancy{width:44px;height:44px}
+  .squad-box .squad-vacancy>b{font-size:18px}
+  .squad-box .squad-vacancy>small{font-size:8px}
+  .squad-box .squad-drag-handle{width:16px;height:16px;font-size:14px;top:-2px;right:-1px;border-radius:5px}
+  .squad-box .squad-captain-label{font-size:7px;padding:0 2px;top:-2px}
+  .squad-box .squad-warehouse-strip{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:repeat(var(--reserve-rows),minmax(52px,auto))!important;gap:4px!important;padding:2px 1px}
+  .squad-box .squad-warehouse .squad-reserve-slot{min-height:52px!important}
+  .squad-box .squad-warehouse .squad-unit{padding:3px 2px}
+  .squad-box .squad-warehouse .squad-unit .squad-pick{grid-template-columns:34px minmax(0,1fr)!important;gap:4px}
+  .squad-box .squad-warehouse .squad-unit .squad-unit-art{width:34px!important;height:34px!important}
+  .squad-box .squad-warehouse .squad-unit .squad-unit-name{font-size:9.5px!important}
+  .squad-box .squad-warehouse .squad-unit .squad-unit-rank{font-size:11px}
+  .squad-box .squad-warehouse .squad-card-top{flex-direction:row;align-items:center;gap:3px}
+  .squad-box .squad-warehouse .squad-card-type>span{display:none}
+  .squad-box .squad-warehouse .squad-card-info{gap:2px}
+  .squad-box .squad-warehouse .squad-card-tag{font-size:8px;padding:1px 2px}
+  .squad-bench-empty{min-height:44px;font-size:9px;padding:4px}
+  .squad-box .squad-bond-tabs{margin-bottom:4px;gap:3px}
+  .squad-box .squad-bond-tab{font-size:10px;padding:3px 4px}
+  .squad-box .squad-bond-rows{gap:4px}
+  .squad-box .squad-bond-row{padding:4px 6px;gap:2px 4px;font-size:10px}
+  .squad-box .squad-bond-row>b{font-size:11px}
+  .squad-box .squad-bond-row>span{font-size:10px;padding:1px 4px}
+  .squad-box .squad-bond-row .squad-bond-stack{font-size:9px}
+  .squad-box .squad-bond-info{width:16px;height:16px;font-size:10px}
+  .squad-box .squad-bond-effect,.squad-box .squad-bond-current{font-size:9.5px;line-height:1.35}
+  .squad-box .squad-bond-current{padding-top:3px}
+  .squad-box .squad-bond-current p{font-size:9.5px;margin:1px 0}
+  .squad-box .squad-bonds>.note,.squad-box .squad-trait-summary>span{font-size:9px}
+  .squad-finish .btn{height:30px!important;min-height:0!important;padding:3px 8px;font-size:12px}
+  .squad-box .squad-formation-surface>.squad-release-slot{min-height:30px!important;padding:2px 8px;gap:5px}
+  .squad-release-slot .squad-release-mark{font-size:15px}
+  .squad-release-slot b{font-size:10px}
+  .squad-release-slot small{font-size:9px}
+
+  /* --- Squad detail modal: wide landscape sheet with 4-col stats --- */
+  .squad-modal{padding:6px}
+  .squad-detail{width:min(780px,96vw);max-width:none;min-height:0;max-height:95dvh;padding:10px 12px;border-radius:14px;font-size:11.5px}
+  .squad-detail-closebar .btn{font-size:15px;padding:2px 9px}
+  .squad-hero{gap:10px}
+  .squad-hero>canvas{width:58px!important;height:58px!important}
+  .squad-hero h3{font-size:16px;margin:2px 0}
+  .squad-hero p,.squad-status{font-size:10.5px;margin:2px 0}
+  .squad-detail>.journey-tags{margin:5px 0;gap:4px}
+  .squad-detail>.journey-tags>span{font-size:10px;padding:2px 5px}
+  .squad-talent{padding:7px 9px;margin-top:6px}
+  .squad-talent h4{font-size:11px;margin:0 0 3px}
+  .squad-talent p{font-size:11px;line-height:1.45}
+  .squad-talent small{font-size:10px;margin-top:3px}
+  .squad-section-title{font-size:12px;margin:8px 0 5px}
+  .squad-stats{grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
+  .squad-stat{padding:5px 7px;gap:2px 4px}
+  .squad-stat>span{font-size:10px}
+  .squad-stat>b{font-size:13px}
+  .squad-stat>small{font-size:9px;line-height:1.3}
+  .squad-skill{padding:7px 9px;margin:5px 0}
+  .squad-skill-heading{font-size:11.5px}
+  .squad-skill>p,.squad-skill>small{font-size:10.5px;line-height:1.4}
+
+  /* --- Battle loot / settlement: stay 2-column side-by-side --- */
+  .journey-box.battle-loot-box{display:block;height:auto;max-height:calc(100dvh - 8px);overflow-y:auto;-webkit-overflow-scrolling:touch;touch-action:pan-y;padding:8px 10px;border-radius:14px;font-size:11.5px}
+  .battle-loot-layout{grid-template-columns:minmax(0,1.85fr) minmax(185px,0.85fr)!important;gap:8px}
+  .battle-loot-main{gap:5px}
+  .battle-loot-side{position:sticky;top:0}
+  .battle-loot-side .damage-list{display:block!important;max-height:calc(94dvh - 120px)!important}
+  .battle-loot-side .expedition-damage-row{grid-template-columns:28px minmax(0,1fr)!important;gap:5px;padding:4px;margin-bottom:4px!important}
+  .battle-loot-side .damage-portrait,.battle-loot-side .damage-portrait canvas{width:28px!important;height:28px!important}
+  .battle-loot-side .damage-name,.battle-loot-side .damage-value{font-size:10px!important}
+  .loot-outcome{gap:8px;padding:2px 0 5px}
+  .loot-outcome-seal{width:30px;height:30px;font-size:19px;border-radius:8px}
+  .loot-outcome h2{font-size:17px}
+  .loot-outcome small,.loot-outcome-meta{font-size:10px}
+  .loot-section{padding:6px 8px;border-radius:9px}
+  .loot-section-title{font-size:10.5px!important;margin:0 0 4px!important}
+  .loot-life-value b{font-size:18px}
+  .loot-loss{font-size:14px;padding:0 5px}
+  .loot-hp-track{height:9px;margin:4px 0}
+  .loot-earnings-grid{gap:8px}
+  .loot-earning-title{font-size:10.5px}
+  .loot-earning-value{font-size:18px;margin:1px 0}
+  .loot-earning p,.loot-earning small{font-size:9.5px;line-height:1.3}
+  .loot-items{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  .loot-item{padding:5px;gap:5px}
+  .loot-item-title{font-size:10.5px}
+  .loot-item p{font-size:9.5px!important;line-height:1.3!important}
+  .loot-companion{grid-template-columns:minmax(115px,1.5fr) minmax(0,3.5fr);gap:8px}
+  .loot-companion-identity canvas{width:54px;height:46px}
+  .loot-companion-identity h4{font-size:14px}
+  .loot-companion-actions .btn{padding:4px 8px;min-height:26px;font-size:11px}
+  .loot-companion-details{padding-left:8px;gap:4px}
+  .loot-mon-skill b,.loot-mon-skill p,.loot-mon-trait{font-size:10.5px!important;line-height:1.35!important}
+  .loot-mon-trait{padding:4px 6px}
+  .loot-footer{position:sticky;bottom:-8px;padding:5px 0 2px;background:linear-gradient(transparent,#09172cf5 35%)}
+  .loot-footer .btn{font-size:11.5px;padding:5px 12px;min-height:28px}
+
+  /* --- Training room, rest/event rooms, supply/peddler markets & prep --- */
+  .journey-box.training-room{padding:8px 10px}
+  .training-header{padding-bottom:6px;margin-bottom:6px;gap:8px}
+  .training-heading h2{font-size:16px}
+  .training-heading>.training-icon img{width:24px;height:24px}
+  .training-wallet b{font-size:15px}
+  .training-layout{grid-template-columns:144px minmax(0,1fr)!important;gap:8px}
+  .training-nav{flex-direction:column!important;overflow:visible!important;gap:4px}
+  .training-nav-item{flex:none!important;min-height:0!important;padding:5px 7px;gap:6px}
+  .training-nav-item b{font-size:11px}
+  .training-nav-item small{font-size:9px;margin-top:1px}
+  .training-workspace{gap:6px}
+  .training-project-head h3{font-size:13.5px}
+  .training-owners{grid-template-columns:repeat(auto-fit,minmax(130px,1fr));max-height:110px;gap:5px}
+  .training-owner{padding:4px 6px;gap:5px}
+  .training-owner canvas{width:32px;height:32px}
+  .training-options{grid-template-columns:repeat(3,minmax(0,1fr))!important;max-height:210px;gap:6px}
+  .training-option{min-height:84px!important;padding:7px 8px}
+  .training-option-top{margin-bottom:4px}
+  .training-option-name{font-size:11.5px}
+  .training-option p{font-size:10px;line-height:1.35;margin-top:3px}
+  .training-option-price{padding-top:5px;font-size:11px}
+  .training-footer{flex-direction:row!important;align-items:center!important;padding:6px 8px;gap:8px}
+  .training-footer .btn{font-size:11px;padding:5px 10px;min-height:28px}
+  .event-sidebar{display:flex!important;flex-direction:column;gap:6px}
+  .event-captain{padding:6px;gap:3px}
+  .event-captain canvas{width:50px;height:46px}
+  .event-captain b{font-size:12px}
+  .event-description{font-size:10px;line-height:1.35}
+  .rest-options .training-option{min-height:110px!important;gap:5px}
+  .rest-options h3{font-size:15px}
+  .event-room .journey-goods,.event-room .pokemon-training-list{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
+  .event-room .journey-product>canvas{width:52px;height:52px}
+  .market-grid,.market-services{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px}
+  .market-items{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:5px}
+  .market-card,.market-service{padding:7px 6px;gap:4px;min-height:0!important;border-radius:10px}
+  .market-card h3,.market-service h3{font-size:12.5px}
+  .market-card p,.market-service p{font-size:10.5px;line-height:1.35}
+  .market-card canvas{width:46px!important;height:46px!important}
+  .market-stars{font-size:14px;letter-spacing:1px}
+  .market-card .btn{min-height:26px;padding:4px;font-size:11px}
+  .market-footer{padding-top:6px}
+  .journey-prep{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)!important;gap:8px}
+  .journey-prep-card{padding:8px 10px}
+  .journey-prep-card h3{font-size:13px;margin:0 0 6px}
+  .journey-prep-hero canvas{width:52px;height:52px}
+  .journey-prep-facts{font-size:11px;gap:2px 8px}
+  .journey-prep-stats div{padding:3px 2px;font-size:10px}
+  .journey-prep-candidates{grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:5px}
+  .journey-prep-mon{padding:4px 6px;gap:5px}
+  .journey-prep-mon canvas{width:30px;height:30px}
+}

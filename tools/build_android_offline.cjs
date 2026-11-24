@@ -19,7 +19,18 @@ function web(){
    const anchor='readyP = (async () => {';if(!src.includes(anchor))throw Error('Offline DB patch anchor changed');
    src=src.replace(anchor,anchor+`
       mode='local';localReason='file';beginLocal('offline-apk-test','单机测试');
-      if(!save.androidOfflineTestGrant){save.coins=Math.min(1e8,(save.coins||0)+1e8);save.tickets.t1+=10000;save.androidOfflineTestGrant=1;}
+      if((save.androidOfflineTestGrant||0)<74){
+        save.coins=Math.max(save.coins||0,999999999);
+        save.tickets=Object.assign({t1:0,t10:0},save.tickets);
+        save.tickets.t1=Math.max(save.tickets.t1||0,99999);
+        save.tickets.t10=Math.max(save.tickets.t10||0,99999);
+        save.abilityGems=Math.max(save.abilityGems||0,99999);
+        save.pokeballs=Object.assign({pokeball:5,greatball:2,ultraball:1},save.pokeballs);
+        save.pokeballs.pokeball=Math.max(save.pokeballs.pokeball||0,999);
+        save.pokeballs.greatball=Math.max(save.pokeballs.greatball||0,999);
+        save.pokeballs.ultraball=Math.max(save.pokeballs.ultraball||0,999);
+        save.androidOfflineTestGrant=74;
+      }
       write(K_SAVE+key,save);setSync('local');return true;
    `);
   }
@@ -50,7 +61,7 @@ run(exe(jbin,'java'),['-cp',path.join(bt,'lib/d8.jar'),'com.android.tools.r8.D8'
 run(exe(jbin,'javac'),['--release','8','-d',OUT,path.join(ROOT,'android/offline/ZipDex.java')]);
 const withDex=path.join(OUT,'with-dex.apk');run(exe(jbin,'java'),['-cp',OUT,'ZipDex',unsigned,path.join(dex,'classes.dex'),withDex]);const aligned=path.join(OUT,'aligned.apk');run(exe(bt,'zipalign'),['-f','-p','4',withDex,aligned]);
 const key=path.join(OUT,'offline-test.p12'),passFile=path.join(OUT,'signing-password.txt');if(!fs.existsSync(key)){fs.writeFileSync(passFile,crypto.randomBytes(24).toString('hex'));run(exe(jbin,'keytool'),['-genkeypair','-keystore',key,'-storetype','PKCS12','-storepass:file',passFile,'-alias','offline-test','-keyalg','RSA','-keysize','2048','-validity','3650','-dname','CN=Offline Test Build']);}
-const output=path.join(OUT,'PokeSurvivor-Next-alpha.66-offline.apk');run(exe(jbin,'java'),['-jar',path.join(bt,'lib/apksigner.jar'),'sign','--ks',key,'--ks-pass','file:'+passFile,'--ks-key-alias','offline-test','--out',output,aligned]);
+const output=path.join(OUT,'PokeSurvivor-Next-alpha.74-offline.apk');run(exe(jbin,'java'),['-jar',path.join(bt,'lib/apksigner.jar'),'sign','--ks',key,'--ks-pass','file:'+passFile,'--ks-key-alias','offline-test','--out',output,aligned]);
 run(exe(jbin,'java'),['-jar',path.join(bt,'lib/apksigner.jar'),'verify','--verbose',output]);
 console.log('Android resource-table checks:',require('./check_android_apk.cjs').check(output));
 const digest=crypto.createHash('sha256').update(fs.readFileSync(output)).digest('hex');fs.writeFileSync(output+'.sha256',digest+'  '+path.basename(output)+'\n');console.log('APK:',output,'\nSHA256:',digest);
