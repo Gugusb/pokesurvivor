@@ -137,6 +137,12 @@ test('8. Boss innate shield activates at difficulty > 3 with cycle scaling, brea
   assert.equal(dmgSuper, 100);
   assert.equal(is.hp, 97);
 
+  // Bloom move (nova/aura) deals +150% (2.5x) innate shield break efficiency
+  G.BossCombat.damage(boss, 100, { type: 'normal', kind: 'nova' });
+  assert.equal(is.hp, 94.5);
+  G.BossCombat.damage(boss, 100, { type: 'dark', kind: 'aura' });
+  assert.equal(is.hp, 89.5);
+
   // Break shield
   is.hp = 1;
   G.BossCombat.damage(boss, 100, { type: 'normal' });
@@ -174,9 +180,9 @@ test('8. Boss innate shield activates at difficulty > 3 with cycle scaling, brea
 test('9. Trail moves double CD & duration, +50% radius, and fire slow exploding DoT projectiles', () => {
   const s = loadFull(), { G } = s;
   const toxic = G.Moves.BY_ID['toxic'];
-  // Original toxic was cd: 0.3, dur: 3, radius: 26 (now cd x4, dur x2, radius x1.5)
+  // Original toxic was cd: 0.3, dur: 3, radius: 26 (now cd x4, dur x1 after -50%, radius x1.5)
   assert.equal(toxic.cd, 1.2);
-  assert.equal(toxic.dur, 6);
+  assert.equal(toxic.dur, 3);
   assert.equal(toxic.radius, 39);
 
   const p = new G.Player(G.DEX_BY[1]);

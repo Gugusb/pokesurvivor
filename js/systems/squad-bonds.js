@@ -79,14 +79,14 @@ G.SquadBonds=(()=>{
     const b=state(kind),k=b.kind,c=cfg(),sep=G.I18n.lang==='zh'?'。':'. ',pct=n=>Number((n*100).toFixed(2))+'%',num=n=>Number(n.toFixed(2));
     if(k==='buff')return L('3 aliados: reducción de daño del equipo ','3 allies: squad damage reduction ','3人激活：全队减伤 ')+pct(value('buff','reduction'))+sep+L('5 aliados: cada apoyo gana una venda cada 5s; cura al aliado con menos del 50% de vida por el 10% de la vida máxima total de apoyos.','5 allies: each support gains a bandage every 5s; heal an ally below half HP for 10% of support total max HP.','5人激活：辅助队员每5秒获得绷带；友方生命低于50%时，消耗绷带治疗辅助队员最大生命总和的10%。');
     if(!KINDS.includes(k))return L('Sin efecto activo todavía.','No active effect yet.','暂不激活羁绊效果。');
-    if(!b.tier)return L('Se activa con 3 especies.','Activates with 3 species.','3名不同宝可梦激活。');
+    if(!b.tier)return L('Se activa con 3 especies.','Activates with 3 species.','3名不同宝可梦激活。')+(k==='bloom'?L(' Las habilidades de Floración rompen Escudo Innato +150% más rápido.',' Bloom moves break Innate Shield 150% faster.',' 绽放类技能削弱生得护盾效率+150%。'):'');
     const base={
       projectile:()=>L('Agilidad +','Agility +','结算敏捷+')+pct(value(k,'agility'))+L(', aguante +',', stamina +','，结算耐力+')+pct(value(k,'stamina')),
       melee:()=>L('Alcance de impacto +','Splash range +','溅射范围+')+pct(value(k,'range')),
       beam:()=>L('Longitud del rayo +','Beam length +','能量柱长度+')+pct(.35*b.scale),
       chain:()=>L('Saltos adicionales +','Additional jumps +','连锁数量+')+Math.max(1,Math.floor(2*b.scale)),
       area:()=>L('Agilidad +','Agility +','结算敏捷+')+pct(value(k,'agility'))+L(', aguante +',', stamina +','，结算耐力+')+pct(value(k,'stamina')),
-      bloom:()=>L('Daño +','Damage +','技能伤害+')+pct(value(k,'damage')),
+      bloom:()=>L('Daño +','Damage +','技能伤害+')+pct(value(k,'damage'))+L(', ruptura de Escudo Innato +150%',', Innate Shield break +150%','，削弱生得护盾效率+150%'),
       orbit:()=>L('Radio +','Orbit radius +','环绕半径+')+pct(c.orbit.radiusBonus)+L(', daño +',', damage +','，伤害+')+pct(value(k,'damage')),
       summon:()=>L('Duración +','Lifetime +','持续时间+')+pct(value(k,'life'))+L(', límite +',', capacity +','，数量上限+')+pct(value(k,'quantity'))
     }[k]();

@@ -60,7 +60,8 @@ G.BossCombat = (() => {
       if (is.state === 'active') {
         const typeMult = attack?.type && G.Types ? G.Types.mult(attack.type, e.types) : 1;
         if (typeMult <= 1.05) amount *= 0.4;
-        is.hp = Math.max(0, is.hp - typeMult);
+        const bloomMult = (attack?.kind === 'nova' || attack?.kind === 'aura' || G.SquadBonds?.group?.(attack?.kind) === 'bloom') ? 2.5 : 1;
+        is.hp = Math.max(0, is.hp - typeMult * bloomMult);
         if (is.hp <= 0) {
           is.hp = 0; is.state = 'stunned'; is.stunT = 8; is.charge = 0;
           e.classStunT = Math.max(e.classStunT || 0, 8);

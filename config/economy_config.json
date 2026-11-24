@@ -470,14 +470,14 @@
     },
     "area": {
       "agility": [
-        0.8,
-        1.5,
-        2.5
+        0.2,
+        0.5,
+        1
       ],
       "stamina": [
-        0.8,
-        1.5,
-        2.5
+        0.2,
+        0.5,
+        1
       ],
       "windupMultiplier": 2,
       "windupSeconds": 1,
@@ -523,11 +523,11 @@
         3
       ],
       "turretTargetsBonus": 2,
-      "fireRateMultiplier": 3,
+      "fireRateMultiplier": 2,
       "turretDamage": [
-        0.2,
-        0.5,
-        1
+        0.1,
+        0.3,
+        0.5
       ],
       "mineRadiusBonus": 2,
       "mineDamage": [

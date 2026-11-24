@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Ajustes de equilibrio de vínculos y habilidades · v0.43.0-alpha.72": "职业羁绊与技能数值平衡调整 · v0.43.0-alpha.72",
+  "Se reduce el poder del vínculo de nivel 7 de Invocación (torreta): cadencia de disparo a +100% y aumento de daño a 10%/30%/50%. El vínculo de nivel 7 de Rayo duplica su consumo de PP al mantener el haz.": "削弱二级召唤羁绊（炮台）：射速提升下调至 +100%，伤害加成下调至 10%/30%/50%；二级能量柱维持光柱时的 PP 消耗速度翻倍。",
+  "Se ajusta el vínculo de Ataque de área (agilidad y aguante a 20%/50%/100%) y la duración base de los movimientos de rastro se reduce a la mitad.": "区域打击一级羁绊的敏捷与耐力加成下调至 20%/50%/100%；地面痕迹类技能的基础持续时间削弱 50%。",
+  "Aumenta el daño base de los movimientos de Aura (+25%) y Nova (+20%). Todas las habilidades de Floración (Aura y Nova) ahora reducen el Escudo Innato de los jefes con un +150% de eficiencia (2,5×).": "提高光环类技能基础伤害 25%、新星类技能基础伤害 20%；所有绽放类技能（光环/新星）新增能力：削弱 BOSS 生得护盾的效率提高 150%（2.5×）。",
+  "Reajusté los tornillos de las torretas y le puse un marcador celeste a las habilidades de Floración para romper los escudos de los jefes. Quien cocina revisó todas las tablas; ahora cada estilo de equipo tiene su momento para brillar.": "我帮炮台拧紧了发条，顺手在绽放招式的手账页贴了破盾小旗。做饭的那家伙挨个算过伤害表，以后咱们挑队伍流派就更顺手啦。",
+
   "Ajuste de recarga de rastro · v0.43.0-alpha.71": "地面痕迹技能冷却调整 · v0.43.0-alpha.71",
   "La recarga base de todos los movimientos de tipo rastro (proyectil lento con área DoT) se ajusta de 200% a 400% de su valor original.": "所有地面痕迹（`trail`）类技能的基础冷却由原值的 200% 延长至 400%。",
   "Ajusté el reloj de los charcos explosivos para que lancen con más calma. Quien cocina revisó el ritmo; nosotros aprovechamos para respirar entre oleadas.": "我把地面痕迹炸弹的闹钟再拨慢了一格。做饭的那家伙看过了节奏，咱们正好趁冷却间隙喘口气。",

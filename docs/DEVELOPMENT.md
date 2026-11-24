@@ -34,6 +34,18 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.72 — 2026-11-24
+
+- 职业羁绊与技能数值平衡调整（`config/economy_config.json`、`js/systems/combat.js`、`js/data/moves.js`、`js/systems/boss-combat.js`、`js/systems/squad-bonds.js`）：
+  1. 削弱二级召唤·炮台：`fireRateMultiplier` 由 `3` 下调至 `2`（+100% 射速），`turretDamage` 由 `[0.2, 0.5, 1]` 下调至 `[0.1, 0.3, 0.5]`。
+  2. 二级能量柱维持光柱 PP 消耗翻倍（每 0.5s 消耗 `2` PP）。
+  3. 区域打击一级羁绊 `agility` / `stamina` 加成由 `[0.8, 1.5, 2.5]` 下调至 `[0.2, 0.5, 1]`。
+  4. 光环（`aura`）基础伤害 +25%，新星（`nova`）基础伤害 +20%。
+  5. 地面痕迹（`trail`）基础持续时间削弱 50%（由 `×2` 回调至 `×1`）。
+  6. 绽放类技能（`nova` / `aura`）新增削弱 BOSS 生得护盾效率 +150%（`2.5×`，与属性克制叠乘），同步更新羁绊说明文案与单元测试 `tools/test_alpha67_mechanics.cjs`。
+- 复评模拟：`turret` T2(500层) 对单倍率由 `15.80×` 降至 `9.12×`，`beam` 由 `9.17×` 降至 `7.53×`，`meteor` 由 `3.85×` 降至 `2.74×`，`trail` 由 `847–1196` DPS 降至 `341.0` DPS，`aura` (`giga-drain`) T0/T2(500层) 由 `56.8 / 180.4` 升至 `69.8 / 220.4` DPS。
+- 验证：`node --test tools/test_alpha67_mechanics.cjs tools/test_battle_stats.cjs tools/test_capture_gacha_research.cjs` 全部通过；`node tools/build.js` 与 `node tools/export_data.js` 通过（当前终端未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.71 — 2026-11-24
 
 - 调整 `trail` 地面痕迹类技能基础冷却（`js/data/moves.js`）：由原值 200%（×2）延长至 400%（×4），保持 DoT 持续时间 ×2 与范围 ×1.5 不变；同步更新 `tools/test_alpha67_mechanics.cjs`。

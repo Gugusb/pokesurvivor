@@ -471,7 +471,7 @@ G.Combat = (() => {
         f.visual=(f.visual||0)-dt;if(f.visual<=0){beam(pl,{...m,bondPulse:true},true);f.visual=.1;}
         f.wait-=dt;
         while(f.wait<=0){
-          if(!G.MovePP.spend(pl,source)){f.gone=true;break;}
+          if(!G.MovePP.spend(pl,source,2)){f.gone=true;break;}
           f.wait+=.5;beam(pl,{...m,bondPulse:true,dmg:m.dmg*.5*m.bondScale});
           if(target.dead){f.gone=true;break;}
         }
