@@ -456,7 +456,7 @@ G.Expedition = (() => {
   function finishBattle(cleared){
     if(run.phase!=='combat')return;
     G.LeaderAbilities?.finishBattle();G.ExpeditionGrowth?.endBattle();
-    const damage=R.squadDamage([...G.EnemyMgr.all(),...(run.pendingSpawns||[]).map(w=>w.enemy)],R.cycleOf(run.day));
+    const damage=run.kind==='rift'&&!cleared?{normal:0,elite:0,boss:0,raw:0,cap:0,applied:0}:R.squadDamage([...G.EnemyMgr.all(),...(run.pendingSpawns||[]).map(w=>w.enemy)],R.cycleOf(run.day));
     G.ExpeditionSupplies?.absorb(run,damage);damage.before=run.squadHp;run.squadHp=Math.max(0,run.squadHp-damage.applied);damage.after=run.squadHp;run.squadDamage=damage;
     if(run.squadHp<=0&&G.TrainerTalents?.rescue(run)){damage.after=run.squadHp;damage.rescued=true;}
     if(run.squadHp<=0){G.ExpeditionRecorder?.finish('defeat');run.phase='squad-defeat';run.pendingSpawns=[];G.EnemyMgr.clear();G.Projectiles.clear();G.Combat.clearFields();G.Hazards.clear();G.Game.expeditionDefeat();return;}

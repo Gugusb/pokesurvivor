@@ -134,7 +134,7 @@ G.HUD = (() => {
       ctx.fillText((boss.name+(boss.bossGuard?.resistance>.1?' · '+G.T('Guardia furiosa'):'')).toUpperCase(), w / 2, bossY + 10);
       const is = G.BossCombat?.innate?.(boss);
       if (is) {
-        const sy = bossY + 15, sh = 9;
+        const sy = bossY + 15, sh = 11;
         const frac = is.state === 'active' ? is.hp / is.max : is.state === 'stunned' ? is.stunT / 8 : is.charge / is.max;
         const col = is.state === 'active' ? '#63e0ff' : is.state === 'stunned' ? '#ffb347' : '#b993ff';
         const lbl = is.state === 'active'
@@ -142,35 +142,18 @@ G.HUD = (() => {
           : is.state === 'stunned'
             ? (G.I18n.lang === 'zh' ? '破盾眩晕 ' : 'BROKEN ') + is.stunT.toFixed(1) + 's (+20%)'
             : (G.I18n.lang === 'zh' ? '护盾充能 ' : 'CHARGING ') + Math.floor(is.charge) + '/' + is.max;
-        bar(ctx, (w - bw) / 2, sy, bw, sh, frac, col);
-        ctx.font = F(800, 8);
-        ctx.fillStyle = '#0e1824';
-        ctx.fillText(lbl, w / 2, sy + 7.5);
+        bar(ctx, (w - bw) / 2, sy, bw, sh, frac, col, 'rgba(8,18,32,.75)');
+        ctx.font = F(800, 9);
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = 'rgba(8,16,28,.85)';
+        ctx.strokeText(lbl, w / 2, sy + 9);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(lbl, w / 2, sy + 9);
       }
     }
 
     // ---------- aviso ----------
-    // ---------- shinies fuera de pantalla: destello en el borde ----------
-    const cam = G.Camera, pulse = 0.6 + Math.sin(performance.now() / 160) * 0.4;
-    for (const e of G.EnemyMgr.shinies()) {
-      const sx = (e.x - cam.left()) * cam.scale, sy = (e.y - cam.top()) * cam.scale;
-      if (sx > 0 && sx < w && sy > 0 && sy < h) continue;
-      const M = 34;
-      const ex = G.U.clamp(sx, M, w - M), ey = G.U.clamp(sy, M + 60, h - M - 70);
-      const a = Math.atan2(sy - ey, sx - ex);
-      ctx.save();
-      ctx.globalAlpha = pulse;
-      ctx.translate(ex, ey);
-      ctx.fillStyle = '#9ae6ff';
-      ctx.beginPath();
-      ctx.moveTo(Math.cos(a) * 24, Math.sin(a) * 24);
-      ctx.lineTo(Math.cos(a + 2.5) * 12, Math.sin(a + 2.5) * 12);
-      ctx.lineTo(Math.cos(a - 2.5) * 12, Math.sin(a - 2.5) * 12);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-      G.Icons.draw(ctx, 'shiny', -12, -12, 24);
-      ctx.restore();
-    }
+    const cam = G.Camera;
 
     // Poder de altar activo.
     if (pl.power) {

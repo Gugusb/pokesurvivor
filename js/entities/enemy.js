@@ -255,7 +255,7 @@
       if (this.shiny) {
         G.FX.burst(this.x, cy, '#ffe9a0', 30, 220);
         G.FX.ring(this.x, this.y, this.r, this.r * 7, '#9ae6ff', 0.7, 5);
-        if (G.onShinyCaught) G.onShinyCaught(this);
+        // Shinies are captured via G.Capture fainted flow, not auto-granted on KO.
       }
       G.Capture?.trySpawn(this);
     }
@@ -818,6 +818,41 @@
         ctx.fill(); ctx.stroke();
         ctx.restore();
       }
+      // 生得护盾外观展示（护盾激活 / 破盾眩晕 / 充能中）
+      const is = this.boss ? G.BossCombat?.innate?.(this) : null;
+      if (is) {
+        const t = performance.now() / 1000;
+        const cx = this.x, cy = this.y - this.bodyH * 0.48;
+        const rx = Math.max(this.r * 1.55, 28), ry = Math.max(this.bodyH * 0.68, 30);
+        ctx.save();
+        if (is.state === 'active') {
+          const pulse = 0.75 + Math.sin(t * 4) * 0.14;
+          const grad = ctx.createRadialGradient(cx, cy, rx * 0.25, cx, cy, rx * 1.15);
+          grad.addColorStop(0, 'rgba(99,224,255,0.04)');
+          grad.addColorStop(0.7, 'rgba(99,224,255,0.2)');
+          grad.addColorStop(1, 'rgba(180,245,255,0.45)');
+          ctx.fillStyle = grad;
+          ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.strokeStyle = '#79ebff'; ctx.lineWidth = 2.6; ctx.globalAlpha = pulse;
+          ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+          ctx.setLineDash([7, 5]); ctx.lineDashOffset = -t * 28;
+          ctx.strokeStyle = '#ffe999'; ctx.lineWidth = 1.6; ctx.globalAlpha = 0.85;
+          ctx.beginPath(); ctx.ellipse(cx, cy, rx + 5, ry + 5, 0, 0, Math.PI * 2); ctx.stroke();
+          ctx.setLineDash([]);
+        } else if (is.state === 'stunned') {
+          ctx.strokeStyle = '#ff9843'; ctx.lineWidth = 2.2; ctx.globalAlpha = 0.45 + Math.sin(t * 8) * 0.25;
+          ctx.setLineDash([4, 6]);
+          ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+          ctx.setLineDash([]);
+        } else if (is.state === 'charging') {
+          const frac = Math.max(0, Math.min(1, is.charge / is.max));
+          ctx.strokeStyle = 'rgba(185,147,255,0.3)'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, Math.PI * 2); ctx.stroke();
+          ctx.strokeStyle = '#c59bff'; ctx.lineWidth = 3; ctx.globalAlpha = 0.9;
+          ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * frac); ctx.stroke();
+        }
+        ctx.restore();
+      }
 
       if (this.burn > 0 || this.abilityBurn || this.poison > 0 || (this.net && this.net.st & 3)) {
         ctx.save();
@@ -842,6 +877,14 @@
         ctx.fillRect(this.x - w / 2, y, w, 3.4);
         ctx.fillStyle = this.boss ? '#ffcb3d' : '#ff5f6d';
         ctx.fillRect(this.x - w / 2, y, w * Math.max(0, this.hp / this.maxHp), 3.4);
+        if (is) {
+          const sy = y + 4.4;
+          const frac = is.state === 'active' ? is.hp / is.max : is.state === 'stunned' ? is.stunT / 8 : is.charge / is.max;
+          ctx.fillStyle = 'rgba(0,0,0,.65)';
+          ctx.fillRect(this.x - w / 2, sy, w, 3.2);
+          ctx.fillStyle = is.state === 'active' ? '#63e0ff' : is.state === 'stunned' ? '#ffb347' : '#b993ff';
+          ctx.fillRect(this.x - w / 2, sy, w * Math.max(0, Math.min(1, frac)), 3.2);
+        }
       }
     }
   }

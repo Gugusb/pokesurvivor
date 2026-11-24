@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Correcciones de grieta, captura y escudo de jefes · v0.43.0-alpha.70": "裂隙、捕捉修复与护盾外观 · v0.43.0-alpha.70",
+  "Se corrige el cierre del juego al aparecer un Pokémon debilitado para captura (`anim.update`) y se resuelve el error al continuar una expedición guardada en la tienda tras derrotar a un jefe.": "修复晕倒宝可梦出现时因动画调用错误导致的游戏崩溃，并修复击败 BOSS 后在商店保存退出无法续玩的问题。",
+  "El Escudo Innato de jefes ahora cuenta con barrera visual alrededor del cuerpo del jefe (activa, rota/aturdida y recargando) y barras dedicadas debajo tanto de su barra superior como de la del HUD.": "为 BOSS「生得护盾」新增本体结界外观（护盾激活、破盾眩晕、充能中三态）以及头顶与顶部 BOSS 血条下方的护盾/充能条。",
+  "Ser expulsado de la Zona de Grieta al agotarse el tiempo ya no resta vida del equipo. Se retiran los avisos y marcadores automáticos de aparición shiny en combate para dejar solo el encuentro natural y la captura manual.": "裂隙区域超时被驱逐后不再扣除小队生命；移除对局内主动刷出闪光的播报提示与屏外指示事件。",
+  "Reparé el letrero de captura y le pinté un brillo celeste al escudo de los jefes para que no nos pille por sorpresa. Quien cocina revisó la salida de la grieta; ahora si se acaba el tiempo volvemos al campamento sin rasguños.": "我修好了捕捉倒计时的牌子，还给 BOSS 的生得护盾描了一圈青蓝结界方便辨认。做饭的那家伙把裂隙出口垫软了；就算时间到了被赶出来，咱们也不会掉生命啦。",
+
   "Escudo innato de jefes, tipos y vínculos · v0.43.0-alpha.67": "BOSS生得护盾、克制强化与技能重做 · v0.43.0-alpha.67",
   "La eficacia de tipos pasa a 200% en supereficaz y 50% en resistencia para todas las unidades. Las batallas élite adquieren una afinidad elemental (80% enemigos de ese tipo), visible con el nuevo objeto único Visor de élite del paquete Larga Marcha.": "全单位属性克制基础修正调整为克制 200%、抵抗 50%。精英战斗新增属性倾向（80% 敌人为该属性），远征者卡包新增唯一局内道具「精英侦察镜」以查看精英战属性。",
   "En dificultad superior a 3, los jefes obtienen un Escudo Innato (100/300/1000 por ciclo) que reduce el daño no supereficaz al 40% y acelera sus habilidades un 40%. Al romperse quedan aturdidos 8 s (+20% daño recibido) y luego recargan (10/s y al golpear aliados).": "难度大于 3 时，所有 BOSS 获得「生得护盾」（各轮回 100/300/1000 点）：存在期间非克制伤害降至 40%、技能频率 +40%，受击按属性克制扣除点数；破盾后眩晕 8 秒且易伤 +20%，结束后进入充能阶段（10点/秒，命中队长/队员获得 40%/20% 最大充能）。",

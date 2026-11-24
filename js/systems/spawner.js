@@ -91,10 +91,6 @@ G.Spawner = (() => {
     if (shiny) e.makeShiny();
     if (G.Events.golden) e.makeGolden();
     G.EnemyMgr.add(e);
-    if (shiny) {
-      say('¡Un ' + e.name + ' shiny anda cerca!', 3.4);
-      G.Audio.sfx('shiny');
-    }
     return e;
   }
   function spawnAngle(){
@@ -107,7 +103,7 @@ G.Spawner = (() => {
     const e = new G.Enemy(b, x, y, scaled(G.Enemies.bossScale(t), G.Coop.scaleHp(players.length) * (players.length > 1 ? 1.4 : 1)), true);
     if (rollShiny(b.dex)) e.makeShiny();
     G.EnemyMgr.add(e);
-    say('¡' + e.name + (e.shiny ? ' shiny' : '') + ' salvaje apareció!', 3.2);
+    say('¡' + e.name + ' salvaje apareció!', 3.2);
     G.Camera.kick(1.1);
     G.Audio.sfx('boss');
     return e;

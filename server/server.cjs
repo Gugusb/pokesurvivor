@@ -631,10 +631,15 @@ function createApp(opts = {}) {
       return json(res, 200, value);
     }
     if (route === "/run/start") {
+      const id = typeof b.id==='string'&&/^[\w-]{8,100}$/.test(b.id)?b.id:randomUUID();
+      const existing=q('SELECT uid FROM runs WHERE id=?',id);
+      if(existing){if(existing.uid!==u.uid)throw fail(409,'Invalid run');return json(res,200,{id});}
       const s = saved(u.uid).save;
+      const rootDex = G.MonProgression.rootFor(b.dex);
+      const hasMon = Object.keys(s.owned).some(d=>G.MonProgression.rootFor(+d)===b.dex) || (s.invites?.[b.dex] > 0) || (s.invites?.[rootDex] > 0);
       if (
         !G.DEX_BY[b.dex] ||
-        !Object.keys(s.owned).some(d=>G.MonProgression.rootFor(+d)===b.dex) ||
+        !hasMon ||
         !Number.isInteger(b.stars) ||
         b.stars < 1 ||
         b.stars > G.Difficulty.unlocked(s)
@@ -648,9 +653,6 @@ function createApp(opts = {}) {
         throw fail(400, "No matching co-op room");
       const speedOwner=b.mode==='g'?r.host:u.uid,initialSpeed=b.speed??1;
       if(!G.CardPacks.speedAllowed(saved(speedOwner).save,initialSpeed))throw fail(400,'Speed not unlocked');
-      const id = typeof b.id==='string'&&/^[\w-]{8,100}$/.test(b.id)?b.id:randomUUID();
-      const existing=q('SELECT uid FROM runs WHERE id=?',id);
-      if(existing){if(existing.uid!==u.uid)throw fail(409,'Invalid run');return json(res,200,{id});}
       atomic(() => {
         exec(
           "INSERT INTO runs(id,uid,dex,stars,started,beat,dirty,mode,room) VALUES(?,?,?,?,?,?,?,?,?)",

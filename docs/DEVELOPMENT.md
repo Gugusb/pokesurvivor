@@ -34,6 +34,15 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.70 — 2026-11-24
+
+- 修复晕倒宝可梦导致游戏崩溃：`js/systems/capture.js` 将 `f.anim.tick(dt)` 更正为 `f.anim.update(dt)`。
+- 补全 BOSS「生得护盾」外观与血条显示：`js/entities/enemy.js` 新增护盾激活/破盾眩晕/充能中三态本体结界视觉效果与 BOSS 头顶血条下方护盾/充能条；`js/ui/hud.js` 强化顶部 BOSS 血条下方的护盾/充能进度条可读性。
+- 修复 BOSS 战后商店存档续玩失败：`server/server.cjs` `/run/start` 改为优先放行本账号已存在对局并兼容邀请函开局；`js/game.js` 容错处理 `G.Server.restoreCheckpoint` 同步异常，避免阻断本地远征存档恢复。
+- 裂隙驱逐不扣生命：`js/systems/expedition.js` 在 `run.kind === 'rift' && !cleared` 结算时将小队伤害置零。
+- 移除对局内主动刷闪/出闪提示事件：`js/systems/spawner.js`、`js/systems/rift.js`、`js/entities/enemy.js`、`js/ui/hud.js` 移除刷闪横幅提示、屏外异色指示箭头、旧裂隙 1/512 高概率刷闪与击杀异色自动弹提示发放。
+- 验证：`node --test tools/test_alpha67_mechanics.cjs tools/test_capture_gacha_research.cjs tools/test_battle_stats.cjs` 23/23 通过；`node tools/build.js` 与 `node tools/export_data.js` 通过。
+
 ### v0.43.0-alpha.67 — 2026-11-24
 
 - 调整 `master_infinite_pp`（`config/trainer_talents.json`、`js/systems/trainer-talents.js`、`js/entities/player.js`）：移除 `cdrPct` 与免 PP，改为提高 200% 初始耐力（强化版 400%）。

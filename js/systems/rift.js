@@ -101,7 +101,7 @@ G.Rift = (() => {
     const mon = mega ? G.DEX_BY[mega.dex] : pool[mi];
     const cfg = {
       tx: 5000 + Math.floor(Math.random() * 3000), ty: 5000 + Math.floor(Math.random() * 3000), r: ARENA_R,
-      dex: mon.dex, mega: mega ? mega.id : null, shiny: G.Sprites.hasShiny(mega ? mega.id : mon.dex) && Math.random() < 1 / 512,
+      dex: mon.dex, mega: mega ? mega.id : null, shiny: G.Sprites.hasShiny(mega ? mega.id : mon.dex) && Math.random() < (G.Spawner?.SHINY_RATE || 1 / 4096),
       // La arena es la de uno de sus tipos, al azar.
       type: forceType || G.U.pick(mega ? G.MEGA_TYPES[mega.id] : mon.types)
     };
@@ -160,7 +160,7 @@ G.Rift = (() => {
     G.Sprites.preload([e.spriteDex], 8000, arena.shiny);
     G.EnemyMgr.add(e);
     arena.bossId = e.id;
-    G.Spawner.say('¡' + e.name + (e.shiny ? ' shiny' : '') + ' te esperaba en la grieta!', 3.2);
+    G.Spawner.say('¡' + e.name + ' te esperaba en la grieta!', 3.2);
     G.Camera.kick(1.1);
     G.Audio.sfx('boss');
   }

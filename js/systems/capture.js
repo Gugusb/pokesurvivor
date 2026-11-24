@@ -63,7 +63,7 @@ G.Capture = (() => {
     if (!list.length || activeModal || !pl || pl.dead) return;
     for (let i = list.length - 1; i >= 0; i--) {
       const f = list[i];
-      f.anim.tick(dt);
+      f.anim.update(dt);
       f.ttl -= dt;
       if (f.ttl <= 0) {
         list.splice(i, 1);
