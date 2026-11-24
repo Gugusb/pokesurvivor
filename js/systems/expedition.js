@@ -220,11 +220,14 @@ G.Expedition = (() => {
     if(note)report.append(node('p','journey-notice',note));right.append(report);
     if(G.LeagueRank?.allows('pokemon-training')??true){const eggs=G.PokemonTraining?.eggPanel(run,renderRoute);if(eggs)right.append(eggs);else{const empty=node('section','journey-eggs route-eggs-empty');empty.append(node('h3','',L('Incubación','Incubation','孵蛋进度')),G.ExpeditionEventUI.icon('luckyegg',30),node('p','route-empty',L('No hay huevos en incubación.','No eggs incubating.','暂无孵化中的蛋')));right.append(empty);}}
     const layout=node('section','journey-layout journey-layout-wide'),route=node('div','journey-route'),grid=node('div','journey-grid');const mapHeading=node('div','route-map-heading');mapHeading.append(node('h3','',L('Mapa de ruta','Route map','日程地图')),node('small','',L('Desplázate para explorar','Scroll to explore','滚动查看完整路线')));route.tabIndex=0;route.setAttribute('aria-label',L('Mapa de ruta desplazable','Scrollable route map','可滚动日程地图'));layout.append(mapHeading);grid.setAttribute('role','group');grid.setAttribute('aria-label',L('Itinerario','Schedule','事件日程'));
+    const hasEliteScout=!!(G.Items?.count(run.captain,'elitescout')>0);
     for(const row of run.map)for(const cell of row){
       const allowed=R.reachable(run.row,run.col,cell.row,cell.col),current=cell.row===run.row&&cell.col===run.col,visited=run.history.some(h=>h.day===cell.day&&h.col===cell.col);
+      if(cell.kind==='elite'&&!cell.eliteType)cell.eliteType=G.U.pick(Object.keys(G.Types.CHART));
       const title=cell.day===60&&cell.kind==='boss'?'Arceus':eventName(cell.kind),b=button('',()=>choose(cell.row,cell.col),'journey-event '+cell.kind+(allowed?' reachable':'')+(current?' current':'')+(visited?' visited':''));
       b.dataset.row=cell.row;b.dataset.col=cell.col;b.dataset.event=cell.kind;b.disabled=!allowed;
       b.append(node('small','',cell.row?String(cell.day):'⚑'),node('b','',eventIcon(cell.kind)),node('span','',T(title)));
+      if(hasEliteScout&&cell.kind==='elite'&&cell.eliteType){const badge=node('div','route-elite-type');badge.innerHTML=G.UI.typeChips([cell.eliteType]);b.append(badge);}
       b.setAttribute('aria-label',L('Día','Day','第')+' '+cell.day+' · '+T(title)+' · '+(cell.col+1));grid.append(b);
     }
     route.append(grid);layout.append(route);main.append(layout);dashboard.append(left,main,right);box.append(dashboard);
@@ -255,7 +258,7 @@ G.Expedition = (() => {
     else if(cell.kind==='pokemon-training'){run.phase='pokemon-training';G.PokemonTraining.open(run,()=>{if(run.labChoice==='train'){run.phase='upgrades';G.UI.hideAll();G.Game.expeditionResume();}else finishStage();});}
     else if(cell.kind==='rest')openRest();
     else if(cell.kind==='wild')openWild();
-    else startBattle(cell.kind);
+    else startBattle(cell.kind,cell.eliteType||null);
     return true;
   }
   function restChoice(kind){
@@ -301,7 +304,10 @@ G.Expedition = (() => {
   }
   function buy(index,ticket=false){
     if(run?.phase!=='shop'||G.TrainerTalentsUI?.busy)return false;const o=offer[index];if(!o||o.kind!=='mon'||o.sold)return false;const cost=G.HoennMarket?.price((G.TrainerTalents?.price(run,G.SquadTraits?.price(o.cost,o.kind)??o.cost)??o.cost),'mon')??o.cost;if(ticket?!(run.traitRecruitTickets>0):!(G.HoennMarket?.canPay(cost,o.hoennToken)??run.gold>=cost))return false;
-    if(!G.Squad.recruit(o.dex,o.moveId,o.rank||1)){G.UI.toast(L('La reserva está llena. Libera un compañero.','Reserves are full. Release a companion first.','候补仓库已满，请先放生伙伴。'));return false;}
+    const q=G.ExpeditionQuality?.quality(o.dex)||1,promo=(run.talentThreeStarCharges||0)>0&&q<=(run.talentThreeStarMaxQ||3);
+    const recruitRank=promo?3:(o.rank||1),recruitDex=promo?G.ExpeditionRules.formForRank(G.MonProgression.rootFor(o.dex),3):o.dex;
+    if(!G.Squad.recruit(recruitDex,o.moveId,recruitRank)){G.UI.toast(L('La reserva está llena. Libera un compañero.','Reserves are full. Release a companion first.','候补仓库已满，请先放生伙伴。'));return false;}
+    if(promo)run.talentThreeStarCharges=Math.max(0,(run.talentThreeStarCharges||0)-1);
     if(ticket)run.traitRecruitTickets--;else{if(G.HoennMarket)G.HoennMarket.pay(cost,o.hoennToken);else run.gold-=cost;run.talentShopBought=true;}o.sold=true;renderShop();return true;
   }
   function upgrade(){if(!run||!G.Economy.buyXp(run))return false;G.Squad.syncTrainer();renderShop();if(!$('squad-rankup')&&!G.TrainerTalentsUI?.busy)$('journey-upgrade').focus({preventScroll:true});$('journey-shop-progress').classList.add('xp-purchased');G.UI.toast(L('Experiencia de entrenador','Trainer XP','训练家经验')+' +'+G.EconomyConfig.buyXp.xpGain+' · Lv.'+run.trainerLevel);return true;}
@@ -332,8 +338,11 @@ G.Expedition = (() => {
     const toolbar=node('section','journey-shop-toolbar'),progress=progressPanel();progress.id='journey-shop-progress';progress.setAttribute('aria-live','polite');toolbar.append(progress,controls);box.append(toolbar);
     goods.append(node('p','note',L('Cinco invitaciones, sin objetos. Bloquear conserva todo al volver; renovar desbloquea la tienda.','Five invitations, no item sales. Lock to preserve all slots on your next visit; refreshing unlocks the shop.','固定5格宝可梦邀请，不出售道具。锁定保留整店至下次访问，手动刷新会解除锁定。')));layout.append(goods);box.append(layout);G.HoennMarketUI?.renderShop(box,run);G.UI.show('scr-journey');if(run.pendingTalentPicks?.length)G.TrainerTalentsUI?.showPickModal(renderShop);
   }
-  function startBattle(kind){
-    run.phase='combat';run.squadHealing={};run.kind=kind;run.elapsed=0;run.spawned=0;run.acc=0;run.kills=0;run.wave=R.wave(run.day,kind);run.bossDead=false;run.waveType=Math.random()<.5?G.U.pick([...new Set(run.pool.flatMap(p=>p.types))]):null;
+  function startBattle(kind,eliteType=null){
+    run.phase='combat';run.squadHealing={};run.kind=kind;run.elapsed=0;run.spawned=0;run.acc=0;run.kills=0;run.wave=R.wave(run.day,kind);run.bossDead=false;
+    const poolTypes=[...new Set(run.pool.flatMap(p=>p.types))];
+    run.eliteType=kind==='elite'?(eliteType||G.U.pick(poolTypes.length?poolTypes:Object.keys(G.Types.CHART))):null;
+    run.waveType=kind==='elite'?run.eliteType:(Math.random()<.5?G.U.pick(poolTypes):null);
     run.appeared=new Set();run.xpJarStored=0;run.xpJarSpent=0;run.pokemonXpGained=0;run.battleCleared=false;
     run.bossEmblemChoices=null;run.bossEmblemClaimed=false;run.companion=null;run.companionOffer=null;run.companionResolved=false;run.loot={};run.goldStart=run.gold;run.lockedGoldAtBattleStart=run.gold;run.inWaveCoinDrops=0;run.settlement=null;run.traitBattleRewards={};
     run.extraStart=JSON.parse(JSON.stringify(G.Game.loot||{}));
@@ -347,7 +356,10 @@ G.Expedition = (() => {
   function spawn(boss=false){
     const cap=run.captain,wave=run.wave,candidates=R.encounterCandidates(run.pool,run.day,boss);
     const riftPool=run.kind==='rift'?G.DEX.filter(p=>G.SPRITE_META[p.dex]&&(p.leg||G.Mega?.LIST?.some(f=>f.dex===p.dex))&&p.dex!==493):null;
-    const same=Math.random()<.85,typed=!boss&&run.waveType?candidates.filter(p=>p.types.includes(run.waveType)===same):null,mon=run.kind==='rift'&&boss?G.U.pick(riftPool?.length?riftPool:candidates):boss&&G.ExpeditionSupplies?G.DEX_BY[G.ExpeditionSupplies.bossDex(run,run.day)]:boss&&run.day===60?G.DEX_BY[493]:G.U.pick(typed?.length?typed:candidates.length?candidates:run.pool);
+    const bias=run.kind==='elite'?.8:.85,same=Math.random()<bias;
+    let typed=!boss&&run.waveType?candidates.filter(p=>p.types.includes(run.waveType)===same):null;
+    if(run.kind==='elite'&&same&&(!typed||!typed.length)&&run.waveType)typed=run.pool.filter(p=>p.types.includes(run.waveType));
+    const mon=run.kind==='rift'&&boss?G.U.pick(riftPool?.length?riftPool:candidates):boss&&G.ExpeditionSupplies?G.DEX_BY[G.ExpeditionSupplies.bossDex(run,run.day)]:boss&&run.day===60?G.DEX_BY[493]:G.U.pick(typed?.length?typed:candidates.length?candidates:run.pool);
     let x=cap.x,y=cap.y,free=false;for(let i=0;i<24;i++){const a=Math.random()*Math.PI*2,d=100+Math.sqrt(Math.random())*Math.max(180,G.Camera.outerRadius());x=cap.x+Math.cos(a)*d;y=cap.y+Math.sin(a)*d;if(G.World.isFree(x,y,20)){free=true;break;}}if(!free){
       // A deterministic search keeps random misses from delaying the finite wave.
       for(let radius=100;radius<=Math.max(180,G.Camera.outerRadius())+180&&!free;radius+=40)for(let j=0;j<32;j++){

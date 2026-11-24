@@ -132,6 +132,21 @@ G.HUD = (() => {
       ctx.font = F(800, 10);
       ctx.fillStyle = '#20160a';
       ctx.fillText((boss.name+(boss.bossGuard?.resistance>.1?' · '+G.T('Guardia furiosa'):'')).toUpperCase(), w / 2, bossY + 10);
+      const is = G.BossCombat?.innate?.(boss);
+      if (is) {
+        const sy = bossY + 15, sh = 9;
+        const frac = is.state === 'active' ? is.hp / is.max : is.state === 'stunned' ? is.stunT / 8 : is.charge / is.max;
+        const col = is.state === 'active' ? '#63e0ff' : is.state === 'stunned' ? '#ffb347' : '#b993ff';
+        const lbl = is.state === 'active'
+          ? (G.I18n.lang === 'zh' ? '生得护盾 ' : 'INNATE SHIELD ') + Math.ceil(is.hp) + '/' + is.max
+          : is.state === 'stunned'
+            ? (G.I18n.lang === 'zh' ? '破盾眩晕 ' : 'BROKEN ') + is.stunT.toFixed(1) + 's (+20%)'
+            : (G.I18n.lang === 'zh' ? '护盾充能 ' : 'CHARGING ') + Math.floor(is.charge) + '/' + is.max;
+        bar(ctx, (w - bw) / 2, sy, bw, sh, frac, col);
+        ctx.font = F(800, 8);
+        ctx.fillStyle = '#0e1824';
+        ctx.fillText(lbl, w / 2, sy + 7.5);
+      }
     }
 
     // ---------- aviso ----------

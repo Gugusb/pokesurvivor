@@ -35,6 +35,11 @@ G.Projectiles = (() => {
       const c=G.EconomyConfig.classBonds.projectile;
       p.r=Math.min(c.maxRadius,p.r);p.bondBaseR=p.r;p.bondBaseScale=p.visualScale||(p.r>=8?1.5:1);p.bondSizeGrowth=1;
     }
+    if(p.bondRecall&&!p.zMove&&!p.boom&&!p.orb&&p.friendly){
+      const sp=Math.hypot(p.vx,p.vy)||260;
+      p.recallStartX=p.x;p.recallStartY=p.y;p.recallSpd=sp;
+      p.recallDist=Math.max(150,Math.min(320,sp*(p.life||1.2)*0.55));
+    }
     list.push(p);
     return p;
   }
@@ -79,6 +84,24 @@ G.Projectiles = (() => {
         }
       }
 
+      // 投射物二级羁绊：飞行至一定距离后若仍有穿透次数，则召回至发射者身边。
+      if (p.bondRecall && !p.zMove && !p.boom && p.friendly) {
+        const o = p.owner || player;
+        if (!p.recalling && p.pierce > 0 && G.U.dist2(p.x, p.y, p.recallStartX, p.recallStartY) >= p.recallDist * p.recallDist) {
+          p.recalling = true;
+          p.hits = new Set();
+          p.life = Math.max(p.life, p.t + 2.5);
+        }
+        if (p.recalling) {
+          if (p.pierce <= 0) { list.splice(i, 1); continue; }
+          const [dx, dy] = G.U.norm(o.x - p.x, o.y - p.y);
+          const sp = p.recallSpd || Math.hypot(p.vx, p.vy) || 260;
+          p.vx = G.U.damp(p.vx, dx * sp, 9, dt);
+          p.vy = G.U.damp(p.vy, dy * sp, 9, dt);
+          if (G.U.dist2(p.x, p.y, o.x, o.y) < (o.r + 12) ** 2) { list.splice(i, 1); continue; }
+        }
+      }
+
       // Teledirigido: curva la velocidad hacia el enemigo más cercano.
       if (p.homing > 0 && p.friendly) {
         const tg = (p.zMove||p.sinnohSoul) && p.homingTarget && !p.homingTarget.dead ? p.homingTarget : nearest(enemies, p.x, p.y, 340);
@@ -101,7 +124,7 @@ G.Projectiles = (() => {
       }else{p.x += p.vx * dt;p.y += p.vy * dt;}
 
       // Fuera de la vista con margen generoso -> se descarta.
-      if (!p.bondOrbitShot && !G.Camera.sees(p.x, p.y, 260)) { remove(p); continue; }
+      if (!p.bondOrbitShot && !p.recalling && !G.Camera.sees(p.x, p.y, 260)) { remove(p); continue; }
     }
   }
 

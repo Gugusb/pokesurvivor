@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Escudo innato de jefes, tipos y vínculos · v0.43.0-alpha.67": "BOSS生得护盾、克制强化与技能重做 · v0.43.0-alpha.67",
+  "La eficacia de tipos pasa a 200% en supereficaz y 50% en resistencia para todas las unidades. Las batallas élite adquieren una afinidad elemental (80% enemigos de ese tipo), visible con el nuevo objeto único Visor de élite del paquete Larga Marcha.": "全单位属性克制基础修正调整为克制 200%、抵抗 50%。精英战斗新增属性倾向（80% 敌人为该属性），远征者卡包新增唯一局内道具「精英侦察镜」以查看精英战属性。",
+  "En dificultad superior a 3, los jefes obtienen un Escudo Innato (100/300/1000 por ciclo) que reduce el daño no supereficaz al 40% y acelera sus habilidades un 40%. Al romperse quedan aturdidos 8 s (+20% daño recibido) y luego recargan (10/s y al golpear aliados).": "难度大于 3 时，所有 BOSS 获得「生得护盾」（各轮回 100/300/1000 点）：存在期间非克制伤害降至 40%、技能频率 +40%，受击按属性克制扣除点数；破盾后眩晕 8 秒且易伤 +20%，结束后进入充能阶段（10点/秒，命中队长/队员获得 40%/20% 最大充能）。",
+  "Infinite Power pasa a otorgar +200% de aguante inicial sin reducción de recarga; se añaden dos talentos de entrenador: Compra astuta (+4 renovaciones gratis y +2 oro) y Fichaje estelar (el próximo reclutamiento de calidad 1–3 en tienda sube al instante a 3★).": "「无限活力矩阵」改为提高 200% 初始耐力并移除减 CD 与免 PP；新增品质 1 潜能「精明采购」（+4 免费刷新、+2 金币）与品质 3 潜能「王牌直聘」（下次商店招募的品质 1–3 宝可梦立即升为 3★）。",
+  "El vínculo de nivel 7 de Proyectil recupera los proyectiles que conserven penetración tras volar cierta distancia; el de Floración aplica 50% de ralentización. Los movimientos de rastro ahora lanzan proyectiles lentos que estallan en áreas DoT más grandes (+50%), el doble de duraderas y con el doble de recarga base.": "重写投射物二级羁绊（飞行一定距离后若仍有穿透则召回）；加强绽放二级羁绊（附带 50% 减速）；重做地面痕迹类技能为慢速投射物，命中炸开范围 DoT（范围 +50%、持续翻倍、基础 CD 翻倍）。",
+  "Anoté la nueva tabla de tipos en el borde del mapa y guardé el visor en el bolsillo delantero para espiar las batallas élite. Quien cocina preparó el escudo de los jefes; yo ya llevo una almohada extra por si nos toca romperlo a base de ventaja elemental.": "我把新的属性克制表抄在路线图边上，把精英侦察镜塞进兜帽口袋里随时偷看精英战属性。做饭的那家伙给 BOSS 加了生得护盾；咱们备好克制属性，破盾那八秒一起冲上去就好啦。",
+
   "Interfaz de combate, carga Z y guardado · v0.43.0-alpha.66": "战场界面、Z充能与存档修复 · v0.43.0-alpha.66",
   "Se unifica la barra superior de combate eliminando el reloj total para destacar el tiempo restante, la barra de jefe se sitúa debajo en móvil y el panel lateral de experiencia del entrenador ahora puede contraerse.": "合并战场顶部基础信息并移除总生存时间，突出本局剩余时间；手机端 BOSS 血条自动避让顶部信息栏；左侧训练家经验面板支持折叠收缩。",
   "En el mapa de ruta móvil se retira la tarjeta grande del día actual para dejar visible el mapa completo; la ficha de detalle del equipo en móvil se amplía y mejora su lectura.": "手机端日程表移除遮挡地图的超大当日选项，完整保留日程大地图；放大并优化手机端编队宝可梦详情弹窗。",

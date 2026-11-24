@@ -44,12 +44,12 @@ G.SquadBonds=(()=>{
     if(m.bondApplied||!applies(p,m))return m;const b=stats(p,m);if(!b.tier||b.kind==='buff')return m;
     const v={...m,bondApplied:true,bondScale:b.scale,bondTier:b.tier,bondKind:b.kind};
     if(b.tier===7){v.bondPalette='class:'+b.kind;v.bondColor=cfg().visuals[b.kind][2];}
-    if(b.kind==='projectile'&&b.tier===7)v.bondPierceGrowth=cfg().projectile.pierceGrowth;
+    if(b.kind==='projectile'&&b.tier===7)v.bondRecall=true;
     if(b.kind==='melee'){const k=1+value('melee','range');if(m.kind==='dash')v.width=(m.width||34)*k;else v.radius=m.radius*k;}
     if(b.kind==='beam'){v.radius=m.radius*(1+.35*b.scale);v.bondSustain=b.tier===7;}
     if(b.kind==='chain'){v.count=(m.count||1)+Math.max(1,Math.floor(2*b.scale));v.bondChain=b.tier===7;}
     if(b.kind==='area'&&b.tier===7){v.bondArea=true;v.bondPlacement=cfg().area.placementMultiplier;}
-    if(b.kind==='bloom'){damage(v,b.kind,1+value('bloom','damage'));if(b.tier===7){const k=1+cfg().bloom.rangeBonus;if(m.radius!=null)v.radius=m.radius*k;if(m.size!=null)v.size=m.size*k;if(m.kind==='nova'){v.speed=m.speed*k;v.bondVisualScale=(m.size>=8?1.5:1)*k;}v.bondStun=cfg().bloom.stunSeconds;v.bondStunChance=cfg().bloom.stunChance;}}
+    if(b.kind==='bloom'){damage(v,b.kind,1+value('bloom','damage'));if(b.tier===7){const k=1+cfg().bloom.rangeBonus;if(m.radius!=null)v.radius=m.radius*k;if(m.size!=null)v.size=m.size*k;if(m.kind==='nova'){v.speed=m.speed*k;v.bondVisualScale=(m.size>=8?1.5:1)*k;}v.bondStun=cfg().bloom.stunSeconds;v.bondStunChance=cfg().bloom.stunChance;v.bondSlow=0.5;v.slow=Math.max(m.slow||0,0.5);}}
     if(b.kind==='orbit'){v.radius=m.radius*(1+cfg().orbit.radiusBonus);damage(v,b.kind,1+value('orbit','damage'));v.bondLaunch=b.tier===7;}
     if(b.kind==='summon'){
       v.dur=(m.dur||(m.kind==='mine'?7:6))*(1+value('summon','life'));v.bondQuantity=1+value('summon','quantity');
@@ -62,6 +62,7 @@ G.SquadBonds=(()=>{
     if(!(dealt>0)||!applies(p,m))return;
     if(group(m.kind)==='melee'&&stats(p,m).tier===7)p.heal(dealt*crowd(p)*cfg().melee.lifestealPerEnemy);
     if(m.bondStun&&!e.dead&&Math.random()<(m.bondStunChance??1)){e.classStunT=Math.max(e.classStunT||0,m.bondStun*(e.boss?cfg().bossStunFactor:1));G.FX.ring(e.x,e.y,e.r,e.r+8,m.bondColor||'#fff',.18,2);}
+    if(m.bondSlow&&!e.dead)e.applySlow(m.bondSlow,2.5);
   }
   function onPierce(p){
     if(!(p.pierce>0)||!p.bondPierceGrowth||p.zMove)return;
@@ -91,12 +92,12 @@ G.SquadBonds=(()=>{
     }[k]();
     if(b.tier<7)return base+sep+L('El segundo efecto requiere 7 especies.','The second effect requires 7 species.','7名不同宝可梦解锁二级效果。');
     const extra={
-      projectile:()=>L('Tras perforar: tamaño y daño +','After penetration: size and damage +','每次穿透后体积与伤害+')+pct(c.projectile.pierceGrowth),
+      projectile:()=>L('Si el proyectil conserva penetración tras cierta distancia, regresa al lanzador; desaparece al agotarla.','Projectiles with remaining pierce after flying a set distance return to the caster; they vanish once pierce is spent.','投射物飞行至一定距离后若仍有穿透次数，则将其召回至发射者身边；穿透次数耗尽后消失。'),
       melee:()=>L('Cada enemigo cercano: agilidad +','Per nearby enemy: agility +','周围每名敌人：敏捷+')+pct(c.melee.agilityPerEnemy)+L(', robo de vida +',', lifesteal +','，吸血率+')+pct(c.melee.lifestealPerEnemy)+L('; máximo ','; up to ','；最多')+c.melee.maxCrowd+L(' enemigos.',' enemies.','名敌人。'),
       beam:()=>L('Mantén el rayo gastando PP.','Sustain the beam by spending PP.','持续消耗PP维持光柱。'),
       chain:()=>L('Agilidad +','Agility +','敏捷+')+pct(.3*b.scale)+L('; saltos retardados que detienen al blanco brevemente.','; delayed jumps briefly stagger targets.','；延迟连锁使目标短暂停顿，可同时释放新连锁。'),
       area:()=>L('Aviso ×','Windup ×','陨石前摇×')+c.area.windupMultiplier+L(', crecimiento hasta ×',', splash grows to ×','，溅射范围成长至×')+c.area.maxRadiusMultiplier+L(', colocación ×',', placement ×','，落点范围×')+c.area.placementMultiplier,
-      bloom:()=>L('Alcance +','Splash range +','溅射范围+')+pct(c.bloom.rangeBonus)+L('; aturdir: ','; stun chance: ','；眩晕概率')+pct(c.bloom.stunChance)+' · '+c.bloom.stunSeconds+L(' s, jefes ',' s, Bosses ','秒，BOSS ')+num(c.bloom.stunSeconds*c.bossStunFactor)+L(' s.',' s.','秒。'),
+      bloom:()=>L('Alcance +','Splash range +','溅射范围+')+pct(c.bloom.rangeBonus)+L('; aplica 50% de ralentización; aturdir: ','; applies 50% slow; stun chance: ','；附带50%减速；眩晕概率')+pct(c.bloom.stunChance)+' · '+c.bloom.stunSeconds+L(' s, jefes ',' s, Bosses ','秒，BOSS ')+num(c.bloom.stunSeconds*c.bossStunFactor)+L(' s.',' s.','秒。'),
       orbit:()=>L('Repone un anillo por recarga; busca al ','Refills a full ring each cooldown; searches within ','每次冷却补满一圈，索敌半径为环绕半径的')+pct(c.orbit.launchRangeMultiplier)+L('; vuelo curvo sin colisión con terreno, penetración +2; daño ×','; curved flight through terrain, +2 pierce; damage ×','；沿渐直弧线飞出，无视地形，穿透+2，伤害×')+c.orbit.launchDamage,
       summon:()=>L('Torreta: blancos +','Turret: targets +','炮台：目标+')+c.summon.turretTargetsBonus+L(', cadencia ×',', fire rate ×','，射速×')+c.summon.fireRateMultiplier+L(', daño +',', damage +','，伤害+')+pct(value(k,'turretDamage'))+L('; mina: radio +','; mine: radius +','；地雷：范围+')+pct(c.summon.mineRadiusBonus)+L(', daño +',', damage +','，伤害+')+pct(value(k,'mineDamage'))+L(', aturde ',', stun ','，眩晕')+c.summon.mineStunSeconds+L(' s (jefes ',' s (Bosses ','秒（BOSS ')+num(c.summon.mineStunSeconds*c.bossStunFactor)+L(' s).',' s).','秒）。')
     }[k]();

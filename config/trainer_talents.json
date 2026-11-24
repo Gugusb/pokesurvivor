@@ -2045,23 +2045,21 @@
         "es": "Infinite Power"
       },
       "desc": {
-        "zh": "全体队员招式冷却缩减 35%，技能施放不再受 PP 限制，进入常态超武狂轰模式。",
-        "en": "Companions gain 35% cooldown reduction and ignore PP costs.",
-        "es": "Los compañeros reducen sus recargas un 35% e ignoran el coste de PP."
+        "zh": "全队耐力提升 200%（提高 200% 初始耐力值）。",
+        "en": "All team members gain +200% initial stamina.",
+        "es": "Todo el equipo gana +200% de aguante inicial."
       },
       "effects": {
-        "cdrPct": 0.35,
-        "ignorePPRequirement": true
+        "staminaBasePct": 2
       },
       "enhanced": {
         "effects": {
-          "cdrPct": 0.7,
-          "ignorePPRequirement": true
+          "staminaBasePct": 4
         },
         "desc": {
-          "zh": "队员技能冷却缩减70%，技能不需要PP；队长沿用原PP规则。",
-          "en": "Companion cooldowns −70% and no PP required; captain keeps normal PP rules.",
-          "es": "Recargas de aliados −70% y sin PP; el capitán mantiene sus reglas."
+          "zh": "全队耐力提升 400%（提高 400% 初始耐力值）。",
+          "en": "All team members gain +400% initial stamina.",
+          "es": "Todo el equipo gana +400% de aguante inicial."
         }
       }
     },
@@ -2095,6 +2093,66 @@
           "zh": "立即获得2金币，利息上限19；商店保底2只最高品质宝可梦。",
           "en": "Gain 2 gold, interest cap 19; shops guarantee 2 highest-quality Pokémon.",
           "es": "Gana 2 de oro, límite de interés 19; las tiendas garantizan 2 Pokémon de máxima calidad."
+        }
+      }
+    },
+    {
+      "id": "silver_quick_stock",
+      "tier": "silver",
+      "category": "ECONOMY",
+      "name": {
+        "zh": "精明采购",
+        "en": "Savvy Stock",
+        "es": "Compra astuta"
+      },
+      "desc": {
+        "zh": "立即获得 4 次免费刷新次数以及 2 金币。",
+        "en": "Immediately gain 4 free shop refreshes and 2 gold.",
+        "es": "Obtén al instante 4 renovaciones gratuitas y 2 de oro."
+      },
+      "effects": {
+        "freeRefreshes": 4,
+        "instantGold": 2
+      },
+      "enhanced": {
+        "effects": {
+          "freeRefreshes": 8,
+          "instantGold": 4
+        },
+        "desc": {
+          "zh": "立即获得 8 次免费刷新次数以及 4 金币。",
+          "en": "Immediately gain 8 free shop refreshes and 4 gold.",
+          "es": "Obtén al instante 8 renovaciones gratuitas y 4 de oro."
+        }
+      }
+    },
+    {
+      "id": "ultra_instant_three_star",
+      "tier": "ultra",
+      "category": "ECONOMY",
+      "name": {
+        "zh": "王牌直聘",
+        "en": "Instant Ace",
+        "es": "Fichaje estelar"
+      },
+      "desc": {
+        "zh": "下次在商店招募的品质 1–3 宝可梦立即升级为三星。",
+        "en": "The next quality 1–3 Pokémon recruited in the shop immediately upgrades to 3 stars.",
+        "es": "El próximo Pokémon de calidad 1–3 reclutado en la tienda asciende de inmediato a 3 estrellas."
+      },
+      "effects": {
+        "nextShopThreeStarMaxQuality": 3,
+        "nextShopThreeStarCharges": 1
+      },
+      "enhanced": {
+        "effects": {
+          "nextShopThreeStarMaxQuality": 3,
+          "nextShopThreeStarCharges": 2
+        },
+        "desc": {
+          "zh": "接下来 2 次在商店招募的品质 1–3 宝可梦立即升级为三星。",
+          "en": "The next 2 quality 1–3 Pokémon recruited in the shop immediately upgrade to 3 stars.",
+          "es": "Los próximos 2 Pokémon de calidad 1–3 reclutados en la tienda ascienden de inmediato a 3 estrellas."
         }
       }
     }

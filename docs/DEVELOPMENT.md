@@ -34,6 +34,18 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.67 — 2026-11-24
+
+- 调整 `master_infinite_pp`（`config/trainer_talents.json`、`js/systems/trainer-talents.js`、`js/entities/player.js`）：移除 `cdrPct` 与免 PP，改为提高 200% 初始耐力（强化版 400%）。
+- 重写投射物二级羁绊与加强绽放二级羁绊（`js/systems/squad-bonds.js`、`js/entities/projectile.js`、`js/systems/combat.js`）：投射物飞行至一定距离后若仍有穿透次数则召回发射者，穿透耗尽后消失；绽放二级羁绊附带 50% 减速。
+- 新增两条训练家升级潜能（`config/trainer_talents.json`、`js/systems/trainer-talents.js`、`js/systems/expedition.js`）：品质 1 `silver_quick_stock`（+4 免费刷新、+2 金币）与品质 3 `ultra_instant_three_star`（下次商店招募品质 1–3 宝可梦立即升 3 星）。
+- 强化全单位属性克制（`js/data/types.js`）：基础克制修正提至 `2.0`（上限 `4.0`），基础抵抗修正改为 `0.5`（下限 `0.25`）。
+- 精英战斗属性倾向与侦察道具（`js/systems/expedition-rules.js`、`js/systems/expedition.js`、`js/data/expedition-cards.js`）：每个精英战节点生成固定 `eliteType`，战斗中 80% 敌人为该属性；远征者卡包新增唯一局内道具 `elitescout`（精英侦察镜），持有后在日程地图显示精英战属性。
+- BOSS 生得护盾（`js/systems/boss-combat.js`、`js/entities/enemy.js`、`js/entities/player.js`、`js/ui/hud.js`）：难度 > 3 时按轮回赋予 100/300/1000 点生得护盾；存在期间非克制伤害降至 40%、技能频率 +40%，受击按 `1 * typeMult` 扣盾；破盾后进入 8s 眩晕且受到伤害 +20%；眩晕结束后进入充能阶段（10点/秒，命中队长/非队长分别获得 40%/20% 最大充能，满充能恢复护盾），HUD 同步显示护盾/眩晕/充能条。
+- 重做 `trail` 地面痕迹技能（`js/data/moves.js`、`js/systems/combat.js`）：基础 CD ×2、DoT 持续 ×2、范围 ×1.5，释放改为发射慢速投射物，命中敌人后炸开生成范围 DoT。
+- 验证：`node --test tools/test_alpha67_mechanics.cjs tools/test_battle_stats.cjs tools/test_capture_gacha_research.cjs` 23/23 通过；`node tools/build.js` 与 `node tools/export_data.js` 通过。
+- 已知限制：`py` 启动器未在当前 shell 中注册，未重跑 `make_seo_pages.py`；未执行真机或浏览器实玩测试。
+
 ### v0.43.0-alpha.66 — 2026-11-24
 
 - 修复远征存档序列化循环引用：`js/systems/expedition-save.js` 的 `actor(p)` 排除 `lastPatch`、`abilityState`、`leaderState`、`megaState`、`zState`，避免 `player.lastPatch -> owner -> player` 导致 `JSON.stringify` 失败。

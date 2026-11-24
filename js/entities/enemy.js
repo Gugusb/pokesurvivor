@@ -165,7 +165,7 @@
         if(shieldDamage>0)G.Audio.sfx('hit',{kind:attack.kind,type:attack.type});
         return shieldDamage;
       }
-      if (G.BossCombat&&!attack.typeBondFraction) hpDamage = G.BossCombat.damage(this,hpDamage);
+      if (G.BossCombat&&!attack.typeBondFraction) { const adj = G.BossCombat.damage(this,hpDamage,attack); hpDamage = adj > 0 ? Math.max(1, Math.round(adj)) : 0; }
       if (!(hpDamage > 0)) return shieldDamage;
       G.ExpeditionDamage?.record(attacker,attack,Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage,damageContext);G.SquadTraits?.hit(attacker,attack,eff==='crit',Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage);
       const actualDealt=Math.min(Math.max(0,this.hp),hpDamage)+shieldDamage;this.hp -= hpDamage;
@@ -314,7 +314,7 @@
       if (seen || this.dead) this.anim.update(dt);
       if (this.flash > 0) this.flash -= dt;
       if (this.dead) { this.fade -= dt; return; }
-      if(G.BossCombat&&!(this.classStunT>0))G.BossCombat.tick(this,dt);
+      if(G.BossCombat)G.BossCombat.tick(this,dt);
       if (this.shiny && seen) {
         this.sparkT -= dt;
         if (this.sparkT <= 0) {
@@ -511,7 +511,7 @@
       if (!ai.fury && this.hp < this.maxHp * 0.5) this.enrage();
       const k = ai.fury ? 1.25 : 1;
       if (ai.cast) return this.bossCast(dt, pl);
-      ai.modeT -= dt; ai.cd -= dt * k * G.Abilities.pressure(this)*(G.TypeBonds?.enemyRate(this)||1);
+      ai.modeT -= dt; ai.cd -= dt * k * G.Abilities.pressure(this)*(G.TypeBonds?.enemyRate(this)||1)*(G.BossCombat?.rateMul?.(this)||1);
       // Alterna siempre: en su distancia favorita está más rato (7-9 s) que en la otra (4-5 s).
       if (ai.modeT <= 0) {
         ai.mode = ai.mode === 'far' ? 'close' : 'far';

@@ -54,7 +54,7 @@ G.TrainerTalents=(()=>{
   const p=current(s),d=choiceDefinition(s,id);if(!p||p.serial!==serial||!p.offers?.includes(id)||!d)return false;
   if(d.effects.promptMoveDraft&&!applyMove(s,options.moveId,options.slot,d.effects.draftMoveLevel||3))return false;
   s.pendingTalentPicks.shift();const inst={id,tier:p.tier,acquiredAtLevel:p.targetLevel,day:s.day,timestamp:Date.now(),enhanced:!!d.enhanced};if(d.enhanced)G.Items.remove(s.captain,'talentseal');s.trainerTalents.push(inst);
-  const e=d.effects;if(e.instantGold)s.gold+=e.instantGold;if(e.freeRefreshes)s.talentFreeRefreshes=(s.talentFreeRefreshes||0)+e.freeRefreshes;if(e.grantRerolls)s.talentRerolls+=e.grantRerolls;
+  const e=d.effects;if(e.instantGold)s.gold+=e.instantGold;if(e.freeRefreshes)s.talentFreeRefreshes=(s.talentFreeRefreshes||0)+e.freeRefreshes;if(e.grantRerolls)s.talentRerolls+=e.grantRerolls;if(e.nextShopThreeStarCharges){s.talentThreeStarCharges=(s.talentThreeStarCharges||0)+e.nextShopThreeStarCharges;s.talentThreeStarMaxQ=Math.max(s.talentThreeStarMaxQ||0,e.nextShopThreeStarMaxQuality||3);}
   if(e.instantGoldCostPct){const cost=Math.floor(s.gold*e.instantGoldCostPct);s.gold-=cost;if(e.investmentReturn){inst.investmentPrincipal=cost;inst.investmentPaid=0;}}if(e.healSquadHp)healSquad(e.healSquadHp,s);
   if(e.typeBondOffset)for(const [type,n]of Object.entries(e.typeBondOffset))s.emblems[type]=(s.emblems[type]||0)+n;
   if(e.grantTypeMon)for(let i=0;i<(e.grantTypeMonCount||1);i++)grantType(s,e.grantTypeMon);sync(s);G.Squad.refresh();return true;
@@ -73,7 +73,8 @@ G.TrainerTalents=(()=>{
  function outgoing(p){return represented(p)&&nfe(p)?1+sum('nfeDmgBonus'):1;}
  function incoming(p,source){if(!represented(p))return 1;let k=nfe(p)?Math.max(.1,1-sum('nfeDmgReduction')):1;if(p.isSquadMember&&G.Squad.gathering&&p.assaultMode!=='assault')k*=Math.max(.1,1-sum('gatherDmgReduction'));if(['contact','melee'].includes(source.kind))k*=Math.max(.1,1-sum('contactDmgReduction'));else if(['ranged','projectile','beam','hazard','explosion'].includes(source.kind))k*=Math.max(.1,1-sum('projectileDmgReduction'));return k;}
  function gatherDelay(){return Math.min(.22,...entries().filter(t=>t.def.effects.gatherDelay).map(t=>t.def.effects.gatherDelay));}
- function noPP(p,m){return represented(p)&&p.isSquadMember&&(has('master_infinite_pp')||has('ultra_overclock_all')&&p.rank===3&&m.evolved);}
+ function noPP(p,m){return represented(p)&&p.isSquadMember&&has('ultra_overclock_all')&&p.rank===3&&m.evolved;}
+ function staminaBasePct(p){return represented(p)?sum('staminaBasePct'):0;}
  function defFactor(p){return represented(p)&&!p.isSquadMember?1+entries().reduce((n,t)=>n+Math.max(0,(t.def.effects.defMult||1)-1),0):1;}
  function visualScale(p){return represented(p)&&!p.isSquadMember?1+entries().reduce((n,t)=>n+Math.max(0,(t.def.effects.scaleMult||1)-1),0):1;}
  function move(p,m){if(!represented(p)||p.isSquadMember||!has('master_dynamax_ace')||m.talentSizeApplied)return m;const k=1+entries().reduce((n,t)=>n+Math.max(0,(t.def.effects.hitRadiusMult||1)-1),0),v={...m,talentSizeApplied:true};for(const key of ['radius','range','width','size'])if(m[key]!=null)v[key]=m[key]*k;return v;}
@@ -117,5 +118,5 @@ G.TrainerTalents=(()=>{
  function rescueCaptain(p){return represented(p)&&!p.isSquadMember&&p.hp<=0&&rescue(run(),p);}
  function draw(ctx){for(const p of G.Squad?.actors?.()||[]){const s=shields.get(p);if(!s||s.hp<=0||run().elapsed>=s.until)continue;ctx.save();ctx.strokeStyle='#b6e9ff';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(p.x,p.y-p.bodyH*.4,p.r+9,p.bodyH*.6+8,0,0,Math.PI*2);ctx.stroke();ctx.restore();}}
  function tick(){const s=run();if(s)sync(s);}
- return {definition,choiceDefinition,permitted,catalogue,by,local,ensure,begin,onLevelUp,current,deal,eligible,canReroll,reroll,choose,entries,sum,has,maxHp,healSquad,receiveGifts,moveChoices,sync,attackPct,speedPct,rate,crit,outgoing,incoming,gatherDelay,noPP,defFactor,visualScale,move,interestDivisor,maxInterest,refreshDiscount,price,shop,wage,investments,repayInvestments,battleReward,beginBattle,battleEnd,absorb,onCast,onKill,pulse,rescue,rescueCaptain,draw,tick};
+ return {definition,choiceDefinition,permitted,catalogue,by,local,ensure,begin,onLevelUp,current,deal,eligible,canReroll,reroll,choose,entries,sum,has,maxHp,healSquad,receiveGifts,moveChoices,sync,attackPct,speedPct,rate,crit,outgoing,incoming,gatherDelay,noPP,staminaBasePct,defFactor,visualScale,move,interestDivisor,maxInterest,refreshDiscount,price,shop,wage,investments,repayInvestments,battleReward,beginBattle,battleEnd,absorb,onCast,onKill,pulse,rescue,rescueCaptain,draw,tick};
 })();

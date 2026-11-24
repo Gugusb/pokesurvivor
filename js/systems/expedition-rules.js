@@ -5,8 +5,12 @@ G.ExpeditionRules = (() => {
   const weights=[['battle',10],['elite',2],['shop',5],['rest',5],['training',3]];
   function roll(rng=Math.random,tier=4,events={}){const base=G.EconomyConfig?Object.entries(G.EconomyConfig.eventWeights):weights,shop=base.find(([id])=>id==='shop')?.[1]||0,item=events['item-shop']?shop*.2:0,peddler=events.peddler?shop*.1:0;const table=base.map(([id,w])=>[id,id==='shop'?w-item-peddler:w]).concat([['item-shop',item],['peddler',peddler]]).filter(([id,w])=>w>0&&(G.LeagueRank?.allows(id,tier)??true));let n=rng()*table.reduce((n,[,w])=>n+w,0);for(const [id,w]of table){n-=w;if(n<0)return id;}return table[0][0];}
   function matrix(cycle=1,rng=Math.random,tier=4,events={}){
-    const d=days(),m=Array.from({length:d+1},(_,r)=>Array.from({length:COLS},(_,c)=>({kind:r===0?'start':r===d?'boss':roll(rng,tier,events),row:r,col:c,day:(cycle-1)*d+r})));
-    if(d>1){const rr=1+Math.floor(rng()*(d-1)),rc=Math.floor(rng()*COLS);m[rr][rc].kind='rift';}
+    const types=Object.keys(G.Types?.CHART||{normal:1,fire:1,water:1,grass:1,electric:1,ice:1,fighting:1,poison:1,ground:1,flying:1,psychic:1,bug:1,rock:1,ghost:1,dragon:1,dark:1,steel:1,fairy:1});
+    const d=days(),m=Array.from({length:d+1},(_,r)=>Array.from({length:COLS},(_,c)=>{
+      const kind=r===0?'start':r===d?'boss':roll(rng,tier,events);
+      return kind==='elite'?{kind,row:r,col:c,day:(cycle-1)*d+r,eliteType:types[Math.floor(rng()*types.length)]}:{kind,row:r,col:c,day:(cycle-1)*d+r};
+    }));
+    if(d>1){const rr=1+Math.floor(rng()*(d-1)),rc=Math.floor(rng()*COLS);m[rr][rc].kind='rift';delete m[rr][rc].eliteType;}
     return m;
   }
   const reachable=(row,col,r,c)=>r===row+1&&c>=0&&c<COLS&&Math.abs(c-col)<=1;

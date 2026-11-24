@@ -31,8 +31,8 @@ G.Types = (() => {
     steel:    { fire: .5, water: .5, electric: .5, ice: 2, rock: 2, steel: .5, fairy: 2 },
     fairy:    { fire: .5, fighting: 2, poison: .5, dragon: 2, dark: 2, steel: .5 }
   };
-  const SOFT = { 2: 1.6, 0.5: 0.6, 0: 0.3 };
-  const MIN = 0.3, MAX = 2.4;
+  const SOFT = { 2: 2.0, 0.5: 0.5, 0: 0.3 };
+  const MIN = 0.25, MAX = 4.0;
 
   /** Multiplicador de un ataque de tipo `atk` contra un Pokémon de tipos `def`. */
   function mult(atk, def) {

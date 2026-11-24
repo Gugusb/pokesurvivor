@@ -115,7 +115,7 @@ G.Player = class Player {
   get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)+(G.SquadTraits?.flat(this,'atk')||0)) * (1+this.statGrowth.atk+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'atk')||1)*(G.LeaderAbilities?.factor(this,'atk')||1); }
   get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)+(G.SquadTraits?.flat(this,'spa')||0)) * (1+this.statGrowth.spa+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'spa')||1)*(G.LeaderAbilities?.factor(this,'spa')||1); }
   get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)+(G.SquadTraits?.flat(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1)*(G.SquadTraits?.factor(this,'agility')||1)*(G.LeaderAbilities?.factor(this,'agility')||1); }
-  get stamina() { return (this.baseStamina+(G.TypeBonds?.baseBonus(this,'stamina')||0)+(G.SquadTraits?.flat(this,'stamina')||0)) * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0))*(G.SquadTraits?.factor(this,'stamina')||1)*(G.LeaderAbilities?.factor(this,'stamina')||1); }
+  get stamina() { return (this.baseStamina*(1+(G.TrainerTalents?.staminaBasePct(this)||0))+(G.TypeBonds?.baseBonus(this,'stamina')||0)+(G.SquadTraits?.flat(this,'stamina')||0)) * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0))*(G.SquadTraits?.factor(this,'stamina')||1)*(G.LeaderAbilities?.factor(this,'stamina')||1); }
   get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
   get ppInterval() { return G.MonProgression ? G.MonProgression.ppInterval(this.stamina) : 1; }
   isPrimaryMove(m) { const group=this.slots.find(g=>g.some(x=>x===m||x.id===m?.id));return !group||group===this.activeGroup(); }
@@ -311,7 +311,7 @@ G.Player = class Player {
     if (G.FailureProtection?.avoidLethal(this,finalDamage)) return false;
     const hpLost=Math.min(this.hp,finalDamage);
     this.hp -= finalDamage;G.TypeBonds?.onDamage(this,hpLost);
-    if(G.BossCombat&&source.enemy)G.BossCombat.leech(source.enemy,hpLost,this.maxHp);
+    if(G.BossCombat&&source.enemy){G.BossCombat.leech(source.enemy,hpLost,this.maxHp);G.BossCombat.onHitPlayer?.(source.enemy,this,hpLost);}
     G.Abilities.onDamage(this);
     G.Abilities.afterHurt(this, source, type);
     if(d>0&&G.Difficulty)G.Difficulty.onHurt(this);

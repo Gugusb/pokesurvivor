@@ -124,7 +124,7 @@ G.Combat = (() => {
   }
 
   function payload(m) {
-    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, moveKind: m.kind, moveId: m.id, damageClass:m.damageClass, evolved:!!m.evolved, phaseWalls:!!m.phaseWalls,leaderBounce:m.leaderBounce||0, specMove:m,homingTarget:m.homingTarget,sinnohSoul:!!m.sinnohSoul,bondPierceGrowth:m.bondPierceGrowth||0,bondDamageContributions:m.bondDamageContributions,visualScale:m.bondVisualScale,bondScale:m.bondScale||1,typeCastId:m.typeCastId||0 };
+    return { burn: m.burn || 0, poison: m.poison || 0, slow: m.slow || 0, knock: m.knock || 0, mtype: m.type, moveKind: m.kind, moveId: m.id, damageClass:m.damageClass, evolved:!!m.evolved, phaseWalls:!!m.phaseWalls,leaderBounce:m.leaderBounce||0, specMove:m,homingTarget:m.homingTarget,sinnohSoul:!!m.sinnohSoul,bondPierceGrowth:m.bondPierceGrowth||0,bondRecall:!!m.bondRecall,bondDamageContributions:m.bondDamageContributions,visualScale:m.bondVisualScale,bondScale:m.bondScale||1,typeCastId:m.typeCastId||0 };
   }
 
   /** Tabla de tipos × clima para un ataque de tipo `type` contra `e`. */
@@ -409,25 +409,30 @@ G.Combat = (() => {
   }
 
   /** Rastro: vas dejando charcos que dañan a lo que pasa por encima. */
-  function trailPatch(pl, m) {
+  function spawnTrailField(pl, m, x, y, isGhost = false) {
     const col = (m.bondColor||G.U.TYPE_COLOR[m.type]), vis = G.VFX.forMove(m);
-    // Parado no deja uno nuevo encima del anterior (sólo de vez en cuando).
-    const last = pl.lastPatch;
-    if (!m.extraCast && last && G.U.dist2(last.x, last.y, pl.x, pl.y) < (m.radius * 0.9) ** 2 && last.t < 1) return;
-    let x=pl.x,y=pl.y;const windup=m.bondArea?G.EconomyConfig.classBonds.area.windupSeconds:0;
-    if(m.bondArea){
-      const c=G.EconomyConfig.classBonds.area,full=m.radius*c.maxRadiusMultiplier,max=Math.max(c.trailPlacementBase,full)*(m.bondPlacement||1),min=Math.min(max*.9,full*c.trailMinDistanceMultiplier);
-      let placed=false;for(let i=0;i<c.placementAttempts;i++){const a=Math.random()*Math.PI*2,d=Math.sqrt(G.U.rand(min*min,max*max)),tx=pl.x+Math.cos(a)*d,ty=pl.y+Math.sin(a)*d;
-        if(G.World.isFree(tx,ty,1,true)){x=tx;y=ty;placed=true;break;}
-      }
-      if(!placed)return;
-    }
-    const f = { kind: 'patch', owner: pl, ghost, m, col, vis, x, y, t: 0, windup, life: (m.dur || 3)+windup, baseR:m.radius, r: m.radius,
+    const windup=m.bondArea?G.EconomyConfig.classBonds.area.windupSeconds:0;
+    const f = { kind: 'patch', owner: pl, ghost: isGhost, m, col, vis, x, y, t: 0, windup, life: (m.dur || 6)+windup, baseR:m.radius, r: m.radius,
                 tick: 0, dmg: m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk) };
     fields.push(f);
-    if(!m.extraCast)pl.lastPatch = f;
+    G.FX.ring(x, y, 8, m.radius, col, 0.25, 2.5);
     const mine = fields.filter(o => o.kind === 'patch' && o.owner === pl && o.m.id===m.id && !!o.m.extraCast===!!m.extraCast && !o.gone);
     for (const o of mine.slice(0, Math.max(0, mine.length - 18))) o.gone = true;
+  }
+
+  function trailPatch(pl, m) {
+    const col = (m.bondColor||G.U.TYPE_COLOR[m.type]), vis = G.VFX.forMove(m);
+    const tg = (pl.target && !pl.target.dead) ? pl.target : G.Projectiles.nearest(G.EnemyMgr.all(), pl.x, pl.y, 420);
+    const a = tg ? Math.atan2(tg.cy() - pl.y, tg.x - pl.x) : pl.aim;
+    const sp = 165;
+    G.Projectiles.spawn(Object.assign({
+      x: pl.x + Math.cos(a) * 6, y: pl.y + Math.sin(a) * 6,
+      vx: Math.cos(a) * sp, vy: Math.sin(a) * sp,
+      dmg: m.dmg * (pl.attackFor ? pl.attackFor(m) : pl.atk),
+      r: 7, life: 2.4, pierce: 0, color: col,
+      hits: new Set(), vis, ghost, owner: pl,
+      trailBurst: true, trailMove: m, trailGhost: ghost
+    }, payload(m)));
   }
 
   /** Abanico corto: muchos disparos rápidos que no llegan lejos (aliento, chorro...). */
@@ -791,6 +796,12 @@ G.Combat = (() => {
         G.SquadBonds?.afterHit(owner,e,p.specMove||{kind:p.moveKind},dealt);if(p.back&&p.specMove?.leaderReturnPull&&!e.boss){const dx=owner.x-e.x,dy=owner.y-e.y,d=Math.hypot(dx,dy)||1;e.kx+=dx/d*100;e.ky+=dy/d*100;}
 
         if (!p.orb) {
+          if (p.trailBurst) {
+            spawnTrailField(owner, p.trailMove || p.specMove, e.x, e.y, !!p.trailGhost);
+            G.FX.burst(e.x, e.y - G.LIFT, p.color, 8, 110);
+            G.Projectiles.remove(p);
+            break;
+          }
           if (p.pierce > 0) { G.SquadBonds?.onPierce(p);p.pierce--; }
           else {
             G.FX.burst(p.x, p.y - G.LIFT, p.color, 5, 80);
