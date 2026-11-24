@@ -82,7 +82,7 @@ G.TypeBonds=(()=>{
     if(a.typeBondFraction){ctx.factor=a.typeBondDot?s.amp:1;return ctx;}
     if(direct&&ready(p,'normal')&&s.normal){ctx.factor*=1+value('normal','mark');ctx.contributions.push(['normal',1+value('normal','mark')]);ctx.normal=true;if(state('normal').tier===5)impact(e.x,e.y,45,'normal');}
     if(ready(p,'psychic')&&a.type==='psychic'){const k=1+s.psychic*value('psychic','vulnerability');ctx.factor*=k;ctx.contributions.push(['psychic',k]);}
-    if(direct&&ready(p,'ice',5)&&ctx.frozen&&!a.typeBondCritApplied)ctx.factor*=G.Abilities.critMultiplier(p)+value('ice','crit');
+    if(direct&&ready(p,'ice',5)&&ctx.frozen&&!a.typeBondCritApplied){const n=G.Abilities.critMultiplier(p)+value('ice','crit');ctx.factor*=G.LeaderAlola?.finalCrit(p,n)??n;}
     if(direct&&ready(p,'fairy',5)&&e.hp/e.maxHp<Math.min(.95,value('fairy','threshold'))){if(!e.boss&&!e.elite&&!e.legend)ctx.execute=true;else{const k=1+value('fairy','execute')*(e.elite?2:1);ctx.factor*=k;ctx.contributions.push(['fairy',k]);}impact(e.x,e.y,55,'fairy');}
     if(a.typeBondDot)ctx.factor*=s.amp;
     return ctx;

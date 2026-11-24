@@ -1,12 +1,13 @@
 /* Explicit authored Kalos bursts use the existing Z scheduler and damage APIs. */
 (()=>{
  const K=G.LeaderKalos,L=G.LeaderAbilities,Z=L._z,{actors,enemies,captain,budget,shield,stun,schedule,synthetic,field,pull}=Z;
+ const uReset=()=>K.s().executeReset===K.s().token;
  const typesFor=d=>d.active.types,main=p=>p.activeMove()||p.moves[0];
- function strike(p,e,power,types,a){if(e.dead)return 0;let total=0;for(const type of types){if(e.dead)break;const m={leaderGenerated:true,kalosZ:true,kind:a.shape==='beam'?'beam':'leader',type,damageClass:main(p).damageClass};let n=budget(p)*power/types.length*K.clampType(p,type,e,G.Abilities.outgoingType(p,type,e.types))*G.Weather.mult(type);if(a.critical)n*=G.Abilities.critMultiplier(p)+L.critMultiplier(p,m,e);if(a.execute&&!e.boss&&!e.elite&&e.hp/e.maxHp<a.execute)n=Math.max(n,e.hp+(e.shield||0)+1);if(a.breakShield)e.shield=0;total+=Z.direct(p,e,n,type,m);}
+ function strike(p,e,power,types,a){if(e.dead)return 0;let total=0;for(const type of types){if(e.dead)break;const m={leaderGenerated:true,kalosZ:true,kind:a.shape==='beam'?'beam':'leader',type,damageClass:main(p).damageClass,leaderTrue:!!a.trueDamage,typeBondCritApplied:!!a.critical};let n=budget(p)*power/types.length*K.clampType(p,type,e,G.Abilities.outgoingType(p,type,e.types))*G.Weather.mult(type);if(a.critical)n*=G.LeaderAlola?.finalCrit(p,G.Abilities.critMultiplier(p)+L.critMultiplier(p,m,e))??(G.Abilities.critMultiplier(p)+L.critMultiplier(p,m,e));if(a.execute&&!e.boss&&!e.elite&&e.hp/e.maxHp<a.execute)n=Math.max(n,e.hp+(e.shield||0)+1);if(a.breakShield)e.shield=0;const before=e.dead;total+=Z.direct(p,e,n,type,m);if(a.resetOnExecute&&!before&&e.hp<=0&&!e.boss&&!e.elite&&!uReset()){K.s().executeReset=K.s().token;for(const move of p.moves)move.t=0;}}
   if(a.stun)stun(e,a.stun);if(a.nonBossStun&&!e.boss)stun(e,a.nonBossStun);if(a.freeze)e.freezeT=Math.max(e.freezeT||0,a.freeze*(e.boss?.5:1));if(a.slow)e.applySlow(a.slow,3);if(a.burn)e.applyBurn(a.burn,p,true);if(a.poison)e.applyPoison(a.poison,p,true);if(a.armor){e.leaderArmor=Math.max(e.leaderArmor||0,a.armor);e.leaderArmorUntil=K.now()+3;}if(a.vulnerable){e.leaderVulnerable=Math.max(e.leaderVulnerable||0,a.vulnerable);e.leaderVulnerableUntil=K.now()+4;}if(a.attackDown){e.leaderDamage=1-a.attackDown;e.leaderDamageUntil=K.now()+3;}return total;
  }
  const ring=(p,types,r=250)=>G.FX.ring(p.x,p.y,10,r,G.U.TYPE_COLOR[types[0]]||'#d7edff',.45,4);
- function execute(p,d){const a=d.active,u=K.s(),types=typesFor(d),start={x:p.x,y:p.y},angle=p.aim;u.token++;u.zUntil=K.now()+(a.duration||4);
+ function execute(p,d){const a=d.active,u=K.s(),types=typesFor(d),start={x:p.x,y:p.y},angle=p.aim;if(!a.continuation)u.token++;u.zUntil=K.now()+(a.duration||4);
   if(a.shield)for(const ally of actors())shield(ally,ally.maxHp*a.shield,a.duration||5);
   if(a.heal)K.healTeam(a.heal);if(a.healMissing)K.healTeam(a.healMissing,true);
   if(a.attackBuff||a.speedBuff||a.haste||a.defenseBuff){u.buffUntil=K.now()+(a.duration||5);u.attackBuff=a.attackBuff||0;u.speedBuff=a.speedBuff||0;u.haste=a.haste||0;u.defenseBuff=a.defenseBuff||0;}
@@ -40,5 +41,5 @@
   if(a.count>1){const v=G.VFX.forType(types[0]);for(let i=0;i<Math.min(24,a.count);i++)G.FX.sp(v.proj||'orb',v.pal,p.x,p.y-G.LIFT,{vx:Math.cos(i*Math.PI*2/a.count)*240,vy:Math.sin(i*Math.PI*2/a.count)*180,life:.5});}
  }
  let installed=false;function install(){if(installed)return;const handlers={},timings={};for(const d of G.LeaderAbilitiesConfig.families.filter(v=>v.generation===6)){if(!['projectile','boomerang','nova','delayedNova','support','rush','melee','beam','cone','targets','field','targetNova','beamNova'].includes(d.active.shape))throw Error('Unreviewed Kalos Z '+d.root);handlers[d.active.kind]=p=>execute(p,d);timings[d.active.kind]=Math.max(4,d.active.duration||0,d.active.delay||0);}if(Object.keys(handlers).length!==37)throw Error('Expected 37 Kalos Z configurations');L.registerZ(handlers,timings);installed=true;}
- G.LeaderKalosZ={install};if(G.LeaderAbilitiesConfig)install();else G.LeaderAbilitiesReady=G.LeaderAbilitiesReady.then(config=>{install();return config;});
+ G.LeaderKalosZ={install,execute,strike};if(G.LeaderAbilitiesConfig)install();else G.LeaderAbilitiesReady=G.LeaderAbilitiesReady.then(config=>{install();return config;});
 })();

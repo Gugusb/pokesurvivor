@@ -647,7 +647,7 @@ G.Combat = (() => {
 
   // Golpe crítico (Mejoras → Golpe Crítico): x1,5 de daño, número naranja y grande.
   const isCrit = (pl,m,e) => {const chance=Math.min(1,(pl.critChance||0)+(G.LeaderAbilities?.crit(pl,m,e)||0)+(G.ExpeditionGrowth?.crit(pl)||0)+(G.SquadTraits?.crit(pl)||0)+(G.TrainerTalents?.crit(pl)||0)+(G.Items?.critBonus(pl)||0)+(G.Specialization?.stats(m).crit||0));return !ghost&&chance>0&&Math.random()<chance;};
-  const critMul=(pl,m,e)=>G.Abilities.critMultiplier(pl)+(G.LeaderAbilities?.critMultiplier(pl,m,e)||0)+(G.ExpeditionGrowth?.critDamage(pl)||0)+(G.Items?.critDamage(pl)||0)+(G.Specialization?.stats(m).critDamage||0)+(e?G.TypeBonds?.critBonus(pl,e)||0:0);
+  const critMul=(pl,m,e)=>{const n=G.Abilities.critMultiplier(pl)+(G.LeaderAbilities?.critMultiplier(pl,m,e)||0)+(G.ExpeditionGrowth?.critDamage(pl)||0)+(G.Items?.critDamage(pl)||0)+(G.Specialization?.stats(m).critDamage||0)+(e?G.TypeBonds?.critBonus(pl,e)||0:0);return G.LeaderAlola?.finalCrit(pl,n)??n;};
   function hit(pl, e, dmg, col, dx, dy, knock, m) {
     const k = typeK(m.type, e, pl,m);
     const crit = m.zCrit ||G.TypeBonds?.forceCrit(pl,e)|| isCrit(pl,m,e);

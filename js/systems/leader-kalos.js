@@ -1,7 +1,7 @@
 /* Kalos supplies the small gaps between authored rules and the shared captain hooks. */
 G.LeaderKalos=(()=>{
  const L=G.LeaderAbilities,Z=L._z,{actors,enemies,captain,state,own,budget,direct,shield,heal,event,stun,field,schedule,synthetic}=Z;
- const active=()=>L.active()&&L.definition(captain()?.dex)?.generation===6,has=p=>active()&&Z.team(p),root=()=>L.definition(captain()?.dex)?.root,R=()=>G.Expedition.run,f=()=>L.profile()||{},k=()=>f().kalos||{},now=()=>state()?.time||0;
+ const active=()=>L.active()&&[6,7].includes(L.definition(captain()?.dex)?.generation),has=p=>active()&&Z.team(p),root=()=>L.definition(captain()?.dex)?.root,R=()=>G.Expedition.run,f=()=>L.profile()||{},k=()=>f().kalos||{},now=()=>state()?.time||0;
  const s=()=>state().kalos||={token:0,supplies:[],kills:0},q=p=>p.kalosState||={at:{},queuedHeal:0,healCredit:p.maxHp*.03,overflowCredit:p.maxHp*.03},wrap=G.LeaderSinnoh.wrap;
  const status=e=>e.burn>0||e.poison>0||e.slowT>0||e.freezeT>0||e.classStunT>0;
  function proc(p,key,cd){const a=q(p);a.at||={};if((a.at[key]??-Infinity)>now())return false;a.at[key]=now()+cd;return true;}
@@ -9,10 +9,10 @@ G.LeaderKalos=(()=>{
  function queue(p,n){if(has(p)&&!p.dead&&n>0)q(p).queuedHeal=Math.min(p.maxHp*2,(q(p).queuedHeal||0)+n);}
  function healTeam(n,missing=false){for(const p of actors())if(!p.dead)queue(p,(missing?p.maxHp-p.hp:p.maxHp)*n);}
  function secondary(p,e,n,type,extra={}){return direct(p,e,n,type,{leaderGenerated:true,kalosSecondary:true,kalosSettled:true,...extra});}
- function supply(p,kind){const u=s();if(kind==='fruit'&&(u.fruits||0)>=4||kind==='carrot'&&(u.carrots||0)>=2)return;u[kind==='fruit'?'fruits':'carrots']=(u[kind==='fruit'?'fruits':'carrots']||0)+1;u.supplies.push({owner:p===captain()?'captain':p.squadId,kind});event('fruitPickup');}
+ function supply(p,kind,bonus=false){const u=s();if(bonus){if((u.zFruits||0)>=6)return false;u.zFruits=(u.zFruits||0)+1;u.supplies.push({owner:p===captain()?'captain':p.squadId,kind});return true;}if(kind==='fruit'&&(u.fruits||0)>=4||kind==='carrot'&&(u.carrots||0)>=2)return;u[kind==='fruit'?'fruits':'carrots']=(u[kind==='fruit'?'fruits':'carrots']||0)+1;u.supplies.push({owner:p===captain()?'captain':p.squadId,kind});event('fruitPickup');}
  function factor(p,key){if(!has(p))return 1;const a=k(),u=s();let n=1;if(a.teamMoxie&&key==='atk')n*=1+Math.min(.35,(u.kills||0)*a.teamMoxie)/(1+(f().stats?.atk||0));if(u.buffUntil>now()){if(['atk','spa'].includes(key))n*=1+(u.attackBuff||0);if(key==='spd')n*=1+(u.speedBuff||0);if(key==='defense')n*=1+(u.defenseBuff||0);}return n;}
  function move(p,m){if(!has(p)||m.leaderGenerated)return m;const n={...m},a=k();if(f().defMelee&&m.kind==='melee'&&a.defCap)n.dmg=n.dmg/(1+Math.min(.4,p.baseDefense*f().defMelee))*(1+Math.min(a.defCap,p.baseDefense*f().defMelee));return n;}
- function outgoing(p,e,m){if(!has(p)||m.kalosSettled)return 1;const a=k(),u=s();let n=1;if(a.bank)n*=1+Math.min(.3,Math.floor(R().gold/20)*a.bank);return n;}
+ function outgoing(p,e,m){if(!has(p)||m.kalosSettled)return 1;const a=k(),u=s();let n=1;if(a.bank)n*=1+Math.min(a.bankCap||.3,Math.floor(R().gold/20)*a.bank);return n;}
  function onCast(p,m){if(!has(p)||m.leaderGenerated)return;m.kalosCast=++s().casts;q(p).lastSerial=m.kalosCast;if(m.kind==='dash')q(p).dashAfterUntil=now()+.8;}
  function hit(p,e,m,dealt,critical){if(has(p)&&m.kalosZ&&m.kalosReturnStun&&m.leaderReturning)stun(e,m.kalosReturnStun);if(has(p)&&m.kalosZ&&m.kalosBurnBlast&&e.burn>=8&&eproc(e,'pyreBlast',.5))for(const foe of G.EnemyMgr.queryCircle(e.x,e.y,90))secondary(p,foe,budget(p)*.02,'fire',{kalosZ:true});if(!has(p)||!(dealt>0)||m.leaderGenerated||m.typeBondSecondary)return;const a=k(),b=q(p),u=s();
   if(critical&&a.critPP&&proc(p,'critPP',.5)&&Math.random()<a.critPP)G.MovePP.add(p,p.moves,1);
@@ -20,7 +20,7 @@ G.LeaderKalos=(()=>{
   if(m.type==='electric'||critical)u.solarHits=(u.solarHits||0)+1;
   if(a.meleeShield&&m.kind==='melee'&&b.shieldSerial!==m.kalosCast&&proc(p,'meleeShield',.5)){b.shieldSerial=m.kalosCast;shield(p,p.maxHp*a.meleeShield,4);}
   if((a.echo||a.meleeEcho&&m.kind==='melee')&&proc(p,'echo:'+e.id,.12)){const amount=dealt*(a.echo||a.meleeEcho);schedule(.12,()=>{if(e.dead)return;secondary(p,e,amount,m.type);event('echoHit');if(a.echoStun&&Math.random()<.2&&eproc(e,'echoStun',1))stun(e,a.echoStun);});}
-  if(a.parasitic&&m.kind==='mine'){e.kalosParasite={left:4,p};}
+  if(a.parasitic&&m.kind==='mine'){if(!e.kalosParasite||e.kalosParasite.left<=0)event('spore');e.kalosParasite={left:4,p};}
  }
  function hurt(p,n,type,src){if(!has(p)||!(n>0))return;if(k().contactCharge&&['contact','melee'].includes(src.kind))event('absorb',n);if(k().reflect&&src.kind==='contact'&&src.enemy)secondary(p,src.enemy,n*k().reflect,'grass');
   const count=k().iceCounter||k().counterSpikes;if(count&&proc(p,'counter',2)){const main=p.activeMove()||p.moves[0];for(let i=0;i<count;i++)synthetic(p,'projectile',{type:k().iceCounter?'ice':'rock',count:1,dmg:main.dmg*.2,damageClass:main.damageClass,speed:350,life:.8,knock:60,kalosSecondary:true},i*Math.PI*2/count);}
@@ -68,5 +68,5 @@ G.LeaderKalos=(()=>{
  const oldEnter=G.HoennMarket.enterShop;G.HoennMarket.enterShop=(run,offers)=>{oldEnter(run,offers);if(active()&&k().visitRefresh&&run.kalosRefreshDay!==run.day){run.kalosRefreshDay=run.day;run.shopFreeRefreshes=(run.shopFreeRefreshes||0)+k().visitRefresh;}};
  function interest(run){if(!active()||run!==R())return null;return {divisor:Math.min(G.TrainerTalents?.interestDivisor(run)||G.EconomyConfig.interest.divisor,k().interestDivisor||Infinity),cap:(G.TrainerTalents?.maxInterest(run)??G.EconomyConfig.interest.maxInterest)+(k().interestCap||0)};}
  function itemHeal(p,n,defer=false){const amount=n*(has(p)&&root()===717?.5:1);if(defer&&has(p)&&R().phase==='combat')queue(p,amount);else p.heal(amount);}
- return {terrainImmune:p=>has(p)&&!!k().terrainImmune,itemHeal,interest,active,has,root,f,k,s,q,now,proc,eproc,queue,healTeam,secondary,clampType,incoming,zBudget,claimItem,makeItemChoice};
+ return {terrainImmune:p=>has(p)&&!!k().terrainImmune,itemHeal,interest,active,has,root,f,k,s,q,now,proc,eproc,queue,healTeam,secondary,clampType,incoming,zBudget,claimItem,makeItemChoice,supply};
 })();

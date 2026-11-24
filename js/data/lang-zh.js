@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Capitanes de Alola · v0.43.0-alpha.65": "阿罗拉队长特性 · v0.43.0-alpha.65",
+  "Llegan 54 familias de capitanes de Alola, con sus cinco apartados originales, avances 5/8 y Z manual por medalla familiar.": "新增54个阿罗拉队长家族，保留五段式原文、训练家5／8级进阶与家族勋章解锁的手动Z。",
+  "Cada familia tiene una estimación y ajustes propios. Las salvas y los ataques conjuntos comparten presupuesto; los ecos y rayos añadidos no se activan a sí mismos.": "每个家族都有单独收益估算与调整。多段、全队攻击共享预算，回响与追加电弧不递归触发自身。",
+  "Pyukumuku y Morelull solo cargan con sus eventos originales. Tapu Fini limita el multiplicador crítico final a 1,5. Guzzlord conserva su crecimiento propio durante la expedición.": "拳海参和睡睡菇严格按原事件充能；卡璞·鳍鳍最终暴伤封顶1.5倍；恶食大王仅自身击杀成长并在本局跨战保留。",
+  "Las provisiones se entregan tras ganar. Comfey obtiene un refresco tras diez segundos con todos sanos; Magearna devuelve 1G en la primera compra de experiencia de cada tienda.": "补给胜利后结算。花疗环环全队连续满血10秒后获得下店一次免费刷新；玛机雅娜每店首次购买经验返还1G。",
+  "Ordené las nuevas fichas con pegatinas de colores y dejé una concha junto a las cuentas. Quien cocina revisó las cifras; yo guardo la ruta de Alola para que podamos salir juntos cuando suene el despertador.": "我用彩色贴纸整理好新特性卡，把贝壳搁在账本旁。做饭的那家伙核对了数值；我给咱们留好阿罗拉路线，等闹钟响了就一起出发。",
+
   "Capitanes de Sinnoh · v0.43.0-alpha.58": "神奥队长特性 · v0.43.0-alpha.58",
   "Sinnoh añade 44 familias de capitán con pasivas, costes, avances y Z manual. Siete familias de generaciones anteriores conservan sus reglas.": "新增44个神奥队长家族，包含基础被动、能力代价、进阶与手动Z；7个前代溯源家族沿用已实装规则。",
   "Las fichas conservan los cinco apartados originales del diseño chino. Los ajustes y equivalencias se explican por separado.": "特性卡保留设计原文的完整五段；数值调整和招式映射另列，方便逐项核对。",
