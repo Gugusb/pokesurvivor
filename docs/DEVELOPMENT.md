@@ -53,7 +53,7 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
   - 新增 `tools/test_mobile_landscape.cjs`，涵盖 844x390、740x360 手机横屏分辨率下的触控几何尺寸、CSS 媒体查询规则与 HUD 绘制布局，3/3 PASS。
   - `tools/test_battle_stats.cjs` 12/12 PASS；`tools/test_leader_abilities.cjs` 8/8 PASS。
   - 运行 `node tools/build.js` 与 `node tools/export_data.js`，标准构建指纹更新为 `a924431eb2`。
-  - 客户端离线打包：更新 `android/offline/AndroidManifest.xml` 与 `tools/build_android_offline.cjs` 至 `versionCode="68"`、`versionName="0.43.0-alpha.68-offline"`，生成 `outputs/PokeSurvivor-Next-alpha.68-offline.apk`（86,724,534 字节，SHA-256: `028242aa7fc7e6a8729fe29371fe2483d1d8b5b03d53eb1d4e70e614fe8bb291`），通过 `tools/check_android_apk.cjs` 14,070 项检查；生成 `outputs/PokeSurvivor-v0.43.0-alpha.68-offline.zip`（71,948,948 字节，SHA-256: `7d2fd61cb830ac404e5115102bb6947e833a37d52856fe3d4796b65588c82a0b`）。
+  - 客户端离线打包：更新 `android/offline/AndroidManifest.xml` 与 `tools/build_android_offline.cjs` 至 `versionCode="68"`、`versionName="0.43.0-alpha.68-offline"`，继承原始 `offline-test.p12` 签名私钥（证书指纹 SHA-256 为 `64bebdb4de751d8c03a2009fa197521d4446f21243167f96184c05024b284b73`），生成 `outputs/PokeSurvivor-Next-alpha.68-offline.apk`（86,724,522 字节，SHA-256: `edbf5247b1f055d5b239ff9b9090f19dfd78b24c7f7203755abf2596ff9e4162`），通过 `tools/check_android_apk.cjs` 14,070 项检查；生成 `outputs/PokeSurvivor-v0.43.0-alpha.68-offline.zip`（71,948,948 字节，SHA-256: `7d2fd61cb830ac404e5115102bb6947e833a37d52856fe3d4796b65588c82a0b`）。
 - 已知限制：本轮在 Node.js 自动化与媒体查询几何计算环境下完成横屏视口验证，未在实体 Android 设备上连接触控板实测；`py` 启动器未在当前 shell 注册，未重跑 `make_seo_pages.py`。
 
 ### v0.43.0-alpha.66 — 2026-11-24
