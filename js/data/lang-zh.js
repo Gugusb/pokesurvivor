@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Capitanes de Galar y Hisui · v0.43.0-alpha.67": "伽勒尔与洗翠队长特性 · v0.43.0-alpha.67",
+  "Se incorporan 44 familias de capitanes de Galar y Hisui con pasiva, coste, avances 5/8 y Z manual familiar. Las ramas de familias anteriores conservan sus reglas.": "接入44个伽勒尔与洗翠队长家族，包含基础被动、代价、训练家5／8级进阶与家族手动Z；前代家族的跨代进化沿用原规则。",
+  "Las fichas conservan los cinco apartados originales; las estimaciones, los ajustes y diez subreglas pendientes se muestran por separado.": "特性卡保留五段原文，收益估算、数值调整与10条暂缓子规则另列，方便逐项核对。",
+  "Los misiles explotan al impactar, los dardos comparten su potencia y las embestidas de ida y vuelta comparten presupuesto. Se ajustan acumulaciones, ecos y escudos de golpes múltiples.": "导弹接触后爆炸，龙箭平分总威力，往返冲锋共用伤害预算；调整了叠层、回响与群怪命中刷盾收益。",
+  "Se mantienen la carga Z de alpha.66, las provisiones tras ganar y los límites de curación y escudo. Llegan nuevas elecciones de botín e intereses ligados al capitán.": "保留alpha.66的Z充能规则、胜利后补给结算及治疗护盾上限；接入队长对应的道具选择和利息效果。",
+  "Dejé las nuevas fichas sujetas con pequeñas banderas y marqué las dudas en otra página. Quien cocina ajustó las cuentas; yo guardo una manta en la mochila para que podamos revisar la ruta de nieve sin tiritar.": "我用小旗固定好新特性卡，把有疑问的地方记在另一页。做饭的那家伙核对了数值；我往行囊里塞了条毯子，咱们看雪原路线时就不用抖个不停啦。",
+
   "Interfaz de combate, carga Z y guardado · v0.43.0-alpha.66": "战场界面、Z充能与存档修复 · v0.43.0-alpha.66",
   "Se unifica la barra superior de combate eliminando el reloj total para destacar el tiempo restante, la barra de jefe se sitúa debajo en móvil y el panel lateral de experiencia del entrenador ahora puede contraerse.": "合并战场顶部基础信息并移除总生存时间，突出本局剩余时间；手机端 BOSS 血条自动避让顶部信息栏；左侧训练家经验面板支持折叠收缩。",
   "En el mapa de ruta móvil se retira la tarjeta grande del día actual para dejar visible el mapa completo; la ficha de detalle del equipo en móvil se amplía y mejora su lectura.": "手机端日程表移除遮挡地图的超大当日选项，完整保留日程大地图；放大并优化手机端编队宝可梦详情弹窗。",
