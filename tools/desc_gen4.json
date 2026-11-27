@@ -1,0 +1,1760 @@
+{
+  "387": {
+    "zh": {
+      "base": [
+        "草、地面属性招式伤害 +35%；地面招式命中减速敌人后3秒内，目标受草招式伤害 +30%。",
+        "每持有1个融合招式槽，草、地面属性招式伤害额外 +15%（上限 +45%）。"
+      ],
+      "active": [
+        "【大陆板块地震】全屏造成 260% 主招草/地复合伤害并减速 50%（3秒），瞬时回复全队 20% 最大生命。",
+        "充能：120秒基础充能，【草/地面招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "移速 -20%；冰属性承伤 +100%。"
+      ],
+      "five": [
+        "队长站立不动时，全队每秒回复 2.5% 最大生命，且物防 +30%。"
+      ],
+      "eight": [
+        "单次直接承伤封顶为自身 15% 最大生命；受接触攻击时反弹等额地面伤害（0.75秒间隔）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Grass & Ground damage +35%; Ground hits on slowed foes make them take +30% Grass damage for 3s.",
+        "Each fused move slot grants +15% Grass & Ground damage (max +45%)."
+      ],
+      "active": [
+        "Continental Quake: Full-screen 260% primary Grass/Ground damage with 50% slow (3s) and 20% Max HP instant team heal.",
+        "Charge: 120s base; [Grass/Ground casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Speed -20%; Ice damage taken +100%."
+      ],
+      "five": [
+        "While captain stands still, team regens 2.5% Max HP/s and gains +30% Defense."
+      ],
+      "eight": [
+        "Direct hits taken cap at 15% Max HP; contact hits reflect equal Ground damage (0.75s CD)."
+      ]
+    }
+  },
+  "390": {
+    "zh": {
+      "base": [
+        "火、格斗招式伤害 +30%，拳击类招式再 +25%；队内每1个火/格斗招式全队暴击率 +4%（上限 +40%）。",
+        "格斗招式无视并削减 30% 物防（3秒）；火招式命中破防敌人转真实伤害并必附灼烧（0.3秒间隔）。"
+      ],
+      "active": [
+        "【闪焰音速连打】无敌 0.8 秒并连出8记半径220必暴火/斗重拳（共 340% 主招真伤，末拳击退200），留4秒半径180灼烧火环。",
+        "充能：120秒基础充能，【近战/位移命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "双防 -25%；水、地面、飞行、超能属性承伤 +35%。"
+      ],
+      "five": [
+        "生命低于 50% 时，移速与施法频率 +40%，且火系招式 0.15 秒后免费追加 1 次（0.3秒间隔，不连锁）。"
+      ],
+      "eight": [
+        "击杀精英或BOSS后全队无敌 1.2 秒（全队共享 10 秒间隔）；近战暴击伤害提至 250%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Fire & Fighting damage +30% (+25% more for punch moves); +4% team crit per Fire/Fighting move (max +40%).",
+        "Fighting hits shred 30% Defense (3s); Fire hits on shredded foes deal true damage and inflict Burn (0.3s CD/target)."
+      ],
+      "active": [
+        "Inferno Drive: 0.8s invulnerable, unleashes 8 crit Fire/Fighting strikes (340% total true damage, r=220, final 200 knockback) and a 4s burn ring (r=180).",
+        "Charge: 120s base; [Melee/Dash hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Defense & Sp. Def -25%; Water, Ground, Flying & Psychic damage taken +35%."
+      ],
+      "five": [
+        "Below 50% HP: Speed & cast rate +40%, and Fire moves echo a free extra cast after 0.15s (0.3s CD, no chain)."
+      ],
+      "eight": [
+        "Elite/boss kills grant 1.2s team invulnerability (10s team CD); Melee crit damage raised to 250%."
+      ]
+    }
+  },
+  "393": {
+    "zh": {
+      "base": [
+        "水、钢属性招式伤害 +30%，直接承伤 -20%；受减速或降攻时全队特攻 +60%（6秒）。",
+        "钢系招式命中按造成伤害 10% 为全队提供白盾（上限 40% 生命）。"
+      ],
+      "active": [
+        "【帝皇坚钢海啸】清除全屏敌弹，向前推出宽300全屏水/钢贯穿波（280% 主招真伤，击退350）。",
+        "充能：120秒基础充能，【水/钢招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "全招式冷却 +15%；电、格斗、地面属性承伤 +45%。"
+      ],
+      "five": [
+        "生命低于 40% 时，水属性招式伤害 +100%（翻倍）。"
+      ],
+      "eight": [
+        "队长250半径内敌人攻击力 -20%；攻击减速、冻结或定身敌人时必定暴击。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Water & Steel damage +30%; direct damage taken -20%; slowed or attack-debuffed triggers +60% team Sp. Atk (6s).",
+        "Steel hits grant team white shields equal to 10% of damage dealt (40% HP cap)."
+      ],
+      "active": [
+        "Imperial Steel Tide: Clears enemy shots and sweeps a 300px-wide Water/Steel wave (280% primary true damage, 350 knockback).",
+        "Charge: 120s base; [Water/Steel casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "All cooldowns +15%; Electric, Fighting & Ground damage taken +45%."
+      ],
+      "five": [
+        "Below 40% HP, Water move damage +100%."
+      ],
+      "eight": [
+        "Enemies within 250px of captain deal -20% damage; guaranteed crits vs slowed, frozen, or stunned foes."
+      ]
+    }
+  },
+  "396": {
+    "zh": {
+      "base": [
+        "移速 +30%，飞行、一般属性招式伤害 +30%；位移招式伤害额外 +50%。",
+        "每战开局前 8 秒，全场敌人攻击力 -20%。"
+      ],
+      "active": [
+        "【苍穹贯杀】无敌 0.6 秒（8级 2 秒），全屏宽140必暴无属性位移贯杀（380% 主招真伤），使命中敌人 4 秒内易伤 +35%。",
+        "充能：120秒基础充能，【位移命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "施放位移招式损失当前生命 5%（不致死）；电、冰、岩石属性承伤 +40%。"
+      ],
+      "five": [
+        "近战冷却 -25%；近战命中时 20% 概率刷新位移招式冷却（每名成员 1 秒间隔）。"
+      ],
+      "eight": [
+        "主动Z无敌延长至 2 秒；移动过程中闪避率提升至 50%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Speed +30%; Flying & Normal damage +30%; Dash moves deal +50% extra damage.",
+        "For the first 8s of combat, all enemies deal -20% damage."
+      ],
+      "active": [
+        "Sky Dive: 0.6s invulnerable (2s at Lv.8), full-screen 140px crit neutral dash (380% primary true damage) applying +35% vulnerability (4s).",
+        "Charge: 120s base; [Dash hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Casting Dash drains 5% current HP (non-lethal); Electric, Ice & Rock damage taken +40%."
+      ],
+      "five": [
+        "Melee cooldown -25%; Melee hits have 20% chance to reset Dash cooldown (1s CD/ally)."
+      ],
+      "eight": [
+        "Manual Z invulnerability extended to 2s; 50% dodge chance while moving."
+      ]
+    }
+  },
+  "399": {
+    "zh": {
+      "base": [
+        "临时属性提升招式的正向增益翻倍（永久升级、装备与羁绊不翻倍）；拾取范围 +100%。",
+        "每击碎 3 个地图障碍物，战后结算额外 +1 金币（单场上限 2 金币）。"
+      ],
+      "active": [
+        "【洪流开山劈】推出宽140全屏水流原木（250% 主招水系真伤，击退200），战后额外 +1 金币并回复全队 15% 最大生命。",
+        "充能：120秒基础充能，【队伍击杀/击碎障碍物】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "队长基础生命与双攻 -20%；格斗、草、电属性承伤 +40%。"
+      ],
+      "five": [
+        "每 10 秒各成员随机1项（物攻/移速/物防/暴击）增益 10 秒：属性经单纯 +200%（暴击 +40%），另1项 -10%。"
+      ],
+      "eight": [
+        "道具商店价格 -30%；每持有 50 金币全队伤害 +10%（上限 +30%）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Temporary positive move buffs double in strength (permanent upgrades, items & bonds unaffected); pickup radius +100%.",
+        "Every 3 obstacles broken grants +1G post-battle (max 2G/battle)."
+      ],
+      "active": [
+        "HM Flood Log: Launches a 140px Water log (250% primary true damage, 200 knockback); grants +1G and 15% Max HP team heal post-battle.",
+        "Charge: 120s base; [Team kills / prop breaks] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Captain Max HP, Attack & Sp. Atk -20%; Fighting, Grass & Electric damage taken +40%."
+      ],
+      "five": [
+        "Every 10s, each ally boosts 1 random stat for 10s (+200% Atk/Speed/Def via Simple, or +40% crit) and lowers another by 10%."
+      ],
+      "eight": [
+        "Item shop prices -30%; +10% team damage per 50G held (max +30%)."
+      ]
+    }
+  },
+  "401": {
+    "zh": {
+      "base": [
+        "1级基础威力不高于 20 或单次至少 3 发的招式伤害 +60%。",
+        "虫系施法（半径160）及命中使敌人减速 25%（2秒）；队内每1个虫系招式全队冷却 -5%（上限 -40%）。"
+      ],
+      "active": [
+        "【破晓夜鸣曲】全屏爆发无属性音波冲击，造成 240% 主招伤害并使全场敌人定身 2 秒。",
+        "充能：120秒基础充能，【声波/虫系招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "全队生命 -30%；火、飞行、岩石属性承伤 +50%。"
+      ],
+      "five": [
+        "本战每击杀 1 名敌人，全队物攻 +2%（上限 +40%）。"
+      ],
+      "eight": [
+        "光环与声波招式范围 +80%；声波命中触发 50% 该次伤害的无属性回响（0.3秒间隔，不连锁）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Moves with Lv.1 base power ≤20 or ≥3 shots per cast deal +60% damage.",
+        "Bug casts (r=160) & hits slow foes 25% (2s); -5% team cooldowns per Bug move (max -40%)."
+      ],
+      "active": [
+        "Perish Melody: Full-screen neutral sound blast dealing 240% primary damage and stunning all foes for 2s.",
+        "Charge: 120s base; [Sound/Bug casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Team Max HP -30%; Fire, Flying & Rock damage taken +50%."
+      ],
+      "five": [
+        "+2% team Attack per kill in the current battle (max +40%)."
+      ],
+      "eight": [
+        "Aura & sound move radius +80%; sound hits echo 50% of damage dealt as neutral damage (0.3s CD, no chain)."
+      ]
+    }
+  },
+  "403": {
+    "zh": {
+      "base": [
+        "电系伤害 +35%；能量柱穿墙且射程 +50%；队内每1个电系招式全队暴击率 +5%（上限 +40%）。",
+        "电系招式命中时有 30% 概率定身敌人 1 秒（每目标 0.75 秒间隔）。"
+      ],
+      "active": [
+        "【万伏雷鸣天罚】向前射出宽160全屏必暴电能量柱（280% 主招真伤），0.2秒后追加全屏 70% 主招电伤冲击。",
+        "充能：120秒基础充能，【电系连锁/能量柱命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "地面属性承伤 +80%；处于异常或减益状态时移速 -20%。"
+      ],
+      "five": [
+        "每战开局前 8 秒，全场敌人攻击力 -25%、移速 -20%。"
+      ],
+      "eight": [
+        "任一队员处于异常或减益状态时，全队无视降攻且双攻 +50%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Electric damage +35%; Beams phase walls with +50% range; +5% team crit per Electric move (max +40%).",
+        "Electric hits have 30% chance to stun for 1s (0.75s CD/target)."
+      ],
+      "active": [
+        "X-Ray Thunder: Fires a 160px full-screen crit Electric beam (280% primary true damage), followed 0.2s later by a 70% full-screen Electric nova.",
+        "Charge: 120s base; [Electric Chain/Beam hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Ground damage taken +80%; Speed -20% while afflicted by status or debuffs."
+      ],
+      "five": [
+        "For the first 8s of combat, all enemies suffer -25% attack and -20% speed."
+      ],
+      "eight": [
+        "While any ally has a status or debuff, team ignores attack debuffs and gains +50% Attack & Sp. Atk."
+      ]
+    }
+  },
+  "408": {
+    "zh": {
+      "base": [
+        "物攻 +50%；全队攻击无视敌方护盾减免；位移弹速 +80%；岩石招式暴击率 +20%。"
+      ],
+      "active": [
+        "【霸王碎颅冲撞】无敌 0.8 秒并向前冲刺350（宽100），无视护盾造成 450% 主招无属性真伤并定身 2.5 秒。",
+        "充能：120秒基础充能，【近战/位移命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "全承伤 +25%、特防 -35%；水、草、格斗、地面、钢属性承伤 +40%。"
+      ],
+      "five": [
+        "位移招式伤害 +30%，且位移反作用力自伤 -50%。"
+      ],
+      "eight": [
+        "任意招式命中直接清空目标护盾；对精英与BOSS伤害 +40%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Attack +50%; all attacks bypass enemy shields; Dash speed +80%; Rock crit chance +20%."
+      ],
+      "active": [
+        "Head Smash Charge: 0.8s invulnerable, dashes 350px (100px wide) bypassing shields for 450% neutral true damage and 2.5s stun.",
+        "Charge: 120s base; [Melee/Dash hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "All damage taken +25%, Sp. Def -35%; Water, Grass, Fighting, Ground & Steel damage taken +40%."
+      ],
+      "five": [
+        "Dash moves deal +30% damage and take -50% recoil self-damage."
+      ],
+      "eight": [
+        "Any hit strips enemy shields completely; +40% damage vs elites and bosses."
+      ]
+    }
+  },
+  "410": {
+    "zh": {
+      "base": [
+        "双防 +80%，物理直接承伤 -40%；生命高于 1 点时免除一击必杀（留1生命，每成员 10 秒间隔）。",
+        "受击伤害的 50% 存入动能池（封顶 100% 主招10秒伤），供主动Z释放。"
+      ],
+      "active": [
+        "【护城金属爆炸】清除全屏敌弹，造成 280% 主招无属性伤害并释放全部储存动能（精英/BOSS封顶 30% 主招10秒伤），击退全场敌人（300）。",
+        "充能：120秒基础充能，【队伍受伤】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "移速 -30%；格斗、地面属性承伤 +100%。"
+      ],
+      "five": [
+        "按基础物防与特防较高值按比例转化为物攻加成（上限 +40%）。"
+      ],
+      "eight": [
+        "队长正前方 120°、半径160常驻金属墙，自动拦截并清除敌方弹幕。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Defense & Sp. Def +80%; physical direct damage taken -40%; survive lethal hits above 1 HP (10s CD/ally).",
+        "Stores 50% of damage taken as kinetic energy (capped at 100% primary 10s damage) for Manual Z."
+      ],
+      "active": [
+        "Metal Burst: Clears shots, deals 280% neutral damage plus stored kinetic energy (capped vs elites/bosses), and knocks all foes back 300.",
+        "Charge: 120s base; [Team hits taken] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Speed -30%; Fighting & Ground damage taken +100%."
+      ],
+      "five": [
+        "Converts higher of base Defense or Sp. Def into bonus Attack (max +40%)."
+      ],
+      "eight": [
+        "Permanent 120° frontal metal wall (r=160) around captain intercepts and clears enemy shots."
+      ]
+    }
+  },
+  "412": {
+    "zh": {
+      "base": [
+        "免疫所有天气环境伤害；每战开局按队内招式分布自动锁定本场形态（平票保留上场）：",
+        "草木（草伤+40%、每秒回1.5%生命）、沙土（地伤+40%、物防+40%）、垃圾（钢伤+40%、远程承伤-30%）、绅士蛾（飞/虫为主：移速+35%、特攻+40%）。"
+      ],
+      "active": [
+        "【三态结晶爆裂】全屏造成 250% 主招草/地/钢复合伤害，并为全队提供 30% 最大生命白盾（5秒）。",
+        "充能：120秒基础充能，【队伍施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "火属性承伤 +60%；全招式范围、射程与宽度 -15%。"
+      ],
+      "five": [
+        "每战每名成员1次致死锁血（留1生命），获得 3 秒无敌且移速 +60%。"
+      ],
+      "eight": [
+        "全队特攻、特防、移速常驻 +25%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to weather damage; locks battle cloak at start by squad move counts (ties keep prior form):",
+        "Plant (+40% Grass, 1.5% HP/s), Sand (+40% Ground, +40% Def), Trash (+40% Steel, -30% ranged taken), Moth (Fly/Bug: +35% Spd, +40% Sp.Atk)."
+      ],
+      "active": [
+        "Triple Cloak Burst: Full-screen 250% Grass/Ground/Steel damage and grants the team a 30% Max HP white shield (5s).",
+        "Charge: 120s base; [Team casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Fire damage taken +60%; all move radius, range & width -15%."
+      ],
+      "five": [
+        "Once per battle per ally, survive lethal damage at 1 HP with 3s invulnerability and +60% Speed."
+      ],
+      "eight": [
+        "Permanent +25% Sp. Atk, Sp. Def & Speed for the whole team."
+      ]
+    }
+  },
+  "415": {
+    "zh": {
+      "base": [
+        "炮台攻击频率 +40%；每战每击杀 10 名敌人采集 1 滴蜂蜜（单场上限 10 滴）。",
+        "战后蜂蜜二选一：兑现金币（单场上限 2 金币）或滋养全队全属性永久提升（每滴 +0.1%，单场上限 +1%、本局上限 +10%）。"
+      ],
+      "active": [
+        "【王室蜂群齐射】4秒内连续18轮全屏蜂群轰炸（共 320% 主招无属性伤害），瞬时回复全队 30% 已损生命。",
+        "充能：120秒基础充能，【队伍施法/受伤】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "队长全部基础属性 -25%；岩石属性承伤 +100%。"
+      ],
+      "five": [
+        "每战开局环绕 3 只护卫工蜂，自动拦截队长140半径内最多 3 发敌方弹幕。"
+      ],
+      "eight": [
+        "战后蜂蜜兑现金币上限提至 3 金币；商店每次购买招式赠送 1 滴蜂蜜（每次访店上限 2 滴）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Turret fire rate +40%; gather 1 Honey per 10 kills (max 10/battle).",
+        "Post-battle Honey converts to gold (max 2G) or permanent all-stat growth (+0.1%/drop, max +1%/battle, +10%/run)."
+      ],
+      "active": [
+        "Royal Swarm Orders: 18 full-screen neutral strikes over 4s (320% total primary damage) and instant 30% missing HP team heal.",
+        "Charge: 120s base; [Team casts / hits taken] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Captain all base stats -25%; Rock damage taken +100%."
+      ],
+      "five": [
+        "Starts each battle with 3 guard bees that intercept up to 3 enemy shots within 140px of captain."
+      ],
+      "eight": [
+        "Honey gold cap rises to 3G/battle; buying moves in shop grants +1 Honey (max 2/visit)."
+      ]
+    }
+  },
+  "417": {
+    "zh": {
+      "base": [
+        "免疫电属性伤害并按原始伤害 100% 瞬时回血；双防 +40%，直接承伤 -30%。",
+        "队长吸引 350 半径内敌方弹幕转向自身，掩护后方队友。"
+      ],
+      "active": [
+        "【白色恶魔放电】全屏造成 260% 主招电伤、定身 2 秒，并使全场敌人 4 秒内攻击力 -30%。",
+        "充能：120秒基础充能，【队伍受伤】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "队长自身招式伤害 -20%；地面属性承伤 +60%。"
+      ],
+      "five": [
+        "近战命中追加目标 15% 当前生命的额外伤害（每目标 1 秒间隔，精英/BOSS封顶 30% 主招10秒伤）。"
+      ],
+      "eight": [
+        "受电伤触发移速 +40%（3秒）与 1 秒无敌；受接触攻击时定身攻击者 1 秒并反弹 50% 所受伤害电伤（0.75秒间隔）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Electric damage and heals 100% of raw Electric hit; Defense & Sp. Def +40%, direct damage taken -30%.",
+        "Captain draws enemy shots within 350px toward itself to shield allies."
+      ],
+      "active": [
+        "White Devil Discharge: Full-screen 260% Electric damage, 2s stun, and -30% enemy attack for 4s.",
+        "Charge: 120s base; [Team hits taken] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Captain move damage -20%; Ground damage taken +60%."
+      ],
+      "five": [
+        "Melee hits deal bonus 15% target current HP damage (1s CD/target, capped at 30% primary 10s damage vs elites/bosses)."
+      ],
+      "eight": [
+        "Electric hits grant +40% Speed (3s) & 1s invulnerability; contact hits stun 1s and reflect 50% as Electric (0.75s CD)."
+      ]
+    }
+  },
+  "418": {
+    "zh": {
+      "base": [
+        "移速 +30%，水系伤害 +35%；相对基础移速的正向增幅按 50% 转为水系增伤（上限 +50%）。",
+        "雨天下全招式冷却 -35%，位移射程 +50%。"
+      ],
+      "active": [
+        "【双尾水流激浪】全屏造成 260% 主招水伤、强力击退（300）并减速 50%（3秒）。",
+        "充能：120秒基础充能，【水系/位移施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "电、草属性承伤 +45%；非雨天且不在水中时双防 -20%。"
+      ],
+      "five": [
+        "水流喷射命中敌人时，立即刷新位移招式冷却并获得 0.5 秒无敌（每名成员 1 秒间隔）。"
+      ],
+      "eight": [
+        "每战首次生命低于 30% 时，获得 40% 最大生命的急救白盾（5秒）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Speed +30%, Water damage +35%; 50% of positive Speed bonus converts to extra Water damage (max +50%).",
+        "In Rain, all cooldowns -35% and Dash range +50%."
+      ],
+      "active": [
+        "Twin-Tail Surge: Full-screen 260% Water damage with 300 knockback and 50% slow (3s).",
+        "Charge: 120s base; [Water/Dash casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Electric & Grass damage taken +45%; Defense & Sp. Def -20% when dry (no Rain/water)."
+      ],
+      "five": [
+        "Aqua Jet hits reset Dash cooldowns and grant 0.5s invulnerability (1s CD/ally)."
+      ],
+      "eight": [
+        "Once per battle below 30% HP, gain a 40% Max HP emergency white shield (5s)."
+      ]
+    }
+  },
+  "420": {
+    "zh": {
+      "base": [
+        "每战开局常驻晴天；晴天下全队物攻与特防 +35%，草、火属性招式伤害 +30%。",
+        "全队每 5 秒瞬时回复 3% 最大生命。"
+      ],
+      "active": [
+        "【朝阳日光绝唱】全屏造成 300% 主招草/火复合伤害，净化全队负面状态并瞬时回复 40% 最大生命。",
+        "充能：120秒基础充能，【队伍受治疗】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "非晴天时全队双攻 -30%；冰、火、飞行、虫属性承伤 +40%。"
+      ],
+      "five": [
+        "晴天下全队生命偷取与吸血效果翻倍（+100%，不加倍其他主动治疗）。"
+      ],
+      "eight": [
+        "晴天「花之礼」提供的物攻与特防加成由 +35% 提升至 +50%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Permanent Sun in combat; in Sun, team Attack & Sp. Def +35% and Grass & Fire damage +30%.",
+        "Instantly heals the team for 3% Max HP every 5s."
+      ],
+      "active": [
+        "Solar Bloom: Full-screen 300% Grass/Fire damage, cleanses team statuses, and instantly heals 40% Max HP.",
+        "Charge: 120s base; [Team healing] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Attack & Sp. Atk -30% outside Sun; Ice, Fire, Flying & Bug damage taken +40%."
+      ],
+      "five": [
+        "Doubles team lifesteal/leech effects in Sun (other active heals unchanged)."
+      ],
+      "eight": [
+        "Flower Gift Attack & Sp. Def bonus in Sun increases from +35% to +50%."
+      ]
+    }
+  },
+  "422": {
+    "zh": {
+      "base": [
+        "免疫水属性伤害，每次受水击叠加全队特攻 +20%（上限 5 层，+100%）。",
+        "水、地面属性招式伤害 +35%；全队招式命中使敌人减速 30%（2秒）。"
+      ],
+      "active": [
+        "【东西海大浊流】对全屏非飞行敌人造成 260% 主招水/地复合伤害，削减 40% 双防（5秒）并定身 1.5 秒。",
+        "充能：120秒基础充能，【水/地面招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "移速 -20%；草属性承伤 +120%。"
+      ],
+      "five": [
+        "受到直接攻击时使攻击者减速 50%（2秒），并保护持有物免遭窃取。"
+      ],
+      "eight": [
+        "每战每名成员1次致死保命，瞬间回复至 50% 最大生命并无敌 1.5 秒。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Water damage; each Water hit stacks +20% team Sp. Atk (max 5 stacks, +100%).",
+        "Water & Ground damage +35%; all move hits slow enemies by 30% (2s)."
+      ],
+      "active": [
+        "Dual-Sea Muddy Water: Deals 260% Water/Ground damage to all grounded foes, shreds 40% defenses (5s), and stuns 1.5s.",
+        "Charge: 120s base; [Water/Ground casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Speed -20%; Grass damage taken +120%."
+      ],
+      "five": [
+        "Direct attackers are slowed by 50% (2s); protects held items & gold from theft."
+      ],
+      "eight": [
+        "Once per battle per ally, survive lethal damage, heal to 50% Max HP, and gain 1.5s invulnerability."
+      ]
+    }
+  },
+  "425": {
+    "zh": {
+      "base": [
+        "浮空免疫地面伤害与地形减速；幽灵、飞行属性招式伤害 +30%。",
+        "施放任意招式后全队移速 +60%（2.5秒）；幽灵招式命中 25% 概率附 1 层灼烧。"
+      ],
+      "active": [
+        "【幽冥热气引爆】对队长半径300内敌人造成 320% 主招幽/火复合伤害，定身 1 秒并击退（180）。",
+        "充能：120秒基础充能，【队伍施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "双防 -30%；电、冰、岩石、恶、幽灵属性承伤 +35%。"
+      ],
+      "five": [
+        "受近战接触攻击时，对半径160内敌人引爆各自 8% 最大生命幽伤（0.75秒间隔，精英/BOSS封顶 30% 主招10秒伤）。"
+      ],
+      "eight": [
+        "移动与施放幽灵招式留下 3 秒半径80幽影风带：带内队友移速 +40%，敌人减速 40%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Floats (immune to Ground damage & terrain slows); Ghost & Flying damage +30%.",
+        "Casting any move grants +60% team Speed (2.5s); Ghost hits have 25% chance to apply Burn."
+      ],
+      "active": [
+        "Phantom Aftermath: Deals 320% Ghost/Fire damage within 300px of captain with 1s stun and 180 knockback.",
+        "Charge: 120s base; [Team casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Defense & Sp. Def -30%; Electric, Ice, Rock, Dark & Ghost damage taken +35%."
+      ],
+      "five": [
+        "Contact hits detonate foes within 160px for 8% of their Max HP as Ghost damage (0.75s CD, capped vs elites/bosses)."
+      ],
+      "eight": [
+        "Moving and Ghost casts leave 3s phantom trails (r=80) granting +40% ally Speed and 40% enemy slow."
+      ]
+    }
+  },
+  "427": {
+    "zh": {
+      "base": [
+        "一般、格斗招式可正常命中幽灵系；免疫定身、冻结与减速。",
+        "近战暴击率 +25%、暴击伤害 240%；队内每1个一般/格斗招式近战施法频率 +6%（上限 +60%）。"
+      ],
+      "active": [
+        "【迷人音速高飞踢】瞬移至目标旁引爆半径200必暴格斗踢击（380% 主招伤），碎盾并定身 1.5 秒；无目标则自损该伤 10%（上限 20% 当前生命）。",
+        "充能：120秒基础充能，【近战/位移命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "格斗、飞行、超能、妖精属性承伤 +35%；主动Z落空承受反冲自伤（上限 20% 当前生命，不致死）。"
+      ],
+      "five": [
+        "受近战接触攻击时，30% 概率使攻击者定身并沉默 2 秒。"
+      ],
+      "eight": [
+        "全队所有攻击无视敌方护盾减免。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Normal & Fighting moves hit Ghost foes normally; immune to stun, freeze & slow.",
+        "Melee crit +25% & 240% crit damage; +6% Melee cast rate per Normal/Fighting move (max +60%)."
+      ],
+      "active": [
+        "High Jump Kick: Warps to target for a 200px crit Fighting blast (380% primary, breaks shields, 1.5s stun); missing recoils 10% of hit (max 20% current HP).",
+        "Charge: 120s base; [Melee/Dash hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Fighting, Flying, Psychic & Fairy damage taken +35%; missed Manual Z deals non-lethal recoil."
+      ],
+      "five": [
+        "Contact attackers have 30% chance to be stunned and silenced for 2s."
+      ],
+      "eight": [
+        "All team attacks bypass enemy shields."
+      ]
+    }
+  },
+  "431": {
+    "zh": {
+      "base": [
+        "火、冰属性承伤 -50%；一般属性招式伤害 +35%；暴击命中使敌人定身 1 秒（每目标 1 秒间隔）。",
+        "受到减速或降攻时全队无视降攻且双攻 +50%（6秒）。"
+      ],
+      "active": [
+        "【泰山狂暴碾压】宽200、距350无属性位移碾压（320% 主招真伤，定身2秒），随后 4 秒全队移速 +40%。",
+        "充能：120秒基础充能，【近战/位移命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "全招式冷却 +15%；格斗属性承伤 +50%。"
+      ],
+      "five": [
+        "对每名敌人的前 2 次近战命中必定暴击并定身 1 秒。"
+      ],
+      "eight": [
+        "近战暴击使敌人流血 4 秒，每秒承受 30 点一般属性伤害。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Fire & Ice damage taken -50%; Normal damage +35%; crits stun targets for 1s (1s CD/target).",
+        "Slow or attack debuffs trigger Defiant: ignore attack debuffs and gain +50% team Attack & Sp. Atk (6s)."
+      ],
+      "active": [
+        "Brutal Body Press: 350px dash (200px wide) dealing 320% neutral true damage with 2s stun, plus +40% team Speed for 4s.",
+        "Charge: 120s base; [Melee/Dash hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "All cooldowns +15%; Fighting damage taken +50%."
+      ],
+      "five": [
+        "First 2 Melee hits against each enemy are guaranteed crits with 1s stun."
+      ],
+      "eight": [
+        "Melee crits inflict 4s bleed dealing 30 Normal damage per second."
+      ]
+    }
+  },
+  "434": {
+    "zh": {
+      "base": [
+        "毒、恶属性招式伤害 +35%，免疫中毒。",
+        "队长200半径恶臭光环使敌人减速 30%、每秒削减 5% 双防（上限 40%，离场3秒失效），并概率定身 0.4 秒（1秒间隔）。"
+      ],
+      "active": [
+        "【生化瓦斯轰爆】前方180°喷射12发毒/火扇形弹（共 300% 主招真伤），前方留5秒半径200燃烧毒池（每0.5秒 10% 毒伤+灼烧+中毒）。",
+        "充能：120秒基础充能，【毒系招式命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "地面属性承伤 +60%；商店招募队友与付费刷新费用 +15%。"
+      ],
+      "five": [
+        "受重击超 20% 生命（半径160，1.5秒间隔）或200半径内敌人阵亡（半径100）时，引爆目标 10% 最大生命毒伤（精英/BOSS受预算上限）。"
+      ],
+      "eight": [
+        "恶系招式命中目标后 5 秒内，目标受到的毒属性招式伤害 +50%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Poison & Dark damage +35%; immune to Poison.",
+        "200px stench aura slows foes 30%, shreds 5% defenses/s (max 40%, 3s decay), and has 20% stun chance (0.4s, 1s CD)."
+      ],
+      "active": [
+        "Toxic Gas Blast: Fires 12 Poison/Fire cone shots (300% total true damage) and leaves a 5s toxic fire pool (r=200, 10% Poison + Burn + Poison/0.5s).",
+        "Charge: 120s base; [Poison move hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Ground damage taken +60%; shop recruitment & paid refresh costs +15%."
+      ],
+      "five": [
+        "Taking hits >20% Max HP (r=160, 1.5s CD) or kills within 200px (r=100) detonate foes for 10% Max HP Poison (capped vs elites/bosses)."
+      ],
+      "eight": [
+        "Dark hits mark targets for 5s, making them take +50% Poison move damage."
+      ]
+    }
+  },
+  "436": {
+    "zh": {
+      "base": [
+        "免疫地面伤害、火属性承伤 -50%；钢、超能属性招式伤害 +30%。",
+        "双防 +35%；环绕招式旋转速度 +40%。"
+      ],
+      "active": [
+        "【远古神钟万鸣】清除全屏敌弹，造成 240% 主招超/钢复合伤害并定身全场 2 秒。",
+        "充能：120秒基础充能，【钢/超能招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "移速 -25%；恶、幽灵属性承伤 +40%。"
+      ],
+      "five": [
+        "移速低于基础值时，每低 10% 使近战与环绕伤害 +20%（上限 +60%）。"
+      ],
+      "eight": [
+        "每战开局自动召唤雨天；雨天下全队每秒回复 2% 最大生命且全承伤 -20%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Ground damage and Fire damage taken -50%; Steel & Psychic damage +30%.",
+        "Defense & Sp. Def +35%; Orbit rotation speed +40%."
+      ],
+      "active": [
+        "Ancient Bell Toll: Clears all enemy shots, deals 240% Psychic/Steel damage full-screen, and stuns all foes for 2s.",
+        "Charge: 120s base; [Steel/Psychic casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Speed -25%; Dark & Ghost damage taken +40%."
+      ],
+      "five": [
+        "When below base Speed, Melee & Orbit damage +20% per 10% Speed missing (max +60%)."
+      ],
+      "eight": [
+        "Summons Rain at battle start; in Rain, team regens 2% Max HP/s and takes -20% damage."
+      ]
+    }
+  },
+  "441": {
+    "zh": {
+      "base": [
+        "一般、飞行属性招式伤害 +30%；移动过程中闪避率 +35%。",
+        "声波招式射程与范围 +60%；被声波命中的敌人 3 秒内所发弹幕 30% 概率偏转90°失效。"
+      ],
+      "active": [
+        "【喋喋不休魔音】向前扇形射出10发无属性音波（共 280% 主招真伤），命中定身 2 秒。",
+        "充能：120秒基础充能，【声波招式命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "全队生命 -30%；电、冰、岩石属性承伤 +40%。"
+      ],
+      "five": [
+        "每 10 秒自动模仿本战输出最高队友的主招式并免费追加 1 次（威力 70%，不连锁）。"
+      ],
+      "eight": [
+        "声波招式暴击率 +30%，暴击时 25% 概率立即重置该招式冷却（0.5秒间隔）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Normal & Flying damage +30%; +35% dodge chance while moving.",
+        "Sound move range & radius +60%; foes hit by sound have 30% of their shots deflected harmlessly for 3s."
+      ],
+      "active": [
+        "Chatter Wave: Fires a 10-shot neutral sound cone (280% total primary true damage) with 2s stun.",
+        "Charge: 120s base; [Sound move hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Team Max HP -30%; Electric, Ice & Rock damage taken +40%."
+      ],
+      "five": [
+        "Every 10s, mimics the top-damage ally's main move at 70% power (no chain)."
+      ],
+      "eight": [
+        "Sound moves gain +30% crit chance; sound crits have 25% chance to reset that move's cooldown (0.5s CD)."
+      ]
+    }
+  },
+  "442": {
+    "zh": {
+      "base": [
+        "非妖精属性的克制承伤转为等倍；幽灵、恶属性伤害 +30%，攻击无视敌方护盾减免。",
+        "本战每击杀 1 名敌人叠加 1 层灵魂（上限 108 层）：每层全伤 +0.4%，满 108 层全属性 +43.2%。"
+      ],
+      "active": [
+        "【百零八魂深渊旋涡】全屏聚怪（350），造成 300% 主招幽/恶复合伤害并定身 2 秒，总伤 20% 平分为全队白盾。",
+        "充能：120秒基础充能，【队伍施法/受伤/击杀】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "移速 -25%；妖精属性承伤 +100%。"
+      ],
+      "five": [
+        "全场敌人招式冷却延长 30%；队长250半径内敌人被持续微拉（20）并沉默。"
+      ],
+      "eight": [
+        "满 108 魂且每战首次生命低于 30% 时，发射18枚追踪幽魂（各240点幽伤，瞄准最高血敌人，对精英/BOSS受单发预算）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Non-Fairy super-effective hits taken become neutral; Ghost & Dark damage +30% and bypass enemy shields.",
+        "Gain 1 soul per kill in battle (max 108): +0.4% damage/soul; at 108 souls, all stats +43.2%."
+      ],
+      "active": [
+        "108-Soul Vortex: Pulls all foes (350), deals 300% Ghost/Dark damage with 2s stun, and splits 20% of total damage as team shields.",
+        "Charge: 120s base; [Team casts / hits taken / kills] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Speed -25%; Fairy damage taken +100%."
+      ],
+      "five": [
+        "All enemy skill cooldowns +30%; foes within 250px of captain are pulled and silenced."
+      ],
+      "eight": [
+        "Once per battle at 108 souls & <30% HP, fires 18 homing souls (240 Ghost each, targeting highest-HP foe, boss/elite budget applies)."
+      ]
+    }
+  },
+  "443": {
+    "zh": {
+      "base": [
+        "移速 +25%，龙、地面属性伤害 +35%；每1个龙/地招式全队双攻 +5%（上限 +60%）。",
+        "受接触攻击反弹目标 6% 最大生命地伤（0.75秒间隔，精英/BOSS受预算）；沙暴下闪避 +35%、龙系暴击 +25%。"
+      ],
+      "active": [
+        "【超音速龙神俯冲】无敌 0.6 秒并冲刺300（宽120），无视护盾造成 380% 主招必暴龙/地真伤，留4秒半径180流沙场（减速50%+微拉）。",
+        "充能：120秒基础充能，【近战/位移命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "冰属性承伤 +100%；龙、妖精属性承伤 +35%。"
+      ],
+      "five": [
+        "每战开局常驻沙暴天气；沙暴下全队特防 +30%。"
+      ],
+      "eight": [
+        "粗糙皮肤反伤由 6% 提至 10%；击杀精英或BOSS立即重置全队招式冷却。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Speed +25%, Dragon & Ground damage +35%; +5% team Attack & Sp. Atk per Dragon/Ground move (max +60%).",
+        "Contact hits reflect 6% attacker Max HP as Ground (0.75s CD, capped); in Sand, +35% dodge & +25% Dragon crit."
+      ],
+      "active": [
+        "Supersonic Dragon Rush: 0.6s invulnerable, 300px crit Dragon/Ground dash (380% true, bypasses shields) leaving a 4s quicksand field (r=180, 50% slow).",
+        "Charge: 120s base; [Melee/Dash hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Ice damage taken +100%; Dragon & Fairy damage taken +35%."
+      ],
+      "five": [
+        "Permanent Sandstorm in combat; team Sp. Def +30% in Sandstorm."
+      ],
+      "eight": [
+        "Rough Skin reflect rises from 6% to 10%; elite/boss kills reset all team move cooldowns."
+      ]
+    }
+  },
+  "447": {
+    "zh": {
+      "base": [
+        "格斗、钢属性伤害 +35%；波导弹及格斗/钢能量柱穿墙且高追踪；每1个融合招式槽使招式范围 +15%（上限 +45%）。",
+        "受到减速或定身时触发不屈：移速 +40%（4秒）并无敌 1 秒。"
+      ],
+      "active": [
+        "【极限波导终结炮】发射宽180全屏贯穿光炮，造成 360% 主招格斗/钢真伤，并使命中目标本场双防削减 30%。",
+        "充能：120秒基础充能，【格斗/钢招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "火、格斗、地面属性承伤 +40%；生命低于 30% 时全承伤 +15%。"
+      ],
+      "five": [
+        "格斗与钢属性本系加成提升至 1.8 倍（适应力）。"
+      ],
+      "eight": [
+        "免疫定身、冻结与减速；近战暴击伤害提至 260%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Fighting & Steel damage +35%; Aura Sphere & Fighting/Steel Beams phase walls and home; +15% move radius per fused slot (max +45%).",
+        "Slow or stun triggers Steadfast: +40% Speed (4s) and 1s invulnerability."
+      ],
+      "active": [
+        "Max Aura Cannon: Fires a 180px full-screen Fighting/Steel beam (360% primary true damage) that permanently shreds 30% defenses for the battle.",
+        "Charge: 120s base; [Fighting/Steel casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Fire, Fighting & Ground damage taken +40%; all damage taken +15% below 30% HP."
+      ],
+      "five": [
+        "Adaptability boosts Fighting & Steel STAB bonus from 1.2× to 1.8×."
+      ],
+      "eight": [
+        "Immune to stun, freeze & slow; Melee crit damage raised to 260%."
+      ]
+    }
+  },
+  "449": {
+    "zh": {
+      "base": [
+        "每战开局常驻沙暴，非岩/钢/地敌人每秒承受 25 点地面风沙伤害。",
+        "地面招式伤害 +40%、范围 +50%；地面招式命中标记敌人 3 秒，使其受全队伤害 +30%。"
+      ],
+      "active": [
+        "【八级地震大裂谷】全屏造成 280% 主招地面伤害，震碎敌方全部护盾并定身全场 2 秒。",
+        "充能：120秒基础充能，【地面招式命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "水、草、冰属性承伤 +45%；非沙暴天气下移速 -20%。"
+      ],
+      "five": [
+        "沙暴天气中，地面、岩石、钢属性招式伤害 +30%。"
+      ],
+      "eight": [
+        "全队免疫击退与拉扯；每战开局获得 30% 最大生命白盾（5秒）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Permanent Sandstorm deals 25 Ground damage/s to non-Rock/Steel/Ground foes.",
+        "Ground move damage +40% & radius +50%; Ground hits mark foes for 3s to take +30% team damage."
+      ],
+      "active": [
+        "Magnitude Rift: Full-screen 280% Ground damage that shatters all enemy shields and stuns for 2s.",
+        "Charge: 120s base; [Ground move hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Water, Grass & Ice damage taken +45%; Speed -20% outside Sandstorm."
+      ],
+      "five": [
+        "In Sandstorm, Ground, Rock & Steel move damage +30%."
+      ],
+      "eight": [
+        "Immune to knockback & pull; grants a 30% Max HP white shield (5s) at battle start."
+      ]
+    }
+  },
+  "451": {
+    "zh": {
+      "base": [
+        "全队暴击伤害提至 300%（3倍）；毒、恶属性招式暴击率 +25%。",
+        "近战命中必定附加 3 层中毒。"
+      ],
+      "active": [
+        "【十字剧毒裂杀】向前交叉斩出2道宽100必暴毒光刃（各 180% 主招真伤），直接处决生命低于 30% 的非BOSS敌人（精英受预算上限）。",
+        "充能：120秒基础充能，【招式暴击】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "未暴击伤害 -20%；地面属性承伤 +60%。"
+      ],
+      "five": [
+        "物防 +35%；完全免疫敌方暴击加成。"
+      ],
+      "eight": [
+        "暴击命中使敌人本场物防永久削减 40%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Team crit damage raised to 300% (3×); Poison & Dark move crit chance +25%.",
+        "Melee hits apply +3 Poison stacks."
+      ],
+      "active": [
+        "Cross Poison Slash: Fires 2 crossed 100px crit Poison blades (180% primary true damage each); executes non-bosses <30% HP (elites capped).",
+        "Charge: 120s base; [Crits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Non-crit damage -20%; Ground damage taken +60%."
+      ],
+      "five": [
+        "Defense +35%; immune to enemy critical multipliers."
+      ],
+      "eight": [
+        "Crits permanently shred 40% target Defense for the battle."
+      ]
+    }
+  },
+  "453": {
+    "zh": {
+      "base": [
+        "免疫水伤并按原始伤害 100% 瞬时回血，雨天每秒回复 3% 最大生命。",
+        "毒、格斗属性伤害 +35%；近战命中附加 3 层中毒并减速 20%。"
+      ],
+      "active": [
+        "【暗夜毒液百裂拳】无敌 0.5 秒并向前240范围轰出 320% 主招毒/斗真伤，对中毒目标按每层毒追加 20% 主招毒伤（上限 +160%）。",
+        "充能：120秒基础充能，【近战/位移命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "火属性承伤 +100%；晴天下每秒流失 0.5% 最大生命（最低保留1生命）。"
+      ],
+      "five": [
+        "敌方弹幕即将命中前 0.5 秒触发预警，期间面对克制属性攻击获得 50% 闪避率。"
+      ],
+      "eight": [
+        "处于雨天、水中或自身中毒状态时，双攻 +40%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Water damage and heals 100% of raw Water hit; regens 3% Max HP/s in Rain.",
+        "Poison & Fighting damage +35%; Melee hits inflict +3 Poison and 20% slow."
+      ],
+      "active": [
+        "Venom Barrage: 0.5s invulnerable, deals 320% Poison/Fighting true damage (r=240) plus +20% Poison per Poison stack (max +160%).",
+        "Charge: 120s base; [Melee/Dash hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Fire damage taken +100%; loses 0.5% Max HP/s in Sun (non-lethal)."
+      ],
+      "five": [
+        "0.5s warning before incoming shots grants 50% dodge chance vs super-effective attacks."
+      ],
+      "eight": [
+        "Attack & Sp. Atk +40% while in Rain, water, or Poisoned."
+      ]
+    }
+  },
+  "455": {
+    "zh": {
+      "base": [
+        "免疫地面伤害；草系伤害 +35%，藤鞭与吸取类招式范围及射程 +50%。",
+        "全队吸血效果 +40%，且吸血治疗量的 50% 转化为全队白盾。"
+      ],
+      "active": [
+        "【食肉巨颚吞噬】将400半径内敌人拉至身前（300），造成 280% 主招草伤并定身 2 秒，瞬时回复全队 25% 最大生命。",
+        "充能：120秒基础充能，【队伍受治疗】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "移速 -20%；火、冰、飞行、毒、虫属性承伤 +35%。"
+      ],
+      "five": [
+        "藤鞭与吸取类招式命中削减目标 30% 物防（3秒），并使其 3 秒内受草属性伤害 +25%。"
+      ],
+      "eight": [
+        "藤鞭与吸取类招式击杀敌人使全队永久最大生命 +1（每战上限 +5，本局上限 +50）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Ground damage; Grass damage +35%; whip & drain moves gain +50% range and radius.",
+        "Lifesteal +40%, and 50% of leech healing converts into team white shields."
+      ],
+      "active": [
+        "Acid Maw Devour: Pulls foes within 400px (300), deals 280% Grass damage with 2s stun, and instantly heals team 25% Max HP.",
+        "Charge: 120s base; [Team healing] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Speed -20%; Fire, Ice, Flying, Poison & Bug damage taken +35%."
+      ],
+      "five": [
+        "Whip & drain hits shred 30% Defense (3s) and make foes take +25% Grass damage (3s)."
+      ],
+      "eight": [
+        "Whip & drain kills permanently grant +1 team Max HP (max +5/battle, +50/run)."
+      ]
+    }
+  },
+  "456": {
+    "zh": {
+      "base": [
+        "免疫水伤并叠加全队特攻 +20%（上限 5 层，+100%）；水系伤害 +30%。",
+        "队长250半径深海荧光使敌人减速 25%，且来自该范围内的攻击有 30% 概率闪避落空。"
+      ],
+      "active": [
+        "【深海极光荧波】全屏造成 240% 主招水伤，并致盲定身全场敌人 2 秒。",
+        "充能：120秒基础充能，【水系招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "物攻与物防 -20%；电、草属性承伤 +50%。"
+      ],
+      "five": [
+        "雨天或水中时，移速 +35%、全招式冷却 -35%。"
+      ],
+      "eight": [
+        "每次施放水系招式，全队获得 3 秒 15% 减伤。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Water damage; each Water hit stacks +20% team Sp. Atk (max 5 stacks, +100%); Water damage +30%.",
+        "250px neon glow slows foes 25% and gives 30% dodge chance vs attackers inside the glow."
+      ],
+      "active": [
+        "Abyssal Aurora: Full-screen 240% Water damage and stuns all enemies for 2s.",
+        "Charge: 120s base; [Water casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Attack & Defense -20%; Electric & Grass damage taken +50%."
+      ],
+      "five": [
+        "In Rain or water: Speed +35% and all cooldowns -35%."
+      ],
+      "eight": [
+        "Casting a Water move grants the team -15% damage taken for 3s."
+      ]
+    }
+  },
+  "459": {
+    "zh": {
+      "base": [
+        "每战开局常驻降雪；草、冰属性招式伤害 +35%；冰系范围招式（陨石/扇形/冲击波/光环）半径 +60%。",
+        "草系招式命中冻结或定身敌人时伤害 +100%（翻倍）。"
+      ],
+      "active": [
+        "【极寒雪怪暴风雪】全屏造成 300% 主招冰/草复合伤害，并冻结全场敌人 2 秒（BOSS减半）。",
+        "充能：120秒基础充能，【草/冰招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "火属性承伤 +120%；格斗、飞行、毒、岩石、虫、钢属性承伤 +30%。"
+      ],
+      "five": [
+        "降雪天气中，全队物防 +40%，每秒回复 2% 最大生命。"
+      ],
+      "eight": [
+        "命中冻结或定身敌人时，对半径90引爆各目标 8% 最大生命冰伤（每目标 1 秒间隔，精英/BOSS封顶 30% 主招10秒伤）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Permanent Snow in combat; Grass & Ice damage +35%; Ice Meteor/Cone/Nova/Aura radius +60%.",
+        "Grass moves deal +100% damage against frozen or stunned enemies."
+      ],
+      "active": [
+        "Abomasnow Blizzard: Full-screen 300% Ice/Grass damage and freezes all foes for 2s (halved on bosses).",
+        "Charge: 120s base; [Grass/Ice casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Fire damage taken +120%; Fighting, Flying, Poison, Rock, Bug & Steel damage taken +30%."
+      ],
+      "five": [
+        "In Snow: team Defense +40% and regens 2% Max HP/s."
+      ],
+      "eight": [
+        "Hitting frozen/stunned foes shatters ice (r=90) for 8% target Max HP Ice damage (1s CD/target, capped vs elites/bosses)."
+      ]
+    }
+  },
+  "479": {
+    "zh": {
+      "base": [
+        "免疫地面伤害，电系伤害 +30%；开战按副属性招式锁定家电形态（该属性伤害 +40%）：",
+        "加热（火招全场灼烧）、清洗（全承伤-25%）、结冰（冰招35%冻结1秒）、旋转（移速+40%）、切割（近战暴击+25%）。"
+      ],
+      "active": [
+        "【超频等离子放电】全屏必暴造成 300% 主招电/当前家电副属性复合伤害，并定身全场 2 秒。",
+        "充能：120秒基础充能，【电系/当前家电属性施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "恶、幽灵属性承伤 +40%；开战切换新家电形态时，前 1 秒招式冷却停滞。"
+      ],
+      "five": [
+        "全队可穿墙；穿墙瞬间获得 1.5 秒电磁穿梭（移速 +50% 且完全闪避伤害）。"
+      ],
+      "eight": [
+        "商店购买属性道具（围巾/背心/先制之爪/剩饭）时，随机1个匹配当前家电属性的未满级招式免费升 1 级。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Ground; Electric +30%; locks appliance at battle start (+40% matching type damage):",
+        "Heat (Fire burns all), Wash (-25% taken), Frost (+35% Ice freeze), Fan (+40% Speed), Mow (+25% Melee crit)."
+      ],
+      "active": [
+        "Overclock Discharge: Full-screen guaranteed-crit 300% Electric + appliance-type damage and 2s stun.",
+        "Charge: 120s base; [Electric / active appliance casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Dark & Ghost damage taken +40%; switching to a new appliance stalls cooldowns for 1s at battle start."
+      ],
+      "five": [
+        "Team phases through walls; entering a wall grants 1.5s phase shield (+50% Speed and full dodge)."
+      ],
+      "eight": [
+        "Buying stat items (Scarf/Vest/Claw/Leftovers) upgrades 1 random matching appliance-type move by 1 level."
+      ]
+    }
+  },
+  "480": {
+    "zh": {
+      "base": [
+        "免疫地面伤害，超能伤害 +30%；无视精英与BOSS 30% 双防。",
+        "属性克制伤害倍率放大至 1.5 倍（单弱点提至 2.4 倍，双重克制封顶 3 倍）。"
+      ],
+      "active": [
+        "【知识之光·心智封印】全屏造成 260% 主招超能伤害，并定身且沉默全场敌人 3 秒（BOSS减半）。",
+        "充能：120秒基础充能，【超能招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "虫、幽灵、恶属性承伤 +40%；属性被抵抗时伤害倍率降至 0.4 倍。"
+      ],
+      "five": [
+        "特防 +60%；免疫定身与降攻减益。"
+      ],
+      "eight": [
+        "强制显形全场隐身与浮空敌人，并对其伤害 +35%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Ground; Psychic damage +30%; ignores 30% of elite & boss defenses.",
+        "Super-effective multipliers amplified 1.5× (1.6× becomes 2.4×, capped at 3×)."
+      ],
+      "active": [
+        "Knowledge Seal: Full-screen 260% Psychic damage with 3s stun and silence (halved on bosses).",
+        "Charge: 120s base; [Psychic casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Bug, Ghost & Dark damage taken +40%; resisted hits drop to 0.4× multiplier."
+      ],
+      "five": [
+        "Sp. Def +60%; immune to stun and attack debuffs."
+      ],
+      "eight": [
+        "Reveals all hidden and flying enemies and deals +35% damage to them."
+      ]
+    }
+  },
+  "481": {
+    "zh": {
+      "base": [
+        "免疫地面伤害，超能、妖精伤害 +30%；任意成员受伤使全队双攻 +25%（5秒，最多3层 +75%）。",
+        "全员生命均不低于 80% 时，全队移速 +30%、全招式冷却 -25%。"
+      ],
+      "active": [
+        "【情感潮汐大爆发】全屏造成 280% 主招超/妖复合伤害，并将总伤 25% 平分转化为全队白盾。",
+        "充能：120秒基础充能，【队伍受伤/超能妖精施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "虫、幽灵、恶属性承伤 +40%；单次承伤超 20% 生命时，15% 伤害转由其余存活队友均摊。"
+      ],
+      "five": [
+        "受伤后 2 秒内自身承伤 -40%；连续 4 秒未受伤时瞬时回复 20% 最大生命。"
+      ],
+      "eight": [
+        "每战1次：有队员濒死时立即以 50% 生命复活并无敌 2 秒（仅对非队长队员生效）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Ground; Psychic & Fairy +30%; any ally hit grants +25% team Attack & Sp. Atk for 5s (max 3 stacks, +75%).",
+        "While all living allies are ≥80% HP, team Speed +30% and cooldowns -25%."
+      ],
+      "active": [
+        "Emotion Surge: Full-screen 280% Psychic/Fairy damage and converts 25% of total damage into team white shields.",
+        "Charge: 120s base; [Team hits taken / Psychic & Fairy casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Bug, Ghost & Dark damage taken +40%; hits exceeding 20% Max HP shift 15% of damage to other living allies."
+      ],
+      "five": [
+        "Take -40% damage for 2s after being hit; staying unharmed for 4s instantly heals 20% Max HP."
+      ],
+      "eight": [
+        "Once per battle, revives a fallen non-captain squadmate at 50% HP with 2s invulnerability."
+      ]
+    }
+  },
+  "482": {
+    "zh": {
+      "base": [
+        "免疫地面伤害；双攻 +50%，超能招式暴击率 +25%。",
+        "生命降至 1 点时双攻额外 +80%，且近战与能量柱无视墙壁。"
+      ],
+      "active": [
+        "【意志之核·超新星】全屏造成 420% 主招超能伤害，队长获得 2 秒无敌。",
+        "充能：120秒基础充能，【队伍施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "双防 -35%；虫、幽灵、恶属性承伤 +45%。"
+      ],
+      "five": [
+        "每战每名成员1次致死锁血（留1生命），获得 2 秒无敌且施法频率翻倍（+100%）。"
+      ],
+      "eight": [
+        "能量柱宽度 +80%，命中使敌人本场特防永久削减 50%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Ground; Attack & Sp. Atk +50%; Psychic crit chance +25%.",
+        "At 1 HP, gain +80% extra Attack & Sp. Atk, and Melee & Beams phase through walls."
+      ],
+      "active": [
+        "Willpower Supernova: Full-screen 420% Psychic damage and grants captain 2s invulnerability.",
+        "Charge: 120s base; [Team casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Defense & Sp. Def -35%; Bug, Ghost & Dark damage taken +45%."
+      ],
+      "five": [
+        "Once per battle per ally, survive lethal damage at 1 HP with 2s invulnerability and doubled cast rate."
+      ],
+      "eight": [
+        "Beam width +80%; Beam hits permanently shred 50% target Sp. Def for the battle."
+      ]
+    }
+  },
+  "483": {
+    "zh": {
+      "base": [
+        "钢、龙属性伤害 +40%，直接承伤 -25%，全招式冷却 -25%；每1个钢/龙招式全队双攻 +6%（上限 +60%）。",
+        "全场敌人移速与敌方弹幕速度常驻 -35%。"
+      ],
+      "active": [
+        "【时光咆哮】冻结全场敌人、敌弹与攻击预警 2.5 秒（BOSS减半），造成 450% 主招龙/钢复合伤害并立即重置全队冷却。",
+        "充能：120秒基础充能，【钢/龙招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "格斗、地面属性承伤 +40%；施放「时光咆哮」后 1 秒内全队移速 -30%。"
+      ],
+      "five": [
+        "正面属性提升持续时间 +50%；负面异常状态持续时间 -70%。"
+      ],
+      "eight": [
+        "「时光咆哮」直接处决生命低于 25% 的非BOSS敌人（精英受预算上限）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Steel & Dragon damage +40%, direct damage taken -25%, cooldowns -25%; +6% team Attack & Sp. Atk per Steel/Dragon move (max +60%).",
+        "All enemy movement and projectile speeds permanently slowed by 35%."
+      ],
+      "active": [
+        "Roar of Time: Freezes enemies, enemy shots & hazards for 2.5s (halved on bosses), deals 450% Dragon/Steel damage, and resets all team cooldowns.",
+        "Charge: 120s base; [Steel/Dragon casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Fighting & Ground damage taken +40%; team Speed -30% for 1s after casting Roar of Time."
+      ],
+      "five": [
+        "Positive buff duration +50%; negative status duration -70%."
+      ],
+      "eight": [
+        "Roar of Time executes non-boss enemies below 25% HP (elites subject to cap)."
+      ]
+    }
+  },
+  "484": {
+    "zh": {
+      "base": [
+        "水、龙属性伤害 +40%；全队移动与招式穿墙且射程扩至2倍视野半径（上限3200）。",
+        "位移变为空间瞬移并无敌 0.5 秒；水/龙能量柱、回旋与位移暴击率 +35%、暴击伤害 280%。"
+      ],
+      "active": [
+        "【亚空裂斩】清除全屏敌弹，全屏必暴造成 440% 主招龙/水复合伤害，震碎护盾并定身 2 秒。",
+        "充能：120秒基础充能，【水/龙招式暴击】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "龙、妖精属性承伤 +40%。"
+      ],
+      "five": [
+        "水/龙能量柱、回旋与位移命中时，消除目标200半径内敌弹，每弹转 2% 最大生命白盾（单次上限 20%，0.5秒间隔）。"
+      ],
+      "eight": [
+        "施放位移瞬移后 2 秒内，全队招式伤害 +50%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Water & Dragon damage +40%; team and moves phase walls with range expanded to 2× screen radius (max 3200).",
+        "Dashes become 0.5s-invulnerable teleports; Water/Dragon Beams, Boomerangs & Dashes gain +35% crit & 280% crit damage."
+      ],
+      "active": [
+        "Spacial Rend: Clears enemy shots, deals guaranteed-crit 440% Dragon/Water full-screen damage, breaks shields, and stuns 2s.",
+        "Charge: 120s base; [Water/Dragon crits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Dragon & Fairy damage taken +40%."
+      ],
+      "five": [
+        "Water/Dragon Beam, Boomerang & Dash hits erase enemy shots within 200px for 2% Max HP shield per shot (max 20%, 0.5s CD)."
+      ],
+      "eight": [
+        "Team move damage +50% for 2s after teleport dashing."
+      ]
+    }
+  },
+  "485": {
+    "zh": {
+      "base": [
+        "免疫火伤并永久激活全队火系伤害 +50%（单层）；火、钢属性伤害 +35%，双防 +35%。",
+        "队长200半径焦土光环每0.5秒造成 20 点火伤（每秒40点）。"
+      ],
+      "active": [
+        "【熔岩风暴】全屏聚怪（350），造成 360% 主招火/钢复合伤害并定身禁锢 3.5 秒（BOSS减半）。",
+        "充能：120秒基础充能，【火/钢招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "地面属性承伤 +100%；水、格斗属性承伤 +40%。"
+      ],
+      "five": [
+        "冰、草、妖精属性承伤 -60%。"
+      ],
+      "eight": [
+        "主动Z持续 4 秒期间，火系招式命中引发半径80爆炸，追加 50% 该次伤害的火伤（0.5秒间隔，不连锁）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Fire damage and permanently unlocks +50% team Fire damage (single stack); Fire & Steel +35%, Defense & Sp. Def +35%.",
+        "200px magma aura deals 20 Fire damage every 0.5s (40/s)."
+      ],
+      "active": [
+        "Magma Storm: Pulls all foes (350), deals 360% Fire/Steel damage, and stuns for 3.5s (halved on bosses).",
+        "Charge: 120s base; [Fire/Steel casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Ground damage taken +100%; Water & Fighting damage taken +40%."
+      ],
+      "five": [
+        "Ice, Grass & Fairy damage taken -60%."
+      ],
+      "eight": [
+        "During Manual Z (4s), Fire hits trigger a 80px blast for +50% extra Fire damage (0.5s CD, no chain)."
+      ]
+    }
+  },
+  "486": {
+    "zh": {
+      "base": [
+        "每战前 15 秒热机（8级 8 秒），队长物攻与移速 -50% 且禁用主动Z。",
+        "热机结束后全队觉醒：物攻 +120%、最大生命 +100%（按比例）、击退 +150%，且免疫击退、定身、冻结、减速与天气伤。"
+      ],
+      "active": [
+        "【大陆终极践踏】觉醒后方可施放：全屏造成 480% 主招无属性伤害，并定身全场敌人 2 秒。",
+        "充能：120秒基础充能，【觉醒后近战命中】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "每战热机期间（前 15 秒）队长物攻与移速 -50% 且无法使用主动Z；格斗属性承伤 +45%。"
+      ],
+      "five": [
+        "慢启动热机期间，全队承伤 -50%。"
+      ],
+      "eight": [
+        "慢启动热机时间由 15 秒缩短至 8 秒；觉醒后全队暴击伤害提至 300%。"
+      ]
+    },
+    "en": {
+      "base": [
+        "First 15s of each battle (8s at Lv.8): captain Attack & Speed -50% and Manual Z locked.",
+        "Once awake, team gains +120% Attack, +100% Max HP (ratio kept), +150% knockback, and immunity to knockback, CC & weather."
+      ],
+      "active": [
+        "Continental Stomp: Usable only after awakening; deals 480% neutral damage full-screen and stuns all foes for 2s.",
+        "Charge: 120s base; [Awakened Melee hits] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Captain Attack & Speed -50% and Manual Z locked during startup; Fighting damage taken +45%."
+      ],
+      "five": [
+        "Team takes -50% damage during Slow Start startup."
+      ],
+      "eight": [
+        "Slow Start duration shortened from 15s to 8s; awakened crit damage raised to 300%."
+      ]
+    }
+  },
+  "487": {
+    "zh": {
+      "base": [
+        "幽灵、龙属性伤害 +40%，直接承伤 -20%；全场敌人招式冷却延长 30%。",
+        "队内每1个幽灵/龙招式全队暴击率 +5%（上限 +40%）。"
+      ],
+      "active": [
+        "【暗影潜袭】全队隐匿无敌 1.5 秒（期间停手），随后瞬移至最高生命敌人背后碎盾必暴斩击（460% 主招幽灵伤，无视护盾）。",
+        "充能：120秒基础充能，【队伍施法/受伤】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "移速 -15%；冰、龙、恶、幽灵、妖精属性承伤 +35%。"
+      ],
+      "five": [
+        "全场敌方弹幕飞行速度降低 50%。"
+      ],
+      "eight": [
+        "主动Z充能加速效率提升约 54%（目标周期缩短 35%）；主动Z击杀敌人返还 20% 充能（每次Z限1次）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Ghost & Dragon damage +40%, direct damage taken -20%; all enemy skill cooldowns +30%.",
+        "+5% team crit chance per Ghost/Dragon move (max +40%)."
+      ],
+      "active": [
+        "Shadow Force: Team vanishes invulnerable for 1.5s (cannot cast), then warps behind highest-HP foe for a 460% crit Ghost strike that breaks & bypasses shields.",
+        "Charge: 120s base; [Team casts / hits taken] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Speed -15%; Ice, Dragon, Dark, Ghost & Fairy damage taken +35%."
+      ],
+      "five": [
+        "All enemy projectiles travel 50% slower."
+      ],
+      "eight": [
+        "Manual Z charge rate boosted ~54% (35% shorter cycle); Z kills refund 20% charge (once per Z)."
+      ]
+    }
+  },
+  "488": {
+    "zh": {
+      "base": [
+        "免疫地面伤害；双防 +60%，超能、妖精属性伤害 +30%。",
+        "全队每 4 秒瞬时回复 4% 最大生命；免疫敌方暴击加成。"
+      ],
+      "active": [
+        "【新月之愿】清除全屏敌弹并净化全队负面状态，瞬时回复全队 50% 已损生命，使全场敌人沉眠定身 2 秒。",
+        "充能：120秒基础充能，【队伍受伤】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "队长自身招式伤害 -20%；恶、幽灵、虫属性承伤 +40%。"
+      ],
+      "five": [
+        "免疫梦魇与恐惧效果；受恶属性攻击时将 40% 所受伤害瞬时转化为生命回复。"
+      ],
+      "eight": [
+        "每战1次：队长受致命伤时免死回至 50% 生命并无敌 2 秒，清除全场普通敌人并对精英/BOSS造成 10% 生命超伤（受预算）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Immune to Ground; Defense & Sp. Def +60%; Psychic & Fairy damage +30%.",
+        "Instantly heals team 4% Max HP every 4s; immune to enemy critical multipliers."
+      ],
+      "active": [
+        "Lunar Dance: Clears enemy shots, cleanses team statuses, instantly heals 50% missing HP, and stuns all foes for 2s.",
+        "Charge: 120s base; [Team hits taken] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Captain move damage -20%; Dark, Ghost & Bug damage taken +40%."
+      ],
+      "five": [
+        "Immune to nightmare & fear; Dark hits instantly heal 40% of damage taken."
+      ],
+      "eight": [
+        "Once per battle, captain survives lethal damage at 50% HP (2s invulnerable), wipes normal foes, and deals 10% Max HP Psychic to elites/bosses (capped)."
+      ]
+    }
+  },
+  "489": {
+    "zh": {
+      "base": [
+        "雨天下免疫并自动净化异常，水系伤害 +50%；施放属性提升招式后全队特攻 +60%（4秒）。",
+        "战后每 30 击杀打捞 +1 金币（上限 3 金币），每战 30% 概率获 1 枚心之鳞片（抵2金币，溢出转经验）。"
+      ],
+      "active": [
+        "【心之交换】窃取精英/BOSS显式攻速（各上限+50%）与减伤（上限40%）增益归全队 6 秒，并对全屏造成 250% 主招水伤。",
+        "充能：120秒基础充能，【水系招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "电、草属性承伤 +45%；非雨天且不在水中时全队双攻 -20%。"
+      ],
+      "five": [
+        "商店全场商品价格 -25%，每次进店额外赠送 1 次免费刷新。"
+      ],
+      "eight": [
+        "水系招式命中非水属性敌人时，额外追加 35% 该次伤害的水系直伤（每目标 0.3 秒间隔）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "In Rain, immune to & cleanses statuses and Water damage +50%; Buff casts grant +60% team Sp. Atk (4s).",
+        "Post-battle salvage: +1G per 30 kills (max 3G) and 30% chance for 1 Heart Scale (worth 2G, excess becomes XP)."
+      ],
+      "active": [
+        "Heart Swap: Steals elite/boss explicit attack/speed (up to +50%) & guard (up to 40%) buffs for 6s and deals 250% Water full-screen.",
+        "Charge: 120s base; [Water casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Electric & Grass damage taken +45%; Attack & Sp. Atk -20% when dry (no Rain/water)."
+      ],
+      "five": [
+        "All shop prices -25% and +1 free refresh per shop visit."
+      ],
+      "eight": [
+        "Water hits vs non-Water enemies deal +35% bonus direct Water damage (0.3s CD/target)."
+      ]
+    }
+  },
+  "491": {
+    "zh": {
+      "base": [
+        "浮空免疫地面伤害与地形减速；恶系伤害 +40%、暴击率 +25%。",
+        "被定身、冻结、减速或带梦魇的敌人每秒扣 3% 最大生命恶伤（精英/BOSS封顶 10% 主招10秒伤）。"
+      ],
+      "active": [
+        "【暗黑洞】全屏强力聚怪（350），造成 360% 主招恶伤，施加 2.5 秒定身与 3 秒梦魇。",
+        "充能：120秒基础充能，【恶系招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "全队生命 -25%；格斗、虫、妖精属性承伤 +45%。"
+      ],
+      "five": [
+        "移动过程中获得 35% 闪避率。"
+      ],
+      "eight": [
+        "敌人因梦魇伤害死亡时，全队回复 1% 最大生命（受3%/秒上限）并永久特攻 +0.2%（单战上限 +3%、本局上限 +20%）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Floats (immune to Ground damage & terrain slows); Dark damage +40%, crit +25%.",
+        "Stunned, frozen, slowed, or nightmared foes lose 3% Max HP/s as Dark damage (capped at 10% primary 10s damage vs elites/bosses)."
+      ],
+      "active": [
+        "Dark Void: Pulls all foes (350), deals 360% Dark damage, and applies 2.5s stun plus 3s nightmare.",
+        "Charge: 120s base; [Dark casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Team Max HP -25%; Fighting, Bug & Fairy damage taken +45%."
+      ],
+      "five": [
+        "35% dodge chance while moving."
+      ],
+      "eight": [
+        "Nightmare kills heal team 1% Max HP (3%/s cap) and permanently add +0.2% Sp. Atk (max +3%/battle, +20%/run)."
+      ]
+    }
+  },
+  "492": {
+    "zh": {
+      "base": [
+        "草、飞行属性伤害 +35%；天空形态移速 +40%；招式追加状态概率翻倍，战后自动净化异常。",
+        "飞行系投射物、扇形与回旋命中 60% 概率定身 0.8 秒（每目标 1 秒间隔）。"
+      ],
+      "active": [
+        "【种子闪光】全屏造成 350% 主招草/飞复合伤害，并使全场敌人特防削减 50%（5秒）。",
+        "充能：120秒基础充能，【草/飞行招式施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "冰属性承伤 +100%；火、毒、飞行、岩石属性承伤 +35%。"
+      ],
+      "five": [
+        "战斗中可手动切换形态（2秒间隔）：陆上形态双防 +40%；天空形态移速与特攻 +40%。"
+      ],
+      "eight": [
+        "「种子闪光」击杀敌人后原地留 6 秒半径100感恩花丛，队友站立其内每秒回复 3% 最大生命（不叠加）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Grass & Flying damage +35%; Sky Form Speed +40%; doubles bonus status chances; cleanses statuses after battle.",
+        "Flying Projectiles, Cones & Boomerangs have 60% chance to stun 0.8s (1s CD/target)."
+      ],
+      "active": [
+        "Seed Flare: Full-screen 350% Grass/Flying damage and cuts all enemy Sp. Def by 50% for 5s.",
+        "Charge: 120s base; [Grass/Flying casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "Ice damage taken +100%; Fire, Poison, Flying & Rock damage taken +35%."
+      ],
+      "five": [
+        "Manually toggle forms in combat (2s CD): Land grants +40% Defense & Sp. Def; Sky grants +40% Speed & Sp. Atk."
+      ],
+      "eight": [
+        "Seed Flare kills leave 6s gratitude flowers (r=100) healing allies inside for 3% Max HP/s (non-stacking)."
+      ]
+    }
+  },
+  "493": {
+    "zh": {
+      "base": [
+        "全队生命、双攻、双防、移速各 +30%；免疫所有负面异常状态。",
+        "施放攻击招式时按当前目标自动转为最克制属性，且所有属性克制伤害再 +50%。"
+      ],
+      "active": [
+        "【制裁光砾】清除全屏敌弹，全屏必暴造成 500% 主招无属性伤害，并定身全场敌人 2.5 秒。",
+        "充能：120秒基础充能，【队伍施法】每次+1秒双倍加速；上限1发，跨战保留。"
+      ],
+      "cost": [
+        "升级所需经验 +35%（经验获取 -26%）；训练家等级低于 5 级时全招式冷却 +15%。"
+      ],
+      "five": [
+        "所有带属性攻击承伤 -30%；每 10 秒自动获得 2 秒无敌。"
+      ],
+      "eight": [
+        "每次施放「制裁光砾」后，随机将全队1个未满级招式升至 5 级，并获 1 张商店一次性免单券（不可出售兑现）。"
+      ]
+    },
+    "en": {
+      "base": [
+        "Team Max HP, Attack, Sp. Atk, Defense, Sp. Def & Speed +30%; immune to all status ailments.",
+        "Attacking moves adapt to the target's best weakness on cast; super-effective damage +50%."
+      ],
+      "active": [
+        "Judgment: Clears enemy shots, deals guaranteed-crit 500% neutral damage full-screen, and stuns all foes for 2.5s.",
+        "Charge: 120s base; [Team casts] adds +1s of 2× speed. Holds 1 charge across battles."
+      ],
+      "cost": [
+        "XP needed +35% (-26% XP gained); all cooldowns +15% before Trainer Lv.5."
+      ],
+      "five": [
+        "Typed damage taken -30%; automatically gain 2s invulnerability every 10s."
+      ],
+      "eight": [
+        "Each Judgment levels 1 random team move to Lv.5 and grants 1 single-use free shop coupon (non-refundable)."
+      ]
+    }
+  }
+}

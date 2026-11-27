@@ -34,6 +34,14 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.78 — 2026-11-27
+
+- 完成全九世代 508 个队长特性家族（Gen 1–9）的标准化、精简与精确数值化展示文案：
+  - 新增 `tools/polish_leader_all_desc.cjs`（统一编译 Gen 6–9 的 187 家族实际运行时参数与 Z 几何，并整合 `tools/desc_gen2.json`–`tools/desc_gen5.json` 经逐一核对实装逻辑的 247 家族与 Gen 1 的 74 家族），在 `config/leader_abilities_gen1..9.json` 统一写入 `display.{zh,en}.{base,active,cost,five,eight}` 字段（中文单条 ≤90 字、英文 ≤158 字，零代码标识/Markdown 泄漏，主动 Z 均采用现行 120 秒基础充能＋对应事件双倍加速说明），完整保留原 `source` 与 `description` 追溯字段。
+  - 更新 `js/ui/leader-abilities-ui.js`：卡片优先按分条列表渲染 `display`，同时对已规范化家族不再堆叠冗长的内部平衡估算附注，统一在卡片底部展示一行通用上限说明（持续治疗 ≤3%/s、白盾 ≤40%、穿甲 ≤60%、BOSS 控制减半、精英/BOSS 单次 Z 总伤 ≤65% 主招 10 秒伤）。
+  - 新增全 508 家族描述质量回归测试 `tools/test_leader_descriptions.cjs`。
+- 验证：`node --test tools/test_leader_descriptions.cjs tools/test_leader_abilities.cjs tools/test_leader_gen2.cjs tools/test_leader_gen3.cjs tools/test_leader_gen4.cjs tools/test_leader_gen5.cjs tools/test_leader_gen6.cjs tools/test_leader_gen7.cjs tools/test_leader_gen8.cjs tools/test_leader_gen9.cjs` 80/82 通过（其中 Gen 1/2/3/5/6/7/8/9 与全量 508 家族描述测试全绿，Gen 4 余 2 项为 `alpha.66` 改为 `chargeBoost` 后旧测试未推进 `tick` 的历史遗留断言）；`node tools/build.js` 与 `node tools/export_data.js` 通过（当前终端未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.77 — 2026-11-27
 
 - 规范化并精简游戏内第一世代（关都）全部 74 个队长特性家族描述：

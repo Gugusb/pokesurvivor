@@ -119,6 +119,54 @@
           "five": "- **幽灵穿墙矢与反弹 (Ghost Arrow Piercing)**：\n  - 全队【投射物 (`projectile`)】弹丸无视地图墙体阻碍直接穿透 (`projectileTerrain: true`)，且命中阻挡边界时可反弹 **1 次** (`ricochet: 1`)。",
           "eight": "- **精准箭雨大师 (Sniper Crit Mastery)**：\n  - 全队暴击伤害倍率由 1.5× 提升至 **1.85×** (`critMultiplier: 1.85`)；\n  - 每次发动【投射物 (`projectile`)】招式额外多射出 **+1 枚箭矢** (`moves.projectile.count: 1`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "投射物伤害 +25%、射程 +30%",
+            "首次命中生命 >80% 敌人必暴",
+            "投射物对生命 >70% 敌人伤害 +20%"
+          ],
+          "active": [
+            "【遮天蔽日暗影箭】降下 8 枚半径140陨石，共造成 60% 主招10秒草/幽灵伤；定身 1.5 秒、减速 60%。",
+            "充能：120秒基础充能，【招式暴击】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物防 -20%",
+            "火、冰、恶、幽灵承伤 +35%"
+          ],
+          "five": [
+            "投射物穿透墙体障碍",
+            "投射物触墙反弹 1 次"
+          ],
+          "eight": [
+            "投射物数量 +1",
+            "暴击伤害提至 1.85倍"
+          ]
+        },
+        "en": {
+          "base": [
+            "Projectile: damage +25%, range +30%",
+            "First hit on foes >80% HP crits",
+            "Projectiles deal +20% vs foes >70% HP"
+          ],
+          "active": [
+            "Drops 8 meteors (r=140) sharing 60% Grass/Ghost dmg; 1.5s stun, 60% slow.",
+            "Charge: 120s base; [Crits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Defense -20%",
+            "Fire/Ice/Dark/Ghost damage taken +35%"
+          ],
+          "five": [
+            "Projectiles pierce walls",
+            "Projectiles bounce off walls 1 times"
+          ],
+          "eight": [
+            "Projectile: count +1",
+            "Crit damage increased to 1.85×"
+          ]
+        }
       }
     },
     {
@@ -232,6 +280,50 @@
           "cost": "- **重量级摔跤慢步 (Heavyweight Slowness)**：\n  - 全队移动速度降低 **10%** (`stats.spd: -0.1`)；\n  - 受到【水】【地面】【格斗】属性伤害提升 **35%** (`incomingTypes: { water: 1.35, ground: 1.35, fighting: 1.35 }`)。",
           "five": "- **炽焰冠军腰带 (Blaze Belt Crit)**：\n  - 攻击处于灼烧状态的敌人时，【火属性】伤害提高 **+25%** (`burnDamage: 1.25`)，【锥形/近战】招式暴击率提升 **+20%** (`burnCrit: 0.2`)。",
           "eight": "- **反击燃躯与近战吸血 (Combustion Lariat)**：\n  - 受到近战接触碰撞时，自动对攻击者施加 **2 层灼烧** (`contactBurn: 2`)；\n  - 全队【近战 (`melee`)】伤害的 **4%** 转化为自身生命回复 (`meleeLeech: 0.04`，受 3%/s 预算限制)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +20%；位移伤害 +20%；位移使180内敌人降攻 25%（2秒）；受伤后 3 秒内物攻 +25%"
+          ],
+          "active": [
+            "【极恶飞跃火焰压】瞬移至高血目标旁引爆半径260冲击，造成 60% 主招10秒火/恶伤；清除敌弹、定身 2 秒、3层灼伤。",
+            "充能：120秒基础充能，【近战命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -10%",
+            "水、地面、格斗承伤 +35%"
+          ],
+          "five": [
+            "火属性对灼伤敌人伤害 +25%",
+            "扇形/近战命中灼伤敌人暴击率 +20%"
+          ],
+          "eight": [
+            "接触攻击者附加 2 层灼伤",
+            "近战造成伤害的 4% 转为吸血"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +20%; Dash: damage +20%; Dash lowers enemy attack 25% in 180px (2s); Attack +25% for 3s after hit taken"
+          ],
+          "active": [
+            "Warps to highest-HP foe and blasts 260px for 60% Fire/Dark dmg; clears shots, 2s stun, +3 Burn.",
+            "Charge: 120s base; [Melee hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -10%",
+            "Water/Ground/Fighting damage taken +35%"
+          ],
+          "five": [
+            "Fire damage vs burned foes +25%",
+            "Cone/Melee gain +20% crit vs burned foes"
+          ],
+          "eight": [
+            "Contact attackers receive +2 Burn",
+            "Melee leeches 4% of damage dealt"
+          ]
         }
       }
     },
@@ -355,6 +447,56 @@
           "five": "- **星海护盾溢流 (Symphony Overheal)**：\n  - 全队生命回复速率提高 **+25%** (`regenRate: 1.25`)；\n  - 满血时溢出的治疗按 **50%** 转化为持久白盾 (`overhealShield: 0.5`，上限 40% MaxHP)。",
           "eight": "- **百花水泡高潮 (Grand Encore Volley)**：\n  - 全队【绽放 (`nova`)】单次发射弹幕数额外 **+3 发** (`moves.nova.count: 3`)；\n  - 遭到水属性伤害时削弱并按比例吸收转化治疗 (`waterHeal: 0.02`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "冲击波伤害 +20%",
+            "光环半径 +30%",
+            "队长160半径芳香场减速 20% 并易伤 15%"
+          ],
+          "active": [
+            "【蔚蓝星海交响曲】半径320爆发，造成 50% 主招10秒水/妖精伤；清除敌弹、定身 2 秒、全队回 15% 最大生命。",
+            "充能：120秒基础充能，【光环命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物防 -25%",
+            "电、草、毒承伤 +35%",
+            "禁止学习【近战】招式"
+          ],
+          "five": [
+            "自然回复速率 +25%",
+            "溢出治疗的 50% 转为白盾（共享3%/秒速率）"
+          ],
+          "eight": [
+            "冲击波数量 +2",
+            "受水伤减免-25%并排队回复 2% 最大生命"
+          ]
+        },
+        "en": {
+          "base": [
+            "Nova: damage +20%",
+            "Aura: radius +30%",
+            "160px sweet aura: 20% slow & +15% vuln"
+          ],
+          "active": [
+            "320px nova for 50% Water/Fairy dmg; clears shots, 2s stun, heals team 15% HP.",
+            "Charge: 120s base; [Aura hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Defense -25%",
+            "Electric/Grass/Poison damage taken +35%",
+            "Bans Melee moves"
+          ],
+          "five": [
+            "Natural regen rate +25%",
+            "50% of overhealing converts to white shield"
+          ],
+          "eight": [
+            "Nova: count +2",
+            "Reduces Water damage taken and queues 2% Max HP heal"
+          ]
+        }
       }
     },
     {
@@ -466,6 +608,52 @@
           "five": "- **树洞啄木藏果 (Woodpecker Berry Stash)**：\n  - 击败敌人时有 **10% 概率掉落树果**（全队至多每 2 秒 1 枚，拾取回 **8% 已损血 + 1 PP + 3 秒加速**，复用 `fruitChance`）；\n  - 全队【近战 (`melee`)】暴击率提升 **+15%**。",
           "eight": "- **树洞碎金储蓄账 (💰 Acorn Gold Cache)**：\n  - 启用储蓄核算 (`bankDamage: 0.015`)：战斗中每累计 20 击杀战后额外发放 **+1 金币**（**单场严格封顶 +2G**），每保有 20 局内金币提供 **+1.5% 输出加成**（**封顶 +30%**）。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "投射物数量 +1",
+            "近战冷却 -15%",
+            "每第 5 次招式命中必暴"
+          ],
+          "active": [
+            "【极速鸟嘴大炮】向前方扇区释放12发冲击，共造成 60% 主招10秒一般/飞行伤；减速 50%、2层灼伤。",
+            "充能：120秒基础充能，【招式暴击】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -15%",
+            "电、冰、岩石承伤 +35%"
+          ],
+          "five": [
+            "近战暴击率 +15%",
+            "击杀 10% 概率产补给果（战后结算回8%已损血+1PP，每战上限4）"
+          ],
+          "eight": [
+            "每持20G伤害 +1.5%（上限 +30%）；每20杀战后 +1G（单场上限2G）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Projectile: count +1",
+            "Melee: CD -15%",
+            "Every 5th move hit crits"
+          ],
+          "active": [
+            "Fires 12-shot cone volley for 60% Normal/Flying dmg total; 50% slow, +2 Burn.",
+            "Charge: 120s base; [Crits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -15%",
+            "Electric/Ice/Rock damage taken +35%"
+          ],
+          "five": [
+            "Melee: crit +15%",
+            "10% kill chance for fruit (post-battle +8% missing HP & 1 PP, max 4)"
+          ],
+          "eight": [
+            "+1.5% dmg/20G (max +30%); +1G/20 kills (max 2G)"
+          ]
+        }
       }
     },
     {
@@ -568,6 +756,50 @@
           "cost": "- **短躯贪吃脆皮 (Lean Patrol)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【格斗属性】伤害提升 **60%** (`incomingTypes.fighting: 1.6`)。",
           "five": "- **缉私查抄战利品 (💰 Patrol Contraband Loot)**：\n  - 在**精英战斗 (`elite`)** 获胜后的结算界面中，额外提供 **+1 次携带道具三选一机会** (`eliteItem: 1`，直接复用现有接口！)。",
           "eight": "- **警队悬赏补贴 (💰 Detective Bounty)**：\n  - 开启抓捕悬赏 (`bankDamage: 0.015`)：战斗每累计 20 击杀，战后额外颁发 **+1 金币**（**单场严格封顶 +2G**），每持有 20G 存款增伤 +1.5%（封顶 +30%）。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +25%",
+            "首次命中生命 >80% 敌人必暴",
+            "队长250半径内敌人攻击频率降低 25%"
+          ],
+          "active": [
+            "【疾行扑咬突袭】瞬移至高血目标旁引爆半径130冲击，造成 55% 主招10秒一般伤；定身 1.5 秒、易伤 25%。",
+            "充能：120秒基础充能，【近战暴击】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -20%",
+            "格斗承伤 +60%"
+          ],
+          "five": [
+            "精英战胜利后额外获得 1 次携带道具三选一"
+          ],
+          "eight": [
+            "每持20G伤害 +1.5%（上限 +30%）；每20杀战后 +1G（单场上限2G）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +25%",
+            "First hit on foes >80% HP crits",
+            "Foes within 250px attack 25% slower"
+          ],
+          "active": [
+            "Warps to highest-HP foe and blasts 130px for 55% Normal dmg; 1.5s stun, +25% vuln.",
+            "Charge: 120s base; [Melee crits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -20%",
+            "Fighting damage taken +60%"
+          ],
+          "five": [
+            "+1 extra 3-pick held item choice after Elite victory"
+          ],
+          "eight": [
+            "+1.5% dmg/20G (max +30%); +1G/20 kills (max 2G)"
+          ]
         }
       }
     },
@@ -681,6 +913,52 @@
           "cost": "- **大颚炮台滞重 (Heavy Cannon Chassis)**：\n  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)；\n  - 受到【火】【岩石】伤害提升 **40%**，且禁止使用【近战 (`melee`)】招式 (`ban: ['melee']`)。",
           "five": "- **队员蓄电池链接 (Battery Squadron Links)**：\n  - 出战队员处于队长 220 半径内时，每秒自动向周边敌人放出一道电系连接弧伤 (`magnetLinks: true`)；\n  - 每次造成电击连击都会提升自身敏捷最高 **+30%** (`electricEngine: 0.03`)。",
           "eight": "- **过载回蓝与光子盾 (Crit PP & Beam Guard)**：\n  - 攻击暴击时有 **30% 概率回复 1 点 PP** (`critPP: 0.3`)；\n  - 发射【能量柱 (`beam`)】期间获得 **+25% 临时双防** (`beamDefense: 0.25`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "能量柱伤害 +25%；连锁数量 +1；免疫地面属性伤害；电属性招式暴击率 +20%"
+          ],
+          "active": [
+            "【终极伏特电磁炮】射出3道贯穿光柱，共造成 50% 主招10秒电必暴伤；定身 1.5 秒。",
+            "充能：120秒基础充能，【电系招式命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -20%",
+            "火、岩石承伤 +40%",
+            "禁止学习【近战】招式"
+          ],
+          "five": [
+            "电系命中叠层，自身每层敏捷 +3%（上限 +30%）",
+            "电系引擎叠层时每秒电击220内最近敌人（3%主招10秒电伤）"
+          ],
+          "eight": [
+            "施放能量柱 0.4 秒内双防 +25%",
+            "暴击 30% 概率返还 1 点 PP（0.5秒冷却）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Beam: damage +25%; Chain: count +1; Immune to Ground damage; Electric move crit +20%"
+          ],
+          "active": [
+            "Fires 3 piercing beams for 50% Electric crit dmg total; 1.5s stun.",
+            "Charge: 120s base; [Electric move hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -20%",
+            "Fire/Rock damage taken +40%",
+            "Bans Melee moves"
+          ],
+          "five": [
+            "Electric hits stack +3% Agility (max +30%)",
+            "While Engine active, zaps nearest foe (220px) every 1s for 3% Electric"
+          ],
+          "eight": [
+            "Defense & Sp. Def +25% for 0.4s on Beam",
+            "Crits have 30% chance to restore 1 PP (0.5s CD)"
+          ]
         }
       }
     },
@@ -796,6 +1074,54 @@
           "five": "- **破冰重拳与护体壳 (Shatter Guard)**：\n  - 攻击处于冻结或眩晕状态的敌人时最终伤害提高 **+25%** (`frozenVulnerable: 0.25`)；\n  - 【近战 (`melee`)】命中敌人立刻获得 **5% MaxHP 护盾**持续 4 秒（受 40% 总盾上限控制）。",
           "eight": "- **反击冰刺与重击激怒 (Counter Ice & Fury)**：\n  - 受击时（内置冷却 2 秒）自动向四周发射 **4 枚冰刺** (`iceCounter: 4`)；\n  - 承受单次重创（>=20% MaxHP）后 4 秒输出额外增加 **+25%** (`heavyFury: true`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +30%、击退 +30%",
+            "受伤后 3 秒内物攻 +30%"
+          ],
+          "active": [
+            "【冰锤绝境猛砸】释放2发半径250爆发，造成 55% 主招10秒格斗/冰伤；定身 2 秒、减速 50%。",
+            "充能：120秒基础充能，【队伍受伤】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -20%",
+            "火、格斗、钢、超能、妖精承伤 +35%",
+            "禁止学习【投射物】招式"
+          ],
+          "five": [
+            "对冻结/定身敌人伤害 +25%",
+            "近战命中获 5% 最大生命白盾（每次施法/0.5秒一次）"
+          ],
+          "eight": [
+            "受重击(≥20%最大生命)后 4 秒内伤害 +25%",
+            "受击每2秒向四周发射 4 枚冰弹（各20%主招伤）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +30%, knockback +30%",
+            "Attack +30% for 3s after hit taken"
+          ],
+          "active": [
+            "2-shot 250px nova for 55% Fighting/Ice dmg; 2s stun, 50% slow.",
+            "Charge: 120s base; [Team hits taken] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -20%",
+            "Fire/Fighting/Steel/Psychic/Fairy damage taken +35%",
+            "Bans Projectile moves"
+          ],
+          "five": [
+            "Damage +25% vs frozen/stunned foes",
+            "Melee hits grant 5% Max HP shield (once/cast, 0.5s CD)"
+          ],
+          "eight": [
+            "Heavy hit (≥20% HP) grants +25% damage (4s)",
+            "On hit (2s CD): fires 4 Ice shards (20% primary dmg)"
+          ]
+        }
       }
     },
     {
@@ -908,6 +1234,52 @@
           "five": "- **舞者共舞连击回响 (Dancer Echo Strike)**：\n  - 队伍所有主体攻击成功命中敌人 **0.12 秒后**，于同一目标上自动重演一次 **20% 威力的舞者追击伤害** (`echo: 0.2`)。",
           "eight": "- **炽舞治愈节奏 (Fever Dance Cure)**：\n  - 触发回响追击时按最大生命的 1% 为队员提供小额持续治疗 (`echoHeal: 0.01`，受 3%/s 预算管辖)；\n  - 全队【火属性】招式基础伤害提高 **+20%** (`fireDamage: 1.2`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "冲击波伤害 +20%",
+            "属性提升冷却 -20%",
+            "施放属性提升时向队友同步 30% 效果（上限5秒）"
+          ],
+          "active": [
+            "【觉醒之舞狂欢节】释放36发全屏爆发，造成 40% 主招10秒火/飞行伤；2层灼伤、5秒双攻 +25%/移速 +30%。",
+            "充能：120秒基础充能，【冲击波施法】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -15%",
+            "岩石、电、冰承伤 +40%"
+          ],
+          "five": [
+            "招式命中后追加 20% 实际伤害回响"
+          ],
+          "eight": [
+            "火属性招式伤害 +20%",
+            "命中回响每0.5秒排队回复 1% 最大生命"
+          ]
+        },
+        "en": {
+          "base": [
+            "Nova: damage +20%",
+            "Buff: CD -20%",
+            "Buff casts sync 30% effect to allies (max 5s)"
+          ],
+          "active": [
+            "36-shot full-screen nova for 40% Fire/Flying dmg; +2 Burn, 5s Atk/SpA +25%/Spd +30%.",
+            "Charge: 120s base; [Nova casts] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -15%",
+            "Rock/Electric/Ice damage taken +40%"
+          ],
+          "five": [
+            "Hits trigger 20% echo"
+          ],
+          "eight": [
+            "Fire move damage +20%",
+            "Hits queue 1% Max HP heal (0.5s CD)"
+          ]
+        }
       }
     },
     {
@@ -1019,6 +1391,52 @@
           "five": "- **花粉传染与安逸粉幕 (Pollen Aftermath & Veil)**：\n  - 带任意异常状态的敌人死亡后向周围 70 范围喷溅虫系毒粉 (`statusDeathPollen: true`)；\n  - 连续 5 秒未受击获得 **+35% 双防保护** (`safeDefense: 0.35`)。",
           "eight": "- **阿罗拉蜜坊分红 (💰 Honey Atelier Dividend)**：\n  - 开启采蜜结账 (`bankDamage: 0.01`)：战斗中每累计 20 次击杀战后额外颁发 **+1 金币**（**单场封顶 +2G**），每保有 20G 存款额外提高 **+1% 伤害**（封顶 +20%）。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "移速 +20%",
+            "1级/副槽招式施法频率 +20%",
+            "击杀 12% 概率产补给果（战后结算回8%已损血+1PP，每战上限4）"
+          ],
+          "active": [
+            "【百花花粉团爆弹】瞬移至高血目标旁引爆半径240冲击，造成 40% 主招10秒虫/妖精伤；减速 50%、额外产 3 份补给果。",
+            "充能：120秒基础充能，【拾取/生成补给果】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -25%、物防 -20%",
+            "火、毒、钢、岩石承伤 +35%"
+          ],
+          "five": [
+            "连续 5 秒未受伤时双防 +35%",
+            "异常敌人死亡引发70半径虫毒爆（2%伤+1中毒）"
+          ],
+          "eight": [
+            "每持20G伤害 +1%（上限 +20%）；每20杀战后 +1G（单场上限2G）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Speed +20%",
+            "Lv.1 & secondary-slot cast rate +20%",
+            "12% kill chance for fruit (post-battle +8% missing HP & 1 PP, max 4)"
+          ],
+          "active": [
+            "Warps to highest-HP foe and blasts 240px for 40% Bug/Fairy dmg; 50% slow, +3 bonus fruits.",
+            "Charge: 120s base; [Fruit drops/pickups] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -25%, Defense -20%",
+            "Fire/Poison/Steel/Rock damage taken +35%"
+          ],
+          "five": [
+            "Defense & Sp. Def +35% after 5s undamaged",
+            "Statused kills explode (r=70, 2% Bug + 1 Poison)"
+          ],
+          "eight": [
+            "+1% dmg/20G (max +20%); +1G/20 kills (max 2G)"
+          ]
+        }
       }
     },
     {
@@ -1125,6 +1543,54 @@
           "five": "- **连突岩炮与爪抛飞石 (Accelrock Cannon)**：\n  - 每释放 **3 次**【突进 (`dash`)】，正面发射 1 枚穿甲大岩弹 (`rockCannon: 3`)；每次【近战 (`melee`)】连带向前飞出 2 枚小碎石 (`meleeStones: 2`)。",
           "eight": "- **狂野狼啸疾行 (Wolf Hunt Momentum)**：\n  - 每次【突进 (`dash`)】结束后移速暴增 **+30%** 持续 0.8 秒 (`dashEndSpeed: 0.3`)；\n  - 全队暴击伤害倍率提高至 **1.9×** (`critMultiplier: 1.9`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "位移冷却 -25%",
+            "近战伤害 +25%",
+            "首次命中生命 >80% 敌人必暴"
+          ],
+          "active": [
+            "【狼啸毁天灭地巨岩阵】半径280爆发，造成 60% 主招10秒岩石伤；碎盾、定身 1.5 秒。",
+            "充能：120秒基础充能，【位移命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -15%",
+            "水、草、地面、格斗、钢承伤 +30%"
+          ],
+          "five": [
+            "每 3 次位移自动发射 1 枚穿透岩炮（60%主招伤）",
+            "每次近战追加 2 枚岩石碎石（各10%主招伤）"
+          ],
+          "eight": [
+            "位移结束 0.5 秒内移速 +30%",
+            "暴击伤害提至 1.9倍"
+          ]
+        },
+        "en": {
+          "base": [
+            "Dash: CD -25%",
+            "Melee: damage +25%",
+            "First hit on foes >80% HP crits"
+          ],
+          "active": [
+            "280px nova for 60% Rock dmg; breaks shields, 1.5s stun.",
+            "Charge: 120s base; [Dash hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -15%",
+            "Water/Grass/Ground/Fighting/Steel damage taken +30%"
+          ],
+          "five": [
+            "Every 3rd Dash fires a piercing Rock boulder (60% primary)",
+            "Melee casts launch 2 Rock shards (10% primary each)"
+          ],
+          "eight": [
+            "Speed +30% for 0.5s after Dash",
+            "Crit damage increased to 1.9×"
+          ]
+        }
       }
     },
     {
@@ -1223,6 +1689,50 @@
           "cost": "- **单鱼惊恐四散 (Solo Form Panic)**：\n  - 一旦生命值跌破 **40%** 退散为单鱼形态，自身受到【电】【草】伤害提升 **40%**，且基础输出优势尽失。",
           "five": "- **单鱼保命缩甲 (Solo Evasion Protocol)**：\n  - 当生命值低于 **40%** 退回弱小单鱼形态时，双防立即翻升 **+50%** (`lowDefense: 0.5`)，并获每场 1 次濒死跃迁免死 (`emergencyWarp: 1.2`) 防止意外减员。",
           "eight": "- **海港鱼群合作社 (💰 Fishermen Cooperative)**：\n  - 开启捕捞分红 (`bankDamage: 0.015`)：每累计 20 击杀战后额外+1G（**单战严格封顶 +2G**），每保有 20 金币提供 **+1.5% 伤害增幅**（封顶 +30%）。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "冲击波射程 +20%",
+            "生命 >85% 时伤害 +35%",
+            "生命 >85% 时水系投射物/光环范围 +20%"
+          ],
+          "active": [
+            "【千鱼合流大潮汐】释放24发全屏爆发，造成 50% 主招10秒水伤；减速 50%、全队回 15% 最大生命。",
+            "充能：120秒基础充能，【招式命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 <40% 时电、草承伤 +40%"
+          ],
+          "five": [
+            "生命低于 40% 时双防 +50%",
+            "每战每名队员1次致死保命并无敌 1.2 秒"
+          ],
+          "eight": [
+            "每持20G伤害 +1.5%（上限 +30%）；每20杀战后 +1G（单场上限2G）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Nova: range +20%",
+            "Damage +35% above 85% HP",
+            "Water Projectile/Aura range +20% above 85% HP"
+          ],
+          "active": [
+            "24-shot full-screen nova for 50% Water dmg; 50% slow, heals team 15% HP.",
+            "Charge: 120s base; [Move hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Below 40% HP: Electric/Grass damage taken +40%"
+          ],
+          "five": [
+            "Defense & Sp. Def +50% below 40% HP",
+            "Once/battle/ally: survive lethal with 1.2s invuln"
+          ],
+          "eight": [
+            "+1.5% dmg/20G (max +30%); +1G/20 kills (max 2G)"
+          ]
         }
       }
     },
@@ -1335,6 +1845,52 @@
           "cost": "- **海星沉底慢行 (Anchored Seabed)**：\n  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)；\n  - 受到【电】【地面】【超能力】属性伤害提升 **40%** (`incomingTypes: { electric: 1.4, ground: 1.4, psychic: 1.4 }`)。",
           "five": "- **毒菱布雷防线 (Toxic Spikes Minefield)**：\n  - 全队【地雷 (`mine`)】单次布雷数 **+1**、基础地雷伤害提升 **+25%** (`moves.mine.damage: 1.25`)。",
           "eight": "- **腐骨剧毒与碎盾反刺 (Corrosive Rate & Shards)**：\n  - 距队长 180 半径内中毒敌人的扣血周期加快 **+35%** (`poisonRate: 1.35`)；\n  - 白盾彻底被击破瞬间自动向外喷射 **8 枚毒属性尖刺** (`shieldShards: 8`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "物防 +30%、特防 +30%",
+            "受中毒敌人伤害 -30%",
+            "队长160半径毒环每0.5秒施加 1 层中毒"
+          ],
+          "active": [
+            "【碉堡剧毒引爆】引爆中毒敌人，造成 10% 主招10秒毒伤 + 8%当前生命；清除敌弹、定身 1.5 秒、全队 40% 白盾。",
+            "充能：120秒基础充能，【施加中毒】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -20%",
+            "电、地面、超能承伤 +40%"
+          ],
+          "five": [
+            "地雷数量 +1、伤害 +25%"
+          ],
+          "eight": [
+            "队长180半径内敌人中毒跳伤频率 +35%",
+            "白盾破裂喷射 8 枚毒碎片（2秒冷却）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Defense +30%, Sp. Def +30%",
+            "Damage from poisoned foes -30%",
+            "160px toxic aura applies +1 Poison/0.5s"
+          ],
+          "active": [
+            "Detonates poisoned foes for 10% Poison dmg + 8% current HP; clears shots, 1.5s stun, 40% team shield.",
+            "Charge: 120s base; [Poison stacks applied] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -20%",
+            "Electric/Ground/Psychic damage taken +40%"
+          ],
+          "five": [
+            "Mine: count +1, damage +25%"
+          ],
+          "eight": [
+            "Poison tick rate +35% within 180px",
+            "Shield break fires 8 Poison shards (2s CD)"
+          ]
         }
       }
     },
@@ -1449,6 +2005,50 @@
           "five": "- **绝境铁蹄加固 (Low-HP Iron Stamina)**：\n  - 宝可梦生命值低于 40% 时双防额外提升 **+45%** (`lowDefense: 0.45`)；\n  - 【突进 (`dash`)】招式期间获得 **30% 受击减伤** (`dashGuard: 0.3`)。",
           "eight": "- **沙土马蹄护体盾 (Mud Shield Guard)**：\n  - 承受单次重击（>=20% MaxHP）时立刻生成 **15% MaxHP 泥甲白盾** (`heavyShield: 0.15`，上限 40%)；\n  - 全队【物理近战 (`melee`)】伤害随自身基础物防转化加成（**封顶 +35%**，`defMelee`）。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "物防 +25%；位移伤害 +20%；陨石伤害 +20%；免疫地面属性伤害；免疫反冲伤害；受伤后 3 秒内物攻 +20%"
+          ],
+          "active": [
+            "【十万马力大地践踏】突进600距离并引发半径240震荡，共造成 55% 主招10秒地面伤；定身 1.5 秒、破甲 40%。",
+            "充能：120秒基础充能，【队伍受伤】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -20%",
+            "水、草、冰承伤 +35%"
+          ],
+          "five": [
+            "生命低于 40% 时双防 +45%",
+            "位移期间承伤 -30%"
+          ],
+          "eight": [
+            "单次受伤 >20% 最大生命时获 15% 白盾（5秒）",
+            "基础物防转化为近战伤害（上限 +35%）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Defense +25%; Dash: damage +20%; Meteor: damage +20%; Immune to Ground damage; Immune to recoil damage; Attack +20% for 3s after hit taken"
+          ],
+          "active": [
+            "Dashes 600px into a 240px blast for 55% Ground dmg total; 1.5s stun, -40% def.",
+            "Charge: 120s base; [Team hits taken] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -20%",
+            "Water/Grass/Ice damage taken +35%"
+          ],
+          "five": [
+            "Defense & Sp. Def +45% below 40% HP",
+            "Take -30% damage while dashing"
+          ],
+          "eight": [
+            "Heavy hit (>20% HP) grants 15% shield (5s)",
+            "Base Defense boosts Melee damage (max +35%)"
+          ]
+        }
       }
     },
     {
@@ -1559,6 +2159,54 @@
           "cost": "- **水上节肢弱电飞岩 (Aquatic Arachnid Flaws)**：\n  - 全队物理攻击 (`atk`) 基础略降 **10%** (`stats.atk: -0.1`)；\n  - 受到【电】【飞行】【岩石】属性伤害提升 **40%** (`incomingTypes: { electric: 1.4, flying: 1.4, rock: 1.4 }`)。",
           "five": "- **暴雨气泡狂暴 (Rain Bubble Surge)**：\n  - 雨天环境下全队伤害提升 **+25%** (`rainDamage: 1.25`)；\n  - 全队【投射物 (`projectile`)】招式伤害提升 **+20%**，水系气泡具备更大命中范围。",
           "eight": "- **水泡白盾自愈再生 (Bubble Shield Regen)**：\n  - 身上只要保持着水泡白盾，每秒自动补充恢复 **2% 最大生命值的白盾** (`screenShieldRegen: 0.02`，受 40% 总盾上限保护)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "火承伤 -50%",
+            "队长180半径水幕削减敌弹 25% 伤害",
+            "减速与减攻持续时间 -50%"
+          ],
+          "active": [
+            "【水泡粘网猛扑】向前方扇区释放冲击，共造成 50% 主招10秒水/虫伤；清除敌弹、减速 60%、全队 25% 白盾。",
+            "充能：120秒基础充能，【护盾/水幕/免疫吸收(每5%最大生命)】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物攻 -10%",
+            "电、飞行、岩石承伤 +40%"
+          ],
+          "five": [
+            "投射物伤害 +20%",
+            "雨天伤害 +25%",
+            "水系投射物体积 +20%"
+          ],
+          "eight": [
+            "有白盾时每秒再生 2% 最大生命白盾"
+          ]
+        },
+        "en": {
+          "base": [
+            "Fire damage taken -50%",
+            "180px water curtain cuts enemy shot damage 25%",
+            "slow/burn debuff duration -50%"
+          ],
+          "active": [
+            "Fires cone volley for 50% Water/Bug dmg total; clears shots, 60% slow, 25% team shield.",
+            "Charge: 120s base; [Absorbed damage (per 5% MaxHP)] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Attack -10%",
+            "Electric/Flying/Rock damage taken +40%"
+          ],
+          "five": [
+            "Projectile: damage +20%",
+            "Rain damage +25%",
+            "Water Projectile size +20%"
+          ],
+          "eight": [
+            "Active shield regens 2% Max HP/s"
+          ]
         }
       }
     },
@@ -1673,6 +2321,50 @@
           "five": "- **花圃修剪免费券 (💰 Garden Shear Refresh)**：\n  - 每进入一家宝可梦商店，自动获得 **+1 次免费刷新额度**；但之后手动付费刷新的费用提升为 **1.5 倍向上取整** (`shopRefreshFactor: 1.5`)。",
           "eight": "- **日光吸血与暴击修剪 (Solar Drain Mastery)**：\n  - 全队【近战 (`melee`)】造成实际伤害的 **5%** 转化为生命偷取 (`meleeLeech: 0.05`，受 3%/s 预算上限保护)；\n  - 【近战 (`melee`)】暴击率提升 **+20%**。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +25%、扇角 126.05°；晴天冷却速率 +25%；晴天移速与敏捷 +20%；持有金币 <30G 时双防 +30%"
+          ],
+          "active": [
+            "【日光镰刀满月斩】半径260强力斩击，造成 50% 主招10秒草必暴伤；易伤 30%、12秒晴天。",
+            "充能：120秒基础充能，【近战施法】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物防 -15%",
+            "火、冰、毒、飞行、虫承伤 +35%"
+          ],
+          "five": [
+            "商店付费刷新费用 ×1.5（向上取整）",
+            "每次进店额外获得 +1 次免费刷新"
+          ],
+          "eight": [
+            "近战暴击率 +20%",
+            "近战造成伤害的 5% 转为吸血"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +25%, arc 126.05°; Sun cooldown rate +25%; Sun Speed & Agility +20%; Defense & Sp. Def +30% below 30G"
+          ],
+          "active": [
+            "260px melee strike for 50% Grass crit dmg; +30% vuln, 12s Sun.",
+            "Charge: 120s base; [Melee casts] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Defense -15%",
+            "Fire/Ice/Poison/Flying/Bug damage taken +35%"
+          ],
+          "five": [
+            "Paid shop refresh cost ×1.5 (rounded up)",
+            "+1 free shop refresh per shop visit"
+          ],
+          "eight": [
+            "Melee: crit +20%",
+            "Melee leeches 5% of damage dealt"
+          ]
+        }
       }
     },
     {
@@ -1786,6 +2478,54 @@
           "five": "- **吸取力量寄生雷 (Strength Sap Parasites)**：\n  - 全队【地雷 (`mine`)】触发时给目标挂上 4 秒寄生状态 (`parasiticMines: true`)，且使受雷击的目标 **沉默 2 秒无法射弹** (`trapSilence: 2`)。",
           "eight": "- **蘑菇吸能回馈 (Sap Healing Blossom)**：\n  - 带寄生标记的敌人阵亡后散播两枚小型毒爆并治疗全队 **5% 已损血** (`parasiteHeal: 0.05`，受预算管辖)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "光环伤害 +20%、半径 +25%",
+            "地雷伤害 +20%",
+            "接触攻击者定身 1 秒"
+          ],
+          "active": [
+            "【极光蘑菇孢子云】展开 3 秒半径1200领域，持续造成共 9% 主招10秒草/妖精伤；非BOSS定身 2.5 秒、减速 60%、易伤 25%、10% 伤害转团队治疗。",
+            "充能：120秒基础充能，【蘑菇感染】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -20%",
+            "毒承伤 +70%",
+            "火、飞行、冰承伤 +30%"
+          ],
+          "five": [
+            "地雷/轨迹命中减速 70% 并沉默 2 秒",
+            "地雷转为4秒寄生毒（每秒1.5%血上限2.5%伤），死后留孢子区"
+          ],
+          "eight": [
+            "寄生目标死亡回复全队 5% 已损生命"
+          ]
+        },
+        "en": {
+          "base": [
+            "Aura: damage +20%, radius +25%",
+            "Mine: damage +20%",
+            "Contact attackers stunned 1s"
+          ],
+          "active": [
+            "3s field (r=1200) dealing 9% Grass/Fairy dmg total; 2.5s non-boss stun, 60% slow, +25% vuln, 10% dmg heals team.",
+            "Charge: 120s base; [Spore infections] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -20%",
+            "Poison damage taken +70%",
+            "Fire/Flying/Ice damage taken +30%"
+          ],
+          "five": [
+            "Mines/Trails slow 70% & silence 2s",
+            "Mines infect 4s poison (1.5% HP/s, capped) and leave spores"
+          ],
+          "eight": [
+            "Parasitized kills heal team 5% missing HP"
+          ]
+        }
       }
     },
     {
@@ -1890,6 +2630,56 @@
           "cost": "- **四倍弱地极度脆皮 (Quadruple Ground Fragility)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【地面属性】伤害提升 **80%** (`incomingTypes.ground: 1.8`)，【水】【超能】【岩石】伤害提升 **30%**。",
           "five": "- **毒焰双重催化 (Venom-Burn Synergy)**：\n  - 场上每名灼烧敌人提高全队特殊攻击 +1.5%（封顶 +25%，`burnSpa`）；【火属性】攻击灼烧敌人增伤 **+25%** (`burnDamage: 1.25`)。",
           "eight": "- **溶甲强酸腐池 (Melting Acid Pool)**：\n  - 距队长 180 范围中毒敌人的扣血速率提升 **+40%** (`poisonRate: 1.4`)；\n  - 【锥形 (`cone`)】招式命中 10% 概率残留腐蚀酸池 (`acidPuddle: true`) 并削减敌防 35% (`acidDefense: 0.35`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "扇形伤害 +20%、附 1 层灼伤、附 1 层中毒",
+            "主体攻击无视敌方 20% 双防"
+          ],
+          "active": [
+            "【毒火熔炉十字喷射】降下 5 枚半径140陨石，共造成 50% 主招10秒火/毒伤；3层灼伤、2层中毒。",
+            "充能：120秒基础充能，【施加中毒】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -20%",
+            "地面承伤 +80%",
+            "水、超能、岩石承伤 +30%"
+          ],
+          "five": [
+            "场上每1名灼伤敌人提升特攻 +1.5%（上限 +25%）",
+            "火属性对灼伤敌人伤害 +25%"
+          ],
+          "eight": [
+            "队长180半径内敌人中毒跳伤频率 +40%",
+            "扇形命中 10% 概率留2秒酸池",
+            "扇形命中削减敌人 25% 双防（3秒）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Cone: damage +20%, +1 Burn, +1 Poison",
+            "Main attacks ignore 20% enemy defenses"
+          ],
+          "active": [
+            "Drops 5 meteors (r=140) sharing 50% Fire/Poison dmg; +3 Burn, +2 Poison.",
+            "Charge: 120s base; [Poison stacks applied] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -20%",
+            "Ground damage taken +80%",
+            "Water/Psychic/Rock damage taken +30%"
+          ],
+          "five": [
+            "+1.5% Sp. Atk per burned foe (max +25%)",
+            "Fire damage vs burned foes +25%"
+          ],
+          "eight": [
+            "Poison tick rate +40% within 180px",
+            "Cone hits have 10% chance to drop 2s acid pool",
+            "Cone hits shred 25% defenses (3s)"
+          ]
         }
       }
     },
@@ -1999,6 +2789,54 @@
           "cost": "- **易燃绒毛惧火 (Flammable Fur Hazard)**：\n  - 受到【火属性】伤害大幅提升 **65%** (`incomingTypes.fire: 1.65`)；\n  - 全队特殊攻击降低 20% (`stats.spa: -0.2`)，禁止学习【能量柱 (`beam`)】招式 (`ban: ['beam']`)。",
           "five": "- **巨熊皮厚护腕 (Fluffy Brawn)**：\n  - 【近战 (`melee`)】命中敌人时立刻生成 **5% MaxHP 白盾** (`meleeShieldGain: 0.05`，上限 40%)；\n  - 单次受击重创（>=20% MaxHP）触发 4 秒 **+25% 狂怒增伤** (`heavyFury: true`)。",
           "eight": "- **泰山压顶近战极意 (Bear Wrestling Mastery)**：\n  - 全队【近战 (`melee`)】暴击率提升 **+20%**，且对处于眩晕 (`classStunT`) 状态的敌人伤害额外提高 **+25%** (`stunVulnerable: 0.25`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +25%、击退 +40%",
+            "物理接触承伤 -35%"
+          ],
+          "active": [
+            "【怪力巨熊震撼拥抱】瞬移至高血目标旁引爆半径220冲击，造成 55% 主招10秒格斗伤；定身 2 秒、全队 30% 白盾。",
+            "充能：120秒基础充能，【近战命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "特攻 -20%",
+            "火承伤 +65%",
+            "禁止学习【能量柱】招式"
+          ],
+          "five": [
+            "受重击(≥20%最大生命)后 4 秒内伤害 +25%",
+            "近战命中获 5% 最大生命白盾（每次施法/0.5秒一次）"
+          ],
+          "eight": [
+            "近战暴击率 +20%",
+            "对定身敌人伤害 +25%"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +25%, knockback +40%",
+            "Physical contact damage taken -35%"
+          ],
+          "active": [
+            "Warps to highest-HP foe and blasts 220px for 55% Fighting dmg; 2s stun, 30% team shield.",
+            "Charge: 120s base; [Melee hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Sp. Atk -20%",
+            "Fire damage taken +65%",
+            "Bans Beam moves"
+          ],
+          "five": [
+            "Heavy hit (≥20% HP) grants +25% damage (4s)",
+            "Melee hits grant 5% Max HP shield (once/cast, 0.5s CD)"
+          ],
+          "eight": [
+            "Melee: crit +20%",
+            "Damage +25% vs stunned foes"
+          ]
         }
       }
     },
@@ -2117,6 +2955,50 @@
           "five": "- **凌空踢击追打 (Knockback Precision)**：\n  - 全队任何攻击命中处于**被击退滑动中 (`kx/ky`)** 的敌人时，**必定触发暴击** (`knockCrit: true`)；\n  - 使用【突进 (`dash`)】时威吓周边敌人降攻 25% (`dashIntimidate: true`)。",
           "eight": "- **优雅女王步法 (Queenly Stride)**：\n  - 全队移动速度提升 **+20%** (`stats.spd: 0.2`)，每次【近战 (`melee`)】击杀或命中使暴击伤害提高至 **1.85×** (`critMultiplier: 1.85`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +25%、击退 +50%；免疫敌方降攻；免疫地形减速与伤害陷阱；免疫地面减速陷阱"
+          ],
+          "active": [
+            "【热带女王高跟回旋踢】释放3发半径260爆发，造成 50% 主招10秒草必暴伤；降攻 30%。",
+            "充能：120秒基础充能，【击退命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "火、冰、毒、飞行、虫承伤 +35%",
+            "禁止学习【地雷】【炮台】招式"
+          ],
+          "five": [
+            "命中被击退敌人必暴",
+            "位移使180内敌人降攻 25%（2秒）"
+          ],
+          "eight": [
+            "移速 +20%",
+            "近战命中后 3 秒内暴击伤害提至 1.85倍"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +25%, knockback +50%; Immune to attack debuffs; Immune to terrain slow & hazard traps; Immune to ground slow traps"
+          ],
+          "active": [
+            "3-shot 260px nova for 50% Grass crit dmg; -30% foe atk.",
+            "Charge: 120s base; [Knockback hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Fire/Ice/Poison/Flying/Bug damage taken +35%",
+            "Bans Mine & Turret moves"
+          ],
+          "five": [
+            "Guaranteed crit vs knocked-back foes",
+            "Dash lowers enemy attack 25% in 180px (2s)"
+          ],
+          "eight": [
+            "Speed +20%",
+            "Melee hits raise crit damage to 1.85× for 3s"
+          ]
+        }
       }
     },
     {
@@ -2229,6 +3111,54 @@
           "five": "- **白盾保鲜与战后疗养 (Overheal Clinic)**：\n  - 溢出治疗量的 **60%** 转化为持久白盾 (`overhealShield: 0.6`，严格受 40% 总盾上限限制)；\n  - 每次波次胜利结算时，存活参战单位自动回复 **25% 已损失局内生命值** (`endHeal: 0.25`)。",
           "eight": "- **岛屿医保分红基金 (💰 Triage Medical Fund)**：\n  - 开启阿罗拉战后诊所账单机制：战后银行利息计算除数小幅优化（每持有 **9G 即可产出 1G**，且利息上限由 5G 放宽至 **6G**），同时进入战斗波次若满血保持超过 10 秒可微弱减少刷新/养护压力。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "光环冷却 -20%、半径 +25%",
+            "属性提升冷却 -20%",
+            "自然回复速率 +35%"
+          ],
+          "active": [
+            "【花环疗愈圣泉】展开全队战术守护；清除敌弹、全队 30% 白盾、全队回 25% 已损生命、5秒敏捷 +25%。",
+            "充能：120秒基础充能，【队伍治疗(每5%最大生命)】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物攻 -15%、特攻 -15%",
+            "毒、钢承伤 +45%"
+          ],
+          "five": [
+            "战后存活全员回复 25% 已损生命",
+            "溢出治疗的 60% 转为白盾（共享3%/秒速率）"
+          ],
+          "eight": [
+            "银行利息放宽至每 9G 产 1G，利息上限 +1G",
+            "战斗中全队连续 10 秒保持满血，下次进店 +1 次免费刷新"
+          ]
+        },
+        "en": {
+          "base": [
+            "Aura: CD -20%, radius +25%",
+            "Buff: CD -20%",
+            "Natural regen rate +35%"
+          ],
+          "active": [
+            "Activates team tactical ward; clears shots, 30% team shield, heals 25% missing HP, 5s Agi +25%.",
+            "Charge: 120s base; [Team heals (per 5% MaxHP)] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Attack -15%, Sp. Atk -15%",
+            "Poison/Steel damage taken +45%"
+          ],
+          "five": [
+            "Post-battle: survivors heal 25% missing HP",
+            "60% of overhealing converts to white shield"
+          ],
+          "eight": [
+            "Bank interest every 9G, cap +1G",
+            "Keep full team at 100% HP for 10s to earn +1 free shop refresh"
+          ]
+        }
       }
     },
     {
@@ -2332,6 +3262,50 @@
           "cost": "- **孤球传接不善法术 (Team Ball Focus)**：\n  - 全队特殊攻击 (`spa`) 降低 **20%** (`stats.spa: -0.2`)；\n  - 受到【飞行】【超能】【妖精】伤害提升 **40%**。",
           "five": "- **中场树果补给线 (Halftime Berry Pass)**：\n  - 击杀敌人有 **10% 概率掉落能量椰果**（回 8% 已损血 + 1 PP + 3 秒移速加成，复用 `fruitChance`）；\n  - 出战队员的综合伤害提升 **+15%** (`allyDamage: 1.15`)。",
           "eight": "- **明星四分卫加农传球 (Star Quarterback)**：\n  - 回旋镖折返阶段的伤害额外放大至 **1.4 倍** (`returnDamage: 1.4`)；全队暴击倍率提高至 **1.85×**。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "回旋伤害 +25%；回旋折返命中必暴；回旋折返拉回非BOSS敌人；回旋折返伤害 +0%、半径 +50%"
+          ],
+          "active": [
+            "【橄榄树果必杀连传】全队齐掷穿透回旋，共造成 60% 主招10秒格斗伤；定身 1.5 秒、减速 50%、额外产 2 份补给果。",
+            "充能：120秒基础充能，【回旋折返命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "特攻 -20%",
+            "飞行、超能、妖精承伤 +40%"
+          ],
+          "five": [
+            "队员伤害 +15%",
+            "击杀 10% 概率产补给果（战后结算回8%已损血+1PP，每战上限4）"
+          ],
+          "eight": [
+            "回旋折返伤害 -60%、半径 +50%",
+            "暴击伤害提至 1.85倍"
+          ]
+        },
+        "en": {
+          "base": [
+            "Boomerang: damage +25%; Boomerang return hits crit; Boomerang return pulls non-bosses; Boomerang return dmg +0%, radius +50%"
+          ],
+          "active": [
+            "All allies throw piercing boomerangs sharing 60% Fighting dmg; 1.5s stun, 50% slow, +2 bonus fruits.",
+            "Charge: 120s base; [Boomerang return hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Sp. Atk -20%",
+            "Flying/Psychic/Fairy damage taken +40%"
+          ],
+          "five": [
+            "Ally damage +15%",
+            "10% kill chance for fruit (post-battle +8% missing HP & 1 PP, max 4)"
+          ],
+          "eight": [
+            "Boomerang return dmg -60%, radius +50%",
+            "Crit damage increased to 1.85×"
+          ]
         }
       }
     },
@@ -2439,6 +3413,52 @@
           "cost": "- **胆小撤退反应与怕电飞岩 (Emergency Panic)**：\n  - 受到【电】【飞行】【岩石】属性伤害提升 **40%** (`incomingTypes: { electric: 1.4, flying: 1.4, rock: 1.4 }`)；\n  - 当血量低于 40% 时全队远程类技能冷却延长 20%。",
           "five": "- **危急逃离战术撤退 (Emergency Exit Warp)**：\n  - 遭受致死打击时每场触发 **1 次紧急隐退免死救援**，保留存活并进入 **1.5 秒完全无敌** (`emergencyWarp: 1.5`)；\n  - 当自身生命跌破 40% 瞬间移速飙升 **+30%** 方便脱离包围 (`rageSpeed: 0.3`)。",
           "eight": "- **具甲硬壳护身刃 (Armored Liquidation)**：\n  - 物理防御提升 **+25%**；每次【近战 (`melee`)】命中敌人即时获取 **5% MaxHP 护体白盾** (`meleeShieldGain: 0.05`，上限 40%)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +25%、半径 +20%",
+            "首次命中生命 >80% 敌人必暴"
+          ],
+          "active": [
+            "【虫水乱舞水裂斩】半径260强力斩击，造成 55% 主招10秒虫/水必暴伤；定身 1.5 秒、破甲 35%。",
+            "充能：120秒基础充能，【近战暴击】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "电、飞行、岩石承伤 +40%",
+            "生命 <40% 时远程招式冷却 +20%"
+          ],
+          "five": [
+            "每战每名队员1次致死保命并无敌 1.5 秒",
+            "生命低于 40% 时移速 +30%"
+          ],
+          "eight": [
+            "物防 +25%",
+            "近战命中获 5% 最大生命白盾（每次施法/0.5秒一次）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +25%, radius +20%",
+            "First hit on foes >80% HP crits"
+          ],
+          "active": [
+            "260px melee strike for 55% Bug/Water crit dmg; 1.5s stun, -35% def.",
+            "Charge: 120s base; [Melee crits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Electric/Flying/Rock damage taken +40%",
+            "Ranged move CD +20% below 40% HP"
+          ],
+          "five": [
+            "Once/battle/ally: survive lethal with 1.5s invuln",
+            "Speed +30% below 40% HP"
+          ],
+          "eight": [
+            "Defense +25%",
+            "Melee hits grant 5% Max HP shield (once/cast, 0.5s CD)"
+          ]
         }
       }
     },
@@ -2556,6 +3576,56 @@
           "five": "- **聚沙成金堡垒白盾 (💰 Sand Gold Fortress)**：\n  - 启用金币白盾转换 (`bankShield: true`)：开战持有金币 `>= 150G` 时开局赋予高额白盾（封顶 **40% MaxHP**）；\n  - 启用聚沙收税 (`bankDamage: 0.015`)：每保有 20G 提供 **+1.5% 伤害增幅**（封顶 +30%），每累计 20 击杀战后额外颁发 **+1G**（**单场严格封顶 +2G**）。",
           "eight": "- **诅咒沙漏吸魂 (Curse Drain Sandstorm)**：\n  - 在自身周围持续扩散沙暴压制效果 (`pressure: 0.3`)，流沙命中带异常敌人时进一步降低目标攻击 25%。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "免疫地面属性伤害",
+            "站立超过 1 秒时双防 +30%",
+            "受水伤减免至0.5倍并排队回复 2% 最大生命"
+          ],
+          "active": [
+            "【集沙吞噬流沙地狱】展开 3 秒半径300领域，持续造成共 45% 主招10秒地面/幽灵伤；减速 60%、全队回 15% 最大生命。",
+            "充能：120秒基础充能，【护盾/水幕/免疫吸收(每5%最大生命)】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -25%",
+            "冰、幽灵、恶、草承伤 +35%",
+            "移动期间暴击率 -15%"
+          ],
+          "five": [
+            "开战金币 ≥60G 时全队获等额白盾（上限 40% 最大生命）",
+            "每持20G伤害 +1.5%（上限 +30%）；每20杀战后 +1G（单场上限2G）"
+          ],
+          "eight": [
+            "队长250半径内敌人攻击频率降低 30%",
+            "队长250半径内敌人攻击降低 20%"
+          ]
+        },
+        "en": {
+          "base": [
+            "Immune to Ground damage",
+            "Defense & Sp. Def +30% after standing 1s",
+            "Reduces Water damage taken and queues 2% Max HP heal"
+          ],
+          "active": [
+            "3s field (r=300) dealing 45% Ground/Ghost dmg total; 60% slow, heals team 15% HP.",
+            "Charge: 120s base; [Absorbed damage (per 5% MaxHP)] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -25%",
+            "Ice/Ghost/Dark/Grass damage taken +35%",
+            "Crit chance -15% while moving"
+          ],
+          "five": [
+            "Combat start with ≥60G grants gold-value shield (cap 40% HP)",
+            "+1.5% dmg/20G (max +30%); +1G/20 kills (max 2G)"
+          ],
+          "eight": [
+            "Foes within 250px attack 30% slower",
+            "Enemies within 250px deal -20% damage"
+          ]
+        }
       }
     },
     {
@@ -2659,6 +3729,54 @@
           "cost": "- **无主动直攻之海参 (Passive Sea Cucumber)**：\n  - 极度偏重挨打反防：全队常规物理攻击与特殊攻击同时降低 **20%**；\n  - 禁止学习进攻类【近战 (`melee`)】与【能量柱 (`beam`)】招式 (`ban: ['melee', 'beam']`)；受到【电】【草】伤害提升 **40%**。",
           "five": "- **海参韧性迟滞抗痛 (Delayed Pain Absorption)**：\n  - 受到的全部伤害中 **40%** 转化为 4 秒平滑扣除的延迟流血池 (`delayedDamage: 0.4`)；\n  - 当体内存在蓄积疼痛值时，全队双防提升 **+30%** (`painDefense: 0.3`)。",
           "eight": "- **终极反吐爆裂 (Final Innards Explosion)**：\n  - 每战首次遭到致命一击时保命保留存活并立刻向全屏引爆超高额【水属性】复仇新星 (`deathNova: true` + `deathHeal: 0.3`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "生命 +35%",
+            "受接触/近战伤害反击 80% 水物理伤害"
+          ],
+          "active": [
+            "【内在物蓄积全爆发】清空全队痛觉池引爆全屏真伤（痛觉总量上限100% + 25%），30%痛觉转治疗；定身 1.5 秒。",
+            "充能：120秒基础充能，【痛觉池扣血】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物攻 -20%、特攻 -20%",
+            "禁止学习【近战】【能量柱】招式",
+            "电、草承伤 +40%"
+          ],
+          "five": [
+            "所受伤害的 40% 转入4秒痛觉池均匀扣除",
+            "痛觉池非空期间双防 +30%"
+          ],
+          "eight": [
+            "每战1次致死保命并引发全屏爆发（30%伤，1秒定身）",
+            "每战每名队员1次致死保命，回复 30% 最大生命并无敌 1.5 秒"
+          ]
+        },
+        "en": {
+          "base": [
+            "Max HP +35%",
+            "Reflects 80% of contact damage as Water"
+          ],
+          "active": [
+            "Purges team pain pools for full-screen true blast (pool + 25%) and heals 30% of pool; 1.5s stun.",
+            "Charge: 120s base; [Pain-pool ticks] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Attack -20%, Sp. Atk -20%",
+            "Bans Melee & Beam moves",
+            "Electric/Grass damage taken +40%"
+          ],
+          "five": [
+            "40% of damage taken defers into 4s pain pool",
+            "Defense & Sp. Def +30% while pain pool active"
+          ],
+          "eight": [
+            "Once/battle: survive lethal with 30% full-screen blast",
+            "Once/battle/ally: survive lethal at 30% HP (1.5s invuln)"
+          ]
         }
       }
     },
@@ -2764,6 +3882,52 @@
           "cost": "- **拘束面具与无道具槽位 (Restraint Mask)**：\n  - 全队最大生命值降低 **15%** (`stats.hp: -0.15`)；\n  - 队长被系统存储碟占用配饰槽，无法从携带道具享受被动加成 (`noItems: true`)。",
           "five": "- **全能战术记忆碟 (Tactical Discs)**：\n  - 全队【近战 (`melee`)】与【突进 (`dash`)】招式伤害提升 **+20%**，技能冷却时间缩短 **10%**。",
           "eight": "- **破除面具全面解放 (Full Restraint Release)**：\n  - 上述 `download` 自适应物攻/特攻增幅升格至 **+40%** (`download: 0.4`)，并附带全队 20% 通用穿甲 (`psychicPenetration: 0.2`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "非本系招式伤害 +25%",
+            "击杀按目标双防自适应提升 25% 物攻或特攻"
+          ],
+          "active": [
+            "【多属性存储突袭】突进600距离并引发半径250震荡，共造成 60% 主招10秒一般伤；定身 2 秒、破甲 35%。",
+            "充能：120秒基础充能，【施放不同属性招式】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -15%",
+            "队长无法使用携带道具"
+          ],
+          "five": [
+            "近战伤害 +20%、冷却 -10%",
+            "位移伤害 +20%、冷却 -10%"
+          ],
+          "eight": [
+            "主体攻击无视敌方 20% 双防",
+            "击杀按目标双防自适应提升 15% 物攻或特攻"
+          ]
+        },
+        "en": {
+          "base": [
+            "Non-STAB move damage +25%",
+            "Kills adaptively boost Attack or Sp. Atk by +25%"
+          ],
+          "active": [
+            "Dashes 600px into a 250px blast for 60% Normal dmg total; 2s stun, -35% def.",
+            "Charge: 120s base; [Distinct move types cast] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -15%",
+            "Captain cannot use held items"
+          ],
+          "five": [
+            "Melee: damage +20%, CD -10%",
+            "Dash: damage +20%, CD -10%"
+          ],
+          "eight": [
+            "Main attacks ignore 20% enemy defenses",
+            "Kills adaptively boost Attack or Sp. Atk by +15%"
+          ]
         }
       }
     },
@@ -2876,6 +4040,54 @@
           "five": "- **盾壳碎裂核心飙车 (Core Overdrive)**：\n  - 当自身生命值跌破 **40%** 触发核心破壳：移动速度立即飙升 **+35%** (`rageSpeed: 0.35`)；\n  - 且损失的生命越多，物攻/特攻与敏捷越高（随已损血比例最高提至 **+35%**，`missingHealthPower`）。",
           "eight": "- **双联流星降雨 (Double Meteor Barrage)**：\n  - 每次发动【陨石 (`meteor`)】招式时，额外多坠落 **+1 颗**天外陨石 (`meteorCover: true`)；\n  - 暴击伤害倍率提高至 **1.85×**。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "陨石伤害 +20%、半径 +25%",
+            "免疫地面属性伤害",
+            "生命 ≥95% 时承伤 -40%"
+          ],
+          "active": [
+            "【星核破壳大坠落】降下 8 枚半径150陨石，共造成 60% 主招10秒岩石/火伤；定身 1.5 秒。",
+            "充能：120秒基础充能，【陨石/位移命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -20%",
+            "电、冰、水、钢承伤 +40%"
+          ],
+          "five": [
+            "生命低于 40% 时移速 +35%",
+            "生命 <40% 时按已损生命提升双攻与敏捷，最高 +35%"
+          ],
+          "eight": [
+            "陨石数量 +1",
+            "暴击伤害提至 1.85倍"
+          ]
+        },
+        "en": {
+          "base": [
+            "Meteor: damage +20%, radius +25%",
+            "Immune to Ground damage",
+            "Take -40% damage at ≥95% HP"
+          ],
+          "active": [
+            "Drops 8 meteors (r=150) sharing 60% Rock/Fire dmg; 1.5s stun.",
+            "Charge: 120s base; [Meteor/Dash hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -20%",
+            "Electric/Ice/Water/Steel damage taken +40%"
+          ],
+          "five": [
+            "Speed +35% below 40% HP",
+            "Below 40% HP: up to +35% Attack/Sp.Atk/Agility by missing HP%"
+          ],
+          "eight": [
+            "Meteor count +1",
+            "Crit damage increased to 1.85×"
+          ]
+        }
       }
     },
     {
@@ -2982,6 +4194,49 @@
           "cost": "- **嗜睡极低机动力 (Drowsy Slothfulness)**：\n  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)；\n  - 受到【格斗属性】伤害提升 **60%** (`incomingTypes.fighting: 1.6`)。",
           "five": "- **安眠枕头战后回神 (Slumber Post-Battle Heal)**：\n  - 每个战斗波次胜利结束时，存活队员与队长自动进入睡眠恢复，回复 **30% 已损失局内生命值** (`endHeal: 0.3`)。",
           "eight": "- **佛系躺平利息账户 (💰 Comatose Lazy Interest)**：\n  - 开启省心挂机理财：战后银行利息结算除数放宽至 **每 8G 产出 1G 利息**（替代每 10G 计息，利息上限由 5G 放宽至 **6G**），同时降低全队受伤 10%。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +20%、击退 +40%；免疫敌方降攻；减速与减攻持续时间 -50%；免疫地形减速与伤害陷阱；免疫地面减速陷阱"
+          ],
+          "active": [
+            "【梦话大闹木枕横扫】半径300爆发，造成 50% 主招10秒一般伤；定身 2 秒、全队回 15% 最大生命。",
+            "充能：120秒基础充能，【近战命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -20%",
+            "格斗承伤 +60%"
+          ],
+          "five": [
+            "战后存活全员回复 30% 已损生命"
+          ],
+          "eight": [
+            "全伤害承伤 -10%",
+            "银行利息放宽至每 8G 产 1G，利息上限 +1G"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +20%, knockback +40%; Immune to attack debuffs; Slow & attack-debuff duration -50%; Immune to terrain slow & hazard traps",
+            "Immune to ground slow traps"
+          ],
+          "active": [
+            "300px nova for 50% Normal dmg; 2s stun, heals team 15% HP.",
+            "Charge: 120s base; [Melee hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -20%",
+            "Fighting damage taken +60%"
+          ],
+          "five": [
+            "Post-battle: survivors heal 30% missing HP"
+          ],
+          "eight": [
+            "All damage taken -10%",
+            "Bank interest every 8G, cap +1G"
+          ]
         }
       }
     },
@@ -3102,6 +4357,50 @@
           "five": "- **炙烤催化与重击护壳 (Burn Boost & Shield)**：\n  - 【火属性】招式命中处于灼烧状态敌人时最终伤害提升 **+25%** (`burnDamage: 1.25`)；\n  - 承受单次大额伤害（>=20% MaxHP）自动获得 **15% MaxHP 白盾** (`heavyShield: 0.15`，上限 40%)。",
           "eight": "- **高温火网连炸 (Infernal Nova Shell)**：\n  - 全队【绽放 (`nova`)】单次发出弹幕数 **+2 发**，且白盾彻底碎裂瞬间向四周喷出爆破火花（复用 `shieldShards` 变体）。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "物防 +35%；冲击波伤害 +20%；接触攻击者附加 3 层灼伤；受接触/近战伤害反击 35% 火物理伤害"
+          ],
+          "active": [
+            "【甲壳地雷大核爆】半径300爆发，造成 50% 主招10秒火/龙伤；清除敌弹、定身 1.5 秒、3层灼伤、全队 35% 白盾。",
+            "充能：120秒基础充能，【队伍受伤】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -25%",
+            "地面、岩石、龙承伤 +35%"
+          ],
+          "five": [
+            "火属性对灼伤敌人伤害 +25%",
+            "单次受伤 >20% 最大生命时获 15% 白盾（5秒）"
+          ],
+          "eight": [
+            "冲击波数量 +2",
+            "白盾破裂喷射 8 枚火碎片（2秒冷却）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Defense +35%; Nova: damage +20%; Contact attackers receive +3 Burn; Reflects 35% of contact damage as Fire"
+          ],
+          "active": [
+            "300px nova for 50% Fire/Dragon dmg; clears shots, 1.5s stun, +3 Burn, 35% team shield.",
+            "Charge: 120s base; [Team hits taken] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -25%",
+            "Ground/Rock/Dragon damage taken +35%"
+          ],
+          "five": [
+            "Fire damage vs burned foes +25%",
+            "Heavy hit (>20% HP) grants 15% shield (5s)"
+          ],
+          "eight": [
+            "Nova: count +2",
+            "Shield break fires 8 Fire shards (2s CD)"
+          ]
+        }
       }
     },
     {
@@ -3217,6 +4516,58 @@
           "five": "- **尖刺避雷触电反击 (Iron Barbs Thunder)**：\n  - 受到近战接触伤害时立刻放出电弧反击近身 3 名目标 (`contactLightning: true`)，同时缩短【突进 (`dash`)】冷却 20%。",
           "eight": "- **电气发动机加速 (Electric Engine Rush)**：\n  - 每触发一次电击命中或暴击，敏捷与冷却速率持续叠升（至多提升 **+30%**，`electricEngine`）且暴击有 30% 概率返还 1 PP (`critPP: 0.3`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "免疫电属性伤害",
+            "电属性招式暴击率 +20%",
+            "免疫电伤后全队 4 秒物攻与敏捷 +25%"
+          ],
+          "active": [
+            "【麻麻刺刺高速电球】突进650距离并引发半径160震荡，共造成 55% 主招10秒电/钢伤；定身 1.5 秒。",
+            "充能：120秒基础充能，【电系招式命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -15%",
+            "地面承伤 +80%",
+            "火、格斗承伤 +35%"
+          ],
+          "five": [
+            "位移冷却 -20%",
+            "受接触攻击每1秒电击220内至多 3 敌（共30%主招伤）"
+          ],
+          "eight": [
+            "暴击 30% 概率返还 1 点 PP（0.5秒冷却）",
+            "电系或暴击命中叠层，全队每层敏捷 +3%（上限 +30%）",
+            "电系引擎叠层同步加速全招式冷却（上限 +30%）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Immune to Electric damage",
+            "Electric move crit +20%",
+            "Electric absorb grants team +25% Attack & Agility (4s)"
+          ],
+          "active": [
+            "Dashes 650px into a 160px blast for 55% Electric/Steel dmg total; 1.5s stun.",
+            "Charge: 120s base; [Electric move hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -15%",
+            "Ground damage taken +80%",
+            "Fire/Fighting damage taken +35%"
+          ],
+          "five": [
+            "Dash: CD -20%",
+            "Contact hits zap up to 3 foes within 220px (30% primary, 1s CD)"
+          ],
+          "eight": [
+            "Crits have 30% chance to restore 1 PP (0.5s CD)",
+            "Electric/crit hits stack +3% team Agility (max +30%)",
+            "Engine stacks also boost cooldown speed (max +30%)"
+          ]
+        }
       }
     },
     {
@@ -3322,6 +4673,52 @@
           "cost": "- **画皮脱落破防损耗 (Busted Disguise Toll)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【幽灵属性】与【钢属性】伤害提升 **40%** (`incomingTypes: { ghost: 1.4, steel: 1.4 }`)。",
           "five": "- **画皮受创狂怒加速 (Busted Rage Rush)**：\n  - 每次受伤（或画皮被触动格挡触发反震）后的 3 秒内，攻击提升 **+25%** (`hurtAttack: 0.25`)、移动速度提升 **+25%** (`hurtSpeed: 0.25`)。",
           "eight": "- **黑影暗爪鬼火回响 (Shadow Claw Echo)**：\n  - 全队【近战 (`melee`)】命中敌人后于 0.15 秒追加 20% 伤害暗影利爪二段斩 (`meleeEcho: 0.2`)；暴击倍率提至 **1.9×**。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +20%；每 3 秒自动格挡 1 次正面近战接触攻击；每战每名队员1次致死锁血并无敌 2 秒；首次命中生命 >80% 敌人必暴"
+          ],
+          "active": [
+            "【亲密无间大乱揍】瞬移至高血目标旁引爆半径260冲击，造成 50% 主招10秒幽灵/妖精必暴伤；定身 1.5 秒。",
+            "充能：120秒基础充能，【近战暴击】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -20%",
+            "幽灵、钢承伤 +40%"
+          ],
+          "five": [
+            "受伤后 3 秒内物攻 +25%",
+            "受伤后 3 秒内移速 +25%",
+            "正面格挡成功触发 3 秒受伤增攻状态"
+          ],
+          "eight": [
+            "暴击伤害提至 1.9倍",
+            "近战命中后追加 20% 实际伤害回响"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +20%; Parries 1 frontal contact hit every 3s; Once/battle/ally: survive lethal with 2s invuln; First hit on foes >80% HP crits"
+          ],
+          "active": [
+            "Warps to highest-HP foe and blasts 260px for 50% Ghost/Fairy crit dmg; 1.5s stun.",
+            "Charge: 120s base; [Melee crits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -20%",
+            "Ghost/Steel damage taken +40%"
+          ],
+          "five": [
+            "Attack +25% for 3s after hit taken",
+            "Speed +25% for 3s after hit taken",
+            "Successful front parry triggers 3s hurt-attack boost"
+          ],
+          "eight": [
+            "Crit damage increased to 1.9×",
+            "Melee triggers 20% echo"
+          ]
         }
       }
     },
@@ -3430,6 +4827,54 @@
           "five": "- **精神牙壁垒粉碎者 (Barrier Shatter Fangs)**：\n  - 攻击带有白盾的目标时额外撕碎防御减免 (`ignoreDefenseBuffs: true`)；白盾被击碎时在原处引发 180 范围冲击波。",
           "eight": "- **水色狂热暴咬 (Tropical Frenzy)**：\n  - 雨天作战时全队输出提高 **+20%** (`rainDamage: 1.2`)；【近战 (`melee`)】暴击率提升 **+20%**。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +20%",
+            "队长160半径光墙减速敌弹 35%，50内清除",
+            "主体攻击无视敌方 25% 双防"
+          ],
+          "active": [
+            "【精神之牙破壁强袭】半径280爆发，造成 50% 主招10秒水/超能伤；反射全屏敌弹、碎盾、定身 1.5 秒。",
+            "充能：120秒基础充能，【拦截弹幕】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物防 -20%",
+            "草、电、虫、恶、幽灵承伤 +35%"
+          ],
+          "five": [
+            "攻击带盾敌人额外 +10% 穿甲",
+            "击碎护盾引发180半径地震（10%主招10秒地伤，1秒冷却）"
+          ],
+          "eight": [
+            "近战暴击率 +20%",
+            "雨天伤害 +20%"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +20%",
+            "160px barrier slows enemy shots 35%, erases <50px",
+            "Main attacks ignore 25% enemy defenses"
+          ],
+          "active": [
+            "280px nova for 50% Water/Psychic dmg; reflects shots, breaks shields, 1.5s stun.",
+            "Charge: 120s base; [Shot intercepts] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Defense -20%",
+            "Grass/Electric/Bug/Dark/Ghost damage taken +35%"
+          ],
+          "five": [
+            "+10% extra armor pen vs shielded foes",
+            "Breaking shields triggers 180px quake (10% Ground, 1s CD)"
+          ],
+          "eight": [
+            "Melee: crit +20%",
+            "Rain damage +20%"
+          ]
+        }
       }
     },
     {
@@ -3537,6 +4982,54 @@
           "five": "- **回响巨声与果树老友 (Sonic Echo & Elder Berries)**：\n  - 全队主体直击命中后 0.12 秒于目标处触发 **20% 伤害声波回响** (`echo: 0.2`)；\n  - 击杀有 **8% 概率掉落长老蜜果**（恢复 8% 已损血 + 1 PP，帮助反复触发半血怒火）。",
           "eight": "- **慈悲暴怒疾走 (Berserk Sprint)**：\n  - 生命跌破 40% 进入怒火冲天状态时，立刻抵消老迈缓慢，移速飙升 **+35%** (`rageSpeed: 0.35`) 且全伤害暴击倍率提升至 **1.85×**。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "扇形伤害 +20%",
+            "冲击波伤害 +20%",
+            "按已损生命提升双攻与敏捷，最高 +35%"
+          ],
+          "active": [
+            "【长老龙啸毁灭声波】全屏爆发，造成 50% 主招10秒龙伤；清除敌弹、定身 2 秒、降攻 30%。",
+            "充能：120秒基础充能，【队长受重击(≥20%最大生命)】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -20%",
+            "格斗、冰、龙、妖精承伤 +35%"
+          ],
+          "five": [
+            "招式命中后追加 20% 实际伤害回响",
+            "击杀 8% 概率产补给果（战后结算回8%已损血+1PP，每战上限4）"
+          ],
+          "eight": [
+            "生命低于 40% 时移速 +35%",
+            "暴击伤害提至 1.85倍"
+          ]
+        },
+        "en": {
+          "base": [
+            "Cone: damage +20%",
+            "Nova: damage +20%",
+            "up to +35% Attack/Sp.Atk/Agility by missing HP%"
+          ],
+          "active": [
+            "full-screen nova for 50% Dragon dmg; clears shots, 2s stun, -30% foe atk.",
+            "Charge: 120s base; [Captain heavy hits (≥20% MaxHP)] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -20%",
+            "Fighting/Ice/Dragon/Fairy damage taken +35%"
+          ],
+          "five": [
+            "Hits trigger 20% echo",
+            "8% kill chance for fruit (post-battle +8% missing HP & 1 PP, max 4)"
+          ],
+          "eight": [
+            "Speed +35% below 40% HP",
+            "Crit damage increased to 1.85×"
+          ]
+        }
       }
     },
     {
@@ -3641,6 +5134,48 @@
           "cost": "- **海底重舵极度迟钝 (Sunken Anchor Drag)**：\n  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)；\n  - 受到【火】【冰】【飞行】【幽灵】【恶】属性伤害提升 **35%**。",
           "five": "- **沉船遗物打捞权 (💰 Shipwreck Salvage Loot)**：\n  - 在**精英战斗 (`elite`)** 获胜时，额外授予 **+1 次携带道具三选一机会** (`eliteItem: 1`，直接复用现有接口！)。",
           "eight": "- **深海打捞金账本 (💰 Sunken Gold Salvage)**：\n  - 开启水手打捞结算 (`bankDamage: 0.015`)：每累计 20 击杀战后额外收获 **+1 金币**（**单场严格封顶 +2G**），每保有 20G 存款提升 **+1.5% 伤害**（封顶 +30%）。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +25%、击退 +50%、扇角 126.05°",
+            "命中被击退敌人必暴"
+          ],
+          "active": [
+            "【深海掷锚锚定绞杀】锁定高血目标重砸半径280区域，造成 60% 主招10秒钢/草伤；定身 2 秒。",
+            "充能：120秒基础充能，【近战命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -20%",
+            "火、冰、飞行、幽灵、恶承伤 +35%"
+          ],
+          "five": [
+            "精英战胜利后额外获得 1 次携带道具三选一"
+          ],
+          "eight": [
+            "每持20G伤害 +1.5%（上限 +30%）；每20杀战后 +1G（单场上限2G）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +25%, knockback +50%, arc 126.05°",
+            "Guaranteed crit vs knocked-back foes"
+          ],
+          "active": [
+            "Slams highest-HP foe (r=280) for 60% Steel/Grass dmg; 2s stun.",
+            "Charge: 120s base; [Melee hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -20%",
+            "Fire/Ice/Flying/Ghost/Dark damage taken +35%"
+          ],
+          "five": [
+            "+1 extra 3-pick held item choice after Elite victory"
+          ],
+          "eight": [
+            "+1.5% dmg/20G (max +30%); +1G/20 kills (max 2G)"
+          ]
         }
       }
     },
@@ -3756,6 +5291,50 @@
           "five": "- **音鳞护手白盾 (Scale Guard Shield)**：\n  - 【近战 (`melee`)】攻击命中敌人时立刻生成 **5% MaxHP 鳞甲白盾**持续 4 秒 (`meleeShieldGain: 0.05`，上限 40%)；\n  - 全队物理攻击与特殊攻击提升 **+10%**。",
           "eight": "- **宗师龙舞破防 (Grand Dragon Mastery)**：\n  - 全队所有招式攻击暴击伤害提至 **1.85×**，主体攻击自带 **20% 通用防抗穿透** (`psychicPenetration: 0.2`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +20%；冲击波伤害 +20%；远程承伤 -25%；免疫声波伤害"
+          ],
+          "active": [
+            "【炽魂烈焰爆】释放24发半径300爆发，造成 40% 主招10秒龙/格斗伤；定身 1.5 秒、5秒双攻 +25%/移速 +30%/冷却加速 +25%。",
+            "充能：120秒基础充能，【招式命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "妖精承伤 +75%",
+            "冰、飞行、超能、龙承伤 +25%"
+          ],
+          "five": [
+            "物攻 +10%、特攻 +10%",
+            "近战命中获 5% 最大生命白盾（每次施法/0.5秒一次）"
+          ],
+          "eight": [
+            "暴击伤害提至 1.85倍",
+            "主体攻击无视敌方 20% 双防"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +20%; Nova: damage +20%; Ranged damage taken -25%; Immune to sound damage"
+          ],
+          "active": [
+            "24-shot 300px nova for 40% Dragon/Fighting dmg; 1.5s stun, 5s Atk/SpA +25%/Spd +30%/Haste +25%.",
+            "Charge: 120s base; [Move hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Fairy damage taken +75%",
+            "Ice/Flying/Psychic/Dragon damage taken +25%"
+          ],
+          "five": [
+            "Attack +10%, Sp. Atk +10%",
+            "Melee hits grant 5% Max HP shield (once/cast, 0.5s CD)"
+          ],
+          "eight": [
+            "Crit damage increased to 1.85×",
+            "Main attacks ignore 20% enemy defenses"
+          ]
+        }
       }
     },
     {
@@ -3867,6 +5446,50 @@
           "five": "- **电驰加速发动机 (Surge Engine)**：\n  - 每次造成电系伤害或触发电系连锁，持续提高全队敏捷直至 **+30%** (`electricEngine: 0.03`)；队友 220 范围内产生电击联结电弧 (`magnetLinks: true`)。",
           "eight": "- **过载雷神暴伤 (Volt Overdrive)**：\n  - 全队暴击倍率提高至 **1.9×** (`critMultiplier: 1.9`)，触发暴击时有 **30% 概率返还 1 点 PP** (`critPP: 0.3`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "移速 +20%；连锁数量 +1、伤害 +20%；位移冷却 -15%；电属性招式暴击率 +25%"
+          ],
+          "active": [
+            "【巨人卫士·阿罗拉雷鸣】全屏冲击造成 35% 主招10秒电伤 + 35%当前生命；碎盾、定身 2 秒。",
+            "充能：120秒基础充能，【电系招式命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物防 -20%、生命 -15%",
+            "地面、毒承伤 +40%"
+          ],
+          "five": [
+            "电系命中叠层，全队每层敏捷 +3%（上限 +30%）",
+            "电系引擎叠层时每秒电击220内最近敌人（3%主招10秒电伤）"
+          ],
+          "eight": [
+            "暴击伤害提至 1.9倍",
+            "暴击 30% 概率返还 1 点 PP（0.5秒冷却）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Speed +20%; Chain: count +1, damage +20%; Dash: CD -15%; Electric move crit +25%"
+          ],
+          "active": [
+            "Full-screen blast for 35% Electric dmg + 35% current HP; breaks shields, 2s stun.",
+            "Charge: 120s base; [Electric move hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Defense -20%, Max HP -15%",
+            "Ground/Poison damage taken +40%"
+          ],
+          "five": [
+            "Electric hits stack +3% team Agility (max +30%)",
+            "While Engine active, zaps nearest foe (220px) every 1s for 3% Electric"
+          ],
+          "eight": [
+            "Crit damage increased to 1.9×",
+            "Crits have 30% chance to restore 1 PP (0.5s CD)"
+          ]
+        }
       }
     },
     {
@@ -3969,6 +5592,58 @@
           "cost": "- **神秘好奇代价 (Curious Fragility)**：\n  - 全队物理防御降低 **20%** (`stats.defense: -0.2`)，受到近战接触物理攻击最终伤害增加 **20%** (`physicalIncoming: 1.2`)；\n  - 受到【毒】【钢】【幽灵】伤害提升 **35%**。",
           "five": "- **光子护身与连射暴击 (Prism Beam Ramp)**：\n  - 发射【能量柱 (`beam`)】时双防临时上升 **+25%** (`beamDefense: 0.25`)；\n  - `beam` 命中次数越多暴击率越高（最高 **+30%**，`beamCritRamp`）。",
           "eight": "- **精神护盾永动再生 (Psychic Shield Sustain)**：\n  - 全队只要带有白盾便每秒再生 **2% MaxHP 白盾** (`screenShieldRegen: 0.02`)；开局或使用辅助技同步提供白盾防护。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "能量柱伤害 +25%",
+            "队长180半径光墙减速敌弹 35%，50内清除",
+            "主体攻击无视敌方 25% 双防"
+          ],
+          "active": [
+            "【灵蝶精神狂啸光柱】射出5道贯穿光柱，共造成 50% 主招10秒超能必暴伤；清除敌弹、定身 1.5 秒。",
+            "充能：120秒基础充能，【能量柱命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物防 -20%",
+            "物理接触承伤 +20%",
+            "毒、钢、幽灵承伤 +35%"
+          ],
+          "five": [
+            "施放能量柱 0.4 秒内双防 +25%",
+            "能量柱每次命中暴击率 +1.5%（上限 +30%）"
+          ],
+          "eight": [
+            "有白盾时每秒再生 2% 最大生命白盾",
+            "开战授予全队 15% 最大生命白盾",
+            "施放属性提升获 3% 最大生命白盾（5秒）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Beam: damage +25%",
+            "180px barrier slows enemy shots 35%, erases <50px",
+            "Main attacks ignore 25% enemy defenses"
+          ],
+          "active": [
+            "Fires 5 piercing beams for 50% Psychic crit dmg total; clears shots, 1.5s stun.",
+            "Charge: 120s base; [Beam hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Defense -20%",
+            "Physical contact damage taken +20%",
+            "Poison/Steel/Ghost damage taken +35%"
+          ],
+          "five": [
+            "Defense & Sp. Def +25% for 0.4s on Beam",
+            "Beam hits stack +1.5% crit (max +30%)"
+          ],
+          "eight": [
+            "Active shield regens 2% Max HP/s",
+            "Starts combat with 15% Max HP team shield",
+            "Buff casts grant 3% Max HP shield (5s)"
+          ]
         }
       }
     },
@@ -4077,6 +5752,50 @@
           "cost": "- **四倍弱毒与牛脾气慢速 (Quadruple Poison Flaw)**：\n  - 受到【毒属性】伤害巨幅提升 **75%** (`incomingTypes.poison: 1.75`)；\n  - 全队移动速度降低 **15%** (`stats.spd: -0.15`)。",
           "five": "- **神木茂盛落果 (Bountiful Grassy Fruit)**：\n  - 击杀敌人有 **10% 概率掉落生命果实**（每 2 秒至多 1 枚，回 **8% 已损血 + 1 PP + 3 秒移速**，`fruitChance: 0.1`），同时溢出治疗的 50% 转白盾 (`overhealShield: 0.5`)。",
           "eight": "- **茂林重甲壁垒 (Forest Bastion)**：\n  - 物理防御提升 **+30%** (`stats.defense: 0.3`)；每次【近战 (`melee`)】命中生成 **5% MaxHP 护盾** (`meleeShieldGain: 0.05`，上限 40%)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +25%、击退 +35%；自然回复速率 +40%；近战造成伤害的 5% 转为吸血；地面承伤 -50%"
+          ],
+          "active": [
+            "【神木巨人木槌轰击】全屏冲击造成 40% 主招10秒草/妖精伤 + 30%当前生命；额外产 3 份补给果。",
+            "充能：120秒基础充能，【近战命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -15%",
+            "毒承伤 +75%"
+          ],
+          "five": [
+            "击杀 10% 概率产补给果（战后结算回8%已损血+1PP，每战上限4）",
+            "溢出治疗的 50% 转为白盾（共享3%/秒速率）"
+          ],
+          "eight": [
+            "物防 +30%",
+            "近战命中获 5% 最大生命白盾（每次施法/0.5秒一次）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +25%, knockback +35%; Natural regen rate +40%; Melee leeches 5% of damage dealt; Ground damage taken -50%"
+          ],
+          "active": [
+            "Full-screen blast for 40% Grass/Fairy dmg + 30% current HP; +3 bonus fruits.",
+            "Charge: 120s base; [Melee hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -15%",
+            "Poison damage taken +75%"
+          ],
+          "five": [
+            "10% kill chance for fruit (post-battle +8% missing HP & 1 PP, max 4)",
+            "50% of overhealing converts to white shield"
+          ],
+          "eight": [
+            "Defense +30%",
+            "Melee hits grant 5% Max HP shield (once/cast, 0.5s CD)"
+          ]
         }
       }
     },
@@ -4192,6 +5911,52 @@
           "five": "- **骤雨伴随水球护卫 (Rain Misty Orbits)**：\n  - 战斗开局自带 **12 秒大雨 (`openingWeather: 'rain'`)**；雨天期间全队【环绕 (`orbit`)】招式法球数量 **+1**、转速加快 **+20%** (`rainOrbits: true`)。",
           "eight": "- **薄雾白盾永续与战后恢复 (Misty Shield Recovery)**：\n  - 白盾存在期间每秒自我再生 **2% MaxHP 白盾** (`screenShieldRegen: 0.02`)；\n  - 战斗胜利结束时存活队员与队长恢复 **25% 已损生命** (`endHeal: 0.25`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "队长180半径水幕削减敌弹 25% 伤害；受属性克制伤害 -20%；免疫地形减速与伤害陷阱；全队最终暴击倍率封顶 1.5倍",
+            "减速与减攻与减攻与减攻与减攻与减攻持续时间 -60%"
+          ],
+          "active": [
+            "【自然圣雾涤荡怒涛】全屏冲击造成 30% 主招10秒水/妖精伤 + 30%当前生命；清除敌弹、全队 30% 白盾、全队回 18% 最大生命。",
+            "充能：120秒基础充能，【护盾/水幕/免疫吸收(每5%最大生命)】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物攻 -10%、特攻 -10%",
+            "电、草、毒承伤 +35%"
+          ],
+          "five": [
+            "雨天环绕数量 +1、转速 +20%",
+            "开战触发 12 秒雨天"
+          ],
+          "eight": [
+            "有白盾时每秒再生 2% 最大生命白盾",
+            "战后存活全员回复 25% 已损生命"
+          ]
+        },
+        "en": {
+          "base": [
+            "180px water curtain cuts enemy shot damage 25%; Super-effective damage taken -20%; Immune to terrain slow & hazard traps",
+            "Final team crit multiplier capped at 1.5×; slow/attack/burn/poison/stun/freeze debuff duration -60%"
+          ],
+          "active": [
+            "Full-screen blast for 30% Water/Fairy dmg + 30% current HP; clears shots, 30% team shield, heals team 18% HP.",
+            "Charge: 120s base; [Absorbed damage (per 5% MaxHP)] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Attack -10%, Sp. Atk -10%",
+            "Electric/Grass/Poison damage taken +35%"
+          ],
+          "five": [
+            "Rain Orbits count +1, speed +20%",
+            "Starts combat with 12s Rain"
+          ],
+          "eight": [
+            "Active shield regens 2% Max HP/s",
+            "Post-battle: survivors heal 25% missing HP"
+          ]
+        }
       }
     },
     {
@@ -4304,6 +6069,50 @@
           "five": "- **破盾神光穿甲 (Astral Penetration)**：\n  - 全队主体攻击无视敌方 **25% 物理与特殊防御** (`psychicPenetration: 0.25`)；\n  - 【突进 (`dash`)】期间获得 **0.25 秒无敌帧** (`dashInvuln: true`)。",
           "eight": "- **光轮穿梭与星辰回复 (Cosmic Sustain)**：\n  - 战斗开局全队立即获得 **25% MaxHP 星辰白盾**，白盾存续期间每秒微弱自我再生 **2% MaxHP 白盾** (`screenShieldRegen: 0.02`，上限 40%)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "位移伤害 +20%；能量柱伤害 +20%；免疫敌方降攻；满血(≥99%)时承伤 -45%"
+          ],
+          "active": [
+            "【日光狂冲与暗影月光】发射贯穿射线并引爆半径220冲击，共造成 55% 主招10秒超能/钢/幽灵伤；碎盾、定身 2 秒。",
+            "充能：120秒基础充能，【能量柱命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -10%",
+            "火、地面、恶、幽灵承伤 +35%"
+          ],
+          "five": [
+            "主体攻击无视敌方 25% 双防",
+            "施放位移获得 0.25 秒无敌"
+          ],
+          "eight": [
+            "有白盾时每秒再生 2% 最大生命白盾",
+            "开战授予全队 25% 最大生命白盾"
+          ]
+        },
+        "en": {
+          "base": [
+            "Dash: damage +20%; Beam: damage +20%; Immune to attack debuffs; -45% damage taken at full HP (≥99%)"
+          ],
+          "active": [
+            "Fires piercing beam into 220px blast for 55% Psychic/Steel/Ghost dmg total; breaks shields, 2s stun.",
+            "Charge: 120s base; [Beam hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -10%",
+            "Fire/Ground/Dark/Ghost damage taken +35%"
+          ],
+          "five": [
+            "Main attacks ignore 25% enemy defenses",
+            "Dash grants 0.25s invulnerability"
+          ],
+          "eight": [
+            "Active shield regens 2% Max HP/s",
+            "Starts combat with 25% Max HP team shield"
+          ]
+        }
       }
     },
     {
@@ -4412,6 +6221,56 @@
           "cost": "- **四倍弱地脆玻璃 (Quadruple Ground Glass)**：\n  - 全队基础物理防御降低 **25%** (`stats.defense: -0.25`)；\n  - 受到【地面属性】伤害巨幅提升 **80%** (`incomingTypes.ground: 1.8`)，【水】【草】【钢】伤害提升 **30%**。",
           "five": "- **异兽毒素催化 (Beast Poison Rate)**：\n  - 距队长 180 半径内中毒敌人的中毒扣血速度提高 **+40%** (`poisonRate: 1.4`)；\n  - 击杀叠加自身战斗攻击势能最高 **+30%** (`killAttack`)。",
           "eight": "- **高魔抗毒素环绕 (SpDef Orbit Synergy)**：\n  - 将自身特殊防御按比例转化为全队【环绕 (`orbit`)】招式伤害加成（**封顶 +40%**，复用 `spdefOrbit`）；白盾碎裂自动散射 8 枚毒弹 (`shieldShards: 8`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "特防 +35%",
+            "队长180半径毒环每0.5秒施加 1 层中毒",
+            "接触攻击者附加 2 层中毒"
+          ],
+          "active": [
+            "【深渊毒星海啸】引爆中毒敌人，造成 12% 主招10秒毒伤 + 8%当前生命；定身 1.5 秒、易伤 30%。",
+            "充能：120秒基础充能，【施加中毒】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物防 -25%",
+            "地面承伤 +80%",
+            "水、草、钢承伤 +30%"
+          ],
+          "five": [
+            "队长180半径内敌人中毒跳伤频率 +40%",
+            "自身每击杀1名敌人特攻 +1%（上限 +30%）"
+          ],
+          "eight": [
+            "基础特防转化为环绕伤害（上限 +40%）",
+            "白盾破裂喷射 8 枚毒碎片（2秒冷却）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Sp. Def +35%",
+            "180px toxic aura applies +1 Poison/0.5s",
+            "Contact attackers receive +2 Poison"
+          ],
+          "active": [
+            "Detonates poisoned foes for 12% Poison dmg + 8% current HP; 1.5s stun, +30% vuln.",
+            "Charge: 120s base; [Poison stacks applied] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Defense -25%",
+            "Ground damage taken +80%",
+            "Water/Grass/Steel damage taken +30%"
+          ],
+          "five": [
+            "Poison tick rate +40% within 180px",
+            "Own kills grant +1% Sp. Atk (max +30%)"
+          ],
+          "eight": [
+            "Base Sp. Def boosts Orbit damage (max +40%)",
+            "Shield break fires 8 Poison shards (2s CD)"
+          ]
         }
       }
     },
@@ -4522,6 +6381,56 @@
           "five": "- **异兽斩杀膨肌 (Beast Kill Muscle)**：\n  - 全队每消灭 1 名敌人，物理攻击力持续叠升（**单场封顶 +35%**，`killAttack`）；每次【近战 (`melee`)】命中生成 **5% MaxHP 护盾** (`meleeShieldGain: 0.05`，上限 40%)。",
           "eight": "- **暴肌回响连打 (Double Muscle Echo)**：\n  - 全队【近战 (`melee`)】命中后于 0.15 秒触发一次 **20% 伤害回响追击** (`meleeEcho: 0.2`)；全队物理伤害暴击率提升 +15%。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "物防 +30%",
+            "近战伤害 +25%、击退 +30%",
+            "近战造成伤害的 5% 转为吸血"
+          ],
+          "active": [
+            "【猛男全力无双连拳】半径260强力斩击，造成 60% 主招10秒虫/格斗伤；碎盾、定身 2 秒。",
+            "充能：120秒基础充能，【近战命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "特防 -25%",
+            "飞行承伤 +80%",
+            "禁止学习【能量柱】招式"
+          ],
+          "five": [
+            "全队每击杀1名敌人，全队物攻 +1%（上限 +35%）",
+            "近战命中获 5% 最大生命白盾（每次施法/0.5秒一次）"
+          ],
+          "eight": [
+            "近战命中后追加 20% 实际伤害回响",
+            "物理招式暴击率 +15%"
+          ]
+        },
+        "en": {
+          "base": [
+            "Defense +30%",
+            "Melee: damage +25%, knockback +30%",
+            "Melee leeches 5% of damage dealt"
+          ],
+          "active": [
+            "260px melee strike for 60% Bug/Fighting dmg; breaks shields, 2s stun.",
+            "Charge: 120s base; [Melee hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Sp. Def -25%",
+            "Flying damage taken +80%",
+            "Bans Beam moves"
+          ],
+          "five": [
+            "Team kills grant +1% team Attack (max +35%)",
+            "Melee hits grant 5% Max HP shield (once/cast, 0.5s CD)"
+          ],
+          "eight": [
+            "Melee triggers 20% echo",
+            "Physical move crit +15%"
+          ]
+        }
       }
     },
     {
@@ -4628,6 +6537,56 @@
           "cost": "- **极度脆弱白纸身躯 (Glass Speedster)**：\n  - 全队最大生命值降低 **25%** (`stats.hp: -0.25`)，双防同时降低 **25%**；\n  - 受到【飞行属性】伤害提升 **70%**，【火】【超能】【妖精】伤害提升 **30%**。",
           "five": "- **飞膝杀戮重置 (Dash Kill Reset)**：\n  - 利用【突进 (`dash`)】招式消灭敌人时，自身全部 `dash` 招式当前剩余冷却时间缩短 **50%** (`dashKillReset: 0.5`)，并获得 0.25s 无敌帧 (`dashInvuln`)。",
           "eight": "- **美螂绝对速度暴伤 (Lethal Grace Crit)**：\n  - 全队暴击倍率由 1.5× 提升至 **2.0×** (`critMultiplier: 2.0`)，移速提升至 +40%。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "移速 +30%",
+            "基础移速转化为位移伤害（上限 +40%）",
+            "首次命中生命 >80% 敌人必暴"
+          ],
+          "active": [
+            "【白衣流星百裂踢】突进750距离并引发半径170震荡，共造成 55% 主招10秒格斗/虫必暴伤；定身 1.5 秒、减速 50%。",
+            "充能：120秒基础充能，【位移施法】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -25%、物防 -25%、特防 -25%",
+            "飞行承伤 +70%",
+            "火、超能、妖精承伤 +30%"
+          ],
+          "five": [
+            "施放位移获得 0.25 秒无敌",
+            "位移击杀缩减自身位移冷却 50%（每次施法一次）"
+          ],
+          "eight": [
+            "移速 +10%",
+            "暴击伤害提至 2倍"
+          ]
+        },
+        "en": {
+          "base": [
+            "Speed +30%",
+            "Base Speed boosts Dash damage (max +40%)",
+            "First hit on foes >80% HP crits"
+          ],
+          "active": [
+            "Dashes 750px into a 170px blast for 55% Fighting/Bug crit dmg total; 1.5s stun, 50% slow.",
+            "Charge: 120s base; [Dash casts] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -25%, Defense -25%, Sp. Def -25%",
+            "Flying damage taken +70%",
+            "Fire/Psychic/Fairy damage taken +30%"
+          ],
+          "five": [
+            "Dash grants 0.25s invulnerability",
+            "Dash kills reduce Dash CD by 50% (once/cast)"
+          ],
+          "eight": [
+            "Speed +10%",
+            "Crit damage increased to 2×"
+          ]
         }
       }
     },
@@ -4737,6 +6696,54 @@
           "five": "- **触电火花与电驰提速 (Conduit Surge)**：\n  - 受到近战接触伤害时立刻放出闪电链反击周边敌人 (`contactLightning: true`)；\n  - 每次造成电系伤害加速全队敏捷至多 **+30%** (`electricEngine: 0.03`)。",
           "eight": "- **超频萤火回蓝暴击 (Overclocked Tail Glow)**：\n  - 暴击时有 **35% 概率恢复 1 点 PP** (`critPP: 0.35`)；所有暴击伤害倍率提升至 **1.85×**。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "特攻 +25%",
+            "连锁伤害 +25%、数量 +2",
+            "电属性招式暴击率 +20%"
+          ],
+          "active": [
+            "【万伏高压雷暴矩阵】锁定至多 12 名敌人齐射打击，共造成 60% 主招10秒电伤；碎盾、定身 2 秒。",
+            "充能：120秒基础充能，【连锁施法】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -15%、物防 -20%",
+            "地面承伤 +60%"
+          ],
+          "five": [
+            "受接触攻击每1秒电击220内至多 3 敌（共30%主招伤）",
+            "电系命中叠层，全队每层敏捷 +3%（上限 +30%）"
+          ],
+          "eight": [
+            "暴击伤害提至 1.85倍",
+            "暴击 35% 概率返还 1 点 PP（0.5秒冷却）"
+          ]
+        },
+        "en": {
+          "base": [
+            "Sp. Atk +25%",
+            "Chain: damage +25%, count +2",
+            "Electric move crit +20%"
+          ],
+          "active": [
+            "Strikes up to 12 targets for 60% Electric dmg total; breaks shields, 2s stun.",
+            "Charge: 120s base; [Chain casts] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -15%, Defense -20%",
+            "Ground damage taken +60%"
+          ],
+          "five": [
+            "Contact hits zap up to 3 foes within 220px (30% primary, 1s CD)",
+            "Electric hits stack +3% team Agility (max +30%)"
+          ],
+          "eight": [
+            "Crit damage increased to 1.85×",
+            "Crits have 35% chance to restore 1 PP (0.5s CD)"
+          ]
+        }
       }
     },
     {
@@ -4841,6 +6848,52 @@
           "five": "- **重甲冲击护盾 (Rocket Bulkhead)**：\n  - 单次受击损失 >=20% 最大生命时，立刻获得 **18% MaxHP 白盾** (`heavyShield: 0.18`，上限 40%)；\n  - 全队每次发动【陨石 (`meteor`)】额外多坠落 **+1 颗** (`meteorCover: true`)。",
           "eight": "- **太空自愈能量恢复 (Orbital Leech Seed)**：\n  - 连续 5 秒未受伤时双防提高 **+35%** (`safeDefense: 0.35`)，且生命回复速率加速至 **1.4 倍** (`safeRegen: 1.4`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "陨石伤害 +25%、半径 +25%；免疫地面属性伤害；物理接触承伤 -20%；远程承伤 -20%"
+          ],
+          "active": [
+            "【重磅火箭推进轰炸】降下 10 枚半径150陨石，共造成 55% 主招10秒钢/火伤；定身 1.5 秒、2层灼伤。",
+            "充能：120秒基础充能，【陨石/位移命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -25%",
+            "火、电承伤 +40%",
+            "禁止学习【位移】招式"
+          ],
+          "five": [
+            "单次受伤 >20% 最大生命时获 18% 白盾（5秒）",
+            "陨石数量 +1"
+          ],
+          "eight": [
+            "连续 5 秒未受伤时双防 +35%",
+            "连续 5 秒未受伤时自然回复 +40%"
+          ]
+        },
+        "en": {
+          "base": [
+            "Meteor: damage +25%, radius +25%; Immune to Ground damage; Physical contact damage taken -20%; Ranged damage taken -20%"
+          ],
+          "active": [
+            "Drops 10 meteors (r=150) sharing 55% Steel/Fire dmg; 1.5s stun, +2 Burn.",
+            "Charge: 120s base; [Meteor/Dash hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -25%",
+            "Fire/Electric damage taken +40%",
+            "Bans Dash moves"
+          ],
+          "five": [
+            "Heavy hit (>20% HP) grants 18% shield (5s)",
+            "Meteor count +1"
+          ],
+          "eight": [
+            "Defense & Sp. Def +35% after 5s undamaged",
+            "Natural regen +40% after 5s undamaged"
+          ]
+        }
       }
     },
     {
@@ -4943,6 +6996,54 @@
           "cost": "- **纸片血防与四倍惧火 (Origami Fragility)**：\n  - 全队最大生命值降低 **25%** (`stats.hp: -0.25`)，特殊防御降低 **30%** (`stats.spdef: -0.3`)；\n  - 受到【火属性】伤害巨幅提升 **85%** (`incomingTypes.fire: 1.85`)，【格斗】伤害提升 **40%**。",
           "five": "- **异兽斩杀叠加攻击 (Origami Snowball)**：\n  - 每击败 1 名敌人叠加全队物理攻击（**单场封顶 +35%**，`killAttack`）；近战命中后 0.15s 追加 **20% 剑气回响** (`meleeEcho: 0.2`)。",
           "eight": "- **一刀两断暴伤巅峰 (Leaf Blade Execution)**：\n  - 全队暴击倍率提高至 **2.0×** (`critMultiplier: 2.0`)，近战暴击命中目标附带 4 秒高额中毒出血感伤害 (`critVenom`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "近战伤害 +20%、暴击率 +20%",
+            "主体攻击无视敌方 25% 双防"
+          ],
+          "active": [
+            "【圣剑折纸百斩瞬狱】半径260强力斩击，造成 50% 主招10秒钢/草必暴伤；处决 <25% 血普通怪并重置冷却。",
+            "充能：120秒基础充能，【近战暴击】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -25%、特防 -30%",
+            "火承伤 +85%",
+            "格斗承伤 +40%"
+          ],
+          "five": [
+            "全队每击杀1名敌人，全队物攻 +1%（上限 +35%）",
+            "近战命中后追加 20% 实际伤害回响"
+          ],
+          "eight": [
+            "暴击伤害提至 2倍",
+            "近战暴击附加 15% 该次伤害的4秒毒伤"
+          ]
+        },
+        "en": {
+          "base": [
+            "Melee: damage +20%, crit +20%",
+            "Main attacks ignore 25% enemy defenses"
+          ],
+          "active": [
+            "260px melee strike for 50% Steel/Grass crit dmg; executes <25% normal foes.",
+            "Charge: 120s base; [Melee crits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -25%, Sp. Def -30%",
+            "Fire damage taken +85%",
+            "Fighting damage taken +40%"
+          ],
+          "five": [
+            "Team kills grant +1% team Attack (max +35%)",
+            "Melee triggers 20% echo"
+          ],
+          "eight": [
+            "Crit damage increased to 2×",
+            "Melee crits add 15% dmg as 4s poison"
+          ]
         }
       }
     },
@@ -5052,6 +7153,49 @@
           "five": "- **暴食吞金增伤账 (💰 Gold Gluttony Ledger)**：\n  - 开启暴食聚财 (`bankDamage: 0.015`)：每保有 20G 局内金币提供 **+1.5% 伤害增幅**（封顶 +30%）；\n  - 战斗每累计 20 击杀战后额外发放 **+1 金币**（**单场严格封顶 +2G**）。",
           "eight": "- **终极咬碎回蓝 (Devour PP Sustain)**：\n  - 用【锥形 (`cone`)】或吞咬招式攻击血量低于 30% 的敌人时，有 **15% 概率恢复 1 点 PP** (`devourPP`)；每击败一名敌人提高自身永久物理攻击（封顶 +35%）。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "生命 +20%；队长最大生命 +40%；击杀 10% 概率产补给果（战后结算回8%已损血+1PP，每战上限4）；每20击杀产1份大粮（战后回10%最大生命，每战上限2）"
+          ],
+          "active": [
+            "【无尽黑洞大口吞噬】半径350吞噬冲击，造成 45% 主招10秒恶/龙伤 + 30%已损生命；10% 伤害转团队治疗。",
+            "充能：120秒基础充能，【队长受伤(每5%最大生命)】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -25%、物防 -20%、特防 -20%",
+            "妖精承伤 +80%"
+          ],
+          "five": [
+            "每持20G伤害 +1.5%（上限 +30%）；每20杀战后 +1G（单场上限2G）"
+          ],
+          "eight": [
+            "队长每击杀1名敌人永久提升本局物攻 +1%（跨战保留，上限 +35%）",
+            "队长击杀有 15% 概率回复全招式 1 点 PP"
+          ]
+        },
+        "en": {
+          "base": [
+            "Max HP +20%; Captain Max HP +40%; 10% kill chance for fruit (post-battle +8% missing HP & 1 PP, max 4)",
+            "Every 20 kills yields 1 ration (post-battle +10% HP, max 2)"
+          ],
+          "active": [
+            "350px devour blast for 45% Dark/Dragon dmg + 30% HP; 10% dmg heals team.",
+            "Charge: 120s base; [Captain damage taken (per 5% MaxHP)] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -25%, Defense -20%, Sp. Def -20%",
+            "Fairy damage taken +80%"
+          ],
+          "five": [
+            "+1.5% dmg/20G (max +30%); +1G/20 kills (max 2G)"
+          ],
+          "eight": [
+            "Captain kills permanently add +1% Attack for run (max +35%)",
+            "Captain kills have 15% chance to restore 1 PP"
+          ]
+        }
       }
     },
     {
@@ -5154,6 +7298,56 @@
           "cost": "- **失光残躯渴望 (Light Starved Shell)**：\n  - 全队生命回复速率减半 (`regenRate: 0.5`)，常规移动速度降低 **10%**；\n  - 受到【恶】【幽灵】【虫】伤害仍受棱镜外溢影响略微提升 15%。",
           "five": "- **光子护壁与连射提暴 (Photon Beam Ramp)**：\n  - 发射【能量柱 (`beam`)】时双防短暂提升 **+25%** (`beamDefense: 0.25`)；\n  - `beam` 命中次数不断推高暴击率（**最高额外 +30%**，`beamCritRamp`）。",
           "eight": "- **究极光辉护盾自愈 (Ultra Prism Regen)**：\n  - 战斗开局自带 25% MaxHP 棱镜白盾，且白盾存在时每秒再生 **2% MaxHP 白盾** (`screenShieldRegen: 0.02`，上限 40%)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "能量柱伤害 +25%、宽度 +25%",
+            "受属性克制伤害 -35%",
+            "主体攻击无视敌方 25% 双防"
+          ],
+          "active": [
+            "【焚天灭世炽热光】射出贯穿光柱并引爆半径230冲击，共造成 50% 主招10秒超能真实必暴伤；清除敌弹、定身 2 秒。",
+            "充能：120秒基础充能，【能量柱命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -10%",
+            "自然回复速率 -50%",
+            "恶、幽灵、虫承伤 +15%"
+          ],
+          "five": [
+            "施放能量柱 0.4 秒内双防 +25%",
+            "能量柱每次命中暴击率 +1.5%（上限 +30%）"
+          ],
+          "eight": [
+            "有白盾时每秒再生 2% 最大生命白盾",
+            "开战授予全队 25% 最大生命白盾"
+          ]
+        },
+        "en": {
+          "base": [
+            "Beam: damage +25%, width +25%",
+            "Super-effective damage taken -35%",
+            "Main attacks ignore 25% enemy defenses"
+          ],
+          "active": [
+            "Fires beam + 230px blast for 50% Psychic true crit dmg total; clears shots, 2s stun.",
+            "Charge: 120s base; [Beam hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -10%",
+            "Natural regen rate -50%",
+            "Dark/Ghost/Bug damage taken +15%"
+          ],
+          "five": [
+            "Defense & Sp. Def +25% for 0.4s on Beam",
+            "Beam hits stack +1.5% crit (max +30%)"
+          ],
+          "eight": [
+            "Active shield regens 2% Max HP/s",
+            "Starts combat with 25% Max HP team shield"
+          ]
         }
       }
     },
@@ -5272,6 +7466,50 @@
           "five": "- **发条精密免费刷新 (💰 Clockwork Free Refresh)**：\n  - 每进入一家宝可梦商店，自动获得 **+1 次免费刷新额度** (`shopFreeRefreshes += 1`)；且购买训练家经验消耗略微稳定保底（不破坏紧平衡）。",
           "eight": "- **王室发条利息升限 (💰 Royal Soul-Heart Mint)**：\n  - 战后银行利息上限由 5G 提升至 **6G**（且利息计算除数小幅放宽至 9G 计息）；\n  - 所有主体攻击自带 **20% 防抗穿透** (`psychicPenetration: 0.2`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "物防 +20%、特防 +20%；能量柱伤害 +20%；冲击波伤害 +20%；全队每击杀1名敌人特攻 +1%（上限 +35%）"
+          ],
+          "active": [
+            "【花朵加农全功率发射】射出宽幅贯穿光柱，共造成 50% 主招10秒妖精必暴伤；定身 1.5 秒、全队 25% 白盾。",
+            "充能：120秒基础充能，【队伍击杀】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -15%",
+            "火、地面承伤 +40%"
+          ],
+          "five": [
+            "每次进店额外获得 +1 次免费刷新",
+            "每家商店首次购买训练家经验返还 1G"
+          ],
+          "eight": [
+            "主体攻击无视敌方 20% 双防",
+            "银行利息放宽至每 9G 产 1G，利息上限 +1G"
+          ]
+        },
+        "en": {
+          "base": [
+            "Defense +20%, Sp. Def +20%; Beam: damage +20%; Nova: damage +20%; Team kills grant +1% Sp. Atk (max +35%)"
+          ],
+          "active": [
+            "Fires piercing beam for 50% Fairy crit dmg total; 1.5s stun, 25% team shield.",
+            "Charge: 120s base; [Team kills] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -15%",
+            "Fire/Ground damage taken +40%"
+          ],
+          "five": [
+            "+1 free shop refresh per shop visit",
+            "First trainer XP purchase per shop rebates 1G"
+          ],
+          "eight": [
+            "Main attacks ignore 20% enemy defenses",
+            "Bank interest every 9G, cap +1G"
+          ]
+        }
       }
     },
     {
@@ -5383,6 +7621,50 @@
           "cost": "- **影中脆皮弱光 (Fragile Shadow Walker)**：\n  - 全队最大生命值降低 **20%** (`stats.hp: -0.2`)；\n  - 受到【飞行】【超能】【幽灵】【妖精】伤害提升 **35%**。",
           "five": "- **影分身回响二段打 (Shadow Echo Follow-up)**：\n  - 【近战 (`melee`)】招式命中敌人 0.15 秒后，影分身必定追击一次 **25% 伤害的暗影重击** (`meleeEcho: 0.25`)；\n  - 施放【突进 (`dash`)】获得 0.25s 无敌帧 (`dashInvuln: true`)。",
           "eight": "- **暗影偷袭无视防抗 (Spectral Pierce)**：\n  - 主体近战攻击穿透敌方 **25% 防抗** (`psychicPenetration: 0.25`) 且攻击有白盾的目标无视防御减免 (`ignoreDefenseBuffs: true`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "移速 +20%；近战伤害 +20%；1—3级招式伤害 +35%；首次命中生命 >80% 敌人必暴"
+          ],
+          "active": [
+            "【七星夺魂腿乱舞】瞬移至高血目标旁引爆半径220冲击，造成 50% 主招10秒格斗/幽灵必暴伤；无敌 2 秒、定身 1.5 秒、破甲 35%。",
+            "充能：120秒基础充能，【近战命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -20%",
+            "飞行、超能、幽灵、妖精承伤 +35%"
+          ],
+          "five": [
+            "施放位移获得 0.25 秒无敌",
+            "近战命中后追加 25% 实际伤害回响"
+          ],
+          "eight": [
+            "攻击带盾敌人额外 +10% 穿甲",
+            "主体近战无视敌方 25% 防御"
+          ]
+        },
+        "en": {
+          "base": [
+            "Speed +20%; Melee: damage +20%; Lv.1–3 move damage +35%; First hit on foes >80% HP crits"
+          ],
+          "active": [
+            "Warps to highest-HP foe and blasts 220px for 50% Fighting/Ghost crit dmg; 2s invuln, 1.5s stun, -35% def.",
+            "Charge: 120s base; [Melee hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -20%",
+            "Flying/Psychic/Ghost/Fairy damage taken +35%"
+          ],
+          "five": [
+            "Dash grants 0.25s invulnerability",
+            "Melee triggers 25% echo"
+          ],
+          "eight": [
+            "+10% extra armor pen vs shielded foes",
+            "Main Melee attacks ignore 25% defense"
+          ]
         }
       }
     },
@@ -5498,6 +7780,54 @@
           "five": "- **高速溶毒催化 (Venom Acceleration)**：\n  - 队长 180 半径范围内处于中毒状态的敌人扣血频率加快 **+40%** (`poisonRate: 1.4`)；\n  - 每消灭 1 名敌人加速自身冷却与攻势 (`killAttack`)。",
           "eight": "- **蚀甲毒池与破防射流 (Acid Dissolution Beam)**：\n  - 【锥形 (`cone`)】与弹道打击 10% 概率脚底留酸液池 (`acidPuddle: true`)，削弱敌人 **35% 双防**持续 3 秒 (`acidDefense: 0.35`)。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "能量柱伤害 +20%、附 1 层中毒",
+            "投射物伤害 +20%、附 1 层中毒",
+            "站在毒池内伤害 +25%"
+          ],
+          "active": [
+            "【四颚龙星毒爆射线】射出3道贯穿光柱，共造成 55% 主招10秒毒/龙伤；3层中毒。",
+            "充能：120秒基础充能，【施加中毒】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物防 -20%、特防 -20%",
+            "地面、冰、超能、龙承伤 +35%"
+          ],
+          "five": [
+            "队长180半径内敌人中毒跳伤频率 +40%",
+            "自身每击杀1名敌人特攻 +1%（上限 +30%）",
+            "每击杀1名敌人冷却速度 +1%（上限 +20%）"
+          ],
+          "eight": [
+            "扇形/投射物/能量柱命中 10% 概率留3秒酸池并破防 35%"
+          ]
+        },
+        "en": {
+          "base": [
+            "Beam: damage +20%, +1 Poison",
+            "Projectile: damage +20%, +1 Poison",
+            "Damage +25% while inside poison pool"
+          ],
+          "active": [
+            "Fires 3 piercing beams for 55% Poison/Dragon dmg total; +3 Poison.",
+            "Charge: 120s base; [Poison stacks applied] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Defense -20%, Sp. Def -20%",
+            "Ground/Ice/Psychic/Dragon damage taken +35%"
+          ],
+          "five": [
+            "Poison tick rate +40% within 180px",
+            "Own kills grant +1% Sp. Atk (max +30%)",
+            "Kills grant +1% cooldown rate (max +20%)"
+          ],
+          "eight": [
+            "Cone/Projectile/Beam hits (10%) drop 3s acid pool & shred 35% defense"
+          ]
+        }
       }
     },
     {
@@ -5597,6 +7927,48 @@
           "cost": "- **双四倍惧斗地与极度蜗速 (Double Quadruple Weakness)**：\n  - 全队移动速度降低 **25%** (`stats.spd: -0.25`)；\n  - 受到【格斗】与【地面】属性伤害提升 **80%** (`incomingTypes: { fighting: 1.8, ground: 1.8 }`)。",
           "five": "- **城墙反刺与护甲转化 (Spikes & Defense-to-Melee)**：\n  - 受到攻击时每 2 秒向四周发射 **4 枚岩石尖刺** (`counterSpikes: 4`)；\n  - 基础物防按比例转化为全队【近战 (`melee`)】增伤（**封顶 +35%**，`defMelee`）。",
           "eight": "- **坚不可摧结实墙体 (Unbreakable Masonry)**：\n  - 全队享有每战 1 次结实免死：受致死伤害保留存活并回复 **35% 最大生命** (`deathHeal: 0.35`) 与 1.5s 无敌保护。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "物防 +35%；物理接触承伤 -25%；每 3 秒自动格挡 1 次正面近战接触攻击；站立超过 1 秒时双防 +25%"
+          ],
+          "active": [
+            "【万石城墙压境地震】半径300爆发，造成 50% 主招10秒岩石/钢伤；定身 2 秒、全队 40% 白盾。",
+            "充能：120秒基础充能，【队伍受伤】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -25%",
+            "格斗、地面承伤 +80%"
+          ],
+          "five": [
+            "基础物防转化为近战伤害（上限 +35%）",
+            "受击每2秒向四周发射 4 枚岩刺（各20%主招伤）"
+          ],
+          "eight": [
+            "每战每名队员1次致死保命，回复 35% 最大生命并无敌 1.5 秒"
+          ]
+        },
+        "en": {
+          "base": [
+            "Defense +35%; Physical contact damage taken -25%; Parries 1 frontal contact hit every 3s; Defense & Sp. Def +25% after standing 1s"
+          ],
+          "active": [
+            "300px nova for 50% Rock/Steel dmg; 2s stun, 40% team shield.",
+            "Charge: 120s base; [Team hits taken] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -25%",
+            "Fighting/Ground damage taken +80%"
+          ],
+          "five": [
+            "Base Defense boosts Melee damage (max +35%)",
+            "On hit (2s CD): fires 4 Rock spikes (20% primary dmg)"
+          ],
+          "eight": [
+            "Once/battle/ally: survive lethal at 35% HP (1.5s invuln)"
+          ]
         }
       }
     },
@@ -5706,6 +8078,54 @@
           "cost": "- **自爆耗血与纸糊身板 (Self-Destructive Glass Cannon)**：\n  - 每次常规施法额外消耗最大生命的 **1.5% × PP** 作为爆破燃料 (`selfCostPP: 0.015`，不致死)；\n  - 全队最大生命降低 20%、受到【水】【地】【岩】【恶】【幽灵】伤害提升 **35%**。",
           "five": "- **焦灼礼花暴击 (Scorched Fireworks)**：\n  - 全队【火属性】招式对处于灼烧状态的目标伤害提高 **+25%** (`burnDamage: 1.25`)；对灼烧敌人暴击率额外提升 **+20%** (`burnCrit: 0.2`)。",
           "eight": "- **不死火苗免死复活 (Encore Spark)**：\n  - 每战首次承受致命或自爆过载危机时保留存活并回复 **30% 最大生命值**，同时触发一圈全屏幽灵火花新星 (`deathNova: true`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "冲击波伤害 +25%、数量 +2、附 1 层灼伤",
+            "按已损生命提升双攻与敏捷，最高 +30%"
+          ],
+          "active": [
+            "【惊爆头颅全屏礼花】释放28发全屏爆发，造成 60% 主招10秒火/幽灵伤；消耗队长 15% 当前生命、定身 1.5 秒、3层灼伤。",
+            "充能：120秒基础充能，【冲击波施法】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "生命 -20%",
+            "每次施法每点PP反噬 1% 最大生命（不致死）",
+            "水、地面、岩石、恶、幽灵承伤 +35%"
+          ],
+          "five": [
+            "火属性对灼伤敌人伤害 +25%",
+            "招式命中灼伤敌人暴击率 +20%"
+          ],
+          "eight": [
+            "每战1次致死保命并引发全屏爆发（30%伤，1秒定身）",
+            "每战每名队员1次致死保命，回复 30% 最大生命并无敌 1.5 秒"
+          ]
+        },
+        "en": {
+          "base": [
+            "Nova: damage +25%, count +2, +1 Burn",
+            "up to +30% Attack/Sp.Atk/Agility by missing HP%"
+          ],
+          "active": [
+            "28-shot full-screen nova for 60% Fire/Ghost dmg; costs captain 15% current HP, 1.5s stun, +3 Burn.",
+            "Charge: 120s base; [Nova casts] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Max HP -20%",
+            "Spending PP costs 1% Max HP/PP (non-lethal)",
+            "Water/Ground/Rock/Dark/Ghost damage taken +35%"
+          ],
+          "five": [
+            "Fire damage vs burned foes +25%",
+            "Moves gain +20% crit vs burned foes"
+          ],
+          "eight": [
+            "Once/battle: survive lethal with 30% full-screen blast",
+            "Once/battle/ally: survive lethal at 30% HP (1.5s invuln)"
+          ]
         }
       }
     },
@@ -5824,6 +8244,52 @@
           "five": "- **全域电拳与闪电引擎 (Global Thunder Fists)**：\n  - 全队任何成员释放【近战 (`melee`)】招式时，必定额外朝最近 2 名敌人释放一道电属性连锁闪电 (`thunderFistsGlobal: true`)；\n  - 电系打击不断堆叠全队敏捷（最高 **+30%**，`electricEngine: 0.03`）。",
           "eight": "- **雷神回蓝与极速冲刺 (Plasma Crit Sustain)**：\n  - 暴击时有 **30% 概率恢复 1 点 PP** (`critPP: 0.3`)；冲刺与近战暴击伤害倍率提高至 **1.9×**。"
         }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "移速 +20%；近战伤害 +25%；免疫电属性伤害；电属性招式暴击率 +20%；免疫电伤后全队 4 秒物攻与敏捷 +25%"
+          ],
+          "active": [
+            "【等离子闪电乱拳】向至多 8 名敌人连续电拳连闪，共造成 60% 主招10秒电伤；定身 1.5 秒。",
+            "充能：120秒基础充能，【电系招式命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "物防 -20%",
+            "地面承伤 +60%",
+            "禁止学习【光环】【地雷】招式"
+          ],
+          "five": [
+            "近战命中每0.5秒向250内至多2敌放出电弧（共40%主招伤）",
+            "电系命中叠层，全队每层敏捷 +3%（上限 +30%）"
+          ],
+          "eight": [
+            "暴击 30% 概率返还 1 点 PP（0.5秒冷却）",
+            "近战与位移暴击伤害提至 1.9倍"
+          ]
+        },
+        "en": {
+          "base": [
+            "Speed +20%; Melee: damage +25%; Immune to Electric damage; Electric move crit +20%; Electric absorb grants team +25% Attack & Agility (4s)"
+          ],
+          "active": [
+            "Strikes up to 8 targets with rapid melee chains for 60% Electric dmg total; 1.5s stun.",
+            "Charge: 120s base; [Electric move hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Defense -20%",
+            "Ground damage taken +60%",
+            "Bans Aura & Mine moves"
+          ],
+          "five": [
+            "Melee arcs Electric to up to 2 foes within 250px (40% primary, 0.5s CD)",
+            "Electric hits stack +3% team Agility (max +30%)"
+          ],
+          "eight": [
+            "Crits have 30% chance to restore 1 PP (0.5s CD)",
+            "Melee & Dash crit damage raised to 1.9×"
+          ]
+        }
       }
     },
     {
@@ -5937,6 +8403,54 @@
           "cost": "- **液态重金属极缓行 (Heavy Liquid Metal)**：\n  - 全队移动速度降低 **20%** (`stats.spd: -0.2`)；\n  - 受到【火】【格斗】【地面】三大弱点伤害提升 **35%**，特殊防御略降 **15%** (`stats.spdef: -0.15`)。",
           "five": "- **熔铁铸币金库白盾 (💰 Liquid Metal Mint)**：\n  - 启用铸币护盾 (`bankShield: true`)：开战持有金币 `>= 150G` 时全队获得等额白盾防护（受 **40% MaxHP** 上限限制）；\n  - 启用熔铁铸币账本 (`bankDamage: 0.015`)：每保有 20G 提供 **+1.5% 增伤**（封顶 +30%），每累计 20 击杀战后额外发放 **+1 金币**（**单场严格封顶 +2G**）。",
           "eight": "- **铁拳产盾与破防重锤 (Steel Fist Bastion)**：\n  - 每次【近战 (`melee`)】命中生成 **5% MaxHP 钢甲白盾** (`meleeShieldGain: 0.05`，上限 40%)；\n  - 所有近战攻击附带 **25% 通用穿甲** (`psychicPenetration: 0.25`)。"
+        }
+      },
+      "display": {
+        "zh": {
+          "base": [
+            "物防 +30%",
+            "近战伤害 +25%",
+            "每次近战 0.2 秒后追加 1 记 20% 威力近战"
+          ],
+          "active": [
+            "【超极巨钢拳大碾压】释放3发半径260爆发，造成 55% 主招10秒钢必暴伤；定身 2 秒。",
+            "充能：120秒基础充能，【近战命中】每次+1秒双倍加速；上限1发，跨战保留。"
+          ],
+          "cost": [
+            "移速 -20%、特防 -15%",
+            "火、格斗、地面承伤 +35%"
+          ],
+          "five": [
+            "开战金币 ≥60G 时全队获等额白盾（上限 40% 最大生命）",
+            "每持20G伤害 +1.5%（上限 +30%）；每20杀战后 +1G（单场上限2G）"
+          ],
+          "eight": [
+            "近战命中获 5% 最大生命白盾（每次施法/0.5秒一次）",
+            "主体近战无视敌方 25% 防御"
+          ]
+        },
+        "en": {
+          "base": [
+            "Defense +30%",
+            "Melee: damage +25%",
+            "Melee triggers a 20% follow-up Melee 0.2s later"
+          ],
+          "active": [
+            "3-shot 260px nova for 55% Steel crit dmg; 2s stun.",
+            "Charge: 120s base; [Melee hits] adds +1s of 2× speed. Holds 1 charge across battles."
+          ],
+          "cost": [
+            "Speed -20%, Sp. Def -15%",
+            "Fire/Fighting/Ground damage taken +35%"
+          ],
+          "five": [
+            "Combat start with ≥60G grants gold-value shield (cap 40% HP)",
+            "+1.5% dmg/20G (max +30%); +1G/20 kills (max 2G)"
+          ],
+          "eight": [
+            "Melee hits grant 5% Max HP shield (once/cast, 0.5s CD)",
+            "Main Melee attacks ignore 25% defense"
+          ]
         }
       }
     }

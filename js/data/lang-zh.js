@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Descripciones unificadas de los 9 gen de capitanes · v0.43.0-alpha.78": "全九世代队长特性描述统一规范化 · v0.43.0-alpha.78",
+  "Se completan y unifican las descripciones en chino e inglés de todas las 508 familias de capitanes (generaciones 1 a 9): viñetas concisas, terminología consistente y cifras exactas alineadas con las reglas reales en combate.": "完成全九世代共 508 个队长特性家族（Gen 1–9）的中英文标准化展示文案：统一招式与属性术语，逐条给出基础被动、能力代价、Lv.5/8 进阶与主动 Z 的实际生效数值，移除代码符号与冗余叙述。",
+  "Las tarjetas de capitán muestran directamente las reglas y valores efectivos (incluida la carga Z de 120 s con aceleración por evento) y ocultan el bloque largo de notas internas, dejando un pie único y claro con los topes compartidos.": "特性卡片直接呈现精确生效规则与现行 120 秒事件加速充能说明，隐藏冗长的内部调整附注区块，精简为一行清晰的通用上限提示。",
+  "Dejé las quinientas ocho fichas de las nueve regiones pasadas a limpio con la misma letra y los mismos números de verdad. Quien cocina revisó hasta las notas antiguas de Teselia; ya podemos comparar capitanes de cualquier generación sin marearnos.": "我把九个世代一共五百零八张特性卡全按同一套格式誊清啦，实打实的数值摆在明面上。做饭的那家伙连合众那批旧调整都逐条核对过，咱们以后挑哪代队长都能一眼看明白。",
+
   "Descripciones claras de capitanes (Gen 1) · v0.43.0-alpha.77": "第一世代队长特性描述规范化优化 · v0.43.0-alpha.77",
   "Se reescriben y estandarizan las descripciones dentro del juego de las 74 familias de capitanes de Kanto (Gen 1) en chino e inglés, con viñetas breves, terminología unificada y valores reales de cada pasiva, coste, avance 5/8 y Z manual.": "全面重写并规范化游戏内第一世代（关都）74 个队长特性家族的中英文描述：统一招式与属性术语，逐条给出基础被动、能力代价、Lv.5/8 进阶与主动 Z 的精确运行数值，去除冗余表述与原始字段名。",
   "Se corrigen textos de carga Z obsoletos (60 s) para reflejar la regla actual de 120 s con aceleración doble por evento, y la tarjeta de capitán ahora admite viñetas estructuradas por línea.": "同步修正卡片内旧版 60 秒充能说明为现行「120秒基础充能＋对应事件双倍加速」规则，并支持特性卡按要点分条渲染。",
