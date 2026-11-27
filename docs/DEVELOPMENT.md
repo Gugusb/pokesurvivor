@@ -34,6 +34,14 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.75 — 2026-11-27
+
+- 落地第八世代（伽勒尔与洗翠）44 个队长特性家族（源设计文 `LEADER_ABILITIES_GEN8.md`，SHA-256 `5f6e1152...`），完整保留 `alpha.67`–`alpha.74` 既有玩法与移动端改动：
+  - 新增配置与文档：`config/leader_abilities_gen8.json`、`docs/LEADER_ABILITIES_GEN8_BALANCE.md`、`tools/import_leader_gen8.cjs`、`tools/test_leader_gen8.cjs`。
+  - 新增运行时与手动 Z：`js/systems/leader-galar.js`、`js/systems/leader-galar-z.js`，并在 `dev.html`、`js/core/leader-abilities-config.js`、`tools/leader_config.cjs`、`js/entities/enemy.js`、`js/systems/combat.js`、`js/systems/leader-abilities.js`、`js/systems/leader-alola.js`、`js/systems/leader-kalos.js`、`js/systems/leader-kalos-z.js`、`js/systems/weather.js`、`js/ui/hoenn-market-ui.js`、`js/ui/leader-kalos-ui.js`、`js/ui/settings-ui.js` 接入全套钩子与界面规则说明。
+  - 保留 120s 基础充能 + 对应事件双倍加速、3% 最大 HP/s 共享治疗队列、40% 白盾与 60% 穿甲上限、每精英/BOSS 65% 主招 10 秒理论伤害共享总预算，以及 10 条暂缓子规则显式标注。
+- 验证：`node --test tools/test_leader_gen8.cjs tools/test_leader_gen7.cjs tools/test_leader_gen6.cjs tools/test_leader_abilities.cjs tools/test_alpha67_mechanics.cjs tools/test_battle_stats.cjs tools/test_capture_gacha_research.cjs` **66/66 全部通过**；`node tools/build.js` 与 `node tools/export_data.js` 通过（当前终端未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.74 — 2026-11-24
 
 - 手机端横屏（`max-height: 520px && min-width: 520px`）等比例缩放与防遮挡优化：

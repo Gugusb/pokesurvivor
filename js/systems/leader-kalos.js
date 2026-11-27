@@ -1,7 +1,7 @@
 /* Kalos supplies the small gaps between authored rules and the shared captain hooks. */
 G.LeaderKalos=(()=>{
  const L=G.LeaderAbilities,Z=L._z,{actors,enemies,captain,state,own,budget,direct,shield,heal,event,stun,field,schedule,synthetic}=Z;
- const active=()=>L.active()&&[6,7].includes(L.definition(captain()?.dex)?.generation),has=p=>active()&&Z.team(p),root=()=>L.definition(captain()?.dex)?.root,R=()=>G.Expedition.run,f=()=>L.profile()||{},k=()=>f().kalos||{},now=()=>state()?.time||0;
+ const active=()=>L.active()&&[6,7,8].includes(L.definition(captain()?.dex)?.generation),has=p=>active()&&Z.team(p),root=()=>L.definition(captain()?.dex)?.root,R=()=>G.Expedition.run,f=()=>L.profile()||{},k=()=>f().kalos||{},now=()=>state()?.time||0;
  const s=()=>state().kalos||={token:0,supplies:[],kills:0},q=p=>p.kalosState||={at:{},queuedHeal:0,healCredit:p.maxHp*.03,overflowCredit:p.maxHp*.03},wrap=G.LeaderSinnoh.wrap;
  const status=e=>e.burn>0||e.poison>0||e.slowT>0||e.freezeT>0||e.classStunT>0;
  function proc(p,key,cd){const a=q(p);a.at||={};if((a.at[key]??-Infinity)>now())return false;a.at[key]=now()+cd;return true;}
@@ -15,15 +15,15 @@ G.LeaderKalos=(()=>{
  function outgoing(p,e,m){if(!has(p)||m.kalosSettled)return 1;const a=k(),u=s();let n=1;if(a.bank)n*=1+Math.min(a.bankCap||.3,Math.floor(R().gold/20)*a.bank);return n;}
  function onCast(p,m){if(!has(p)||m.leaderGenerated)return;m.kalosCast=++s().casts;q(p).lastSerial=m.kalosCast;if(m.kind==='dash')q(p).dashAfterUntil=now()+.8;}
  function hit(p,e,m,dealt,critical){if(has(p)&&m.kalosZ&&m.kalosReturnStun&&m.leaderReturning)stun(e,m.kalosReturnStun);if(has(p)&&m.kalosZ&&m.kalosBurnBlast&&e.burn>=8&&eproc(e,'pyreBlast',.5))for(const foe of G.EnemyMgr.queryCircle(e.x,e.y,90))secondary(p,foe,budget(p)*.02,'fire',{kalosZ:true});if(!has(p)||!(dealt>0)||m.leaderGenerated||m.typeBondSecondary)return;const a=k(),b=q(p),u=s();
-  if(critical&&a.critPP&&proc(p,'critPP',.5)&&Math.random()<a.critPP)G.MovePP.add(p,p.moves,1);
+  if(critical&&a.critPP&&(!a.critPPType||m.type===a.critPPType)&&proc(p,'critPP',.5)&&Math.random()<a.critPP)G.MovePP.add(p,p.moves,1);
   if(a.freezeBeam&&m.kind==='beam'){e.applySlow(a.freezeBeam,1);if(eproc(e,'freezeBeam',.5)&&Math.random()<.15){e.freezeT=Math.max(e.freezeT||0,.7*(e.boss?.5:1));event('freeze');}}
   if(m.type==='electric'||critical)u.solarHits=(u.solarHits||0)+1;
   if(a.meleeShield&&m.kind==='melee'&&b.shieldSerial!==m.kalosCast&&proc(p,'meleeShield',.5)){b.shieldSerial=m.kalosCast;shield(p,p.maxHp*a.meleeShield,4);}
-  if((a.echo||a.meleeEcho&&m.kind==='melee')&&proc(p,'echo:'+e.id,.12)){const amount=dealt*(a.echo||a.meleeEcho);schedule(.12,()=>{if(e.dead)return;secondary(p,e,amount,m.type);event('echoHit');if(a.echoStun&&Math.random()<.2&&eproc(e,'echoStun',1))stun(e,a.echoStun);});}
+  if((a.echo||a.meleeEcho&&m.kind==='melee'||a.rainEcho&&m.kind==='melee'&&G.Weather.current?.kind==='rain')&&proc(p,'echo:'+e.id,.12)){const amount=dealt*((a.echo||(m.kind==='melee'?a.meleeEcho||0:0))+(a.rainEcho&&m.kind==='melee'&&G.Weather.current?.kind==='rain'?a.rainEcho:0));schedule(a.echoDelay||.12,()=>{if(e.dead)return;if(a.echoTypes)for(const type of a.echoTypes)secondary(p,e,amount/a.echoTypes.length*clampType(p,type,e,G.Abilities.outgoingType(p,type,e.types))*G.Weather.mult(type),type);else secondary(p,e,amount,m.type);event('echoHit');if(a.echoStun&&Math.random()<.2&&eproc(e,'echoStun',1))stun(e,a.echoStun);});}
   if(a.parasitic&&m.kind==='mine'){if(!e.kalosParasite||e.kalosParasite.left<=0)event('spore');e.kalosParasite={left:4,p};}
  }
  function hurt(p,n,type,src){if(!has(p)||!(n>0))return;if(k().contactCharge&&['contact','melee'].includes(src.kind))event('absorb',n);if(k().reflect&&src.kind==='contact'&&src.enemy)secondary(p,src.enemy,n*k().reflect,'grass');
-  const count=k().iceCounter||k().counterSpikes;if(count&&proc(p,'counter',2)){const main=p.activeMove()||p.moves[0];for(let i=0;i<count;i++)synthetic(p,'projectile',{type:k().iceCounter?'ice':'rock',count:1,dmg:main.dmg*.2,damageClass:main.damageClass,speed:350,life:.8,knock:60,kalosSecondary:true},i*Math.PI*2/count);}
+  const count=k().iceCounter||k().counterSpikes||k().typedCounter?.count;if(count&&proc(p,'counter',2)){const main=p.activeMove()||p.moves[0];for(let i=0;i<count;i++)synthetic(p,'projectile',{type:k().typedCounter?.type||(k().iceCounter?'ice':'rock'),count:1,dmg:main.dmg*.2,damageClass:main.damageClass,speed:350,life:.8,knock:60,kalosSecondary:true},i*Math.PI*2/count);}
  }
  function killed(e){if(!active()||!Z.team(e.lastAttacker))return;const u=s(),a=k(),p=e.lastAttacker,m=e.lastTypeBondAttack||{};u.kills++;
   if(!m.leaderGenerated&&a.fruitChance&&Math.random()<a.fruitChance&&proc(captain(),'supply',2))supply(p,'fruit');
@@ -39,7 +39,7 @@ G.LeaderKalos=(()=>{
  }
  function tick(dt){if(!active()||R().phase!=='combat'||!(dt>0))return;const u=s(),a=k(),cp=captain();for(const p of actors()){const b=q(p);b.healCredit=Math.min(p.maxHp*.03,(b.healCredit||0)+p.maxHp*.03*dt);b.overflowCredit=Math.min(p.maxHp*.03,(b.overflowCredit||0)+p.maxHp*.03*dt);if(!p.dead&&b.queuedHeal>0){const wanted=Math.min(b.queuedHeal,p.maxHp-p.hp,b.healCredit),before=p.hp;u.queuePay=true;try{p.heal(wanted);}finally{u.queuePay=false;}b.queuedHeal=Math.max(0,b.queuedHeal-Math.max(0,p.hp-before));if(p.hp>=p.maxHp)b.queuedHeal=0;}}
   if(a.zRegen&&u.zUntil>now())for(const p of actors())heal(p,p.maxHp*a.zRegen*dt);
-  u.pulse=(u.pulse||0)+dt;if(u.pulse>=1){u.pulse-=1;if(a.iceAura){for(const e of G.EnemyMgr.queryCircle(cp.x,cp.y,a.iceAura)){e.applySlow(.3,1.1);secondary(cp,e,budget(cp)*.01,'ice');event('iceHit');}}}
+  u.pulse=(u.pulse||0)+dt;if(u.pulse>=1){u.pulse-=1;if(a.iceAura){for(const e of G.EnemyMgr.queryCircle(cp.x,cp.y,a.iceAura)){e.applySlow(.3,1.1);if(a.iceAuraDamage!==0){secondary(cp,e,budget(cp)*.01,'ice');event('iceHit');}}}}
   // Buff copies happen after the ordinary buff has actually been applied, not before it.
   for(const job of [...(u.syncJobs||[])]){u.syncJobs.splice(u.syncJobs.indexOf(job),1);const p=actors().find(p=>(p===cp?'captain':p.squadId)===job.owner);if(!p)continue;for(const ally of actors().filter(v=>v!==p&&!v.dead))for(const [key,b]of Object.entries(p.buffs)){if(key!==job.stat||!(b.n>0&&b.amount>0&&b.t>0)||!ally.buffs[key])continue;const current=ally.buffs[key],amount=b.n*b.amount*a.sync;if(current.t>0&&current.n*current.amount>=amount)continue;ally.addBuff(key,amount,Math.min(5,b.t),1);}}
  }

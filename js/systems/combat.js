@@ -713,6 +713,7 @@ G.Combat = (() => {
       // --- disparos de jugadores ---
       // Orbes de un compañero: sólo se ven.
       if (p.ghost) continue;
+      if(G.LeaderGalar?.obstacle(p))continue;
       if(p.phaseWalls&&!p.ignoreTerrain&&G.World.arenaContains&&!G.World.arenaContains(p.x,p.y,p.r)){G.Projectiles.remove(p);continue;}
       if (!p.orb && !p.zMove && !p.phaseWalls && !p.ignoreTerrain) {
         const block = G.World.projectileBlock(p.x, p.y, p.r);
@@ -789,7 +790,7 @@ G.Combat = (() => {
                crit ? 'crit' : p.mtype ? G.Types.label(G.Abilities.outgoingType(owner, p.mtype, e.types)) : null, owner, {leaderGenerated:!!p.specMove?.leaderGenerated,leaderCrit:crit,leaderReturning:!!p.back,leaderBounced:!!p.leaderBounced, id: p.moveId, type: p.mtype, kind: p.moveKind || (p.orb ? 'orbit' : 'projectile'), damageClass:p.damageClass, evolved:!!p.evolved,typeCastId:p.typeCastId||0,johtoBaton:!!p.specMove?.johtoBaton,leaderTrue:!!p.specMove?.leaderTrue,hoennZ:!!p.specMove?.hoennZ,sinnohZ:!!p.specMove?.sinnohZ,kalosZ:!!p.specMove?.kalosZ,kalosCast:p.specMove?.kalosCast,kalosReturnStun:p.specMove?.kalosReturnStun,kalosBurnBlast:!!p.specMove?.kalosBurnBlast,kalosSecondary:!!p.specMove?.kalosSecondary,unovaSerial:p.specMove?.unovaSerial,unovaSmelt:!!p.specMove?.unovaSmelt,unovaDarkBoost:!!p.specMove?.unovaDarkBoost,unovaSecondary:!!p.specMove?.unovaSecondary,sinnohVulnerable:p.specMove?.sinnohVulnerable,sinnohSoul:!!p.specMove?.sinnohSoul,sinnohSecondary:!!p.specMove?.sinnohSecondary,sinnohCut:p.specMove?.sinnohCut,sinnohBreak:!!p.specMove?.sinnohBreak,sinnohExecute:p.specMove?.sinnohExecute,hoennExecute:p.specMove?.hoennExecute,hoennShieldCut:p.specMove?.hoennShieldCut,hoennSoften:p.specMove?.hoennSoften,hoennSpdefZero:p.specMove?.hoennSpdefZero,hoennTeamAttack:p.specMove?.hoennTeamAttack,hoennPen:p.specMove?.hoennPen,typeBondSecondary:!!p.typeBondSecondary,noDragonCount:!!p.noDragonCount,typeBondCritApplied:true,bondDamageContributions:p.bondDamageContributions,bondDamageKind:p.bondDamageKind }) || 0;
         if (Math.random() < 0.5) G.FX.sp('impact', p.vis ? p.vis.pal : 'normal', e.x, e.y - e.bodyH * 0.5, { life: 0.12, scale: 1 });
         owner.dmgDealt += dealt;
-        owner.onDealt(dealt);
+        owner.onDealt(dealt);G.LeaderGalarZ?.projectileHit(owner,e,p.specMove);
         if (p.burn) e.applyBurn(p.burn, owner,!!p.specMove?.leaderGenerated);
         if (p.poison) e.applyPoison(p.poison, owner,!!p.specMove?.leaderGenerated);
         if (p.slow) e.applySlow(p.slow);if(p.specMove?.leaderStun)G.LeaderAbilities?._z.stun(e,p.specMove.leaderStun);if(p.specMove?.johtoExtendStun)G.LeaderJohto?.extendStun(e,p.specMove.johtoExtendStun);if(p.specMove?.johtoSmash)e.shield=0;

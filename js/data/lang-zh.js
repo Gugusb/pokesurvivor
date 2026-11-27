@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Capitanes de Galar y Hisui · v0.43.0-alpha.75": "伽勒尔与洗翠队长特性 · v0.43.0-alpha.75",
+  "Se incorporan 44 familias de capitanes de Galar y Hisui con pasiva, coste, avances 5/8 y Z manual familiar. Las ramas de familias anteriores conservan sus reglas.": "接入44个伽勒尔与洗翠队长家族，包含基础被动、代价、训练家5／8级进阶与家族手动Z；前代家族的跨代进化沿用原规则。",
+  "Las fichas conservan los cinco apartados originales; las estimaciones, los ajustes y diez subreglas pendientes se muestran por separado.": "特性卡保留五段原文，收益估算、数值调整与10条暂缓子规则另列，方便逐项核对。",
+  "Los misiles explotan al impactar, los dardos comparten su potencia y las embestidas de ida y vuelta comparten presupuesto. Se ajustan acumulaciones, ecos y escudos de golpes múltiples.": "导弹接触后爆炸，龙箭平分总威力，往返冲锋共用伤害预算；调整了叠层、回响与群怪命中刷盾收益。",
+  "Se mantienen la carga Z de alpha.66, las provisiones tras ganar y los límites de curación y escudo. Llegan nuevas elecciones de botín e intereses ligados al capitán.": "保留alpha.66的Z充能规则、胜利后补给结算及治疗护盾上限；接入队长对应的道具选择和利息效果。",
+  "Dejé las nuevas fichas sujetas con pequeñas banderas y marqué las dudas en otra página. Quien cocina ajustó las cuentas; yo guardo una manta en la mochila para que podamos revisar la ruta de nieve sin tiritar.": "我用小旗固定好新特性卡，把有疑问的地方记在另一页。做饭的那家伙核对了数值；我往行囊里塞了条毯子，咱们看雪原路线时就不用抖个不停啦。",
+
   "Optimización de móvil en horizontal y APK de prueba · v0.43.0-alpha.74": "手机端横屏布局优化与离线测试 APK · v0.43.0-alpha.74",
   "Se reescala de forma proporcional la interfaz de combate en móvil horizontal: controles táctiles, ranuras de movimientos, barra superior, barra de jefe y pestañas laterales dejan mucha más visibilidad del campo, y los paneles flotantes de EXP y daño arrancan plegados por defecto en pantallas bajas.": "手机端横屏战斗界面全面等比例瘦身：缩小虚拟摇杆、技能槽、顶部状态条、BOSS 血条/生得护盾条与侧边标签按钮，大幅释放战斗视野；左侧训练家经验面板与右侧伤害统计在矮屏横屏下默认折叠为迷你标签，点击随时展开。",
   "El calendario de ruta, la tienda (5 ofertas en una fila), la formación de equipo, las cartas de subida de nivel, los talentos del entrenador, la mochila y los resultados de combate adoptan diseños horizontales compactos para reducir drásticamente el desplazamiento vertical.": "日程地图改为满屏三栏横屏工作台、商店 5 格宝可梦一字排开、编队界面三栏紧凑排布（两行 10 格同屏可见）、升级选卡与训练家潜能改为横向并排、战利品结算与背包保持双栏横排，大幅减少手机横屏频繁上下翻页。",
