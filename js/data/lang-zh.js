@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Descripciones claras de capitanes (Gen 1) · v0.43.0-alpha.77": "第一世代队长特性描述规范化优化 · v0.43.0-alpha.77",
+  "Se reescriben y estandarizan las descripciones dentro del juego de las 74 familias de capitanes de Kanto (Gen 1) en chino e inglés, con viñetas breves, terminología unificada y valores reales de cada pasiva, coste, avance 5/8 y Z manual.": "全面重写并规范化游戏内第一世代（关都）74 个队长特性家族的中英文描述：统一招式与属性术语，逐条给出基础被动、能力代价、Lv.5/8 进阶与主动 Z 的精确运行数值，去除冗余表述与原始字段名。",
+  "Se corrigen textos de carga Z obsoletos (60 s) para reflejar la regla actual de 120 s con aceleración doble por evento, y la tarjeta de capitán ahora admite viñetas estructuradas por línea.": "同步修正卡片内旧版 60 秒充能说明为现行「120秒基础充能＋对应事件双倍加速」规则，并支持特性卡按要点分条渲染。",
+  "Pasé a limpio las setenta y cuatro fichas de Kanto con números claros y sin rodeos. Quien cocina revisó cada porcentaje contra el juego real; ahora de un vistazo sabemos qué hace nuestro capitán sin leer un pergamino.": "我把关都七十四张特性卡全抄了一遍整齐版，把弯弯绕绕的话删干净、数值标明白啦。做饭的那家伙对照实战把每个百分比都核过一遍，咱们以后一眼就能看懂队长怎么发力。",
+
   "Capitanes de Paldea · v0.43.0-alpha.76": "帕底亚队长特性（九世代收官） · v0.43.0-alpha.76",
   "Se incorporan las 52 familias de capitanes de Paldea (desde Sprigatito hasta Terapagos) con pasiva, coste, avances en niveles 5 y 8 y Z manual familiar, completando las nueve generaciones. Las evoluciones de familias previas (#979–#983, #1011/#1019, #1018) conservan sus raíces originales.": "完整接入帕底亚 52 个队长特性家族（新叶喵至太乐巴戈斯），涵盖基础被动、能力代价、训练家 5／8 级进阶与家族手动 Z，九个世代队长特性全部落地；跨代进化（#979–#983、#1011/#1019、#1018）沿用原根家族规则。",
   "Las fichas conservan los cinco apartados originales del diseño; las estimaciones numéricas, los ajustes y tres subreglas no cuantificadas se listan por separado.": "特性卡完整保留五段设计原文，每家族收益估算、数值调整与 3 条未定量暂缓子规则另列展示。",

@@ -22,7 +22,18 @@ function setup(dex=4,level=1,medal=true,reuse=null){
 }
 test('74 catalogue families, all named Z handlers and readable five-part parameters are covered',()=>{
  const {G}=setup();assert.equal(G.LeaderAbilitiesConfig.families.length,74);assert.equal(G.LeaderAbilities.zKinds.length,74);
- for(const f of G.LeaderAbilitiesConfig.families){assert.ok(G.LeaderAbilities.zKinds.includes(f.active.kind));assert.ok(G.LeaderMedals.medalsFor(f.members.find(d=>G.DEX_BY[d]?.gen===1)).some(d=>d.leader));}
+ for(const f of G.LeaderAbilitiesConfig.families){
+  assert.ok(G.LeaderAbilities.zKinds.includes(f.active.kind));
+  assert.ok(G.LeaderMedals.medalsFor(f.members.find(d=>G.DEX_BY[d]?.gen===1)).some(d=>d.leader));
+  for(const lang of ['zh','en'])for(const key of ['base','active','cost','five','eight']){
+   const arr=f.description?.[lang]?.[key];
+   assert.ok(Array.isArray(arr)&&arr.length>=1,`missing ${lang}.${key} on #${f.root}`);
+   for(const line of arr){
+    assert.ok(line.trim().length>=4&&line.length<=160,`bad length ${lang}.${key} on #${f.root}: ${line}`);
+    assert.ok(!/budget\(|stats\.[a-z]|moves\.[a-z]|zCrit|incomingTypes/.test(line),`raw code token in #${f.root}: ${line}`);
+   }
+  }
+ }
 });
 test('passives and costs do not require medals; 5/8 advances use trainer level; family medals and legacy medals unlock Z',()=>{
  const {G,p}=setup(4,1,false);assert.equal(G.LeaderMedals.unlocked(6),false);assert.equal(G.LeaderAbilities.profile().moves.cone.range,1.7);assert.equal(G.LeaderAbilities.profile().weakDamage,1.35);assert.equal(G.LeaderAbilities.profile().burnCrit,undefined);

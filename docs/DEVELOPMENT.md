@@ -34,6 +34,14 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.77 — 2026-11-27
+
+- 规范化并精简游戏内第一世代（关都）全部 74 个队长特性家族描述：
+  - 新增批量生成脚本 `tools/polish_leader_gen1_desc.cjs`，在 `config/leader_abilities_gen1.json` 中为全 74 家族写入标准化中英文 `description.zh` / `description.en`（严格对齐 `leader-abilities.js` 与 `leader-z-moves.js` 的实际运行数值，涵盖百分比增减、范围/冷却/持续/上限及 Z 威力与 `120s + 1s 双倍加速` 充能行，保留原 `source` 与所有运行时参数不变）。
+  - 更新 `js/ui/leader-abilities-ui.js`：支持数组形式的分条 `<li>` 渲染，非中文语言优先回退至 `description.en`，并修正通用回退充能文案由旧 60 秒改为现行 120 秒基础充能规则。
+  - 在 `tools/test_leader_abilities.cjs` 新增全 74 家族中英文五段描述完整性、长度与零代码符号泄漏断言。
+- 验证：`node --test tools/test_leader_abilities.cjs tools/test_leader_gen9.cjs` 通过；`node tools/build.js` 与 `node tools/export_data.js` 通过（当前终端未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.76 — 2026-11-27
 
 - 落地第九世代（帕底亚）全部 52 个队长特性家族（`#906` 新叶喵至 `#1024` 太乐巴戈斯，源设计文 `LEADER_ABILITIES_GEN9.md`），九个世代队长特性全部完成落地（总计 508 个手动 Z 调度）：
