@@ -39,11 +39,32 @@ G.LeagueRank=(()=>{
     const applied=kind==='stars'?points-before.points:protocol-before.protocol;
     return {id,reason,hp,diff,bonus,grade:reason==='cleared'?grade:null,kind,award,applied,before,after,promoted:after.tier>before.tier||after.protocol>before.protocol};
   }
+  const TIER_REWARDS = { 2: 1000, 3: 1500, 4: 3000, 5: 4000, 6: 5000, 7: 6000, 8: 8000, p1: 10000 };
+  function syncRewards(s){
+    if(!s)return {granted:0,items:[]};
+    s.leagueRankRewards=s.leagueRankRewards&&typeof s.leagueRankRewards==='object'&&!Array.isArray(s.leagueRankRewards)?s.leagueRankRewards:{};
+    const v=view(s),items=[];let granted=0;
+    for(let t=2;t<=v.tier;t++){
+      const key=String(t);
+      if(!s.leagueRankRewards[key]&&TIER_REWARDS[key]){
+        s.leagueRankRewards[key]=TIER_REWARDS[key];
+        s.leagueCoins=(s.leagueCoins||0)+TIER_REWARDS[key];
+        granted+=TIER_REWARDS[key];items.push({key:'R'+t,amount:TIER_REWARDS[key]});
+      }
+    }
+    if(v.protocol>=1&&!s.leagueRankRewards.p1){
+      s.leagueRankRewards.p1=TIER_REWARDS.p1;
+      s.leagueCoins=(s.leagueCoins||0)+TIER_REWARDS.p1;
+      granted+=TIER_REWARDS.p1;items.push({key:'R8+',amount:TIER_REWARDS.p1});
+    }
+    return {granted,items};
+  }
   function settle(s,run,options={}){
     normalize(s);const r=preview(s,run,options);
-    if(!validId(r.id))return {...r,reason:'invalid',award:0,applied:0,after:r.before,promoted:false};
+    if(!validId(r.id))return {...r,reason:'invalid',award:0,applied:0,after:r.before,promoted:false,leagueCoinsGranted:0};
     if(r.applied>0)s.leagueRank.results[r.id]={kind:r.kind,award:r.award,hp:r.hp,at:options.at??Date.now()};
-    return r;
+    const rw=syncRewards(s);
+    return {...r,leagueCoinsGranted:rw.granted,leagueRewardItems:rw.items};
   }
   function rules(input=G.Expedition?.run){const tier=typeof input==='number'?input:input?.leagueTier??view(G.DB?.save).tier;return {tier,skill:true,types:tier>=2,traits:tier>=3,'pokemon-training':tier>=3,training:true,eggs:tier>=4,eggTags:tier>=3,talents:true,advancedFruits:tier>=4,pityEvery:tier===1?4:tier===2?8:0,companionChance:tier===1?.6:tier===2?.4:null};}
   const allows=(key,input)=>rules(input)[key]!==false;
@@ -53,5 +74,5 @@ G.LeagueRank=(()=>{
     const roots=new Set(members.map(p=>G.MonProgression.rootFor(p.dex)));if(offers.some(o=>o&&!o.sold&&roots.has(G.MonProgression.rootFor(o.dex))))return true;
     const card=pool.drawOwned(members,rng);if(!card)return false;pool.putBack(offers[0]);offers[0]=card;return true;
   }
-  return {rules,allows,filterMap,pityShop,TIERS,local,normalize,view,merge,preview,settle};
+  return {rules,allows,filterMap,pityShop,TIERS,TIER_REWARDS,syncRewards,local,normalize,view,merge,preview,settle};
 })();

@@ -1,6 +1,21 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Bolsa de consignación": "交易所（寄售商店）",
+  "Compra y vende con Monedas Liga": "使用联盟币寄售与购买道具",
+  "Monedas Liga": "联盟币",
+  "Monedas Liga:": "联盟币：",
+  "Actualizar": "刷新",
+  "Comprar": "选购商品",
+  "Consignar": "我要寄售",
+  "Mis anuncios": "我的寄售",
+  "Medallas de las regiones disponibles": "全九世代队长特性勋章与邀请函",
+  "Gacha de habilidades Gen 1–9, Monedas Liga y Bolsa · v0.43.0-alpha.79": "全世代特性抽卡重构、联盟币与交易所 · v0.43.0-alpha.79",
+  "El Gacha de habilidades ya incluye las 9 generaciones (Kanto a Paldea): 2% de medalla de capitán con igual peso por familia y 98% de invitación de la generación (conservando el 0,1% de Bola Dorada). Las medallas repetidas se convierten en un Vale de medalla familiar.": "特性抽卡正式开放全部九个世代（关都至帕底亚）：2% 概率获得本世代队长特性勋章（各家族权重均等为 1），98% 概率获得本世代宝可梦邀请函（保留 0.1% 金色精灵球）；重复抽中队长特性勋章时转化为该家族的「特性勋章兑换券」。",
+  "Llega la nueva moneda Monedas Liga: se obtiene completando tareas de investigación (+200 cada una), alcanzando por primera vez los rangos R2–R8 y el primer claro del Camino del Campeón (1.000 a 10.000), logros (50–200) y ventas en la Bolsa.": "新增货币「联盟币」：完成宝可梦研究任务（每项 200）、首次到达联盟段位 R2–R8 及冠军之路首通（依次 1000／1500／3000／4000／5000／6000／8000／10000）、达成成就（50–200）以及交易所寄售均可获取。",
+  "Se añade la Bolsa de consignación (tienda entre jugadores): permite consignar Gemas de habilidad (mín. 100), Vales de medalla (mín. 2.000, desbloquean la medalla al instante al comprarlos) y Poké/Super/Ultra Balls (mín. 50 / 200 / 1.000), agrupados por tipo con precio mínimo y lista ordenada por precio ascendente.": "新增玩家「交易所（寄售商店）」：支持寄售特性宝石（最低 100）、特性勋章兑换券（最低 2000，购买后立即解锁对应家族特性勋章并消耗）及普通/超级/高级球（最低 50／200／1000），按商品种类展示最低价，点开后按价格升序展示所有在售项与寄售者。",
+  "Abrí un mostrador de consignación al lado del gacha y puse un letrero nuevo para las Monedas Liga. Quien cocina revisó todas las cerraduras del servidor para que nadie pierda ni un vale; si nos sale una medalla repetida, ahora podemos cambiarla por algo útil.": "我在抽卡机旁边新搭了座交易所小摊，给联盟币挂上了新牌子。做饭的那家伙把账房的每道锁都查了一遍，以后抽到重复的队长勋章也能挂上去换点好东西啦。",
+
   "Descripciones unificadas de los 9 gen de capitanes · v0.43.0-alpha.78": "全九世代队长特性描述统一规范化 · v0.43.0-alpha.78",
   "Se completan y unifican las descripciones en chino e inglés de todas las 508 familias de capitanes (generaciones 1 a 9): viñetas concisas, terminología consistente y cifras exactas alineadas con las reglas reales en combate.": "完成全九世代共 508 个队长特性家族（Gen 1–9）的中英文标准化展示文案：统一招式与属性术语，逐条给出基础被动、能力代价、Lv.5/8 进阶与主动 Z 的实际生效数值，移除代码符号与冗余叙述。",
   "Las tarjetas de capitán muestran directamente las reglas y valores efectivos (incluida la carga Z de 120 s con aceleración por evento) y ocultan el bloque largo de notas internas, dejando un pie único y claro con los topes compartidos.": "特性卡片直接呈现精确生效规则与现行 120 秒事件加速充能说明，隐藏冗长的内部调整附注区块，精简为一行清晰的通用上限提示。",

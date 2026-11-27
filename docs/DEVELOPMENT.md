@@ -34,6 +34,21 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.79 — 2026-11-27
+
+- 重构特性抽卡（Gen 1–9 全开放 + 新卡池概率 + 特性勋章兑换券）：
+  - `js/systems/ability-gacha.js` 与 `js/ui/gacha-ui.js`：动态读取全部九个世代（Gen 1–9）队长特性家族，卡池调整为 **2% 概率获得本世代队长特性勋章**（该世代所有家族等权均分，每家族权 1）+ **98% 概率获得本世代宝可梦邀请函**（保留 0.1% 金色精灵球与 70 抽 5★ 保底）；重复抽中已有家族的特性勋章时，自动发放该家族的 **特性勋章兑换券**（`save.abilityVouchers[medalId]`）。
+- 新增货币「联盟币（`leagueCoins`）」及多渠道获取：
+  - 存档与同步接入 `js/core/db.js`、`js/systems/save-sync.js`、`server/domain.cjs` 及顶部状态栏（`dev.html`、`js/ui/ui.js`）。
+  - 宝可梦研究任务（`js/systems/research.js`）：每完成并领取 1 项研究任务奖励 **200 联盟币**。
+  - 联盟段位首达奖励（`js/systems/league-rank.js`）：首次达到 `R2–R8` 及冠军之路首通（`p1`）依次发放 `1000 / 1500 / 3000 / 4000 / 5000 / 6000 / 8000 / 10000` 联盟币（幂等记录于 `leagueRankRewards`，老存档打开主菜单自动补发）。
+  - 成就奖励（`js/data/achievements.js`、`js/systems/progress.js`）：按成就档位附加 `50 / 80 / 120 / 200` 联盟币。
+- 新增交易所（寄售商店）：
+  - 后端原子交易（`server/store.cjs`、`server/exchange.cjs`、`server/server.cjs`）：新增 `exchange_listings` 表与 `/api/exchange`、`/api/exchange/list`、`/api/exchange/buy`、`/api/exchange/cancel` 接口（`BEGIN IMMEDIATE` 原子扣款/放货/防自买/防重复购买已拥有勋章，响应禁用缓存）。
+  - 支持寄售商品与最低价：特性宝石（100）、特性勋章兑换券（2000，购买后立即解锁该家族特性勋章并消耗）、普通球（50）、超级球（200）、高级球（1000）。
+  - 前端系统与界面（`js/systems/exchange.js`、`js/ui/exchange-ui.js`、`js/net/server-client.js`、`js/ui/menu.js`、`css/style.css`）：选购页按商品种类展示最低价与在售数量，点开后按价格升序展示所有在售项及寄售者，并支持寄售上架与下架退回（同时兼容本地/游客模式演示）。
+- 验证：`node --test tools/test_exchange_gacha.cjs tools/test_server.cjs` 全部通过；`node tools/build.js` 与 `node tools/export_data.js` 通过（当前终端未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.78 — 2026-11-27
 
 - 完成全九世代 508 个队长特性家族（Gen 1–9）的标准化、精简与精确数值化展示文案：

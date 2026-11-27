@@ -9,7 +9,7 @@ G.UI = (() => {
   const $ = id => document.getElementById(id);
   const SCREENS = ['scr-login', 'scr-test', 'scr-result', 'scr-starters', 'scr-menu',
                    'scr-dex', 'scr-upgrades', 'scr-gacha', 'scr-levelup', 'scr-pause', 'scr-over',
-                   'scr-nick', 'scr-friends', 'scr-lobby', 'scr-rank', 'scr-item', 'scr-goals', 'scr-bond', 'scr-mod', 'scr-offline','scr-victory','scr-nursery','scr-backpack','scr-specialization','scr-journey','scr-squad'];
+                   'scr-nick', 'scr-friends', 'scr-lobby', 'scr-rank', 'scr-item', 'scr-goals', 'scr-bond', 'scr-mod', 'scr-offline','scr-victory','scr-nursery','scr-backpack','scr-specialization','scr-journey','scr-squad','scr-exchange'];
 
   function show(id, keepMenu = false) {
     for (const s of SCREENS) if (s !== id && !(keepMenu && s === 'scr-menu')) $(s).classList.add('hidden');
@@ -30,6 +30,7 @@ G.UI = (() => {
   function refreshCoins() {
     const s = G.DB.save;
     $('coins').textContent = s ? s.coins.toLocaleString('es') : '0';
+    if ($('league-coins')) $('league-coins').textContent = s ? (s.leagueCoins || 0).toLocaleString('es') : '0';
     const t = (s && s.tickets) || { t1: 0, t10: 0 };
     $('tickets-pill').innerHTML = `${G.Icons.html('ticket', 18)} ${t.t1} &nbsp;${G.Icons.html('ticket10', 18)} ${t.t10} &nbsp;${G.Icons.html('gem', 18)} ${(s && s.abilityGems) || 0}`;
     // Punto de sincronización: verde = guardado en la nube, amarillo = guardando,

@@ -1164,3 +1164,25 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
   .mastery-card { min-height: 52px; padding: 8px 10px; margin: 5px 0; gap: 3px; }
   .mastery-card span { font-size: 11px; line-height: 1.35; }
 }
+
+/* ============ Exchange (Consignment Shop) & League Coins ============ */
+.league-pill { border-color: rgba(255, 210, 90, .45); color: #ffe799; }
+.league-coin-ico { font-style: normal; }
+.exchange-box { max-width: 820px; width: min(820px, 96vw); max-height: 86vh; display: flex; flex-direction: column; }
+.exchange-body { overflow-y: auto; flex: 1; min-height: 220px; padding-right: 4px; }
+.exchange-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 10px; }
+.exchange-cat-card { display: flex; align-items: center; gap: 10px; text-align: left; padding: 12px; border-radius: 12px; border: 1px solid rgba(130, 190, 230, .28); background: rgba(20, 38, 62, .75); color: #e8f3ff; cursor: pointer; transition: border-color .15s, transform .12s; }
+.exchange-cat-card:hover { border-color: #ffd15c; transform: translateY(-1px); }
+.exchange-cat-card.empty { opacity: .72; }
+.exchange-cat-card .ex-ico { flex: 0 0 32px; display: grid; place-items: center; }
+.exchange-cat-card .ex-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.exchange-cat-card .ex-info b { font-size: 14px; color: #fff6d6; }
+.exchange-cat-card .ex-info small { font-size: 12px; color: #9ec7e0; }
+.exchange-cat-card .ex-price { font-size: 12px; color: #ffd978; }
+.exchange-detail-head { padding: 8px 10px; border-radius: 10px; background: rgba(255, 255, 255, .04); border: 1px solid rgba(130, 190, 230, .2); }
+.exchange-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+.exchange-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 12px; border-radius: 10px; background: rgba(16, 30, 50, .72); border: 1px solid rgba(130, 190, 230, .22); flex-wrap: wrap; }
+.ex-row-main { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ex-row-price { font-size: 15px; color: #ffd76a; min-width: 96px; }
+.ex-row-seller { font-size: 13px; color: #b5d3ea; }
+.ex-price-input { width: 104px; padding: 5px 8px; border-radius: 8px; border: 1px solid rgba(140, 195, 235, .4); background: rgba(10, 20, 36, .85); color: #fff; font-size: 13px; }

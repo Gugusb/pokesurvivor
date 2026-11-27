@@ -15,6 +15,7 @@ const { openStore } = require("./store.cjs"),
   { ROOT, G, fresh, sanitize, clone, record, safeObject } = require("./domain.cjs");
 const {characterFor}=require('./character-profiles.cjs');
 const {createRecorder}=require('./expedition-recorder.cjs');
+const {createExchange}=require('./exchange.cjs');
 const derive = promisify(scrypt),
   digest = (s) => createHash("sha256").update(s).digest("hex");
 const VERSION = require('./package.json').version,
@@ -421,6 +422,7 @@ function createApp(opts = {}) {
     });
   }
   const services = require('./social-services.cjs')({q,all,exec,atomic,saved,save,isFriend,now,fail,notifySocial,rng:opts.rewardRandom});
+  const exchange = createExchange({db,G,q,all,exec,atomic,saved,save,displayName,now,fail});
   async function api(req, res, url) {
     checkOrigin(req);
     const route = url.pathname.slice(4),
@@ -441,6 +443,7 @@ function createApp(opts = {}) {
       "/ranking",
       "/social",
       "/nursery",
+      "/exchange",
       "/profile",
       "/admin/users",
       "/admin/reports",
@@ -744,6 +747,8 @@ function createApp(opts = {}) {
     }
     if(route==='/nursery' || route.startsWith('/nursery/') || route.startsWith('/gifts/'))
       return json(res,200,services.route(route,u.uid,b,url));
+    if(route==='/exchange' || route.startsWith('/exchange/'))
+      return json(res,200,exchange.route(route,u,b));
     if (route === "/friends/request") {
       const other = q(
         "SELECT uid FROM users WHERE lower=? AND deleted=0 AND ban=0",

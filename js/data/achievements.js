@@ -87,7 +87,13 @@ G.AchDefs = (() => {
   for (const a of LIST) if (a.id === 'evoAll') { a.goal = evoTotal; a.desc = `Evoluciona los ${evoTotal} movimientos distintos.`; }
 
   const BY = {};
-  for (const a of LIST) BY[a.id] = a;
+  for (const a of LIST) {
+    a.reward = Object.assign({}, a.reward);
+    if (!a.reward.leagueCoins) {
+      a.reward.leagueCoins = a.tier === 1 ? 50 : a.tier === 3 ? 200 : a.dex ? 80 : 120;
+    }
+    BY[a.id] = a;
+  }
 
   return { CATS, LIST, BY };
 })();

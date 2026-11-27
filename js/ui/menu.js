@@ -10,7 +10,7 @@ G.MenuUI = (() => {
     dexFilter === 'shiny' ? !!s.shiny?.[p.dex] : /^\d$/.test(dexFilter) ? p.rarity === +dexFilter : true;
 
   function init() {
-    const ICON = { play: 'ball', dex: 'book', nursery:'ball', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
+    const ICON = { play: 'ball', dex: 'book', nursery:'ball', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', exchange: 'coin', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
     document.querySelectorAll('#scr-menu [data-go]').forEach(b => {
       b.insertAdjacentHTML('afterbegin', `<span class="mi-ico">${G.Icons.html(ICON[b.dataset.go], 26)}</span>`);
       b.dataset.sfx = b.dataset.go === 'play' ? 'confirm' : 'click';
@@ -21,6 +21,7 @@ G.MenuUI = (() => {
         else if (go === 'upgrades') openUpgrades();
         else if (go === 'gacha') G.GachaUI.open();
         else if (go === 'ability-gacha') G.GachaUI.open('ability');
+        else if (go === 'exchange') G.ExchangeUI.open();
         else if (go === 'goals') G.GoalsUI.open();
         else if (go === 'offline') G.OfflineUI.open();
         else if (go === 'nursery') G.NurseryUI.open();
@@ -47,6 +48,8 @@ G.MenuUI = (() => {
     G.UI.chrome(true);
     G.UI.show('scr-menu');
     G.ExpeditionSave?.menu();G.LeagueRankUI?.menu();
+    const lr = G.LeagueRank?.syncRewards(s);
+    if (lr?.granted) { G.DB.commit(true); G.UI.refreshCoins(); }
     G.UI.sprite($('menu-partner'), mon.dex, { lively: true, scale: 4, hero: true, shiny });
     $('menu-partner').style.setProperty('--stage-c', shiny ? '#9ae6ff' : G.U.TYPE_COLOR[mon.types[0]]);
     $('menu-partner').classList.toggle('shiny', shiny);

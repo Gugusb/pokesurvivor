@@ -42,6 +42,15 @@ G.Server = (() => {
       'Gift already sent today':['Ya has enviado un regalo hoy a este amigo.','今天已经向这位好友送过礼物。'],
       'Daily gift limit reached':['Has alcanzado los 10 regalos diarios.','今天已向 10 位好友赠礼，请明日再来。'],
       'Gift not found':['Regalo no encontrado.','未找到这份礼物。'],
+      'Item cannot be consigned':['Este objeto no puede consignarse.','该物品不可寄售。'],
+      'Insufficient Ability Gems':['Gemas de habilidad insuficientes.','特性宝石数量不足。'],
+      'Insufficient Poké Balls':['Poké Balls insuficientes.','精灵球数量不足。'],
+      'Insufficient Medal Vouchers':['Vales de medalla insuficientes.','特性勋章兑换券数量不足。'],
+      'Listing not found or already sold':['Anuncio no encontrado o ya vendido.','该寄售商品不存在或已被买走。'],
+      'Cannot buy your own listing':['No puedes comprar tu propio anuncio.','不能购买自己寄售的商品。'],
+      'Insufficient League Coins':['Monedas de la Liga insuficientes.','联盟币余额不足。'],
+      'Ability medal already owned':['Ya posees esta medalla de capitán.','你已拥有该家族的特性勋章，无需重复购买。'],
+      'Listing not found':['Anuncio no encontrado.','未找到该寄售商品。'],
       'Wallet limit reached':['Alcanza el límite del monedero; gasta primero.','货币达到上限，请先消耗后再领取。'],
       "Sign in required": ["Inicia sesión de nuevo.", "请重新登录。"],
       "Account suspended": ["Cuenta suspendida.", "账号已被封禁。"],
@@ -321,6 +330,18 @@ G.Server = (() => {
       return r.report;
     });
   }
+  async function exchangeAction(route, data) {
+    await flush();
+    return enqueue(async () => {
+      if (dirty || pendingSave) await upload();
+      const r = data === undefined ? await api(route) : await api(route, data);
+      if (r && r.save) {
+        accept(r, true);
+        G.UI?.refreshCoins?.();
+      }
+      return r;
+    });
+  }
   async function socialAction(route,data={},reward=false) {
     await flush();
     return enqueue(async()=>{
@@ -479,6 +500,7 @@ G.Server = (() => {
     flush,packAction,packLocal,
     settleOffline,
     socialAction,
+    exchangeAction,
     claimBonus,
     checkpointRun:()=>run?{id:run.id,start:{...run.start}}:null,pauseCheckpoint:()=>clearInterval(beatTimer),
     async restoreCheckpoint(saved){if(!user||!saved?.start||saved.start.mode!=='q'||typeof saved.id!=='string'||!/^[\w-]{8,100}$/.test(saved.id)||saved.id!==saved.start.id)throw Error('Invalid saved run');clearInterval(beatTimer);++runGeneration;run={id:saved.id,start:{...saved.start},started:false};displayRun=run.id;runPromise=Promise.resolve(run);await enqueue(()=>ensureStarted(run));await heartbeat();startRun();},

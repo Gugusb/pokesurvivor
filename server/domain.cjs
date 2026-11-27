@@ -96,9 +96,18 @@ function sanitize(input, old, name, options={}) {
           .map((f) => ({ dex: f.dex, shiny: !!f.shiny }))
       : [],
   };
-  for (const k of ["coins", "abilityGems"])
+  for (const k of ["coins", "abilityGems", "leagueCoins"])
     if (!Number.isSafeInteger(s[k]) || s[k] < 0 || s[k] > 1e8)
       throw new Error("Invalid currency");
+  if (!s.abilityVouchers || typeof s.abilityVouchers !== "object" || Array.isArray(s.abilityVouchers)) s.abilityVouchers = {};
+  for (const [id, cnt] of Object.entries(s.abilityVouchers)) {
+    const v = Math.floor(+cnt || 0);
+    if (!G.AbilityDefs?.BY_ID?.[id] || v <= 0 || v > 9999) delete s.abilityVouchers[id];
+    else s.abilityVouchers[id] = v;
+  }
+  if (!s.leagueRankRewards || typeof s.leagueRankRewards !== "object" || Array.isArray(s.leagueRankRewards)) s.leagueRankRewards = {};
+  if (!s.pokeballs || typeof s.pokeballs !== "object" || Array.isArray(s.pokeballs)) s.pokeballs = { pokeball: 5, greatball: 2, ultraball: 1 };
+  for (const k of ["pokeball", "greatball", "ultraball"]) s.pokeballs[k] = Math.max(0, Math.min(9999, Math.floor(+s.pokeballs[k] || 0)));
   for (const k of ["t1", "t10"])
     if (
       !Number.isSafeInteger(s.tickets?.[k]) ||

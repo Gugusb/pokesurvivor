@@ -74,6 +74,7 @@ G.DB = (() => {
       created: Date.now(),
       updated: Date.now(),    // última modificación (para fusionar)
       coins: START_COINS,
+      leagueCoins: 0,
       owned: {},              // dex -> { at, from: 'starter'|'gacha'|'capture'|'golden-ball' }
       invites: {},            // dex -> count of invitation cards
       inviteIVs: {},          // dex -> 8-stat max IV array recorded from invitations before permanent ownership
@@ -93,6 +94,7 @@ G.DB = (() => {
       abilityGems: 10,        // regalo inicial, una sola vez por partida guardada
       abilityStarterGranted: true,
       abilityMedals: {},      // dex-habilidad -> { at, from }
+      abilityVouchers: {},    // medalId -> count (duplicate leader medals)
       abilityPity: {},        // contador independiente por banner de habilidades
       abilityEquipped: {},    // una sola medalla equipada por especie
       megaStones: {},         // permanent collection keyed by Mega form
@@ -100,6 +102,7 @@ G.DB = (() => {
       zStones: {}, zEquipped: {}, zAccess:{}, zDuplicates:{}, zAccessMigrated:true,
       difficulty: { selected: 1, cleared: {}, cashouts:{} },
       leagueRank: {v:1,results:{}},
+      leagueRankRewards: {},  // tierKey -> leagueCoins already claimed,
       difficultyRecords: {},  // dex -> stars -> { best: seconds, won }
       failureProtection: {},
       offline: { seen: 0, carry: 0, rates: null },
@@ -165,9 +168,17 @@ G.DB = (() => {
     G.Equipment?.normalize(s);
     const n = v => (Number.isFinite(+v) && +v > 0 ? Math.floor(+v) : 0);
     s.coins = n(s.coins);
+    s.leagueCoins = n(s.leagueCoins);
     s.tickets.t1 = n(s.tickets.t1);
     s.tickets.t10 = n(s.tickets.t10);
     s.abilityGems = n(s.abilityGems);
+    if (!s.abilityVouchers || typeof s.abilityVouchers !== 'object' || Array.isArray(s.abilityVouchers)) s.abilityVouchers = {};
+    for (const id of Object.keys(s.abilityVouchers)) {
+      const cnt = Math.min(9999, n(s.abilityVouchers[id]));
+      if (cnt <= 0 || (G.AbilityDefs && !Object.prototype.hasOwnProperty.call(G.AbilityDefs.BY_ID, id))) delete s.abilityVouchers[id];
+      else s.abilityVouchers[id] = cnt;
+    }
+    if (!s.leagueRankRewards || typeof s.leagueRankRewards !== 'object' || Array.isArray(s.leagueRankRewards)) s.leagueRankRewards = {};
     if (!s.abilityMedals || typeof s.abilityMedals !== 'object' || Array.isArray(s.abilityMedals)) s.abilityMedals = {};
     if (G.AbilityDefs) {
       for (const id of Object.keys(s.abilityMedals)) {
@@ -298,6 +309,9 @@ G.DB = (() => {
     }
     // Cuando están presentes, el saldo y el pity son los de la copia reciente.
     if (r.abilityGems == null) r.abilityGems = older.abilityGems || 0;
+    if (r.leagueCoins == null) r.leagueCoins = older.leagueCoins || 0;
+    r.abilityVouchers = Object.assign({}, older.abilityVouchers || {}, r.abilityVouchers || {});
+    r.leagueRankRewards = Object.assign({}, older.leagueRankRewards || {}, r.leagueRankRewards || {});
     if (r.abilityPity == null) r.abilityPity = JSON.parse(JSON.stringify(older.abilityPity || {}));
     if (r.abilityEquipped == null) r.abilityEquipped = JSON.parse(JSON.stringify(older.abilityEquipped || {}));
     if (r.megaEquipped == null) r.megaEquipped = JSON.parse(JSON.stringify(older.megaEquipped || {}));

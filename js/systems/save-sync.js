@@ -7,7 +7,7 @@ G.SaveSync=(()=>{
   function walk(c,b,n,path=''){
    if(same(b,n))return copy(c);
    if(n===undefined)return undefined;
-   if(['coins','abilityGems','tickets.t1','tickets.t10'].includes(path)){
+   if(['coins','abilityGems','leagueCoins','tickets.t1','tickets.t10'].includes(path)){
     return (Number(c)||0)+(Number(n)||0)-(Number(b)||0);
    }
    if(path.startsWith('stats.')&&typeof n==='number')return /\.(best|high)/i.test(path)?Math.max(c||0,n):Math.max(0,(Number(c)||0)+Math.max(0,n-(Number(b)||0)));
@@ -32,7 +32,7 @@ G.SaveSync=(()=>{
    if(result.tickets)result.tickets.t1=Math.max(0,Math.min(1e7,(result.tickets.t1||0)+a.tickets));
   }
   if(current?.difficulty)result.difficulty={...copy(current.difficulty),selected:next?.difficulty?.selected!==base?.difficulty?.selected?next?.difficulty?.selected:current.difficulty.selected};
-  for(const k of ['coins','abilityGems'])if(result[k]!==undefined)result[k]=Math.max(0,Math.min(1e8,result[k]));
+  for(const k of ['coins','abilityGems','leagueCoins'])if(result[k]!==undefined)result[k]=Math.max(0,Math.min(1e8,result[k]));
   for(const k of ['t1','t10'])if(result.tickets?.[k]!==undefined)result.tickets[k]=Math.max(0,Math.min(1e7,result.tickets[k]));
   return result;
  }

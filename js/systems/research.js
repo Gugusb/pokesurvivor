@@ -80,7 +80,8 @@ G.Research = (() => {
       return {
         id: t.id,
         label: t.label(),
-        rewardLabel: t.rewardLabel(mon),
+        rewardLabel: t.rewardLabel(mon) + ' · +' + TASK_LEAGUE_COINS + ' ' + L('Monedas Liga', 'League Coins', '联盟币'),
+        leagueCoins: TASK_LEAGUE_COINS,
         rewardType: t.rewardType,
         rewardId,
         titleText: t.rewardType === 'title' ? titleName(r, t) : null,
@@ -92,6 +93,8 @@ G.Research = (() => {
     });
   }
 
+  const TASK_LEAGUE_COINS = 200;
+
   function claim(dex, taskId, save = G.DB?.save) {
     if (!save || !G.DB?.owns(dex)) return false;
     const r = rootOf(dex);
@@ -101,6 +104,7 @@ G.Research = (() => {
     const e = entry(save, dex);
     e.claimed ||= {};
     e.claimed[taskId] = true;
+    save.leagueCoins = (save.leagueCoins || 0) + TASK_LEAGUE_COINS;
     if (item.rewardType === 'avatar') {
       save.avatars ||= [];
       if (!save.avatars.includes(r)) save.avatars.push(r);
@@ -111,6 +115,7 @@ G.Research = (() => {
       save.profile ||= { favs: [], title: '', avatar: 0 };
       if (!save.profile.title) save.profile.title = item.titleText;
     }
+    G.UI?.refreshCoins?.();
     G.DB.commit(true);
     return true;
   }

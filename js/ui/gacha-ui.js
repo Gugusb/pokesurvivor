@@ -144,26 +144,41 @@ G.GachaUI = (() => {
 
   function refreshAbilities() {
     const s = G.DB.save;
-    const banner = G.Gacha.BANNERS[gen - 1], species = G.AbilityDefs.SPECIES.filter(d => G.DEX_BY[d].gen === gen);
+    const banner = G.Gacha.BANNERS[gen - 1];
+    const medals = G.AbilityGacha.familyMedals(gen);
+    const species = medals.map(m => m.dex);
+    const L = (es, en, zh) => G.I18n.lang === 'zh' ? zh : G.I18n.lang === 'en' ? en : es;
     document.querySelectorAll('#gacha-gens .gen-tab').forEach(t => t.classList.toggle('on', +t.dataset.gen === gen));
     $('banner').style.background = 'linear-gradient(135deg, #3a1d6e, #1b2f78 55%, #0f4d6e)';
-    $('banner-title').textContent = banner.name + ' · Medallas de habilidad';
-    const complete = G.AbilityGacha.pool(5, gen).every(p => G.AbilityDefs.medalsFor(p.dex).length);
-    $('banner-desc').textContent = complete ? 'Las especies de cinco estrellas dan medallas de habilidad. El resto da Pokémon.' : 'Sólo las especies con habilidades disponibles dan medallas; las demás dan Pokémon.';
-    const medals = G.AbilityDefs.LIST.filter(m => G.DEX_BY[m.dex].gen === gen);
-    $('gacha-owned').textContent = 'Medallas: ' + medals.filter(m => s.abilityMedals[m.id]).length + ' / ' + medals.length;
+    $('banner-title').textContent = banner.name + ' · ' + L('Medallas de capitán', 'Captain Medals', '队长特性抽卡');
+    $('banner-desc').textContent = L(
+      `2% medalla de capitán (${medals.length} familias con igual peso; duplicados → vale de canje) · 98% invitación de Gen ${gen} (con Bola Dorada 0,1%).`,
+      `2% Captain Medal (${medals.length} families, equal weight; duplicates → Medal Voucher) · 98% Gen ${gen} Invitation (0.1% Golden Ball kept).`,
+      `2% 概率获得本世代队长特性勋章（${medals.length} 个家族等权均分；重复转为特性勋章兑换券）· 98% 概率获得本世代宝可梦邀请函（保留 0.1% 金色精灵球）。`
+    );
+    $('gacha-owned').textContent = L('Medallas', 'Medals', '已解锁勋章') + ': ' + medals.filter(m => s.abilityMedals[m.id]).length + ' / ' + medals.length;
     const feat = $('gacha-feat'); feat.innerHTML = '';
     for (const dex of species.slice(-3)) feat.appendChild(medalArt(dex));
-    $('gacha-pity').textContent = 'Tiradas sin legendaria en ' + banner.name + ': ' + (s.abilityPity[gen] || 0) + ' / ' + G.Gacha.PITY_5;
-    $('gacha-rates').innerHTML = '<h3>Probabilidades</h3>' + G.Gacha.RATES.slice().reverse().map(([r, w]) =>
-      '<div><span style="color:' + G.Gacha.RARITY_COLOR[r] + '">' + G.UI.stars(r, 10) + ' ' + G.Gacha.RARITY_NAME[r] + '</span><span>' + w + '%</span></div>').join('') +
-      '<p class="note">' + G.T('Cada especie conserva su probabilidad. Sus medallas se reparten por igual.') + '<br>· ' + G.T('La tirada ×10 y la garantía siguen activas.') + '<br>· ' + G.T('Las medallas repetidas se convierten en Pokémonedas.') + '<br>· ' + G.T('Los premios Pokémon pueden ser shiny; las medallas no.') + '<br>· ' + G.T('Las gemas de habilidad se consiguen en las grietas.') + '</p>';
+    $('gacha-pity').textContent = L('Tiradas sin 5★ en ', 'Pulls without 5★ in ', '距离 5★ 保底（' + banner.name + '）：') + (s.abilityPity[gen] || 0) + ' / ' + G.Gacha.PITY_5;
+    const eachPct = medals.length ? (2 / medals.length).toFixed(3) : '0';
+    $('gacha-rates').innerHTML = '<h3>' + L('Probabilidades', 'Rates', '卡池概率') + '</h3>' +
+      `<div><span style="color:#ffcb3d">✦ ${L('Medalla de capitán', 'Captain Medal', '队长特性勋章')}</span><span>2% (${L('cada familia', 'each family', '每家族')} ${eachPct}%)</span></div>` +
+      `<div><span style="color:#7fe0ff">★ ${L('Invitación de Gen ' + gen, 'Gen ' + gen + ' Invitation', '本世代宝可梦邀请函')}</span><span>98%</span></div>` +
+      `<p class="note">· ${L('Medalla repetida → Vale de medalla familiar (intercambiable en la Bolsa).', 'Duplicate medal → Family Medal Voucher (tradable in the Exchange).', '重复获得队长特性勋章时，自动转化为该家族的「特性勋章兑换券」（可在交易所寄售）。')}<br>· ${L('Las invitaciones mantienen el 0,1% de Bola Dorada y la garantía de 70 tiradas.', 'Invitations keep the 0.1% Golden Ball and 70-pull 5★ pity.', '邀请函池保留 0.1% 金色精灵球与 70 抽 5★ 保底机制。')}<br>· ${L('Las gemas de habilidad se consiguen en las grietas.', 'Ability Gems are earned from Rifts.', '特性宝石可通过裂隙与交易所获取。')}</p>`;
     $('cost-1').innerHTML = G.Icons.html('gem', 18) + ' 1';
     $('cost-10').innerHTML = G.Icons.html('gem', 18) + ' 10';
-    $('gacha-tickets').innerHTML = G.Icons.html('gem', 18) + ' <b>' + s.abilityGems + '</b> Gemas de habilidad';
+    $('gacha-tickets').innerHTML = G.Icons.html('gem', 18) + ' <b>' + s.abilityGems + '</b> ' + L('Gemas de habilidad', 'Ability Gems', '特性宝石');
     $('pull-1').disabled = !G.AbilityGacha.costOf(s, 1);
     $('pull-10').disabled = !G.AbilityGacha.costOf(s, 10);$('pull-100').disabled=!G.AbilityGacha.costOf(s,100);$('cost-100').textContent='100 '+G.T('Gemas de habilidad');
     const inventory = $('ability-medals'); inventory.innerHTML = '';
+    const vEntries = Object.entries(s.abilityVouchers || {}).filter(([, cnt]) => cnt > 0);
+    if (vEntries.length) {
+      const vBox = document.createElement('div');
+      vBox.className = 'ability-equipment';
+      vBox.innerHTML = '<h3>' + L('Vales de medalla de capitán', 'Captain Medal Vouchers', '持有的特性勋章兑换券') + '</h3><p class="note">' +
+        vEntries.map(([id, cnt]) => { const m = G.AbilityDefs.BY_ID[id]; return (m ? G.T(G.DEX_BY[m.dex]?.name || '') + ' · ' + G.T(m.name) : id) + ' ×' + cnt; }).join(' / ') + '</p>';
+      inventory.appendChild(vBox);
+    }
     for (const dex of species) renderEquipment(inventory, dex);
     G.UI.refreshCoins();
   }
@@ -229,13 +244,15 @@ G.GachaUI = (() => {
         if (r.ivUp) art.insertAdjacentHTML('beforeend', '<span class="iv-up" title="' + G.T('IV mejorados') + '" aria-label="' + G.T('IV mejorados') + '">↑</span>');
         c.appendChild(art);
       }
-      const tag = r.goldenBall
-        ? `<span class="new">${r.shiny ? '¡SHINY NUEVO!' : G.T('¡BOLA DORADA!')}</span>`
-        : r.invitation
-          ? `<span class="new">${r.isNew ? G.T('¡NUEVA INVITACIÓN!') : G.T('Invitación') + ' ×' + (r.invites || 1)}</span>`
-          : r.isNew
-            ? `<span class="new">¡NUEVO!</span>`
-            : `Repetido · <span class="coin"></span> +${r.refund}`;
+      const tag = r.voucher
+        ? `<span class="new">${G.I18n.lang === 'zh' ? '重复 · 特性勋章兑换券 +1' : G.I18n.lang === 'en' ? 'Duplicate · Medal Voucher +1' : 'Repetida · Vale de medalla +1'}</span>`
+        : r.goldenBall
+          ? `<span class="new">${r.shiny ? '¡SHINY NUEVO!' : G.T('¡BOLA DORADA!')}</span>`
+          : r.invitation
+            ? `<span class="new">${r.isNew ? G.T('¡NUEVA INVITACIÓN!') : G.T('Invitación') + ' ×' + (r.invites || 1)}</span>`
+            : r.isNew
+              ? `<span class="new">¡NUEVO!</span>`
+              : `Repetido · <span class="coin"></span> +${r.refund}`;
       const medal = r.medal && G.AbilityDefs.BY_ID[r.medal];
       c.insertAdjacentHTML('beforeend', `<b>${r.shiny ? G.Icons.html('shiny', 12) + ' ' : ''}${mon.name}${medal ? ' · ' + medal.name : ''}</b>${medal ? '<small>Medalla de habilidad</small>' : ''}<div class="tag">${tag}</div>`);
       out.appendChild(c);

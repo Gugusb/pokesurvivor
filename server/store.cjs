@@ -31,6 +31,9 @@ function openStore(file) {
     CREATE INDEX IF NOT EXISTS nursery_guest ON nursery_hatches(guest,guest_claim);
     CREATE TABLE IF NOT EXISTS gifts(id TEXT PRIMARY KEY,sender TEXT NOT NULL REFERENCES users(uid),recipient TEXT NOT NULL REFERENCES users(uid),day INTEGER NOT NULL,at INTEGER NOT NULL,reward TEXT NOT NULL,claimed INTEGER NOT NULL DEFAULT 0,UNIQUE(sender,recipient,day));
     CREATE INDEX IF NOT EXISTS gifts_recipient ON gifts(recipient,claimed);
+    CREATE TABLE IF NOT EXISTS exchange_listings(id TEXT PRIMARY KEY,seller_uid TEXT NOT NULL REFERENCES users(uid),seller_name TEXT NOT NULL,item_key TEXT NOT NULL,price INTEGER NOT NULL,created INTEGER NOT NULL,status TEXT NOT NULL DEFAULT 'active',buyer_uid TEXT,sold_at INTEGER);
+    CREATE INDEX IF NOT EXISTS exchange_active_key_price ON exchange_listings(status,item_key,price,created);
+    CREATE INDEX IF NOT EXISTS exchange_seller ON exchange_listings(seller_uid,status);
   `);
   // Existing hatches have no reliable shiny snapshot; preserve them as ordinary parents.
   const hatchColumns = db.prepare('PRAGMA table_info(nursery_hatches)').all();
