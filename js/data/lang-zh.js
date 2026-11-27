@@ -1,6 +1,13 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Capitanes de Paldea · v0.43.0-alpha.76": "帕底亚队长特性（九世代收官） · v0.43.0-alpha.76",
+  "Se incorporan las 52 familias de capitanes de Paldea (desde Sprigatito hasta Terapagos) con pasiva, coste, avances en niveles 5 y 8 y Z manual familiar, completando las nueve generaciones. Las evoluciones de familias previas (#979–#983, #1011/#1019, #1018) conservan sus raíces originales.": "完整接入帕底亚 52 个队长特性家族（新叶喵至太乐巴戈斯），涵盖基础被动、能力代价、训练家 5／8 级进阶与家族手动 Z，九个世代队长特性全部落地；跨代进化（#979–#983、#1011/#1019、#1018）沿用原根家族规则。",
+  "Las fichas conservan los cinco apartados originales del diseño; las estimaciones numéricas, los ajustes y tres subreglas no cuantificadas se listan por separado.": "特性卡完整保留五段设计原文，每家族收益估算、数值调整与 3 条未定量暂缓子规则另列展示。",
+  "Se integran mecánicas propias de Paldea: absorción de fuego y tierra, estela venenosa móvil de Revavroom, debilitamiento al emerger de Wugtrio, curación bajo nieve de Cetitan, inmunidad del Agua bajo sol para Walking Wake, perforación de escudos en cuerpo a cuerpo y coste mínimo de PP de Terapagos.": "实装帕底亚专属机制：火/地系吸收反哺、噗隆隆移动毒气尾迹、海地鼠出洞削攻、走鲸雪地回血、波荡水晴天水招不降威、近战主体穿盾以及太乐巴戈斯非零 PP 消耗约束等。",
+  "Se mantienen la carga Z de 120 s con aceleración por evento, el límite compartido de curación (3% PS/s) y escudo (40%), el presupuesto compartido por jefe (65%) y las liquidaciones de tienda, intereses y botín élite.": "沿用 120 秒基础充能＋对应事件双倍加速、3% 最大生命/秒共享治疗队列、40% 白盾与每首领 65% Z 总预算，以及商店刷新、银行利息和精英道具三选一结算。",
+  "Pegué la última hoja de Paldea en la libreta y alineé los nueve separadores de colores con una concha encima. Quien cocina revisó hasta las cuentas de Gholdengo; ya tenemos todas las regiones listas para elegir capitán con calma frente a una bebida tibia.": "我把帕底亚这一页贴进手账最后一栏，九个世代的彩色贴纸排成一排，拿枚小贝壳压平啦。做饭的那家伙连赛富豪的账本都核对过一遍，咱们捧杯热饮慢慢挑心仪的队长出发就行。",
+
   "Capitanes de Galar y Hisui · v0.43.0-alpha.75": "伽勒尔与洗翠队长特性 · v0.43.0-alpha.75",
   "Se incorporan 44 familias de capitanes de Galar y Hisui con pasiva, coste, avances 5/8 y Z manual familiar. Las ramas de familias anteriores conservan sus reglas.": "接入44个伽勒尔与洗翠队长家族，包含基础被动、代价、训练家5／8级进阶与家族手动Z；前代家族的跨代进化沿用原规则。",
   "Las fichas conservan los cinco apartados originales; las estimaciones, los ajustes y diez subreglas pendientes se muestran por separado.": "特性卡保留五段原文，收益估算、数值调整与10条暂缓子规则另列，方便逐项核对。",

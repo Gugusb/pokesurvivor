@@ -2,7 +2,7 @@
 G.LeaderAlola=(()=>{
  const L=G.LeaderAbilities,K=G.LeaderKalos,Z=L._z,wrap=G.LeaderSinnoh.wrap;
  const {actors,enemies,captain,own,state,budget,event,shield,synthetic,field,schedule,stun}=Z;
- const active=()=>L.active()&&[7,8].includes(L.definition(captain()?.dex)?.generation),has=p=>active()&&Z.team(p),f=()=>L.profile().alola||{},now=K.now;
+ const active=()=>L.active()&&[7,8,9].includes(L.definition(captain()?.dex)?.generation),has=p=>active()&&Z.team(p),f=()=>L.profile().alola||{},now=K.now;
  const s=()=>state().alola||={growth:0},q=p=>p.alolaState||={kills:0,engine:0},run=()=>G.Expedition.run;
  const ordinary=m=>!m.leaderGenerated&&!m.typeBondSecondary&&!m.kalosSecondary;
  const scope=p=>f().engineScope==='team'?actors():[p];

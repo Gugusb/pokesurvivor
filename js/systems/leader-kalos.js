@@ -1,7 +1,7 @@
 /* Kalos supplies the small gaps between authored rules and the shared captain hooks. */
 G.LeaderKalos=(()=>{
  const L=G.LeaderAbilities,Z=L._z,{actors,enemies,captain,state,own,budget,direct,shield,heal,event,stun,field,schedule,synthetic}=Z;
- const active=()=>L.active()&&[6,7,8].includes(L.definition(captain()?.dex)?.generation),has=p=>active()&&Z.team(p),root=()=>L.definition(captain()?.dex)?.root,R=()=>G.Expedition.run,f=()=>L.profile()||{},k=()=>f().kalos||{},now=()=>state()?.time||0;
+ const active=()=>L.active()&&[6,7,8,9].includes(L.definition(captain()?.dex)?.generation),has=p=>active()&&Z.team(p),root=()=>L.definition(captain()?.dex)?.root,R=()=>G.Expedition.run,f=()=>L.profile()||{},k=()=>f().kalos||{},now=()=>state()?.time||0;
  const s=()=>state().kalos||={token:0,supplies:[],kills:0},q=p=>p.kalosState||={at:{},queuedHeal:0,healCredit:p.maxHp*.03,overflowCredit:p.maxHp*.03},wrap=G.LeaderSinnoh.wrap;
  const status=e=>e.burn>0||e.poison>0||e.slowT>0||e.freezeT>0||e.classStunT>0;
  function proc(p,key,cd){const a=q(p);a.at||={};if((a.at[key]??-Infinity)>now())return false;a.at[key]=now()+cd;return true;}

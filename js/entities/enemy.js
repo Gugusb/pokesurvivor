@@ -121,7 +121,7 @@
       const shielded = this.shield > 0;
       const settledKalos=!!(attack.kalosSettled&&G.LeaderKalos?.has(attacker));
       const leaderFactor=settledKalos?1:G.LeaderAbilities?.outgoing(attacker,this,attack)??1;amount*=leaderFactor;
-      const bypass = !!G.LeaderGalar?.shieldBypass(attacker,attack)||!!(G.LeaderUnova?.has(attacker)&&G.LeaderUnova.f().moldBreaker)||!!(G.LeaderSinnoh?.has(attacker)&&(G.LeaderSinnoh.f().infiltrator||G.LeaderSinnoh.f().moldBreaker||attack.sinnohBreak))||!!(G.LeaderHoenn?.has(attacker)&&attack.hoennVenom&&G.LeaderHoenn.f().venomBypass)||!!(G.LeaderJohto?.has(attacker)&&G.LeaderJohto.f().infiltrator)||!!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
+      const bypass = !!G.LeaderGalar?.shieldBypass(attacker,attack)||!!G.LeaderPaldea?.shieldBypass(attacker,attack)||!!(G.LeaderUnova?.has(attacker)&&G.LeaderUnova.f().moldBreaker)||!!(G.LeaderSinnoh?.has(attacker)&&(G.LeaderSinnoh.f().infiltrator||G.LeaderSinnoh.f().moldBreaker||attack.sinnohBreak))||!!(G.LeaderHoenn?.has(attacker)&&attack.hoennVenom&&G.LeaderHoenn.f().venomBypass)||!!(G.LeaderJohto?.has(attacker)&&G.LeaderJohto.f().infiltrator)||!!attack.typeBondFraction||!this.remote && shielded && attacker && attack.kind === 'melee' &&
         G.Abilities.has(attacker, 'unseenfist') && Math.random() < 0.3;
       const bond=!this.remote&&!settledKalos?G.TypeBonds?.beforeHit(attacker,this,attack):null;
       if(bond)amount*=bond.factor;

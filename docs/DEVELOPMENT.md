@@ -34,6 +34,14 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.76 — 2026-11-27
+
+- 落地第九世代（帕底亚）全部 52 个队长特性家族（`#906` 新叶喵至 `#1024` 太乐巴戈斯，源设计文 `LEADER_ABILITIES_GEN9.md`），九个世代队长特性全部完成落地（总计 508 个手动 Z 调度）：
+  - 新增配置、估算文档与导入工具：`config/leader_abilities_gen9.json`、`docs/LEADER_ABILITIES_GEN9_BALANCE.md`、`tools/import_leader_gen9.cjs`、`tools/test_leader_gen9.cjs`。
+  - 新增运行时与手动 Z：`js/systems/leader-paldea.js`、`js/systems/leader-paldea-z.js`，并在 `dev.html`、`js/core/leader-abilities-config.js`、`tools/leader_config.cjs`、`js/entities/enemy.js`、`js/systems/combat.js`、`js/systems/leader-kalos.js`、`js/systems/leader-alola.js`、`js/systems/weather.js`、`js/ui/hoenn-market-ui.js`、`js/ui/leader-kalos-ui.js`、`js/ui/settings-ui.js` 接入全套帕底亚专属钩子与 9 种定制 Z 几何。
+  - 保留 `alpha.66` 120s 基础充能 + 对应事件双倍加速、3% 最大 HP/s 共享治疗队列、40% 白盾与 60% 穿甲上限、非零属性倍率 `0.3–2.4` 钳制（保留 `0×` 免疫）、每精英/BOSS 65% 主招 10 秒理论伤害共享总预算；跨代进化（`#979/#980/#981/#982/#983/#1011/#1019/#1018`）继续归属前代根家族，3 条未定量设计子规则在 `LEADER_ABILITIES_GEN9_BALANCE.md` 与界面规则栏显式暂缓标注。
+- 验证：`node --test tools/test_leader_gen9.cjs tools/test_leader_gen8.cjs tools/test_leader_gen7.cjs tools/test_leader_gen6.cjs tools/test_leader_abilities.cjs tools/test_alpha67_mechanics.cjs tools/test_battle_stats.cjs tools/test_capture_gacha_research.cjs` **74/74 全部通过**；`node tools/build.js` 与 `node tools/export_data.js` 通过（当前终端未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.75 — 2026-11-27
 
 - 落地第八世代（伽勒尔与洗翠）44 个队长特性家族（源设计文 `LEADER_ABILITIES_GEN8.md`，SHA-256 `5f6e1152...`），完整保留 `alpha.67`–`alpha.74` 既有玩法与移动端改动：
