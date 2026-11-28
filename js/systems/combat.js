@@ -596,7 +596,15 @@ G.Combat = (() => {
     }
   }
 
-  function clearFields(owner) { fields = owner ? fields.filter(f => f.owner !== owner) : []; }
+  function clearFields(owner) {
+    fields = owner ? fields.filter(f => f.owner !== owner) : [];
+    if (owner) { if ('lastPatch' in owner) owner.lastPatch = null; }
+    else {
+      const cap = G.Expedition?.run?.captain || G.Game?.player;
+      if (cap && 'lastPatch' in cap) cap.lastPatch = null;
+      for (const p of G.Squad?.roster || []) if (p && 'lastPatch' in p) p.lastPatch = null;
+    }
+  }
 
   function orbit(pl, m, dt, now, isGhost = false, refill = false) {
     const rehit=m.remoteRehit||Math.max(.12,m.cd)*pl.cdMul/rateFor(pl,m);

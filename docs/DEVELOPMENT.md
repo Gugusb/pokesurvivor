@@ -34,6 +34,16 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.85 — 2026-11-28
+
+- 加固远征本地存档序列化与恢复流程，彻底防止 `Converting circular structure to JSON`（例如旧版地面区域 `owner -> Member -> lastPatch` 环）导致保存失败：
+  - `js/systems/expedition-save.js`：`stringify()` 改为基于祖先栈（`stack` + `raw` 双栈，兼容 `Set`/`Map` 自引用与非循环共享 DAG 对象）的防环序列化，并在序列化与 `actor()` / `savedRun` 采样阶段统一过滤实时战斗实体实例（`G.Player`、`G.Squad.Member`、`G.Enemy`、`G.Sprites.Animator`）。
+  - 扩充 `actor()` 忽略列表（新增 `idleTarget`、`lastAttacker`、`owner`）并在 `hydrate()` 恢复旧存档时自动清除残留临时字段（`lastPatch`、`idleTarget`、`target`、`lastAttacker`、`owner`）。
+  - `js/systems/combat.js`：`clearFields()` 清理地面区域时同步清空残留的 `lastPatch` 引用。
+- 回归验证：
+  - 扩展 `tools/test_expedition_save.cjs` 新增循环结构（`patch.owner = member; member.lastPatch = patch`）、实时实体泄漏、自引用 `Set`/`Map`、非循环共享对象保留以及 `hydrate()` 清理旧版临时字段的回归测试；`node --test tools/test_expedition_save.cjs tools/test_namecard_rank_rewards.cjs tools/test_agility_cooldown.cjs tools/test_developer_journal.cjs` 全部通过（24/24）。
+  - 已运行 `node tools/build.js` 与 `node tools/export_data.js` 更新构建产物；本机环境未安装 `py` 启动器，未执行 `make_seo_pages.py`。
+
 ### v0.43.0-alpha.84 — 2026-11-28
 
 - 新增自定义玩家名片系统及其个性化展示（`js/systems/namecard.js`、`js/ui/namecard-ui.js`、`css/namecard.css`，纳入 `tools/build.js` 缓存指纹与 `server/domain.cjs` 服务端校验）：

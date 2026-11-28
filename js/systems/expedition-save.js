@@ -6,12 +6,16 @@ G.ExpeditionSave=(()=>{
  const owner=()=>G.DB.loggedIn?(G.DB.mode+':'+(G.DB.fb?.uid||G.DB.user||'guest')):null;
  const key=()=> 'ps.expedition.checkpoint.'+encodeURIComponent(owner());
  const ledgerKey=id=>'ps.expedition.receipts.'+encodeURIComponent(owner())+'.'+id;
- function stringify(v){return JSON.stringify(v,(k,x)=>x instanceof Set?{$set:[...x]}:x instanceof Map?{$map:[...x]}:x);}
+ const SKIP_ACTOR=new Set(['anim','moves','slots','target','idleTarget','lastAttacker','owner','uid','coopHost','lastPatch','abilityState','leaderState','megaState','zState']);
+ const SKIP_RUN=new Set(['captain','pool','unitPool','pendingSpawns']);
+ const STALE_FIELDS=['lastPatch','idleTarget','target','lastAttacker','owner'];
+ function isLiveEntity(x){return !!x&&typeof x==='object'&&((G.Player&&x instanceof G.Player)||(G.Squad?.Member&&x instanceof G.Squad.Member)||(G.Enemy&&x instanceof G.Enemy)||(G.Sprites?.Animator&&x instanceof G.Sprites.Animator));}
+ function stringify(v){const stack=[],raw=[];return JSON.stringify(v,function(k,x){while(stack.length&&stack[stack.length-1]!==this){stack.pop();raw.pop();}if(!x||typeof x!=='object')return x;if(isLiveEntity(x)||stack.includes(x)||raw.includes(x))return undefined;if(x instanceof Set){const w={$set:[...x]};stack.push(w);raw.push(x);return w;}if(x instanceof Map){const w={$map:[...x]};stack.push(w);raw.push(x);return w;}stack.push(x);raw.push(x);return x;});}
  function parse(s){return JSON.parse(s,(k,x)=>['__proto__','prototype','constructor'].includes(k)?undefined:x&&typeof x==='object'&&Object.keys(x).length===1&&Array.isArray(x.$set)?new Set(x.$set):x&&typeof x==='object'&&Object.keys(x).length===1&&Array.isArray(x.$map)?new Map(x.$map):x);}
- function actor(p){const fields={};for(const [k,v]of Object.entries(p))if(!['anim','moves','slots','target','uid','coopHost','lastPatch','abilityState','leaderState','megaState','zState'].includes(k)&&typeof v!=='function')fields[k]=v;
+ function actor(p){const fields={};for(const [k,v]of Object.entries(p))if(!SKIP_ACTOR.has(k)&&typeof v!=='function'&&!isLiveEntity(v))fields[k]=v;
   return {fields,moves:p.moves.map(m=>({...m})),slots:p.slots.map(g=>g.map(m=>p.moves.indexOf(m))),pp:G.MovePP.snapshot(p),control:G.MoveControl.snapshot(p),items:G.BreakItems.snapshot(p)};
  }
- function hydrate(a,member=false){const d=a.fields,p=member?new G.Squad.Member(d.dex,d.rank,a.moves[0]?.id):new G.Player(G.DEX_BY[d.dex]);Object.assign(p,d);
+ function hydrate(a,member=false){const d={...a.fields};for(const k of STALE_FIELDS)delete d[k];const p=member?new G.Squad.Member(d.dex,d.rank,a.moves[0]?.id):new G.Player(G.DEX_BY[d.dex]);Object.assign(p,d);
   p.moves=a.moves.map(m=>Object.assign(G.Moves.instance(m.id),m));p.slots=a.slots.map(g=>g.map(i=>p.moves[i]));p.target=null;p.anim=new G.Sprites.Animator(p.spriteDex,1,!!p.shiny);if(p.dead)p.anim.play('Faint',{hold:true});G.MovePP.restoreCheckpoint(p,a.pp);G.MoveControl.restore(p,a.control);G.BreakItems.restore(p,a.items);return p;
  }
  function validate(s){
@@ -21,7 +25,7 @@ G.ExpeditionSave=(()=>{
   if(!Array.isArray(d.pool)||d.pool.some(id=>!G.DEX_BY[id])||!Array.isArray(d.formation)||d.formation.some(id=>id!=null&&!d.members.some(a=>a.fields.squadId===id)))throw Error('Invalid squad checkpoint');return d;
  }
  function capture(target=null){const r=G.Expedition.run;if(!r||!stable.has(r.phase)||G.Coop.active)return null;
-  const people=[r.captain,...G.Squad.roster],savedRun={};for(const [k,v]of Object.entries(r))if(!['captain','pool','unitPool','pendingSpawns'].includes(k)&&typeof v!=='function')savedRun[k]=v;
+  const people=[r.captain,...G.Squad.roster],savedRun={};for(const [k,v]of Object.entries(r))if(!SKIP_RUN.has(k)&&typeof v!=='function'&&!isLiveEntity(v))savedRun[k]=v;
   const payload=stringify({run:savedRun,pool:r.pool.map(m=>m.dex),stock:[...r.unitPool.stock],offers:G.Expedition.offers,captain:actor(r.captain),members:G.Squad.roster.map(actor),formation:G.Squad.formation.map(p=>p?.squadId??null),shopLevel:G.Squad.shopLevel,
    game:G.Game.checkpoint(),server:G.Server?.checkpointRun?.(),world:G.World.snapshot(),bonds:G.SquadBonds.snapshot(),growth:G.ExpeditionGrowth.berries,traits:G.SquadTraits.snapshot(people),types:G.TypeBonds.snapshot(),damage:G.ExpeditionDamage.checkpoint(people),training:G.ExpeditionTraining.snapshot(r,people),failure:G.FailureProtection.snapshot(r.captain),target});
   if(payload.length>MAX_BYTES)throw Error(L('Partida demasiado grande.','Checkpoint too large.','存档体积过大。'));
