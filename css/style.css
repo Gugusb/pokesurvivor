@@ -1020,33 +1020,7 @@ a.btn { text-decoration: none; display: inline-block; color: var(--ink); }
 .sup-tab tr.tot td { font-weight: 700; color: var(--gold); border-bottom: 0; }
 #btn-support span { margin-left: 2px; }
 @media (max-height: 520px) { #btn-support span { display: none; } }
-/* ============ Pokémon en móvil horizontal ============
- * La lista a la izquierda y la ficha (con "Elegir de compañero") a la derecha,
- * siempre a la vista: antes la ficha quedaba debajo de la lista y había que
- * bajar hasta el borde para encontrar el botón. */
-@media (max-height: 520px) {
-  #scr-dex .box { height: 100%; display: flex; flex-direction: column; padding: 8px 10px; }
-  #scr-dex .gen-tabs { margin-top: 2px; padding-bottom: 4px; flex: 0 0 auto; }
-  #scr-dex .split { grid-template-columns: 1fr minmax(190px, 36%); gap: 8px; flex: 1; min-height: 0; margin-top: 2px !important; }
-  #scr-dex .split > div:first-child { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
-  #scr-dex .gen-tabs, #scr-dex .filters { scrollbar-width: none; }
-  #scr-dex .gen-tabs::-webkit-scrollbar, #scr-dex .filters::-webkit-scrollbar { display: none; }
-  #scr-dex .filters { flex-wrap: nowrap; overflow-x: auto; margin-bottom: 4px; flex: 0 0 auto; }
-  #scr-dex .chip { flex: 0 0 auto; padding: 2px 8px; font-size: 12px; }
-  #scr-dex .grid { max-height: none; flex: 1; min-height: 0; grid-template-columns: repeat(auto-fill, minmax(78px, 1fr)); gap: 5px; }
-  #scr-dex .cell canvas { width: 69px; height: 60px; }
-  #scr-dex .cell b { font-size: 11px; }
-  #dex-detail { min-height: 0; overflow-y: auto; padding: 6px 8px; display: flex; flex-direction: column; }
-  #dex-detail .stage { width: 132px; height: 114px; margin: 2px auto 4px; }
-  #dex-detail h3 { margin: 0; }
-  #dex-detail .stat { grid-template-columns: 54px minmax(0, 1fr) 34px 38px; gap: 4px; font-size: 12px; margin: 2px 0; }
-  #dex-detail .stat .iv-value { font-size: 10px; }
-  #dex-detail p { margin: 4px 0 !important; font-size: 12px !important; }
-  #dex-detail .move-icons { margin-bottom: 4px; }
-  /* El botón de elegir, pegado abajo de la ficha: se ve aunque la ficha no quepa. */
-  #dex-detail .btn { position: sticky; bottom: 0; order: 9; margin-top: auto; padding: 8px 6px; font-size: 15px;
-    box-shadow: 0 -6px 10px rgba(5,10,25,.6); }
-}
+/* ============ Pokémon en móvil horizontal (gestionado por css/pokedex.css) ============ */
 .card.corrupted { border-color:#bd62e5; box-shadow:inset 0 0 24px #6c236933,0 0 12px #9e43ca44; }
 .card.corrupted .nm { color:#e3a9ff; }
 #self-recovery { display:grid; gap:10px; }

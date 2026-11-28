@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Rediseño completo de la Pokédex · v0.43.0-alpha.81": "全新双栏图鉴界面改版 · v0.43.0-alpha.81",
+  "Se renueva la Pokédex con un diseño en dos columnas: ficha izquierda con cabecera diagonal bicolor por tipos, cadena evolutiva interactiva, pedestal animado y gráfico radar de seis estadísticas; lista derecha con pestañas de categoría, buscador por nombre o número, filtros de generación y rareza, botón aleatorio y barra de progreso.": "图鉴界面全面改版为双栏展示：左侧为斜切双属性主题横幅、可点击局内进化链、立绘展台与六维种族值雷达图；右侧为分类胶囊、名称/编号搜索、世代与稀有度筛选、随机挑选与图鉴收集进度条。",
+  "Toda la información del Pokémon se organiza en seis pestañas dentro de la propia ficha sin ventanas emergentes: Resumen, Movimientos, Estadísticas e IV, Tipos y afinidades, Habilidades/Mega/Equipo e Investigación y medallas de dificultad, con selección directa mediante Enter y flechas.": "宝可梦全部信息整合进面板内六大页签（概览、招式、数值、属性、特性装备、研究），告别嵌套弹窗；支持键盘左右键切换与回车一键出战。",
+  "Pasé toda la tarde recortando separadores de colores y dibujando hexágonos en el cuaderno para que la Pokédex se lea de un vistazo. Quien cocina revisó el buscador y las pestañas de investigación; ahora podemos cambiar de compañero con solo pulsar una tecla y volver a la manta.": "一下午都在给手账剪彩色页签、画六维雷达图，这下看哪只伙伴都能一眼瞧清啦。做饭的那家伙核对完搜索栏和研究页，咱们按个回车就能换好队长继续窝进毯子里咯。",
+
   "Corrección de compañero invitado en guardado y Bolsa · v0.43.0-alpha.80": "修复使用邀请函伙伴时保存与寄售报错 · v0.43.0-alpha.80",
   "Se corrige el error «Partner not owned» al guardar la partida, iniciar una expedición o consignar objetos en la Bolsa cuando el compañero seleccionado se obtuvo mediante invitación.": "修复当选中由「邀请函」出战的伙伴（尚未永久捕捉）时，上传云存档、开局或交易所寄售提示「伙伴未拥有（Partner not owned）」的问题。",
   "Le enseñé al guardián del servidor a reconocer también las invitaciones, así no nos rechaza la mochila ni el mostrador cuando salimos con un compañero invitado.": "我给门卫大叔补上了邀请函的登记册，以后带着受邀伙伴去交易所寄售或者存进度都不会被拦在门外啦。",

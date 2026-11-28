@@ -84,6 +84,7 @@
 <link rel="stylesheet" href="css/league-rank.css">
 <link rel="stylesheet" href="css/leader-abilities.css">
 <link rel="stylesheet" href="css/hoenn-market.css">
+<link rel="stylesheet" href="css/pokedex.css">
 </head>
 <body>
 
@@ -478,16 +479,30 @@
 
 <!-- ====== Colección ====== -->
 <section id="scr-dex" class="scr dim hidden">
-  <div class="box wide">
-    <div class="row between"><h2>Pokémon <span id="dex-total" class="sub" style="font-size:15px"></span></h2><button class="btn small ghost" data-back>Volver</button></div>
-    <div class="gen-tabs" id="dex-gens"></div>
-    <div class="split" style="margin-top:8px">
-      <div>
-        <div class="filters" id="dex-filters"></div>
-        <div class="grid" id="dex-grid"></div>
+  <div class="dex-shell">
+    <div class="dex-showcase" id="dex-detail"></div>
+    <aside class="dex-roster">
+      <div class="dex-cat-bar" id="dex-cat-bar"></div>
+      <div class="dex-toolbar">
+        <div class="dex-search-wrap">
+          <input id="dex-search" type="search" autocomplete="off" spellcheck="false" placeholder="Buscar por nombre o nº...">
+          <button type="button" id="dex-search-clear" class="dex-search-clear hidden" aria-label="Clear">×</button>
+        </div>
+        <button type="button" id="dex-filter-toggle" class="dex-tool-btn">Filtrar ▾</button>
+        <button type="button" id="dex-random" class="dex-tool-btn">↻ Aleatorio</button>
       </div>
-      <div class="panel" id="dex-detail"></div>
-    </div>
+      <div class="gen-tabs dex-gen-strip" id="dex-gens"></div>
+      <div class="filters dex-filter-tray collapsed" id="dex-filters"></div>
+      <div class="grid dex-roster-grid" id="dex-grid"></div>
+      <div class="dex-roster-foot">
+        <div class="dex-prog-row">
+          <span id="dex-prog-label">Progreso</span>
+          <div class="dex-prog-track"><i id="dex-prog-fill" style="width:0%"></i></div>
+          <span id="dex-total"></span>
+        </div>
+        <div class="dex-quick-strip" id="dex-quick-strip"></div>
+      </div>
+    </aside>
   </div>
 </section>
 
@@ -798,6 +813,7 @@
 <script defer src="js/ui/offline-ui.js"></script>
 <script defer src="js/ui/login.js"></script>
 <script defer src="js/ui/test.js"></script>
+<script defer src="js/ui/dex-ui.js"></script>
 <script defer src="js/ui/menu.js"></script>
 <script defer src="js/ui/card-packs-ui.js"></script>
 <script defer src="js/ui/slots.js"></script>

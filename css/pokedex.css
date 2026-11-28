@@ -1,0 +1,2013 @@
+/* ============ pokedex.css — 图鉴界面重设计（双栏展示 + 六维雷达 + 分页详情） ============ */
+
+#scr-dex {
+  padding: 60px 16px 32px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(8, 12, 24, .78);
+  backdrop-filter: blur(6px);
+}
+
+#scr-dex .dex-shell {
+  width: min(1440px, 100%);
+  height: min(840px, calc(100vh - 94px));
+  display: grid;
+  grid-template-columns: minmax(0, 1.92fr) minmax(308px, 1fr);
+  gap: 14px;
+  min-height: 0;
+}
+
+/* ---------- 通用暗色双栏容器 ---------- */
+.dex-showcase,
+.dex-roster {
+  background: #1a2033;
+  border: 1px solid rgba(255, 255, 255, .10);
+  border-radius: 18px;
+  box-shadow: 0 20px 52px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .06);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+}
+
+/* 覆盖通用 .panel 样式 */
+#dex-detail.dex-showcase {
+  padding: 0;
+  border-width: 1px;
+  border-color: rgba(255, 255, 255, .11);
+  background: #1a2033;
+}
+
+/* =========================================================
+   左侧：顶部斜切双属性 Hero 横幅
+   ========================================================= */
+.dex-hero {
+  --t1: #5fcb6a;
+  --t2: #9b59b6;
+  position: relative;
+  flex: 0 0 auto;
+  min-height: 222px;
+  display: grid;
+  grid-template-columns: 42% 58%;
+  overflow: hidden;
+  background-color: var(--t2);
+  background-image:
+    radial-gradient(ellipse at 65% 45%, rgba(255, 255, 255, .14), transparent 62%),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, .065) 0 14px,
+      rgba(0, 0, 0, .04) 14px 28px
+    );
+}
+
+/* 左侧主属性斜切底色 + 白色分隔斜线 */
+.dex-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-color: var(--t1);
+  background-image:
+    radial-gradient(circle at 18% 22%, rgba(255, 255, 255, .18), transparent 56%),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, .075) 0 14px,
+      rgba(0, 0, 0, .035) 14px 28px
+    );
+  clip-path: polygon(0 0, 44.5% 0, 38.5% 100%, 0 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dex-hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, .95), rgba(255, 255, 255, .82));
+  clip-path: polygon(44.2% 0, 45.2% 0, 39.2% 100%, 38.2% 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dex-hero.is-locked {
+  --t1: #3b4662;
+  --t2: #283047;
+}
+
+.dex-hero-left {
+  position: relative;
+  z-index: 2;
+  padding: 14px 20px 28px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.dex-meta-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, .96);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
+}
+
+.dex-no {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .03em;
+}
+
+.dex-gen-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #d9444c;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .28);
+  text-shadow: none;
+}
+
+.dex-rar-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(15, 20, 36, .42);
+  border: 1px solid rgba(255, 255, 255, .24);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-shadow: none;
+}
+
+.dex-name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dex-name {
+  margin: 0;
+  font-size: clamp(24px, 2.5vw, 34px);
+  line-height: 1.08;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: .01em;
+  text-shadow:
+    -2px -2px 0 #131928,
+     2px -2px 0 #131928,
+    -2px  2px 0 #131928,
+     2px  2px 0 #131928,
+     0    4px 10px rgba(0, 0, 0, .45);
+}
+
+.dex-own-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(16, 22, 38, .44);
+  border: 1px solid rgba(255, 255, 255, .28);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  text-shadow: none;
+  backdrop-filter: blur(4px);
+}
+
+.dex-own-pill.is-owned {
+  background: rgba(25, 135, 84, .52);
+  border-color: rgba(168, 255, 198, .55);
+}
+
+.dex-own-pill.is-invite {
+  background: rgba(217, 138, 28, .52);
+  border-color: rgba(255, 224, 130, .6);
+}
+
+.dex-types-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dex-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, .36);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .28);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+}
+
+.dex-hero-meter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px 2px 6px;
+  border-radius: 999px;
+  background: rgba(15, 21, 36, .46);
+  border: 1px solid rgba(255, 255, 255, .2);
+  font-size: 11px;
+  font-weight: 700;
+  color: #eef5ff;
+  cursor: pointer;
+}
+
+.dex-hero-meter:hover {
+  background: rgba(15, 21, 36, .66);
+}
+
+.dex-hero-meter-bar {
+  width: 48px;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .2);
+  overflow: hidden;
+}
+
+.dex-hero-meter-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff8bb0, #ffd25c);
+}
+
+/* 进化链条 */
+.dex-evo-block {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dex-evo-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, .92);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+}
+
+.dex-evo-chain {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.dex-evo-node {
+  position: relative;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  padding: 0;
+  background: rgba(16, 22, 38, .48);
+  border: 2px solid rgba(255, 255, 255, .42);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform .12s, border-color .12s, box-shadow .12s;
+}
+
+.dex-evo-node:hover {
+  transform: scale(1.08);
+  border-color: #fff;
+}
+
+.dex-evo-node.is-current {
+  border-color: #ffe066;
+  background: rgba(255, 224, 102, .22);
+  box-shadow: 0 0 0 2px rgba(255, 224, 102, .38), 0 3px 8px rgba(0, 0, 0, .35);
+}
+
+.dex-evo-node canvas {
+  width: 34px;
+  height: 34px;
+  display: block;
+}
+
+.dex-evo-arrow {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .55);
+}
+
+.dex-evo-arrow span {
+  font-size: 13px;
+  margin-top: 1px;
+}
+
+/* 右侧：立绘展台 + 六维雷达图 */
+.dex-hero-right {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(150px, 1fr) minmax(175px, 1.05fr);
+  align-items: center;
+  padding: 8px 14px 24px 18px;
+  gap: 6px;
+}
+
+.dex-sprite-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.dex-pedestal {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 158px;
+  height: 142px;
+}
+
+.dex-pedestal::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  width: 132px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(255, 255, 255, .36), rgba(255, 255, 255, .10) 64%, transparent 74%);
+  border: 2px solid rgba(255, 255, 255, .52);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .25);
+  pointer-events: none;
+}
+
+#dex-big.dex-hero-canvas {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+  width: 154px;
+  height: 138px;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, .38));
+}
+
+#dex-big.dex-hero-canvas.shiny {
+  filter: drop-shadow(0 0 14px rgba(154, 230, 255, .75)) drop-shadow(0 6px 10px rgba(0, 0, 0, .38));
+}
+
+.dex-pedestal-bar {
+  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(15, 20, 36, .62);
+  border: 1px solid rgba(255, 255, 255, .2);
+  font-size: 11px;
+  font-weight: 700;
+  color: #f4f7ff;
+  z-index: 2;
+}
+
+.dex-shiny-seg {
+  display: inline-flex;
+  gap: 3px;
+  background: rgba(15, 20, 36, .66);
+  border: 1px solid rgba(255, 255, 255, .24);
+  border-radius: 999px;
+  padding: 2px;
+  margin-top: 2px;
+  z-index: 2;
+}
+
+.dex-shiny-seg button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #cfd9f2;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 9px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dex-shiny-seg button.on {
+  background: #fff;
+  color: #161d31;
+}
+
+.dex-radar-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+}
+
+.dex-radar-svg {
+  width: 100%;
+  max-width: 224px;
+  height: auto;
+  overflow: visible;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, .25));
+}
+
+.dex-radar-lbl {
+  fill: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  paint-order: stroke;
+  stroke: rgba(16, 20, 36, .75);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+/* =========================================================
+   悬浮胶囊标签栏（压在 Hero 下边缘）
+   ========================================================= */
+.dex-tabbar-wrap {
+  display: flex;
+  justify-content: center;
+  margin: -21px 12px 8px;
+  position: relative;
+  z-index: 5;
+  flex: 0 0 auto;
+}
+
+.dex-tabbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 5px;
+  border-radius: 999px;
+  background: #171d2f;
+  border: 1px solid rgba(255, 255, 255, .13);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .48);
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.dex-tabbar::-webkit-scrollbar {
+  display: none;
+}
+
+.dex-tab {
+  position: relative;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #b7c4e0;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 6px 13px 6px 8px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  transition: background .14s, color .14s, transform .1s;
+}
+
+.dex-tab:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, .07);
+}
+
+.dex-tab-ico {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .08);
+  display: grid;
+  place-items: center;
+  flex: 0 0 22px;
+}
+
+.dex-tab.on {
+  background: linear-gradient(135deg, #57d66d, #2fb859);
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(47, 184, 89, .42), inset 0 1px 0 rgba(255, 255, 255, .35);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .3);
+}
+
+.dex-tab.on .dex-tab-ico {
+  background: #fff;
+  color: #198754;
+}
+
+.dex-tab-dot {
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ffd447;
+  box-shadow: 0 0 8px #ffd447;
+}
+
+/* =========================================================
+   标签页主体内容区
+   ========================================================= */
+.dex-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 6px 18px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dex-body::-webkit-scrollbar,
+#dex-grid::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.dex-body::-webkit-scrollbar-thumb,
+#dex-grid::-webkit-scrollbar-thumb {
+  background: rgba(180, 198, 232, .25);
+  border-radius: 999px;
+}
+
+.dex-body::-webkit-scrollbar-track,
+#dex-grid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dex-card {
+  background: #131827;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 14px;
+  padding: 13px 15px;
+  min-width: 0;
+}
+
+.dex-card-title {
+  margin: 0 0 9px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #93a4c6;
+  letter-spacing: .02em;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dex-two-col {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* ---------- 概览页（Overview） ---------- */
+.dex-ability-headline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.dex-ability-headline h4 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #fff;
+}
+
+.dex-status-tag {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .09);
+  color: #c5d3ee;
+  white-space: nowrap;
+}
+
+.dex-status-tag.ok {
+  background: rgba(65, 201, 114, .2);
+  color: #7df0a5;
+  border: 1px solid rgba(65, 201, 114, .35);
+}
+
+.dex-status-tag.warn {
+  background: rgba(255, 196, 61, .16);
+  color: #ffe082;
+  border: 1px solid rgba(255, 196, 61, .35);
+}
+
+.dex-ability-desc {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #d6e0f5;
+}
+
+.dex-ability-desc strong {
+  color: #ffe699;
+}
+
+.dex-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 9px;
+}
+
+.dex-mini-pill {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: rgba(68, 196, 118, .15);
+  border: 1px solid rgba(68, 196, 118, .28);
+  color: #8cf2b0;
+}
+
+.dex-mini-pill.cost {
+  background: rgba(244, 102, 114, .14);
+  border-color: rgba(244, 102, 114, .3);
+  color: #ffadb5;
+}
+
+.dex-mini-pill.info {
+  background: rgba(94, 168, 255, .14);
+  border-color: rgba(94, 168, 255, .28);
+  color: #9fd0ff;
+}
+
+.dex-z-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dex-z-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.dex-z-badge {
+  flex: 0 0 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #ffd25c, #f09532);
+  color: #1a1426;
+  font-size: 13px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+}
+
+.dex-z-badge.lv {
+  background: rgba(114, 174, 255, .22);
+  border: 1px solid rgba(114, 174, 255, .38);
+  color: #a8d4ff;
+  font-size: 11px;
+}
+
+.dex-z-item b {
+  display: block;
+  font-size: 13px;
+  color: #f4f7ff;
+  margin-bottom: 2px;
+}
+
+.dex-z-item p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.48;
+  color: #b7c5e2;
+}
+
+/* 概览中间：4张彩色斜纹招式卡 */
+.dex-ov-moves {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dex-move-strip-card {
+  --mc: #4ec25c;
+  position: relative;
+  border-radius: 13px;
+  padding: 11px 12px;
+  background-color: var(--mc);
+  background-image:
+    linear-gradient(180deg, rgba(10, 15, 28, .08) 0%, rgba(10, 15, 28, .48) 100%),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, .09) 0 12px,
+      rgba(0, 0, 0, .06) 12px 24px
+    );
+  border: 1px solid rgba(255, 255, 255, .24);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, .28);
+  color: #fff;
+  cursor: pointer;
+  transition: transform .12s, box-shadow .12s;
+  min-width: 0;
+}
+
+.dex-move-strip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, .38);
+}
+
+.dex-move-strip-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.dex-move-ico-ring {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .92);
+  display: grid;
+  place-items: center;
+  flex: 0 0 30px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .28);
+}
+
+.dex-move-strip-head b {
+  display: block;
+  font-size: 13.5px;
+  line-height: 1.15;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dex-move-strip-head small {
+  display: block;
+  font-size: 11px;
+  color: rgba(255, 255, 255, .9);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .4);
+}
+
+.dex-move-strip-desc {
+  margin: 0;
+  font-size: 11.5px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, .95);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .42);
+}
+
+/* 概览底部记录条 */
+.dex-record-strip {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: #131827;
+  border: 1px solid rgba(255, 255, 255, .08);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+.dex-record-pills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 12px;
+  color: #9eb0d1;
+}
+
+.dex-record-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+  color: #b7c6e4;
+}
+
+.dex-record-pill b {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+.dex-diff-dots {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  color: #8f9fbe;
+}
+
+.dex-diff-star {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, .05);
+  color: #6f7f9e;
+  font-weight: 700;
+  font-size: 11px;
+}
+
+.dex-diff-star.won {
+  background: rgba(255, 210, 63, .18);
+  border: 1px solid rgba(255, 210, 63, .42);
+  color: #ffe066;
+}
+
+/* ---------- 招式页（Moves） ---------- */
+.dex-moves-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dex-move-card {
+  --mc: #4ec25c;
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+  background: #131827;
+  border: 1px solid rgba(255, 255, 255, .10);
+  border-left: 3px solid var(--mc);
+  border-radius: 13px;
+  padding: 12px 13px;
+  min-width: 0;
+}
+
+.dex-move-card.is-start {
+  background: linear-gradient(135deg, rgba(65, 201, 114, .11), #131827 55%);
+  border-color: rgba(82, 214, 105, .42);
+}
+
+.dex-move-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.dex-move-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.dex-move-card-top b {
+  font-size: 14.5px;
+  color: #fff;
+}
+
+.dex-move-tag {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .09);
+  color: #cbd7f0;
+  white-space: nowrap;
+}
+
+.dex-move-tag.start {
+  background: #36c462;
+  color: #0b1f12;
+}
+
+.dex-move-tag.evo {
+  background: rgba(255, 210, 63, .18);
+  color: #ffe066;
+  border: 1px solid rgba(255, 210, 63, .36);
+}
+
+.dex-move-sub {
+  font-size: 11.5px;
+  color: #8fa2c7;
+  margin: 2px 0 6px;
+}
+
+.dex-move-desc {
+  font-size: 12.5px;
+  color: #d7e1f7;
+  line-height: 1.45;
+  margin: 0 0 8px;
+}
+
+.dex-move-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.dex-metric-pill {
+  font-size: 11px;
+  color: #9cb0d4;
+  background: rgba(255, 255, 255, .05);
+  border: 1px solid rgba(255, 255, 255, .07);
+  border-radius: 6px;
+  padding: 2px 7px;
+}
+
+.dex-metric-pill b {
+  color: #fff;
+  margin-left: 3px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 数值页（Stats & IVs） ---------- */
+#dex-detail .dex-stats-list .stat {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) 48px 50px;
+  gap: 8px;
+  align-items: center;
+  font-size: 13px;
+  margin: 7px 0;
+  color: #c7d4ef;
+}
+
+#dex-detail .dex-stats-list .stat .bar {
+  height: 9px;
+  background: rgba(255, 255, 255, .08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+#dex-detail .dex-stats-list .stat .bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #277bff, #57b5ff);
+}
+
+.dex-kv-table {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dex-kv-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, .05);
+}
+
+.dex-kv-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.dex-kv-row span {
+  color: #9eb0d2;
+}
+
+.dex-kv-row b {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 属性页（Types） ---------- */
+.dex-eff-group {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr);
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 13px;
+}
+
+.dex-eff-group:last-child {
+  margin-bottom: 0;
+}
+
+.dex-eff-lbl {
+  font-size: 12.5px;
+  font-weight: 800;
+  padding-top: 6px;
+}
+
+.dex-eff-lbl.weak { color: #ff7684; }
+.dex-eff-lbl.res  { color: #67b9ff; }
+.dex-eff-lbl.sup  { color: #67e695; }
+
+.dex-eff-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.dex-eff-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 46px;
+}
+
+.dex-eff-dot {
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .28);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .4);
+}
+
+.dex-eff-mult {
+  font-size: 11px;
+  font-weight: 700;
+  color: #c2d0ea;
+  font-variant-numeric: tabular-nums;
+}
+
+.dex-family-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.dex-mini-mon {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, .11);
+  background: rgba(255, 255, 255, .04);
+  border-radius: 10px;
+  padding: 5px 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #e4ecfc;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color .12s, background .12s;
+}
+
+.dex-mini-mon:hover {
+  border-color: rgba(255, 255, 255, .36);
+  background: rgba(255, 255, 255, .09);
+}
+
+.dex-mini-mon.is-current {
+  border-color: #ffd447;
+  background: rgba(255, 212, 71, .14);
+}
+
+.dex-mini-mon.is-locked {
+  opacity: .55;
+}
+
+.dex-shared-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.dex-shared-dot {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .04);
+  border: 1px solid rgba(255, 255, 255, .08);
+  padding: 0;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform .1s, border-color .1s;
+}
+
+.dex-shared-dot:hover {
+  transform: scale(1.1);
+  border-color: #ffe066;
+}
+
+.dex-is-sil canvas {
+  filter: brightness(0) saturate(0) opacity(.42);
+}
+
+/* ---------- 特性与装备页（Abilities & Gear & Mega） ---------- */
+#dex-detail .ability-equipment {
+  border-top: 0;
+  margin: 0;
+  padding: 0;
+}
+
+#dex-detail .ability-equipment h3,
+#dex-detail .ability-equipment h4 {
+  margin: 0 0 6px;
+}
+
+#dex-detail .carried-equipment select {
+  height: 38px;
+  padding: 6px 10px;
+  font-size: 13px;
+  line-height: 1.2;
+  background: #1b2540;
+  border: 1px solid rgba(255, 255, 255, .18);
+  border-radius: 9px;
+  color: #f0f5ff;
+  margin: 8px 0 10px;
+}
+
+#dex-detail .difficulty-record {
+  border-top: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.dex-mega-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.dex-mega-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(164, 92, 224, .18), rgba(20, 26, 44, .92));
+  border: 1px solid rgba(212, 148, 255, .32);
+}
+
+.dex-mega-card canvas {
+  flex: 0 0 auto;
+}
+
+.dex-mega-card h5 {
+  margin: 0 0 4px;
+  font-size: 14px;
+  color: #f4d6ff;
+}
+
+/* ---------- 研究与奖牌页（Research & Difficulty） ---------- */
+.dex-research-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #fcebf2, #efe8fa);
+  color: #201c2d;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, .24);
+}
+
+.dex-research-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+}
+
+.dex-research-badge {
+  flex: 0 0 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #b58cff, #7f6be6);
+  color: #fff;
+  font-size: 20px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  box-shadow: 0 4px 12px rgba(127, 107, 230, .35);
+}
+
+.dex-research-meta {
+  flex: 1;
+  min-width: 0;
+}
+
+.dex-research-meta small {
+  display: block;
+  font-size: 11.5px;
+  color: #6b6182;
+  font-weight: 700;
+}
+
+.dex-research-meta h4 {
+  margin: 2px 0 6px;
+  font-size: 18px;
+  font-weight: 900;
+  color: #1b1726;
+}
+
+.dex-research-prog {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(32, 28, 45, .14);
+  overflow: hidden;
+}
+
+.dex-research-prog i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #ff70a6, #8f72ff);
+}
+
+.dex-research-next {
+  flex: 0 0 auto;
+  text-align: right;
+  padding: 7px 12px;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .75);
+  border: 1px solid rgba(127, 107, 230, .2);
+}
+
+.dex-research-next small {
+  display: block;
+  font-size: 11px;
+  color: #6c6184;
+}
+
+.dex-research-next b {
+  font-size: 12.5px;
+  color: #261d3a;
+}
+
+.dex-research-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.dex-task-card {
+  background: #131827;
+  border: 1px solid rgba(255, 255, 255, .10);
+  border-radius: 13px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.dex-task-card.is-ready {
+  border-color: #ff80b5;
+  box-shadow: 0 0 0 1px rgba(255, 128, 181, .35), 0 6px 16px rgba(0, 0, 0, .3);
+}
+
+.dex-task-card.is-claimed {
+  border-color: rgba(82, 214, 105, .36);
+}
+
+.dex-task-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #9bb0d6;
+}
+
+.dex-task-card b {
+  font-size: 13px;
+  color: #fff;
+  line-height: 1.35;
+}
+
+.dex-task-reward {
+  font-size: 11.5px;
+  color: #ffd875;
+  line-height: 1.4;
+}
+
+.dex-task-bar {
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .10);
+  overflow: hidden;
+}
+
+.dex-task-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, #52d669, #ffd447);
+}
+
+.dex-task-card .btn {
+  margin-top: auto;
+  width: 100%;
+  font-size: 12px;
+  padding: 6px 8px;
+}
+
+/* =========================================================
+   左侧底部操作栏（快捷胶囊 + 红色主按钮）
+   ========================================================= */
+.dex-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 16px;
+  background: #141929;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+.dex-footer-left,
+.dex-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.dex-pill-btn {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, .13);
+  background: #232b42;
+  color: #dce6fa;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 7px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background .12s, border-color .12s, transform .1s;
+}
+
+.dex-pill-btn:hover {
+  background: #2e3957;
+  border-color: rgba(255, 255, 255, .28);
+  color: #fff;
+}
+
+.dex-cta-btn {
+  appearance: none;
+  border: 0;
+  border-radius: 14px;
+  padding: 10px 22px;
+  min-width: 196px;
+  background: linear-gradient(135deg, #ff6c5c, #eb474f);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: .02em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(235, 71, 79, .45), inset 0 1px 0 rgba(255, 255, 255, .32);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .3);
+  transition: transform .1s, filter .12s;
+}
+
+.dex-cta-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  filter: brightness(1.07);
+}
+
+.dex-cta-btn:disabled {
+  background: linear-gradient(135deg, #326452, #244a3d);
+  color: #c5f7df;
+  box-shadow: none;
+  cursor: default;
+}
+
+.dex-cta-btn.is-locked {
+  background: linear-gradient(135deg, #3b4664, #2a324b);
+  color: #cfd9f2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+}
+
+.dex-cta-btn kbd {
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(15, 20, 36, .42);
+  border: 1px solid rgba(255, 255, 255, .2);
+  color: #fff;
+}
+
+/* =========================================================
+   右侧：图鉴列表（分类胶囊 + 搜索 + 世代条 + 卡片网格 + 进度条）
+   ========================================================= */
+.dex-cat-bar {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  padding: 10px 10px 6px;
+  background: #141929;
+  border-bottom: 1px solid rgba(255, 255, 255, .06);
+  flex: 0 0 auto;
+}
+
+.dex-cat-btn {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #9aa9ca;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 4px;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  white-space: nowrap;
+  transition: background .12s, color .12s;
+}
+
+.dex-cat-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, .06);
+}
+
+.dex-cat-btn.on {
+  background: #303a58;
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .14);
+}
+
+.dex-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px 6px;
+  flex: 0 0 auto;
+}
+
+.dex-search-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+#dex-search {
+  width: 100%;
+  box-sizing: border-box;
+  background: #121725;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 999px;
+  padding: 6px 28px 6px 12px;
+  color: #f0f5ff;
+  font-size: 12.5px;
+  outline: none;
+}
+
+#dex-search:focus {
+  border-color: #63a4ff;
+}
+
+#dex-search::placeholder {
+  color: #6f7f9e;
+}
+
+.dex-search-clear {
+  position: absolute;
+  right: 7px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 0;
+  background: transparent;
+  color: #8f9fbe;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.dex-tool-btn {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, .10);
+  background: #232b42;
+  color: #cbd7f0;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.dex-tool-btn:hover,
+.dex-tool-btn.on {
+  background: #313d5d;
+  color: #fff;
+  border-color: rgba(255, 212, 71, .5);
+}
+
+/* 世代横向条 */
+#dex-gens.dex-gen-strip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 0 10px 7px;
+  margin: 0;
+  overflow-x: auto;
+  flex: 0 0 auto;
+  scrollbar-width: none;
+}
+
+#dex-gens.dex-gen-strip::-webkit-scrollbar {
+  display: none;
+}
+
+#dex-gens.dex-gen-strip .gen-tab {
+  flex: 0 0 auto;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #141929;
+  border: 1px solid rgba(255, 255, 255, .10);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  color: #a9b8d8;
+}
+
+#dex-gens.dex-gen-strip .gen-tab b {
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+#dex-gens.dex-gen-strip .gen-tab small {
+  font-size: 10px;
+  color: #7c8eb2;
+}
+
+#dex-gens.dex-gen-strip .gen-tab.on {
+  background: rgba(87, 214, 109, .18);
+  border-color: #57d66d;
+  color: #fff;
+}
+
+#dex-gens.dex-gen-strip .gen-tab.on small {
+  color: #b7f5c4;
+}
+
+/* 稀有度筛选抽屉 */
+#dex-filters.dex-filter-tray {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 0 10px 8px;
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+#dex-filters.dex-filter-tray.collapsed {
+  display: none;
+}
+
+#dex-filters.dex-filter-tray .chip {
+  font-size: 11.5px;
+  padding: 3px 9px;
+  border-width: 1px;
+  background: #141929;
+}
+
+/* 卡片网格（对齐参考图风格） */
+#dex-grid.dex-roster-grid {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(76px, 1fr));
+  align-content: start;
+  gap: 7px;
+  padding: 6px 10px 10px;
+  overflow-y: auto;
+}
+
+#dex-grid.dex-roster-grid .cell {
+  --card-c: #5fcb6a;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 102px;
+  padding: 15px 4px 6px;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 255, 255, .14);
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 255, 255, .24), transparent 65%),
+    linear-gradient(180deg, var(--card-c), #26394d);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .24);
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform .1s, border-color .12s, box-shadow .12s;
+}
+
+#dex-grid.dex-roster-grid .cell.is-invite {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(255, 238, 180, .28), transparent 65%),
+    linear-gradient(180deg, #4b8d6f, #263848);
+}
+
+#dex-grid.dex-roster-grid .cell.locked {
+  background: #262d43;
+  border-color: rgba(255, 255, 255, .07);
+  box-shadow: none;
+  opacity: .92;
+  cursor: pointer;
+}
+
+#dex-grid.dex-roster-grid .cell:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, .52);
+}
+
+#dex-grid.dex-roster-grid .cell.on {
+  border-color: #ffd84d;
+  box-shadow: 0 0 0 2px rgba(255, 216, 77, .38), 0 6px 16px rgba(0, 0, 0, .48);
+  transform: translateY(-1px);
+  z-index: 2;
+}
+
+#dex-grid.dex-roster-grid .cell .no {
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  font-size: 9.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, .82);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .6);
+}
+
+#dex-grid.dex-roster-grid .cell .badge-r {
+  position: absolute;
+  top: 3px;
+  right: 5px;
+  font-size: 11px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: #ffe066;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .75);
+}
+
+#dex-grid.dex-roster-grid .cell .dex-lock-ico {
+  position: absolute;
+  top: 4px;
+  right: 5px;
+  font-size: 10px;
+  color: #f3c448;
+  opacity: .9;
+}
+
+#dex-grid.dex-roster-grid .cell canvas {
+  width: 68px;
+  height: 58px;
+  margin: 0 auto;
+}
+
+#dex-grid.dex-roster-grid .cell b {
+  display: block;
+  width: 100%;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#dex-grid.dex-roster-grid .cell.locked b {
+  color: #8f9db9;
+  text-shadow: none;
+}
+
+.dex-cell-bar {
+  width: 78%;
+  height: 3.5px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, .35);
+  overflow: hidden;
+  margin-top: 3px;
+}
+
+.dex-cell-bar i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: #f3b33d;
+}
+
+/* 右侧底部收集进度条 + 快捷跳转 */
+.dex-roster-foot {
+  flex: 0 0 auto;
+  padding: 9px 11px 10px;
+  background: #141929;
+  border-top: 1px solid rgba(255, 255, 255, .08);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dex-prog-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #aebcd9;
+}
+
+.dex-prog-track {
+  flex: 1;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .09);
+  overflow: hidden;
+}
+
+.dex-prog-track i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #52d669, #38bdf8);
+}
+
+#dex-total {
+  color: #fff;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.dex-quick-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.dex-quick-card {
+  appearance: none;
+  border: 1px solid rgba(255, 255, 255, .10);
+  background: #1e253b;
+  border-radius: 10px;
+  padding: 5px 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  text-align: left;
+  min-width: 0;
+  transition: border-color .12s, background .12s;
+}
+
+.dex-quick-card:hover {
+  border-color: #ffd84d;
+  background: #27304d;
+}
+
+.dex-quick-card.is-ready {
+  border-color: rgba(87, 214, 109, .5);
+  background: linear-gradient(135deg, rgba(66, 198, 104, .22), #1e253b);
+}
+
+.dex-quick-card canvas {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+}
+
+.dex-quick-meta {
+  min-width: 0;
+  flex: 1;
+}
+
+.dex-quick-meta small {
+  display: block;
+  font-size: 9.5px;
+  color: #82e6a0;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dex-quick-meta b {
+  display: block;
+  font-size: 11px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* =========================================================
+   响应式适配：平板 / 手机横屏 / 手机竖屏
+   ========================================================= */
+@media (max-width: 1120px) {
+  #scr-dex .dex-shell {
+    grid-template-columns: minmax(0, 1.55fr) minmax(270px, 1fr);
+  }
+  .dex-ov-moves {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dex-research-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* 手机横屏（如 844×390 / 915×412） */
+@media (max-height: 540px) {
+  #scr-dex {
+    padding: 46px 8px 6px !important;
+  }
+  #scr-dex .dex-shell {
+    height: calc(100vh - 54px);
+    grid-template-columns: minmax(0, 1.55fr) minmax(220px, 1fr);
+    gap: 8px;
+  }
+  .dex-hero {
+    min-height: 138px;
+    grid-template-columns: 46% 54%;
+  }
+  .dex-hero-left {
+    padding: 8px 10px 20px 12px;
+    gap: 4px;
+  }
+  .dex-name {
+    font-size: 20px;
+  }
+  .dex-evo-node {
+    width: 30px;
+    height: 30px;
+  }
+  .dex-evo-node canvas {
+    width: 26px;
+    height: 26px;
+  }
+  .dex-hero-right {
+    padding: 4px 8px 18px 10px;
+    grid-template-columns: minmax(90px, .9fr) minmax(110px, 1.1fr);
+  }
+  .dex-pedestal {
+    width: 102px;
+    height: 92px;
+  }
+  #dex-big.dex-hero-canvas {
+    width: 98px;
+    height: 88px;
+  }
+  .dex-radar-svg {
+    max-width: 146px;
+  }
+  .dex-tabbar-wrap {
+    margin: -16px 8px 4px;
+  }
+  .dex-tab {
+    padding: 4px 9px 4px 6px;
+    font-size: 11.5px;
+  }
+  .dex-tab-ico {
+    width: 18px;
+    height: 18px;
+    flex-basis: 18px;
+  }
+  .dex-body {
+    padding: 4px 10px 8px;
+    gap: 8px;
+  }
+  .dex-footer {
+    padding: 6px 10px;
+  }
+  .dex-cta-btn {
+    min-width: 132px;
+    padding: 7px 14px;
+    font-size: 13px;
+  }
+  .dex-cta-btn kbd {
+    display: none;
+  }
+  #dex-grid.dex-roster-grid {
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    gap: 5px;
+  }
+  #dex-grid.dex-roster-grid .cell {
+    min-height: 84px;
+    padding: 12px 3px 4px;
+  }
+  #dex-grid.dex-roster-grid .cell canvas {
+    width: 52px;
+    height: 44px;
+  }
+  .dex-quick-strip {
+    display: none;
+  }
+}
+
+/* 手机竖屏 / 窄屏（<= 780px） */
+@media (max-width: 780px) and (min-height: 541px) {
+  #scr-dex {
+    padding: 58px 8px 8px;
+    overflow-y: auto;
+    align-items: flex-start;
+  }
+  #scr-dex .dex-shell {
+    height: auto;
+    max-height: none;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .dex-hero {
+    grid-template-columns: 1fr;
+    min-height: auto;
+  }
+  .dex-hero::before {
+    clip-path: polygon(0 0, 100% 0, 100% 52%, 0 58%);
+  }
+  .dex-hero::after {
+    clip-path: polygon(0 57.5%, 100% 51.5%, 100% 52.8%, 0 58.8%);
+  }
+  .dex-hero-left {
+    padding: 12px 14px 14px;
+  }
+  .dex-hero-right {
+    padding: 8px 10px 26px;
+    grid-template-columns: 1fr 1fr;
+  }
+  .dex-two-col,
+  .dex-moves-grid {
+    grid-template-columns: 1fr;
+  }
+  .dex-ov-moves,
+  .dex-research-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .dex-roster {
+    max-height: 58vh;
+  }
+  .dex-footer {
+    flex-wrap: wrap;
+  }
+  .dex-cta-btn {
+    flex: 1;
+    min-width: 150px;
+  }
+  .dex-cta-btn kbd {
+    display: none;
+  }
+  .dex-research-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .dex-research-next {
+    text-align: left;
+  }
+}
