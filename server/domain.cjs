@@ -37,6 +37,7 @@ for (const f of [
   "js/data/breakthrough-items.js",
   "js/data/expedition-cards.js",
   "js/systems/card-packs.js",
+  "js/systems/namecard.js",
   "js/systems/save-sync.js",
   "js/core/db.js",
 ]) {
@@ -86,11 +87,13 @@ function sanitize(input, old, name, options={}) {
   for (const v of Object.values(s.stats))
     if (typeof v === "number" && (!Number.isFinite(v) || v < 0 || v > 1e12))
       throw new Error("Invalid statistics");
+  const rawProfile = clone(s.profile);
   s.profile = {
+    ...rawProfile,
     title:
-      typeof s.profile.title === "string" ? s.profile.title.slice(0, 40) : "",
-    favs: Array.isArray(s.profile.favs)
-      ? s.profile.favs
+      typeof rawProfile.title === "string" ? rawProfile.title.slice(0, 40) : "",
+    favs: Array.isArray(rawProfile.favs)
+      ? rawProfile.favs
           .filter((f) => f && G.DEX_BY[f.dex])
           .slice(0, 3)
           .map((f) => ({ dex: f.dex, shiny: !!f.shiny }))
@@ -159,6 +162,11 @@ function sanitize(input, old, name, options={}) {
   s.offline = clone(old.offline);
   s.failureProtection = clone(old.failureProtection||{});
   s.leagueRank=clone(old.leagueRank||{v:1,results:{}});
+  s.titles=Array.isArray(s.titles)?s.titles.filter(t=>typeof t==='string'&&t.length<=40).slice(0,500):[];
+  s.avatars=Array.isArray(s.avatars)?s.avatars.map(Number).filter(d=>G.DEX_BY[d]).slice(0,500):[];
+  s.avatarFrames=Array.isArray(old.avatarFrames)?clone(old.avatarFrames):[];
+  G.LeagueRank.syncRewards(s);
+  G.Namecard.normalize(s);
   Object.assign(s,G.ZAccess.merge(s,old));
   for(const [d,type] of Object.entries(s.zEquipped))
     if(!G.DEX_BY[d] || type!==null && (!G.ZAccess.TYPES.includes(type)||!G.ZAccess.allowed(s,d)))delete s.zEquipped[d];

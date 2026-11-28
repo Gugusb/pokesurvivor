@@ -82,6 +82,7 @@ G.DB = (() => {
       research: {},           // rootDex -> { battles, kills, bosses, wins, maxLv, claimed: {} }
       titles: [],             // unlocked custom title IDs
       avatars: [],            // unlocked avatar dex IDs
+      avatarFrames: [],       // unlocked custom avatar frame IDs
       shiny: {},              // dex -> { at, from } — variantes shiny conseguidas
       partner: null,          // dex del Pokémon con el que juegas
       partnerShiny: false,    // jugar con su versión shiny (si la tienes)
@@ -155,6 +156,8 @@ G.DB = (() => {
     G.LeagueRank?.normalize(s);
     if (G.FailureProtection) G.FailureProtection.normalize(s);
     if (G.Offline) G.Offline.normalize(s);
+    if (!Array.isArray(s.avatarFrames)) s.avatarFrames = [];
+    G.Namecard?.normalize(s);
     if (!s.megaStones || typeof s.megaStones !== 'object' || Array.isArray(s.megaStones)) s.megaStones = {};
     if (!s.megaEquipped || typeof s.megaEquipped !== 'object' || Array.isArray(s.megaEquipped)) s.megaEquipped = {};
     if (G.Mega) {

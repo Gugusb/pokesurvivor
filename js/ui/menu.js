@@ -5,7 +5,7 @@ G.MenuUI = (() => {
   const GEN_NAMES = ['Kanto', 'Johto', 'Hoenn', 'Sinnoh', 'Teselia', 'Kalos', 'Alola', 'Galar', 'Paldea'];
 
   function init() {
-    const ICON = { play: 'ball', dex: 'book', nursery:'ball', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', exchange: 'coin', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
+    const ICON = { play: 'ball', dex: 'book', nursery:'ball', upgrades: 'up', gacha: 'ball4', 'ability-gacha': 'gem', exchange: 'coin', namecard: 'crown', goals: 'medal3', offline: 'clock', friends: 'friends', rank: 'trophy', settings: 'gear' };
     document.querySelectorAll('#scr-menu [data-go]').forEach(b => {
       b.insertAdjacentHTML('afterbegin', `<span class="mi-ico">${G.Icons.html(ICON[b.dataset.go], 26)}</span>`);
       b.dataset.sfx = b.dataset.go === 'play' ? 'confirm' : 'click';
@@ -17,6 +17,7 @@ G.MenuUI = (() => {
         else if (go === 'gacha') G.GachaUI.open();
         else if (go === 'ability-gacha') G.GachaUI.open('ability');
         else if (go === 'exchange') G.ExchangeUI.open();
+        else if (go === 'namecard') G.NamecardUI.open();
         else if (go === 'goals') G.GoalsUI.open();
         else if (go === 'offline') G.OfflineUI.open();
         else if (go === 'nursery') G.NurseryUI.open();

@@ -1,0 +1,1086 @@
+/* ============ namecard.css — Custom Player Namecard & League Rank Rewards ============ */
+
+/* --- Reusable Namecard Banner (used in Editor Preview, Public Profile, Goals Profile) --- */
+.nc-banner {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(260px, 1.15fr) auto auto;
+  align-items: center;
+  gap: 18px;
+  padding: 20px 24px;
+  border-radius: 18px;
+  background:
+    radial-gradient(ellipse at 82% 55%, var(--nc-bg-glow, rgba(87, 214, 109, .24)), transparent 58%),
+    linear-gradient(125deg, #1b2235 0%, #171e30 55%, #1d2b2b 100%);
+  border: 1px solid rgba(255, 255, 255, .11);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, .42), inset 0 1px 0 rgba(255, 255, 255, .06);
+  overflow: hidden;
+  min-height: 146px;
+}
+
+.nc-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: .9;
+}
+
+.nc-banner > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Card Pack & Scenic Backgrounds */
+.nc-bg-none {
+  background:
+    radial-gradient(ellipse at 85% 65%, rgba(87, 214, 109, .22), transparent 58%),
+    linear-gradient(115deg, #192033 0%, #171e31 58%, #21372c 100%);
+}
+.nc-bg-pack {
+  background:
+    radial-gradient(circle at 86% 24%, color-mix(in srgb, var(--nc-bg-accent, #82d4ee) 38%, transparent), transparent 54%),
+    radial-gradient(ellipse at 18% 90%, color-mix(in srgb, var(--nc-bg-accent, #82d4ee) 22%, transparent), transparent 55%),
+    repeating-linear-gradient(-45deg, rgba(255, 255, 255, .035) 0 14px, rgba(0, 0, 0, .04) 14px 28px),
+    linear-gradient(125deg, #182034 0%, color-mix(in srgb, var(--nc-bg-accent, #82d4ee) 24%, #141a2b) 100%);
+}
+.nc-bg-amethyst_cave {
+  background:
+    radial-gradient(circle at 75% 28%, rgba(188, 120, 255, .38), transparent 46%),
+    radial-gradient(circle at 22% 78%, rgba(124, 58, 237, .30), transparent 50%),
+    repeating-linear-gradient(125deg, rgba(216, 180, 254, .06) 0 2px, transparent 2px 24px),
+    linear-gradient(135deg, #17112b 0%, #271747 55%, #16132c 100%);
+}
+.nc-bg-night_glacier {
+  background:
+    radial-gradient(ellipse at 70% 18%, rgba(124, 216, 255, .36), transparent 52%),
+    linear-gradient(165deg, rgba(56, 189, 248, .14) 0%, transparent 48%, rgba(186, 230, 253, .16) 100%),
+    linear-gradient(135deg, #0f1c31 0%, #152d4b 58%, #0e1e36 100%);
+}
+.nc-bg-crimson_citadel {
+  background:
+    radial-gradient(circle at 80% 30%, rgba(255, 93, 108, .42), transparent 40%),
+    radial-gradient(circle at 28% 82%, rgba(185, 28, 28, .28), transparent 50%),
+    linear-gradient(130deg, #1e1222 0%, #371525 58%, #1d101d 100%);
+}
+.nc-bg-circuit_city {
+  background:
+    linear-gradient(90deg, rgba(59, 227, 196, .08) 1px, transparent 1px) 0 0 / 26px 26px,
+    linear-gradient(rgba(59, 227, 196, .08) 1px, transparent 1px) 0 0 / 26px 26px,
+    radial-gradient(circle at 78% 50%, rgba(59, 227, 196, .30), transparent 54%),
+    linear-gradient(135deg, #0d1c26 0%, #122d3b 55%, #0c1b24 100%);
+}
+.nc-bg-champion_bonfire {
+  background:
+    radial-gradient(circle at 76% 74%, rgba(255, 148, 66, .44), transparent 46%),
+    radial-gradient(circle at 24% 25%, rgba(251, 191, 36, .22), transparent 48%),
+    linear-gradient(130deg, #211618 0%, #3a1f1b 55%, #231517 100%);
+}
+.nc-bg-celestial_hall {
+  background:
+    radial-gradient(circle at 78% 28%, rgba(86, 240, 255, .36), transparent 46%),
+    radial-gradient(circle at 30% 80%, rgba(167, 139, 250, .30), transparent 52%),
+    radial-gradient(circle at 52% 45%, rgba(255, 255, 255, .09), transparent 40%),
+    linear-gradient(135deg, #101936 0%, #1d2952 52%, #132c44 100%);
+}
+
+/* --- Avatar + Avatar Frames --- */
+.nc-avatar-wrap {
+  position: relative;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.nc-avatar-core {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 45% 32%, #293654, #141a2a 85%);
+  border: 2px solid rgba(255, 255, 255, .18);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, .42);
+}
+
+.nc-avatar-core canvas,
+.nc-avatar-core svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.nc-frame-none .nc-avatar-core {
+  border: 2.5px solid rgba(255, 255, 255, .18);
+}
+
+.nc-frame-emerald .nc-avatar-core {
+  border: 3px solid #57d66d;
+  box-shadow: 0 0 0 3px rgba(87, 214, 109, .24), 0 8px 20px rgba(47, 184, 89, .32);
+}
+
+.nc-frame-cobalt .nc-avatar-core {
+  border: 3px solid #52a8ff;
+  box-shadow: 0 0 0 3px rgba(82, 168, 255, .26), 0 8px 20px rgba(37, 99, 235, .36);
+}
+
+.nc-frame-shiny .nc-avatar-core {
+  border: 3px solid #7ce8ff;
+  box-shadow: 0 0 0 3px rgba(124, 232, 255, .28), 0 0 18px rgba(124, 232, 255, .48);
+}
+
+.nc-frame-scholar .nc-avatar-core {
+  border: 3px solid #c48aff;
+  box-shadow: 0 0 0 3px rgba(196, 138, 255, .28), 0 0 18px rgba(168, 85, 247, .42);
+}
+
+/* R7 Champion Flame Frame */
+.nc-frame-r7 {
+  background: conic-gradient(from 0deg, #ff4500, #ffb703, #ff2e63, #ff7b00, #ffd166, #ff4500);
+  padding: 4px;
+  box-shadow: 0 0 24px rgba(255, 86, 36, .62), 0 0 0 2px rgba(255, 214, 102, .5);
+}
+.nc-frame-r7 .nc-avatar-core {
+  width: 86px;
+  height: 86px;
+  border: 2.5px solid #2b1214;
+}
+.nc-frame-r7::after {
+  content: '👑';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 16px;
+  filter: drop-shadow(0 2px 5px rgba(0, 0, 0, .75));
+}
+
+/* R8 Hall of Fame Aura Frame */
+.nc-frame-r8 {
+  background: conic-gradient(from 45deg, #00f0ff, #7c3aed, #38bdf8, #e0faff, #00f0ff);
+  padding: 4.5px;
+  box-shadow: 0 0 28px rgba(0, 240, 255, .64), 0 0 0 2px rgba(224, 250, 255, .65);
+}
+.nc-frame-r8 .nc-avatar-core {
+  width: 86px;
+  height: 86px;
+  border: 2.5px solid #0e1e38;
+}
+.nc-frame-r8::after {
+  content: '✦';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #00f0ff, #6366f1);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 900;
+  box-shadow: 0 2px 10px rgba(0, 240, 255, .75);
+}
+
+/* Champion Road P1 Prismatic Frame */
+.nc-frame-prism {
+  background: conic-gradient(from 0deg, #ff3b9a, #fbbf24, #34d399, #38bdf8, #a855f7, #ff3b9a);
+  padding: 4.5px;
+  box-shadow: 0 0 28px rgba(244, 114, 182, .62), 0 0 0 2px rgba(255, 255, 255, .55);
+}
+.nc-frame-prism .nc-avatar-core {
+  width: 86px;
+  height: 86px;
+  border: 2.5px solid #1e132c;
+}
+
+/* --- Nameplate Box --- */
+.nc-plate {
+  position: relative;
+  padding: 14px 18px 13px;
+  border-radius: 14px;
+  background: rgba(18, 24, 39, .84);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.nc-plate-type {
+  background:
+    linear-gradient(105deg, rgba(18, 24, 39, .92) 45%, color-mix(in srgb, var(--nc-plate-accent, #57d66d) 36%, rgba(18, 24, 39, .86)) 100%);
+}
+
+.nc-plate-gold_velvet {
+  background:
+    linear-gradient(115deg, rgba(32, 24, 14, .92) 40%, rgba(168, 122, 30, .38) 100%);
+}
+
+.nc-plate-prism_aurora {
+  background:
+    linear-gradient(120deg, rgba(18, 22, 46, .92) 25%, rgba(56, 189, 248, .28) 65%, rgba(244, 114, 182, .30) 100%);
+}
+
+.nc-plate-motif-sprite {
+  position: absolute;
+  right: 8px;
+  bottom: -6px;
+  opacity: .32;
+  pointer-events: none;
+  filter: saturate(1.1);
+}
+
+/* Nameplate Edges */
+.nc-edge-solid {
+  border: 1.5px solid color-mix(in srgb, var(--nc-plate-accent, #57d66d) 55%, rgba(255, 255, 255, .22));
+}
+.nc-edge-none {
+  border: 1px solid rgba(255, 255, 255, .06);
+}
+.nc-edge-glow {
+  border: 1.5px solid color-mix(in srgb, var(--nc-plate-accent, #57d66d) 72%, #fff);
+  box-shadow: 0 0 18px color-mix(in srgb, var(--nc-plate-accent, #57d66d) 38%, transparent);
+}
+.nc-edge-double {
+  border: 2px solid rgba(255, 212, 71, .75);
+  box-shadow: inset 0 0 0 2px rgba(18, 24, 39, .95), inset 0 0 0 3.5px rgba(255, 212, 71, .42);
+}
+.nc-edge-corner {
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+.nc-edge-corner::before,
+.nc-edge-corner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 14px;
+}
+.nc-edge-corner::before {
+  background:
+    linear-gradient(var(--nc-plate-accent, #57d66d), var(--nc-plate-accent, #57d66d)) top left / 18px 2.5px no-repeat,
+    linear-gradient(var(--nc-plate-accent, #57d66d), var(--nc-plate-accent, #57d66d)) top left / 2.5px 18px no-repeat,
+    linear-gradient(var(--nc-plate-accent, #57d66d), var(--nc-plate-accent, #57d66d)) top right / 18px 2.5px no-repeat,
+    linear-gradient(var(--nc-plate-accent, #57d66d), var(--nc-plate-accent, #57d66d)) top right / 2.5px 18px no-repeat,
+    linear-gradient(var(--nc-plate-accent, #57d66d), var(--nc-plate-accent, #57d66d)) bottom left / 18px 2.5px no-repeat,
+    linear-gradient(var(--nc-plate-accent, #57d66d), var(--nc-plate-accent, #57d66d)) bottom left / 2.5px 18px no-repeat,
+    linear-gradient(var(--nc-plate-accent, #57d66d), var(--nc-plate-accent, #57d66d)) bottom right / 18px 2.5px no-repeat,
+    linear-gradient(var(--nc-plate-accent, #57d66d), var(--nc-plate-accent, #57d66d)) bottom right / 2.5px 18px no-repeat;
+}
+
+.nc-name-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.nc-player-name {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 900;
+  color: #fff;
+  letter-spacing: -.01em;
+  line-height: 1.15;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, .45);
+}
+
+/* League Rank Pill inside Namecard */
+.nc-rank-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px 3px 6px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--nc-rank-color, #708090) 22%, rgba(16, 22, 36, .92));
+  border: 1px solid color-mix(in srgb, var(--nc-rank-color, #708090) 68%, rgba(255, 255, 255, .3));
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--nc-rank-color, #708090) 30%, transparent);
+}
+
+.nc-rank-pill .nc-rank-code {
+  padding: 2px 5px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--nc-rank-color, #708090) 85%, #fff);
+  color: #101522;
+  font-size: 10.5px;
+  font-weight: 900;
+}
+
+.nc-title-line {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  align-self: flex-start;
+  padding: 2px 9px;
+  border-radius: 7px;
+  background: rgba(255, 212, 71, .14);
+  border: 1px solid rgba(255, 212, 71, .35);
+  color: #ffe27a;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* Showcase Pill inside Nameplate */
+.nc-showcase-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(12, 16, 28, .76);
+  border: 1.5px solid color-mix(in srgb, var(--nc-sc-color, #f5b935) 62%, rgba(255, 255, 255, .15));
+  max-width: 280px;
+}
+
+.nc-sc-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--nc-sc-color, #f5b935) 22%, #182034);
+  border: 1px solid color-mix(in srgb, var(--nc-sc-color, #f5b935) 55%, transparent);
+  font-size: 13px;
+  flex: 0 0 auto;
+}
+
+.nc-sc-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nc-sc-copy strong {
+  font-size: 13px;
+  color: #fff;
+  line-height: 1.1;
+}
+
+.nc-sc-copy small {
+  font-size: 11px;
+  color: #a9b8d4;
+  line-height: 1.1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nc-sc-bar {
+  height: 3.5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .10);
+  overflow: hidden;
+  margin-top: 2px;
+}
+
+.nc-sc-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+  background: var(--nc-sc-color, #57d66d);
+}
+
+.nc-since {
+  font-size: 11.5px;
+  color: #93a4c6;
+}
+
+/* Standing Partner Sprite on Namecard */
+.nc-partner-stage {
+  position: relative;
+  width: 102px;
+  height: 98px;
+  display: grid;
+  place-items: center;
+}
+
+.nc-partner-stage::after {
+  content: '';
+  position: absolute;
+  bottom: 4px;
+  width: 68px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, .55), transparent 72%);
+  z-index: 0;
+}
+
+.nc-partner-stage canvas {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .48));
+}
+
+/* Right-Side 6-Slot Badge Bar */
+.nc-badge-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(15, 20, 34, .76);
+  border: 1.5px solid rgba(255, 255, 255, .10);
+}
+
+.nc-badge-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 30px;
+}
+
+.nc-badge-ico {
+  font-size: 17px;
+  line-height: 1;
+  opacity: .42;
+  filter: grayscale(.55);
+}
+
+.nc-badge-item.lit .nc-badge-ico {
+  opacity: 1;
+  filter: drop-shadow(0 2px 6px rgba(255, 212, 71, .45));
+}
+
+.nc-badge-item span {
+  font-size: 11px;
+  font-weight: 800;
+  color: #8898b8;
+}
+
+.nc-badge-item.lit span {
+  color: #eef4ff;
+}
+
+/* Badge Strip Borders */
+.nc-bf-none { border-color: rgba(255, 255, 255, .09); }
+.nc-bf-bronze { border-color: #cd7f32; box-shadow: 0 0 12px rgba(205, 127, 50, .26); }
+.nc-bf-silver { border-color: #cbd5e1; box-shadow: 0 0 14px rgba(203, 213, 225, .28); }
+.nc-bf-emerald { border-color: #34d399; box-shadow: 0 0 16px rgba(52, 211, 153, .32); }
+.nc-bf-ruby { border-color: #fb7185; box-shadow: 0 0 16px rgba(251, 113, 133, .36); }
+.nc-bf-gold {
+  border-color: #fbbf24;
+  background: linear-gradient(135deg, rgba(40, 30, 14, .84), rgba(22, 24, 38, .86));
+  box-shadow: 0 0 20px rgba(251, 191, 36, .40);
+}
+.nc-bf-champion {
+  border-color: #f472b6;
+  background: linear-gradient(135deg, rgba(44, 18, 44, .86), rgba(18, 28, 52, .88));
+  box-shadow: 0 0 22px rgba(244, 114, 182, .45), inset 0 0 0 1px rgba(124, 232, 255, .35);
+}
+
+/* --- Full-Screen Custom Namecard Editor Modal (Reference 1:1 Layout) --- */
+.nc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 95;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  background: rgba(8, 11, 20, .82);
+  backdrop-filter: blur(8px);
+}
+
+.nc-modal {
+  width: min(1140px, 100%);
+  height: min(820px, calc(100vh - 28px));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 22px 16px;
+  border-radius: 22px;
+  background: #171c2c;
+  border: 1px solid rgba(255, 255, 255, .10);
+  box-shadow: 0 28px 70px rgba(0, 0, 0, .65);
+  overflow: hidden;
+}
+
+.nc-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+
+.nc-modal-kicker {
+  display: block;
+  font-size: 12px;
+  color: #8f9fbe;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+
+.nc-modal-head h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+  color: #fff;
+}
+
+.nc-modal-tools {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nc-rand-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, .15);
+  border: 1px solid rgba(56, 189, 248, .38);
+  color: #bae6fd;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform .1s, background .12s;
+}
+.nc-rand-btn:hover { background: rgba(56, 189, 248, .26); transform: translateY(-1px); }
+
+.nc-currency-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 999px;
+  background: #101524;
+  border: 1px solid rgba(255, 212, 71, .28);
+  color: #ffe27a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.nc-preview-wrap {
+  flex: 0 0 auto;
+}
+
+/* Editor Split Body */
+.nc-editor-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 14px;
+}
+
+.nc-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px;
+  border-radius: 16px;
+  background: #121726;
+  border: 1px solid rgba(255, 255, 255, .07);
+  overflow-y: auto;
+}
+
+.nc-side-group {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #6d7f9f;
+  padding: 8px 10px 4px;
+  letter-spacing: .04em;
+}
+
+.nc-side-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: #b7c6e4;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: left;
+  transition: background .12s, color .12s;
+}
+
+.nc-side-btn:hover {
+  background: rgba(255, 255, 255, .05);
+  color: #fff;
+}
+
+.nc-side-btn.on {
+  background: rgba(255, 255, 255, .08);
+  border-color: rgba(244, 114, 182, .45);
+  color: #fff;
+  box-shadow: inset 3px 0 0 #f43f7f;
+}
+
+.nc-side-ico {
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, .06);
+  font-size: 14px;
+}
+
+/* Saved Presets at Sidebar Bottom */
+.nc-presets-box {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, .07);
+}
+
+.nc-presets-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  padding: 4px 4px 6px;
+}
+
+.nc-preset-slot {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 11px;
+  background: #1b2236;
+  border: 1.5px solid rgba(255, 255, 255, .14);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 0;
+  color: #8f9fbe;
+  font-size: 12px;
+  font-weight: 800;
+}
+.nc-preset-slot.filled {
+  border-color: rgba(82, 168, 255, .62);
+  background: #1a2844;
+}
+.nc-preset-slot:hover {
+  border-color: #f5b935;
+}
+.nc-preset-save {
+  width: 100%;
+  padding: 5px 8px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid rgba(255, 255, 255, .10);
+  color: #b7c6e4;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.nc-preset-save:hover { background: rgba(255, 255, 255, .12); color: #fff; }
+
+/* Right Content Panel */
+.nc-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: #121726;
+  border: 1px solid rgba(255, 255, 255, .07);
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.nc-panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.nc-panel-head h3 {
+  margin: 0;
+  font-size: 19px;
+  font-weight: 900;
+  color: #fff;
+}
+
+.nc-panel-head p {
+  margin: 3px 0 0;
+  font-size: 12.5px;
+  color: #8f9fbe;
+}
+
+.nc-subtabs {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 999px;
+  background: #1a2136;
+  border: 1px solid rgba(255, 255, 255, .08);
+  gap: 2px;
+}
+
+.nc-subtab {
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 0;
+  background: transparent;
+  color: #9bb0d4;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.nc-subtab.on {
+  background: #2f3b5b;
+  color: #fff;
+}
+
+/* Search & Filter Bar */
+.nc-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nc-filters input,
+.nc-filters select {
+  background: #1a2136;
+  border: 1px solid rgba(255, 255, 255, .12);
+  border-radius: 10px;
+  color: #eef4ff;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.nc-filters input {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* Option Grids */
+.nc-grid-avatars {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 10px;
+}
+
+.nc-grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
+  gap: 10px;
+}
+
+.nc-grid-wide {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(228px, 1fr));
+  gap: 10px;
+}
+
+.nc-tile {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  padding: 12px 10px;
+  border-radius: 14px;
+  background: #192035;
+  border: 1.5px solid rgba(255, 255, 255, .08);
+  color: #dce6fa;
+  cursor: pointer;
+  text-align: center;
+  transition: transform .1s, border-color .14s, background .14s;
+}
+
+.nc-tile:hover:not(.locked) {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, .28);
+  background: #202944;
+}
+
+.nc-tile.on {
+  border-color: #f5b935;
+  background: rgba(245, 185, 53, .10);
+  box-shadow: 0 0 0 1px rgba(245, 185, 53, .45);
+}
+
+.nc-tile.locked {
+  opacity: .56;
+  cursor: not-allowed;
+}
+
+.nc-tile b {
+  font-size: 13px;
+  color: #fff;
+  line-height: 1.25;
+}
+
+.nc-tile small {
+  font-size: 11px;
+  color: #8f9fbe;
+  line-height: 1.3;
+}
+
+.nc-lock {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: rgba(15, 20, 34, .88);
+  border: 1px solid rgba(255, 212, 71, .35);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+}
+
+/* Title Rows */
+.nc-title-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nc-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 13px;
+  background: #192035;
+  border: 1.5px solid rgba(255, 255, 255, .09);
+  color: #eef4ff;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .12s, background .12s;
+}
+
+.nc-title-row:hover:not(.locked) {
+  border-color: rgba(255, 255, 255, .28);
+  background: #202944;
+}
+
+.nc-title-row.on {
+  border-color: #f5b935;
+  background: rgba(245, 185, 53, .12);
+}
+
+.nc-title-row.locked {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.nc-title-tag {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .08);
+  color: #c5d3ee;
+}
+
+/* Background Swatch Tile */
+.nc-bg-swatch {
+  width: 100%;
+  height: 62px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Showcase Selection Card */
+.nc-sc-card {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 11px 13px;
+  border-radius: 14px;
+  background: #192035;
+  border: 1.5px solid rgba(255, 255, 255, .08);
+  cursor: pointer;
+  text-align: left;
+}
+
+.nc-sc-card:hover { border-color: rgba(255, 255, 255, .28); }
+.nc-sc-card.on { border-color: #f5b935; background: rgba(245, 185, 53, .10); }
+
+/* Footer Buttons */
+.nc-modal-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding-top: 6px;
+}
+
+.nc-btn-cancel {
+  min-width: 132px;
+  padding: 11px 24px;
+  border-radius: 999px;
+  background: #262f47;
+  border: 1px solid rgba(255, 255, 255, .14);
+  color: #dce6fa;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.nc-btn-cancel:hover { background: #313d5b; }
+
+.nc-btn-save {
+  min-width: 148px;
+  padding: 11px 28px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #5ce075, #2db857);
+  border: 1px solid rgba(190, 255, 210, .52);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(45, 184, 87, .40);
+}
+.nc-btn-save:hover { filter: brightness(1.07); }
+
+/* Topbar clickable user-pill hint */
+#user-pill.nc-clickable {
+  cursor: pointer;
+  transition: border-color .14s, background .14s;
+}
+#user-pill.nc-clickable:hover {
+  border-color: rgba(255, 212, 71, .55);
+  background: rgba(255, 212, 71, .12);
+}
+
+/* --- League Trainer Card One-Time Tier Rewards (Requirement 2) --- */
+.league-tier-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px dashed rgba(255, 255, 255, .10);
+}
+
+.league-rw-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 10.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, .06);
+  color: #cbd5e1;
+  border: 1px solid rgba(255, 255, 255, .08);
+}
+
+.league-rw-chip.rw-coin {
+  background: rgba(255, 212, 71, .12);
+  border-color: rgba(255, 212, 71, .28);
+  color: #ffe27a;
+}
+
+.league-rw-chip.rw-title {
+  background: rgba(168, 85, 247, .16);
+  border-color: rgba(192, 132, 252, .34);
+  color: #e9d5ff;
+}
+
+.league-rw-chip.rw-frame {
+  background: rgba(56, 189, 248, .16);
+  border-color: rgba(125, 211, 252, .38);
+  color: #bae6fd;
+}
+
+.league-card .league-profile {
+  align-self: start;
+  position: sticky;
+  top: 0;
+}
+
+.league-tier.unlocked .league-rw-chip {
+  opacity: .92;
+}
+
+.league-rw-status {
+  font-size: 10px !important;
+  font-weight: 800;
+  color: #7df0a5 !important;
+  margin-top: 2px;
+}
+
+.league-protocol-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.league-protocol-rewards {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.league-card-nc-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 9px 14px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #3b82f6, #6366f1);
+  border: 1px solid rgba(191, 219, 254, .42);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.league-card-nc-btn:hover { filter: brightness(1.08); }
+
+/* Public Profile Modal Width Upgrade for Namecard Banner */
+#scr-profile .profile-box {
+  width: min(920px, 100%) !important;
+  max-height: min(86vh, 780px);
+  overflow-y: auto;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .nc-banner {
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    padding: 14px 16px;
+  }
+  .nc-partner-stage { display: none; }
+  .nc-badge-bar { grid-column: 1 / -1; justify-content: space-around; }
+  .nc-editor-body { grid-template-columns: 156px minmax(0, 1fr); }
+}
+
+@media (max-width: 640px) {
+  .nc-editor-body { grid-template-columns: 1fr; }
+  .nc-sidebar { flex-direction: row; overflow-x: auto; flex: 0 0 auto; }
+  .nc-side-group, .nc-presets-box { display: none; }
+  .nc-side-btn { width: auto; white-space: nowrap; }
+}

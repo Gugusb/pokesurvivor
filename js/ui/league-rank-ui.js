@@ -16,14 +16,46 @@ G.LeagueRankUI=(()=>{
   function refreshBadges(){for(const b of document.querySelectorAll('[data-league-badge]')){const next=badge();if(b.id)next.id=b.id;b.replaceWith(next);}}
   function close(){if(!modal)return;modal.remove();modal=null;returnFocus?.focus({preventScroll:true});returnFocus=null;}
   function open(){
-    if(modal)return;returnFocus=document.activeElement;const v=R().view(G.DB.save),save=G.DB.save;
+    if(modal)return;returnFocus=document.activeElement;const save=G.DB.save;R().syncRewards?.(save);const v=R().view(save);
     modal=node('div','league-overlay');modal.setAttribute('role','dialog');modal.setAttribute('aria-modal','true');modal.setAttribute('aria-labelledby','league-card-title');
     const card=node('section','league-card');card.style.setProperty('--league-color',v.color);const head=node('header','league-card-head'),identity=node('div');identity.append(node('small','league-kicker',L('CERTIFICACIÓN DE LA LIGA','LEAGUE CERTIFICATION','宝可梦联盟 · 训练家认证')),node('h2','',''));identity.lastChild.id='league-card-title';identity.lastChild.textContent=L('Tarjeta de entrenador','League Trainer Card','联盟训练家卡');const exit=node('button','league-close','×');exit.type='button';exit.setAttribute('aria-label',L('Cerrar','Close','关闭'));exit.onclick=close;head.append(identity,exit);card.append(head);
     const layout=node('div','league-card-layout'),profile=node('aside','league-profile'),large=crest(v,126);profile.append(large,node('span','league-rank-code',v.protocol?'R8 · P'+v.protocol:'R'+v.tier),node('h3','',v.name),stars(v.stars),node('p','league-profile-progress',subtitle(v)));
-    const mon=G.DEX_BY[save.profile?.avatar||save.partner];if(mon)profile.append(G.UI.spriteCanvas(mon.dex,132,100,{scale:4,hero:true,shiny:!!save.partnerShiny&&mon.dex===save.partner}));profile.append(node('b','league-trainer-name',(save.name||G.DB.user||L('Entrenador','Trainer','训练家'))+(save.profile?.title?' · '+save.profile.title:'')),node('small','league-profile-note',L('La Liga conserva tus estrellas.','Your stars are protected.','联盟保护：只升不降')));
-    const content=node('main','league-card-content'),path=node('section','league-path');path.append(node('h3','',L('Ascenso en la Liga','League ascent','联盟晋升之路')));const grid=node('div','league-tier-grid');
-    for(const t of R().TIERS){const unlocked=t.tier<=v.tier,e=node('article','league-tier'+(unlocked?' unlocked':'')+(t.tier===v.tier?' current':''));e.dataset.leagueTier=t.tier;e.style.setProperty('--league-color',t.color);e.append(crest({...t,protocol:0},48),node('small','','R'+t.tier),node('b','',R().local(t.name)),node('span','',t.tier===v.tier?L('Actual','Current','当前段位'):unlocked?'✓':t.tier===8?L('Salón de la Fama','Hall of Fame','满星毕业'):L('3 estrellas','3 stars','3星晋升')));grid.append(e);}path.append(grid);content.append(path);
-    const protocol=node('section','league-protocol');protocol.append(node('div','league-section-title',L('Camino del Campeón','Champion Road','冠军之路')),node('small','',v.tier===8?L('Cada victoria avanza una etapa.','Each successful settlement advances one stage.','每次成功结算推进1阶'):L('Se abre al llegar a R8.','Opens at R8.','达到殿堂大师后开启')));const steps=node('div','league-protocol-steps');for(let i=1;i<=20;i++){const e=node('span',i<=v.protocol?'done':v.tier===8&&i===v.protocol+1?'next':'',String(i));e.setAttribute('aria-label',L('Etapa ','Stage ','第 ')+i+(i<=v.protocol?' ✓':''));steps.append(e);}protocol.append(steps);content.append(protocol);
+    const mon=G.DEX_BY[save.profile?.partnerDex||save.profile?.avatar||save.partner];if(mon)profile.append(G.UI.spriteCanvas(mon.dex,132,100,{scale:4,hero:true,shiny:!!(save.profile?.partnerDex?save.profile.partnerShiny:save.partnerShiny&&mon.dex===save.partner)}));
+    const titleLabel=G.Namecard?.resolveTitleLabel?G.Namecard.resolveTitleLabel(save.profile?.title):save.profile?.title;
+    const displayName=G.DB.guest?G.T('Invitado'):(save.name||G.DB.user||L('Entrenador','Trainer','训练家'));
+    profile.append(node('b','league-trainer-name',displayName+(titleLabel?' · '+titleLabel:'')),node('small','league-profile-note',L('La Liga conserva tus estrellas.','Your stars are protected.','联盟保护：只升不降')));
+    if(G.NamecardUI){const ncBtn=node('button','league-card-nc-btn','✦ '+L('Personalizar tarjeta','Customize Namecard','自定义玩家名片'));ncBtn.type='button';ncBtn.onclick=()=>{close();G.NamecardUI.open();};profile.append(ncBtn);}
+    const content=node('main','league-card-content'),path=node('section','league-path');path.append(node('h3','',L('Ascenso en la Liga y recompensas únicas','League Ascent & One-Time Rewards','联盟晋升之路与一次性段位奖励')));const grid=node('div','league-tier-grid');
+    for(const t of R().TIERS){
+      const unlocked=t.tier<=v.tier,e=node('article','league-tier'+(unlocked?' unlocked':'')+(t.tier===v.tier?' current':''));
+      e.dataset.leagueTier=t.tier;e.style.setProperty('--league-color',t.color);
+      e.append(crest({...t,protocol:0},46),node('small','','R'+t.tier),node('b','',R().local(t.name)),node('span','',t.tier===v.tier?L('Actual','Current','当前段位'):unlocked?'✓':t.tier===8?L('Salón de la Fama','Hall of Fame','满星毕业'):L('3 estrellas','3 stars','3星晋升')));
+      const ms=R().milestone?.(t.tier);
+      const rw=node('div','league-tier-rewards');
+      if(ms){
+        if(ms.coins)rw.append(node('span','league-rw-chip rw-coin','🏅 '+ms.coins.toLocaleString()));
+        if(ms.title)rw.append(node('span','league-rw-chip rw-title','🏷 '+R().local(ms.title)));
+        if(ms.frame)rw.append(node('span','league-rw-chip rw-frame','🖼 '+R().local(ms.frame)));
+        if(unlocked)rw.append(node('span','league-rw-status',L('Reclamado ✓','Claimed ✓','已领取 ✓')));
+      }else{
+        rw.append(node('span','league-rw-chip',L('Rango inicial','Starting tier','起始段位')));
+      }
+      e.append(rw);
+      grid.append(e);
+    }
+    path.append(grid);content.append(path);
+    const protocol=node('section','league-protocol');
+    const pHead=node('div','league-protocol-head');
+    pHead.append(node('div','league-section-title',L('Camino del Campeón','Champion Road','冠军之路')));
+    const p1=R().milestone?.('p1');
+    if(p1){
+      const pRw=node('div','league-protocol-rewards');
+      pRw.append(node('span','league-rw-chip rw-coin','P1 · 🏅 '+p1.coins.toLocaleString()));
+      if(p1.title)pRw.append(node('span','league-rw-chip rw-title','🏷 '+R().local(p1.title)));
+      if(v.protocol>=1)pRw.append(node('span','league-rw-status',L('Reclamado ✓','Claimed ✓','已领取 ✓')));
+      pHead.append(pRw);
+    }
+    protocol.append(pHead,node('small','',v.tier===8?L('Cada victoria avanza una etapa.','Each successful settlement advances one stage.','每次成功结算推进1阶'):L('Se abre al llegar a R8.','Opens at R8.','达到殿堂大师后开启')));const steps=node('div','league-protocol-steps');for(let i=1;i<=20;i++){const e=node('span',i<=v.protocol?'done':v.tier===8&&i===v.protocol+1?'next':'',String(i));e.setAttribute('aria-label',L('Etapa ','Stage ','第 ')+i+(i<=v.protocol?' ✓':''));steps.append(e);}protocol.append(steps);content.append(protocol);
     const rules=node('section','league-rules');rules.append(node('h3','',L('Evaluación R1–R7','R1–R7 assessment','R1—R7 · 小队生命评级')));const grades=node('div','league-grade-grid');for(const [grade,hp,n]of [['SSS','HP ≥70',3],['S','40 ≤ HP <70',2],['A','0 < HP <40',1]]){const e=node('div','league-grade');e.append(node('b','',grade),node('span','',hp),node('strong','','+'+n+' ★'));grades.append(e);}rules.append(grades,node('p','',L('Completa el día 60 y finaliza la expedición. Una evaluación por partida; una derrota no resta estrellas. En R4+, solo cuentan victorias en dificultad igual o superior a tu rango; si tu rango es inferior a la dificultad, ganas +1 ★ extra.','Complete day 60 and settle the expedition. One evaluation per run; defeats never remove stars. At R4+, only clears at your rank difficulty or higher award points; clearing above your rank grants +1 extra ★.','完成第60天后，在整局最终结算时评定；一局仅一次，失败不扣星、不降段。到达R4后仅挑战对应或更高难度（如R5需N5+）才加分；若段位低于所选难度，额外+1 ★。')));content.append(rules);layout.append(profile,content);card.append(layout);modal.append(card);modal.onclick=e=>{if(e.target===modal)close();};document.body.append(modal);exit.focus();
   }
   const reasonText=r=>r.reason==='difficulty'?L('Dificultad inferior a R'+(r.before?.tier||4)+' · sin estrellas','Difficulty below R'+(r.before?.tier||4)+' · no stars','难度低于当前段位 R'+(r.before?.tier||4)+' · 本次不加分'):r.reason==='cleared'&&!r.applied?L('Rango ordinario completado','Regular ranks completed','常规段位已满星'):r.reason==='defeat'?L('Protección de la Liga · no pierdes estrellas','League protection · no stars lost','联盟保护 · 本次不扣星'):r.reason==='incomplete'?L('Completa el día 60 para optar al ascenso.','Complete day 60 to qualify for promotion.','完成第60天后，才可获得升段评定'):r.reason==='maxed'?L('Camino del Campeón completado','Champion Road completed','冠军之路已满阶'):r.reason==='duplicate'?L('Esta partida ya fue certificada.','This run has already been certified.','本局已完成认证'):L('Partida no válida para la certificación.','This run does not qualify for certification.','本局不计入联盟段位');

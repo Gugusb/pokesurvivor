@@ -468,8 +468,11 @@ G.Social = (() => {
     return {
       cardTheme:G.CardPacks?.normalize(s).theme,
       name: me ? me.name : G.DB.user,
+      created: s.created || Date.now(),
+      leagueRank: G.LeagueRank?.view(s),
+      namecard: G.Namecard?.publicData(s, { name: me ? me.name : G.DB.user }),
       favs: (prof.favs || []).slice(0, 3).map(f => ({ dex: f.dex | 0, shiny: !!f.shiny })),
-      title: prof.title || '',
+      title: G.Namecard?.resolveTitleLabel ? G.Namecard.resolveTitleLabel(prof.title) : (prof.title || ''),
       best: { solo: st.bestTime | 0, group: st.bestGroupTime | 0, level: st.bestLevel | 0, bosses: st.bossesTotal | 0,
               legends: Object.keys(s.legends || {}).length, kills: st.totalKills | 0, medals: unlocked.length },
       medals

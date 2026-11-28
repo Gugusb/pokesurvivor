@@ -149,10 +149,37 @@
     function profile(box) {
       const s = G.DB.save;
       s.profile = s.profile || { favs: [], title: '' };
+      G.LeagueRank?.syncRewards?.(s);
+      G.Namecard?.normalize?.(s);
       const P = s.profile;
+      const TL = (es, en, zh) => G.I18n?.lang === 'zh' ? zh : G.I18n?.lang === 'en' ? en : es;
       box.insertAdjacentHTML('beforeend', `<p class="sub">${G.DB.online ? 'Así te ven los demás jugadores (desde el ranking y la lista de amigos).'
-        : 'Tu perfil se publica cuando juegas con una cuenta online.'}</p>
-        <h3>Tus 3 Pokémon favoritos</h3>`);
+        : 'Tu perfil se publica cuando juegas con una cuenta online.'}</p>`);
+
+      if (G.Namecard && G.NamecardUI) {
+        const previewHost = document.createElement('div');
+        previewHost.style.marginBottom = '14px';
+        const selfDisplayName = G.DB.guest ? G.T('Invitado') : (G.DB.user || s.name || TL('Entrenador', 'Trainer', '训练家'));
+        previewHost.appendChild(G.NamecardUI.renderBanner(G.Namecard.publicData(s, { name: selfDisplayName })));
+        box.appendChild(previewHost);
+
+        const actions = document.createElement('div');
+        actions.className = 'row wrap';
+        actions.style.gap = '10px';
+        actions.style.marginBottom = '18px';
+        const customize = document.createElement('button');
+        customize.className = 'btn gold';
+        customize.textContent = '✦ ' + TL('Personalizar tarjeta', 'Customize Namecard', '自定义我的名片');
+        customize.onclick = () => G.NamecardUI.open();
+        const prev = document.createElement('button');
+        prev.className = 'btn ghost';
+        prev.textContent = TL('Ver mi perfil público', 'Preview Public Profile', '查看公开资料卡');
+        prev.onclick = () => (G.DB.mode === 'server' && G.Server?.user?.uid) ? G.ProfileUI.show(G.Server.user.uid) : G.ProfileUI.showData(G.Social.profileData());
+        actions.append(customize, prev);
+        box.appendChild(actions);
+      }
+
+      box.insertAdjacentHTML('beforeend', `<h3>Tus 3 Pokémon favoritos</h3>`);
       const favs = document.createElement('div');
       favs.className = 'fav-slots';
       for (let i = 0; i < 3; i++) {
@@ -168,21 +195,21 @@
       }
       box.appendChild(favs);
 
-      const titles = G.Progress.titles();
-      box.insertAdjacentHTML('beforeend', `<h3 style="margin-top:14px">Título</h3>`);
-      const sel = document.createElement('select');
-      sel.className = 'field';
-      sel.style.maxWidth = '320px';
-      sel.innerHTML = `<option value="">(sin título)</option>` + titles.map(t => `<option ${t === P.title ? 'selected' : ''}>${esc(t)}</option>`).join('');
-      sel.onchange = () => { P.title = sel.value; save(); };
-      box.appendChild(sel);
-      if (!titles.length) box.insertAdjacentHTML('beforeend', '<p class="note">Consigue logros para desbloquear títulos.</p>');
-
-      const prev = document.createElement('button');
-      prev.className = 'btn gold'; prev.style.marginTop = '16px';
-      prev.textContent = 'Ver mi perfil público';
-      prev.onclick = () => G.DB.mode==='server' ? G.ProfileUI.show(G.Server.user?.uid) : G.ProfileUI.showData(G.Social.profileData());
-      box.appendChild(prev);
+      if (!G.NamecardUI) {
+        const titles = G.Progress.titles();
+        box.insertAdjacentHTML('beforeend', `<h3 style="margin-top:14px">Título</h3>`);
+        const sel = document.createElement('select');
+        sel.className = 'field';
+        sel.style.maxWidth = '320px';
+        sel.innerHTML = `<option value="">(sin título)</option>` + titles.map(t => `<option ${t === P.title ? 'selected' : ''}>${esc(t)}</option>`).join('');
+        sel.onchange = () => { P.title = sel.value; save(); };
+        box.appendChild(sel);
+        const prev = document.createElement('button');
+        prev.className = 'btn gold'; prev.style.marginTop = '16px';
+        prev.textContent = 'Ver mi perfil público';
+        prev.onclick = () => G.DB.mode==='server' ? G.ProfileUI.show(G.Server.user?.uid) : G.ProfileUI.showData(G.Social.profileData());
+        box.appendChild(prev);
+      }
     }
 
     function pickFav(i) {
@@ -260,13 +287,33 @@
       body.style.setProperty('--prof-accent',/^#[0-9a-f]{6}$/i.test(character?.color||'')?character.color:'#ffd23f');
       const number=v=>Math.max(0,Math.floor(Number(v)||0)).toLocaleString(G.I18n.lang==='zh'?'zh-CN':G.I18n.lang==='en'?'en':'es');
       const completed=(d.completedDex||[]).filter(dex=>G.DEX_BY[dex]);
+      const ncData = d.namecard || (G.NamecardUI ? {
+        name: d.name || '???',
+        created: d.created || Date.now(),
+        title: character ? local(character.title) : (G.Namecard?.resolveTitleLabel ? G.Namecard.resolveTitleLabel(d.title) : d.title),
+        leagueRank: d.leagueRank || { tier: 1, stars: 0, protocol: 0, color: '#708090', name: G.LeagueRank ? G.LeagueRank.local(G.LeagueRank.TIERS[0].name) : 'R1' },
+        avatarType: 'pokemon',
+        avatarId: 'partner',
+        avatarDex: d.partner || d.favs?.[0]?.dex || 25,
+        avatarShiny: false,
+        avatarFrame: 'none',
+        bg: d.cardTheme ? 'theme:' + d.cardTheme : 'none',
+        nameplate: 'default',
+        nameplateEdge: 'corner',
+        showcase: { display: String(number(b.medals)), label: T('Colección completa','Full-medal Pokémon','满勋章宝可梦'), pct: Math.min(100, (b.medals||0)/10), color: '#ff5b7f', icon: 'ruby' },
+        resolvedBadgeFrame: 'none',
+        badges: [{ icon: 'ruby', count: b.medals||0, label: { zh:'满勋章', en:'8★', es:'8★' } }, { icon: 'star', count: b.legends||0, label: { zh:'传说击败', en:'Legends', es:'Legendarios' } }],
+        partnerDex: d.partner || d.favs?.[0]?.dex || 25,
+        partnerShiny: false
+      } : null);
+      if (ncData && character) ncData.title = local(character.title);
       body.innerHTML = `
-        <div class="prof-hero">
+        <div id="prof-nc-host" style="margin-bottom:14px"></div>
+        ${character ? `<div class="prof-hero" style="margin-bottom:12px">
           <div class="prof-kicker">${T('CUADERNO DE AVENTURAS','ADVENTURE JOURNAL','冒险档案')}</div>
-          <div class="prof-head"><h2 translate="no">${esc(d.name || '???')}</h2>${character||d.title ? `<span class="prof-title">${esc(character?local(character.title):d.title)}</span>` : ''}</div>
-          <p class="prof-bio">${esc(character?local(character.bio):T('Cada compañero guarda una historia. Aquí continúa la aventura.','Every partner has a story. The adventure continues here.','每一位伙伴都珍藏着故事，下一段冒险从这里继续。'))}</p>
-          ${character?`<p class="prof-preset">${T('Ficha de personaje · datos y marcas predefinidos.','Preset character profile · curated records and information.','预设角色档案 · 资料与成绩为预置展示内容。')}</p>`:''}
-        </div>
+          <p class="prof-bio">${esc(local(character.bio))}</p>
+          <p class="prof-preset">${T('Ficha de personaje · datos y marcas predefinidos.','Preset character profile · curated records and information.','预设角色档案 · 资料与成绩为预置展示内容。')}</p>
+        </div>` : ''}
         <div class="prof-marks">
           <div><span>${T('Colección completa','Full-medal Pokémon','满勋章宝可梦')}</span><b>${number(b.medals)}</b></div>
           <div><span>${T('Puntuación de aventura','Adventure score','冒险最高得分')}</span><b>${b.score?number(b.score):'—'}</b></div>
@@ -278,7 +325,12 @@
         <h3 class="prof-section-title">${T('Galería de victorias','Hall of victories','通关伙伴墙')} <small>${number(b.medals)}</small></h3>
         <div class="prof-victories" id="prof-victories"></div>
         <h3 class="prof-ach-title hidden" id="prof-ach-title">${T('Logros','Achievements','成就收藏')}</h3><div class="prof-medals" id="prof-medals"></div>`;
-      if(theme){const badge=document.createElement('span');badge.className='pack-theme-badge';badge.textContent='✦ '+G.CardPacks.local(theme.name);body.querySelector('.prof-hero').append(badge);}
+      const ncHost = $('prof-nc-host');
+      if (ncData && G.NamecardUI?.renderBanner) {
+        ncHost.appendChild(G.NamecardUI.renderBanner(ncData));
+      } else {
+        ncHost.innerHTML = `<div class="prof-hero"><div class="prof-head"><h2 translate="no">${esc(d.name || '???')}</h2>${d.title ? `<span class="prof-title">${esc(d.title)}</span>` : ''}</div></div>`;
+      }
       const favs = $('prof-favs');
       for (const f of (d.favs || []).slice(0, 3)) {
         if (!G.DEX_BY[f.dex]) continue;

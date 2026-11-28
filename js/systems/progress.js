@@ -195,9 +195,10 @@ G.Progress = (() => {
     }
   }
 
-  /** Títulos que tienes (de los logros conseguidos). */
+  /** Títulos que tienes (logros, rango de Liga e investigación). */
   function titles() {
     const s = G.DB.save;
+    if (G.Namecard?.allTitles) return G.Namecard.allTitles(s).filter(t => t.unlocked).map(t => t.label);
     return G.AchDefs.LIST.filter(a => a.title && s && s.ach && s.ach[a.id]).map(a => a.title);
   }
 

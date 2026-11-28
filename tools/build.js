@@ -56,13 +56,14 @@ if (!EXPOSE) {
     '--unicode-escape-sequence', 'false', '--target', 'browser'], { stdio: 'inherit', shell });
 }
 const min = fs.readFileSync(outJs);
-const hash = crypto.createHash('sha1').update(min).update(fs.readFileSync(path.join(ROOT, 'css/style.css'))).update(fs.readFileSync(path.join(ROOT,'css/expedition.css'))).update(fs.readFileSync(path.join(ROOT,'css/pokedex.css'))).update(fs.readFileSync(path.join(ROOT,'css/dashboard-ui.css'))).digest('hex').slice(0, 10);
+const hash = crypto.createHash('sha1').update(min).update(fs.readFileSync(path.join(ROOT, 'css/style.css'))).update(fs.readFileSync(path.join(ROOT,'css/expedition.css'))).update(fs.readFileSync(path.join(ROOT,'css/pokedex.css'))).update(fs.readFileSync(path.join(ROOT,'css/dashboard-ui.css'))).update(fs.readFileSync(path.join(ROOT,'css/namecard.css'))).digest('hex').slice(0, 10);
 
 let html = dev.slice(0, i) + `<script defer src="js/app.min.js?v=${hash}"></script>` + dev.slice(j + END.length);
 html = html.replace(/href="css\/style\.css(?:\?[^"]*)?"/, `href="css/style.css?v=${hash}"`);
 html = html.replace(/href="css\/expedition\.css(?:\?[^"]*)?"/, `href="css/expedition.css?v=${hash}"`);
 html = html.replace(/href="css\/pokedex\.css(?:\?[^"]*)?"/, `href="css/pokedex.css?v=${hash}"`);
 html = html.replace(/href="css\/dashboard-ui\.css(?:\?[^"]*)?"/, `href="css/dashboard-ui.css?v=${hash}"`);
+html = html.replace(/href="css\/namecard\.css(?:\?[^"]*)?"/, `href="css/namecard.css?v=${hash}"`);
 html = html.replace(/<meta name="robots" content="noindex">\s*/, '');
 html = html.replace(/[ \t]*<button\b[^>]*data-t="dev"[^>]*>[\s\S]*?<\/button>\r?\n?/g, '');
 // --sin-seo: sin canonical/redes/datos estructurados ni enlaces a las páginas

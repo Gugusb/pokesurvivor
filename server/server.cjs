@@ -898,14 +898,24 @@ function createApp(opts = {}) {
       const character=characterFor(db,id),record=q('SELECT t FROM time_scores WHERE uid=?',id),bestScore=q('SELECT score,stars,t FROM run_scores WHERE uid=?',id);
       const curatedTime=character?Math.max(0,...Object.values(s.difficultyRecords||{}).map(rows=>rows[8]?.best||0)):0;
       const completed=Object.keys(s.difficultyRecords||{}).map(Number).filter(dex=>G.DEX_BY[dex]&&G.Difficulty.frame(s,dex)==='ruby');
+      const lrView = G.LeagueRank.view(s);
+      const nc = G.Namecard?.publicData
+        ? G.Namecard.publicData(s, {
+            name: displayName(p),
+            ...(character ? { title: character.title?.zh || '', partnerDex: character.team?.[0] || s.partner || 321 } : {})
+          })
+        : null;
       return json(res, 200, {
         name: displayName(p),
+        created: s.created || 0,
         character,
         partner:s.partner||null,
         completedDex:completed.slice(0,12),
         favs: character ? character.team.filter(dex=>G.DEX_BY[dex]).map(dex=>({dex,shiny:false})) : (s.profile?.favs || []).filter(f=>G.DEX_BY[f?.dex]).slice(0, 3),
         cardTheme: G.CardPacks.normalize(s).theme,
-        title: String(s.profile?.title || "").slice(0, 40),
+        title: String(G.Namecard?.resolveTitleLabel ? G.Namecard.resolveTitleLabel(s.profile?.title) : (s.profile?.title || "")).slice(0, 40),
+        leagueRank: lrView,
+        namecard: nc,
         best: {
           solo: s.stats.bestTime || 0,
           group: s.stats.bestGroupTime || 0,

@@ -40,7 +40,9 @@ G.UI = (() => {
                   offline: 'Sin conexión: se subirá al volver', local: 'Guardado sólo en este navegador', guest: 'Invitado: no se guarda' };
     $('user-pill').innerHTML = G.Icons.html(G.DB.guest ? 'user' : 'crown', 18) + ' <span translate="no">' + (G.DB.guest ? G.T('Invitado') : (G.DB.user || '')) + '</span>' +
       `<i class="sync ${st}" title="${TIP[st] || ''}"></i>`;
-    $('user-pill').title = TIP[st] || '';
+    $('user-pill').title = (TIP[st] ? TIP[st] + ' · ' : '') + G.T('Personaliza tu tarjeta');
+    $('user-pill').classList.add('nc-clickable');
+    $('user-pill').onclick = () => { if (G.DB.save && G.NamecardUI) G.NamecardUI.open(); };
   }
 
   let toastEl = null, toastT = 0;

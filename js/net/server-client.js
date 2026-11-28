@@ -678,11 +678,15 @@ G.Social = (() => {
       G.Server.api("/profile?uid=" + encodeURIComponent(uid)),
     profileData() {
       const s = G.DB.save;
+      const displayName = G.DB.guest ? G.T('Invitado') : G.DB.user;
       return {
         cardTheme:G.CardPacks?.normalize(s).theme,
-        name: G.DB.user,
+        name: displayName,
+        created: s.created || Date.now(),
+        leagueRank: G.LeagueRank?.view(s),
+        namecard: G.Namecard?.publicData(s, { name: displayName }),
         favs: s.profile?.favs || [],
-        title: s.profile?.title || "",
+        title: G.Namecard?.resolveTitleLabel ? G.Namecard.resolveTitleLabel(s.profile?.title) : (s.profile?.title || ""),
         best: {
           solo: s.stats.bestTime || 0,
           group: s.stats.bestGroupTime || 0,

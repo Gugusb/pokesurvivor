@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Sistema de tarjeta personalizada y recompensas de rango · v0.43.0-alpha.84": "自定义玩家名片系统与段位一次性奖励 · v0.43.0-alpha.84",
+  "Llega el sistema completo de Tarjeta de jugador personalizable (accesible desde el menú principal, la barra superior, Misiones → Perfil y la Tarjeta de la Liga): permite configurar Avatar (entrenadores y tus Pokémon), Marco de avatar, Título, Fondo (temas de paquetes de cartas y escenarios por logros/rango), Placa de nombre (18 estilos elementales libres y bordes luminosos), Vitrina con barra de progreso, Borde de medallas, Compañero en pie (normal o shiny) y hasta 3 estilos guardados, mostrando siempre tu rango actual de la Liga.": "全新上线「自定义玩家名片」系统（可从主菜单、顶部玩家昵称、任务→个人资料及联盟训练家卡进入）：支持自由搭配头像（训练家与已拥有宝可梦）、头像框、称号、背景（卡包主题与里程碑场景）、名牌样式与边缘（18 种属性样式默认全开放）、陈列柜进度徽章、徽章边框、站立展示伙伴（支持切换异色）及 3 套造型预设，并在名片与公开资料卡中实时展示玩家联盟段位。",
+  "La Tarjeta de entrenador de la Liga muestra ahora las recompensas únicas de cada rango: Monedas Liga desde R2 hasta R8 y P1, un título exclusivo en cada rango desde R4 (Líder de gimnasio, Aspirante al Alto Mando, Alto Mando, Campeón de la Liga, Maestro del Salón de la Fama y Pionero del Camino del Campeón en P1) y marcos de avatar exclusivos en R7 (Marco Llama de Campeón) y R8 (Marco Salón de la Fama).": "联盟训练家卡新增各段位「一次性奖励」明细展示：除 R2–R8 及冠军之路 P1 的联盟币奖励外，自 R4 起每提升一个段位均可解锁专属称号（道馆馆主、联盟准天王、联盟四天王、联盟冠军、殿堂大师及 P1 冠军之路开拓者），达到 R7 与 R8 还可分别获得专属限定头像框「炽焰冠军框」与「星辰殿堂框」。",
+  "Colgué un tablero de corcho junto al mostrador para que podamos vestir nuestra tarjeta con marcos brillantes, fondos marinos y nuestro compañero favorito al lado. Quien cocina anotó todos los premios de cada rango en la ficha de la Liga; el marco de R8 brilla tanto que casi me despierta de la siesta.": "在海边柜台旁挂好了软木板，咱们可以给名片换上亮闪闪的头像框、背景和最合拍的伙伴啦。做饭的那家伙把每个段位的一次性奖励都工工整整写进了训练家卡里，R8 那个星辰框亮得差点把午睡的我晃醒呢。",
+
   "Reajuste de fórmula de agilidad y recarga · v0.43.0-alpha.83": "敏捷与冷却结算公式重构及十项平衡调整 · v0.43.0-alpha.83",
   "Nueva fórmula de agilidad: Agilidad final = Base × (1 + suma de multiplicadores) + Extra (los bonos fijos y planos como Garra Rápida, Roca 5 o Enlace del Capitán ya no se amplifican por multiplicadores). Las reducciones de enfriamiento ahora se multiplican sobre la duración (por ejemplo, -10% y -30% resultan en 63% de la recarga original).": "重构敏捷结算为「基础值 ×（1 + 乘区累加）+ 额外值」，其中基础值为原始基础值乘以个体乘区，额外值（如先制之爪、岩石 5、连携主将）不享受敏捷乘区；冷却时间缩短乘区统一按剩余时长相乘（例如 -10% 与 -30% 叠加为 0.90 × 0.70 = 63% 原冷却）。",
   "Metrónomo pasa a ser un objeto único con recarga ×0,95; Garra Rápida otorga +5 de agilidad plana por acumulación; se retira la antigua bonificación residual stat:cd (+3%/nivel).": "节拍器调整为唯一道具且效果改为冷却 ×0.95；先制之爪改为每层提供 +5 点额外敏捷；移除局外旧版 stat:cd（+3%/级）敏捷残留收益。",
@@ -22,6 +27,9 @@ G.I18n.addChinese({
   "Le enseñé al guardián del servidor a reconocer también las invitaciones, así no nos rechaza la mochila ni el mostrador cuando salimos con un compañero invitado.": "我给门卫大叔补上了邀请函的登记册，以后带着受邀伙伴去交易所寄售或者存进度都不会被拦在门外啦。",
 
   "Bolsa de consignación": "交易所（寄售商店）",
+  "Tarjeta de jugador": "玩家名片",
+  "Personaliza tu tarjeta": "自定义你的名片",
+  "Avatar, marco, fondo y título": "头像、头像框、称号、背景与陈列柜",
   "Compra y vende con Monedas Liga": "使用联盟币寄售与购买道具",
   "Monedas Liga": "联盟币",
   "Monedas Liga:": "联盟币：",

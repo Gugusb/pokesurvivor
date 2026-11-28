@@ -34,6 +34,17 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.84 — 2026-11-28
+
+- 新增自定义玩家名片系统及其个性化展示（`js/systems/namecard.js`、`js/ui/namecard-ui.js`、`css/namecard.css`，纳入 `tools/build.js` 缓存指纹与 `server/domain.cjs` 服务端校验）：
+  - 实时名片横幅支持展示圆形头像与头像框、带联盟段位徽标（R1–R8 / R8·P#）与称号的名牌盒、带进度条的陈列柜徽章、注册日期、站立宝可梦伙伴（支持异色）及 6 格徽章边框栏。
+  - 自定义编辑器提供 8 大个性分类（头像［训练家/宝可梦］、头像框、称号、背景［卡包主题+成就/段位场景］、名牌［18 种全免费属性样式+边缘］、陈列柜［图鉴/异色/勋章/段位/18 属性登记进度］、徽章边框［自动/段位边框］、伙伴选择）、一键随机与 3 套造型预设，支持主菜单、顶部昵称胶囊、任务→个人资料与联盟训练家卡多入口打开。
+  - 公开资料卡（`G.ProfileUI.showData` 与 `GET /api/profile`）接入完整名片横幅与联盟段位展示，服务端 `sanitize` 严格校验各装扮解锁条件防止伪造未解锁段位奖励，同时修复游客模式下点击「查看公开资料卡」无响应与游客名未本地化为「游客」的问题。
+- 联盟训练家卡（`js/systems/league-rank.js`、`js/ui/league-rank-ui.js`）补充一次性段位奖励体系与卡片展示：
+  - 新增 `TIER_MILESTONES`、`unlockedTitles`、`unlockedFrames`，并扩展 `syncRewards`：除 R2–R8 与冠军之路 P1 一次性联盟币（1000–10000）外，R4–R8 及 P1 依次解锁专属称号（`道馆馆主`、`联盟准天王`、`联盟四天王`、`联盟冠军`、`殿堂大师`、`冠军之路开拓者`），R7 与 R8 额外解锁限定头像框（`炽焰冠军框`、`星辰殿堂框`）。
+  - 联盟训练家卡逐段位展示一次性奖励与已领取状态，并在左侧个人栏提供「自定义玩家名片」快捷入口。
+- 验证：`node --test tools/test_namecard_rank_rewards.cjs tools/test_league_rank.cjs tools/test_developer_journal.cjs tools/test_exchange_gacha.cjs tools/test_server.cjs`（38/38 全部通过）；本地 `http://127.0.0.1:8000/` 实机浏览器验收通过（联盟训练家卡奖励胶囊无换行重叠、左侧按钮首屏可见、名片编辑实时预览与保存、公开资料卡完整渲染、0 JS 报错）；`node tools/build.js` 与 `node tools/export_data.js` 通过（本机未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.83 — 2026-11-28
 
 - 敏捷与冷却结算体系重构及 10 项数值/机制平衡调整：
