@@ -4,8 +4,8 @@ G.Economy=(()=>{
   // Display whole spendable gold without changing fractional accounting.
   const formatGold=value=>Math.floor(Number(value)||0).toLocaleString(G.I18n?.lang==='zh'?'zh-CN':G.I18n?.lang||'en');
   const events={battle:'NORMAL_BATTLE',elite:'ELITE_BATTLE',boss:'BOSS_BATTLE',shop:'SHOP','item-shop':'SHOP',peddler:'SHOP',training:'SKILL_TRAINING','pokemon-training':'POKEMON_TRAINING',wild:'WILD_EXPEDITION',rest:'REST'};
-  const levelRow=level=>config().levels.find(row=>row.level===level);
-  const maxLevel=s=>s.cycle>=config().endless.unlockCycle?config().levels.at(-1).level:config().levels.at(-2).level;
+  const levelRow=level=>config().levels.find(row=>row.level===level)||config().levels.at(-1);
+  const maxLevel=()=>config().levels.at(-1).level;
   const interest=(gold,s=G.Expedition?.run)=>{const terms=G.LeaderKalos?.interest(s);return Math.max(0,Math.min(terms?.cap??G.TrainerTalents?.maxInterest(s)??config().interest.maxInterest,Math.floor(gold/(terms?.divisor||G.TrainerTalents?.interestDivisor(s)||config().interest.divisor))));};
   const capacity=s=>levelRow(s.trainerLevel).squadCap+(s.extraPopPurchases||0)+(s.hasPopCapItem?1:0);
   const refreshCost=s=>(G.LeaderAbilities?.refreshCost||((v)=>v))(Math.max(1,(s.cycle>=config().endless.unlockCycle+1?config().shop.endlessCycle5PlusRefreshCost:config().shop.baseRefreshCost)-(G.TrainerTalents?.refreshDiscount(s)||0)));
@@ -19,7 +19,7 @@ G.Economy=(()=>{
     else if(s.trainerLevel===maxLevel(s))s.trainerXp=Math.min(s.trainerXp,levelRow(s.trainerLevel).xpToNext);
     return s.trainerLevel!==old?s.trainerLevel:null;
   }
-  function buyXp(s){if(s.phase!=='shop'||s.pendingTalentPicks?.length||s.trainerLevel>=maxLevel(s)||s.gold<config().buyXp.goldCost)return false;s.gold-=config().buyXp.goldCost;addXp(s,config().buyXp.xpGain);G.SquadTraits?.buyXp();return true;}
+  function buyXp(){return false;}
   function buyLicense(s){if(s.phase!=='shop'||s.cycle<config().endless.unlockCycle||s.trainerLevel!==config().levels.at(-1).level||s.gold<licenseCost(s))return false;s.gold-=licenseCost(s);s.extraPopPurchases++;return true;}
   function buyPopCap(s){const tier=config().itemTiers.POP_CAP;if(s.phase!=='shop'||s.trainerLevel<tier.unlockLevel||s.hasPopCapItem||s.gold<tier.price)return false;s.gold-=tier.price;s.hasPopCapItem=true;return true;}
   function overclock(s){if(s.phase!=='training'||s.trainingUsed||s.cycle<config().endless.unlockCycle)return false;s.skillOverclockCount++;s.trainingUsed=true;return true;}

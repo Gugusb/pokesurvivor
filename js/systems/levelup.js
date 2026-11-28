@@ -7,6 +7,7 @@
 G.LevelUp = (() => {
   // Run-local history, shared by initial offers, rerolls and extra choices.
   const missed = new WeakMap();
+  const lastOffered = new WeakMap();
   const CATEGORY = { attack: 5, buff: 2, stat: 3 };
   const family = m => m.kind === 'buff' ? 'buff' : 'attack';
 
@@ -141,8 +142,12 @@ G.LevelUp = (() => {
 
   /** Three distinct cards; never two consecutive displays without an available upgrade. */
   function offer(pl, n = 3+(G.Items?.count(pl,'luckymedal')||0)) {
-    n=Math.max(n,G.LeaderHoenn?.active()&&G.LeaderHoenn.f().choices||3);
+    if (n > 0) n=Math.max(n,G.LeaderHoenn?.active()&&G.LeaderHoenn.f().choices||3);
+    const prevKeys = lastOffered.get(pl);
     const pool = candidates(pl);
+    if (prevKeys && pool.length > n) {
+      for (const c of pool) if (prevKeys.has(c.key)) c.w = (c.w || 1) * 0.3;
+    }
     const picked = [];
     const eligible = pool.some(c => c.type === 'up');
     const guarantee = eligible && missed.get(pl);
@@ -153,13 +158,15 @@ G.LevelUp = (() => {
       picked.push(c);
     }
     if (picked.length) missed.set(pl, eligible && !picked.some(c => c.type === 'up'));
-    return picked.map(c=>{
+    const shown = picked.map(c=>{
       if(c.materialize)c=c.materialize();
       if(!G.Difficulty||Math.random()>=G.Difficulty.corruptionChance())return c;
       return {...c,corrupted:true,desc:c.desc+' '+G.T('Contaminada: -10 de vida máxima.'),apply:p=>{
         c.apply(p);const k=G.Mega?.active(p)?G.Mega.HP:1;p.maxHp=Math.max(k,p.maxHp-10*k);p.hp=Math.min(p.hp,p.maxHp);
       }};
     });
+    if (shown.length) lastOffered.set(pl, new Set(shown.map(c => c.key)));
+    return shown;
   }
   function shuffled(a){const out=a.slice();for(let i=out.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[out[i],out[j]]=[out[j],out[i]];}return out;}
   function evolutionOffer(pl){

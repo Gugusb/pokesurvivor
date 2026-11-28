@@ -2659,20 +2659,20 @@
       "class": "bloom",
       "classZh": "绽放",
       "category": "conditional",
-      "traitId": "cond_buy_xp_heal_captain",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_heal_captain",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "heal_captain",
       "values": [
-        24,
-        36,
-        48
+        48,
+        72,
+        96
       ],
-      "description": "每购买一次经验，恢复队长宝可梦24/36/48%最大生命",
+      "description": "休息结束时，恢复队长宝可梦48/72/96%最大生命",
       "descriptionsByStar": {
-        "1": "每购买一次经验，恢复队长宝可梦24%最大生命",
-        "2": "每购买一次经验，恢复队长宝可梦36%最大生命",
-        "3": "每购买一次经验，恢复队长宝可梦48%最大生命"
+        "1": "休息结束时，恢复队长宝可梦48%最大生命",
+        "2": "休息结束时，恢复队长宝可梦72%最大生命",
+        "3": "休息结束时，恢复队长宝可梦96%最大生命"
       },
       "members": [
         {
@@ -2756,20 +2756,20 @@
       "class": "summon",
       "classZh": "召唤",
       "category": "conditional",
-      "traitId": "cond_buy_xp_bond_max_type",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_bond_max_type",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "bond_max_type",
       "values": [
-        4,
-        7,
-        9
+        9,
+        14,
+        19
       ],
-      "description": "每购买一次经验，层数最多已激活属性羁绊层数+4/7/9",
+      "description": "休息结束时，层数最多已激活属性羁绊层数+9/14/19",
       "descriptionsByStar": {
-        "1": "每购买一次经验，层数最多已激活属性羁绊层数+4",
-        "2": "每购买一次经验，层数最多已激活属性羁绊层数+7",
-        "3": "每购买一次经验，层数最多已激活属性羁绊层数+9"
+        "1": "休息结束时，层数最多已激活属性羁绊层数+9",
+        "2": "休息结束时，层数最多已激活属性羁绊层数+14",
+        "3": "休息结束时，层数最多已激活属性羁绊层数+19"
       },
       "members": [
         {
@@ -5486,20 +5486,20 @@
       "class": "area",
       "classZh": "区域",
       "category": "conditional",
-      "traitId": "cond_buy_xp_heal_captain",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_heal_captain",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "heal_captain",
       "values": [
-        24,
-        36,
-        48
+        48,
+        72,
+        96
       ],
-      "description": "每购买一次经验，恢复队长宝可梦24/36/48%最大生命",
+      "description": "休息结束时，恢复队长宝可梦48/72/96%最大生命",
       "descriptionsByStar": {
-        "1": "每购买一次经验，恢复队长宝可梦24%最大生命",
-        "2": "每购买一次经验，恢复队长宝可梦36%最大生命",
-        "3": "每购买一次经验，恢复队长宝可梦48%最大生命"
+        "1": "休息结束时，恢复队长宝可梦48%最大生命",
+        "2": "休息结束时，恢复队长宝可梦72%最大生命",
+        "3": "休息结束时，恢复队长宝可梦96%最大生命"
       },
       "members": [
         {
@@ -6039,20 +6039,20 @@
       "class": "bloom",
       "classZh": "绽放",
       "category": "conditional",
-      "traitId": "cond_buy_xp_gold",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_gold",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "gold",
       "values": [
-        1,
-        1,
-        2
+        2,
+        3,
+        4
       ],
-      "description": "每购买一次经验，获得1/1/2金币",
+      "description": "休息结束时，获得2/3/4金币",
       "descriptionsByStar": {
-        "1": "每购买一次经验，获得1金币",
-        "2": "每购买一次经验，获得1金币",
-        "3": "每购买一次经验，获得2金币"
+        "1": "休息结束时，获得2金币",
+        "2": "休息结束时，获得3金币",
+        "3": "休息结束时，获得4金币"
       },
       "members": [
         {
@@ -7603,20 +7603,20 @@
       "class": "bloom",
       "classZh": "绽放",
       "category": "conditional",
-      "traitId": "cond_buy_xp_stat_agi_sta",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_stat_agi_sta",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "stat_agi_sta",
       "values": [
-        1,
-        2,
-        3
+        3,
+        4,
+        6
       ],
-      "description": "每购买一次经验，周围宝可梦的敏捷和耐力永久+1/2/3",
+      "description": "休息结束时，周围宝可梦的敏捷和耐力永久+3/4/6",
       "descriptionsByStar": {
-        "1": "每购买一次经验，周围宝可梦的敏捷和耐力永久+1",
-        "2": "每购买一次经验，周围宝可梦的敏捷和耐力永久+2",
-        "3": "每购买一次经验，周围宝可梦的敏捷和耐力永久+3"
+        "1": "休息结束时，周围宝可梦的敏捷和耐力永久+3",
+        "2": "休息结束时，周围宝可梦的敏捷和耐力永久+4",
+        "3": "休息结束时，周围宝可梦的敏捷和耐力永久+6"
       },
       "members": [
         {
@@ -8864,20 +8864,20 @@
       "class": "projectile",
       "classZh": "投掷物",
       "category": "conditional",
-      "traitId": "cond_buy_xp_exp",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_exp",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "exp",
       "values": [
-        1,
-        2,
-        3
+        3,
+        4,
+        6
       ],
-      "description": "每购买一次经验，获得1/2/3经验",
+      "description": "休息结束时，获得3/4/6经验",
       "descriptionsByStar": {
-        "1": "每购买一次经验，获得1经验",
-        "2": "每购买一次经验，获得2经验",
-        "3": "每购买一次经验，获得3经验"
+        "1": "休息结束时，获得3经验",
+        "2": "休息结束时，获得4经验",
+        "3": "休息结束时，获得6经验"
       },
       "members": [
         {
@@ -8901,20 +8901,20 @@
       "class": "bloom",
       "classZh": "绽放",
       "category": "conditional",
-      "traitId": "cond_buy_xp_heal_captain",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_heal_captain",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "heal_captain",
       "values": [
-        24,
-        36,
-        48
+        48,
+        72,
+        96
       ],
-      "description": "每购买一次经验，恢复队长宝可梦24/36/48%最大生命",
+      "description": "休息结束时，恢复队长宝可梦48/72/96%最大生命",
       "descriptionsByStar": {
-        "1": "每购买一次经验，恢复队长宝可梦24%最大生命",
-        "2": "每购买一次经验，恢复队长宝可梦36%最大生命",
-        "3": "每购买一次经验，恢复队长宝可梦48%最大生命"
+        "1": "休息结束时，恢复队长宝可梦48%最大生命",
+        "2": "休息结束时，恢复队长宝可梦72%最大生命",
+        "3": "休息结束时，恢复队长宝可梦96%最大生命"
       },
       "members": [
         {
@@ -11191,20 +11191,20 @@
       "class": "projectile",
       "classZh": "投掷物",
       "category": "conditional",
-      "traitId": "cond_buy_xp_heal_captain",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_heal_captain",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "heal_captain",
       "values": [
-        24,
-        36,
-        48
+        48,
+        72,
+        96
       ],
-      "description": "每购买一次经验，恢复队长宝可梦24/36/48%最大生命",
+      "description": "休息结束时，恢复队长宝可梦48/72/96%最大生命",
       "descriptionsByStar": {
-        "1": "每购买一次经验，恢复队长宝可梦24%最大生命",
-        "2": "每购买一次经验，恢复队长宝可梦36%最大生命",
-        "3": "每购买一次经验，恢复队长宝可梦48%最大生命"
+        "1": "休息结束时，恢复队长宝可梦48%最大生命",
+        "2": "休息结束时，恢复队长宝可梦72%最大生命",
+        "3": "休息结束时，恢复队长宝可梦96%最大生命"
       },
       "members": [
         {
@@ -13099,20 +13099,20 @@
       "class": "melee",
       "classZh": "近战",
       "category": "conditional",
-      "traitId": "cond_buy_xp_bond_adjacent",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_bond_adjacent",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "bond_adjacent",
       "values": [
-        1,
-        1,
-        2
+        2,
+        3,
+        4
       ],
-      "description": "每购买一次经验，周围宝可梦已激活羁绊层数+1/1/2",
+      "description": "休息结束时，周围宝可梦已激活羁绊层数+2/3/4",
       "descriptionsByStar": {
-        "1": "每购买一次经验，周围宝可梦已激活羁绊层数+1",
-        "2": "每购买一次经验，周围宝可梦已激活羁绊层数+1",
-        "3": "每购买一次经验，周围宝可梦已激活羁绊层数+2"
+        "1": "休息结束时，周围宝可梦已激活羁绊层数+2",
+        "2": "休息结束时，周围宝可梦已激活羁绊层数+3",
+        "3": "休息结束时，周围宝可梦已激活羁绊层数+4"
       },
       "members": [
         {
@@ -13430,20 +13430,20 @@
       "class": "area",
       "classZh": "区域",
       "category": "conditional",
-      "traitId": "cond_buy_xp_heal_captain",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_heal_captain",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "heal_captain",
       "values": [
-        24,
-        36,
-        48
+        48,
+        72,
+        96
       ],
-      "description": "每购买一次经验，恢复队长宝可梦24/36/48%最大生命",
+      "description": "休息结束时，恢复队长宝可梦48/72/96%最大生命",
       "descriptionsByStar": {
-        "1": "每购买一次经验，恢复队长宝可梦24%最大生命",
-        "2": "每购买一次经验，恢复队长宝可梦36%最大生命",
-        "3": "每购买一次经验，恢复队长宝可梦48%最大生命"
+        "1": "休息结束时，恢复队长宝可梦48%最大生命",
+        "2": "休息结束时，恢复队长宝可梦72%最大生命",
+        "3": "休息结束时，恢复队长宝可梦96%最大生命"
       },
       "members": [
         {
@@ -14731,20 +14731,20 @@
       "class": "melee",
       "classZh": "近战",
       "category": "conditional",
-      "traitId": "cond_buy_xp_heal_captain",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_heal_captain",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "heal_captain",
       "values": [
-        24,
-        36,
-        48
+        48,
+        72,
+        96
       ],
-      "description": "每购买一次经验，恢复队长宝可梦24/36/48%最大生命",
+      "description": "休息结束时，恢复队长宝可梦48/72/96%最大生命",
       "descriptionsByStar": {
-        "1": "每购买一次经验，恢复队长宝可梦24%最大生命",
-        "2": "每购买一次经验，恢复队长宝可梦36%最大生命",
-        "3": "每购买一次经验，恢复队长宝可梦48%最大生命"
+        "1": "休息结束时，恢复队长宝可梦48%最大生命",
+        "2": "休息结束时，恢复队长宝可梦72%最大生命",
+        "3": "休息结束时，恢复队长宝可梦96%最大生命"
       },
       "members": [
         {
@@ -15026,20 +15026,20 @@
       "class": "buff",
       "classZh": "辅助",
       "category": "conditional",
-      "traitId": "cond_buy_xp_stat_atk_spa",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_stat_atk_spa",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "stat_atk_spa",
       "values": [
-        8,
-        12,
-        16
+        16,
+        24,
+        32
       ],
-      "description": "每购买一次经验，周围宝可梦的物攻和特攻永久+8/12/16",
+      "description": "休息结束时，周围宝可梦的物攻和特攻永久+16/24/32",
       "descriptionsByStar": {
-        "1": "每购买一次经验，周围宝可梦的物攻和特攻永久+8",
-        "2": "每购买一次经验，周围宝可梦的物攻和特攻永久+12",
-        "3": "每购买一次经验，周围宝可梦的物攻和特攻永久+16"
+        "1": "休息结束时，周围宝可梦的物攻和特攻永久+16",
+        "2": "休息结束时，周围宝可梦的物攻和特攻永久+24",
+        "3": "休息结束时，周围宝可梦的物攻和特攻永久+32"
       },
       "members": [
         {
@@ -17458,20 +17458,20 @@
       "class": "buff",
       "classZh": "辅助",
       "category": "conditional",
-      "traitId": "cond_buy_xp_stat_agi_sta",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_stat_agi_sta",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "stat_agi_sta",
       "values": [
-        1,
-        2,
-        3
+        3,
+        4,
+        6
       ],
-      "description": "每购买一次经验，周围宝可梦的敏捷和耐力永久+1/2/3",
+      "description": "休息结束时，周围宝可梦的敏捷和耐力永久+3/4/6",
       "descriptionsByStar": {
-        "1": "每购买一次经验，周围宝可梦的敏捷和耐力永久+1",
-        "2": "每购买一次经验，周围宝可梦的敏捷和耐力永久+2",
-        "3": "每购买一次经验，周围宝可梦的敏捷和耐力永久+3"
+        "1": "休息结束时，周围宝可梦的敏捷和耐力永久+3",
+        "2": "休息结束时，周围宝可梦的敏捷和耐力永久+4",
+        "3": "休息结束时，周围宝可梦的敏捷和耐力永久+6"
       },
       "members": [
         {
@@ -17796,20 +17796,20 @@
       "class": "bloom",
       "classZh": "绽放",
       "category": "conditional",
-      "traitId": "cond_buy_xp_gold",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_gold",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "gold",
       "values": [
-        1,
-        1,
-        2
+        2,
+        3,
+        4
       ],
-      "description": "每购买一次经验，获得1/1/2金币",
+      "description": "休息结束时，获得2/3/4金币",
       "descriptionsByStar": {
-        "1": "每购买一次经验，获得1金币",
-        "2": "每购买一次经验，获得1金币",
-        "3": "每购买一次经验，获得2金币"
+        "1": "休息结束时，获得2金币",
+        "2": "休息结束时，获得3金币",
+        "3": "休息结束时，获得4金币"
       },
       "members": [
         {
@@ -18845,20 +18845,20 @@
       "class": "projectile",
       "classZh": "投掷物",
       "category": "conditional",
-      "traitId": "cond_buy_xp_bond_self",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_bond_self",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "bond_self",
       "values": [
-        2,
-        3,
-        4
+        4,
+        7,
+        9
       ],
-      "description": "每购买一次经验，自身已激活羁绊层数+2/3/4",
+      "description": "休息结束时，自身已激活羁绊层数+4/7/9",
       "descriptionsByStar": {
-        "1": "每购买一次经验，自身已激活羁绊层数+2",
-        "2": "每购买一次经验，自身已激活羁绊层数+3",
-        "3": "每购买一次经验，自身已激活羁绊层数+4"
+        "1": "休息结束时，自身已激活羁绊层数+4",
+        "2": "休息结束时，自身已激活羁绊层数+7",
+        "3": "休息结束时，自身已激活羁绊层数+9"
       },
       "members": [
         {
@@ -19516,20 +19516,20 @@
       "class": "buff",
       "classZh": "辅助",
       "category": "conditional",
-      "traitId": "cond_buy_xp_stat_agi_sta",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_stat_agi_sta",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "stat_agi_sta",
       "values": [
-        1,
-        2,
-        3
+        3,
+        4,
+        6
       ],
-      "description": "每购买一次经验，周围宝可梦的敏捷和耐力永久+1/2/3",
+      "description": "休息结束时，周围宝可梦的敏捷和耐力永久+3/4/6",
       "descriptionsByStar": {
-        "1": "每购买一次经验，周围宝可梦的敏捷和耐力永久+1",
-        "2": "每购买一次经验，周围宝可梦的敏捷和耐力永久+2",
-        "3": "每购买一次经验，周围宝可梦的敏捷和耐力永久+3"
+        "1": "休息结束时，周围宝可梦的敏捷和耐力永久+3",
+        "2": "休息结束时，周围宝可梦的敏捷和耐力永久+4",
+        "3": "休息结束时，周围宝可梦的敏捷和耐力永久+6"
       },
       "members": [
         {
@@ -19601,20 +19601,20 @@
       "class": "melee",
       "classZh": "近战",
       "category": "conditional",
-      "traitId": "cond_buy_xp_bond_self",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_bond_self",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "bond_self",
       "values": [
-        2,
-        3,
-        4
+        4,
+        7,
+        9
       ],
-      "description": "每购买一次经验，自身已激活羁绊层数+2/3/4",
+      "description": "休息结束时，自身已激活羁绊层数+4/7/9",
       "descriptionsByStar": {
-        "1": "每购买一次经验，自身已激活羁绊层数+2",
-        "2": "每购买一次经验，自身已激活羁绊层数+3",
-        "3": "每购买一次经验，自身已激活羁绊层数+4"
+        "1": "休息结束时，自身已激活羁绊层数+4",
+        "2": "休息结束时，自身已激活羁绊层数+7",
+        "3": "休息结束时，自身已激活羁绊层数+9"
       },
       "members": [
         {
@@ -20599,20 +20599,20 @@
       "class": "projectile",
       "classZh": "投掷物",
       "category": "conditional",
-      "traitId": "cond_buy_xp_bond_max_type",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_bond_max_type",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "bond_max_type",
       "values": [
-        4,
-        6,
-        9
+        9,
+        13,
+        18
       ],
-      "description": "每购买一次经验，层数最多已激活属性羁绊层数+4/6/9",
+      "description": "休息结束时，层数最多已激活属性羁绊层数+9/13/18",
       "descriptionsByStar": {
-        "1": "每购买一次经验，层数最多已激活属性羁绊层数+4",
-        "2": "每购买一次经验，层数最多已激活属性羁绊层数+6",
-        "3": "每购买一次经验，层数最多已激活属性羁绊层数+9"
+        "1": "休息结束时，层数最多已激活属性羁绊层数+9",
+        "2": "休息结束时，层数最多已激活属性羁绊层数+13",
+        "3": "休息结束时，层数最多已激活属性羁绊层数+18"
       },
       "members": [
         {
@@ -21501,20 +21501,20 @@
       "class": "bloom",
       "classZh": "绽放",
       "category": "conditional",
-      "traitId": "cond_buy_xp_bond_self",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_bond_self",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "bond_self",
       "values": [
-        2,
-        3,
-        4
+        4,
+        7,
+        9
       ],
-      "description": "每购买一次经验，自身已激活羁绊层数+2/3/4",
+      "description": "休息结束时，自身已激活羁绊层数+4/7/9",
       "descriptionsByStar": {
-        "1": "每购买一次经验，自身已激活羁绊层数+2",
-        "2": "每购买一次经验，自身已激活羁绊层数+3",
-        "3": "每购买一次经验，自身已激活羁绊层数+4"
+        "1": "休息结束时，自身已激活羁绊层数+4",
+        "2": "休息结束时，自身已激活羁绊层数+7",
+        "3": "休息结束时，自身已激活羁绊层数+9"
       },
       "members": [
         {
@@ -23106,20 +23106,20 @@
       "class": "melee",
       "classZh": "近战",
       "category": "conditional",
-      "traitId": "cond_buy_xp_bond_max_type",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_bond_max_type",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "bond_max_type",
       "values": [
-        4,
-        7,
-        9
+        9,
+        14,
+        19
       ],
-      "description": "每购买一次经验，层数最多已激活属性羁绊层数+4/7/9",
+      "description": "休息结束时，层数最多已激活属性羁绊层数+9/14/19",
       "descriptionsByStar": {
-        "1": "每购买一次经验，层数最多已激活属性羁绊层数+4",
-        "2": "每购买一次经验，层数最多已激活属性羁绊层数+7",
-        "3": "每购买一次经验，层数最多已激活属性羁绊层数+9"
+        "1": "休息结束时，层数最多已激活属性羁绊层数+9",
+        "2": "休息结束时，层数最多已激活属性羁绊层数+14",
+        "3": "休息结束时，层数最多已激活属性羁绊层数+19"
       },
       "members": [
         {
@@ -23366,20 +23366,20 @@
       "class": "bloom",
       "classZh": "绽放",
       "category": "conditional",
-      "traitId": "cond_buy_xp_bond_adjacent",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_bond_adjacent",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "bond_adjacent",
       "values": [
-        1,
-        1,
-        2
+        2,
+        3,
+        4
       ],
-      "description": "每购买一次经验，周围宝可梦已激活羁绊层数+1/1/2",
+      "description": "休息结束时，周围宝可梦已激活羁绊层数+2/3/4",
       "descriptionsByStar": {
-        "1": "每购买一次经验，周围宝可梦已激活羁绊层数+1",
-        "2": "每购买一次经验，周围宝可梦已激活羁绊层数+1",
-        "3": "每购买一次经验，周围宝可梦已激活羁绊层数+2"
+        "1": "休息结束时，周围宝可梦已激活羁绊层数+2",
+        "2": "休息结束时，周围宝可梦已激活羁绊层数+3",
+        "3": "休息结束时，周围宝可梦已激活羁绊层数+4"
       },
       "members": [
         {
@@ -23727,20 +23727,20 @@
       "class": "melee",
       "classZh": "近战",
       "category": "conditional",
-      "traitId": "cond_buy_xp_free_refresh",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_free_refresh",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "free_refresh",
       "values": [
-        1,
-        2,
-        3
+        3,
+        4,
+        6
       ],
-      "description": "每购买一次经验，获得1/2/3次商店免费刷新",
+      "description": "休息结束时，获得3/4/6次商店免费刷新",
       "descriptionsByStar": {
-        "1": "每购买一次经验，获得1次商店免费刷新",
-        "2": "每购买一次经验，获得2次商店免费刷新",
-        "3": "每购买一次经验，获得3次商店免费刷新"
+        "1": "休息结束时，获得3次商店免费刷新",
+        "2": "休息结束时，获得4次商店免费刷新",
+        "3": "休息结束时，获得6次商店免费刷新"
       },
       "members": [
         {
@@ -23852,20 +23852,20 @@
       "class": "melee",
       "classZh": "近战",
       "category": "conditional",
-      "traitId": "cond_buy_xp_heal_captain",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_heal_captain",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "heal_captain",
       "values": [
-        24,
-        36,
-        48
+        48,
+        72,
+        96
       ],
-      "description": "每购买一次经验，恢复队长宝可梦24/36/48%最大生命",
+      "description": "休息结束时，恢复队长宝可梦48/72/96%最大生命",
       "descriptionsByStar": {
-        "1": "每购买一次经验，恢复队长宝可梦24%最大生命",
-        "2": "每购买一次经验，恢复队长宝可梦36%最大生命",
-        "3": "每购买一次经验，恢复队长宝可梦48%最大生命"
+        "1": "休息结束时，恢复队长宝可梦48%最大生命",
+        "2": "休息结束时，恢复队长宝可梦72%最大生命",
+        "3": "休息结束时，恢复队长宝可梦96%最大生命"
       },
       "members": [
         {
@@ -23965,20 +23965,20 @@
       "class": "buff",
       "classZh": "辅助",
       "category": "conditional",
-      "traitId": "cond_buy_xp_stat_crit",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_stat_crit",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "stat_crit",
       "values": [
-        2,
-        3,
-        4
+        4,
+        6,
+        8
       ],
-      "description": "每购买一次经验，周围宝可梦的暴击率+2/3/4%",
+      "description": "休息结束时，周围宝可梦的暴击率+4/6/8%",
       "descriptionsByStar": {
-        "1": "每购买一次经验，周围宝可梦的暴击率+2%",
-        "2": "每购买一次经验，周围宝可梦的暴击率+3%",
-        "3": "每购买一次经验，周围宝可梦的暴击率+4%"
+        "1": "休息结束时，周围宝可梦的暴击率+4%",
+        "2": "休息结束时，周围宝可梦的暴击率+6%",
+        "3": "休息结束时，周围宝可梦的暴击率+8%"
       },
       "members": [
         {
@@ -24144,20 +24144,20 @@
       "class": "area",
       "classZh": "区域",
       "category": "conditional",
-      "traitId": "cond_buy_xp_stat_atk_spa",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_stat_atk_spa",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "stat_atk_spa",
       "values": [
-        8,
-        12,
-        16
+        16,
+        24,
+        32
       ],
-      "description": "每购买一次经验，周围宝可梦的物攻和特攻永久+8/12/16",
+      "description": "休息结束时，周围宝可梦的物攻和特攻永久+16/24/32",
       "descriptionsByStar": {
-        "1": "每购买一次经验，周围宝可梦的物攻和特攻永久+8",
-        "2": "每购买一次经验，周围宝可梦的物攻和特攻永久+12",
-        "3": "每购买一次经验，周围宝可梦的物攻和特攻永久+16"
+        "1": "休息结束时，周围宝可梦的物攻和特攻永久+16",
+        "2": "休息结束时，周围宝可梦的物攻和特攻永久+24",
+        "3": "休息结束时，周围宝可梦的物攻和特攻永久+32"
       },
       "members": [
         {
@@ -24244,20 +24244,20 @@
       "class": "beam",
       "classZh": "能量柱",
       "category": "conditional",
-      "traitId": "cond_buy_xp_bond_adjacent",
-      "condition": "每购买一次经验",
-      "conditionId": "buy_xp",
+      "traitId": "rest_end_bond_adjacent",
+      "condition": "休息结束时",
+      "conditionId": "rest_end",
       "effectId": "bond_adjacent",
       "values": [
-        1,
-        1,
-        2
+        2,
+        3,
+        4
       ],
-      "description": "每购买一次经验，周围宝可梦已激活羁绊层数+1/1/2",
+      "description": "休息结束时，周围宝可梦已激活羁绊层数+2/3/4",
       "descriptionsByStar": {
-        "1": "每购买一次经验，周围宝可梦已激活羁绊层数+1",
-        "2": "每购买一次经验，周围宝可梦已激活羁绊层数+1",
-        "3": "每购买一次经验，周围宝可梦已激活羁绊层数+2"
+        "1": "休息结束时，周围宝可梦已激活羁绊层数+2",
+        "2": "休息结束时，周围宝可梦已激活羁绊层数+3",
+        "3": "休息结束时，周围宝可梦已激活羁绊层数+4"
       },
       "members": [
         {

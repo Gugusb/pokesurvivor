@@ -70,7 +70,6 @@ G.LeaderAlola=(()=>{
  for(const [key,fn]of Object.entries({onCast,hit,killed,hurt,tick}))wrap(key,(old,...args)=>{old(...args);fn(...args);});
  wrap('enemyTick',(old,e,dt)=>{old(e,dt);if(active()&&f().sandWeaken&&Math.hypot(e.x-captain().x,e.y-captain().y)<250){e.leaderDamage=.8;e.leaderDamageUntil=now()+.2;}});
  const oldStatus=G.ActorStatus.apply;G.ActorStatus.apply=(p,kind,dur=3,...args)=>{const result=oldStatus(p,kind,has(p)&&f().statusShort?.includes(kind)?dur*f().statusFactor:dur,...args);if(has(p)){q(p).lastSlow=p.slowT;q(p).lastAttack=p.attackDebuffT;}return result;};
- const oldXp=G.Economy.buyXp;G.Economy.buyXp=r=>{const ok=oldXp(r);if(ok&&active()&&f().xpRebate&&r===run()&&r.alolaRebateVisit!==(r.alolaShopVisit||0)){r.alolaRebateVisit=r.alolaShopVisit||0;r.gold+=f().xpRebate;}return ok;};
- const oldShop=G.HoennMarket.enterShop;G.HoennMarket.enterShop=(r,offers)=>{oldShop(r,offers);if(!active()||r!==run())return;r.alolaShopVisit=(r.alolaShopVisit||0)+1;if(r.alolaClinic){r.shopFreeRefreshes=(r.shopFreeRefreshes||0)+r.alolaClinic;r.alolaClinic=0;}};
+ const oldShop=G.HoennMarket.enterShop;G.HoennMarket.enterShop=(r,offers)=>{oldShop(r,offers);if(!active()||r!==run())return;r.alolaShopVisit=(r.alolaShopVisit||0)+1;if(f().xpRebate&&r.alolaRebateVisit!==r.alolaShopVisit){r.alolaRebateVisit=r.alolaShopVisit;r.gold+=f().xpRebate;}if(r.alolaClinic){r.shopFreeRefreshes=(r.shopFreeRefreshes||0)+r.alolaClinic;r.alolaClinic=0;}};
  return {active,has,f,s,q,now,finalCrit,primary,typed,extra,trapImmune:p=>has(p)&&!!f().trapImmune};
 })();

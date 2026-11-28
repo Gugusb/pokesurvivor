@@ -173,7 +173,7 @@ G.Dev = (() => {
           case 'bond-layer': if(requireRun()){const kind=panel.querySelector('#dev-bond-kind').value,n=Number(panel.querySelector('#dev-bond-layer').value);if(!G.SquadBonds.setLayer(bondTestCategory,kind,n))G.UI.toast('请输入0至10000的层数（可含小数）');}break;
           case 'type-bond-reset':if(requireRun())G.TypeBonds?.beginStage();break;
           case 'bond-party':{
-            if(!requireRun()||!G.Squad.active)break;if(G.Expedition?.run){G.Expedition.run.trainerLevel=Math.max(8,G.Expedition.run.trainerLevel);G.Squad.syncTrainer();}else{for(let i=0;i<10&&G.Squad.capacity<7;i++)if(!G.Squad.upgrade())break;}for(const p of [...G.Squad.roster])G.Squad.release(p);
+            if(!requireRun()||!G.Squad.active)break;if(G.Expedition?.run){G.Expedition.run.trainerLevel=Math.max(5,G.Expedition.run.trainerLevel);G.Squad.syncTrainer();}else{for(let i=0;i<10&&G.Squad.capacity<7;i++)if(!G.Squad.upgrade())break;}for(const p of [...G.Squad.roster])G.Squad.release(p);
             const kind=panel.querySelector('#dev-bond-kind').value,seen=new Set();
             for(const mon of G.DEX){if(seen.has(mon.name)||!G.SPRITE_META[mon.dex])continue;const id=bondTestCategory==='types'?(mon.types.includes(kind)?G.Moves.startFor(mon):null):G.Moves.poolFor(mon).find(id=>G.Moves.BY_ID[id].kind===kind);if(!id)continue;seen.add(mon.name);G.Squad.recruit(mon.dex,id);if(seen.size===6)break;}G.Squad.refresh();break;
           }

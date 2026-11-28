@@ -100,7 +100,7 @@ G.Squad = (() => {
   function promote(p,material){if(!roster.includes(p)||p.rank>=G.EconomyConfig.compatibility.maxRank)return false;const before=starSnapshot(p);p.rank++;evolve(p);rankMove(p);refresh();G.SquadTraits?.merge(p,material);showRankUp(before,p);consolidate();return true;}
   function reorder(index,dir){const j=index+dir;if(j<0||j>=roster.length)return false;[roster[index],roster[j]]=[roster[j],roster[index]];formation=Array.from({length:capacity()-1},(_,i)=>roster[i]||null);refresh();return true;}
   function syncTrainer(){
-    const r=G.Expedition?.run;if(r?.trainerLevel)level=r.trainerLevel;
+    const r=G.Expedition?.run;if(r?.trainerLevel)level=Math.min(r.trainerLevel,G.Economy?.maxLevel?.(r)||r.trainerLevel);
     while(formation.length<capacity()-1)formation.push(reserves()[0]||null);
     if(r?.trainerLevel&&captain){const target=G.EconomyConfig.captainEvolutionLevels.filter(l=>level>=l).length;captain.trainerRank||=1;while(captain.trainerRank<target){const before=starSnapshot(captain);captain.trainerRank++;evolve(captain);G.SquadTraits?.rankUp(captain);showRankUp(before,captain);}}
     refresh();

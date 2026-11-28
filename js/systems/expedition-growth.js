@@ -39,14 +39,19 @@ G.ExpeditionGrowth=(()=>{
     const unlocked=kind=>(G.LeagueRank?.allows('advancedFruits')??true)&&(kind==='hormone'?taken['fruit:hormone']:targets(kind).length>0);
     const biased=(pool,present)=>G.U.pick(pool.flatMap(k=>present.has(k)?[k,k,k]:[k]));
     for(const kind of ['type','skill','slot'])if(unlocked(kind)){
-      const c=card(kind,L('Mejora','Upgrade','成长'),'');c.materialize=()=>{
-        const target=kind==='type'?biased(targets(kind),new Set(people().flatMap(p=>p.mon.types))):kind==='skill'?biased(targets(kind),new Set(people().flatMap(p=>p.moves.map(m=>G.SquadBonds.group(m.kind))))):G.U.pick(targets(kind));
-        const label=kind==='type'?G.T(G.U.TYPE_NAME[target]):kind==='skill'?G.SquadBonds.label(target):String(target);
-        const title=kind==='type'?L('Baya de Tipo','Type Fruit','属性果实'):kind==='skill'?L('Baya Técnica','Skill Fruit','技能果实'):L('Mejora de Puesto','Slot Upgrade','槽位改造');
-        const desc=kind==='type'?L(label+': daño +1%.',label+' Pokémon damage +1%.',label+'属性宝可梦伤害+1%'):kind==='skill'?target==='buff'?L('Apoyo: efecto +1%.','Support skill effect +1%.','辅助技能效果+1%'):L(label+': daño +1%.',label+' skill damage +1%.',label+'技能伤害+1%'):L('Puesto '+label+': atributos +1%.','Slot '+label+': all stats +1%.',label+'号位全属性+1%');
-        return {...c,materialize:null,title,desc,target,tag:kind==='slot'?L('Puesto '+label,'Slot '+label,label+'号位'):kind==='type'?L('Tipo '+label,label+' type',label+'属性'):label,color:kind==='type'?G.U.TYPE_COLOR[target]:c.color,apply:()=>fruitReward(kind,target)};
-      };
-      if(kind!=='slot'||G.Squad.capacity>1)cards.push(c);
+      const list=targets(kind),slots=list.length>=2?2:1,pickedTargets=new Set();
+      for(let s=0;s<slots;s++){
+        const c=card(kind,L('Mejora','Upgrade','成长'),'');c.key='fruit:'+kind+(s?':'+s:'');c.materialize=()=>{
+          const avail=list.filter(k=>!pickedTargets.has(k)),use=avail.length?avail:list;
+          const target=kind==='type'?biased(use,new Set(people().flatMap(p=>p.mon.types))):kind==='skill'?biased(use,new Set(people().flatMap(p=>p.moves.map(m=>G.SquadBonds.group(m.kind))))):G.U.pick(use);
+          pickedTargets.add(target);
+          const label=kind==='type'?G.T(G.U.TYPE_NAME[target]):kind==='skill'?G.SquadBonds.label(target):String(target);
+          const title=kind==='type'?L('Baya de Tipo','Type Fruit','属性果实'):kind==='skill'?L('Baya Técnica','Skill Fruit','技能果实'):L('Mejora de Puesto','Slot Upgrade','槽位改造');
+          const desc=kind==='type'?L(label+': daño +1%.',label+' Pokémon damage +1%.',label+'属性宝可梦伤害+1%'):kind==='skill'?target==='buff'?L('Apoyo: efecto +1%.','Support skill effect +1%.','辅助技能效果+1%'):L(label+': daño +1%.',label+' skill damage +1%.',label+'技能伤害+1%'):L('Puesto '+label+': atributos +1%.','Slot '+label+': all stats +1%.',label+'号位全属性+1%');
+          return {...c,materialize:null,key:'fruit:'+kind+':'+target,title,desc,target,tag:kind==='slot'?L('Puesto '+label,'Slot '+label,label+'号位'):kind==='type'?L('Tipo '+label,label+' type',label+'属性'):label,color:kind==='type'?G.U.TYPE_COLOR[target]:c.color,apply:()=>fruitReward(kind,target)};
+        };
+        if(kind!=='slot'||G.Squad.capacity>1)cards.push(c);
+      }
     }
     if(unlocked('hormone'))cards.push(card('hormone',L('Baya Hormona','Hormone Fruit','激素果实'),L('Próximo combate: equipo +10 PP temporales.','Next battle: team +10 temporary PP.','下场战斗全队临时PP+10'),L('Se consume al combatir','Consumed next battle','下场消耗')));
     return cards;

@@ -28,7 +28,7 @@ G.LeaderAbilities=(()=>{
   if(!active())return null;
   const r=run(),d=definition(r.captain.dex),level=r.trainerLevel||1,key=d.id+':'+level;
   if(r===cachedRun&&key===cachedKey)return effective;
-  const out={};for(const part of [d.base,d.cost,level>=5?d.five:null,level>=8?d.eight:null].filter(Boolean)){
+  const out={};for(const part of [d.base,d.cost,level>=3?d.five:null,level>=5?d.eight:null].filter(Boolean)){
    const moves=out.moves||={};
    for(const [kind,mods]of Object.entries(part.moves||{})){
     const dest=moves[kind]||={};for(const[k,v]of Object.entries(mods))dest[k]=dest[k]==null?v:['count','crit','poison','burn'].includes(k)?dest[k]+v:['arc','critMul'].includes(k)?Math.max(dest[k],v):dest[k]*v;
@@ -156,7 +156,7 @@ G.LeaderAbilities=(()=>{
   if(f.specialCooldown&&m.damageClass==='special')r/=f.specialCooldown;
   if(f.nonStabCooldown&&!p.mon.types.includes(m.type))r/=f.nonStabCooldown;
   if(f.dryCooldown&&!isRain())r/=f.dryCooldown;
-  if(f.weather==='sun'&&m.type==='fire'&&(run().trainerLevel||1)>=8)r*=1.25;
+  if(f.weather==='sun'&&m.type==='fire'&&(run().trainerLevel||1)>=5)r*=1.25;
   if(zOn('shellSmash')&&m.kind==='projectile')r*=1.5;
   if(zOn('harvest')&&m.kind==='meteor'||zOn('genesis'))r=Math.max(r,m.cd*p.cdMul/.15);
   return clamp(r,.1,Math.max(1,m.cd*p.cdMul/.15));

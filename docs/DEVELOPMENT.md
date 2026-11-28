@@ -34,6 +34,22 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.87 — 2026-11-28
+
+- **6 级训练家/商店经验体系与移除买经验**（`config/economy_config.json`、`js/systems/economy.js`、`js/systems/expedition.js`、`js/systems/squad.js`、`js/systems/expedition-save.js`）：
+  - 移除商店买经验（`buyXp` 置为禁用，商店隐藏 `#journey-upgrade` 按钮），并将训练家/商店等级由 10 级精简为 6 级（Lv.1–Lv.6，每级 +1 编队上限至 6；升级所需经验 `10 / 16 / 22 / 26 / 30`，累计 104 XP；全周期最高 Lv.6，不再锁定于无尽第 4 周期；旧存档读档自动向下钳位）。
+  - 重排 6 级商店品质概率表与道具解锁等级（`TACTIC` Lv.3、`EMBLEM` Lv.4、`POP_CAP` Lv.5），同步将队长进化节点（`captainEvolutionLevels: [1, 3, 5]`）与队长特性进阶节点（`leader-abilities.js`、`leader-sinnoh.js`、`leader-unova.js`、`hoenn-market.js`、`leader-abilities-ui.js`、`developer.js`）由 Lv.5/Lv.8 映射为 Lv.3/Lv.5，玛机雅娜 `xpRebate` 改为进店首次返利。
+  - 将 26 个原 `buy_xp` 触发的队员特性家族迁移至 `rest_end`（`data/trait_rework_index.json`、`js/data/trait-rework.js`、`docs/TRAIT_CATALOG.md`）。
+- **休息营地事件正式加入地图池**（`config/economy_config.json`）：
+  - 在 `eventWeights` 中加入 `rest: 2.5`（同步微调 `wild: 3`），日程地图正常生成休息营地节点，支持睡觉（恢复队长 50% 生命）或锻炼（+3 训练家经验）并触发所有 `rest_end` 队员特性。
+- **等级提升奖励随机化重构**（`config/trainer_talents.json`、`js/systems/trainer-talents.js`、`js/ui/trainer-talents-ui.js`、`js/systems/levelup.js`、`js/systems/expedition-growth.js`）：
+  - 更新训练家潜能 6 级品质掉落概率表（Lv.2–Lv.6），取消单槽强锁固定分类（消除单卡池 100% 固定出场），改为逐槽独立按本级概率抽品质并全池随机抽取（同次最多 1 张属性羁绊卡、同类软降权 `0.45×`、跨级近期已见卡降权 `0.3×`、柔化队长属性亲和权重），卡片顶栏展示各自品质标签。
+  - 宝可梦升级奖励新增跨次连续防重复降权（`0.3×`）并修复 `offer(pl, 0)` 边界，远征已解锁属性/技能/槽位果实扩展至最多 2 个不同目标槽位。
+- 验证：
+  - `node --test tools/test_economy.cjs tools/test_trainer_talents.cjs tools/test_levelup.cjs tools/test_squad_traits.cjs tools/test_developer_journal.cjs` 全部通过（69/69）。
+  - 无头浏览器实机端到端验证：确认 6 级商店无买经验按钮、地图正常生成休息营地、休息锻炼 +3 XP 并触发 `E4 休整作业` 填经验罐 +20、升级至 Lv.3 弹出多品质随机潜能且重掷刷新 3 张全新卡，零 `pageerror` 与游戏报错。
+  - 已运行 `node tools/build.js` 与 `node tools/export_data.js` 更新构建产物；本机未安装 `py` 启动器，未执行 `make_seo_pages.py`。
+
 ### v0.43.0-alpha.86 — 2026-11-28
 
 - 按 `TRAIT_COMPOSITION_REBALANCE_GDD.md` 方案 B（Plan B）重新分配远征队员特性并实装全部 16 套新模板运行时逻辑：

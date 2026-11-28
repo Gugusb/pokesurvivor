@@ -84,7 +84,7 @@ G.LeaderSinnoh=(()=>{
   if(a.skillHaste&&m.kind==='melee')n*=1+Math.min(.6,skillCount()*a.skillHaste);
   if(a.rainCD&&wx()==='rain')n/=a.rainCD;if(a.wetCD&&wet(p))n/=a.wetCD;
   if(a.healthyJoy&&healthy())n/=.75;if(a.lastStandHaste&&q(p).rescueUntil>now())n*=2;
-  if(a.earlyCD&&G.Expedition.run.trainerLevel<5)n/=a.earlyCD;
+  if(a.earlyCD&&G.Expedition.run.trainerLevel<3)n/=a.earlyCD;
   if(a.appliance&&q(p).formStallUntil>now())return 0;
   return Math.min(n,Math.max(1,m.cd*p.cdMul/.15));
  }

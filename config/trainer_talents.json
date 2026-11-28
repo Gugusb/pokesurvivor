@@ -40,58 +40,34 @@
   },
   "levelDropOdds": {
     "2": {
-      "silver": 90,
-      "great": 10,
+      "silver": 65,
+      "great": 35,
       "ultra": 0,
       "master": 0
     },
     "3": {
-      "silver": 80,
-      "great": 20,
-      "ultra": 0,
+      "silver": 30,
+      "great": 50,
+      "ultra": 20,
       "master": 0
     },
     "4": {
-      "silver": 15,
-      "great": 80,
-      "ultra": 5,
-      "master": 0
+      "silver": 10,
+      "great": 45,
+      "ultra": 35,
+      "master": 10
     },
     "5": {
       "silver": 0,
-      "great": 85,
-      "ultra": 15,
-      "master": 0
+      "great": 25,
+      "ultra": 50,
+      "master": 25
     },
     "6": {
       "silver": 0,
-      "great": 75,
-      "ultra": 25,
-      "master": 0
-    },
-    "7": {
-      "silver": 0,
-      "great": 20,
-      "ultra": 75,
-      "master": 5
-    },
-    "8": {
-      "silver": 0,
-      "great": 0,
-      "ultra": 80,
-      "master": 20
-    },
-    "9": {
-      "silver": 0,
-      "great": 0,
-      "ultra": 15,
-      "master": 85
-    },
-    "10": {
-      "silver": 0,
-      "great": 0,
-      "ultra": 0,
-      "master": 100
+      "great": 10,
+      "ultra": 35,
+      "master": 55
     }
   },
   "talents": [

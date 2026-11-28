@@ -15,30 +15,59 @@ G.TrainerTalents=(()=>{
  const represented=p=>!!p&&G.Squad?.active&&G.Squad.actors().includes(p);
  const maxHp=(s=run())=>(G.ExpeditionSupplies?.maxHp(s)||G.EconomyConfig.initial.squadHp||100)+sum('maxSquadHpBonus',s);
  function healSquad(n,s=run(),source='talent'){if(!s||!(n>0))return 0;const before=s.squadHp;s.squadHp=Math.min(maxHp(s),Math.round((s.squadHp+n)*1e6)/1e6);const restored=s.squadHp-before;if(restored>0){s.squadHealing||={};s.squadHealing[source]=(s.squadHealing[source]||0)+restored;}return restored;}
+ const TIER_RANK={silver:1,great:2,ultra:3,master:4};
+ function rollTier(odds,rng=Math.random){let roll=rng()*100,tier='silver';for(const [k,v]of Object.entries(odds)){roll-=v;if(roll<0){tier=k;break;}}return tier;}
  function onLevelUp(s,level,rng=Math.random){
   ensure(s);if(!cfg()||s.pendingTalentPicks.some(p=>p.targetLevel===level)||s.trainerTalents.some(p=>p.acquiredAtLevel===level))return;
-  const odds=cfg().levelDropOdds[level];if(!odds)return;let roll=rng()*100,tier='silver';for(const [k,v]of Object.entries(odds)){roll-=v;if(roll<0){tier=k;break;}}
-  s.pendingTalentPicks.push({targetLevel:level,tier,serial:++s.talentSequence,seen:[],offers:null});
+  const odds=cfg().levelDropOdds[level];if(!odds)return;
+  s.pendingTalentPicks.push({targetLevel:level,tier:rollTier(odds,rng),mixedTiers:true,serial:++s.talentSequence,seen:[],offers:null});
  }
- function begin(s){ensure(s);shields=new WeakMap();linkBuffs=new WeakMap();s.talentGifts=[];}
- function eligible(s,p){return catalogue().filter(d=>permitted(d,s)&&d.tier===p.tier&&!p.seen.includes(d.id)&&!(d.unique&&has(d.id,s)));}
+ function begin(s){ensure(s);shields=new WeakMap();linkBuffs=new WeakMap();s.talentGifts=[];s.talentRecentSeen=[];}
+ function allowedTiers(p){
+  const odds=p.mixedTiers&&p.targetLevel?cfg()?.levelDropOdds?.[p.targetLevel]:null;
+  if(odds)return Object.entries(odds).filter(([,v])=>v>0).map(([k])=>k);
+  return p.tier?[p.tier]:['silver','great','ultra','master'];
+ }
+ function eligible(s,p,tierOverride=null){
+  const tiers=tierOverride?[tierOverride]:allowedTiers(p);
+  return catalogue().filter(d=>permitted(d,s)&&tiers.includes(d.tier)&&!p.seen.includes(d.id)&&!(d.unique&&has(d.id,s)));
+ }
  function affinity(d,s){
   const cap=s.captain,types=new Map();for(const p of G.Squad?.actors?.()||[cap])for(const type of p.mon.types)types.set(type,(types.get(type)||0)+1);
-  if(!d.tagType)return 2;return 1+(cap.mon.types.includes(d.tagType)?12:0)+(types.get(d.tagType)||0)*4+(G.SquadBonds?.layer('types',d.tagType)||0)*.04;
+  if(!d.tagType)return 2;return 1+(cap.mon.types.includes(d.tagType)?5:0)+(types.get(d.tagType)||0)*1.5+(G.SquadBonds?.layer('types',d.tagType)||0)*.02;
  }
  // Bond upgrades share one outer weight; type tailoring applies only after that group wins.
  const bondUpgrade=d=>!!(d.effects.typeBondOffset||d.effects.captainOmniTag);
  function pickWeighted(list,weight,rng){let n=rng()*list.reduce((sum,d)=>sum+weight(d),0);for(const d of list){n-=weight(d);if(n<0)return d;}return list.at(-1);}
- function weighted(list,s,rng){
-  const bonds=list.filter(bondUpgrade),buckets=list.filter(d=>!bondUpgrade(d)).map(d=>({cards:[d],weight:affinity(d,s)}));
-  if(bonds.length)buckets.push({cards:bonds,weight:cfg().bondUpgradeGroupWeight});
+ function weighted(list,s,rng,out=[]){
+  const recent=new Set(s.talentRecentSeen||[]);
+  const cardWeight=d=>affinity(d,s)*(out.some(x=>x.category===d.category)?.45:1)*(recent.has(d.id)?.3:1);
+  const bonds=list.filter(bondUpgrade),nonBonds=list.filter(d=>!bondUpgrade(d));
+  const hasBond=out.some(bondUpgrade);
+  const pool=hasBond&&nonBonds.length?nonBonds:list;
+  const poolBonds=pool.filter(bondUpgrade),buckets=pool.filter(d=>!bondUpgrade(d)).map(d=>({cards:[d],weight:cardWeight(d)}));
+  if(poolBonds.length)buckets.push({cards:poolBonds,weight:(cfg().bondUpgradeGroupWeight||2)*(out.some(x=>x.category==='BONDS')?.45:1)});
   const chosen=pickWeighted(buckets,b=>b.weight,rng).cards;
-  return chosen.length===1?chosen[0]:pickWeighted(chosen,d=>affinity(d,s),rng);
+  return chosen.length===1?chosen[0]:pickWeighted(chosen,d=>affinity(d,s)*(recent.has(d.id)?.35:1),rng);
  }
  function deal(s,p,rng=Math.random){
-  const available=eligible(s,p),out=[];if(available.length<3)return null;
-  for(const categories of [['BONDS','CAPTAIN'],['COMBAT'],['ECONOMY']]){const fresh=available.filter(d=>!out.includes(d)),preferred=fresh.filter(d=>categories.includes(d.category)),card=weighted(preferred.length?preferred:fresh,s,rng);out.push(card);}
-  p.offers=out.map(d=>d.id);p.seen.push(...p.offers);return p.offers.map(by);
+  const allEligible=eligible(s,p);if(allEligible.length<3)return null;
+  const odds=p.mixedTiers&&p.targetLevel?cfg()?.levelDropOdds?.[p.targetLevel]:null;
+  const out=[];
+  for(let i=0;i<3;i++){
+   let pool=allEligible.filter(d=>!out.includes(d));
+   if(odds){
+    const slotTier=rollTier(odds,rng),tierPool=pool.filter(d=>d.tier===slotTier);
+    if(tierPool.length)pool=tierPool;
+   }
+   const card=weighted(pool,s,rng,out);
+   if(card)out.push(card);
+  }
+  if(out.length<3)return null;
+  p.offers=out.map(d=>d.id);p.seen.push(...p.offers);
+  if(p.mixedTiers){p.tier=out.reduce((best,d)=>(TIER_RANK[d.tier]||0)>(TIER_RANK[best]||0)?d.tier:best,out[0].tier);}
+  s.talentRecentSeen=[...(s.talentRecentSeen||[]),...p.offers].slice(-9);
+  return p.offers.map(by);
  }
  function current(s=run()){ensure(s);const p=s?.pendingTalentPicks[0];if(!p)return null;if(p.offers?.some(id=>!permitted(by(id),s))){p.seen=p.seen.filter(id=>!p.offers.includes(id));p.offers=null;}if(!p.offers)deal(s,p);return p;}
  function canReroll(s=run()){const p=current(s);return !!p&&s.talentRerolls>0&&eligible(s,p).length>=3;}
@@ -53,7 +82,7 @@ G.TrainerTalents=(()=>{
  function choose(s,serial,id,options={}){
   const p=current(s),d=choiceDefinition(s,id);if(!p||p.serial!==serial||!p.offers?.includes(id)||!d)return false;
   if(d.effects.promptMoveDraft&&!applyMove(s,options.moveId,options.slot,d.effects.draftMoveLevel||3))return false;
-  s.pendingTalentPicks.shift();const inst={id,tier:p.tier,acquiredAtLevel:p.targetLevel,day:s.day,timestamp:Date.now(),enhanced:!!d.enhanced};if(d.enhanced)G.Items.remove(s.captain,'talentseal');s.trainerTalents.push(inst);
+  s.pendingTalentPicks.shift();const inst={id,tier:d.tier||p.tier,acquiredAtLevel:p.targetLevel,day:s.day,timestamp:Date.now(),enhanced:!!d.enhanced};if(d.enhanced)G.Items.remove(s.captain,'talentseal');s.trainerTalents.push(inst);
   const e=d.effects;if(e.instantGold)s.gold+=e.instantGold;if(e.freeRefreshes)s.talentFreeRefreshes=(s.talentFreeRefreshes||0)+e.freeRefreshes;if(e.grantRerolls)s.talentRerolls+=e.grantRerolls;if(e.nextShopThreeStarCharges){s.talentThreeStarCharges=(s.talentThreeStarCharges||0)+e.nextShopThreeStarCharges;s.talentThreeStarMaxQ=Math.max(s.talentThreeStarMaxQ||0,e.nextShopThreeStarMaxQuality||3);}
   if(e.instantGoldCostPct){const cost=Math.floor(s.gold*e.instantGoldCostPct);s.gold-=cost;if(e.investmentReturn){inst.investmentPrincipal=cost;inst.investmentPaid=0;}}if(e.healSquadHp)healSquad(e.healSquadHp,s);
   if(e.typeBondOffset)for(const [type,n]of Object.entries(e.typeBondOffset))s.emblems[type]=(s.emblems[type]||0)+n;

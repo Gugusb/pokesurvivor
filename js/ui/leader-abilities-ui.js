@@ -39,7 +39,7 @@ G.LeaderAbilitiesUI=(()=>{
   const unlocked=G.LeaderMedals.unlocked(dex),box=node('section','leader-ability-card');box.dataset.leaderFamily=d.root;
   const head=node('header'),name=node('div');name.append(node('small','',L('队长特性 · 进化链共享','Captain ability · family shared')),node('h3','',d.name[G.I18n.lang]||d.name.en));head.append(node('span','leader-ability-seal','✦'),name,node('b','leader-medal-state',unlocked?L('Z 已解锁','Z unlocked'):L('家族勋章解锁 Z','Family medal unlocks Z')));box.append(head);
   const grid=node('div','leader-ability-grid');
-  for(const [key,title,icon,level]of [['base',L('基础被动','Passive'),'◆',1],['active',L('主动 Z 招式','Manual Z'),'Z',1],['cost',L('能力代价','Trade-off'),'◇',1],['five',L('进阶能力 I','Advance I'),'5',5],['eight',L('进阶能力 II','Advance II'),'8',8]]){
+  for(const [key,title,icon,level]of [['base',L('基础被动','Passive'),'◆',1],['active',L('主动 Z 招式','Manual Z'),'Z',1],['cost',L('能力代价','Trade-off'),'◇',1],['five',L('进阶能力 I','Advance I'),'3',3],['eight',L('进阶能力 II','Advance II'),'5',5]]){
    const section=node('article','leader-ability-part '+key);section.dataset.part=key;if(level>trainerLevel||key==='active'&&!unlocked)section.classList.add('locked');
    const h=node('h4');h.append(node('i','',icon),node('span','',title),node('small','',key==='active'?L('手动施放','Manual cast'):level>1?'Lv.'+level:L('开局生效','From start')));section.append(h);
    const list=node('ul');
