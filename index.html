@@ -77,13 +77,14 @@
 }
 </script>
 
-<link rel="stylesheet" href="css/style.css?v=83a1bd6e9d">
-<link rel="stylesheet" href="css/expedition.css?v=83a1bd6e9d">
+<link rel="stylesheet" href="css/style.css?v=f64c8b302b">
+<link rel="stylesheet" href="css/expedition.css?v=f64c8b302b">
 <link rel="stylesheet" href="css/trainer-talents.css">
 <link rel="stylesheet" href="css/league-rank.css">
 <link rel="stylesheet" href="css/leader-abilities.css">
 <link rel="stylesheet" href="css/hoenn-market.css">
-<link rel="stylesheet" href="css/pokedex.css?v=83a1bd6e9d">
+<link rel="stylesheet" href="css/pokedex.css?v=f64c8b302b">
+<link rel="stylesheet" href="css/dashboard-ui.css?v=f64c8b302b">
 </head>
 <body>
 
@@ -187,7 +188,6 @@
       <div class="menu-list">
         <div class="play-row">
           <button class="menu-item play" data-go="play">Jugar<small>Entra en la mazmorra</small></button>
-          <div class="difficulty-picker"><label for="menu-difficulty">Dificultad</label><select id="menu-difficulty"></select><small id="difficulty-note"></small></div>
         </div>
         <button class="menu-item" data-go="dex">Pokémon<small id="menu-dex-count">Tu colección</small></button>
         <button class="menu-item" data-go="upgrades">Paquetes de cartas<small>Cartas para toda tu colección</small></button>
@@ -224,32 +224,45 @@
 <div id="credits-line" class="credits-line hidden">Proyecto de fan sin ánimo de lucro · Sprites: SpriteCollab (CC BY-NC 4.0) · Pokémon © Nintendo/Creatures/GAME FREAK · <a href="#" class="legal-link" data-legal>Aviso legal</a></div>
 
 <!-- ====== Bolsa de consignación (Exchange) ====== -->
-<section id="scr-exchange" class="scr hidden">
-  <div class="box wide exchange-box">
-    <div class="row between" style="gap:10px;flex-wrap:wrap">
-      <div>
-        <h2 style="margin:0">Bolsa de consignación</h2>
-        <p class="sub" style="margin:2px 0 0">Monedas Liga: 🏅 <b id="exchange-balance">0</b></p>
+<section id="scr-exchange" class="scr dim hidden">
+  <div class="ui-shell exchange-box">
+    <header class="ui-hero">
+      <div class="ui-hero-left">
+        <div class="ui-hero-titles">
+          <h2>Bolsa de consignación</h2>
+          <p class="ui-hero-sub">Monedas Liga: 🏅 <b id="exchange-balance">0</b></p>
+        </div>
       </div>
-      <div class="row" style="gap:8px">
+      <div class="ui-hero-actions">
         <button class="btn small ghost" onclick="G.ExchangeUI.refresh()">Actualizar</button>
         <button class="btn small ghost" data-back>Volver</button>
       </div>
+    </header>
+    <div class="ui-tabs-dock">
+      <div class="tabs" id="exchange-tabs">
+        <button class="gen-tab on" data-t="browse">Comprar</button>
+        <button class="gen-tab" data-t="sell">Consignar</button>
+        <button class="gen-tab" data-t="mine">Mis anuncios</button>
+      </div>
     </div>
-    <div class="tabs" id="exchange-tabs" style="margin:10px 0">
-      <button class="gen-tab on" data-t="browse">Comprar</button>
-      <button class="gen-tab" data-t="sell">Consignar</button>
-      <button class="gen-tab" data-t="mine">Mis anuncios</button>
+    <div class="ui-body">
+      <div id="exchange-body" class="exchange-body"></div>
     </div>
-    <div id="exchange-body" class="exchange-body"></div>
   </div>
 </section>
 
 <!-- ====== Novedades (cambios del juego) ====== -->
 <section id="scr-news" class="scr dim hidden">
-  <div class="box news-box">
-    <div class="row between"><h2>Novedades</h2><button class="btn small ghost" id="news-close">Cerrar</button></div>
-    <div id="news-body" class="news-body"></div>
+  <div class="ui-shell ui-medium news-box">
+    <header class="ui-hero no-dock">
+      <div class="ui-hero-left">
+        <div class="ui-hero-titles"><h2>Novedades</h2></div>
+      </div>
+      <div class="ui-hero-actions">
+        <button class="btn small ghost" id="news-close">Cerrar</button>
+      </div>
+    </header>
+    <div id="news-body" class="ui-body news-body"></div>
   </div>
 </section>
 
@@ -269,25 +282,41 @@
 
 <!-- ====== Apoyar el proyecto (donaciones) ====== -->
 <section id="scr-support" class="scr dim hidden">
-  <div class="box support">
-    <div class="row between"><h2>Apoyar el proyecto</h2><button class="btn small ghost" id="sup-close">Cerrar</button></div>
-    <div id="sup-body"></div>
+  <div class="ui-shell ui-medium support">
+    <header class="ui-hero no-dock">
+      <div class="ui-hero-left">
+        <div class="ui-hero-titles"><h2>Apoyar el proyecto</h2></div>
+      </div>
+      <div class="ui-hero-actions">
+        <button class="btn small ghost" id="sup-close">Cerrar</button>
+      </div>
+    </header>
+    <div id="sup-body" class="ui-body"></div>
   </div>
 </section>
 
 <!-- ====== Ajustes ====== -->
 <section id="scr-settings" class="scr dim hidden">
-  <div class="box settings">
-    <div class="row between"><h2>Ajustes</h2><button class="btn small ghost" id="set-close">Cerrar</button></div>
-    <div class="tabs" id="set-tabs">
-      <button class="gen-tab" data-t="sound">Sonido</button>
-      <button class="gen-tab" data-t="gfx">Gráficos</button>
-      <button class="gen-tab" data-t="ctl">Controles</button>
-      <button class="gen-tab" data-t="expedition">Guardar expedición</button>
-      <button class="gen-tab" data-t="acc">Cuenta</button>
-      <button class="gen-tab" data-t="about">Acerca de</button>
+  <div class="ui-shell ui-medium settings">
+    <header class="ui-hero">
+      <div class="ui-hero-left">
+        <div class="ui-hero-titles"><h2>Ajustes</h2></div>
+      </div>
+      <div class="ui-hero-actions">
+        <button class="btn small ghost" id="set-close">Cerrar</button>
+      </div>
+    </header>
+    <div class="ui-tabs-dock">
+      <div class="tabs" id="set-tabs">
+        <button class="gen-tab" data-t="sound">Sonido</button>
+        <button class="gen-tab" data-t="gfx">Gráficos</button>
+        <button class="gen-tab" data-t="ctl">Controles</button>
+        <button class="gen-tab" data-t="expedition">Guardar expedición</button>
+        <button class="gen-tab" data-t="acc">Cuenta</button>
+        <button class="gen-tab" data-t="about">Acerca de</button>
+      </div>
     </div>
-    <div id="set-body" class="set-body"></div>
+    <div id="set-body" class="ui-body set-body"></div>
   </div>
 </section>
 
@@ -379,25 +408,47 @@
 
 <!-- ====== Amigos ====== -->
 <section id="scr-friends" class="scr dim hidden">
-  <div class="box wide">
-    <div class="row between"><h2>Amigos</h2>
-      <div class="row"><button id="fr-room" class="btn small gold hidden">Ir a la sala</button><button class="btn small ghost" data-back>Volver</button></div></div>
-    <p class="sub" id="fr-me"></p>
-    <form id="fr-add" class="row" autocomplete="off">
-      <input id="fr-name" class="field grow" maxlength="16" spellcheck="false" placeholder="Apodo de tu amigo">
-      <button class="btn gold" type="submit" data-sfx="confirm">Añadir amigo</button>
-    </form>
-    <p id="fr-msg" class="note"></p>
-    <div id="fr-inbox"></div>
-    <div id="fr-list" class="fr-list"></div>
+  <div class="ui-shell">
+    <header class="ui-hero no-dock">
+      <div class="ui-hero-left">
+        <div class="ui-hero-titles"><h2>Amigos</h2></div>
+      </div>
+      <div class="ui-hero-actions">
+        <button id="fr-room" class="btn small gold hidden">Ir a la sala</button>
+        <button class="btn small ghost" data-back>Volver</button>
+      </div>
+    </header>
+    <div class="ui-body">
+      <div class="fr-top-card">
+        <p class="sub" id="fr-me"></p>
+        <form id="fr-add" class="row" autocomplete="off">
+          <input id="fr-name" class="field grow" maxlength="16" spellcheck="false" placeholder="Apodo de tu amigo">
+          <button class="btn gold" type="submit" data-sfx="confirm">Añadir amigo</button>
+        </form>
+        <p id="fr-msg" class="note"></p>
+      </div>
+      <div id="fr-inbox"></div>
+      <div id="fr-list" class="fr-list"></div>
+    </div>
   </div>
 </section>
 
 <!-- ====== Sala (partida en grupo) ====== -->
 <section id="scr-nursery" class="scr dim hidden">
-  <div class="box wide nursery-box">
-    <div class="nursery-toolbar"><div class="nursery-heading"><span class="nursery-emblem" aria-hidden="true"><i class="nursery-egg"></i></span><div><h2 id="nursery-title">Guardería</h2><p>Un hogar para nuevos compañeros</p></div></div><button id="nursery-back" class="btn small ghost">Volver</button></div>
-    <p id="nursery-message" class="note" role="status"></p><div id="nursery-body"></div>
+  <div class="ui-shell nursery-box">
+    <header class="ui-hero no-dock nursery-toolbar">
+      <div class="ui-hero-left nursery-heading">
+        <span class="nursery-emblem" aria-hidden="true"><i class="nursery-egg"></i></span>
+        <div class="ui-hero-titles"><h2 id="nursery-title">Guardería</h2><p>Un hogar para nuevos compañeros</p></div>
+      </div>
+      <div class="ui-hero-actions">
+        <button id="nursery-back" class="btn small ghost">Volver</button>
+      </div>
+    </header>
+    <div class="ui-body">
+      <p id="nursery-message" class="note" role="status"></p>
+      <div id="nursery-body"></div>
+    </div>
   </div>
 </section>
 <section id="scr-lobby" class="scr dim hidden">
@@ -418,18 +469,30 @@
 
 <!-- ====== Ranking ====== -->
 <section id="scr-rank" class="scr dim hidden">
-  <div class="box wide">
-    <div class="row between"><h2>Ranking</h2><span class="row" style="gap:6px"><button id="rk-mod" class="btn small ghost hidden">Moderación</button><button class="btn small ghost" data-back>Volver</button></span></div>
-    <div class="gen-tabs" id="rk-mode"></div>
-    <div class="filters" id="rk-period"></div>
-    <div class="row rk-tools">
-      <div class="filters" id="rk-scope" style="margin:0"></div>
-      <input id="rk-poke" class="field" list="rk-dl" placeholder="Filtrar por Pokémon (histórico)" spellcheck="false">
-      <datalist id="rk-dl"></datalist>
-      <button id="rk-clear" class="btn small ghost hidden">Quitar filtro</button>
+  <div class="ui-shell">
+    <header class="ui-hero">
+      <div class="ui-hero-left">
+        <div class="ui-hero-titles"><h2>Ranking</h2></div>
+      </div>
+      <div class="ui-hero-actions">
+        <button id="rk-mod" class="btn small ghost hidden">Moderación</button>
+        <button class="btn small ghost" data-back>Volver</button>
+      </div>
+    </header>
+    <div class="ui-tabs-dock">
+      <div class="gen-tabs" id="rk-mode"></div>
     </div>
-    <div id="rk-list" class="rk-list"></div>
-    <div id="rk-me" class="rk-me"></div>
+    <div class="ui-body">
+      <div class="filters" id="rk-period"></div>
+      <div class="row rk-tools">
+        <div class="filters" id="rk-scope" style="margin:0"></div>
+        <input id="rk-poke" class="field" list="rk-dl" placeholder="Filtrar por Pokémon (histórico)" spellcheck="false">
+        <datalist id="rk-dl"></datalist>
+        <button id="rk-clear" class="btn small ghost hidden">Quitar filtro</button>
+      </div>
+      <div id="rk-list" class="rk-list"></div>
+      <div id="rk-me" class="rk-me"></div>
+    </div>
   </div>
 </section>
 
@@ -447,14 +510,23 @@
 
 <!-- ====== Misiones, logros y perfil ====== -->
 <section id="scr-goals" class="scr dim hidden">
-  <div class="box wide">
-    <div class="row between"><h2>Misiones</h2><button class="btn small ghost" data-back>Volver</button></div>
-    <div class="tabs" id="goals-tabs">
-      <div class="tab on" data-tab="missions">Misiones</div>
-      <div class="tab" data-tab="ach">Logros</div>
-      <div class="tab" data-tab="profile">Perfil</div>
+  <div class="ui-shell">
+    <header class="ui-hero">
+      <div class="ui-hero-left">
+        <div class="ui-hero-titles"><h2>Misiones</h2></div>
+      </div>
+      <div class="ui-hero-actions">
+        <button class="btn small ghost" data-back>Volver</button>
+      </div>
+    </header>
+    <div class="ui-tabs-dock">
+      <div class="tabs" id="goals-tabs">
+        <div class="tab on" data-tab="missions">Misiones</div>
+        <div class="tab" data-tab="ach">Logros</div>
+        <div class="tab" data-tab="profile">Perfil</div>
+      </div>
     </div>
-    <div id="goals-body" class="goals-body"></div>
+    <div id="goals-body" class="ui-body goals-body"></div>
   </div>
 </section>
 
@@ -505,34 +577,61 @@
 </section>
 
 <!-- ====== Mejoras ====== -->
-<section id="scr-upgrades" class="scr dim hidden"><div class="box wide pack-house"><div class="row between"><h2>Paquetes de cartas</h2><button class="btn small ghost" data-back>Volver</button></div><div id="pack-body"></div></div></section>
+<section id="scr-upgrades" class="scr dim hidden">
+  <div class="ui-shell pack-house">
+    <header class="ui-hero no-dock">
+      <div class="ui-hero-left">
+        <div class="ui-hero-titles"><h2>Paquetes de cartas</h2></div>
+      </div>
+      <div class="ui-hero-actions">
+        <button class="btn small ghost" data-back>Volver</button>
+      </div>
+    </header>
+    <div class="ui-body">
+      <div id="pack-body"></div>
+    </div>
+  </div>
+</section>
 
 <!-- ====== Gacha ====== -->
 <section id="scr-gacha" class="scr dim hidden">
-  <div class="box wide">
-    <div class="row between"><h2 id="gacha-heading">Gacha</h2><button class="btn small ghost" data-back>Volver</button></div>
-    <div class="seg gacha-mode"><button id="gacha-pokemon-mode">Pokémon</button><button id="gacha-ability-mode">Habilidades</button></div>
-    <div class="gen-tabs" id="gacha-gens"></div>
-    <div class="split" style="margin-top:8px">
-      <div>
-        <div class="banner" id="banner">
-          <h3 id="banner-title"></h3>
-          <p id="banner-desc" style="margin:4px 0 6px"></p>
-          <p class="sub" id="gacha-owned" style="margin:0"></p>
-          <div class="feat" id="gacha-feat"></div>
-        </div>
-        <div class="row wrap" style="margin-top:14px">
-          <button id="pull-1" class="btn grow" data-sfx="none">Tirar ×1 · <span id="cost-1"></span></button>
-          <button id="pull-10" class="btn gold grow" data-sfx="none">Tirar ×10 · <span id="cost-10"></span></button>
-          <button id="pull-100" class="btn gold grow" data-sfx="none">Tirar ×100 · <span id="cost-100"></span></button>
-          <button id="pull-10b" class="btn gold grow" data-sfx="none">Tirar ×10 · <span id="cost-10b"></span></button>
-        </div>
-        <p class="note tickets-line" id="gacha-tickets"></p>
-        <p class="note" id="gacha-pity"></p>
+  <div class="ui-shell">
+    <header class="ui-hero">
+      <div class="ui-hero-left">
+        <div class="ui-hero-titles"><h2 id="gacha-heading">Gacha</h2></div>
       </div>
-      <div class="panel rates" id="gacha-rates"></div>
+      <div class="ui-hero-actions">
+        <button class="btn small ghost" data-back>Volver</button>
+      </div>
+    </header>
+    <div class="ui-tabs-dock">
+      <div class="seg gacha-mode"><button id="gacha-pokemon-mode">Pokémon</button><button id="gacha-ability-mode">Habilidades</button></div>
     </div>
-    <div id="ability-medals" class="hidden"></div>
+    <div class="ui-body">
+      <div class="gen-tabs" id="gacha-gens"></div>
+      <div class="split">
+        <div>
+          <div class="banner" id="banner">
+            <h3 id="banner-title"></h3>
+            <p id="banner-desc" style="margin:4px 0 6px"></p>
+            <p class="sub" id="gacha-owned" style="margin:0"></p>
+            <div class="feat" id="gacha-feat"></div>
+          </div>
+          <div class="gacha-pull-bar">
+            <button id="pull-1" class="btn grow" data-sfx="none">Tirar ×1 · <span id="cost-1"></span></button>
+            <button id="pull-10" class="btn gold grow" data-sfx="none">Tirar ×10 · <span id="cost-10"></span></button>
+            <button id="pull-100" class="btn gold grow" data-sfx="none">Tirar ×100 · <span id="cost-100"></span></button>
+            <button id="pull-10b" class="btn gold grow" data-sfx="none">Tirar ×10 · <span id="cost-10b"></span></button>
+          </div>
+          <div class="gacha-meta-bar">
+            <p class="note tickets-line" id="gacha-tickets"></p>
+            <p class="note" id="gacha-pity"></p>
+          </div>
+        </div>
+        <div class="panel rates" id="gacha-rates"></div>
+      </div>
+      <div id="ability-medals" class="hidden"></div>
+    </div>
   </div>
 </section>
 
@@ -587,9 +686,18 @@
 </section>
 
 <section id="scr-offline" class="scr dim hidden">
-  <div class="box" style="width:min(520px,100%);max-height:90dvh;overflow:auto">
-    <h2>Ingresos sin conexión</h2><div id="offline-body"></div>
-    <button id="offline-close" class="btn gold">Volver</button>
+  <div class="ui-shell ui-compact">
+    <header class="ui-hero no-dock">
+      <div class="ui-hero-left">
+        <div class="ui-hero-titles"><h2>Ingresos sin conexión</h2></div>
+      </div>
+    </header>
+    <div class="ui-body">
+      <div id="offline-body"></div>
+    </div>
+    <footer class="ui-footer">
+      <button id="offline-close" class="btn gold">Volver</button>
+    </footer>
   </div>
 </section>
 
@@ -646,6 +754,6 @@
 <button id="squad-open" class="bag-open squad-open hidden" type="button">♧<kbd>T</kbd></button>
 
 <!-- datos generados -->
-<script defer src="js/app.min.js?v=83a1bd6e9d"></script>
+<script defer src="js/app.min.js?v=f64c8b302b"></script>
 </body>
 </html>

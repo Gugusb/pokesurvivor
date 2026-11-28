@@ -10,7 +10,7 @@ G.Expedition = (() => {
   const genNames=['Kanto','Johto','Hoenn','Sinnoh','Teselia','Kalos','Alola','Galar','Paldea'];
   const summary=()=>run?{...R.progress({day:run.day,arceus:run.arceus,cashout:run.cashout}),squadHp:run.squadHp,leagueTier:run.leagueTier??1}:null;
   function header(title,sub){
-    const box=$('journey-content');box.replaceChildren();box.classList.remove('battle-loot-box','training-room','event-room','route-room');const head=node('header','journey-head');head.append(node('small','journey-eyebrow',L('EXPEDICIÓN','EXPEDITION','小队远征')),node('h2','',title),node('p','',sub));box.append(head);if(run&&run.phase!=='shop')box.append(progressPanel());return box;
+    const box=$('journey-content');box.replaceChildren();box.classList.remove('battle-loot-box','training-room','event-room','route-room','journey-prep-shell');const head=node('header','journey-head');head.append(node('small','journey-eyebrow',L('EXPEDICIÓN','EXPEDITION','小队远征')),node('h2','',title),node('p','',sub));box.append(head);if(run&&run.phase!=='shop')box.append(progressPanel());return box;
   }
   let hudCollapsed=null;
   const isHudCollapsed=()=>hudCollapsed===null?(typeof innerHeight==='number'&&innerHeight<=520):hudCollapsed;
@@ -191,15 +191,27 @@ G.Expedition = (() => {
     const render=()=>{
       const mon=G.DEX_BY[draft.dex],tier=G.LeagueRank?.view(G.DB.save)?.tier||1,stars=G.DB.save.difficulty?.selected||1;
       const warn=tier>=4&&stars<tier?L(' ⚠ Dificultad N'+stars+' inferior a R'+tier+': no sumará estrellas al finalizar.',' ⚠ Difficulty N'+stars+' is below R'+tier+': no stars will be awarded.',' ⚠ 当前所选难度 N'+stars+' 低于段位 R'+tier+'，通关结算不会加分。'):tier<stars&&tier<8?L(' ★ Dificultad N'+stars+' superior a R'+tier+': +1 ★ extra al completar.',' ★ Difficulty N'+stars+' is above R'+tier+': +1 extra ★ on clear.',' ★ 当前所选难度 N'+stars+' 高于段位 R'+tier+'，通关后额外 +1 ★。'):'';
-      const box=header(L('Preparar expedición','Expedition preparation','远征战前准备'),L('Revisa al capitán y los recursos de la ruta antes de partir.','Review your captain and route resources before setting out.','出发前查看队长、本局宝可梦候选和道具池。')+warn);
+      const box=header(L('Preparar expedición','Expedition preparation','远征战前准备'),L('Revisa al capitán, la dificultad y los recursos de la ruta antes de partir.','Review your captain, difficulty, and route resources before setting out.','出发前确认队长、挑战难度、本局宝可梦候选与道具池。')+warn);
+      box.classList.add('journey-prep-shell');
       G.LeagueRankUI?.mountHeader(box.querySelector('.journey-head'));
-      const prep=node('div','journey-prep'),{section,select}=prepCaptain(mon);
-      select.onchange=()=>{draft.dex=+select.value;draft.gens=null;render();$('journey-captain').focus();};
-      prep.append(section,prepItems(),prepCandidates(draft.gens));
-      const actions=node('div','journey-actions');actions.append(button(L('Volver','Back','返回'),()=>{draft=null;G.MenuUI.open();}));
-      if(!draft.gens)actions.append(button(L('Preparar ruta','Prepare route','生成本局世代'),()=>{draft.gens=R.generations(mon);render();},'btn gold'));
-      else actions.append(button(L('¡En marcha!','Set out!','出发'),async()=>{if(busy)return;if(G.ExpeditionSave?.hasSave&&!confirm(L('La nueva expedición reemplazará el archivo local. ¿Continuar?','A new expedition will replace the local checkpoint. Continue?','开始新远征会替换本机存档，是否继续？')))return;busy=true;try{if(G.DB.save.partner!==draft.dex)G.DB.save.partnerShiny=false;G.DB.save.partner=draft.dex;G.DB.commit();await G.Game.startRun(null,true);}finally{busy=false;}},'btn gold'));
-      actions.classList.add('journey-prep-actions');box.append(actions,prep);G.UI.show('scr-journey');
+      const scrollBody=node('div','journey-prep-body');
+      const prep=node('div','journey-prep'),leftCol=node('div','journey-prep-col'),rightCol=node('div','journey-prep-col');
+      const {section,select}=prepCaptain(mon);
+      select.onchange=()=>{draft.dex=+select.value;draft.gens=null;render();$('journey-captain')?.focus();};
+      leftCol.append(section);
+      if(G.DifficultyUI?.prepCard)leftCol.append(G.DifficultyUI.prepCard(render));
+      rightCol.append(prepCandidates(draft.gens),prepItems());
+      prep.append(leftCol,rightCol);
+      scrollBody.append(prep);
+      const footer=node('footer','journey-prep-footer');
+      const summaryPill=node('div','journey-prep-summary');
+      summaryPill.innerHTML=`<span>${L('Capitán','Captain','队长')}：<b>${T(mon.name)}</b></span><span translate="no">${L('Dificultad','Difficulty','难度')}：<b>${stars}★</b></span>`;
+      const actions=node('div','journey-actions journey-prep-actions');
+      actions.append(button('← '+L('Volver','Back','返回'),()=>{draft=null;G.MenuUI.open();},'btn small ghost'));
+      if(!draft.gens)actions.append(button(L('Preparar ruta','Prepare route','生成本局世代'),()=>{draft.gens=R.generations(mon);render();},'btn gold prep-cta'));
+      else actions.append(button(L('¡En marcha!','Set out!','出发！'),async()=>{if(busy)return;if(G.ExpeditionSave?.hasSave&&!confirm(L('La nueva expedición reemplazará el archivo local. ¿Continuar?','A new expedition will replace the local checkpoint. Continue?','开始新远征会替换本机存档，是否继续？')))return;busy=true;try{if(G.DB.save.partner!==draft.dex)G.DB.save.partnerShiny=false;G.DB.save.partner=draft.dex;G.DB.commit();await G.Game.startRun(null,true);}finally{busy=false;}},'btn gold prep-cta'));
+      footer.append(summaryPill,actions);
+      box.append(scrollBody,footer);G.UI.show('scr-journey');
     };render();
   }
   function begin(captain){

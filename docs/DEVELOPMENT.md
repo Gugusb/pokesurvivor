@@ -34,6 +34,15 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.82 — 2026-11-28
+
+- 沿用 `v0.43.0-alpha.81` 图鉴的双色斜纹横幅、悬浮胶囊页签与深色层次卡片风格，新增 `css/dashboard-ui.css`（纳入 `tools/build.js` 缓存指纹）并统一重构 14 个核心界面：
+  - 游戏卡包（`#scr-upgrades`）、宝可梦抽卡（`#scr-gacha`）、特性抽卡（`#scr-gacha.is-ability`，独立紫蓝主题切换）、交易所（`#scr-exchange`）、任务/成就/档案（`#scr-goals`）、挂机收益（`#scr-offline`）、孵蛋屋（`#scr-nursery`）、好友（`#scr-friends`）、排行榜（`#scr-rank`）、设置（`#scr-settings`）、更新内容（`#scr-news`）、支持界面（`#scr-support`）、联盟训练家卡（`.league-overlay` / `.league-card`）与远征战前准备界面（`#journey-content.journey-prep-shell`）。
+- 合并难度选择进入远征前准备界面：
+  - 从主菜单 `#scr-menu` 移除拥挤的 `.difficulty-picker`，保留清爽的开始按钮。
+  - 在 `js/ui/difficulty-ui.js` 新增 `prepCard(onChange)`，并在 `js/systems/expedition.js` 的 `setup()` 双栏战前准备面板中直接嵌入 1★–8★ 交互难度网格，实时更新得分倍率、难度特性、R4+ 计分提醒与跨级 `+1★` 提示，同时在底部固定栏实时汇总队长与所选难度（并保留兼容隐藏 `#menu-difficulty` / `#difficulty-note` 与 `.journey-prep-actions button:last-child` 选择器）。
+- 验证：`node --test tools/test_exchange_gacha.cjs tools/test_server.cjs tools/test_developer_journal.cjs` 全部通过；`node tools/build.js` 与 `node tools/export_data.js` 通过（当前终端未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.81 — 2026-11-28
 
 - 参考双栏展示图鉴布局全面重构游戏内图鉴界面（保留并完整接入本项目全部玩法模块）：

@@ -1,6 +1,11 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Interfaz unificada en todas las pantallas y dificultad en preparación · v0.43.0-alpha.82": "全界面视觉统一改版与远征准备合并难度选择 · v0.43.0-alpha.82",
+  "Se extiende el nuevo estilo visual (cabecera diagonal bicolor, pestañas flotantes y tarjetas oscuras limpias) a Paquetes de cartas, Gacha, Gacha de habilidades, Bolsa, Misiones, Ingresos sin conexión, Guardería, Amigos, Ranking, Ajustes, Tarjeta de entrenador de la Liga, Novedades y Apoyo.": "沿用新版图鉴的双色斜纹主题横幅、悬浮胶囊页签与深色层次卡片风格，全面统一优化卡包、抽卡、特性抽卡、交易所、任务、挂机收益、孵蛋屋、好友、排行榜、设置、联盟训练家卡、更新内容与支持界面。",
+  "El selector de dificultad (1★–8★) pasa del menú principal a la pantalla de Preparación de expedición con botones directos, multiplicador de puntuación y avisos de rango R4+ / bonificación +1 ★ en vivo.": "将 1★–8★ 难度选择从主菜单移至「远征战前准备」界面，支持卡片按钮直选并实时联动显示得分倍率、难度词条与 R4+／跨级 +1★ 段位提示。",
+  "Aproveché que todavía quedaban pegatinas de colores en la mesa y vestí toda la base con el mismo estilo de la Pokédex. Quien cocina trasladó la elección de dificultad a la sala de preparación; ahora el menú principal respira más y antes de salir revisamos equipo y estrellas de una sola vez.": "趁着桌上的彩色贴纸还剩不少，顺手把整个营地的各个面板都换成了和图鉴同一套风格。做饭的那家伙把难度选择搬进了远征准备室，主菜单清爽多了，出发前也能一次核对好队长和星级啦。",
+
   "Rediseño completo de la Pokédex · v0.43.0-alpha.81": "全新双栏图鉴界面改版 · v0.43.0-alpha.81",
   "Se renueva la Pokédex con un diseño en dos columnas: ficha izquierda con cabecera diagonal bicolor por tipos, cadena evolutiva interactiva, pedestal animado y gráfico radar de seis estadísticas; lista derecha con pestañas de categoría, buscador por nombre o número, filtros de generación y rareza, botón aleatorio y barra de progreso.": "图鉴界面全面改版为双栏展示：左侧为斜切双属性主题横幅、可点击局内进化链、立绘展台与六维种族值雷达图；右侧为分类胶囊、名称/编号搜索、世代与稀有度筛选、随机挑选与图鉴收集进度条。",
   "Toda la información del Pokémon se organiza en seis pestañas dentro de la propia ficha sin ventanas emergentes: Resumen, Movimientos, Estadísticas e IV, Tipos y afinidades, Habilidades/Mega/Equipo e Investigación y medallas de dificultad, con selección directa mediante Enter y flechas.": "宝可梦全部信息整合进面板内六大页签（概览、招式、数值、属性、特性装备、研究），告别嵌套弹窗；支持键盘左右键切换与回车一键出战。",

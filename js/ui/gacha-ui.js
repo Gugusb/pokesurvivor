@@ -37,6 +37,7 @@ G.GachaUI = (() => {
 
   function refresh() {
     const ability = mode === 'ability';
+    $('scr-gacha')?.classList.toggle('is-ability', ability);
     $('gacha-heading').textContent = ability ? 'Gacha de habilidades' : 'Gacha';
     $('gacha-pokemon-mode').classList.toggle('on', !ability);
     $('gacha-ability-mode').classList.toggle('on', ability);

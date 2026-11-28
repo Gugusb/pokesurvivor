@@ -4,6 +4,8 @@ G.DifficultyUI = (() => {
   }
   function menu() {
     const s = G.DB.save, select = G.UI.$('menu-difficulty'), note = G.UI.$('difficulty-note');
+    decorate(G.UI.$('menu-partner'), s.partner);
+    if (!select) return;
     select.innerHTML = '';
     for (let n = 1; n <= 8; n++) {
       const option = document.createElement('option'); option.value = n;
@@ -16,12 +18,94 @@ G.DifficultyUI = (() => {
       const lines=[G.T('Multiplicador de puntuación')+' ×'+G.Difficulty.scoreMultiplier(n).toFixed(2),...G.Difficulty.traits(n).map(x=>'• '+G.T(x))];
       if(tier>=4&&n<tier)lines.push('⚠ '+G.T('En R{x}+ solo suma estrellas jugar en dificultad {x}★ o superior.').replace(/\{x\}/g,tier));
       else if(tier<n&&tier<8)lines.push('★ '+G.T('Dificultad superior a tu rango R{x}: +1 ★ extra al completar.').replace(/\{x\}/g,tier));
-      note.style.whiteSpace='pre-line';
-      note.textContent=lines.join('\n');
-      note.title = G.T('Supera una dificultad para desbloquear la siguiente.');
+      if (note) {
+        note.style.whiteSpace='pre-line';
+        note.textContent=lines.join('\n');
+        note.title = G.T('Supera una dificultad para desbloquear la siguiente.');
+      }
     };
     select.onchange = () => { if (G.Difficulty.select(s, +select.value)) G.DB.commit(); update(); };
-    update(); decorate(G.UI.$('menu-partner'), s.partner);
+    update();
+  }
+  function prepCard(onChange) {
+    const s = G.DB.save;
+    const unlocked = G.Difficulty.unlocked(s);
+    const tier = G.LeagueRank?.view(s)?.tier || 1;
+    const selected = s.difficulty.selected;
+    const L = (es, en, zh) => G.I18n.lang === 'zh' ? zh : G.I18n.lang === 'en' ? en : es;
+
+    const section = document.createElement('section');
+    section.className = 'journey-prep-card prep-diff-card';
+    const head = document.createElement('div');
+    head.className = 'prep-diff-head';
+    head.innerHTML = `<h3>${G.T('Dificultad')}</h3><span class="prep-diff-mult" translate="no">${L('Multiplicador', 'Score', '得分倍率')} ×${G.Difficulty.scoreMultiplier(selected).toFixed(2)}</span>`;
+    section.appendChild(head);
+
+    const grid = document.createElement('div');
+    grid.className = 'prep-diff-grid';
+    for (let n = 1; n <= 8; n++) {
+      const locked = n > unlocked;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'prep-diff-btn' + (n === selected ? ' on' : '') + (locked ? ' locked' : '')
+        + (!locked && tier < n && tier < 8 ? ' bonus' : '')
+        + (!locked && tier >= 4 && n < tier ? ' low-rank' : '');
+      b.disabled = locked;
+      b.dataset.diff = String(n);
+      const sub = locked ? '🔒' : (tier < n && tier < 8 ? '+1★' : tier >= 4 && n < tier ? '⚠' : '×' + G.Difficulty.scoreMultiplier(n).toFixed(1));
+      b.innerHTML = `<b translate="no">${n}★</b><small translate="no">${sub}</small>`;
+      b.onclick = () => {
+        if (G.Difficulty.select(s, n)) {
+          G.DB.commit();
+          G.Audio?.sfx?.('select');
+          onChange?.();
+        }
+      };
+      grid.appendChild(b);
+    }
+    section.appendChild(grid);
+
+    // 保留隐藏同步 select 以兼容脚本选择器与无障碍访问
+    const select = document.createElement('select');
+    select.id = 'menu-difficulty';
+    select.className = 'sr-only';
+    select.setAttribute('aria-label', G.T('Dificultad'));
+    for (let n = 1; n <= 8; n++) {
+      const o = document.createElement('option');
+      o.value = n;
+      o.textContent = n + '★';
+      o.disabled = n > unlocked;
+      select.appendChild(o);
+    }
+    select.value = selected;
+    select.onchange = () => {
+      if (G.Difficulty.select(s, +select.value)) { G.DB.commit(); onChange?.(); }
+    };
+    section.appendChild(select);
+
+    const note = document.createElement('div');
+    note.id = 'difficulty-note';
+    note.className = 'prep-diff-note';
+    const lines = [
+      G.T('Multiplicador de puntuación') + ' ×' + G.Difficulty.scoreMultiplier(selected).toFixed(2),
+      ...G.Difficulty.traits(selected).map(x => '• ' + G.T(x))
+    ];
+    if (tier >= 4 && selected < tier) {
+      lines.push('⚠ ' + G.T('En R{x}+ solo suma estrellas jugar en dificultad {x}★ o superior.').replace(/\{x\}/g, tier));
+    } else if (tier < selected && tier < 8) {
+      lines.push('★ ' + G.T('Dificultad superior a tu rango R{x}: +1 ★ extra al completar.').replace(/\{x\}/g, tier));
+    }
+    note.style.whiteSpace = 'pre-line';
+    note.textContent = lines.join('\n');
+    section.appendChild(note);
+
+    const hint = document.createElement('p');
+    hint.className = 'note';
+    hint.style.margin = '8px 0 0';
+    hint.textContent = G.T('Supera una dificultad para desbloquear la siguiente.');
+    section.appendChild(hint);
+
+    return section;
   }
   function detail(parent, dex) {
     const section = document.createElement('section'); section.className = 'difficulty-record';
@@ -90,5 +174,5 @@ G.DifficultyUI = (() => {
     'En R{x}+ solo suma estrellas jugar en dificultad {x}★ o superior.': '当前段位 R{x}，只有挑战 {x}★ 及以上难度才会在结算时加分。',
     'Dificultad superior a tu rango R{x}: +1 ★ extra al completar.': '难度高于当前段位 R{x}：远征通关后额外 +1 ★。'
   });
-  return { menu, detail, decorate };
+  return { menu, prepCard, detail, decorate };
 })();
