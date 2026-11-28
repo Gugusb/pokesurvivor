@@ -85,9 +85,10 @@ G.Combat = (() => {
     m.castAt = performance.now();
   }
   function perform(pl,m,cd,secondary=false){
-    pl.cast(m);
+    const castMove=secondary?{...m,extraCast:true}:m;
+    pl.cast(castMove);
     if(G.Coop.active)G.Coop.cast(pl,m,secondary?cd:0);
-    run(pl,secondary?{...m,extraCast:true}:m,cd);
+    run(pl,castMove,cd);
   }
   function extras(pl,m,cd){
     const q=G.Specialization?.stats(m);if(!q)return;
@@ -144,7 +145,7 @@ G.Combat = (() => {
 
   function counterTackle(pl, attacker) {
     if (G.ZMoves && G.ZMoves.busy(pl)) return;
-    const m = G.Moves.instance('tackle', 1), aim = pl.aim;
+    const m = Object.assign(G.Moves.instance('tackle', 1), { extraCast: true }), aim = pl.aim;
     if (attacker) pl.aim = Math.atan2(attacker.y - pl.y, attacker.x - pl.x);
     try { pl.cast(m); if (G.Coop.active) G.Coop.cast(pl, m); run(pl, m); }
     finally { pl.aim = aim; }

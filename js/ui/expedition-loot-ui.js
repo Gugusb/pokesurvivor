@@ -33,6 +33,7 @@ G.ExpeditionLootUI=(()=>{
     formula.textContent=terms.filter(([,n],i)=>n||i===0||i===2).map(([name,n])=>name+' '+G.Economy.formatGold(n)).join(' + ')+' = '+G.Economy.formatGold(report.totalGoldGained||0)+' G';gold.append(formula);
     const interestTerms=G.LeaderKalos?.interest(s),divisor=interestTerms?.divisor||G.TrainerTalents?.interestDivisor(s)||G.EconomyConfig.interest.divisor,cap=interestTerms?.cap??G.TrainerTalents?.maxInterest(s)??G.EconomyConfig.interest.maxInterest;
     gold.append(node('small','loot-interest-rule',L('Interés: ','Interest: ','利息：')+'⌊'+G.Economy.formatGold(s.lockedGoldAtBattleStart)+'G ÷ '+divisor+'⌋ · '+L('máx. ','cap ','上限 ')+cap+'G'));
+    if((s.traitPendingWage||0)>0)gold.append(node('small','loot-interest-rule',L('Salario de rasgo en espera: ','Queued trait wage: ','待顺延发放特性工资：')+G.Economy.formatGold(s.traitPendingWage)+' G'));
     const raw=(s.loot.xp||0)+(s.loot.xpBig||0),xp=card('pokemon',L('EXP Pokémon','Pokémon XP','宝可梦经验'),'star',s.pokemonXpGained??raw);
     xp.append(node('p','loot-resource-detail',L('Recogida ','Collected ','拾取 ')+fmt(Math.max(0,raw-(s.xpJarSpent||0)))+' · '+L('Retirada ','Jar withdrawal ','罐中提取 ')+fmt(s.xpJarSpent)+(s.traitBattleRewards?.mon_xp?' · '+L('Rasgos ','Traits ','特性 ')+fmt(s.traitBattleRewards.mon_xp):'')));
     xp.append(node('small','loot-resource-detail',L('Guardada ','Jar deposit ','存罐 ')+fmt(s.xpJarStored)+' · '+L('Reserva ','Balance ','余量 ')+fmt(s.xpJar)));

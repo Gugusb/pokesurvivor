@@ -34,6 +34,22 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.86 — 2026-11-28
+
+- 按 `TRAIT_COMPOSITION_REBALANCE_GDD.md` 方案 B（Plan B）重新分配远征队员特性并实装全部 16 套新模板运行时逻辑：
+  - 数据源与导出链路（`data/trait_rework_index.json`、`js/data/trait-rework.js`、`js/data/squad-traits.js`、`tools/import_trait_rework.cjs`、`tools/export_squad_traits.cjs`、`docs/TRAIT_CATALOG.md`）：
+    - 升级至 `version: "3.0.0"`（Plan B），替换 1–4 品质 190 个终端家族（401 物种），冻结全部 143 个 5 品质家族（194 物种），保留 6 个 3/4 品质终端家族（`#4 小火龙`、`#775 树枕尾熊`、`#84 嘟嘟`、`#207 天蝎`、`#751 滴蛛`、`#884 铝钢龙`，共 12 物种），达到物种口径 773∶193（80.02%∶19.98%）、家族口径 368∶141（72.30%∶27.70%）。
+    - 附带 `legacyV2` 变更根映射，确保既有 v2 远征存档续玩沿用旧特性表，新开远征采用 v3 特性表。
+  - 运行时与系统接入（`js/systems/squad-traits.js`、`js/entities/player.js`、`js/systems/combat.js`、`js/systems/leader-abilities.js`、`js/ui/expedition-loot-ui.js`）：
+    - 经济型 E1–E5：跟队工资（每 2 场胜利战后 1G，全队单场上限 1G，顺延队列与每持有者单份待领上限，结算面板显示待顺延工资）、战斗记录（80 普通施法战后 +1 训练家经验，单人 1/全队 2 限额）、清扫笔记（20 击杀战后 +20/30/40 宝可梦经验，单人 2 次/场，触发时锁定星级值）、休整作业（休息结束填充经验罐 20/30/40，受容量限制）、采购助手（3 场胜利 +1 免费商店刷新，全队每周期上限 2 次，排除流浪商人）。
+    - 主动叠层手 S1–S5：练招积累（20 施法→触发招式职业）、属性磨炼（25 施法→首属性）、邻位配合（30 施法→邻位去重属性/职业，不含蛋组）、击破积累（15 击杀→主技能职业）、主力供能（30 击杀→全队最高层属性，固定顺序打破平局）；统一含每游戏秒 1 次限频、未激活/超限门槛前停靠与 `extraCast` 排除（`combat.js` 为连发/回响/反击撞击标记 `extraCast: true`）。
+    - Buff 手 B1–B6：鼓舞邻位（双攻 +4%–12.8%，8s/12s CD）、节奏指挥（下一次普通招式基础敏捷 +6%–18%，接入 alpha.83 `agilityExtra`，6s 或施法后移除/12s CD）、守备照看（双防 +6%–19.2%，8s/12s CD，不改减伤）、邻位急救（6 施法治疗生命比例最低邻位 2% 自身最大生命，单次≤受疗者 3%，共享 3%/s 治疗限速）、开场护航（每战斗日一次，邻位 3%/4%/5% 白盾 8s，与队长特性共享 40% 白盾上限）、补给接力（25 施法为普通 PP 比例最低邻位主技能回 1 PP，10s CD，只补缺口且不解除归队禁攻）。
+- 验证：
+  - `node tools/export_squad_traits.cjs` 校验 509 家族 / 966 物种及全部各星数值通过。
+  - `node --test tools/test_squad_traits.cjs` 全部 26/26 项通过（覆盖静态方案 B 分布、全部 16 套新模板、冷却/上限/平局/停靠边界与 v2/v3 存档兼容）；`test_agility_cooldown.cjs`（11/11）、`test_expedition_save.cjs`、`test_league_rank.cjs`、`test_pokemon_training.cjs`、`test_training_support.cjs` 均通过。
+  - 无头浏览器端到端验证（隔离内存 SQLite + R5 测试账号）：校验商店特性显示、B4/B5/B6/E1/S1 实战触发、存档退出并续玩恢复 `schemaVersion === '3.0.0'` 与进度，零 `pageerror` 与游戏控制台报错。
+  - 已运行 `node tools/build.js` 与 `node tools/export_data.js` 更新构建产物；本机未安装 `py` 启动器，未执行 `make_seo_pages.py`。
+
 ### v0.43.0-alpha.85 — 2026-11-28
 
 - 加固远征本地存档序列化与恢复流程，彻底防止 `Converting circular structure to JSON`（例如旧版地面区域 `owner -> Member -> lastPatch` 环）导致保存失败：

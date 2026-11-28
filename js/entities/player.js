@@ -125,6 +125,7 @@ G.Player = class Player {
       + (m && this.isSquadMember ? (G.SquadBonds?.agilityPct ? G.SquadBonds.agilityPct(this, m) : ((G.SquadBonds?.agility(this, m) || 1) - 1)) : 0);
     const extra = (G.Items?.agilityBonus?.(this) || 0)
       + (G.SquadTraits?.flat(this, 'agility') || 0)
+      + (G.SquadTraits?.agilityExtra?.(this) || 0)
       + (G.TypeBonds?.baseBonus(this, 'agility') || 0)
       + (G.TypeBonds?.agilityFlat?.(this) || 0)
       + (G.TrainerTalents?.agilityExtra?.(this) || 0);
