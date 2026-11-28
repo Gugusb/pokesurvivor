@@ -607,3 +607,119 @@ button:not(:disabled),summary{transition:border-color .13s,background-color .13s
   .journey-prep-mon{padding:4px 6px;gap:5px}
   .journey-prep-mon canvas{width:30px;height:30px}
 }
+
+/* ============ Release gold coin FX ============ */
+.release-gold-fx{position:fixed;inset:0;pointer-events:none;z-index:9999;overflow:hidden}
+.release-gold-pop{position:fixed;display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:999px;background:linear-gradient(135deg,#43300d,#1f1809);border:1.5px solid #ffd56b;color:#ffe680;font-weight:800;font-size:15px;line-height:1;box-shadow:0 6px 20px #0008,0 0 14px #ffcf4d66;transform:translate(-50%,-50%);animation:release-gold-rise .82s cubic-bezier(.22,.84,.36,1) forwards}
+.release-gold-pop img,.release-gold-pop svg{width:17px;height:17px;flex:none}
+.release-gold-coin{position:fixed;width:11px;height:11px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff6b3,#ffcf48 55%,#b87410 100%);border:1px solid #fff0a8;box-shadow:0 0 8px #ffd14799;transform:translate(-50%,-50%);animation:release-coin-fly .78s cubic-bezier(.2,.72,.28,1) forwards}
+.squad-wallet>span.squad-wallet-pop{animation:wallet-gold-flash .55s ease-out}
+@keyframes release-gold-rise{
+  0%{opacity:0;transform:translate(-50%,-20%) scale(.72)}
+  18%{opacity:1;transform:translate(-50%,-75%) scale(1.12)}
+  68%{opacity:1;transform:translate(-50%,-155%) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-210%) scale(.92)}
+}
+@keyframes release-coin-fly{
+  0%{opacity:0;transform:translate(-50%,-50%) scale(.4)}
+  20%{opacity:1;transform:translate(calc(-50% + var(--bx)),calc(-50% + var(--by))) scale(1.08)}
+  100%{opacity:0;transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(.55)}
+}
+@keyframes wallet-gold-flash{
+  0%{transform:scale(1);box-shadow:0 0 0 0 #ffd14788}
+  35%{transform:scale(1.1);box-shadow:0 0 0 6px #ffd14744;border-color:#ffd56b;color:#fff2a8}
+  100%{transform:scale(1);box-shadow:0 0 0 0 #ffd14700}
+}
+@media(prefers-reduced-motion:reduce){
+  .release-gold-pop{animation:release-gold-rise .45s linear forwards}
+  .release-gold-coin{display:none}
+  .squad-wallet>span.squad-wallet-pop{animation:none}
+}
+
+/* ============ Shop card structural defaults (desktop preserved) ============ */
+.journey-product-head{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%}
+.journey-product-title{display:flex;flex-direction:column;align-items:center;min-width:0;width:100%}
+.journey-product-foot{display:flex;flex-direction:column;gap:6px;margin-top:auto;width:100%}
+.journey-product-foot>small{text-align:center}
+
+/* ============ Mobile Shop: zero-scroll full-visibility layout (Landscape) ============ */
+@media(max-height:520px) and (min-width:520px){
+  #scr-journey:has(.shop-room){padding:3px 6px}
+  .shop-room.journey-box{width:100%!important;height:calc(100dvh - 6px)!important;max-height:calc(100dvh - 6px)!important;padding:5px 8px!important;border-radius:12px!important;display:flex!important;flex-direction:column!important;gap:3px!important;overflow:hidden!important}
+  .shop-room>.journey-head{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:6px!important;margin:0!important;padding:0!important}
+  .shop-room>.journey-head .journey-eyebrow,.shop-room>.journey-head p{display:none!important}
+  .shop-room>.journey-head h2{font-size:14px!important;margin:0!important;line-height:1.15!important}
+  .shop-room>.journey-meta{display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:6px!important;margin:0!important;padding:2px 6px!important;font-size:10.5px!important;border-radius:7px!important}
+  .shop-room>.journey-meta .journey-squad-link{margin-left:auto!important;min-height:22px!important;padding:2px 8px!important;font-size:10px!important}
+  .shop-room>.journey-odds{display:flex!important;flex-wrap:nowrap!important;gap:4px!important;margin:0!important}
+  .shop-room>.journey-odds span{padding:1px 6px!important;font-size:9.5px!important;line-height:1.3!important}
+  .shop-room>.journey-shop-toolbar{position:static!important;margin:0!important;padding:3px 6px!important;border-radius:8px!important;display:flex!important;flex-wrap:nowrap!important;align-items:center!important;gap:6px!important}
+  .shop-room>.journey-shop-toolbar .expedition-progress{flex:1 1 220px!important;margin:0!important;padding:0!important;gap:2px 8px!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .shop-room>.journey-shop-toolbar .expedition-xp-label{margin-bottom:1px!important}
+  .shop-room>.journey-shop-toolbar .expedition-xp-label b,.shop-room>.journey-shop-toolbar .expedition-xp-label span{font-size:9px!important}
+  .shop-room>.journey-shop-toolbar .expedition-squad-hp,.shop-room>.journey-shop-toolbar .expedition-captain-hp,.shop-room>.journey-shop-toolbar .talent-hud{display:none!important}
+  .shop-room>.journey-shop-toolbar .journey-shop-controls{flex:0 0 auto!important;margin:0!important;gap:4px!important;flex-wrap:nowrap!important}
+  .shop-room>.journey-shop-toolbar .btn{min-height:24px!important;padding:2px 7px!important;font-size:10px!important;white-space:nowrap!important}
+  .shop-room>.journey-layout{flex:1 1 0!important;min-height:0!important;display:flex!important;flex-direction:column!important;margin:0!important;gap:0!important;overflow:hidden!important}
+  .shop-room .journey-goods{flex:1 1 0!important;min-height:0!important;display:grid!important;grid-template-columns:repeat(5,minmax(0,1fr))!important;grid-auto-rows:minmax(0,1fr)!important;gap:5px!important;align-content:stretch!important;overflow:hidden!important}
+  .shop-room .journey-goods>.note{display:none!important}
+  .shop-room .journey-product{padding:4px 5px!important;gap:2px!important;border-radius:9px!important;min-height:0!important;height:100%!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}
+  .shop-room .journey-owned-badge{margin:-2px -2px 1px!important;padding:1px 4px!important;font-size:8.5px!important;line-height:1.2!important}
+  .shop-room .journey-product-head{flex-direction:row!important;align-items:center!important;gap:4px!important}
+  .shop-room .journey-product-art{width:34px!important;height:34px!important;flex:none!important}
+  .shop-room .journey-product-art canvas{width:34px!important;height:34px!important}
+  .shop-room .journey-product-title{align-items:flex-start!important;text-align:left!important;overflow:hidden!important}
+  .shop-room .journey-product-title small{font-size:8px!important;line-height:1.15!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important}
+  .shop-room .journey-product-title h3{font-size:11px!important;margin:0!important;line-height:1.15!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important}
+  .shop-room .journey-product .journey-shop-trait{flex:1 1 0!important;min-height:0!important;overflow-y:auto!important;padding:3px 4px!important;font-size:8.5px!important;line-height:1.25!important;margin:0!important}
+  .shop-room .journey-product .journey-tags{gap:2px!important;margin:0!important;justify-content:flex-start!important;flex-wrap:wrap!important}
+  .shop-room .journey-product .journey-tags>span{font-size:8px!important;padding:1px 3px!important;line-height:1.15!important}
+  .shop-room .journey-product .journey-shop-move{font-size:9px!important;line-height:1.2!important;margin:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .shop-room .journey-product-foot{gap:2px!important;margin-top:auto!important}
+  .shop-room .journey-product-foot>small{font-size:8px!important;line-height:1.1!important}
+  .shop-room .journey-product-foot .btn{min-height:22px!important;padding:2px 4px!important;font-size:10px!important}
+}
+
+/* ============ Mobile Shop: zero-scroll full-visibility layout (Portrait) ============ */
+@media(max-width:660px) and (orientation:portrait){
+  #scr-journey:has(.shop-room){padding:4px}
+  .shop-room.journey-box{width:100%!important;height:calc(100dvh - 8px)!important;max-height:calc(100dvh - 8px)!important;padding:7px 7px 6px!important;border-radius:14px!important;display:flex!important;flex-direction:column!important;gap:4px!important;overflow:hidden!important}
+  .shop-room>.journey-head{margin:0!important;padding:0!important;display:flex!important;align-items:center!important;justify-content:space-between!important}
+  .shop-room>.journey-head .journey-eyebrow,.shop-room>.journey-head p{display:none!important}
+  .shop-room>.journey-head h2{font-size:16px!important;margin:0!important;line-height:1.2!important}
+  .shop-room>.journey-meta{display:flex!important;flex-wrap:wrap!important;align-items:center!important;gap:4px 8px!important;margin:0!important;padding:4px 7px!important;font-size:11px!important;border-radius:8px!important}
+  .shop-room>.journey-meta .journey-squad-link{margin-left:auto!important;min-height:24px!important;padding:2px 8px!important;font-size:10.5px!important}
+  .shop-room>.journey-odds{display:flex!important;flex-wrap:nowrap!important;justify-content:space-between!important;gap:3px!important;margin:0!important}
+  .shop-room>.journey-odds span{flex:1 1 0!important;text-align:center!important;padding:2px 2px!important;font-size:9.5px!important}
+  .shop-room>.journey-shop-toolbar{position:static!important;margin:0!important;padding:5px 6px!important;border-radius:9px!important;display:flex!important;flex-direction:column!important;gap:4px!important}
+  .shop-room>.journey-shop-toolbar .expedition-progress{margin:0!important;padding:0!important;gap:3px 8px!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .shop-room>.journey-shop-toolbar .expedition-xp-label{margin-bottom:1px!important}
+  .shop-room>.journey-shop-toolbar .expedition-xp-label b,.shop-room>.journey-shop-toolbar .expedition-xp-label span{font-size:9.5px!important}
+  .shop-room>.journey-shop-toolbar .expedition-squad-hp,.shop-room>.journey-shop-toolbar .expedition-captain-hp,.shop-room>.journey-shop-toolbar .talent-hud{display:none!important}
+  .shop-room>.journey-shop-toolbar .journey-shop-controls{display:flex!important;flex-wrap:nowrap!important;gap:4px!important;margin:0!important}
+  .shop-room>.journey-shop-toolbar .btn{flex:1 1 0!important;min-height:28px!important;padding:3px 5px!important;font-size:10.5px!important;white-space:nowrap!important}
+  .shop-room>.journey-layout{flex:1 1 0!important;min-height:0!important;display:flex!important;flex-direction:column!important;margin:0!important;overflow:hidden!important}
+  .shop-room .journey-goods{flex:1 1 0!important;min-height:0!important;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;grid-template-rows:repeat(3,minmax(0,1fr))!important;gap:5px!important;overflow:hidden!important}
+  .shop-room .journey-goods>.note{display:none!important}
+  .shop-room .journey-product{padding:5px 6px!important;gap:2px!important;border-radius:10px!important;min-height:0!important;height:100%!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}
+  .shop-room .journey-product[data-product="4"]{grid-column:1 / -1!important;display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)!important;grid-template-rows:auto minmax(0,1fr) auto!important;column-gap:8px!important;row-gap:2px!important;align-items:center!important}
+  .shop-room .journey-product[data-product="4"] .journey-owned-badge{grid-column:1 / -1!important}
+  .shop-room .journey-product[data-product="4"] .journey-product-head{grid-column:1;grid-row:1 / 3}
+  .shop-room .journey-product[data-product="4"] .journey-shop-trait{grid-column:2;grid-row:1 / 3;height:100%!important}
+  .shop-room .journey-product[data-product="4"] .journey-tags,.shop-room .journey-product[data-product="4"] .journey-shop-move{grid-column:1}
+  .shop-room .journey-product[data-product="4"] .journey-product-foot{grid-column:2;grid-row:3;flex-direction:row!important;align-items:center!important}
+  .shop-room .journey-owned-badge{margin:-2px -2px 1px!important;padding:1px 5px!important;font-size:9px!important;line-height:1.15!important}
+  .shop-room .journey-product-head{flex-direction:row!important;align-items:center!important;gap:5px!important}
+  .shop-room .journey-product-art{width:38px!important;height:38px!important;flex:none!important}
+  .shop-room .journey-product-art canvas{width:38px!important;height:38px!important}
+  .shop-room .journey-product-title{align-items:flex-start!important;text-align:left!important;overflow:hidden!important}
+  .shop-room .journey-product-title small{font-size:8.5px!important;line-height:1.15!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important}
+  .shop-room .journey-product-title h3{font-size:12px!important;margin:0!important;line-height:1.15!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important}
+  .shop-room .journey-product .journey-shop-trait{flex:1 1 0!important;min-height:0!important;overflow-y:auto!important;padding:3px 5px!important;font-size:9px!important;line-height:1.25!important;margin:0!important}
+  .shop-room .journey-product .journey-tags{gap:2px!important;margin:0!important;justify-content:flex-start!important;flex-wrap:wrap!important}
+  .shop-room .journey-product .journey-tags>span{font-size:8.5px!important;padding:1px 4px!important;line-height:1.15!important}
+  .shop-room .journey-product .journey-shop-move{font-size:9.5px!important;line-height:1.2!important;margin:0!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+  .shop-room .journey-product-foot{flex-direction:row!important;align-items:center!important;justify-content:space-between!important;gap:4px!important;margin-top:auto!important}
+  .shop-room .journey-product-foot>small{font-size:8.5px!important;white-space:nowrap!important}
+  .shop-room .journey-product-foot .btn{flex:1 1 auto!important;min-height:26px!important;padding:3px 6px!important;font-size:11px!important}
+}

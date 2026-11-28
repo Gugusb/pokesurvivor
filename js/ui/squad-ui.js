@@ -47,17 +47,53 @@ G.SquadUI=(()=>{
       const p=G.Squad.roster.find(p=>id(p)===key);if(!p||!canEdit())return;let changed=false;
       if(drop.startsWith('slot:'))changed=G.Squad.place(p,Number(drop.slice(5)));
       else if(drop==='bench')changed=G.Squad.bench(p);
-      else if(drop==='release'){releaseMember(p,false);return;}
+      else if(drop==='release'){releaseMember(p,false,$('squad-release-slot'));return;}
       else if(drop.startsWith('unit:'))changed=G.Squad.swap(p,G.Squad.roster.find(q=>id(q)===drop.slice(5)));
       if(changed){renderList();bar.firstChild.textContent=(G.Squad.deployed().length+1)+' / '+G.Squad.capacity+' · '+L('Plazas','Squad limit','编队上限');}
     }});
     root.append(node('p','note squad-help',canEdit()?L('En móvil, arrastra el asa de puntos. El capitán conserva su puesto.','On touchscreens, drag the dotted grip. The captain keeps the lead slot.','手机可拖动圆点把手；队长位置固定，队员可在出战队伍与候补间拖放。'):L('Reorganiza el equipo en el itinerario o la tienda. T o Esc para volver.','Rearrange the squad in the itinerary or shop. T or Esc to return.','可在日程或商店阶段调整编队；按 T 或 Esc 返回。')));
   }
-  function releaseMember(p,ask=true){
+  function playReleaseGoldFx(amount,origin){
+    if(!(amount>0)||typeof document==='undefined')return;
+    G.Audio?.sfx?.('coin');
+    const walletGold=document.querySelector('.squad-wallet > span:first-child');
+    if(walletGold){walletGold.classList.remove('squad-wallet-pop');void walletGold.offsetWidth;walletGold.classList.add('squad-wallet-pop');}
+    const calm=!!G.Settings?.get?.('calm')||matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
+    const x=origin?.x??innerWidth*.5,y=origin?.y??innerHeight*.5;
+    const layer=node('div','release-gold-fx');layer.setAttribute('aria-hidden','true');
+    const badge=node('div','release-gold-pop');
+    badge.style.left=x+'px';badge.style.top=y+'px';
+    badge.innerHTML=(G.Icons?.html?G.Icons.html('coin',18):'🪙')+'<span>+'+G.Economy.formatGold(amount)+' G</span>';
+    layer.append(badge);
+    if(!calm){
+      const wr=walletGold?.getBoundingClientRect?.();
+      const tx=wr?wr.left+wr.width*.5:x,ty=wr?wr.top+wr.height*.5:Math.max(24,y-110);
+      const count=Math.min(7,Math.max(5,amount+4));
+      for(let i=0;i<count;i++){
+        const spark=node('span','release-gold-coin');
+        const ang=(Math.PI*2*i)/count+(Math.random()-.5)*.45,rad=22+Math.random()*28;
+        spark.style.left=x+'px';spark.style.top=y+'px';
+        spark.style.setProperty('--bx',Math.round(Math.cos(ang)*rad)+'px');
+        spark.style.setProperty('--by',Math.round(Math.sin(ang)*rad)+'px');
+        spark.style.setProperty('--tx',Math.round(tx-x+(Math.random()-.5)*14)+'px');
+        spark.style.setProperty('--ty',Math.round(ty-y+(Math.random()-.5)*10)+'px');
+        spark.style.animationDelay=(i*28)+'ms';
+        layer.append(spark);
+      }
+    }
+    document.body.append(layer);
+    setTimeout(()=>layer.remove(),920);
+  }
+  function releaseMember(p,ask=true,anchor=null){
     if(!canEdit()||!G.Squad.roster.includes(p))return false;
     if(ask&&G.Expedition.phase!=='loot'&&!confirm(L('¿Liberar a este compañero? No podrás recuperarlo.','Release this companion? This cannot be undone.','确定放生这位伙伴吗？本次远征中无法找回。')))return false;
+    const earned=G.Expedition.run.unitPool?.sellValue(p)||0;
+    const el=anchor||$('squad-release')||$('squad-release-slot');
+    const rect=el?.getBoundingClientRect?.();
+    const origin=rect&&rect.width?{x:rect.left+rect.width*.5,y:rect.top+rect.height*.5}:null;
     if(!G.Squad.release(p))return false;closeDetails(false);selected=null;render();
-    G.UI.toast(L('Compañero liberado','Companion released','已放生伙伴')+' · '+T(p.mon.name));return true;
+    playReleaseGoldFx(earned,origin);
+    G.UI.toast(L('Compañero liberado','Companion released','已放生伙伴')+' · '+T(p.mon.name)+(earned?' (+'+G.Economy.formatGold(earned)+' G)':''));return true;
   }
   function choose(p){
     selected=p;for(const e of $('squad-list').querySelectorAll('[data-squad-select]')){const on=e.dataset.squadSelect===id(p);e.classList.toggle('selected',on);e.setAttribute('aria-pressed',on);}
@@ -82,7 +118,7 @@ G.SquadUI=(()=>{
       release.id='squad-release-slot';
       release.dataset.squadDrop='release';
       release.setAttribute('aria-label',L('Arrastra aquí para liberar','Drag here to release','拖入此处放生伙伴'));
-      release.append(node('span','squad-release-mark','↗'),node('b','',L('Liberar','Release','放生')),node('small','',L('Arrastra aquí','Drop companion here','拖入伙伴')));
+      release.append(node('span','squad-release-mark','↗'),node('b','',L('Liberar','Release','放生')),node('small','',L('Arrastra aquí (+1G)','Drop here (+1G)','拖入伙伴 (+1G)')));
       list.append(release);
     }
     const board=node('section','squad-field-panel');board.append(node('h3','',L('Equipo de combate','Battle squad','出战队伍')));
@@ -153,7 +189,7 @@ G.SquadUI=(()=>{
       if(m.kind==='buff')card.append(node('p','',L('Apoya al usuario y a sus vecinos de formación al 30% del efecto original.','Supports the user and adjacent formation partners at 30% of the original effect.','增益自身与编队中前、后各一位队友，效果为原来的30%。')));
     }
     if(p.isSquadMember&&canEdit()){
-      const release=button(L('Liberar compañero','Release companion','放生伙伴')+' · +'+(G.Expedition.run.unitPool?.sellValue(p)||0)+' G',()=>releaseMember(p),'btn squad-release');release.id='squad-release';box.append(release);
+      const release=button(L('Liberar compañero','Release companion','放生伙伴')+' · +'+(G.Expedition.run.unitPool?.sellValue(p)||0)+' G',()=>releaseMember(p,true,release),'btn squad-release');release.id='squad-release';box.append(release);
     }
     refreshDetails();
   }

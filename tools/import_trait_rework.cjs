@@ -21,7 +21,7 @@ const v3Calc={
   v3_buff_adj_shield:star=>[3,4,5][star-1],
   v3_buff_adj_pp:()=>1
 };
-const conditions=new Set(['battle_end','rest_end','buy_xp','cast_100','kill_30','star_up','battle_win_2','battle_win_3','battle_start','cast_6','cast_20','cast_25','cast_30','cast_80','kill_15','kill_20']),seen=new Set(),roots=new Set();
+const conditions=new Set(['battle_end','rest_end','buy_xp','xp_gain_3','cast_100','kill_30','star_up','battle_win_2','battle_win_3','battle_start','cast_6','cast_20','cast_25','cast_30','cast_80','kill_15','kill_20']),seen=new Set(),roots=new Set();
 for(const f of data.families){
  assert.ok(!roots.has(f.rootDex),'duplicate root');roots.add(f.rootDex);assert.equal(f.quality,ctx.G.ExpeditionQualityMap[f.rootDex]);
  assert.ok(f.category==='independent'||f.category==='conditional');assert.ok(f.category==='independent'||conditions.has(f.conditionId),'unknown condition '+f.conditionId);

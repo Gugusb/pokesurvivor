@@ -34,6 +34,21 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.88 — 2026-11-28
+
+- **放生宝可梦获得金币特效**（`js/ui/squad-ui.js`、`css/expedition.css`）：
+  - 在详情页放生按钮与拖拽放生区触发 `playReleaseGoldFx()`：播放 `coin` 音效、弹出金色 `+1 G` 飘字、生成飞向 `.squad-wallet` 的金币粒子并触发金币栏高亮动画（兼容 `calm` 与 `prefers-reduced-motion`），放生提示补充 `(+1 G)`。
+- **原买经验队员特性改为每获得 3 点训练家经验触发**（`data/trait_rework_index.json`、`js/data/trait-rework.js`、`tools/import_trait_rework.cjs`、`js/systems/squad-traits.js`、`js/systems/economy.js`、`docs/TRAIT_CATALOG.md`）：
+  - 将原 26 个 `buy_xp` 家族统一改为 `conditionId: 'xp_gain_3'`（1× 数值倍率，中/英/西三语文案）；`G.Economy.addXp()` 触发 `G.SquadTraits.trainerXpGained(gain)` 累计 `xpProgress` 并每满 3 点触发一次 `xp_gain_3`（带递归锁防止 `exp@xp_gain_3` 自循环，且 `xpProgress` 写入远征本地存档快照）。
+- **统一商店宝可梦售价 3G / 放生返还 1G**（`config/economy_config.json`、`js/systems/expedition.js`、`js/ui/squad-ui.js`）：
+  - 1–5 品质 `unitTiers` 全部统一为 `cost: 3`、`sellValues: [1, 1, 1]`；商店概率条改为按品质（`1品`–`5品` / `Q1`–`Q5`）标注，拖拽放生槽注明 `(+1G)`。
+- **手机端商店免上下滑动排版优化**（`js/systems/expedition.js`、`js/ui/expedition-event-ui.js`、`css/expedition.css`）：
+  - 为宝可梦商店增加 `.shop-room` 作用域与紧凑卡片头尾结构（`.journey-product-head` / `.journey-product-foot`），横屏（`max-height: 520px`）采用全屏单行 5 卡固定视口布局，竖屏（`max-width: 660px`）采用全屏 `2×2 + 通栏第 5 卡` 固定视口网格，单屏完整呈现全部 5 名伙伴信息、概率条与控制栏，零纵向滚动。
+- 验证：
+  - `node --test tools/test_economy.cjs tools/test_squad_traits.cjs tools/test_trainer_talents.cjs tools/test_developer_journal.cjs` 全部通过（59/59）。
+  - 无头浏览器实机验收与截图核验：横屏 `844×390`（`scrollHeight === clientHeight === 382`）与竖屏 `390×844`（`scrollHeight === clientHeight === 834`）均零纵向滚动，全部 5 卡标价 `3 金币`、概率显示 `1品`–`5品`，放生实测 `+1 G` 飘字与金币粒子特效正常渲染，零 JS 报错。
+  - 已运行 `node tools/build.js` 与 `node tools/export_data.js` 更新构建产物；本机未安装 `py` 启动器，未执行 `make_seo_pages.py`。
+
 ### v0.43.0-alpha.87 — 2026-11-28
 
 - **6 级训练家/商店经验体系与移除买经验**（`config/economy_config.json`、`js/systems/economy.js`、`js/systems/expedition.js`、`js/systems/squad.js`、`js/systems/expedition-save.js`）：

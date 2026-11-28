@@ -2,7 +2,7 @@
 G.SquadTraits=(()=>{
  let records=new WeakMap(),battles=new Set(),rests=new Set(),shieldDays=new Set(),merges=new WeakSet();
  let tempBuffs=new WeakMap(),traitShields=new WeakMap(),healBudgets=new WeakMap();
- let battleTime=0,e2TeamBattleTotal=0,pendingBattleXp=0,pendingBattleMonXp=0,wageSeq=0,e5CycleGrants=Object.create(null);
+ let battleTime=0,e2TeamBattleTotal=0,pendingBattleXp=0,pendingBattleMonXp=0,wageSeq=0,e5CycleGrants=Object.create(null),xpProgress=0,inXpTrigger=false;
  let schemaVersion=G.SquadTraitDefs?.version||'3.0.0';
  const run=()=>G.Expedition?.run,local=v=>v?.[G.I18n.lang]||v?.en||v;
  const L=(es,en,zh)=>local({es,en,zh});
@@ -157,6 +157,12 @@ G.SquadTraits=(()=>{
  }
  function restEnd(){const r=run();if(!r||rests.has(r.day))return;rests.add(r.day);emit('rest_end');}
  function buyXp(){emit('buy_xp');}
+ function trainerXpGained(amount){
+  if(inXpTrigger||!enabled()||!G.Squad?.active||!(amount>0)||!Number.isFinite(amount))return;
+  inXpTrigger=true;
+  try{xpProgress+=amount;while(xpProgress>=3-1e-9){xpProgress=Math.max(0,xpProgress-3);emit('xp_gain_3');}}
+  finally{inXpTrigger=false;}
+ }
  function rankUp(p){const s=state(p),rank=p.rank||p.trainerRank||1;s.rankEvents||=new Set();if(s.rankEvents.has(rank))return;s.rankEvents.add(rank);emit('star_up');}
  function merge(a,b){if(!b||merges.has(b))return;merges.add(b);rankUp(a);}
  const isNormalCast=(p,m)=>!!m&&!m.extraCast&&!m.leaderGenerated&&!m.zMove&&!m.typeBondSecondary&&!!p?.moves?.some(x=>x===m||x.id===m.id);
@@ -288,7 +294,7 @@ G.SquadTraits=(()=>{
  function reset(){
   records=new WeakMap();battles=new Set();rests=new Set();shieldDays=new Set();merges=new WeakSet();
   tempBuffs=new WeakMap();traitShields=new WeakMap();healBudgets=new WeakMap();
-  battleTime=0;e2TeamBattleTotal=0;pendingBattleXp=0;pendingBattleMonXp=0;wageSeq=0;e5CycleGrants=Object.create(null);
+  battleTime=0;e2TeamBattleTotal=0;pendingBattleXp=0;pendingBattleMonXp=0;wageSeq=0;e5CycleGrants=Object.create(null);xpProgress=0;inXpTrigger=false;
   schemaVersion=G.SquadTraitDefs?.version||'3.0.0';
  }
  function description(p){
@@ -354,7 +360,7 @@ G.SquadTraits=(()=>{
   const isV3=String(d.effect||'').startsWith('v3_');
   let text=({zh,en,es}[lang]||en)[d.effect]||'';
   if(!isV3){
-   const event={battle_end:L('Al terminar el combate: ','On battle end: ','战斗结束时，'),rest_end:L('Al terminar el descanso: ','On rest end: ','休息结束时，'),buy_xp:L('Al comprar EXP: ','On buying XP: ','每购买一次经验，'),cast_100:L('Cada 100 lanzamientos propios: ','Every 100 own casts: ','自身每释放100次技能，'),kill_30:L('Cada 30 derrotas propias: ','Every 30 own kills: ','自身每击败30个宝可梦，'),star_up:L('Al ascender un compañero del equipo: ','Whenever a squad companion ranks up: ','队伍宝可梦升星时，')}[d.event];
+   const event={battle_end:L('Al terminar el combate: ','On battle end: ','战斗结束时，'),rest_end:L('Al terminar el descanso: ','On rest end: ','休息结束时，'),buy_xp:L('Al comprar EXP: ','On buying XP: ','每购买一次经验，'),xp_gain_3:L('Cada 3 EXP de entrenador obtenida: ','Every 3 trainer XP gained: ','每获得3点训练家经验，'),cast_100:L('Cada 100 lanzamientos propios: ','Every 100 own casts: ','自身每释放100次技能，'),kill_30:L('Cada 30 derrotas propias: ','Every 30 own kills: ','自身每击败30个宝可梦，'),star_up:L('Al ascender un compañero del equipo: ','Whenever a squad companion ranks up: ','队伍宝可梦升星时，')}[d.event];
    if(event)text=event+text;
   }
   if(represented(p)&&d.category==='independent'&&d.effect!=='indep_heal_allies'){
@@ -376,18 +382,18 @@ G.SquadTraits=(()=>{
   for(const p of G.Squad.deployed()){const s=state(p);if(s.reviveWait==null)continue;ctx.save();ctx.font='bold 12px system-ui';ctx.textAlign='center';ctx.fillStyle='#f6e6ff';ctx.fillText('✦ '+s.reviveWait.toFixed(1)+'s',p.x,p.y-p.bodyH-20);ctx.restore();}
  }
  function snapshot(actors){
-  return {schemaVersion,battles:[...battles],rests:[...rests],shieldDays:[...shieldDays],wageSeq,e5CycleGrants:{...e5CycleGrants},
+  return {schemaVersion,battles:[...battles],rests:[...rests],shieldDays:[...shieldDays],wageSeq,e5CycleGrants:{...e5CycleGrants},xpProgress,
    states:actors.map(p=>{const s=state(p);return {casts:s.casts||0,kills:s.kills||0,winCount:s.winCount||0,wagePending:s.wagePending?{...s.wagePending}:null,usedRevives:0,reviveWait:null,rankEvents:s.rankEvents?[...s.rankEvents]:[],cache:null};})};
  }
  function restore(saved,actors){
   records=new WeakMap();tempBuffs=new WeakMap();traitShields=new WeakMap();healBudgets=new WeakMap();
   battles=new Set(saved?.battles||[]);rests=new Set(saved?.rests||[]);shieldDays=new Set(saved?.shieldDays||[]);merges=new WeakSet();
-  wageSeq=saved?.wageSeq||0;e5CycleGrants={...(saved?.e5CycleGrants||{})};
+  wageSeq=saved?.wageSeq||0;e5CycleGrants={...(saved?.e5CycleGrants||{})};xpProgress=saved?.xpProgress||0;inXpTrigger=false;
   battleTime=0;e2TeamBattleTotal=0;pendingBattleXp=0;pendingBattleMonXp=0;
   schemaVersion=saved?(saved.schemaVersion||'2.0.0'):(G.SquadTraitDefs?.version||'3.0.0');
   actors.forEach((p,i)=>{const st=saved?.states?.[i];records.set(p,{casts:st?.casts||0,kills:st?.kills||0,winCount:st?.winCount||0,wagePending:st?.wagePending?{...st.wagePending}:null,usedRevives:0,reviveWait:null,cdUntil:0,lastStackAt:-Infinity,e2Triggers:0,e3Triggers:0,rankEvents:new Set(st?.rankEvents||[]),cache:null});});
  }
  const noop=()=>{},neutral=()=>({factor:1,execute:false,contributions:[]});
- return {snapshot,restore,assign,reset,def,state,weight,value,local,activeTags,layers,adjacent,factor,agilityExtra,flat,crit,visualScale,sync,trigger,cast,kill,hurt,tick,restEnd,buyXp,finishBattle,rankUp,merge,beginBattle,description,draw,reviveTotal,absorb,shield,pendingWageCount,get schemaVersion(){return schemaVersion;},
+ return {snapshot,restore,assign,reset,def,state,weight,value,local,activeTags,layers,adjacent,factor,agilityExtra,flat,crit,visualScale,sync,trigger,cast,kill,hurt,tick,restEnd,buyXp,trainerXpGained,finishBattle,rankUp,merge,beginBattle,description,draw,reviveTotal,absorb,shield,pendingWageCount,get schemaVersion(){return schemaVersion;},get xpProgress(){return xpProgress;},
   hit:noop,release:noop,visitShop:noop,dayEnd:noop,beforeHit:neutral,cooldown:()=>1,move:(p,m)=>m,price:base=>base,get coinCarry(){return 0;}};
 })();

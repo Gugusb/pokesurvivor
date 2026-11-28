@@ -141,7 +141,7 @@
   ],
   "unitTiers": {
     "1": {
-      "cost": 2,
+      "cost": 3,
       "poolPerSpecies": 22,
       "starMultipliers": [
         1,
@@ -150,8 +150,8 @@
       ],
       "sellValues": [
         1,
-        3,
-        9
+        1,
+        1
       ]
     },
     "2": {
@@ -163,13 +163,13 @@
         3.1
       ],
       "sellValues": [
-        2,
-        5,
-        17
+        1,
+        1,
+        1
       ]
     },
     "3": {
-      "cost": 4,
+      "cost": 3,
       "poolPerSpecies": 15,
       "starMultipliers": [
         1,
@@ -177,13 +177,13 @@
         3.25
       ],
       "sellValues": [
-        3,
-        8,
-        26
+        1,
+        1,
+        1
       ]
     },
     "4": {
-      "cost": 5,
+      "cost": 3,
       "poolPerSpecies": 12,
       "starMultipliers": [
         1,
@@ -191,13 +191,13 @@
         3.4
       ],
       "sellValues": [
-        4,
-        11,
-        35
+        1,
+        1,
+        1
       ]
     },
     "5": {
-      "cost": 6,
+      "cost": 3,
       "poolPerSpecies": 9,
       "starMultipliers": [
         1,
@@ -205,9 +205,9 @@
         4.2
       ],
       "sellValues": [
-        5,
-        14,
-        44
+        1,
+        1,
+        1
       ]
     }
   },

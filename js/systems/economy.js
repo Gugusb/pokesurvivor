@@ -13,10 +13,12 @@ G.Economy=(()=>{
   const overclockCost=s=>config().endless.skillOverclockBaseCost+config().endless.skillOverclockStepCost*s.skillOverclockCount;
   function create(){return {...config().initial,cycle:1,extraPopPurchases:0,flawlessStreak:0,skillOverclockCount:0,settledDays:new Set()};}
   function addXp(s,amount){
-    const old=s.trainerLevel;s.trainerXp+=Math.max(0,amount);
+    const gain=Math.max(0,amount);
+    const old=s.trainerLevel;s.trainerXp+=gain;
     while(s.trainerLevel<maxLevel(s)&&s.trainerXp>=levelRow(s.trainerLevel).xpToNext){s.trainerXp-=levelRow(s.trainerLevel).xpToNext;s.trainerLevel++;G.TrainerTalents?.onLevelUp(s,s.trainerLevel);}
     if(s.trainerLevel===config().levels.at(-1).level)s.trainerXp=0;
     else if(s.trainerLevel===maxLevel(s))s.trainerXp=Math.min(s.trainerXp,levelRow(s.trainerLevel).xpToNext);
+    if(gain>0&&s===G.Expedition?.run)G.SquadTraits?.trainerXpGained?.(gain);
     return s.trainerLevel!==old?s.trainerLevel:null;
   }
   function buyXp(){return false;}
