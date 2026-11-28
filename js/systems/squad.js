@@ -41,7 +41,6 @@ G.Squad = (() => {
     get spa(){return super.spa*(G.ExpeditionQuality?.factors(this).ad||1);}
     addMaxHp(amount){super.addMaxHp(amount*(G.ExpeditionQuality?.factors(this).hp||1)*(this.traitHpFactor||1));}
     isPrimaryMove(){return false;}
-    agilityFor(m){return super.agilityFor(m)*(G.SquadBonds?.agility(this,m)||1);}
     staminaFor(m){return super.staminaFor(m)*(G.SquadBonds?.stamina(this,m)||1);}
     ppIntervalFor(m){return G.MonProgression.ppInterval(this.staminaFor(m));}
     update(dt){

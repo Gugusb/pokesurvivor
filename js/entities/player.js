@@ -114,12 +114,29 @@ G.Player = class Player {
     G.Abilities.attackBonus(this) - (G.Abilities.has(this, 'defiant')||(G.LeaderJohto?.guts(this)||G.LeaderHoenn?.guts(this)||G.LeaderSinnoh?.guts(this)||G.LeaderUnova?.guts(this)) ? 0 : this.attackDebuff)); }
   get atk() { return (this.baseAtk+(G.TypeBonds?.baseBonus(this,'atk')||0)+(G.SquadTraits?.flat(this,'atk')||0)) * (1+this.statGrowth.atk+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'atk')||1)*(G.LeaderAbilities?.factor(this,'atk')||1); }
   get spa() { return (this.baseSpa+(G.TypeBonds?.baseBonus(this,'spa')||0)+(G.SquadTraits?.flat(this,'spa')||0)) * (1+this.statGrowth.spa+(G.TrainerTalents?.attackPct(this)||0)+(G.Squad?.growth(this,'atk')||0)+this.buffFraction('atk')) * this.attackMultiplier*(G.SquadTraits?.factor(this,'spa')||1)*(G.LeaderAbilities?.factor(this,'spa')||1); }
-  get agility() { return (this.baseAgility+(G.TypeBonds?.baseBonus(this,'agility')||0)+(G.SquadTraits?.flat(this,'agility')||0)) * (1+this.statGrowth.agility+(G.Squad?.growth(this,'agility')||0))*(G.TypeBonds?.agility(this)||1)*(G.SquadTraits?.factor(this,'agility')||1)*(G.LeaderAbilities?.factor(this,'agility')||1); }
+  agilityParts(m = null) {
+    const base = this.baseAgility;
+    const mul = (this.statGrowth.agility || 0)
+      + (G.Squad?.growth(this, 'agility') || 0)
+      + (G.TypeBonds?.agilityPct ? G.TypeBonds.agilityPct(this) : ((G.TypeBonds?.agility(this) || 1) - 1))
+      + ((G.SquadTraits?.factor(this, 'agility') || 1) - 1)
+      + ((G.LeaderAbilities?.factor(this, 'agility') || 1) - 1)
+      + (m ? ((G.LeaderAbilities?.agility(this, m) || 1) - 1) : 0)
+      + (m && this.isSquadMember ? (G.SquadBonds?.agilityPct ? G.SquadBonds.agilityPct(this, m) : ((G.SquadBonds?.agility(this, m) || 1) - 1)) : 0);
+    const extra = (G.Items?.agilityBonus?.(this) || 0)
+      + (G.SquadTraits?.flat(this, 'agility') || 0)
+      + (G.TypeBonds?.baseBonus(this, 'agility') || 0)
+      + (G.TypeBonds?.agilityFlat?.(this) || 0)
+      + (G.TrainerTalents?.agilityExtra?.(this) || 0);
+    const total = Math.max(0, base * Math.max(0.1, 1 + mul) + extra);
+    return { base, mul, extra, total };
+  }
+  get agility() { return this.agilityParts(null).total; }
   get stamina() { return (this.baseStamina*(1+(G.TrainerTalents?.staminaBasePct(this)||0))+(G.TypeBonds?.baseBonus(this,'stamina')||0)+(G.SquadTraits?.flat(this,'stamina')||0)) * (1+this.statGrowth.stamina+(G.Squad?.growth(this,'stamina')||0))*(G.SquadTraits?.factor(this,'stamina')||1)*(G.LeaderAbilities?.factor(this,'stamina')||1); }
   get agilityCooldown() { return G.MonProgression ? G.MonProgression.cooldownFactor(this.agility) : 1; }
   get ppInterval() { return G.MonProgression ? G.MonProgression.ppInterval(this.stamina) : 1; }
   isPrimaryMove(m) { const group=this.slots.find(g=>g.some(x=>x===m||x.id===m?.id));return !group||group===this.activeGroup(); }
-  agilityFor(m) { return this.agility*(this.isPrimaryMove(m)?1:.5)*(G.LeaderAbilities?.agility(this,m)||1); }
+  agilityFor(m) { return this.agilityParts(m).total*(this.isPrimaryMove(m)?1:.5); }
   staminaFor(m) { return this.stamina*(this.isPrimaryMove(m)?1:.5); }
   agilityCooldownFor(m) { return G.MonProgression?G.MonProgression.cooldownFactor(this.agilityFor(m)):this.agilityCooldown; }
   ppIntervalFor(m,primary=this.isPrimaryMove(m)) { return G.MonProgression?G.MonProgression.ppInterval(this.stamina*(primary?1:.5)):this.ppInterval; }
@@ -267,7 +284,8 @@ G.Player = class Player {
     if (this.anim.busy() && this.anim.progress() < 0.65) return;
     const meta = G.Sprites.animMeta(this.spriteDex, anim);
     const len = meta ? meta.d.reduce((a, b) => a + b, 0) / 60 : 0.4;
-    const cd = Math.max(0.12, m.cd * this.cdMul * (G.Specialization?.stats(m).cooldown||1) * this.agilityCooldownFor(m) * (G.Items?.cooldownFactor(this)||1) / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1)/(G.TrainerTalents?.rate(this)||1));
+    const cdFactor = G.Combat?.cooldownFactor ? G.Combat.cooldownFactor(this, m) : ((G.Specialization?.stats(m).cooldown||1) * this.agilityCooldownFor(m) * (G.Items?.cooldownFactor(this)||1) * (G.SquadTraits?.cooldown(this)||1) * (G.TrainerTalents?.cooldownFactor?.(this)??(1/(G.TrainerTalents?.rate(this)||1))) / (G.LeaderAbilities?.rate(this,m)||1) / G.Abilities.cooldownRate(this, m) / (G.Mega ? G.Mega.cooldownRate(this, m) : 1));
+    const cd = Math.max(0.12, m.cd * this.cdMul * cdFactor);
     this.anim.play(anim, { speed: Math.max(1, len / (cd * 0.9)) });
     this.attackFace = 0.35;
   }

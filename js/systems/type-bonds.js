@@ -1,6 +1,6 @@
 /* Attribute bonds are run-only. Their added damage is tagged to prevent recursive procs. */
 G.TypeBonds=(()=>{
-  let time=0,nextCast=1,fields=[],earth=0,earthTime=0,windTime=0,dragonKills=0,psychicUntil=0,rockUntil=0;
+  let time=0,nextCast=1,fields=[],earth=0,earthTime=0,windTime=0,dragonKills=0,psychicUntil=0,psychicCdUntil=0,rockUntil=0,rockStacks=0;
   let records=new WeakMap(),bug={stacks:0,ascended:false,bonus:{},inherited:{}},hpOwner=null,hpAdded=0;
   const active=()=>!!G.Squad?.active&&(G.LeagueRank?.allows('types')??true),team=()=>active()?G.Squad.actors():[],alive=()=>team().filter(p=>!p.dead);
   const captain=()=>team()[0],has=(p,type)=>!!p?.mon?.types.includes(type),belongs=(p,type)=>active()&&team().includes(p)&&has(p,type);
@@ -43,14 +43,16 @@ G.TypeBonds=(()=>{
   }
   function reset(){
     if(hpOwner){hpOwner.maxHp=Math.max(1,hpOwner.maxHp-hpAdded);if(!hpOwner.dead)hpOwner.hp=Math.min(hpOwner.maxHp,Math.max(1,hpOwner.hp-hpAdded));}
-    time=0;nextCast=1;fields=[];pulses=[];lastImpact=-1;lastByType=new Map();earth=earthTime=windTime=dragonKills=psychicUntil=rockUntil=0;records=new WeakMap();bug={stacks:0,ascended:false,bonus:{},inherited:{}};hpOwner=null;hpAdded=0;
+    time=0;nextCast=1;fields=[];pulses=[];lastImpact=-1;lastByType=new Map();earth=earthTime=windTime=dragonKills=psychicUntil=psychicCdUntil=rockUntil=rockStacks=0;records=new WeakMap();bug={stacks:0,ascended:false,bonus:{},inherited:{}};hpOwner=null;hpAdded=0;
   }
   function beginStage(){
-    fields=[];pulses=[];lastImpact=-1;lastByType=new Map();earth=earthTime=windTime=dragonKills=psychicUntil=rockUntil=0;records=new WeakMap();bug={stacks:0,ascended:false,bonus:{},inherited:{}};syncStats();
+    fields=[];pulses=[];lastImpact=-1;lastByType=new Map();earth=earthTime=windTime=dragonKills=psychicUntil=psychicCdUntil=rockUntil=rockStacks=0;records=new WeakMap();bug={stacks:0,ascended:false,bonus:{},inherited:{}};syncStats();
     for(const e of G.EnemyMgr.all())delete e.typeBondState;
   }
   const baseBonus=(p,key)=>p===captain()?bug.bonus[key]||0:0;
-  function agility(p){return active()&&team().includes(p)?1+(p.isSquadMember&&time<psychicUntil?1:0)+(has(p,'rock')&&time<rockUntil?1:0):1;}
+  function agilityPct(p){return active()&&team().includes(p)&&p.isSquadMember&&time<psychicUntil?1:0;}
+  function agility(p){return 1+agilityPct(p);}
+  function agilityFlat(p){return active()&&team().includes(p)&&has(p,'rock')&&time<rockUntil&&rockStacks>0?rockStacks*10:0;}
   const speed=p=>active()&&team().includes(p)&&state('electric').tier===5?1+value('electric','speed'):1;
   const regen=p=>p===captain()&&bug.ascended?p.maxHp*.15:0;
   function damageMultiplier(p){
@@ -123,7 +125,7 @@ G.TypeBonds=(()=>{
     if(ready(p,'electric')&&Math.random()<.15){s.shock=5;s.shockOwner=p;}
     if(ready(p,'ice')&&Math.random()<.15){s.frost++;if(s.frost>=3){s.frost=0;s.frozen=Math.max(s.frozen,value('ice','freeze'));e.freezeT=Math.max(e.freezeT||0,s.frozen);}}
     if(ready(p,'poison')&&Math.random()<.2)addPoison(e,p);
-    if(ready(p,'psychic')){const old=s.psychic;s.psychic+=state('psychic').tier===5?2:1;if(state('psychic').tier===5&&old>100){psychicUntil=time+2;impact(p.x,p.y,65,'psychic');}}
+    if(ready(p,'psychic')){const old=s.psychic;s.psychic+=state('psychic').tier===5?2:1;if(state('psychic').tier===5&&old>100&&time>=psychicCdUntil){psychicUntil=time+2;psychicCdUntil=time+10;impact(p.x,p.y,65,'psychic');}}
     if(ready(p,'rock')&&Math.random()<.1){fields.push({kind:'rock',x:e.x,y:e.y,left:3,p,born:time});ring(e.x,e.y,24,'rock');}
     if(ready(p,'ghost')&&Math.random()<.15)addFear(e,p);
     if(ready(p,'dark')){if(state('dark').tier===5&&ctx.dot){refreshDots(e);impact(e.x,e.y,40,'dark');}if(Math.random()<Math.min(1,value('dark','chance'))){const r=Math.floor(Math.random()*3);if(r===0)addIgnite(e,p,'dark');else if(r===1)addPoison(e,p,1,'dark');else addFear(e,p,'dark');}}
@@ -158,12 +160,12 @@ G.TypeBonds=(()=>{
     if(p&&team().includes(p)&&state('dragon').tier===5&&!a.noDragonCount){dragonKills++;if(dragonKills>=100){dragonKills-=100;const owner=source('dragon');if(owner){impact(captain().x,captain().y,340,'dragon');for(const foe of [...G.EnemyMgr.all()])if(!foe.dead)deal(foe,base('dragon')*value('dragon','meteor'),owner,'dragon',{noDragonCount:true});}}}
   }
   function tick(dt){
-    if(!active()||!(dt>0))return;time+=dt;for(const p of pulses)p.t+=dt;pulses=pulses.filter(p=>p.t<.55);for(const p of team())ps(p).hurt=ps(p).hurt.filter(h=>time-h.t<=3);
+    if(!active()||!(dt>0))return;time+=dt;if(time>=rockUntil)rockStacks=0;for(const p of pulses)p.t+=dt;pulses=pulses.filter(p=>p.t<.55);for(const p of team())ps(p).hurt=ps(p).hurt.filter(h=>time-h.t<=3);
     syncStats();const ground=state('ground');if(ground.tier>=2){earthTime+=dt;const interval=Math.max(.25,value('ground','interval')),limit=Math.max(1,Math.floor(value('ground','shields')));while(earthTime>=interval){earthTime-=interval;earth=Math.min(limit,earth+1);}earth=Math.min(earth,limit);}else{earth=earthTime=0;}
     const fly=state('flying');if(fly.tier>=2){windTime+=dt;const interval=fly.tier===5?.2:3;while(windTime>=interval){windTime-=interval;const p=source('flying')||captain();if(fly.tier===5)impact(captain().x,captain().y,240,'flying');else ring(captain().x,captain().y,240,'flying');for(const e of near(captain().x,captain().y,240)){deal(e,base('flying')*value('flying',fly.tier===5?'aura':'pulse'),p,'flying',{knock:fly.tier===5?0:260});if(fly.tier===5)e.applySlow(.55,.4);}}}else windTime=0;
     if(state('grass').tier>=2)for(const p of alive().filter(p=>has(p,'grass'))){const s=ps(p);s.grassTime=(s.grassTime||0)+dt;while(s.grassTime>=2){s.grassTime-=2;fields.push({kind:'grass',x:p.x,y:p.y,left:3,tick:1,p,born:time,r:state('grass').tier===5?175:70});ring(p.x,p.y,state('grass').tier===5?175:70,'grass');}}
     for(let i=fields.length-1;i>=0;i--){const f=fields[i],age=Math.max(0,time-Math.max(f.born,time-dt)),step=Math.min(age,f.left);f.left-=age;
-      if(f.kind==='rock'&&f.left<=0){area(f.x,f.y,state('rock').tier===5?200:100,f.p,'rock',base('rock')*value('rock','impact'));if(state('rock').tier===5){rockUntil=time+2;impact(f.x,f.y,200,'rock');}fields.splice(i,1);}
+      if(f.kind==='rock'&&f.left<=0){area(f.x,f.y,state('rock').tier===5?200:100,f.p,'rock',base('rock')*value('rock','impact'));if(state('rock').tier===5){rockStacks=Math.min(10,(time<rockUntil?rockStacks:0)+1);rockUntil=time+2;impact(f.x,f.y,200,'rock');}fields.splice(i,1);}
       else if(f.kind==='grass'){f.tick-=step;while(f.tick<=1e-8){f.tick+=1;for(const e of near(f.x,f.y,f.r)){deal(e,base('grass')*value('grass','dot'),f.p,'grass');if(state('grass').tier===5)es(e).root=1;}
           if(state('grass').tier===5)for(const p of alive().filter(p=>has(p,'grass')&&G.U.dist2(p.x,p.y,f.x,f.y)<=f.r*f.r))if(Math.random()<.35){p.heal(p.maxHp*value('grass','heal'));impact(p.x,p.y,50,'grass');}}
         if(f.left<=0)fields.splice(i,1);
@@ -182,8 +184,8 @@ G.TypeBonds=(()=>{
     if(s.normal)icons.push(['normal','']);if(s.ignite?.left>0)icons.push(['fire','']);if(s.wet>0)icons.push(['water','']);if(s.shock>0)icons.push(['electric','']);if(s.frost||s.frozen>0)icons.push(['ice',s.frost||'']);if(s.poison?.left>0)icons.push(['poison',s.poison.n]);if(s.fear?.left>0)icons.push(['ghost','']);if(s.psychic)icons.push(['psychic',s.psychic]);if(s.root>0)icons.push(['grass','']);
     ctx.save();ctx.font='bold 9px monospace';ctx.fillStyle='#fff';ctx.textAlign='left';icons.forEach(([type,n],i)=>{const x=e.x-icons.length*10+i*20,y=e.y-e.bodyH-43;G.Icons.draw(ctx,'type:'+type,x,y,12);if(n)ctx.fillText(String(n),x+10,y+12);});ctx.restore();
   }
-  function snapshot(){return {time,nextCast,earth,earthTime,windTime,dragonKills,psychicUntil,rockUntil,bug,hpAdded};}
-  function restore(s){if(!s)return;({time,nextCast,earth,earthTime,windTime,dragonKills,psychicUntil,rockUntil,bug,hpAdded}=s);hpOwner=G.Squad.actors()[0];if(!active()){if(hpOwner&&hpAdded){const ratio=hpOwner.hp/hpOwner.maxHp;hpOwner.maxHp=Math.max(1,hpOwner.maxHp-hpAdded);hpOwner.hp=hpOwner.dead?0:hpOwner.maxHp*ratio;}hpAdded=0;bug={stacks:0,ascended:false,bonus:{},inherited:{}};}fields=[];pulses=[];records=new WeakMap();}
-  return {snapshot,restore,state,value,base,reset,beginStage,baseBonus,agility,speed,regen,defense,damageMultiplier,move,cast,beforeHit,afterHit,forceCrit,critBonus,knock,onDamage,block,contact,enemySpeed,enemyRate,enemyTick,death,tick,
-    drawGround,drawAir,drawEnemy,immobile:e=>active()&&(es(e).root>0||es(e).fear?.left>0),get fields(){return fields;},get shields(){return earth;},get cluster(){return bug.stacks;},get ascended(){return bug.ascended;},get clock(){return time;}};
+  function snapshot(){return {time,nextCast,earth,earthTime,windTime,dragonKills,psychicUntil,psychicCdUntil,rockUntil,rockStacks,bug,hpAdded};}
+  function restore(s){if(!s)return;({time,nextCast,earth,earthTime,windTime,dragonKills,psychicUntil,rockUntil,bug,hpAdded}=s);psychicCdUntil=s.psychicCdUntil||0;rockStacks=s.rockStacks||0;hpOwner=G.Squad.actors()[0];if(!active()){if(hpOwner&&hpAdded){const ratio=hpOwner.hp/hpOwner.maxHp;hpOwner.maxHp=Math.max(1,hpOwner.maxHp-hpAdded);hpOwner.hp=hpOwner.dead?0:hpOwner.maxHp*ratio;}hpAdded=0;bug={stacks:0,ascended:false,bonus:{},inherited:{}};}fields=[];pulses=[];records=new WeakMap();}
+  return {snapshot,restore,state,value,base,reset,beginStage,baseBonus,agility,agilityPct,agilityFlat,speed,regen,defense,damageMultiplier,move,cast,beforeHit,afterHit,forceCrit,critBonus,knock,onDamage,block,contact,enemySpeed,enemyRate,enemyTick,death,tick,
+    drawGround,drawAir,drawEnemy,immobile:e=>active()&&(es(e).root>0||es(e).fear?.left>0),get fields(){return fields;},get shields(){return earth;},get cluster(){return bug.stacks;},get ascended(){return bug.ascended;},get clock(){return time;},get rockStacks(){return rockStacks;},get psychicCdUntil(){return psychicCdUntil;}};
 })();

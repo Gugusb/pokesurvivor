@@ -2,7 +2,7 @@
 G.Items = (() => {
   const LIST=[
     {id:'leftovers',name:'Restos',desc:'Recupera un poco de vida de forma continua.'},
-    {id:'quickclaw',name:'Garra Rápida',desc:'Acorta la recarga de los movimientos.'},
+    {id:'quickclaw',name:'Garra Rápida',desc:'Aumenta la agilidad en +5 por acumulación.'},
     {id:'focussash',name:'Banda Focus',desc:'Evita un golpe mortal. Se consume al activarse.'},
     {id:'shellbell',name:'Cascabel Concha',desc:'El daño causado recupera un poco de vida.'},
     {id:'amuletcoin',name:'Moneda Amuleto',desc:'Consigue más monedas al terminar la aventura.'},
@@ -22,7 +22,9 @@ G.Items = (() => {
   const count=(p,id)=>G.LeaderAbilities?.active()&&p===G.Expedition.run.captain&&G.LeaderAbilities.profile().noItems?0:BY[id]?Math.max(0,p?.specialItems?.[id]||0):0;
   const icon=id=>BY[id]?.icon||id;
   function gain(p,id){
-    if(!p||!BY[id]||G.ExpeditionSupplies&&!G.ExpeditionSupplies.canGain(p,id))return false;
+    if(!p||!BY[id])return false;
+    if(BY[id].infinite===false&&count(p,id)>=1)return false;
+    if(G.ExpeditionSupplies&&!G.ExpeditionSupplies.canGain(p,id))return false;
     if(BY[id].unlock&&!p.remote&&G.CardPacks&&!G.CardPacks.enabled(G.DB.save,id))return false;
     p.specialItems ||= {};
     if(id==='masterytm')p.specTokens=(p.specTokens||0)+1;
@@ -31,7 +33,18 @@ G.Items = (() => {
     G.ExpeditionSupplies?.gained(p,id);return true;
   }
   function remove(p,id){if(!count(p,id))return false;if(--p.specialItems[id]===0)delete p.specialItems[id];return true;}
-  const permitted=i=>!!i&&(!i.expeditionOnly||G.Expedition?.active&&(G.ExpeditionSupplies?.canGain(G.Expedition.run.captain,i.id)??true))&&(!i.unlock||!!G.DB?.save&&G.CardPacks?.enabled(G.DB.save,i.id));
+  const ownerOf=()=>G.Expedition?.active?G.Expedition.run?.captain:G.Game?.player;
+  const permitted=i=>{
+    if(!i)return false;
+    if(i.expeditionOnly&&!G.Expedition?.active)return false;
+    if(i.infinite===false){
+      const owner=ownerOf();
+      if(owner&&count(owner,i.id)>=1)return false;
+      if(G.ExpeditionSupplies&&!G.ExpeditionSupplies.canGain(owner,i.id))return false;
+    }
+    if(i.unlock&&!(G.DB?.save&&G.CardPacks?.enabled(G.DB.save,i.id)))return false;
+    return true;
+  };
   function roll(){return G.U.pick(LIST.filter(i=>!i.boss&&permitted(i))).id;}
   function rewardChoices(rng=Math.random,rift=true,bonus=0){
     const out=[];
@@ -44,7 +57,8 @@ G.Items = (() => {
     }
     return out;
   }
-  const cooldownFactor=p=>Math.pow(.96,count(p,'quickclaw'))*Math.pow(.98,count(p,'metronomeitem'));
+  const cooldownFactor=p=>count(p,'metronomeitem')?0.95:1;
+  const agilityBonus=p=>5*count(p,'quickclaw');
   const ranged=m=>['projectile','beam','boomerang','chain','meteor','nova','cone','turret'].includes(m?.kind);
   function onCast(p,m){
     G.BreakItems?.onCast(p,m);
@@ -74,5 +88,5 @@ G.Items = (() => {
   }
   const typeBonus=(p,m)=>G.STARTER_ITEMS?.reduce((n,i)=>n+(i.type&&i.type===m.type?.toLowerCase()||i.effect&&i.effect===m.damageClass?.toLowerCase()?count(p,i.id)*(i.value||.05):0),0)||0;
   const critBonus=p=>.03*count(p,'scopelens'),critDamage=p=>.1*count(p,'zoomlens');
-  return {permitted,typeBonus,critBonus,critDamage,LIST,BY,ACTIVE,count,icon,gain,remove,roll,rewardChoices,cooldownFactor,ranged,onCast,onHit,useActive};
+  return {permitted,typeBonus,critBonus,critDamage,LIST,BY,ACTIVE,count,icon,gain,remove,roll,rewardChoices,cooldownFactor,agilityBonus,ranged,onCast,onHit,useActive};
 })();

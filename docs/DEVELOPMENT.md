@@ -34,6 +34,21 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.83 — 2026-11-28
+
+- 敏捷与冷却结算体系重构及 10 项数值/机制平衡调整：
+  1. **节拍器（`metronomeitem`）**：在 `js/data/starter-items.js` 标记为唯一道具（`infinite: false`），效果调整为冷却 `×0.95`；在 `js/data/items.js` 与 `js/systems/expedition-supplies.js` 全面落实 `infinite === false` 唯一获取限制（掉落/奖励箱/商店均不重复产出）。
+  2. **先制之爪（`quickclaw`）**：从 `Items.cooldownFactor` 移除，改为 `Items.agilityBonus(p) = 5 * count`（每层 +5 额外敏捷），更新西/英/中文描述。
+  3. **冷却缩短乘区统一**：在 `js/systems/trainer-talents.js`（`cdrPct` 按条目相乘）、`js/systems/combat.js`（新增并导出 `cooldownFactor(pl, m)`）、`js/systems/player-stats.js` 与 `js/entities/player.js` 统一以剩余冷却时长相乘叠加（例：`-10%` 与 `-30%` 叠加为 `0.90 × 0.70 = 0.63` 原冷却）。
+  4. **连携主将（`gold_captain_link`）**：在 `config/trainer_talents.json` 与 `js/systems/trainer-talents.js` 重构为队长每次施法使最近 2 名存活队员获得不叠加增益（+20% 基础敏捷，作为额外敏捷，释放技能后移除；强化版 3 名存活队员 +40% 基础敏捷）。
+  5. **移除旧版局外 `stat:cd`（`+3%/级`）效果**：在 `js/data/upgrades.js`、`js/systems/card-packs.js` 与 `js/ui/card-packs-ui.js` 移除 `L('cd') * 0.03` 与 `legacyAgility` 加成（保留旧存档兼容反序列化）。
+  6. **投射物职业羁绊（`projectile`）**：在 `config/economy_config.json` 与 `js/systems/squad-bonds.js` 将敏捷节点由 `[0.5, 1, 1.5]` 调整为 `[0.2, 0.5, 0.8]`（按层数插值），并导出 `agilityPct(p, m)` 汇入敏捷加成乘区，更新描述为「基础敏捷」。
+  7. **超能力 5 羁绊（`psychic`）**：在 `js/systems/type-bonds.js` 与 `js/data/type-bonds.js` 为命中超能层数 `>100` 触发 2 秒全体队员敏捷 `+100%` 的效果增加 10 秒内置冷却（`psychicCdUntil`，纳入存档快照与恢复）。
+  8. **岩石 5 羁绊（`rock`）**：在 `js/systems/type-bonds.js` 与 `js/data/type-bonds.js` 将落石引爆效果改为 2 秒内全队岩石属性成员敏捷 `+10` 点（上限 10 层 = `+100`，作为额外敏捷，`rockStacks` 纳入存档快照与恢复）。
+  9. **小队个体词条——传说全属性（`indep_legendary_all`）**：在 `js/systems/squad-traits.js`、`data/trait_rework_index.json` 与生成的 `js/data/trait-rework.js` 中将其属性加成范围限定为 `hp`、`atk`、`spa`、`defense`、`spdef`（不再加成 `agility`、`stamina`、`spd`），同步更新 60 个传说家族描述。
+  10. **敏捷最终结算公式优化**：在 `js/entities/player.js`（新增 `agilityParts(m)`）与 `js/systems/squad.js` 重构为 `finalAgility = baseAgility × (1 + 乘区累加) + 额外值`（基础值为原始种族敏捷 × 个体乘区；各百分比乘区累加而非连乘；额外值不享受敏捷乘区）。
+- 验证：新增 `tools/test_agility_cooldown.cjs`（11/11 通过），连同 `test_squad_traits.cjs`、`test_permanent_stats.cjs`、`test_card_packs.cjs`、`test_expedition_supplies.cjs`、`test_exchange_gacha.cjs`、`test_server.cjs`、`test_developer_journal.cjs` 全部通过；`node tools/build.js` 与 `node tools/export_data.js` 通过（本机未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.82 — 2026-11-28
 
 - 沿用 `v0.43.0-alpha.81` 图鉴的双色斜纹横幅、悬浮胶囊页签与深色层次卡片风格，新增 `css/dashboard-ui.css`（纳入 `tools/build.js` 缓存指纹）并统一重构 14 个核心界面：

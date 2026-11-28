@@ -1057,23 +1057,23 @@
         "es": "Coordinated Lead"
       },
       "desc": {
-        "zh": "队长每次释放招式，为距离最近的 2 名队友缩减该招式 15% 的冷却时间。",
-        "en": "Captain casts reduce move cooldowns of the two closest allies by 15% of base cooldown.",
-        "es": "Cada ataque del capitán reduce los tiempos de recarga de los dos aliados más cercanos en un 15% de la recarga base."
+        "zh": "队长每次施法，使距离最近的 2 名存活队员获得增益：提高 20% 的基础敏捷（不叠加），释放技能后移除。",
+        "en": "Whenever the captain casts a move, the 2 nearest living companions gain a non-stacking +20% base Agility buff until they cast a move.",
+        "es": "Cada vez que el capitán lanza un movimiento, los 2 aliados vivos más cercanos ganan una mejora no acumulable de +20% de agilidad base hasta que lancen un movimiento."
       },
       "effects": {
-        "captainCastCdrAllyPct": 0.15,
+        "captainCastAgilityPct": 0.2,
         "targets": 2
       },
       "enhanced": {
         "effects": {
-          "captainCastCdrAllyPct": 0.3,
+          "captainCastAgilityPct": 0.4,
           "targets": 3
         },
         "desc": {
-          "zh": "队长施法时，最近3名队员的技能冷却推进30%。",
-          "en": "Captain casts advance cooldowns of the nearest 3 companions by 30%.",
-          "es": "Al lanzar el capitán, avanza un 30% las recargas de los 3 aliados más cercanos."
+          "zh": "队长每次施法，使距离最近的 3 名存活队员获得增益：提高 40% 的基础敏捷（不叠加），释放技能后移除。",
+          "en": "Whenever the captain casts a move, the 3 nearest living companions gain a non-stacking +40% base Agility buff until they cast a move.",
+          "es": "Cada vez que el capitán lanza un movimiento, los 3 aliados vivos más cercanos ganan una mejora no acumulable de +40% de agilidad base hasta que lancen un movimiento."
         }
       }
     },

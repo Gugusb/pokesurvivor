@@ -42,6 +42,7 @@ G.I18n.add({
   "Recupera un poco de vida de forma continua.": "Continuously restores a little HP.",
   "Aumenta el daño, pero impide cambiar de movimiento.": "Raises damage, but prevents switching moves.",
   "Acorta la recarga de los movimientos.": "Shortens move cooldowns.",
+  "Aumenta la agilidad en +5 por acumulación.": "Increases Agility by +5 per stack.",
   "Evita un golpe mortal. Se consume al activarse.": "Survives one fatal hit. Consumed when triggered.",
   "El daño causado recupera un poco de vida.": "Dealing damage restores a little HP.",
   "Consigue más monedas al terminar la aventura.": "Earn more coins at the end of the adventure.",

@@ -36,7 +36,8 @@ G.SquadBonds=(()=>{
   const applies=(p,m)=>!!p?.isSquadMember&&G.Squad?.active&&G.Squad.deployed().includes(p)&&!m?.zMove;
   function stats(p,m){return applies(p,m)?state(m?.kind):{count:0,layers:0,tier:0,scale:0};}
   function crowd(p){const c=cfg().melee;return Math.min(c.maxCrowd,G.EnemyMgr.queryCircle(p.x,p.y,c.crowdRadius).filter(e=>!e.dead).length);}
-  function agility(p,m){const b=stats(p,m);if(!b.tier)return 1;return 1+(b.kind==='projectile'||b.kind==='area'?value(b.kind,'agility'):b.kind==='chain'&&b.tier===7?.3*b.scale:b.kind==='melee'&&b.tier===7?crowd(p)*cfg().melee.agilityPerEnemy:0);}
+  function agilityPct(p,m){const b=stats(p,m);if(!b.tier)return 0;return b.kind==='projectile'||b.kind==='area'?value(b.kind,'agility'):b.kind==='chain'&&b.tier===7?.3*b.scale:b.kind==='melee'&&b.tier===7?crowd(p)*cfg().melee.agilityPerEnemy:0;}
+  function agility(p,m){return 1+agilityPct(p,m);}
   function stamina(p,m){const b=stats(p,m);return 1+(b.tier&&(b.kind==='projectile'||b.kind==='area')?value(b.kind,'stamina'):0);}
   const sustain=()=>1;
   function damage(v,kind,k){v.dmg*=k;v.bondDamageContributions=[...(v.bondDamageContributions||[]),[kind,k]];}
@@ -81,7 +82,7 @@ G.SquadBonds=(()=>{
     if(!KINDS.includes(k))return L('Sin efecto activo todavía.','No active effect yet.','暂不激活羁绊效果。');
     if(!b.tier)return L('Se activa con 3 especies.','Activates with 3 species.','3名不同宝可梦激活。')+(k==='bloom'?L(' Las habilidades de Floración rompen Escudo Innato +150% más rápido.',' Bloom moves break Innate Shield 150% faster.',' 绽放类技能削弱生得护盾效率+150%。'):'');
     const base={
-      projectile:()=>L('Agilidad +','Agility +','结算敏捷+')+pct(value(k,'agility'))+L(', aguante +',', stamina +','，结算耐力+')+pct(value(k,'stamina')),
+      projectile:()=>L('Agilidad base +','Base agility +','基础敏捷+')+pct(value(k,'agility'))+L(', aguante +',', stamina +','，结算耐力+')+pct(value(k,'stamina')),
       melee:()=>L('Alcance de impacto +','Splash range +','溅射范围+')+pct(value(k,'range')),
       beam:()=>L('Longitud del rayo +','Beam length +','能量柱长度+')+pct(.35*b.scale),
       chain:()=>L('Saltos adicionales +','Additional jumps +','连锁数量+')+Math.max(1,Math.floor(2*b.scale)),
@@ -104,5 +105,5 @@ G.SquadBonds=(()=>{
     return base+'。'+extra;
   }
   function restore(saved){reset();for(const [k,n]of Object.entries(saved||{})){const i=k.indexOf(':');setLayer(k.slice(0,i),k.slice(i+1),n);}refresh();}
-  return {snapshot:()=>({...layers}),restore,KINDS,ALL_KINDS,group,label,reset,refresh,count,layer,setLayer,addLayer,state,stats,scale,value,crowd,agility,stamina,sustain,move,afterHit,onPierce,description,palette:id=>cfg().visuals[id.replace('class:','')],get revision(){return revision;}};
+  return {snapshot:()=>({...layers}),restore,KINDS,ALL_KINDS,group,label,reset,refresh,count,layer,setLayer,addLayer,state,stats,scale,value,crowd,agility,agilityPct,stamina,sustain,move,afterHit,onPierce,description,palette:id=>cfg().visuals[id.replace('class:','')],get revision(){return revision;}};
 })();

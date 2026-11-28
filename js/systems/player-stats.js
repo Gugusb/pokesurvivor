@@ -21,7 +21,19 @@ G.PlayerStats=(()=>{
       return {key,name,base,permanent,fruit,skills,other,total,battle};
     });
   }
-  function cooldown(p,m){return Math.max(.05,m.cd*p.cdMul)*(p.agilityCooldownFor?.(m)||p.agilityCooldown)*(G.Items?.cooldownFactor(p)||1)*(G.Specialization?.stats(m).cooldown||1)/G.Abilities.cooldownRate(p,m)/(G.Mega?.cooldownRate(p,m)||1)*(G.SquadTraits?.cooldown(p)||1)/(G.TrainerTalents?.rate(p)||1);}
+  function cooldown(p,m){
+    const factor=G.Combat?.cooldownFactor?G.Combat.cooldownFactor(p,m):(
+      (p.agilityCooldownFor?.(m)||p.agilityCooldown)
+      *(G.Items?.cooldownFactor(p)||1)
+      *(G.Specialization?.stats(m).cooldown||1)
+      *(G.SquadTraits?.cooldown(p)||1)
+      *(G.TrainerTalents?.cooldownFactor?.(p)??(1/(G.TrainerTalents?.rate(p)||1)))
+      /(G.LeaderAbilities?.rate(p,m)||1)
+      /(G.Abilities?.cooldownRate(p,m)||1)
+      /(G.Mega?.cooldownRate(p,m)||1)
+    );
+    return Math.max(.05,m.cd*p.cdMul)*factor;
+  }
   function move(p,m){let view=G.Specialization?.move(p,m)||m;view=G.Mega?.move(p,view)||view;view=G.SquadBonds?.move(p,view)||view;view=G.TypeBonds?.move(p,view)||view;view=G.Abilities.move(p,view);view=G.SquadTraits?.move(p,view)||view;view=G.TrainerTalents?.move(p,view)||view;return {view,cd:cooldown(p,m),pp:G.MovePP.state(p,m),power:view.dmg||0};}
   return {rows,move,cooldown,fmt};
 })();

@@ -1,6 +1,12 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Reajuste de fórmula de agilidad y recarga · v0.43.0-alpha.83": "敏捷与冷却结算公式重构及十项平衡调整 · v0.43.0-alpha.83",
+  "Nueva fórmula de agilidad: Agilidad final = Base × (1 + suma de multiplicadores) + Extra (los bonos fijos y planos como Garra Rápida, Roca 5 o Enlace del Capitán ya no se amplifican por multiplicadores). Las reducciones de enfriamiento ahora se multiplican sobre la duración (por ejemplo, -10% y -30% resultan en 63% de la recarga original).": "重构敏捷结算为「基础值 ×（1 + 乘区累加）+ 额外值」，其中基础值为原始基础值乘以个体乘区，额外值（如先制之爪、岩石 5、连携主将）不享受敏捷乘区；冷却时间缩短乘区统一按剩余时长相乘（例如 -10% 与 -30% 叠加为 0.90 × 0.70 = 63% 原冷却）。",
+  "Metrónomo pasa a ser un objeto único con recarga ×0,95; Garra Rápida otorga +5 de agilidad plana por acumulación; se retira la antigua bonificación residual stat:cd (+3%/nivel).": "节拍器调整为唯一道具且效果改为冷却 ×0.95；先制之爪改为每层提供 +5 点额外敏捷；移除局外旧版 stat:cd（+3%/级）敏捷残留收益。",
+  "Enlace del Capitán otorga a los 2 aliados vivos más cercanos +20% de agilidad base no acumulable hasta su próximo ataque (3 aliados y +40% mejorado). Proyectil otorga +20%/+50%/+80% de agilidad base; Psíquico 5 añade un enfriamiento interno de 10 s; Roca 5 pasa a +10 de agilidad plana por 2 s hasta 10 acumulaciones; el rasgo Legendario ahora solo potencia PS, ambos ataques y ambas defensas.": "连携主将改为队长每次施法使最近 2 名存活队员获得 +20% 基础敏捷（不叠加，施法后移除；强化版为 3 名／+40%）；投射物羁绊调整为基础敏捷 +20%/+50%/+80%；超能力 5 羁绊增设 10 秒内置冷却；岩石 5 羁绊改为落石引爆使全队岩石属性成员 2 秒内敏捷 +10（上限 10 层）；传说全属性词条改为仅提升双攻、双防及生命。",
+  "Ajusté los engranajes del reloj de arena con una taza tibia al lado para que la agilidad en el tramo final no se dispare hasta las nubes. Quien cocina revisó cada multiplicador y cada objeto uno por uno; ahora el ritmo de las habilidades se siente firme de principio a fin.": "端着热饮把沙漏的齿轮重新拧紧了一遍，后期的敏捷总算不会一路飙上天啦。做饭的那家伙把每个乘区和道具都挨个核过账，咱们以后不管推到第几天，技能节奏都稳稳当当的。",
+
   "Interfaz unificada en todas las pantallas y dificultad en preparación · v0.43.0-alpha.82": "全界面视觉统一改版与远征准备合并难度选择 · v0.43.0-alpha.82",
   "Se extiende el nuevo estilo visual (cabecera diagonal bicolor, pestañas flotantes y tarjetas oscuras limpias) a Paquetes de cartas, Gacha, Gacha de habilidades, Bolsa, Misiones, Ingresos sin conexión, Guardería, Amigos, Ranking, Ajustes, Tarjeta de entrenador de la Liga, Novedades y Apoyo.": "沿用新版图鉴的双色斜纹主题横幅、悬浮胶囊页签与深色层次卡片风格，全面统一优化卡包、抽卡、特性抽卡、交易所、任务、挂机收益、孵蛋屋、好友、排行榜、设置、联盟训练家卡、更新内容与支持界面。",
   "El selector de dificultad (1★–8★) pasa del menú principal a la pantalla de Preparación de expedición con botones directos, multiplicador de puntuación y avisos de rango R4+ / bonificación +1 ★ en vivo.": "将 1★–8★ 难度选择从主菜单移至「远征战前准备」界面，支持卡片按钮直选并实时联动显示得分倍率、难度词条与 R4+／跨级 +1★ 段位提示。",
@@ -311,6 +317,7 @@ G.I18n.addChinese({
   "Recupera un poco de vida de forma continua.": "持续恢复少量生命。",
   "Aumenta el daño, pero impide cambiar de movimiento.": "提高伤害，但无法切换技能。",
   "Acorta la recarga de los movimientos.": "缩短招式冷却。",
+  "Aumenta la agilidad en +5 por acumulación.": "每层敏捷提高5点。",
   "Evita un golpe mortal. Se consume al activarse.": "抵挡一次致命攻击，触发后消耗一件。",
   "El daño causado recupera un poco de vida.": "造成伤害时恢复少量生命。",
   "Consigue más monedas al terminar la aventura.": "冒险结束时获得更多金币。",

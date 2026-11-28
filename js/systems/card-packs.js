@@ -40,8 +40,8 @@ G.CardPacks=(()=>{
    const legacyTokens=Math.max(0,Math.floor(+p.tokens?.breakthrough||0));
    p.tokens=Object.fromEntries(packs.map(pack=>[pack.id,Math.max(0,Math.min(1e6,Math.floor(+p.tokens?.[pack.id]||0)))]));
    if(legacyTokens)p.tokens.beginner=Math.min(1e6,(p.tokens.beginner||0)+legacyTokens);
-   if(p.skillMigrated!==1){const bonus=taken['stat:cd']*.03,levels=Math.min(6,Math.floor((bonus+1e-9)/.05));taken['skill:agility']=levels;p.legacyAgility=Math.max(0,bonus-levels*.05);p.skillMigrated=1;}
-   p.legacyAgility=Math.max(0,Math.min(.24,Number(p.legacyAgility)||0));
+   if(p.skillMigrated!==1){const bonus=taken['stat:cd']*.03,levels=Math.min(6,Math.floor((bonus+1e-9)/.05));taken['skill:agility']=levels;p.skillMigrated=1;}
+   p.legacyAgility=0;
    p.disabled=Object.fromEntries(items.filter(i=>p.disabled?.[i.id]===true).map(i=>[i.id,true]));
    if(!themes.some(t=>t.id===p.theme&&taken['theme:'+t.id]))p.theme='';
    p.seq=Math.max(0,Math.min(1e9,Math.floor(+p.seq||0)));
@@ -62,14 +62,14 @@ G.CardPacks=(()=>{
    }
    return p;
  }
- const levels=s=>{const p=normalize(s);return {...Object.fromEntries(G.Upgrades.LIST.map(u=>[u.id,u.id==='cd'?0:p.taken['stat:'+u.id]||0])),...Object.fromEntries(skills.map(c=>[c.key,p.taken[c.id]||0])),legacyAgility:p.legacyAgility};};
+ const levels=s=>{const p=normalize(s);return {...Object.fromEntries(G.Upgrades.LIST.map(u=>[u.id,u.id==='cd'?0:p.taken['stat:'+u.id]||0])),...Object.fromEntries(skills.map(c=>[c.key,p.taken[c.id]||0])),legacyAgility:0};};
  const remaining=(s,id='beginner')=>{const p=normalize(s);return (packBy[id]?.cards||[]).reduce((n,c)=>n+available(s,p,c),0);};
  function draw(s,rng=Math.random,id='beginner',token=false){const p=normalize(s);if(p.pending)return p.pending;const pack=packBy[id];if(!pack)throw Error('Invalid pack');if(!remaining(s,id))throw Error('Pack empty');if(token?!p.tokens[id]:s.coins<pack.price)throw Error(token?'No pack owned':'Not enough coins');
    const bag=[];for(const c of pack.cards)for(let n=0;n<available(s,p,c);n++)bag.push(c.id);const options=[];for(let i=0;i<3&&bag.length;i++){const k=Math.max(0,Math.min(bag.length-1,Math.floor(rng()*bag.length)));options.push(bag.splice(k,1)[0]);}
    if(token)p.tokens[id]--;else s.coins-=pack.price;p.pending={id:globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2),seq:++p.seq,pack:id,options,...(token?{token:true}:{})};return p.pending;
  }
  function drawMany(s,rng=Math.random,id='beginner',token=false,count=10){const p=normalize(s);if(p.pending)return p.pending;const total=Math.min(10,Math.max(1,count|0),remaining(s,id)),pack=packBy[id];if(!pack)throw Error('Invalid pack');if(!total)throw Error('Pack empty');if(token?p.tokens[id]<total:s.coins<pack.price*total)throw Error(token?'No pack owned':'Not enough coins');const offer=draw(s,rng,id,token);offer.batch={total,left:total};return offer;}
- function choose(s,seq,index,rng=Math.random){const p=normalize(s),offer=p.pending;if(!offer||seq!==offer.seq||!Number.isInteger(index)||index<0||index>=offer.options.length)throw Error('Invalid pack choice');const c=BY[offer.options[index]];if(c.kind==='tickets'&&s.tickets.t1+100>1e7||c.kind==='gems'&&s.abilityGems+20>1e8)throw Error('Wallet limit reached');p.taken[c.id]++;p.closed[offerId(offer)]={card:c.id,pack:offer.pack,token:!!offer.token};p.pending=null;if(c.id==='stat:cd')p.legacyAgility+=.03;if(c.kind==='tickets')s.tickets.t1+=100;if(c.kind==='gems')s.abilityGems+=20;if(c.kind==='z')G.ZAccess.unlock(s,c.key,'cardpack');
+ function choose(s,seq,index,rng=Math.random){const p=normalize(s),offer=p.pending;if(!offer||seq!==offer.seq||!Number.isInteger(index)||index<0||index>=offer.options.length)throw Error('Invalid pack choice');const c=BY[offer.options[index]];if(c.kind==='tickets'&&s.tickets.t1+100>1e7||c.kind==='gems'&&s.abilityGems+20>1e8)throw Error('Wallet limit reached');p.taken[c.id]++;p.closed[offerId(offer)]={card:c.id,pack:offer.pack,token:!!offer.token};p.pending=null;if(c.kind==='tickets')s.tickets.t1+=100;if(c.kind==='gems')s.abilityGems+=20;if(c.kind==='z')G.ZAccess.unlock(s,c.key,'cardpack');
    if(offer.batch?.left>1&&remaining(s,offer.pack)){try{const next=draw(s,rng,offer.pack,!!offer.token);next.batch={total:offer.batch.total,left:offer.batch.left-1};}catch(e){if(!['Not enough coins','No pack owned','Pack empty'].includes(e.message))throw e;}}
    if(!p.pending&&p.waiting.length)p.pending=p.waiting.shift();return c.id;}
  function apply(s,data){switch(data.action){case 'draw':return data.count===10?drawMany(s,Math.random,data.pack||'beginner',data.token===true):draw(s,Math.random,data.pack||'beginner',data.token===true);case 'choose':if(data.offerId&&data.offerId!==s.cardPack?.pending?.id)throw Error('Invalid pack choice');return choose(s,data.seq,data.index);case 'toggle':return toggle(s,data.id);case 'theme':return equip(s,data.id);default:throw Error('Invalid pack action');}}
@@ -88,7 +88,7 @@ G.CardPacks=(()=>{
  function reconcile(current={},base={},next={}){
    const out=clone(current),equal=(a,b)=>JSON.stringify(a)===JSON.stringify(b),{correction,duplicates,overflow}=settlement(current,base,next);out.taken||={};out.tokens||={};out.disabled||={};
    for(const c of [...cards,legacy,...legacyFruits])out.taken[c.id]=Math.max(0,Math.min(c.max,(current.taken?.[c.id]||0)+Math.max(0,(next.taken?.[c.id]||0)-(base.taken?.[c.id]||0)-(duplicates[c.id]||0))));
-   out.legacyAgility=Math.min(.24,(current.legacyAgility||0)+.03*Math.max(0,out.taken[legacy.id]-(current.taken?.[legacy.id]||0)));
+   out.legacyAgility=0;
    for(const pack of packs)out.tokens[pack.id]=Math.max(0,Math.min(1e6,(current.tokens?.[pack.id]||0)+(next.tokens?.[pack.id]||0)-(base.tokens?.[pack.id]||0)+(correction.tokens[pack.id]||0)));
    for(const item of items)if(next.disabled?.[item.id]!==base.disabled?.[item.id])out.disabled[item.id]=!!next.disabled?.[item.id];
    if(next.theme!==base.theme)out.theme=next.theme;

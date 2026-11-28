@@ -33,7 +33,19 @@ G.Combat = (() => {
     for(const m of [...primary,...pl.moves.filter(m=>!primary.includes(m))])tickMove(dt,pl,m,now);
   }
 
-  const rateFor=(pl,m)=>(G.LeaderAbilities?.rate(pl,m)||1)*(G.TrainerTalents?.rate(pl)||1)*G.Abilities.cooldownRate(pl,m)/(G.SquadTraits?.cooldown(pl)||1)*(G.Mega?G.Mega.cooldownRate(pl,m):1)/(pl.agilityCooldownFor?.(m)||pl.agilityCooldown||1)/(G.Items?.cooldownFactor(pl)||1)/(G.Specialization?.stats(m).cooldown||1);
+  // Cooldown reductions stack multiplicatively on duration: e.g. -10% and -30% -> 0.9 * 0.7 = 0.63.
+  function cooldownFactor(pl,m){
+    const factor=(pl.agilityCooldownFor?.(m)||pl.agilityCooldown||1)
+      *(G.Items?.cooldownFactor(pl)||1)
+      *(G.Specialization?.stats(m).cooldown||1)
+      *(G.SquadTraits?.cooldown(pl)||1)
+      *(G.TrainerTalents?.cooldownFactor?.(pl)??(1/(G.TrainerTalents?.rate(pl)||1)))
+      /(G.LeaderAbilities?.rate(pl,m)||1)
+      /(G.Abilities?.cooldownRate(pl,m)||1)
+      /(G.Mega?G.Mega.cooldownRate(pl,m):1);
+    return Math.max(0.01,factor);
+  }
+  const rateFor=(pl,m)=>1/cooldownFactor(pl,m);
   function tickMove(dt, pl, m, now) {
     const cooldownRate = rateFor(pl,m);
     m.t -= dt * cooldownRate;
@@ -832,7 +844,7 @@ G.Combat = (() => {
     }
   }
 
-  return { reach, tick, resolve, ghostCast, ghostOrbit, counterTackle, updateFields, drawGroundFields, drawAirFields, clearFields,
+  return { reach, tick, cooldownFactor, resolve, ghostCast, ghostOrbit, counterTackle, updateFields, drawGroundFields, drawAirFields, clearFields,
            leaderCast(pl,m){run(pl,m,Math.max(.15,m.cd||1));},
            zHit(pl, e, dmg, m) { hit(pl,e,dmg,(m.bondColor||G.U.TYPE_COLOR[m.type]),e.x-pl.x,e.y-pl.y,m.knock||0,{...m,zMove:true}); },
            get fieldCount() { return fields.length; } };

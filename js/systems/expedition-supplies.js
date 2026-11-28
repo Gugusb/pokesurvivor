@@ -14,7 +14,13 @@ G.ExpeditionSupplies=(()=>{
     const p=s.captain;for(let i=0;i<s.permanentPerks.startLevel;i++){p.level++;G.Abilities.onLevel(p);}p.xp=0;p.xpNext=G.Player.xpFor(p.level);s.supplyClaims=new Set();s.supplyPurchases={};
   }
   function restore(s){s.permanentPerks||={};s.supplyClaims=s.supplyClaims instanceof Set?s.supplyClaims:new Set(s.supplyClaims||[]);s.supplyPurchases||={};s.xpJar=Math.max(0,Math.min(jarMax(s),s.xpJar||0));}
-  function canGain(p,id){const s=run(),it=G.Items.BY[id];return !it?.expeditionOnly||!!s&&p===s.captain&&(unlimited(id)||!(s.supplyClaims?.has(id)||G.Items.count(p,id)));}
+  function canGain(p,id){
+    const s=run(),it=G.Items.BY[id];
+    if(!it)return false;
+    if(it.expeditionOnly&&(!s||p!==s.captain))return false;
+    if(unlimited(id))return true;
+    return (!p||!G.Items.count(p,id))&&!(s&&s.supplyClaims?.has(id));
+  }
   function gained(p,id){if(p!==run()?.captain)return;restore(run());if(!unlimited(id))run().supplyClaims.add(id);}
   function battleEnd(s,cleared){
     s.xpJarItemFill=0;s.campHealed=0;if(count('campkit',s)&&!s.captain.dead){const before=s.captain.hp;s.captain.heal(Math.max(0,s.captain.maxHp-s.captain.hp)*.25);s.campHealed=s.captain.hp-before;}
