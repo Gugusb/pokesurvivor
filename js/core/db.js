@@ -346,7 +346,7 @@ G.DB = (() => {
     if(G.Difficulty)r.stats.coinsEarned=Math.max(0,(newer.stats?.coinsEarned||0)-G.Difficulty.cashoutTotal(newer),(older.stats?.coinsEarned||0)-G.Difficulty.cashoutTotal(older))+G.Difficulty.cashoutTotal(r);
     if (r.starter == null) r.starter = older.starter;
     if (r.personality == null) r.personality = older.personality;
-    if (r.partner == null || !r.owned[r.partner]) { r.partner = older.partner; r.partnerShiny = older.partnerShiny; }
+    if (r.partner == null || (!r.owned[r.partner] && !(r.invites?.[r.partner] > 0))) { r.partner = older.partner; r.partnerShiny = older.partnerShiny; }
     r.created = Math.min(a.created || Date.now(), b.created || Date.now());
     r.updated = Math.max(a.updated || 0, b.updated || 0);
     if(G.CardPacks){const pack=newer.cardPack||older.cardPack;if(pack)r.cardPack=JSON.parse(JSON.stringify(pack));G.CardPacks.normalize(r);}else normalizeUpgrades(r);

@@ -134,7 +134,13 @@ function sanitize(input, old, name, options={}) {
       }
     }
   }
-  if (s.partner != null && (!G.DEX_BY[s.partner] || !s.owned[s.partner]))
+  if (!s.invites || typeof s.invites !== "object" || Array.isArray(s.invites)) s.invites = {};
+  for (const [d, cnt] of Object.entries(s.invites)) {
+    const v = Math.floor(+cnt || 0);
+    if (!G.DEX_BY[d] || v <= 0 || v > 9999 || s.owned[d]) delete s.invites[d];
+    else s.invites[d] = v;
+  }
+  if (s.partner != null && (!G.DEX_BY[s.partner] || (!s.owned[s.partner] && !(s.invites[s.partner] > 0))))
     throw new Error("Partner not owned");
   s.name = name;
   s.updated = Date.now();

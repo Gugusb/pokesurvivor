@@ -34,6 +34,14 @@ git ls-remote origin refs/heads/main refs/tags/vX.Y.Z 'refs/tags/vX.Y.Z^{}'
 
 ## 版本记录
 
+### v0.43.0-alpha.80 — 2026-11-28
+
+- 修复使用邀请函伙伴（`invites[dex] > 0` 且尚未永久捕捉 `owned[dex]`）时，云存档同步（含交易所寄售前的 `flush`）与开局校验报 `Partner not owned` 的问题：
+  - `server/domain.cjs`：在 `sanitize()` 中规范化 `s.invites`，并允许 `s.partner` 为 `s.owned[dex]` 或 `s.invites[dex] > 0`。
+  - `server/server.cjs`：开局校验同步允许邀请函伙伴；`js/core/db.js` 存档合并同步保留邀请函伙伴；`js/net/server-client.js` 补充错误中文翻译。
+  - `tools/test_exchange_gacha.cjs`：补充邀请函伙伴上传存档并寄售的回归断言。
+- 验证：`node --test tools/test_exchange_gacha.cjs tools/test_server.cjs` 21/21 全部通过；`node tools/build.js` 与 `node tools/export_data.js` 通过（当前终端未注册 `py` 启动器，未执行 `make_seo_pages.py`）。
+
 ### v0.43.0-alpha.79 — 2026-11-27
 
 - 重构特性抽卡（Gen 1–9 全开放 + 新卡池概率 + 特性勋章兑换券）：

@@ -51,6 +51,7 @@ G.Server = (() => {
       'Insufficient League Coins':['Monedas de la Liga insuficientes.','联盟币余额不足。'],
       'Ability medal already owned':['Ya posees esta medalla de capitán.','你已拥有该家族的特性勋章，无需重复购买。'],
       'Listing not found':['Anuncio no encontrado.','未找到该寄售商品。'],
+      'Partner not owned':['El compañero seleccionado no está desbloqueado.','当前伙伴尚未拥有或没有邀请函。'],
       'Wallet limit reached':['Alcanza el límite del monedero; gasta primero.','货币达到上限，请先消耗后再领取。'],
       "Sign in required": ["Inicia sesión de nuevo.", "请重新登录。"],
       "Account suspended": ["Cuenta suspendida.", "账号已被封禁。"],

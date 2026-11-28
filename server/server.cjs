@@ -280,7 +280,7 @@ function createApp(opts = {}) {
   function member(u) {
     const s = saved(u.uid).save,
       dex = s.partner;
-    if (!G.DEX_BY[dex] || !s.owned[dex])
+    if (!G.DEX_BY[dex] || (!s.owned[dex] && !(s.invites?.[dex] > 0)))
       throw fail(400, "Choose an owned partner first");
     const abilities = Object.fromEntries(
       G.MonProgression.familyFor(dex).map((d) => {

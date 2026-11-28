@@ -1,6 +1,10 @@
 // 简体中文词典，移植自 Gugusb 的 PokeSurvivor-PC combined.js（2026-10-14）。
 // 只导入显示文本；使用游戏原生语言系统。
 G.I18n.addChinese({
+  "Corrección de compañero invitado en guardado y Bolsa · v0.43.0-alpha.80": "修复使用邀请函伙伴时保存与寄售报错 · v0.43.0-alpha.80",
+  "Se corrige el error «Partner not owned» al guardar la partida, iniciar una expedición o consignar objetos en la Bolsa cuando el compañero seleccionado se obtuvo mediante invitación.": "修复当选中由「邀请函」出战的伙伴（尚未永久捕捉）时，上传云存档、开局或交易所寄售提示「伙伴未拥有（Partner not owned）」的问题。",
+  "Le enseñé al guardián del servidor a reconocer también las invitaciones, así no nos rechaza la mochila ni el mostrador cuando salimos con un compañero invitado.": "我给门卫大叔补上了邀请函的登记册，以后带着受邀伙伴去交易所寄售或者存进度都不会被拦在门外啦。",
+
   "Bolsa de consignación": "交易所（寄售商店）",
   "Compra y vende con Monedas Liga": "使用联盟币寄售与购买道具",
   "Monedas Liga": "联盟币",

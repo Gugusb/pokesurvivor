@@ -165,9 +165,11 @@ test('Server Exchange API enforces min prices, sorts ascending, unlocks voucher 
     const bReg = await req('POST', '/api/register', { name: 'BuyerTwo', pass: 'password123' });
     assert.equal(bReg.status, 201);
 
-    // Seed seller with voucher + gems + balls, buyer with League Coins via save endpoint
+    // Seed seller with voucher + gems + balls AND an invited-only partner (not permanently owned yet)
     const medalId = '906-leader_protean_flower_trick';
     const sellerSave = structuredClone(sReg.data.save);
+    sellerSave.invites = { 906: 1 };
+    sellerSave.partner = 906;
     sellerSave.abilityGems = 5;
     sellerSave.pokeballs = { pokeball: 5, greatball: 3, ultraball: 2 };
     sellerSave.abilityVouchers = { [medalId]: 2 };
